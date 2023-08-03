@@ -9,6 +9,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.UI.Components.Widgets;
 
 
 namespace JJMasterData.Core.Web.Components;
@@ -37,13 +39,14 @@ internal class GridToolbar
     private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlElement()
     {
         var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
-        var expressionsService = GridView.ExpressionsService;
         var formValues = await GridView.GetDefaultValuesAsync();
+        var linkButtonFactory = new LinkButtonFactory(GridView.ExpressionsService);
+        var formStateData = new FormStateData(GridView.UserValues, formValues, PageState.List);
 
         foreach (var action in actions)
         {
-            bool isVisible = await expressionsService.GetBoolValueAsync	(action.VisibleExpression, PageState.List, formValues);
-            if (!isVisible)
+            var linkButton = await linkButtonFactory.CreateAsync(action, formStateData);
+            if (!linkButton.Visible)
                 continue;
 
             if (action is FilterAction { EnableScreenSearch: true })
@@ -51,9 +54,7 @@ internal class GridToolbar
                 yield return GridView.Filter.GetHtmlToolBarSearch();
                 continue;
             }
-
-            bool isEnabled = await expressionsService.GetBoolValueAsync(action.EnableExpression, PageState.List, formValues);
-            var linkButton = JJLinkButton.GetInstance(action, isEnabled, true);
+            
             linkButton.OnClientClick = GetScriptAction(action, formValues);
             switch (action)
             {
@@ -80,26 +81,26 @@ internal class GridToolbar
         var pageState = PageState.List;
         var expressionsService = GridView.ExpressionsService;
         string script;
-
+        
         switch (action)
         {
             case UrlRedirectAction redirectAction:
-                script = GridView.ActionManager.GetUrlRedirectScript(redirectAction, formValues, pageState, contextAction, null);
+                script = GridView.Scripts.GetUrlRedirectToolbarScript(redirectAction, formValues);
                 break;
             case InternalAction internalAction:
-                script = GridView.ActionManager.GetInternalUrlScript(internalAction, formValues);
+                script = GridView.FormViewScripts.GetInternalUrlScript(internalAction, formValues);
                 break;
             case SqlCommandAction:
-                script = GridView.ActionManager.GetCommandScript(action, formValues, contextAction);
+                script = GridView.FormViewScripts.GetCommandScript(action, formValues, contextAction);
                 break;
             case ScriptAction jsAction:
                 script = expressionsService.ParseExpression(jsAction.OnClientClick, pageState, false, formValues);
                 break;
             case InsertAction insertAction:
-                script = GridView.ActionManager.GetFormActionScript(action, formValues, contextAction, insertAction.ShowAsPopup);
+                script = GridView.FormViewScripts.GetFormActionScript(action, formValues, contextAction, insertAction.ShowAsPopup);
                 break;
                 case DeleteSelectedRowsAction or ImportAction or LogAction:
-                script = GridView.ActionManager.GetFormActionScript(action, formValues, contextAction);
+                script = GridView.FormViewScripts.GetFormActionScript(action, formValues, contextAction);
                 break;
             case ConfigAction:
                 script = BootstrapHelper.GetModalScript($"config_modal_{GridView.Name}");
@@ -111,7 +112,7 @@ internal class GridToolbar
                     GridView.IsExternalRoute);
                 break;
             case RefreshAction:
-                script = GridView.Scripts.GetRefreshScript(GridView);
+                script = GridView.Scripts.GetRefreshScript();
                 break;
             case FilterAction:
                 script = BootstrapHelper.GetModalScript($"filter_modal_{GridView.Name}");
@@ -125,7 +126,6 @@ internal class GridToolbar
             case SubmitAction submitAction:
                 string confirmationMessage = submitAction.ConfirmationMessage;
                 script = !string.IsNullOrWhiteSpace(confirmationMessage) ? $"return confirm('{confirmationMessage}');" : string.Empty;
-
                 break;
             default:
                 throw new NotImplementedException();

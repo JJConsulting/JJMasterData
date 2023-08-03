@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -10,20 +11,25 @@ namespace JJMasterData.Core.Web.Factories;
 
 internal class TextRangeFactory : IControlFactory<JJTextRange>
 {
+    private JJMasterDataEncryptionService EncryptionService { get; }
     private IHttpContext HttpContext { get; }
     private TextBoxFactory TextBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public TextRangeFactory(IHttpContext httpContext,IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public TextRangeFactory(IHttpContext httpContext,
+                            IExpressionsService expressionsService,
+                            IStringLocalizer<JJMasterDataResources> stringLocalizer,
+                            JJMasterDataEncryptionService encryptionService)
     {
+        EncryptionService = encryptionService;
         HttpContext = httpContext;
-        TextBoxFactory = new TextBoxFactory(httpContext, stringLocalizer, expressionsService);
+        TextBoxFactory = new TextBoxFactory(httpContext, stringLocalizer, expressionsService, EncryptionService);
         StringLocalizer = stringLocalizer;
     }
 
     public JJTextRange Create()
     {
-        return new JJTextRange(HttpContext,TextBoxFactory,StringLocalizer);
+        return new JJTextRange(HttpContext, TextBoxFactory, StringLocalizer);
     }
 
     public JJTextRange Create(FormElement formElement, FormElementField field, ControlContext context)
@@ -42,7 +48,7 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
         range.FromField.Text = valueFrom;
         range.FromField.Name = field.Name + "_from";
         range.FromField.PlaceHolder = StringLocalizer["From"];
-        
+
         string valueTo = "";
         if (values != null && values.ContainsKey(field.Name + "_to"))
         {

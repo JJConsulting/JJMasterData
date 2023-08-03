@@ -8,6 +8,9 @@ namespace JJMasterData.Core.DataManager;
 
 public class ActionMap
 {
+    [JsonProperty("dictionaryName")]
+    public required string DictionaryName { get; set; }
+
     [JsonProperty("actionName")] 
     public required string ActionName { get; set; }
 
@@ -32,6 +35,7 @@ public class ActionMap
         IDictionary<string, dynamic> row,
         string actionName)
     {
+        DictionaryName = formElement.Name;
         ActionSource = actionSource;
         ActionName = actionName;
         PkFieldValues = new Dictionary<string, dynamic>();

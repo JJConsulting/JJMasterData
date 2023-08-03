@@ -1,4 +1,5 @@
 #nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,20 +9,20 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions;
 
-public abstract class FormElementActionList : System.Collections.Generic.IList<BasicAction>
+public abstract class FormElementActionList : IList<BasicAction>
 {
-    protected System.Collections.Generic.IList<BasicAction> List { get; set; }
+    protected IList<BasicAction> List { get; set; }
     protected FormElementActionList()
     {
-        List = new System.Collections.Generic.List<BasicAction>();
+        List = new List<BasicAction>();
     }
-    
+
     [JsonConstructor]
-    protected FormElementActionList(System.Collections.Generic.IList<BasicAction> list)
+    protected FormElementActionList(IList<BasicAction> list)
     {
         List = list;
     }
-    
+
     public IEnumerator<BasicAction> GetEnumerator()
     {
         return List.GetEnumerator();
@@ -37,11 +38,11 @@ public abstract class FormElementActionList : System.Collections.Generic.IList<B
         return List.First(a => a.Name == actionName);
     }
 
-    public System.Collections.Generic.List<BasicAction> GetAllSorted()
+    public List<BasicAction> GetAllSorted()
     {
         return List.OrderBy(x => x.Order).ToList();
     }
-    
+
     public void SetDefaultOption(string actionName)
     {
         foreach (var action in List)
@@ -55,12 +56,12 @@ public abstract class FormElementActionList : System.Collections.Generic.IList<B
         ValidateAction(item);
         List.Add(item);
     }
-    
+
 
     public void Set(BasicAction item)
     {
         ValidateAction(item);
-        
+
         var existingAction = List.FirstOrDefault(a => a.Name == item.Name);
         if (existingAction != null)
         {
@@ -72,7 +73,7 @@ public abstract class FormElementActionList : System.Collections.Generic.IList<B
             List.Add(item);
         }
     }
-    
+
     public void Clear()
     {
         List.Clear();
@@ -85,7 +86,7 @@ public abstract class FormElementActionList : System.Collections.Generic.IList<B
 
     public void CopyTo(BasicAction[] array, int arrayIndex)
     {
-        List.CopyTo(array,arrayIndex);
+        List.CopyTo(array, arrayIndex);
     }
 
     public bool Remove(BasicAction item)
@@ -104,7 +105,7 @@ public abstract class FormElementActionList : System.Collections.Generic.IList<B
     public void Insert(int index, BasicAction item)
     {
         ValidateAction(item);
-        List.Insert(index,item);
+        List.Insert(index, item);
     }
 
     public void RemoveAt(int index)
@@ -117,8 +118,8 @@ public abstract class FormElementActionList : System.Collections.Generic.IList<B
         get => List[index];
         set => List[index] = value;
     }
-    
-    private static void ValidateAction(BasicAction action)
+
+    internal static void ValidateAction(BasicAction action)
     {
         if (action == null)
             throw new ArgumentNullException(nameof(action));

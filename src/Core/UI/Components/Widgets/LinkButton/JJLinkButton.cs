@@ -77,7 +77,7 @@ public class JJLinkButton : JJBaseView
         Type = LinkButtonType.Link;
     }
 
-    internal static JJLinkButton GetInstance(BasicAction action, bool enable, bool visible)
+    internal JJLinkButton GetInstance(BasicAction action, bool enable, bool visible)
     {
         return new JJLinkButton
         {

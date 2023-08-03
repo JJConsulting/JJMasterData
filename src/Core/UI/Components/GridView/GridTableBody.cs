@@ -64,11 +64,11 @@ internal class GridTableBody
     internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(DataRow row, int index)
     {
         var values = await GetValues(row);
-
+        var formData = new FormStateData(GridView.UserValues, values, PageState.List);
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
-        string onClickScript = GetOnClickScript(values, defaultAction);
+        string onClickScript = await GetOnClickScript(formData, defaultAction);
 
         if (GridView.EnableMultiSelect)
         {
@@ -91,7 +91,7 @@ internal class GridTableBody
             yield return visibleFieldHtml;
         }
 
-        foreach (var actionHtml in GetActionsHtmlList(values))
+        await foreach (var actionHtml in GetActionsHtmlListAsync(formData))
         {
             yield return actionHtml;
         }
@@ -188,25 +188,24 @@ internal class GridTableBody
         return div;
     }
 
-    public IEnumerable<HtmlBuilder> GetActionsHtmlList(IDictionary<string, dynamic> values)
+    public async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlListAsync(FormStateData formStateData)
     {
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var groupedActions = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
-
-        foreach (var action in GetActionsWithoutGroupHtml(actionsWithoutGroup, values))
+        await foreach (var action in GetActionsWithoutGroupHtmlAsync(actionsWithoutGroup, formStateData))
         {
             yield return action;
         }
 
         if (groupedActions.Count > 0)
         {
-            yield return GetActionsGroupHtml(groupedActions, values);
+            yield return await GetActionsGroupHtmlAsync(groupedActions, formStateData);
         }
     }
 
 
-    private HtmlBuilder GetActionsGroupHtml(IEnumerable<BasicAction> actions, IDictionary<string, dynamic> values)
+    private async Task<HtmlBuilder> GetActionsGroupHtmlAsync(IEnumerable<BasicAction> actions, FormStateData formStateData)
     {
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("table-action");
@@ -215,7 +214,8 @@ internal class GridTableBody
         foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
         {
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
-            btnGroup.Actions.Add(GridView.ActionManager.GetLinkGrid(groupedAction, values));
+            var linkButton = await GridView.FormViewScripts.GetLinkGridAsync(groupedAction, formStateData);
+            btnGroup.Actions.Add(linkButton);
         }
 
         td.AppendComponent(btnGroup);
@@ -223,18 +223,18 @@ internal class GridTableBody
     }
 
 
-    private IEnumerable<HtmlBuilder> GetActionsWithoutGroupHtml(IEnumerable<BasicAction> actionsWithoutGroup, IDictionary<string, dynamic> values)
+    private async IAsyncEnumerable<HtmlBuilder> GetActionsWithoutGroupHtmlAsync(IEnumerable<BasicAction> actionsWithoutGroup, FormStateData formStateData)
     {
         foreach (var action in actionsWithoutGroup)
         {
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("table-action");
 
-            var link = GridView.ActionManager.GetLinkGrid(action, values);
+            var link = await GridView.FormViewScripts.GetLinkGridAsync(action, formStateData);
             var onRender = OnRenderAction;
             if (onRender != null)
             {
-                var args = new ActionEventArgs(action, link, values);
+                var args = new ActionEventArgs(action, link, formStateData.FormValues);
                 onRender.Invoke(GridView, args);
                 if (args.HtmlResult != null)
                 {
@@ -305,16 +305,16 @@ internal class GridTableBody
         return checkBox;
     }
 
-    private string GetOnClickScript(IDictionary<string, dynamic> values, BasicAction defaultAction)
+    private async Task<string> GetOnClickScript(FormStateData formStateData, BasicAction defaultAction)
     {
         if (GridView.EnableEditMode || defaultAction == null)
             return string.Empty;
 
-        var linkDefaultAction = GridView.ActionManager.GetLinkGrid(defaultAction, values);
+        var linkDefaultAction = await GridView.FormViewScripts.GetLinkGridAsync(defaultAction, formStateData);
 
         if (OnRenderAction != null)
         {
-            var args = new ActionEventArgs(defaultAction, linkDefaultAction, values);
+            var args = new ActionEventArgs(defaultAction, linkDefaultAction, formStateData.FormValues);
             OnRenderAction.Invoke(GridView, args);
 
             if (args.HtmlResult != null)

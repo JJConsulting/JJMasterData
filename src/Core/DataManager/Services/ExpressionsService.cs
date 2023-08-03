@@ -124,6 +124,16 @@ public class ExpressionsService : IExpressionsService
         return await GetExpressionValueAsync(field.DefaultValue, field, state, formValues);
     }
 
+
+    public async Task<bool> GetBoolValueAsync(
+        string expression,
+        FormStateData formStateData)
+    {
+        return await GetBoolValueAsync(expression, formStateData.PageState, formStateData.FormValues,
+            formStateData.UserValues);
+    }
+
+    
     public async Task<bool> GetBoolValueAsync(
         string expression,
         PageState state,

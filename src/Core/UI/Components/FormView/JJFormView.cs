@@ -4,7 +4,6 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
@@ -26,9 +25,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.GridView;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -54,7 +50,7 @@ public class JJFormView : JJAsyncBaseView
     #endregion
 
     #region "Properties"
-    
+
     private JJDataPanel _dataPanel;
     private JJGridView _gridView;
     private ActionMap _currentActionMap;
@@ -142,7 +138,7 @@ public class JJFormView : JJAsyncBaseView
             _gridView.UserValues = UserValues;
             _gridView.IsExternalRoute = IsExternalRoute;
             _gridView.ShowTitle = true;
-            
+
             _gridView.ToolBarActions.Add(new InsertAction());
             _gridView.ToolBarActions.Add(new DeleteSelectedRowsAction());
             _gridView.ToolBarActions.Add(new LogAction());
@@ -239,16 +235,16 @@ public class JJFormView : JJAsyncBaseView
         var factory = JJService.Provider.GetScopedDependentService<FormViewFactory>();
         FormElement = dataDictionaryRepository.GetMetadata(elementName);
         IsExternalRoute = false;
-        factory.SetFormViewParams(this,FormElement);
+        factory.SetFormViewParams(this, FormElement);
     }
-    
+
     public JJFormView(FormElement formElement) : this()
     {
         IsExternalRoute = false;
         FormElement = formElement;
     }
 #endif
-    
+
     internal JJFormView(
         FormElement formElement,
         IHttpContext currentContext,
@@ -259,7 +255,7 @@ public class JJFormView : JJAsyncBaseView
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ComponentFactory componentFactory) 
+        ComponentFactory componentFactory)
     {
         Name = "jjview_" + formElement.Name.ToLower();
         FormElement = formElement;
@@ -280,7 +276,7 @@ public class JJFormView : JJAsyncBaseView
     {
         return RenderHtmlAsync().GetAwaiter().GetResult();
     }
-    
+
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
         var requestType = CurrentContext.Request.QueryString("t");
@@ -293,7 +289,7 @@ public class JJFormView : JJAsyncBaseView
             return DataPanel.RenderHtml();
 
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))
-            return JJFileDownloader.ResponseRoute(CurrentContext,EncryptionService,ComponentFactory.Downloader);
+            return JJFileDownloader.ResponseRoute(CurrentContext, EncryptionService, ComponentFactory.Downloader);
 
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
             return JJSearchBox.ResponseJson(DataPanel, CurrentContext);
@@ -311,7 +307,7 @@ public class JJFormView : JJAsyncBaseView
         {
             if (!DataImportation.Upload.Name.Equals(objName))
                 return null;
-            
+
             await GetHtmlDataImp();
         }
         else if ("geturlaction".Equals(requestType))
@@ -341,7 +337,7 @@ public class JJFormView : JJAsyncBaseView
             values = await GetFormValuesAsync();
 
         DataPanel.Values = values;
-        
+
         var htmlPanel = await DataPanel.GetHtmlAsync();
         return htmlPanel;
     }
@@ -460,11 +456,11 @@ public class JJFormView : JJAsyncBaseView
             return await GetDataPanelHtmlAsync(new(values, null, PageState), autoReloadFields);
         }
     }
-    
+
     private async Task<HtmlBuilder> GetHtmlInsert()
     {
         var action = InsertAction;
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression,  PageState.List,
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, PageState.List,
             RelationValues);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Insert action not enabled"]);
@@ -589,7 +585,7 @@ public class JJFormView : JJAsyncBaseView
 
         return sHtml;
     }
-    
+
     private async Task<HtmlBuilder> GetHtmlElementInsert()
     {
         string encryptedActionMap = CurrentContext.Request.Form("current_selaction_" + Name);
@@ -637,7 +633,7 @@ public class JJFormView : JJAsyncBaseView
         var values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
         return await GetDataPanelHtmlAsync(new(values, null, PageState), false);
     }
-    
+
     private async Task<HtmlBuilder> GetHtmlDelete()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
@@ -789,7 +785,7 @@ public class JJFormView : JJAsyncBaseView
     private async Task<HtmlBuilder> GetHtmlDataImp()
     {
         var action = GridView.ImportAction;
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression,  PageState.List,
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, PageState.List,
             RelationValues);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Import action not enabled"]);
@@ -827,7 +823,7 @@ public class JJFormView : JJAsyncBaseView
         parentPanel.Values = values;
         parentPanel.IsExternalRoute = IsExternalRoute;
         parentPanel.AutoReloadFormFields = autoReloadFormFields;
-        
+
         if (relationships.Count == 0)
         {
             return await GetFormViewWithParentPanelHtml(parentPanel);
@@ -843,7 +839,8 @@ public class JJFormView : JJAsyncBaseView
             .GetAllSorted()
             .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Top).ToList();
 
-        html.AppendComponent(GetFormToolbar(topActions, parentPanel.PageState, parentPanel.Values));
+        var formData = new FormStateData(GridView.UserValues, parentPanel.Values, parentPanel.PageState);
+        html.AppendComponent(await GetFormToolbarAsync(topActions, formData));
 
         var layoutHtml = layout.GetRelationshipsHtml(parentPanel, relationships);
 
@@ -853,7 +850,7 @@ public class JJFormView : JJAsyncBaseView
             .GetAllSorted()
             .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Bottom).ToList();
 
-        html.AppendComponent(GetFormToolbar(bottomActions, parentPanel.PageState, parentPanel.Values));
+        html.AppendComponent(await GetFormToolbarAsync(bottomActions, formData));
 
         return html;
     }
@@ -862,16 +859,17 @@ public class JJFormView : JJAsyncBaseView
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
         formHtml.WithNameAndId(Name);
-        
+
         if (parentPanel.Errors != null)
             formHtml.AppendComponent(new JJValidationSummary(parentPanel.Errors));
 
         var parentPanelHtml = await parentPanel.GetPanelHtmlAsync();
-        
+
         var panelActions = parentPanel.FormElement.Options.FormToolbarActions
             .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel).ToList();
 
-        var toolbar = GetFormToolbar(panelActions, parentPanel.PageState, parentPanel.Values);
+        var formState = new FormStateData(GridView.UserValues, parentPanel.Values, parentPanel.PageState);
+        var toolbar = await GetFormToolbarAsync(panelActions, formState);
 
         formHtml.Append(parentPanelHtml);
         formHtml.AppendComponent(toolbar);
@@ -899,15 +897,14 @@ public class JJFormView : JJAsyncBaseView
         return toolbar;
     }
 
-    private JJToolbar GetFormToolbar(IList<BasicAction> actions, PageState pageState,
-        IDictionary<string, dynamic> values)
+    private async Task<JJToolbar> GetFormToolbarAsync(IList<BasicAction> actions, FormStateData formStateData)
     {
         var toolbar = new JJToolbar
         {
             CssClass = "pb-3 mt-3"
         };
 
-        var context = new ActionContext(values, pageState, ActionSource.FormToolbar, null);
+        var context = new ActionContext(formStateData, ActionSource.FormToolbar, null);
 
         foreach (var action in actions.Where(a => !a.IsGroup))
         {
@@ -916,7 +913,8 @@ public class JJFormView : JJAsyncBaseView
                 saveAction.EnterKeyBehavior = DataPanel.FormUI.EnterKey;
             }
 
-            toolbar.Items.Add(GridView.ActionManager.GetLinkFormToolbar(action, values, pageState).GetHtmlBuilder());
+            var linkButton = await GridView.FormViewScripts.GetLinkFormToolbarAsync(action, formStateData);
+            toolbar.Items.Add(linkButton.GetHtmlBuilder());
         }
 
         if (actions.Any(a => a.IsGroup))
@@ -929,17 +927,18 @@ public class JJFormView : JJAsyncBaseView
             foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
             {
                 btnGroup.ShowAsButton = groupedAction.ShowAsButton;
-                btnGroup.Actions.Add(GridView.ActionManager.GetLinkFormToolbar(groupedAction, values, pageState));
+                var linkButton = await GridView.FormViewScripts.GetLinkFormToolbarAsync(groupedAction, formStateData);
+                btnGroup.Actions.Add(linkButton);
             }
 
             toolbar.Items.Add(btnGroup.GetHtmlBuilder());
         }
 
 
-        if (pageState == PageState.View)
+        if (formStateData.PageState == PageState.View)
         {
             if (LogAction.IsVisible)
-                toolbar.Items.Add(GetButtonViewLog(values).GetHtmlBuilder());
+                toolbar.Items.Add(GetButtonViewLog(formStateData.FormValues).GetHtmlBuilder());
         }
 
         return toolbar;
@@ -949,7 +948,7 @@ public class JJFormView : JJAsyncBaseView
     {
         if (!e.Action.Name.Equals("_jjselaction")) return;
 
-        if (sender is not JJGridView grid) 
+        if (sender is not JJGridView grid)
             return;
 
         var map = new ActionMap(ActionSource.GridTable, grid.FormElement, e.FieldValues, e.Action.Name);
@@ -1044,7 +1043,7 @@ public class JJFormView : JJAsyncBaseView
 
     private JJLinkButton GetButtonHideLog(IDictionary<string, dynamic> values)
     {
-        string scriptAction = GridView.ActionManager.GetFormActionScript(ViewAction, values, ActionSource.GridTable);
+        string scriptAction = GridView.FormViewScripts.GetFormActionScript(ViewAction, values, ActionSource.GridTable);
         var btn = new JJLinkButton
         {
             Type = LinkButtonType.Button,
@@ -1058,7 +1057,7 @@ public class JJFormView : JJAsyncBaseView
 
     private JJLinkButton GetButtonViewLog(IDictionary<string, dynamic> values)
     {
-        string scriptAction = GridView.ActionManager.GetFormActionScript(LogAction, values, ActionSource.GridToolbar);
+        string scriptAction = GridView.FormViewScripts.GetFormActionScript(LogAction, values, ActionSource.GridToolbar);
         var btn = new JJLinkButton
         {
             Type = LinkButtonType.Button,

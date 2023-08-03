@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
@@ -17,7 +18,12 @@ public interface IExpressionsService
         ExpressionManagerInterval? interval = null);
 
     Task<string?> GetDefaultValueAsync(ElementField field, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);
+
+    [Obsolete("Use FormStateData parameter")]
     Task<bool> GetBoolValueAsync(string expression, PageState state, IDictionary<string,dynamic?>? formValues = null, IDictionary<string,dynamic?>? userValues = null);
+
+    Task<bool> GetBoolValueAsync(string expression, FormStateData formStateData);
+
     Task<string?> GetTriggerValueAsync(FormElementField field, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);
     bool ParseBool(object value);
 }

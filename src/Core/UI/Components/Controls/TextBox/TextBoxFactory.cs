@@ -9,22 +9,27 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.UI.Components.FormView;
 
 namespace JJMasterData.Core.Web.Factories;
 
 internal class TextBoxFactory : IControlFactory<JJTextGroup>
 {
+    private JJMasterDataEncryptionService EncryptionService { get; }
     private IHttpContext HttpContext { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IExpressionsService ExpressionsService { get; }
 
     public TextBoxFactory(IHttpContext httpContext, 
                           IStringLocalizer<JJMasterDataResources> stringLocalizer, 
-                          IExpressionsService expressionsService)
+                          IExpressionsService expressionsService,
+                          JJMasterDataEncryptionService encryptionService)
     {
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
         ExpressionsService = expressionsService;
+        EncryptionService = encryptionService;
     }
     
     public JJTextGroup Create()
@@ -65,14 +70,23 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
     }
 
 
-    private void AddUserActions(FormElement formElement, string componentName, FormElementField field,
-        FormStateData formStateData, JJTextGroup textGroup)
+    private void AddUserActions(FormElement formElement, 
+                                string componentName, 
+                                FormElementField field,
+                                FormStateData formStateData, 
+                                JJTextGroup textGroup)
     {
+        var actionManager = new FormViewScripts(
+            formElement,
+            ExpressionsService,
+            componentName,
+            StringLocalizer,
+            EncryptionService);
+
         var actions = field.Actions.GetAllSorted().FindAll(x => x.IsVisible);
         foreach (var action in actions)
         {
-            var actionManager = new ActionManager(formElement, ExpressionsService, componentName);
-            var link = actionManager.GetLinkField(action, formStateData.FormValues, formStateData.PageState, field.Name);
+            var link = actionManager.GetLinkFieldAsync(action, formStateData, field.Name).GetAwaiter().GetResult();
             textGroup.Actions.Add(link);
         }
     }

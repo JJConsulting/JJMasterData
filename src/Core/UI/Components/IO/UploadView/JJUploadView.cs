@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
@@ -33,7 +34,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <img src="../media/JJFormUploadFileExample.png"/>
 /// </example>
 /// <seealso cref="JJUploadArea"/>
-public class JJUploadView : JJBaseView
+public class JJUploadView : JJAsyncBaseView
 {
     private const string FileName = "Name";
     private const string FileNameJs = "NameJS";
@@ -235,6 +236,11 @@ public class JJUploadView : JJBaseView
 
     internal override HtmlBuilder RenderHtml()
     {
+        return RenderHtmlAsync().GetAwaiter().GetResult();
+    }
+
+    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    {
         Upload.OnFileUploaded += OnFileUploaded;
         string previewImage = CurrentContext.Request["previewImage"];
         if (!string.IsNullOrEmpty(previewImage))
@@ -254,7 +260,7 @@ public class JJUploadView : JJBaseView
             html.AppendComponent(new JJTitle(Title, SubTitle));
 
         html.Append(GetHtmlForm());
-        html.Append(ViewGallery ? GetHtmlGallery() : GetHtmlGridView());
+        html.Append(ViewGallery ? await GetHtmlGallery() : await GetHtmlGridView());
         html.AppendComponent(GetHtmlPreviewModal());
 
         return html;
@@ -394,12 +400,12 @@ public class JJUploadView : JJBaseView
         return panelContent;
     }
 
-    private HtmlBuilder GetHtmlGridView()
+    private async Task<HtmlBuilder> GetHtmlGridView()
     {
-        return GridView.GetHtmlBuilder();
+        return await GridView.GetHtmlBuilderAsync();
     }
 
-    private HtmlBuilder GetHtmlGallery()
+    private async Task<HtmlBuilder> GetHtmlGallery()
     {
         var files = FormFileManager.GetFiles();
         if (files.Count <= 0) return null;
@@ -417,20 +423,23 @@ public class JJUploadView : JJBaseView
             var file = fileInfo.Content;
             var col = new HtmlBuilder(HtmlTag.Div);
             col.WithCssClass("col-sm-3");
-            col.Append(HtmlTag.Ul, ul =>
+            await col.AppendAsync(HtmlTag.Ul, async ul =>
             {
                 ul.WithCssClass("list-group list-group-flush");
                 ul.Append(GetHtmlGalleryPreview(file.FileName));
                 ul.Append(GetHtmlGalleryListItem("Name", file.FileName));
                 ul.Append(GetHtmlGalleryListItem("Size", file.Length + " Bytes"));
                 ul.Append(GetHtmlGalleryListItem("Last Modified", file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
-                ul.Append(HtmlTag.Li, li =>
+                await ul.AppendAsync(HtmlTag.Li, async li =>
                 {
                     li.WithCssClass("list-group-item");
-                    li.Append(HtmlTag.Table, table =>
+                    await li.AppendAsync(HtmlTag.Table, async table =>
                     {
                         table.WithCssClass("table-gallery");
-                        table.AppendRange(GridView.Table.Body.GetActionsHtmlList(ConvertFormFileToDictionary(file)).ToList());
+                        var files = ConvertFormFileToDictionary(file);
+                        var formState = new FormStateData(UserValues, files, PageState.List);
+                        var htmlActions = GridView.Table.Body.GetActionsHtmlListAsync(formState);
+                        await table.AppendRangeAsync(htmlActions);
                     });
                 });
             });

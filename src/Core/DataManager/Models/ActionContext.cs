@@ -7,14 +7,12 @@ using JJMasterData.Core.FormEvents.Args;
 namespace JJMasterData.Core.DataManager;
 
 public record ActionContext(
-    IDictionary<string, dynamic> Values,
-    PageState PageState,
+    FormStateData FormStateData,
     ActionSource Source,
     EventHandler<ActionEventArgs> OnRenderAction
 )
 {
-    public PageState PageState { get; } = PageState;
-    public IDictionary<string, dynamic> Values { get; } = Values;
+    public FormStateData FormStateData { get; } = FormStateData;
     public ActionSource Source { get; } = Source;
     public EventHandler<ActionEventArgs> OnRenderAction { get; } = OnRenderAction;
 }

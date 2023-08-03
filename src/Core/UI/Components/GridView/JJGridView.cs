@@ -27,6 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Core.UI.Components.FormView;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -79,7 +80,7 @@ public class JJGridView : JJAsyncBaseView
     private GridFilter _filter;
     private GridTable _table;
     private DataTable _dataSource;
-    private ActionManager _actionManager;
+    private FormViewScripts _formViewScripts;
     private List<FormElementField> _pkFields;
     private IDictionary<string, dynamic> _defaultValues;
     private List<BasicAction> _toolBarActions;
@@ -153,8 +154,8 @@ public class JJGridView : JJAsyncBaseView
         }
     }
 
-    internal ActionManager ActionManager =>
-        _actionManager ??= new ActionManager(FormElement, ExpressionsService, Name);
+    internal FormViewScripts FormViewScripts =>
+        _formViewScripts ??= new FormViewScripts(this);
 
     internal IFormValuesService FormValuesService { get; }
 
@@ -522,7 +523,7 @@ public class JJGridView : JJAsyncBaseView
     internal IEntityRepository EntityRepository { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     
-    internal GridScripts Scripts => _gridScripts ??= new GridScripts(EncryptionService, UrlHelper, ExpressionsService, StringLocalizer);
+    internal GridScripts Scripts => _gridScripts ??= new GridScripts(this);
 
     internal IHttpContext CurrentContext { get; }
     #endregion
@@ -992,7 +993,7 @@ public class JJGridView : JJAsyncBaseView
             Text = "Ok",
             IconClass = "fa fa-check",
             ShowAsButton = true,
-            OnClientClick = ActionManager.GetConfigUIScript(ConfigAction, RelationValues)
+            OnClientClick = Scripts.GetConfigUIScript(ConfigAction, RelationValues)
         };
         modal.Buttons.Add(btnOk);
 
@@ -1001,7 +1002,7 @@ public class JJGridView : JJAsyncBaseView
             Text = "Cancel",
             IconClass = "fa fa-times",
             ShowAsButton = true,
-            OnClientClick = $"JJView.closeSettingsModal('{Name}');"
+            OnClientClick = Scripts.GetCloseConfigUIScript()
         };
         modal.Buttons.Add(btnCancel);
 

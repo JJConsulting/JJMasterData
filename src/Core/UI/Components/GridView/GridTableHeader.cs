@@ -133,7 +133,7 @@ internal class GridTableHeader
     private void SetSortAttributes(HtmlBuilder span, FormElementField field)
     {
         span.WithCssClass("jjenable-sorting");
-        span.WithAttribute("onclick", GridView.Scripts.GetSortingScript(GridView,field.Name));
+        span.WithAttribute("onclick", GridView.Scripts.GetSortingScript(field.Name));
     }
 
     private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlBuilder()
@@ -235,7 +235,7 @@ internal class GridTableHeader
                     li.Append(HtmlTag.A, a =>
                     {
                         a.WithAttribute("href", "javascript:void(0);");
-                        a.WithAttribute("onclick", GridView.Scripts.GetSelectAllScript(GridView));
+                        a.WithAttribute("onclick", GridView.Scripts.GetSelectAllScript());
                         a.AppendText(GridView.StringLocalizer["Mark all {0} records", GridView.TotalRecords]);
                     });
                 });

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
@@ -13,147 +15,126 @@ namespace JJMasterData.Core.Web.Components.Scripts;
 
 public class GridScripts
 {
-    private JJMasterDataEncryptionService EncryptionService { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
-    private IExpressionsService ExpressionsService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private readonly JJGridView _gridView;
+    private JJMasterDataEncryptionService EncryptionService => _gridView.EncryptionService;
+    private JJMasterDataUrlHelper UrlHelper => _gridView.UrlHelper;
+    private IExpressionsService ExpressionsService => _gridView.ExpressionsService;
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer => _gridView.StringLocalizer;
 
-    public GridScripts(
-        JJMasterDataEncryptionService encryptionService, 
-        JJMasterDataUrlHelper urlHelper,
-        IExpressionsService expressionsService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public GridScripts(JJGridView gridView)
     {
-        EncryptionService = encryptionService;
-        UrlHelper = urlHelper;
-        ExpressionsService = expressionsService;
-        StringLocalizer = stringLocalizer;
+        _gridView = gridView;
     }
 
-    internal string GetUrl(string dictionaryName)
+    private string GetUrl()
     {
-        string dictionaryNameEncrypted = EncryptionService.EncryptString(dictionaryName);
+        string dictionaryNameEncrypted = EncryptionService.EncryptString(_gridView.FormElement.Name);
         return UrlHelper.GetUrl("GetGridViewTable", "Grid", new { dictionaryName = dictionaryNameEncrypted });
     }
-    public string GetSortingScript(JJGridView gridView, string fieldName)
+
+    public string GetSortingScript(string fieldName)
     {
-        if (gridView.IsExternalRoute)
+        if (_gridView.IsExternalRoute)
         {
-            var url = GetUrl(gridView.FormElement.Name);
-            return $"GridView.sorting('{gridView.Name}','{url}','{fieldName}')";
+            var url = GetUrl();
+            return $"GridView.sorting('{_gridView.Name}','{url}','{fieldName}')";
         }
 
-        string ajax = gridView.EnableAjax ? "true" : "false";
-        return $"JJView.sortFormValues('{gridView.Name}','{ajax}','{fieldName}')";
+        string ajax = _gridView.EnableAjax ? "true" : "false";
+        return $"JJView.sortFormValues('{_gridView.Name}','{ajax}','{fieldName}')";
     }
 
-    public string GetPaginationScript(JJGridView gridView, int page)
+    public string GetPaginationScript(int page)
     {
-        string name = gridView.Name;
-        if (gridView.IsExternalRoute)
+        string name = _gridView.Name;
+        if (_gridView.IsExternalRoute)
         {
-            var url = GetUrl(gridView.FormElement.Name);
+            var url = GetUrl();
             return $"GridView.pagination('{name}', '{url}', {page})";
         }
 
-        string enableAjax = gridView.EnableAjax ? "true" : "false";
+        string enableAjax = _gridView.EnableAjax ? "true" : "false";
         return $"JJView.paginateGrid('{name}', {enableAjax}, {page})";
     }
 
-    public string GetRefreshScript(JJGridView gridView)
+    public string GetRefreshScript()
     {
-        string name = gridView.Name;
-        if (gridView.IsExternalRoute)
+        string name = _gridView.Name;
+        if (_gridView.IsExternalRoute)
         {
-            var url = GetUrl(gridView.FormElement.Name);
+            var url = GetUrl();
             return $"JJGridView.refresh('{name}', '{url}')";
         }
 
-        string enableAjax = gridView.EnableAjax ? "true" : "false";
+        string enableAjax = _gridView.EnableAjax ? "true" : "false";
         return $"JJView.refresh('{name}', {enableAjax})";
     }
 
-    public string GetFilterScript(JJGridView gridView)
+    public string GetFilterScript()
     {
-        string name = gridView.Name;
-        if (gridView.IsExternalRoute)
+        string name = _gridView.Name;
+        if (_gridView.IsExternalRoute)
         {
-            var url = GetUrl(gridView.FormElement.Name);
+            var url = GetUrl();
             return $"GridView.filter('{name}', '{url}')";
         }
-        string enableAjax = gridView.EnableAjax ? "true" : "false";
+        string enableAjax = _gridView.EnableAjax ? "true" : "false";
         return $"JJView.filter('{name}','{enableAjax}')";
     }
-    
-    public string GetSelectAllScript(JJGridView gridView)
+
+    public string GetSelectAllScript()
     {
-        string name = gridView.Name;
-        if (gridView.IsExternalRoute)
+        string name = _gridView.Name;
+        if (_gridView.IsExternalRoute)
         {
-            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(gridView.FormElement.Name);
-            var url = UrlHelper.GetUrl("SelectAllRows","Grid", new {dictionaryName = encryptedDictionaryName});
+            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(_gridView.FormElement.Name);
+            var url = UrlHelper.GetUrl("SelectAllRows", "Grid", new { dictionaryName = encryptedDictionaryName });
             return $"GridView.selectAllRows('{name}', '{url}')";
         }
-        string enableAjax = gridView.EnableAjax ? "true" : "false";
+        string enableAjax = _gridView.EnableAjax ? "true" : "false";
         return $"JJView.selectAll('{name}','{enableAjax}')";
     }
 
-    //TODO  
-    public string GetUrlRedirectScript(
-        FormElement formElement,
-        string componmentName,
-        string fieldName,
-        UrlRedirectAction action, 
-        IDictionary<string, dynamic> formValues, 
-        PageState pageState,
-        ActionSource contextAction)
+
+    public string GetUrlRedirectToolbarScript(
+        UrlRedirectAction action,
+        IDictionary<string, dynamic> formValues)
     {
-        var actionMap = new ActionMap(contextAction, formElement, formValues, action.Name)
-        {
-            FieldName = fieldName
-        };
-        var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
-        string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
         int popupSize = (int)action.PopupSize;
+        string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
+        string url = ExpressionsService.ParseExpression(action.UrlRedirect, PageState.List, false, formValues);
+        string popup = action.UrlAsPopUp ? "true" : "false";
+        string popUpTitle = action.PopUpTitle;
 
         var script = new StringBuilder();
+        script.Append("FormView.doUrlRedirect('");
+        script.Append(url);
+        script.Append("',");
+        script.Append(popup);
+        script.Append(",'");
+        script.Append(popUpTitle);
+        script.Append("','");
+        script.Append(confirmationMessage);
+        script.Append("','");
+        script.Append(popupSize);
+        script.Append("');");
 
-        if (contextAction is ActionSource.Field or ActionSource.FormToolbar)
-        {
-            script.Append("FormView.executeRedirectAction('");
-            script.Append(componmentName);
-            script.Append("','");
-            script.Append(encryptedActionMap);
-            script.Append('\'');
-            if (!string.IsNullOrEmpty(confirmationMessage))
-            {
-                script.Append(",'");
-                script.Append(confirmationMessage);
-                script.Append('\'');
-            }
-
-            script.Append(");");
-        }
-        else
-        {
-            string url = ExpressionsService.ParseExpression(action.UrlRedirect, pageState, false, formValues);
-            string popup = action.UrlAsPopUp ? "true" : "false";
-            string popUpTitle = action.PopUpTitle;
-
-            script.Append("FormView.doUrlRedirect('");
-            script.Append(url);
-            script.Append("',");
-            script.Append(popup);
-            script.Append(",'");
-            script.Append(popUpTitle);
-            script.Append("','");
-            script.Append(confirmationMessage);
-            script.Append("','");
-            script.Append(popupSize);
-            script.Append("');");
-        }
 
         return script.ToString();
     }
+    
+    public string GetConfigUIScript(ConfigAction action, IDictionary<string, dynamic> formValues)
+    {
+        var actionMap = new ActionMap(ActionSource.GridToolbar, _gridView.FormElement, formValues, action.Name);
+        string encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
+
+        return $"JJView.openSettingsModal('{_gridView.Name}','{encryptedActionMap}');";
+    }
+
+    public string GetCloseConfigUIScript()
+    {
+        return $"JJView.closeSettingsModal('{_gridView.Name}');";
+    }
+
 
 }
