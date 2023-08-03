@@ -90,7 +90,7 @@ internal class ActionManager
         }
 
         var urlHelper = JJMasterDataUrlHelper.GetInstance();
-        string url = urlHelper.GetUrl(null, "InternalRedirect",
+        string url = urlHelper.GetUrl("Index", "InternalRedirect",
             new
             {
                 parameters = JJMasterDataEncryptionService.EncryptStringWithUrlEscape(@params.ToString()),

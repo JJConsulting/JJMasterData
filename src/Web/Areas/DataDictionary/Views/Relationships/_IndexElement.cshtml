@@ -22,10 +22,13 @@
 
 <div class="row">
     <div class="col-sm-8">
+        @{
+            var newRelationLabel = @StringLocalizer["New Relation"];
+        }
         <jj-link-button icon="PlusCircle"
                         text="@StringLocalizer["New"]"
                         type="LinkButtonType.Button"
-                        on-client-click="popup.show('@StringLocalizer["New Relation"]', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName })');"/>
+                        on-client-click="popup.show('@newRelationLabel', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName })');"/>
     </div>
 </div>
 <br/>
