@@ -606,7 +606,102 @@ FeedbackIcon.searchClass = "jj-icon-search";
 FeedbackIcon.successClass = "jj-icon-success";
 FeedbackIcon.warningClass = "jj-icon-warning";
 FeedbackIcon.errorClass = "jj-icon-error";
-class FormView {
+var _a, _b;
+var showWaitOnPost = true;
+var bootstrapVersion = 3;
+const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
+const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
+class GridView {
+    static sorting(componentName, url, tableOrder) {
+        const tableOrderElement = document.querySelector("#current_tableorder_" + componentName);
+        if (tableOrder + " ASC" === tableOrderElement.value)
+            tableOrderElement.value = tableOrder + " DESC";
+        else
+            tableOrderElement.value = tableOrder + " ASC";
+        document.querySelector("#current_tableaction_" + componentName).value = "";
+        document.querySelector("#current_formaction_" + componentName).value = "";
+        GridView.refreshGrid(componentName, url);
+    }
+    static pagination(componentName, url, currentPage) {
+        document.querySelector("#current_tablepage_" + componentName).value = currentPage;
+        document.querySelector("#current_tableaction_" + componentName).value = "";
+        document.querySelector("#current_formaction_" + componentName).value = "";
+        GridView.refreshGrid(componentName, url);
+    }
+    static filter(componentName, url) {
+        document.querySelector("#current_filteraction_" + componentName).value = "FILTERACTION";
+        document.querySelector("#current_tableaction_" + componentName).value = "";
+        document.querySelector("#current_tablepage_" + componentName).value = "1";
+        document.querySelector("#current_formaction_" + componentName).value = "";
+        GridView.refreshGrid(componentName, url);
+    }
+    static refresh(componentName, url) {
+        document.querySelector("#current_tableaction_" + componentName).value = "";
+        document.querySelector("#current_tablerow_" + componentName).value = "";
+        document.querySelector("#current_formaction_" + componentName).value = "";
+        GridView.refreshGrid(componentName, url);
+    }
+    static selectAllRows(componentName, url) {
+        fetch(url, { method: "POST" })
+            .then(response => response.json())
+            .then(data => GridView.selectAllRowsElements(componentName, data.selectedRows));
+    }
+    static selectAllRowsElements(componentName, rows) {
+        const values = rows.split(",");
+        const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+        const selectedRowsInput = document.getElementById("selectedrows_" + componentName);
+        selectedRowsInput.value = values.join(",");
+        const selectedText = document.getElementById("selectedtext_" + componentName);
+        selectedText.textContent = selectedText.getAttribute("paramSelStr").replace("{0}", values.length.toString());
+    }
+    static refreshGrid(componentName, url) {
+        const form = document.querySelector("form");
+        let urlBuilder = new UrlBuilder(url);
+        urlBuilder.addQueryParameter("componentName", componentName);
+        SpinnerOverlay.show();
+        fetch(urlBuilder.build(), {
+            method: form.method,
+            body: new FormData(form)
+        })
+            .then(response => response.text())
+            .then(data => {
+            document.querySelector("#jjgridview_" + componentName).innerHTML = data;
+            loadJJMasterData();
+            document.querySelector("#current_filteraction_" + componentName).value = "";
+            SpinnerOverlay.hide();
+        })
+            .catch(error => {
+            console.log(error);
+            document.querySelector("#current_filteraction_" + componentName).value = "";
+        });
+    }
+}
+$(function () {
+    bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
+    loadJJMasterData("load", null);
+});
+class JJSortable {
+    static setup() {
+        $(".jjsortable").sortable({
+            helper: function (e, tr) {
+                var $originals = tr.children();
+                var $helper = tr.clone();
+                $helper.children().each(function (index) {
+                    $(this).width($originals.eq(index).width());
+                });
+                return $helper;
+            },
+            change: function (event, ui) {
+                ui.placeholder.css({
+                    visibility: "visible",
+                    background: "#fbfbfb"
+                });
+            }
+        });
+    }
+}
+class JJView {
     static postFormValues(objid, enableAjax, loadform) {
         if (enableAjax) {
             const frm = $("form");
@@ -799,7 +894,7 @@ class FormView {
         $("#current_formaction_" + objid).val("");
         this.postFormValues(objid, enableAjax, false);
     }
-    static gridAction(componentName, encryptedActionMap, confirmMessage) {
+    static executeGridAction(componentName, encryptedActionMap, confirmMessage) {
         if (confirmMessage) {
             var result = confirm(confirmMessage);
             if (!result) {
@@ -810,7 +905,7 @@ class FormView {
         $("#current_formaction_" + componentName).val("");
         $("form:first").trigger("submit");
     }
-    static redirectFormUrl(objid, criptid, confirmMessage) {
+    static executeRedirectAction(componentName, encryptedActionMap, confirmMessage) {
         if (confirmMessage) {
             var result = confirm(confirmMessage);
             if (!result) {
@@ -820,17 +915,17 @@ class FormView {
         var frm = $("form");
         var surl = frm.attr("action");
         if (surl.includes("?"))
-            surl += "&t=geturlaction&objname=" + objid;
+            surl += "&t=geturlaction&objname=" + componentName;
         else
-            surl += "?t=geturlaction&objname=" + objid;
+            surl += "?t=geturlaction&objname=" + componentName;
         $.ajax({
             async: true,
             type: "POST",
             url: surl,
-            data: frm.serialize() + '&criptid=' + criptid,
+            data: frm.serialize() + '&criptid=' + encryptedActionMap,
             success: function (data) {
                 if (data.UrlAsPopUp) {
-                    popup.show(data.TitlePopUp, data.UrlRedirect);
+                    popup.show(data.PopUpTitle, data.UrlRedirect);
                 }
                 else {
                     window.location.href = data.UrlRedirect;
@@ -982,101 +1077,6 @@ class FormView {
             $("#infotext_" + objid).css("display", "");
             $("ul.pagination").css("display", "");
         }
-    }
-}
-var _a, _b;
-var showWaitOnPost = true;
-var bootstrapVersion = 3;
-const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
-const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
-class GridView {
-    static sorting(componentName, url, tableOrder) {
-        const tableOrderElement = document.querySelector("#current_tableorder_" + componentName);
-        if (tableOrder + " ASC" === tableOrderElement.value)
-            tableOrderElement.value = tableOrder + " DESC";
-        else
-            tableOrderElement.value = tableOrder + " ASC";
-        document.querySelector("#current_tableaction_" + componentName).value = "";
-        document.querySelector("#current_formaction_" + componentName).value = "";
-        GridView.refreshGrid(componentName, url);
-    }
-    static pagination(componentName, url, currentPage) {
-        document.querySelector("#current_tablepage_" + componentName).value = currentPage;
-        document.querySelector("#current_tableaction_" + componentName).value = "";
-        document.querySelector("#current_formaction_" + componentName).value = "";
-        GridView.refreshGrid(componentName, url);
-    }
-    static filter(componentName, url) {
-        document.querySelector("#current_filteraction_" + componentName).value = "FILTERACTION";
-        document.querySelector("#current_tableaction_" + componentName).value = "";
-        document.querySelector("#current_tablepage_" + componentName).value = "1";
-        document.querySelector("#current_formaction_" + componentName).value = "";
-        GridView.refreshGrid(componentName, url);
-    }
-    static refresh(componentName, url) {
-        document.querySelector("#current_tableaction_" + componentName).value = "";
-        document.querySelector("#current_tablerow_" + componentName).value = "";
-        document.querySelector("#current_formaction_" + componentName).value = "";
-        GridView.refreshGrid(componentName, url);
-    }
-    static selectAllRows(componentName, url) {
-        fetch(url, { method: "POST" })
-            .then(response => response.json())
-            .then(data => GridView.selectAllRowsElements(componentName, data.selectedRows));
-    }
-    static selectAllRowsElements(componentName, rows) {
-        const values = rows.split(",");
-        const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
-        checkboxes.forEach(checkbox => checkbox.checked = true);
-        const selectedRowsInput = document.getElementById("selectedrows_" + componentName);
-        selectedRowsInput.value = values.join(",");
-        const selectedText = document.getElementById("selectedtext_" + componentName);
-        selectedText.textContent = selectedText.getAttribute("paramSelStr").replace("{0}", values.length.toString());
-    }
-    static refreshGrid(componentName, url) {
-        const form = document.querySelector("form");
-        let urlBuilder = new UrlBuilder(url);
-        urlBuilder.addQueryParameter("componentName", componentName);
-        SpinnerOverlay.show();
-        fetch(urlBuilder.build(), {
-            method: form.method,
-            body: new FormData(form)
-        })
-            .then(response => response.text())
-            .then(data => {
-            document.querySelector("#jjgridview_" + componentName).innerHTML = data;
-            loadJJMasterData();
-            document.querySelector("#current_filteraction_" + componentName).value = "";
-            SpinnerOverlay.hide();
-        })
-            .catch(error => {
-            console.log(error);
-            document.querySelector("#current_filteraction_" + componentName).value = "";
-        });
-    }
-}
-$(function () {
-    bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
-    loadJJMasterData("load", null);
-});
-class JJSortable {
-    static setup() {
-        $(".jjsortable").sortable({
-            helper: function (e, tr) {
-                var $originals = tr.children();
-                var $helper = tr.clone();
-                $helper.children().each(function (index) {
-                    $(this).width($originals.eq(index).width());
-                });
-                return $helper;
-            },
-            change: function (event, ui) {
-                ui.placeholder.css({
-                    visibility: "visible",
-                    background: "#fbfbfb"
-                });
-            }
-        });
     }
 }
 function loadJJMasterData(event, prefixSelector) {

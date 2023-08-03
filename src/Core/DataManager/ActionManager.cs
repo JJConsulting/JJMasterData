@@ -41,19 +41,15 @@ internal class ActionManager
     public IExpressionsService Expression { get; private set; }
 
     public string ComponentName { get; set; }
-
-    internal IEntityRepository EntityRepository => JJService.Provider.GetRequiredService<IEntityRepository>();
-
+    
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer =>
         JJService.Provider.GetRequiredService<IStringLocalizer<JJMasterDataResources>>();
-
-    internal IFieldValuesService FieldValuesService =>
-        JJService.Provider.GetScopedDependentService<IFieldValuesService>();
 
     internal JJMasterDataEncryptionService JJMasterDataEncryptionService =>
         JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
 
-    public ActionManager(FormElement formElement, IExpressionsService expression, string panelName)
+    public ActionManager(
+        FormElement formElement, IExpressionsService expression, string panelName)
     {
         FormElement = formElement;
         Expression = expression;
@@ -101,7 +97,9 @@ internal class ActionManager
     }
 
 
-    public string GetUrlRedirectScript(UrlRedirectAction action, IDictionary<string, dynamic> formValues,
+    public string GetUrlRedirectScript(
+        UrlRedirectAction action,
+        IDictionary<string, dynamic> formValues,
         PageState pageState,
         ActionSource contextAction, string fieldName)
     {
@@ -174,16 +172,7 @@ internal class ActionManager
             Area = "MasterData"
         });
     }
-
-    internal string GetExportScript(ExportAction action, IDictionary<string, dynamic> formValues)
-    {
-        var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
-        var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
-
-        return $"JJDataExp.doExport('{ComponentName}','{encryptedActionMap}');";
-    }
-
-
+    
     internal string GetConfigUIScript(ConfigAction action, IDictionary<string, dynamic> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
@@ -225,19 +214,13 @@ internal class ActionManager
     {
         return GetLink(action, formValues, pageState, ActionSource.Field, panelName);
     }
-
-    private static HtmlBuilder GetDividerHtml()
-    {
-        var li = new HtmlBuilder(HtmlTag.Li)
-            .WithCssClass("separator")
-            .WithCssClass("divider");
-
-        return li;
-    }
-
-
-    private JJLinkButton GetLink(BasicAction action, IDictionary<string, dynamic> formValues, PageState pagestate,
-        ActionSource contextAction, string fieldName = null)
+    
+    private JJLinkButton GetLink(
+        BasicAction action, 
+        IDictionary<string, dynamic> formValues,
+        PageState pagestate,
+        ActionSource contextAction,
+        string fieldName = null)
     {
         var enabled = Expression.GetBoolValueAsync(action.EnableExpression, pagestate, formValues).GetAwaiter()
             .GetResult();

@@ -921,7 +921,6 @@ public class JJFormView : JJAsyncBaseView
 
         if (actions.Any(a => a.IsGroup))
         {
-
             var btnGroup = new JJLinkButtonGroup
             {
                 CaretText = "More"

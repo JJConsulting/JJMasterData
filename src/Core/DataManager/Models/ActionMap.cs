@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using Newtonsoft.Json;
 
@@ -11,13 +8,17 @@ namespace JJMasterData.Core.DataManager;
 
 public class ActionMap
 {
-    [JsonProperty("actionName")] public required string ActionName { get; set; }
+    [JsonProperty("actionName")] 
+    public required string ActionName { get; set; }
 
-    [JsonProperty("fieldName")] public string FieldName { get; set; }
+    [JsonProperty("fieldName")] 
+    public string FieldName { get; set; }
 
-    [JsonProperty("pkFieldValues")] public IDictionary<string, dynamic> PkFieldValues { get; }
+    [JsonProperty("pkFieldValues")] 
+    public IDictionary<string, dynamic> PkFieldValues { get; }
 
-    [JsonProperty("contextAction")] public required ActionSource ActionSource { get; set; }
+    [JsonProperty("contextAction")] 
+    public required ActionSource ActionSource { get; set; }
 
     public ActionMap()
     {
