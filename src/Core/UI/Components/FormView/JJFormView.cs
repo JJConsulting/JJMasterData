@@ -866,7 +866,7 @@ public class JJFormView : JJAsyncBaseView
         if (parentPanel.Errors != null)
             formHtml.AppendComponent(new JJValidationSummary(parentPanel.Errors));
 
-        var parentPanelHtml = await parentPanel.GetPanelHtml();
+        var parentPanelHtml = await parentPanel.GetPanelHtmlAsync();
         
         var panelActions = parentPanel.FormElement.Options.FormToolbarActions
             .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel).ToList();

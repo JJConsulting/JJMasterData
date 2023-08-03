@@ -43,9 +43,16 @@ internal class ActionManager
     public string ComponentName { get; set; }
 
     internal IEntityRepository EntityRepository => JJService.Provider.GetRequiredService<IEntityRepository>();
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer => JJService.Provider.GetRequiredService<IStringLocalizer<JJMasterDataResources>>();
-    internal IFieldValuesService FieldValuesService => JJService.Provider.GetScopedDependentService<IFieldValuesService>();
-    internal JJMasterDataEncryptionService JJMasterDataEncryptionService => JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+
+    internal IStringLocalizer<JJMasterDataResources> StringLocalizer =>
+        JJService.Provider.GetRequiredService<IStringLocalizer<JJMasterDataResources>>();
+
+    internal IFieldValuesService FieldValuesService =>
+        JJService.Provider.GetScopedDependentService<IFieldValuesService>();
+
+    internal JJMasterDataEncryptionService JJMasterDataEncryptionService =>
+        JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+
     public ActionManager(FormElement formElement, IExpressionsService expression, string panelName)
     {
         FormElement = formElement;
@@ -82,76 +89,46 @@ internal class ActionManager
             }
         }
 
-
         var urlHelper = JJMasterDataUrlHelper.GetInstance();
-        string url = urlHelper.GetUrl(null, "InternalRedirect", new { parameters = JJMasterDataEncryptionService.EncryptStringWithUrlEscape(@params.ToString()), Area = "MasterData" });
+        string url = urlHelper.GetUrl(null, "InternalRedirect",
+            new
+            {
+                parameters = JJMasterDataEncryptionService.EncryptStringWithUrlEscape(@params.ToString()),
+                Area = "MasterData"
+            });
 
-        var script = new StringBuilder();
-        script.Append("FormView.doUrlRedirect('");
-        script.Append(url);
-        script.Append("',");
-        script.Append(popup);
-        script.Append(",'");
-        script.Append(popUpTitle);
-        script.Append("','");
-        script.Append(confirmationMessage);
-        script.Append("','");
-        script.Append(popupSize);
-        script.Append("');");
-
-        return script.ToString();
+        return $"JJView.executeRedirectAction('{url}',{popup},'{popUpTitle}','{confirmationMessage}','{popupSize}');";
     }
 
-    public string GetUrlRedirectScript(UrlRedirectAction action, IDictionary<string, dynamic> formValues, PageState pageState,
+
+    public string GetUrlRedirectScript(UrlRedirectAction action, IDictionary<string, dynamic> formValues,
+        PageState pageState,
         ActionSource contextAction, string fieldName)
     {
-        var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
-        actionMap.FieldName = fieldName;
+        var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name)
+        {
+            FieldName = fieldName
+        };
         var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
         int popupSize = (int)action.PopupSize;
 
-        var script = new StringBuilder();
-
         if (contextAction is ActionSource.Field or ActionSource.FormToolbar)
         {
-            script.Append("FormView.executeRedirectAction('");
-            script.Append(ComponentName);
-            script.Append("','");
-            script.Append(encryptedActionMap);
-            script.Append('\'');
-            if (!string.IsNullOrEmpty(confirmationMessage))
-            {
-                script.Append(",'");
-                script.Append(confirmationMessage);
-                script.Append('\'');
-            }
-
-            script.Append(");");
-        }
-        else
-        {
-            string url = Expression.ParseExpression(action.UrlRedirect, pageState, false, formValues);
-            string popup = action.UrlAsPopUp ? "true" : "false";
-            string popUpTitle = action.PopUpTitle;
-
-            script.Append("FormView.doUrlRedirect('");
-            script.Append(url);
-            script.Append("',");
-            script.Append(popup);
-            script.Append(",'");
-            script.Append(popUpTitle);
-            script.Append("','");
-            script.Append(confirmationMessage);
-            script.Append("','");
-            script.Append(popupSize);
-            script.Append("');");
+            return
+                $"JJView.executeRedirectAction('{ComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
 
-        return script.ToString();
+        string url = Expression.ParseExpression(action.UrlRedirect, pageState, false, formValues);
+        string popup = action.UrlAsPopUp ? "true" : "false";
+        string popUpTitle = action.PopUpTitle;
+
+        return $"JJView.executeRedirectAction('{url}',{popup},'{popUpTitle}','{confirmationMessage}','{popupSize}');";
     }
 
-    public string GetFormActionScript(BasicAction action, IDictionary<string, dynamic> formValues, ActionSource actionSource, bool isPopup = false)
+
+    public string GetFormActionScript(BasicAction action, IDictionary<string, dynamic> formValues,
+        ActionSource actionSource, bool isPopup = false)
     {
         var actionMap = new ActionMap(actionSource, FormElement, formValues, action.Name);
         var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
@@ -161,45 +138,19 @@ internal class ActionManager
         if (isPopup)
         {
             var url = GetFormViewUrl(FormElement.Name, action, actionMap);
-            functionSignature = $"ActionManager.executeFormActionAsPopUp('{url}','";
-            var script = new StringBuilder();
-            script.Append(functionSignature);
-            script.Append(ComponentName);
-            script.Append('\'');
-            if (!string.IsNullOrEmpty(confirmationMessage))
-            {
-                script.Append(",'");
-                script.Append(confirmationMessage);
-                script.Append('\'');
-            }
-
-            script.Append(");");
-
-            return script.ToString();
+            functionSignature =
+                $"ActionManager.executeFormActionAsPopUp('{url}','{ComponentName}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
         else
         {
-            functionSignature = "ActionManager.executeFormAction('";
-            var script = new StringBuilder();
-            script.Append(functionSignature);
-            script.Append(ComponentName);
-            script.Append("','");
-            script.Append(encryptedActionMap);
-            script.Append('\'');
-            if (!string.IsNullOrEmpty(confirmationMessage))
-            {
-                script.Append(",'");
-                script.Append(confirmationMessage);
-                script.Append('\'');
-            }
-
-            script.Append(");");
-
-            return script.ToString();
+            functionSignature =
+                $"ActionManager.executeFormAction('{ComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
 
-
+        return functionSignature;
     }
+
+
     private static string GetFormViewUrl(string dictionaryName, BasicAction action, ActionMap actionMap)
     {
         var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
@@ -229,53 +180,27 @@ internal class ActionManager
         var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
         var encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
 
-        var script = new StringBuilder();
-        script.Append("JJDataExp.doExport('");
-        script.Append(ComponentName);
-        script.Append("','");
-        script.Append(encryptedActionMap);
-        script.Append("');");
-
-        return script.ToString();
+        return $"JJDataExp.doExport('{ComponentName}','{encryptedActionMap}');";
     }
+
 
     internal string GetConfigUIScript(ConfigAction action, IDictionary<string, dynamic> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, FormElement, formValues, action.Name);
         string encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
 
-        var script = new StringBuilder();
-        script.Append("FormView.openSettingsModal('");
-        script.Append(ComponentName);
-        script.Append("','");
-        script.Append(encryptedActionMap);
-        script.Append("');");
-
-        return script.ToString();
+        return $"JJView.openSettingsModal('{ComponentName}','{encryptedActionMap}');";
     }
 
-    public string GetCommandScript(BasicAction action, IDictionary<string, dynamic> formValues, ActionSource contextAction)
+    public string GetCommandScript(BasicAction action, IDictionary<string, dynamic> formValues,
+        ActionSource contextAction)
     {
         var actionMap = new ActionMap(contextAction, FormElement, formValues, action.Name);
         string encryptedActionMap = JJMasterDataEncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
-        var script = new StringBuilder();
-        script.Append("FormView.gridAction('");
-        script.Append(ComponentName);
-        script.Append("','");
-        script.Append(encryptedActionMap);
-        script.Append("'");
-        if (!string.IsNullOrEmpty(confirmationMessage))
-        {
-            script.Append(",'");
-            script.Append(confirmationMessage);
-            script.Append("'");
-        }
-
-        script.Append(");");
-
-        return script.ToString();
+        return
+            $"JJView.executeGridAction('{ComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
 
@@ -289,12 +214,14 @@ internal class ActionManager
     //    return GetLink(action, formValues, PageState.List, ActionSource.GridToolbar);
     //}
 
-    public JJLinkButton GetLinkFormToolbar(BasicAction action, IDictionary<string, dynamic> formValues, PageState pageState)
+    public JJLinkButton GetLinkFormToolbar(BasicAction action, IDictionary<string, dynamic> formValues,
+        PageState pageState)
     {
         return GetLink(action, formValues, pageState, ActionSource.FormToolbar);
     }
 
-    public JJLinkButton GetLinkField(BasicAction action, IDictionary<string, dynamic> formValues, PageState pageState, string panelName)
+    public JJLinkButton GetLinkField(BasicAction action, IDictionary<string, dynamic> formValues, PageState pageState,
+        string panelName)
     {
         return GetLink(action, formValues, pageState, ActionSource.Field, panelName);
     }
@@ -307,13 +234,15 @@ internal class ActionManager
 
         return li;
     }
-    
+
 
     private JJLinkButton GetLink(BasicAction action, IDictionary<string, dynamic> formValues, PageState pagestate,
         ActionSource contextAction, string fieldName = null)
     {
-        var enabled = Expression.GetBoolValueAsync(action.EnableExpression,  pagestate, formValues).GetAwaiter().GetResult();
-        var visible = Expression.GetBoolValueAsync(action.VisibleExpression, pagestate, formValues).GetAwaiter().GetResult();
+        var enabled = Expression.GetBoolValueAsync(action.EnableExpression, pagestate, formValues).GetAwaiter()
+            .GetResult();
+        var visible = Expression.GetBoolValueAsync(action.VisibleExpression, pagestate, formValues).GetAwaiter()
+            .GetResult();
         var link = JJLinkButton.GetInstance(action, enabled, visible);
 
         string script;
@@ -362,13 +291,13 @@ internal class ActionManager
                 script = $"FormView.refresh('{ComponentName}');";
                 break;
             case FilterAction filterAction:
-                {
-                    if (filterAction.ShowAsCollapse)
-                        link.Visible = false;
+            {
+                if (filterAction.ShowAsCollapse)
+                    link.Visible = false;
 
-                    script = BootstrapHelper.GetModalScript($"filter_modal_{ComponentName}");
-                    break;
-                }
+                script = BootstrapHelper.GetModalScript($"filter_modal_{ComponentName}");
+                break;
+            }
             case LegendAction:
                 script = BootstrapHelper.GetModalScript($"iconlegend_modal_{ComponentName}");
                 break;
@@ -395,5 +324,4 @@ internal class ActionManager
 
         return link;
     }
-    
 }

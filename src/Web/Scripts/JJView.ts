@@ -216,7 +216,7 @@
         this.postFormValues(objid, enableAjax, false);
     }
 
-    static gridAction(componentName, encryptedActionMap, confirmMessage) {
+    static executeGridAction(componentName, encryptedActionMap, confirmMessage) {
         if (confirmMessage) {
             var result = confirm(confirmMessage);
             if (!result) {

@@ -185,21 +185,18 @@ public class JJDataPanel : JJAsyncBaseView
         return RenderHtmlAsync().GetAwaiter().GetResult();
     }
 
-    protected override async  Task<HtmlBuilder> RenderHtmlAsync()
+    protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
         Values ??= await GetFormValuesAsync();
         string requestType = CurrentContext.Request.QueryString("t");
         string panelName = CurrentContext.Request.QueryString("pnlname");
-
-        //Lookup Route
+        
         if (JJLookup.IsLookupRoute(this, CurrentContext))
             return JJLookup.ResponseRoute(this);
-
-        //FormUpload Route
+        
         if (JJTextFile.IsUploadViewRoute(this, CurrentContext))
             return JJTextFile.ResponseRoute(this);
-
-        //DownloadFile Route
+        
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))
             //TODO GUSTAVO INJETAR FILEDOWNLOADER FACTORY OU ARRUMAR
             return JJFileDownloader.ResponseRoute(CurrentContext, EncryptionService, null);
@@ -209,7 +206,7 @@ public class JJDataPanel : JJAsyncBaseView
 
         if ("reloadPanel".Equals(requestType) && Name.Equals(panelName))
         {
-            var html = await GetPanelHtml();
+            var html = await GetPanelHtmlAsync();
             CurrentContext.Response.SendResponse(html.ToString());
             return null;
         }
@@ -220,10 +217,10 @@ public class JJDataPanel : JJAsyncBaseView
             return null;
         }
 
-        return await GetPanelHtml();
+        return await GetPanelHtmlAsync();
     }
 
-    internal async Task<HtmlBuilder> GetPanelHtml()
+    internal async Task<HtmlBuilder> GetPanelHtmlAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
@@ -251,7 +248,6 @@ public class JJDataPanel : JJAsyncBaseView
     private async Task<string> GetHtmlFormScript()
     {
         var script = new StringBuilder();
-        script.AppendLine("");
         script.AppendLine("$(document).ready(function () { ");
 
         if (FormUI.EnterKey == FormEnterKey.Tab)
@@ -296,7 +292,7 @@ public class JJDataPanel : JJAsyncBaseView
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public async Task<IDictionary<string, dynamic>>  ValidateFieldsAsync(IDictionary<string, dynamic> values, PageState pageState)
+    public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(IDictionary<string, dynamic> values, PageState pageState)
     {
         return await ValidateFieldsAsync(values, pageState, true);
     }

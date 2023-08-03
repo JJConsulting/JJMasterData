@@ -33,7 +33,6 @@ namespace JJMasterData.Core.Web.Components;
 /// <img src="../media/JJFormUploadFileExample.png"/>
 /// </example>
 /// <seealso cref="JJUploadArea"/>
-/// TODO: New name suggestion: JJUploadView (I think we should use view for components with other components inside)
 public class JJUploadView : JJBaseView
 {
     private const string FileName = "Name";

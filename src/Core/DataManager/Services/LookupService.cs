@@ -85,7 +85,7 @@ public class LookupService : ILookupService
         return fields[dataItem.ElementMap.FieldDescription]?.ToString();
     }
 
-    private Dictionary<string, dynamic> GetFilters(FormElementDataItem dataItem, string searchId, PageState pageState,
+    private IDictionary<string, dynamic> GetFilters(FormElementDataItem dataItem, string searchId, PageState pageState,
         IDictionary<string, dynamic> formValues)
     {
         var filters = new Dictionary<string, dynamic>();
@@ -104,7 +104,7 @@ public class LookupService : ILookupService
         return filters;
     }
 
-    private async Task<IDictionary<string, dynamic>> GetFieldsAsync(FormElementDataItem dataItem, Dictionary<string, dynamic> filters)
+    private async Task<IDictionary<string, dynamic>> GetFieldsAsync(FormElementDataItem dataItem, IDictionary<string, dynamic> filters)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dataItem.ElementMap.ElementName);
         return await EntityRepository.GetDictionaryAsync(formElement, filters);
