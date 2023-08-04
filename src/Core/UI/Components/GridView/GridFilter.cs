@@ -150,14 +150,14 @@ internal class GridFilter
             return GetFilterScreenHtml().RenderHtml();
         }
 
-        return await GetDefautFilterHtml();
+        return await GetDefaultFilterHtml();
     }
 
-    private async Task<HtmlBuilder> GetDefautFilterHtml()
+    private async Task<HtmlBuilder> GetDefaultFilterHtml()
     {
-        string requestType = CurrentContext.Request.QueryString("t");
-        string objName = CurrentContext.Request.QueryString("objname");
-        string panelName = CurrentContext.Request.QueryString("pnlname");
+        var requestType = CurrentContext.Request.QueryString("t");
+        var objName = CurrentContext.Request.QueryString("objname");
+        var panelName = CurrentContext.Request.QueryString("pnlname");
 
         if (JJSearchBox.IsSearchBoxRoute(GridView, GridView.CurrentContext))
             return JJSearchBox.ResponseJson(GridView, GridView.FormElement, await GridView.GetCurrentFilterAsync(), GridView.CurrentContext, GridView.ComponentFactory.Controls.GetFactory<SearchBoxFactory>());

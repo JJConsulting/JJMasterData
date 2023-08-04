@@ -93,9 +93,15 @@ internal class ActionsScripts
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
 
+        if (actionContext.IsExternalRoute)
+        {
+            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(actionContext.FormElement.Name);
+            var url = UrlHelper.GetUrl("GetUrlRedirect", "UrlRedirect", new {dictionaryName = encryptedDictionaryName, componentName = actionContext.ParentComponentName});
+            return $"ActionManager.executeRedirectAction('{url}','{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")})";
+        }
+        
         return
             $"ActionManager.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
-
     }
 
     public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource, bool isPopup = false)

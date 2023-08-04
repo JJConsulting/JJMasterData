@@ -17,7 +17,11 @@ class ActionManager {
         form.requestSubmit();
         return false;
     }
-    static executeRedirectAction(componentName, encryptedActionMap, confirmMessage) {
+    static executeRedirectAction(...args) {
+        let url = args[0];
+        const componentName = args[1];
+        const encryptedActionMap = args[2];
+        const confirmMessage = args[3];
         if (confirmMessage) {
             const result = confirm(confirmMessage);
             if (!result) {
@@ -26,19 +30,25 @@ class ActionManager {
         }
         const currentFormActionInput = document.querySelector("#current-formAction-" + componentName);
         currentFormActionInput.value = encryptedActionMap;
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("t", "geturlaction");
-        urlBuilder.addQueryParameter("objname", componentName);
-        const url = urlBuilder.build();
+        if (!url) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("t", "geturlaction");
+            urlBuilder.addQueryParameter("objname", componentName);
+            url = urlBuilder.build();
+        }
+        this.executeUrlRedirect(url);
+        return true;
+    }
+    static executeUrlRedirect(url) {
         fetch(url, {
             method: "POST",
             body: new FormData(document.querySelector("form"))
         }).then(response => response.json()).then(data => {
-            if (data.UrlAsPopUp) {
-                popup.show(data.PopUpTitle, data.UrlRedirect);
+            if (data.urlAsPopUp) {
+                popup.show(data.popUpTitle, data.urlRedirect);
             }
             else {
-                window.location.href = data.UrlRedirect;
+                window.location.href = data.urlRedirect;
             }
         });
     }
