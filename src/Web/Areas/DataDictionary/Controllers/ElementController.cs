@@ -33,7 +33,7 @@ public class ElementController : DataDictionaryController
         try
         {
             _elementService.CreateStructureIfNotExists();
-            var model = await GetEntityGridView();
+            var model = await GetEntityFormView();
             return View(model);
         }
         catch (DataAccessException)
@@ -69,8 +69,8 @@ public class ElementController : DataDictionaryController
 
     public async Task<IActionResult> Export()
     {
-        var gridView = await GetGridView();
-        var selectedRows = gridView.GetSelectedGridValues();
+        var formView = await GetFormView();
+        var selectedRows = formView.GridView.GetSelectedGridValues();
 
         if(selectedRows.Count == 1)
         {
@@ -181,9 +181,9 @@ public class ElementController : DataDictionaryController
         }
     }
 
-    public async Task<JJGridView> GetEntityGridView()
+    public async Task<JJFormView> GetEntityFormView()
     {
-        var gridView = await GetGridView();
+        var formView = await GetFormView();
 
         var acTools = new UrlRedirectAction
         {
@@ -193,7 +193,7 @@ public class ElementController : DataDictionaryController
             EnableExpression = "exp:'T' <> {type}",
             IsDefaultOption = true
         };
-        gridView.AddGridAction(acTools);
+        formView.GridView.AddGridAction(acTools);
 
         var renderBtn = new ScriptAction
         {
@@ -203,7 +203,7 @@ public class ElementController : DataDictionaryController
             EnableExpression = "exp:'T' <> {type}",
             IsGroup = true
         };
-        gridView.AddGridAction(renderBtn);
+        formView.GridView.AddGridAction(renderBtn);
 
         var btnDuplicate = new UrlRedirectAction
         {
@@ -213,7 +213,7 @@ public class ElementController : DataDictionaryController
             EnableExpression = "exp:'T' <> {type}",
             IsGroup = true
         };
-        gridView.AddGridAction(btnDuplicate);
+        formView.GridView.AddGridAction(btnDuplicate);
 
         var btnAdd = new UrlRedirectAction
         {
@@ -223,7 +223,7 @@ public class ElementController : DataDictionaryController
             ShowAsButton = true,
             UrlRedirect = Url.Action("Add")
         };
-        gridView.AddToolBarAction(btnAdd);
+        formView.GridView.AddToolBarAction(btnAdd);
 
         var btnImport = new UrlRedirectAction
         {
@@ -237,7 +237,7 @@ public class ElementController : DataDictionaryController
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
-        gridView.AddToolBarAction(btnImport);
+        formView.GridView.AddToolBarAction(btnImport);
 
         var btnExport = new ScriptAction
         {
@@ -248,9 +248,9 @@ public class ElementController : DataDictionaryController
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
             OnClientClick =
-                $"DataDictionaryUtils.exportElement('{gridView.Name}', '{Url.Action("Export")}', '{StringLocalizer["Select one or more dictionaries"]}');"
+                $"DataDictionaryUtils.exportElement('{formView.Name}', '{Url.Action("Export")}', '{StringLocalizer["Select one or more dictionaries"]}');"
         };
-        gridView.AddToolBarAction(btnExport);
+        formView.GridView.AddToolBarAction(btnExport);
 
         var btnAbout = new UrlRedirectAction
         {
@@ -265,7 +265,7 @@ public class ElementController : DataDictionaryController
             CssClass = BootstrapHelper.PullRight
         };
 
-        gridView.AddToolBarAction(btnAbout);
+        formView.GridView.AddToolBarAction(btnAbout);
 
         var btnLog = new UrlRedirectAction
         {
@@ -280,7 +280,7 @@ public class ElementController : DataDictionaryController
             CssClass = BootstrapHelper.PullRight
         };
 
-        gridView.AddToolBarAction(btnLog);
+        formView.GridView.AddToolBarAction(btnLog);
 
         var btnSettings = new UrlRedirectAction
         {
@@ -295,7 +295,7 @@ public class ElementController : DataDictionaryController
             CssClass = BootstrapHelper.PullRight
         };
 
-        gridView.AddToolBarAction(btnSettings);
+        formView.GridView.AddToolBarAction(btnSettings);
 
         var btnResources = new UrlRedirectAction
         {
@@ -310,9 +310,9 @@ public class ElementController : DataDictionaryController
             CssClass = BootstrapHelper.PullRight
         };
 
-        gridView.AddToolBarAction(btnResources);
+        formView.GridView.AddToolBarAction(btnResources);
 
-        gridView.AddToolBarAction(new SubmitAction()
+        formView.GridView.AddToolBarAction(new SubmitAction()
         {
             Name = "btnDeleteMetadata",
             Order = 0,
@@ -324,16 +324,16 @@ public class ElementController : DataDictionaryController
             FormAction = Url.Action("Delete", "Element")
         });
 
-        gridView.OnRenderAction += OnRenderAction;
+        formView.GridView.OnRenderAction += OnRenderAction;
 
-        return gridView;
+        return formView;
     }
     
     public async Task<IActionResult> Delete()
     {
-        var formView = await GetEntityGridView();
+        var formView = await GetEntityFormView();
 
-        var selectedGridValues = formView.GetSelectedGridValues();
+        var selectedGridValues = formView.GridView.GetSelectedGridValues();
 
         selectedGridValues
             .Select(value => value["name"]!.ToString()!)
@@ -343,13 +343,13 @@ public class ElementController : DataDictionaryController
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task<JJGridView> GetGridView()
+    private async Task<JJFormView> GetFormView()
     {
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        var gridView = await _elementService.GetGridView();
-        gridView.FormElement.Title =
+        var formView = await _elementService.GetFormView();
+        formView.FormElement.Title =
             $"<img src=\"{baseUrl}/_content/JJMasterData.Web/images/JJMasterData.png\" style=\"width:8%;height:8%;\"/>";
 
-        return gridView;
+        return formView;
     }
 }

@@ -437,7 +437,7 @@ public class JJUploadView : JJAsyncBaseView
                     {
                         table.WithCssClass("table-gallery");
                         var files = ConvertFormFileToDictionary(file);
-                        var formState = new FormStateData(UserValues, files, PageState.List);
+                        var formState = new FormStateData(files, UserValues, PageState.List);
                         var htmlActions = GridView.Table.Body.GetActionsHtmlListAsync(formState);
                         await table.AppendRangeAsync(htmlActions);
                     });

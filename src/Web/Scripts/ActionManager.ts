@@ -19,8 +19,8 @@ class ActionManager {
             }
         }
 
-        const currentTableActionInput = document.querySelector<HTMLInputElement>("#current_tableaction_" + actionName);
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current_formaction_" + actionName);
+        const currentTableActionInput = document.querySelector<HTMLInputElement>("#current-tableAction-" + actionName);
+        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-formAction-" + actionName);
 
         let form = document.querySelector<HTMLFormElement>("form");
 

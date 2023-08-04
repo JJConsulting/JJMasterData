@@ -1,16 +1,11 @@
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
-using JJMasterData.Core.DataDictionary.Actions.UserCreated;
-using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Html;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.UI.Components.Widgets;
+using JJMasterData.Core.DataManager.Models;
 
 
 namespace JJMasterData.Core.Web.Components;
@@ -39,13 +34,15 @@ internal class GridToolbar
     private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlElement()
     {
         var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
+        var linkButtonFactory = GridView.ComponentFactory.LinkButtonFactory;
         var formValues = await GridView.GetDefaultValuesAsync();
-        var linkButtonFactory = new LinkButtonFactory(GridView.ExpressionsService);
         var formStateData = new FormStateData(GridView.UserValues, formValues, PageState.List);
 
+        var context = ActionContext.FromGridView(GridView, formStateData);
+        
         foreach (var action in actions)
         {
-            var linkButton = await linkButtonFactory.CreateAsync(action, formStateData);
+            var linkButton = await linkButtonFactory.CreateGridToolbarButtonAsync(action, context);
             if (!linkButton.Visible)
                 continue;
 
@@ -55,7 +52,6 @@ internal class GridToolbar
                 continue;
             }
             
-            linkButton.OnClientClick = GetScriptAction(action, formValues);
             switch (action)
             {
                 case ExportAction when GridView.DataExportation.IsRunning():
@@ -74,63 +70,5 @@ internal class GridToolbar
             yield return linkButton.GetHtmlBuilder();
         }
     }
-
-    private string GetScriptAction(BasicAction action, IDictionary<string,dynamic>formValues)
-    {
-        var contextAction = ActionSource.GridToolbar;
-        var pageState = PageState.List;
-        var expressionsService = GridView.ExpressionsService;
-        string script;
-        
-        switch (action)
-        {
-            case UrlRedirectAction redirectAction:
-                script = GridView.Scripts.GetUrlRedirectToolbarScript(redirectAction, formValues);
-                break;
-            case InternalAction internalAction:
-                script = GridView.FormViewScripts.GetInternalUrlScript(internalAction, formValues);
-                break;
-            case SqlCommandAction:
-                script = GridView.FormViewScripts.GetCommandScript(action, formValues, contextAction);
-                break;
-            case ScriptAction jsAction:
-                script = expressionsService.ParseExpression(jsAction.OnClientClick, pageState, false, formValues);
-                break;
-            case InsertAction insertAction:
-                script = GridView.FormViewScripts.GetFormActionScript(action, formValues, contextAction, insertAction.ShowAsPopup);
-                break;
-                case DeleteSelectedRowsAction or ImportAction or LogAction:
-                script = GridView.FormViewScripts.GetFormActionScript(action, formValues, contextAction);
-                break;
-            case ConfigAction:
-                script = BootstrapHelper.GetModalScript($"config_modal_{GridView.Name}");
-                break;
-            case ExportAction:
-                script = GridView.DataExportation.Scripts.GetExportPopupScript(
-                    GridView.FormElement.Name,
-                        GridView.Name,
-                    GridView.IsExternalRoute);
-                break;
-            case RefreshAction:
-                script = GridView.Scripts.GetRefreshScript();
-                break;
-            case FilterAction:
-                script = BootstrapHelper.GetModalScript($"filter_modal_{GridView.Name}");
-                break;
-            case LegendAction:
-                script = BootstrapHelper.GetModalScript($"iconlegend_modal_{GridView.Name}");
-                break;
-            case SortAction:
-                script = BootstrapHelper.GetModalScript($"sort_modal_{GridView.Name}");
-                break;
-            case SubmitAction submitAction:
-                string confirmationMessage = submitAction.ConfirmationMessage;
-                script = !string.IsNullOrWhiteSpace(confirmationMessage) ? $"return confirm('{confirmationMessage}');" : string.Empty;
-                break;
-            default:
-                throw new NotImplementedException();
-        }
-
-        return script;
-    }
+    
 }

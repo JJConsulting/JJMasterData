@@ -108,8 +108,8 @@
         else
             $(tableOrder).val(v + " ASC");
 
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
 
@@ -134,30 +134,30 @@
 
         $("#current_tableorder_" + objid).val(descCommand);
         $("#sort_modal_" + objid).modal('hide');
-        $("#current_formaction_" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.refresh(objid, true);
 
     }
 
     static paginateGrid(objid, enableAjax, v) {
         $("#current_tablepage_" + objid).val(v);
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
 
     static refresh(objid, enableAjax) {
-        $("#current_tableaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
         $("#current_tablerow_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
 
     static openSettingsModal(componentName, encryptedActionMap) {
-        $("#current_tableaction_" + componentName).val(encryptedActionMap);
+        $("#current-tableAction-" + componentName).val(encryptedActionMap);
         $("#current_tablepage_" + componentName).val("1");
         $("#current_tablerow_" + componentName).val("");
-        $("#current_formaction_" + componentName).val("");
+        $("#current-formAction-" + componentName).val("");
         $("form:first").trigger("submit");
     }
     static closeSettingsModal(objid) {
@@ -169,9 +169,9 @@
 
     static filter(objid, enableAjax) {
         $("#current_filteraction_" + objid).val("FILTERACTION");
-        $("#current_tableaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
         $("#current_tablepage_" + objid).val("1");
-        $("#current_formaction_" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.postFormValues(objid, enableAjax, false);
         return false;
     }
@@ -211,8 +211,8 @@
             }
         });
         $("#current_filteraction_" + objid).val("CLEARACTION");
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.postFormValues(objid, enableAjax, false);
     }
 
@@ -224,8 +224,8 @@
             }
         }
 
-        $("#current_tableaction_" + componentName).val(encryptedActionMap);
-        $("#current_formaction_" + componentName).val("");
+        $("#current-tableAction-" + componentName).val(encryptedActionMap);
+        $("#current-formAction-" + componentName).val("");
         $("form:first").trigger("submit");
     }
 
@@ -272,8 +272,8 @@
             }
         }
 
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         $("#current_tablerow_" + objid).val(criptid);
         $("form:first").trigger("submit");
     }

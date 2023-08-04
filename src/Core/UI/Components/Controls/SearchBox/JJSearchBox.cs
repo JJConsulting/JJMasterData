@@ -261,7 +261,7 @@ public class JJSearchBox : JJBaseControl
             return null;
 
         var field = formElement.Fields[fieldName];
-        var expOptions = new FormStateData(view.UserValues, formValues, pageState);
+        var expOptions = new FormStateData(formValues, view.UserValues, pageState);
         
         var searchBox = searchBoxFactory.Create(formElement,field, new(expOptions, view.Name, dictionaryName));
         searchBox.ResponseJson();

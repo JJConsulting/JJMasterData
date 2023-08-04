@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -64,7 +65,7 @@ internal class GridTableBody
     internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(DataRow row, int index)
     {
         var values = await GetValues(row);
-        var formData = new FormStateData(GridView.UserValues, values, PageState.List);
+        var formData = new FormStateData(values, GridView.UserValues, PageState.List);
         var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
@@ -211,10 +212,14 @@ internal class GridTableBody
         td.WithCssClass("table-action");
 
         var btnGroup = new JJLinkButtonGroup();
+        
+        var context = ActionContext.FromGridView(GridView, formStateData);
+        var factory = GridView.ComponentFactory.LinkButtonFactory;
+        
         foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
         {
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
-            var linkButton = await GridView.FormViewScripts.GetLinkGridAsync(groupedAction, formStateData);
+            var linkButton = await factory.CreateGridTableButtonAsync(groupedAction, context);
             btnGroup.Actions.Add(linkButton);
         }
 
@@ -225,12 +230,13 @@ internal class GridTableBody
 
     private async IAsyncEnumerable<HtmlBuilder> GetActionsWithoutGroupHtmlAsync(IEnumerable<BasicAction> actionsWithoutGroup, FormStateData formStateData)
     {
+        var context = ActionContext.FromGridView(GridView, formStateData);
+        var factory = GridView.ComponentFactory.LinkButtonFactory;
         foreach (var action in actionsWithoutGroup)
         {
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("table-action");
-
-            var link = await GridView.FormViewScripts.GetLinkGridAsync(action, formStateData);
+            var link = await factory.CreateGridTableButtonAsync(action, context);
             var onRender = OnRenderAction;
             if (onRender != null)
             {
@@ -310,26 +316,30 @@ internal class GridTableBody
         if (GridView.EnableEditMode || defaultAction == null)
             return string.Empty;
 
-        var linkDefaultAction = await GridView.FormViewScripts.GetLinkGridAsync(defaultAction, formStateData);
+        var factory = GridView.ComponentFactory.LinkButtonFactory;
+
+        var context = ActionContext.FromGridView(GridView, formStateData);
+        
+        var actionButton = await factory.CreateGridTableButtonAsync(defaultAction, context);
 
         if (OnRenderAction != null)
         {
-            var args = new ActionEventArgs(defaultAction, linkDefaultAction, formStateData.FormValues);
+            var args = new ActionEventArgs(defaultAction, actionButton, formStateData.FormValues);
             OnRenderAction.Invoke(GridView, args);
 
             if (args.HtmlResult != null)
             {
-                linkDefaultAction = null;
+                actionButton = null;
             }
         }
 
-        if (linkDefaultAction is { Visible: true })
+        if (actionButton is { Visible: true })
         {
-            if (!string.IsNullOrEmpty(linkDefaultAction.OnClientClick))
-                return linkDefaultAction.OnClientClick;
+            if (!string.IsNullOrEmpty(actionButton.OnClientClick))
+                return actionButton.OnClientClick;
 
-            return !string.IsNullOrEmpty(linkDefaultAction.UrlAction)
-                ? $"window.location.href = '{linkDefaultAction.UrlAction}'"
+            return !string.IsNullOrEmpty(actionButton.UrlAction)
+                ? $"window.location.href = '{actionButton.UrlAction}'"
                 : string.Empty;
         }
 

@@ -80,7 +80,7 @@ public class JJGridView : JJAsyncBaseView
     private GridFilter _filter;
     private GridTable _table;
     private DataTable _dataSource;
-    private FormViewScripts _formViewScripts;
+    private ActionsScripts _actionsScripts;
     private List<FormElementField> _pkFields;
     private IDictionary<string, dynamic> _defaultValues;
     private List<BasicAction> _toolBarActions;
@@ -154,8 +154,8 @@ public class JJGridView : JJAsyncBaseView
         }
     }
 
-    internal FormViewScripts FormViewScripts =>
-        _formViewScripts ??= new FormViewScripts(this);
+    internal ActionsScripts ActionsScripts =>
+        _actionsScripts ??= new ActionsScripts(ExpressionsService,UrlHelper,EncryptionService,StringLocalizer);
 
     internal IFormValuesService FormValuesService { get; }
 
@@ -475,13 +475,13 @@ public class JJGridView : JJAsyncBaseView
         get =>
             _toolBarActions ??= new List<BasicAction>
             {
-                new LegendAction(),
-                new RefreshAction(),
-                new FilterAction(),
-                new ImportAction(),
-                new ExportAction(),
-                new ConfigAction(),
-                new SortAction()
+                // new LegendAction(),
+                // new RefreshAction(),
+                // new FilterAction(),
+                // new ImportAction(),
+                // new ExportAction(),
+                // new ConfigAction(),
+                // new SortAction()
             };
         internal set => _toolBarActions = value;
     }
@@ -498,7 +498,7 @@ public class JJGridView : JJAsyncBaseView
         get
         {
             if (_currentActionMap != null) return _currentActionMap;
-            var encryptedActionMap = CurrentContext.Request["current_tableaction_" + Name];
+            var encryptedActionMap = CurrentContext.Request["current-tableAction-" + Name];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -578,10 +578,9 @@ public class JJGridView : JJAsyncBaseView
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + Name);
-
         if (!string.IsNullOrEmpty(lookupRoute))
             return GetLookupHtml(lookupRoute);
-
+        
         html.AppendIf(ShowTitle, GetTitle(_defaultValues).GetHtmlBuilder);
 
         if (FilterAction.IsVisible)
@@ -615,7 +614,7 @@ public class JJGridView : JJAsyncBaseView
 
         string requestType = CurrentContext.Request.QueryString("t");
 
-        string currentAction = CurrentContext.Request["current_tableaction_" + Name];
+        string currentAction = CurrentContext.Request["current-tableAction-" + Name];
 
         var html = new HtmlBuilder(HtmlTag.Div);
 
@@ -691,7 +690,7 @@ public class JJGridView : JJAsyncBaseView
         var elementList = new List<HtmlBuilder>();
         elementList.Add(GetHiddenInput($"current_tableorder_{Name}", CurrentOrder));
         elementList.Add(GetHiddenInput($"current_tablepage_{Name}", CurrentPage.ToString()));
-        elementList.Add(GetHiddenInput($"current_tableaction_{Name}", currentAction));
+        elementList.Add(GetHiddenInput($"current-tableAction-{Name}", currentAction));
         elementList.Add(GetHiddenInput($"current_tablerow_{Name}", string.Empty));
 
         if (EnableMultiSelect)
@@ -1522,8 +1521,7 @@ public class JJGridView : JJAsyncBaseView
 
     public void SetGridOptions(GridUI options)
     {
-        //TODO:
-        //GridViewFactory.SetGridUIOptions(this, options);
+        // FormElement.Options.Grid = options;
     }
 
     internal BasicAction GetCurrentAction(ActionMap actionMap)

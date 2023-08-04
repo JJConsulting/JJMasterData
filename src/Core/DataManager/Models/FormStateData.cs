@@ -17,7 +17,10 @@ public class FormStateData
     public required PageState PageState { get; init; }
     
     [SetsRequiredMembers]
-    public FormStateData(IDictionary<string,dynamic> userValues, IDictionary<string,dynamic>formValues, PageState pageState)
+    public FormStateData(
+        IDictionary<string, dynamic> formValues, 
+        IDictionary<string, dynamic> userValues,
+        PageState pageState)
     {
         UserValues = userValues.DeepCopy();
         FormValues = formValues;
