@@ -618,7 +618,7 @@ public class JJGridView : JJAsyncBaseView
         if (await CheckForExportation(requestType))
             return null;
 
-        if (await CheckForTableRow(requestType, Table))
+        if (await CheckForTableRow(requestType))
             return null;
 
         if (await CheckForSelectAllRows(requestType))
@@ -710,7 +710,7 @@ public class JJGridView : JJAsyncBaseView
         return false;
     }
 
-    private async Task<bool> CheckForTableRow(string requestType, GridTable table)
+    private async Task<bool> CheckForTableRow(string requestType)
     {
         if ("tablerow".Equals(requestType))
         {
@@ -718,22 +718,25 @@ public class JJGridView : JJAsyncBaseView
             if (Name.Equals(gridName))
             {
                 int rowIndex = int.Parse(CurrentContext.Request.QueryString("nRow"));
-                var row = DataSource.Rows[rowIndex];
 
-                string htmlResponse = string.Empty;
-
-                await foreach (var td in  table.Body.GetTdHtmlList(row, rowIndex))
-                {
-                    htmlResponse += td.ToString();
-                }
-
-                CurrentContext.Response.SendResponseObsolete(htmlResponse);
+                var htmlResponse = await GetTableRowHtmlAsync(rowIndex);
+                
+                CurrentContext.Response.SendResponse(htmlResponse);
             }
 
             return true;
         }
 
         return false;
+    }
+    
+    public async Task<string> GetTableRowHtmlAsync(int rowIndex)
+    {
+        var row = DataSource.Rows[rowIndex];
+
+        return await Table.Body
+            .GetTdHtmlList(row, rowIndex)
+            .AggregateAsync(string.Empty, (current, td) => current + td.ToString());
     }
 
     private async Task<bool> CheckForExportation(string requestType)

@@ -21,19 +21,23 @@ namespace JJMasterData.Core.UI.Components.Widgets;
 
 public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 {
+    private ActionsScripts _actionsScripts;
+    private GridScripts _gridScripts;
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
 
-    private ActionsScripts ActionsScripts { get; }
+    private ActionsScripts ActionsScripts => _actionsScripts ??= new ActionsScripts(ExpressionsService,UrlHelper,EncryptionService,StringLocalizer);
+    //E agora?
+   // private GridScripts GridScripts => _gridScripts ??= new GridScripts(EncryptionService,UrlHelper);
 
     public LinkButtonFactory(IExpressionsService expressionsService,
         JJMasterDataUrlHelper urlHelper,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        ActionsScripts = new ActionsScripts(expressionsService, urlHelper, encryptionService, stringLocalizer);
+        _actionsScripts = new ActionsScripts(expressionsService, urlHelper, encryptionService, stringLocalizer);
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
         UrlHelper = urlHelper;

@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.Web.Components;
 

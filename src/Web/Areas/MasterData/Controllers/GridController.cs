@@ -43,13 +43,13 @@ public class GridController : MasterDataController
     
     [HttpPost]
     [ServiceFilter<FormElementDecryptionFilter>]
-    public async Task<IActionResult> GetTableRowHtml(FormElement formElement, string componentName)
+    public async Task<IActionResult> GetTableRowHtml(FormElement formElement, string componentName, int rowIndex)
     {
         var gridView = GridViewFactory.Create(formElement);
         gridView.Name = componentName;
         gridView.IsExternalRoute = true;
-        throw new NotImplementedException("todo");
-        //return Content(await gridView.GetTableRowHtml());
+        
+        return Content(await gridView.GetTableRowHtmlAsync(rowIndex));
     }
 
 }
