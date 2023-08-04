@@ -346,7 +346,7 @@ public class ElementController : DataDictionaryController
     private async Task<JJFormView> GetFormView()
     {
         var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        var formView = await _elementService.GetFormView();
+        var formView = await _elementService.GetFormViewAsync();
         formView.FormElement.Title =
             $"<img src=\"{baseUrl}/_content/JJMasterData.Web/images/JJMasterData.png\" style=\"width:8%;height:8%;\"/>";
 

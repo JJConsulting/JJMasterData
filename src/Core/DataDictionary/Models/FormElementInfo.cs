@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using JJMasterData.Commons.Data.Entity;
 using Newtonsoft.Json;
 
@@ -6,16 +7,22 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementInfo
 {
-    public string Name { get; set; }
+    public required string Name { get; set; }
     
-    public string TableName { get; set; }
+    public required string TableName { get; set; }
     
-    public string Info { get; set; }
+    public required string Info { get; set; }
     
-    public string Sync { get; set; }
+    public required string Sync { get; set; }
     
-    public DateTime Modified { get; set; }
+    public required DateTime Modified { get; set; }
+
+    public FormElementInfo()
+    {
+        
+    }
     
+    [SetsRequiredMembers]
     [JsonConstructor]
     public FormElementInfo(string name, string tableName, string info, string sync, DateTime modified )
     {
@@ -26,7 +33,7 @@ public class FormElementInfo
         Modified = modified;
     }
     
-
+    [SetsRequiredMembers]
     public FormElementInfo(Element formElement, DateTime modified)
     {
         Name = formElement.Name;

@@ -213,7 +213,8 @@ public class JJDataPanel : JJAsyncBaseView
 
         if ("geturlaction".Equals(requestType))
         {
-            await SendUrlRedirect();
+            var encryptedActionMap = CurrentContext.Request["current-formAction-" + Name.ToLower()];
+            await SendUrlRedirect(EncryptionService.DecryptActionMap(encryptedActionMap));
             return null;
         }
 
@@ -309,17 +310,8 @@ public class JJDataPanel : JJAsyncBaseView
         return await FieldsService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink);
     }
     
-    internal async Task SendUrlRedirect()
+    internal async Task SendUrlRedirect(ActionMap actionMap)
     {
-        if (!Name.Equals(CurrentContext.Request["objname"]))
-            return;
-
-        string encryptedActionMap = CurrentContext.Request["encryptedActionMap"];
-        if (string.IsNullOrEmpty(encryptedActionMap))
-            return;
-
-        var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
-
         var model = await new UrlRedirectService(FormValuesService, ExpressionsService).GetUrlRedirectAsync(FormElement,actionMap, PageState);
         
         CurrentContext.Response.SendResponse(model.ToJson(), "application/json");

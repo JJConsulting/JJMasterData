@@ -1,4 +1,6 @@
 #nullable enable
+using System.Diagnostics.CodeAnalysis;
+
 namespace JJMasterData.Commons.Data.Entity;
 using System;
 using System.Collections.Generic;
@@ -90,4 +92,18 @@ public class EntityResult
     }
     public static explicit operator List<IDictionary<string,dynamic?>>(EntityResult entityResult) => ToList(entityResult);
     public static explicit operator DataTable(EntityResult entityResult) => ToDataTable(entityResult);
+}
+
+public class EntityResult<T>
+{
+    public required T Data { get; init; }
+    public required int TotalOfRecords { get; init; }
+    
+    [SetsRequiredMembers]
+    public EntityResult(T data, int totalOfRecords)
+    {
+        Data = data;
+        TotalOfRecords = totalOfRecords;
+    }
+
 }

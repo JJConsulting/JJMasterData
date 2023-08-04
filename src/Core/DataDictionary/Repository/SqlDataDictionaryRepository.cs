@@ -262,14 +262,32 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         return dt.ToModelList<FormElementInfo>();
     }
 
-    public async Task<IEnumerable<FormElementInfo>> GetMetadataInfoListAsync(DataDictionaryFilter filter,
+    public async Task<EntityResult<IEnumerable<FormElementInfo>>> GetFormElementInfoListAsync(DataDictionaryFilter filter,
         string orderBy, int recordsPerPage, int currentPage)
     {
         var filters = (IDictionary)filter.ToDictionary();
         filters.Add("type", "F");
 
-        var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filters, orderBy, recordsPerPage,
+        var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement, filters, orderBy, recordsPerPage,
             currentPage);
-        return dt.Item1.ToModelList<FormElementInfo>();
+
+
+        var formElementInfoList = new List<FormElementInfo>();
+
+        foreach (var element in result.Item1)
+        {
+            var info = new FormElementInfo
+            {
+                Info = element["info"],
+                Modified = element["modified"],
+                Name = element["name"],
+                Sync = element["sync"],
+                TableName = element["tablename"]
+            };
+            
+            formElementInfoList.Add(info);
+        }
+
+        return new EntityResult<IEnumerable<FormElementInfo>>(formElementInfoList, result.Item2);
     }
 }

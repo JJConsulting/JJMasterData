@@ -17,14 +17,39 @@ class ActionManager {
         form.requestSubmit();
         return false;
     }
-    static executeFormAction(actionName, encryptedActionMap, confirmationMessage) {
+    static executeRedirectAction(componentName, encryptedActionMap, confirmMessage) {
+        if (confirmMessage) {
+            const result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        const currentFormActionInput = document.querySelector("#current-formAction-" + componentName);
+        currentFormActionInput.value = encryptedActionMap;
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("t", "geturlaction");
+        urlBuilder.addQueryParameter("objname", componentName);
+        const url = urlBuilder.build();
+        fetch(url, {
+            method: "POST",
+            body: new FormData(document.querySelector("form"))
+        }).then(response => response.json()).then(data => {
+            if (data.UrlAsPopUp) {
+                popup.show(data.PopUpTitle, data.UrlRedirect);
+            }
+            else {
+                window.location.href = data.UrlRedirect;
+            }
+        });
+    }
+    static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
                 return false;
             }
         }
-        const currentTableActionInput = document.querySelector("#current-tableAction-" + actionName);
-        const currentFormActionInput = document.querySelector("#current-formAction-" + actionName);
+        const currentTableActionInput = document.querySelector("#current-tableAction-" + componentName);
+        const currentFormActionInput = document.querySelector("#current-formAction-" + componentName);
         let form = document.querySelector("form");
         if (!form) {
             form = document.forms[0];
@@ -904,39 +929,6 @@ class JJView {
         $("#current-tableAction-" + componentName).val(encryptedActionMap);
         $("#current-formAction-" + componentName).val("");
         $("form:first").trigger("submit");
-    }
-    static executeRedirectAction(componentName, encryptedActionMap, confirmMessage) {
-        if (confirmMessage) {
-            var result = confirm(confirmMessage);
-            if (!result) {
-                return false;
-            }
-        }
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&t=geturlaction&objname=" + componentName;
-        else
-            surl += "?t=geturlaction&objname=" + componentName;
-        $.ajax({
-            async: true,
-            type: "POST",
-            url: surl,
-            data: frm.serialize() + '&criptid=' + encryptedActionMap,
-            success: function (data) {
-                if (data.UrlAsPopUp) {
-                    popup.show(data.PopUpTitle, data.UrlRedirect);
-                }
-                else {
-                    window.location.href = data.UrlRedirect;
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
-            }
-        });
     }
     static executeSqlCommand(objid, criptid, confirmMessage) {
         if (confirmMessage) {

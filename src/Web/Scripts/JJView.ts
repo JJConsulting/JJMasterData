@@ -228,41 +228,7 @@
         $("#current-formAction-" + componentName).val("");
         $("form:first").trigger("submit");
     }
-
-    static executeRedirectAction(componentName, encryptedActionMap, confirmMessage) {
-        if (confirmMessage) {
-            var result = confirm(confirmMessage);
-            if (!result) {
-                return false;
-            }
-        }
-
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&t=geturlaction&objname=" + componentName;
-        else
-            surl += "?t=geturlaction&objname=" + componentName;
-
-        $.ajax({
-            async: true,
-            type: "POST",
-            url: surl,
-            data: frm.serialize() + '&criptid=' + encryptedActionMap,
-            success: function (data) {
-                if (data.UrlAsPopUp) {
-                    popup.show(data.PopUpTitle, data.UrlRedirect);
-                } else {
-                    window.location.href = data.UrlRedirect;
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
-            }
-        });
-    }
+    
 
     static executeSqlCommand(objid, criptid, confirmMessage) {
         if (confirmMessage) {

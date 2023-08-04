@@ -141,7 +141,7 @@ public class ElementService : BaseService
     }
 
 
-    public async Task<JJFormView> GetFormView()
+    public async Task<JJFormView> GetFormViewAsync()
     {
         var element = new Element(_options.DataDictionaryTableName, "Data Dictionaries");
         element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false,
@@ -179,19 +179,18 @@ public class ElementService : BaseService
         if (!filter.ContainsKey("type"))
             filter.Add("type", "F");
 
-        formView.GridView.OnDataLoad += FormViewOnDataLoad;
+        formView.GridView.OnDataLoadAsync += FormViewOnDataLoad;
 
         return formView;
     }
 
-    private void FormViewOnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
+    private async Task FormViewOnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
     {
-        int tot = e.Tot;
         var filter = DataDictionaryFilter.GetInstance(e.Filters);
         string orderBy = string.IsNullOrEmpty(e.OrderBy) ? "name ASC" : e.OrderBy;
-        var list = DataDictionaryRepository.GetMetadataInfoList(filter, orderBy, e.RegporPag, e.CurrentPage, ref tot);
-        e.DataSource = list.ToDataTable();
-        e.Tot = tot;
+        var result = await DataDictionaryRepository.GetFormElementInfoListAsync(filter, orderBy, e.RegporPag, e.CurrentPage);
+        e.DataSource = result.Data.ToDataTable();
+        e.Tot = result.TotalOfRecords;
     }
 
     #endregion

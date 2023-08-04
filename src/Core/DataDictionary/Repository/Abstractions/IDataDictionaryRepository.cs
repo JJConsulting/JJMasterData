@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
@@ -65,7 +66,7 @@ public interface IDataDictionaryRepository
     IEnumerable<FormElementInfo> GetMetadataInfoList(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
 
     /// <inheritdoc cref="GetMetadataInfoList"/>
-    Task<IEnumerable<FormElementInfo>> GetMetadataInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage);
+    Task<EntityResult<IEnumerable<FormElementInfo>>> GetFormElementInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage);
     
     /// <summary>
     /// Checks if the dictionary exists

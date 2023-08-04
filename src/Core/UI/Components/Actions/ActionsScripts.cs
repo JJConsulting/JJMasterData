@@ -79,7 +79,7 @@ internal class ActionsScripts
                 Area = "MasterData"
             });
 
-        return $"JJView.executeRedirectAction('{url}',{popup},'{popUpTitle}','{confirmationMessage}','{popupSize}');";
+        return $"ActionManager.executeRedirectAction('{url}',{popup},'{popUpTitle}','{confirmationMessage}','{popupSize}');";
     }
     
 
@@ -94,7 +94,7 @@ internal class ActionsScripts
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
 
         return
-            $"JJView.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            $"ActionManager.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
 
     }
 
@@ -145,9 +145,10 @@ internal class ActionsScripts
         });
     }
     
-    public string GetUserActionScript(
+    internal string GetUserActionScript(
         UserCreatedAction userCreatedAction,
-        ActionContext actionContext)
+        ActionContext actionContext,
+        ActionSource actionSource)
     {
 
         var formStateData = actionContext.FormStateData;
@@ -155,9 +156,9 @@ internal class ActionsScripts
         switch (userCreatedAction)
         {
             case UrlRedirectAction urlRedirectAction:
-                return GetUrlRedirectScript(urlRedirectAction, actionContext,ActionSource.Field);
+                return GetUrlRedirectScript(urlRedirectAction, actionContext,actionSource);
             case SqlCommandAction:
-                return GetCommandScript(userCreatedAction,actionContext,ActionSource.Field);
+                return GetCommandScript(userCreatedAction,actionContext,actionSource);
             case ScriptAction jsAction:
                 return ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData.PageState, false, formStateData.FormValues, formStateData.UserValues);
             case InternalAction internalAction:

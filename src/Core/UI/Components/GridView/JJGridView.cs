@@ -27,6 +27,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.UI.Components.FormView;
 
 namespace JJMasterData.Core.Web.Components;
@@ -64,8 +66,9 @@ public class JJGridView : JJAsyncBaseView
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// using the proc informed in the FormElement;
     /// </remarks>
+    
     public event EventHandler<GridDataLoadEventArgs> OnDataLoad;
-
+    public event AsyncEventHandler<GridDataLoadEventArgs> OnDataLoadAsync;
     public event EventHandler<ActionEventArgs> OnRenderAction;
 
     #endregion
@@ -456,42 +459,25 @@ public class JJGridView : JJAsyncBaseView
     internal async Task<IDictionary<string, dynamic>> GetDefaultValuesAsync() => _defaultValues ??=
         await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
 
-    public LegendAction LegendAction => (LegendAction)ToolBarActions.Find(x => x is LegendAction);
+    public LegendAction LegendAction => ToolBarActions.LegendAction;
 
-    public RefreshAction RefreshAction => (RefreshAction)ToolBarActions.Find(x => x is RefreshAction);
+    public RefreshAction RefreshAction => ToolBarActions.RefreshAction;
 
-    public FilterAction FilterAction => (FilterAction)ToolBarActions.Find(x => x is FilterAction);
+    public FilterAction FilterAction => ToolBarActions.FilterAction;
 
-    public ImportAction ImportAction => (ImportAction)ToolBarActions.Find(x => x is ImportAction);
+    public ImportAction ImportAction => ToolBarActions.ImportAction;
 
-    public ExportAction ExportAction => (ExportAction)ToolBarActions.Find(x => x is ExportAction);
+    public ExportAction ExportAction => ToolBarActions.ExportAction;
 
-    public ConfigAction ConfigAction => (ConfigAction)ToolBarActions.Find(x => x is ConfigAction);
+    public ConfigAction ConfigAction => ToolBarActions.ConfigAction;
 
-    public SortAction SortAction => (SortAction)ToolBarActions.Find(x => x is SortAction);
+    public SortAction SortAction => ToolBarActions.SortAction;
 
-    public List<BasicAction> ToolBarActions
-    {
-        get =>
-            _toolBarActions ??= new List<BasicAction>
-            {
-                // new LegendAction(),
-                // new RefreshAction(),
-                // new FilterAction(),
-                // new ImportAction(),
-                // new ExportAction(),
-                // new ConfigAction(),
-                // new SortAction()
-            };
-        internal set => _toolBarActions = value;
-    }
+    [Obsolete("Please use FormElement.Options.GridToolbarActions")]
+    public GridToolbarActionList ToolBarActions => FormElement.Options.GridToolbarActions;
 
-    public List<BasicAction> GridActions
-    {
-        get => _gridActions ??= new List<BasicAction>();
-
-        internal set => _gridActions = value;
-    }
+    [Obsolete("Please use FormElement.Options.GridTableActions")]
+    public GridTableActionList GridActions => FormElement.Options.GridTableActions;
 
     private ActionMap CurrentActionMap
     {
@@ -1095,7 +1081,7 @@ public class JJGridView : JJAsyncBaseView
                 break;
             case "export":
                 {
-                    if (IsUserSetDataSource || OnDataLoad != null)
+                    if (IsUserSetDataSource || OnDataLoad != null || OnDataLoadAsync != null)
                     {
                         var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, int.MaxValue, 1);
                         DataExportation.StartExportation(result.ToDataTable());
@@ -1210,7 +1196,7 @@ public class JJGridView : JJAsyncBaseView
             dt = dv.ToTable();
             dv.Dispose();
         }
-        else if (OnDataLoad != null)
+        else if (OnDataLoad != null || OnDataLoadAsync != null)
         {
             var args = new GridDataLoadEventArgs
             {
@@ -1220,7 +1206,14 @@ public class JJGridView : JJAsyncBaseView
                 CurrentPage = currentPage,
                 Tot = total
             };
-            OnDataLoad.Invoke(this, args);
+
+            OnDataLoad?.Invoke(this,args);
+            
+            if (OnDataLoadAsync != null)
+            {
+                await OnDataLoadAsync(this, args);
+            }
+            
             total = args.Tot;
             dt = args.DataSource;
         }
@@ -1418,7 +1411,7 @@ public class JJGridView : JJAsyncBaseView
         if (string.IsNullOrEmpty(actionName))
             throw new ArgumentNullException(nameof(actionName));
 
-        var action = ToolBarActions.Find(x => x.Name.Equals(actionName));
+        var action = ToolBarActions.First(x => x.Name.Equals(actionName));
 
         switch (action)
         {
@@ -1474,7 +1467,7 @@ public class JJGridView : JJAsyncBaseView
         if (string.IsNullOrEmpty(actionName))
             throw new ArgumentNullException(nameof(actionName));
 
-        var action = GridActions.Find(x => x.Name.Equals(actionName));
+        var action = GridActions.First(x => x.Name.Equals(actionName));
         switch (action)
         {
             case null:
@@ -1489,12 +1482,12 @@ public class JJGridView : JJAsyncBaseView
 
     public BasicAction GetToolBarAction(string actionName)
     {
-        return ToolBarActions.Find(x => x.Name.Equals(actionName));
+        return ToolBarActions.First(x => x.Name.Equals(actionName));
     }
 
     public BasicAction GetGridAction(string actionName)
     {
-        return GridActions.Find(x => x.Name.Equals(actionName));
+        return GridActions.First(x => x.Name.Equals(actionName));
     }
 
     /// <summary>
@@ -1531,8 +1524,8 @@ public class JJGridView : JJAsyncBaseView
 
         return actionMap.ActionSource switch
         {
-            ActionSource.GridTable => GridActions.Find(x => x.Name.Equals(actionMap.ActionName)),
-            ActionSource.GridToolbar => ToolBarActions.Find(x => x.Name.Equals(actionMap.ActionName)),
+            ActionSource.GridTable => GridActions.First(x => x.Name.Equals(actionMap.ActionName)),
+            ActionSource.GridToolbar => ToolBarActions.First(x => x.Name.Equals(actionMap.ActionName)),
             ActionSource.Field => FormElement.Fields[actionMap.FieldName].Actions.Get(actionMap.ActionName),
             _ => null,
         };

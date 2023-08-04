@@ -97,19 +97,10 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         if (gridOptions == null)
             throw new ArgumentNullException(nameof(gridOptions), "Grid Options");
         
-        foreach (var action in options.GridTableActions)
-        {
-            grid.GridActions.Add(action);
-        }
-
-        foreach (var action in options.GridToolbarActions)
-        {
-            grid.ToolBarActions.Add(action);
-        }
-        
         SetGridUiOptions(grid, gridOptions);
     }
 
+    //todo? 
     internal void SetGridUiOptions(JJGridView grid, GridUI gridOptions)
     {
         grid.EnableAjax = true;

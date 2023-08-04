@@ -168,9 +168,10 @@ public class JJFormView : JJAsyncBaseView
     {
         get
         {
-            if (_currentActionMap != null) return _currentActionMap;
+            if (_currentActionMap != null) 
+                return _currentActionMap;
 
-            string encryptedActionMap = CurrentContext.Request["current-formAction-" + Name];
+            string encryptedActionMap = CurrentContext.Request["current-formAction-" + Name.ToLower()];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -181,17 +182,17 @@ public class JJFormView : JJAsyncBaseView
 
 
     public DeleteSelectedRowsAction DeleteSelectedRowsAction
-        => (DeleteSelectedRowsAction)GridView.ToolBarActions.Find(x => x is DeleteSelectedRowsAction);
+        => (DeleteSelectedRowsAction)GridView.ToolBarActions.First(x => x is DeleteSelectedRowsAction);
 
-    public InsertAction InsertAction => (InsertAction)GridView.ToolBarActions.Find(x => x is InsertAction);
+    public InsertAction InsertAction => (InsertAction)GridView.ToolBarActions.InsertAction;
 
-    public EditAction EditAction => (EditAction)GridView.GridActions.Find(x => x is EditAction);
+    public EditAction EditAction => (EditAction)GridView.GridActions.EditAction;
 
-    public DeleteAction DeleteAction => (DeleteAction)GridView.GridActions.Find(x => x is DeleteAction);
+    public DeleteAction DeleteAction => (DeleteAction)GridView.GridActions.DeleteAction;
 
-    public ViewAction ViewAction => (ViewAction)GridView.GridActions.Find(x => x is ViewAction);
+    public ViewAction ViewAction => (ViewAction)GridView.GridActions.ViewAction;
 
-    public LogAction LogAction => (LogAction)GridView.ToolBarActions.Find(x => x is LogAction);
+    public LogAction LogAction => (LogAction)GridView.ToolBarActions.LogAction;
 
 
     public bool ShowTitle { get; set; }
@@ -309,7 +310,7 @@ public class JJFormView : JJAsyncBaseView
         }
         else if ("geturlaction".Equals(requestType))
         {
-            await DataPanel.SendUrlRedirect();
+            await DataPanel.SendUrlRedirect(CurrentActionMap);
             return null;
         }
 
@@ -825,7 +826,7 @@ public class JJFormView : JJAsyncBaseView
         
         if (relationships.Count == 0)
         {
-            return await GetFormViewWithParentPanelHtml(parentPanel,actionContext);
+            return await GetFormViewWithParentPanelHtml(parentPanel);
         }
 
         var html = new HtmlBuilder(HtmlTag.Div);
@@ -839,7 +840,7 @@ public class JJFormView : JJAsyncBaseView
             .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Top).ToList();
 
         
-        html.AppendComponent(await GetFormToolbarAsync(topActions, actionContext));
+        html.AppendComponent(await GetFormToolbarAsync(topActions));
 
         var layoutHtml = layout.GetRelationshipsHtml(parentPanel, relationships,actionContext);
 
@@ -849,13 +850,12 @@ public class JJFormView : JJAsyncBaseView
             .GetAllSorted()
             .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Bottom).ToList();
 
-        html.AppendComponent(await GetFormToolbarAsync(bottomActions, actionContext));
+        html.AppendComponent(await GetFormToolbarAsync(bottomActions));
 
         return html;
     }
 
-    internal async Task<HtmlBuilder> GetFormViewWithParentPanelHtml(JJDataPanel parentPanel,
-        ActionContext actionContext)
+    internal async Task<HtmlBuilder> GetFormViewWithParentPanelHtml(JJDataPanel parentPanel)
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
         formHtml.WithNameAndId(Name);
@@ -868,7 +868,7 @@ public class JJFormView : JJAsyncBaseView
         var panelActions = parentPanel.FormElement.Options.FormToolbarActions
             .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel).ToList();
         
-        var toolbar = await GetFormToolbarAsync(panelActions, actionContext);
+        var toolbar = await GetFormToolbarAsync(panelActions);
 
         formHtml.Append(parentPanelHtml);
         formHtml.AppendComponent(toolbar);
@@ -896,7 +896,7 @@ public class JJFormView : JJAsyncBaseView
         return toolbar;
     }
 
-    private async Task<JJToolbar> GetFormToolbarAsync(IList<BasicAction> actions, ActionContext actionContext)
+    private async Task<JJToolbar> GetFormToolbarAsync(IList<BasicAction> actions)
     {
         var toolbar = new JJToolbar
         {
@@ -914,7 +914,7 @@ public class JJFormView : JJAsyncBaseView
 
 
             
-            var linkButton = await factory.CreateFormToolbarButtonAsync(action,actionContext);
+            var linkButton = await factory.CreateFormToolbarButtonAsync(action,this);
             toolbar.Items.Add(linkButton.GetHtmlBuilder());
         }
 
@@ -929,7 +929,7 @@ public class JJFormView : JJAsyncBaseView
             {
                 btnGroup.ShowAsButton = groupedAction.ShowAsButton;
                 var factory = ComponentFactory.LinkButtonFactory;
-                var linkButton = await factory.CreateFormToolbarButtonAsync(groupedAction, actionContext);
+                var linkButton = await factory.CreateFormToolbarButtonAsync(groupedAction, this);
                 btnGroup.Actions.Add(linkButton);
             }
 
@@ -937,10 +937,14 @@ public class JJFormView : JJAsyncBaseView
         }
 
 
-        if (actionContext.FormStateData.PageState == PageState.View)
+        if (PageState == PageState.View)
         {
             if (LogAction.IsVisible)
-                toolbar.Items.Add(GetButtonViewLog(actionContext.FormStateData.FormValues).GetHtmlBuilder());
+            {
+                var values = await GetFormValuesAsync();
+                toolbar.Items.Add(GetButtonViewLog(values).GetHtmlBuilder());
+            }
+               
         }
 
         return toolbar;
@@ -1042,8 +1046,7 @@ public class JJFormView : JJAsyncBaseView
         btn.Text = "Back";
         return btn;
     }
-
-    [Obsolete("Add this to AuditLog DataPanel Form Actions")]
+    
     private JJLinkButton GetButtonHideLog(IDictionary<string, dynamic> values)
     {
         var context = new ActionContext
@@ -1064,8 +1067,7 @@ public class JJFormView : JJAsyncBaseView
         };
         return btn;
     }
-
-    [Obsolete("Add this to AuditLog DataPanel Form Actions")]
+    
     private JJLinkButton GetButtonViewLog(IDictionary<string, dynamic> values)
     {
         var context = new ActionContext
@@ -1089,17 +1091,11 @@ public class JJFormView : JJAsyncBaseView
 
     #region "Legacy GridView inherited compatibility"
     [Obsolete("Please use GridView.GridActions")]
-    public List<BasicAction> GridActions
-    {
-        get => GridView.GridActions;
-        internal set => GridView.GridActions = value;
-    }
+    public GridTableActionList GridActions => GridView.GridActions;
+
     [Obsolete("Please use GridView.ToolBarActions")]
-    public List<BasicAction> ToolBarActions
-    {
-        get => GridView.ToolBarActions;
-        internal set => GridView.ToolBarActions = value;
-    }
+    public GridToolbarActionList ToolBarActions => GridView.ToolBarActions;
+
     [Obsolete("Please use GridView.SetCurrentFilterAsync")]
     public void SetCurrentFilter(string userid, string userId)
     {

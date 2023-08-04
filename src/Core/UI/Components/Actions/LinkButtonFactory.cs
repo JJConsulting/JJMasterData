@@ -63,21 +63,22 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
         };
     }
 
-    public async Task<JJLinkButton> CreateAsync(BasicAction action, FormStateData formStateData)
+    private async Task<JJLinkButton> CreateAsync(BasicAction action, FormStateData formStateData)
     {
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formStateData);
-        bool isEnabled = await ExpressionsService.GetBoolValueAsync(action.EnableExpression, formStateData);
+        var isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formStateData);
+        var isEnabled = await ExpressionsService.GetBoolValueAsync(action.EnableExpression, formStateData);
         return Create(action, isEnabled, isVisible);
     }
 
-    public async Task<JJLinkButton> CreateGridTableButtonAsync(BasicAction action, ActionContext actionContext)
+    public async Task<JJLinkButton> CreateGridTableButtonAsync(BasicAction action, JJGridView gridView, FormStateData formStateData)
     {
+        var actionContext = ActionContext.FromGridView(gridView,formStateData);
         var button = await CreateAsync(action, actionContext.FormStateData);
 
         switch (action)
         {
             case UserCreatedAction userCreatedAction:
-                button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext);
+                button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext,ActionSource.GridTable);
                 break;
             case GridTableAction:
                 button.OnClientClick =
@@ -91,13 +92,14 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
         return button;
     }
 
-    public async Task<JJLinkButton> CreateGridToolbarButtonAsync(BasicAction action, ActionContext actionContext)
+    public async Task<JJLinkButton> CreateGridToolbarButtonAsync(BasicAction action, JJGridView gridView, FormStateData formStateData)
     {
-        var button = await CreateAsync(action, actionContext.FormStateData);
+        var actionContext = ActionContext.FromGridView(gridView, formStateData);
+        var button = await CreateAsync(action, formStateData);
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext);
+            button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.GridToolbar);
         }
         else if (action is GridToolbarAction gridToolbarAction)
         {
@@ -150,13 +152,14 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
         return button;
     }
 
-    public async Task<JJLinkButton> CreateFormToolbarButtonAsync(BasicAction action, ActionContext actionContext)
+    public async Task<JJLinkButton> CreateFormToolbarButtonAsync(BasicAction action, JJFormView formView)
     {
+        var actionContext = await ActionContext.FromFormViewAsync(formView);
         var button = await CreateAsync(action, actionContext.FormStateData);
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext);
+            button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext,ActionSource.FormToolbar);
         }
         else if (action is FormToolbarAction)
         {
@@ -188,6 +191,13 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 
     public async Task<JJLinkButton> CreateFieldLinkAsync(BasicAction action, ActionContext actionContext)
     {
-        return await CreateAsync(action, actionContext.FormStateData);
+        var button = await CreateAsync(action, actionContext.FormStateData);
+
+        if (action is UserCreatedAction userCreatedAction)
+        {
+            button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction,actionContext, ActionSource.Field);
+        }
+
+        return button;
     }
 }

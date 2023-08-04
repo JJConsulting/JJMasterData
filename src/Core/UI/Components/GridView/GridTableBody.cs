@@ -213,13 +213,12 @@ internal class GridTableBody
 
         var btnGroup = new JJLinkButtonGroup();
         
-        var context = ActionContext.FromGridView(GridView, formStateData);
         var factory = GridView.ComponentFactory.LinkButtonFactory;
         
         foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
         {
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
-            var linkButton = await factory.CreateGridTableButtonAsync(groupedAction, context);
+            var linkButton = await factory.CreateGridTableButtonAsync(groupedAction, GridView, formStateData);
             btnGroup.Actions.Add(linkButton);
         }
 
@@ -230,13 +229,12 @@ internal class GridTableBody
 
     private async IAsyncEnumerable<HtmlBuilder> GetActionsWithoutGroupHtmlAsync(IEnumerable<BasicAction> actionsWithoutGroup, FormStateData formStateData)
     {
-        var context = ActionContext.FromGridView(GridView, formStateData);
         var factory = GridView.ComponentFactory.LinkButtonFactory;
         foreach (var action in actionsWithoutGroup)
         {
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("table-action");
-            var link = await factory.CreateGridTableButtonAsync(action, context);
+            var link =  await factory.CreateGridTableButtonAsync(action, GridView, formStateData);
             var onRender = OnRenderAction;
             if (onRender != null)
             {
@@ -317,10 +315,8 @@ internal class GridTableBody
             return string.Empty;
 
         var factory = GridView.ComponentFactory.LinkButtonFactory;
-
-        var context = ActionContext.FromGridView(GridView, formStateData);
         
-        var actionButton = await factory.CreateGridTableButtonAsync(defaultAction, context);
+        var actionButton =  await factory.CreateGridTableButtonAsync(defaultAction, GridView, formStateData);
 
         if (OnRenderAction != null)
         {

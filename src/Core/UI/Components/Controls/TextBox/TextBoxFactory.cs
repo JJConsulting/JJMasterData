@@ -12,7 +12,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.UI.Components.FormView;
 using JJMasterData.Core.UI.Components.Widgets;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -89,9 +88,9 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
         {
             FormElement = formElement,
             FormStateData = controlContext.FormStateData,
-            ParentComponentName = controlContext.ParentName,
+            ParentComponentName = controlContext.ParentComponentName,
             FieldName = field.Name,
-            IsExternalRoute = false
+            IsExternalRoute = textGroup.IsExternalRoute
         };
         
         foreach (var action in actions)
