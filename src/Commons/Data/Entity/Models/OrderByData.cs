@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Data.Entity;
 
@@ -29,7 +30,7 @@ public record OrderByData(
         string fieldName = parts[0];
         string directionStr = parts[1].ToUpper();
 
-        if (!Enum.TryParse(directionStr, out OrderByDirection direction) ||
+        if (!Enum.TryParse(directionStr.ToLower().FirstCharToUpper(), out OrderByDirection direction) ||
             !Enum.IsDefined(typeof(OrderByDirection), direction))
         {
             throw new ArgumentException("Invalid value for Direction in orderBy.");

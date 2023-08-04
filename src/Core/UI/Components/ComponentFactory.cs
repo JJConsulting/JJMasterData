@@ -1,6 +1,7 @@
 ﻿using System;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
+using JJMasterData.Core.UI.Components.Widgets;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,7 +26,7 @@ public class ComponentFactory
     public IComponentFactory<JJUploadView> FormUpload => GetFactory<IComponentFactory<JJUploadView> >();
     public IComponentFactory<JJFileDownloader> Downloader => GetFactory<IComponentFactory<JJFileDownloader>>();
     public IComponentFactory<JJUploadArea> UploadArea => GetFactory<IComponentFactory<JJUploadArea>>();
-
+    public LinkButtonFactory LinkButtonFactory => GetFactory<LinkButtonFactory>();
     public ControlFactory Controls => GetFactory<ControlFactory>();
 
     public ComponentFactory(IServiceProvider serviceProvider)

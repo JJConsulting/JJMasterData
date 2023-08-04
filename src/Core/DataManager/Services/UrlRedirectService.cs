@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -19,7 +20,18 @@ public class UrlRedirectService : IUrlRedirectService
     
     public async Task<UrlRedirectModel> GetUrlRedirectAsync(FormElement formElement,ActionMap actionMap, PageState pageState)
     {
-        var urlAction = (UrlRedirectAction)formElement.Fields[actionMap?.FieldName].Actions.Get(actionMap!.ActionName);
+        var urlAction = actionMap.ActionSource switch
+        {
+            ActionSource.Field => (UrlRedirectAction)formElement.Fields[actionMap?.FieldName]
+                .Actions.Get(actionMap!.ActionName),
+            ActionSource.GridTable =>
+                (UrlRedirectAction)formElement.Options.GridTableActions.Get(actionMap!.ActionName),
+            ActionSource.GridToolbar => (UrlRedirectAction)formElement.Options.GridToolbarActions.Get(actionMap!
+                .ActionName),
+            ActionSource.FormToolbar => (UrlRedirectAction)formElement.Options.FormToolbarActions.Get(actionMap!
+                .ActionName),
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
         var values = await FormValuesService.GetFormValuesAsync(formElement,pageState);
         

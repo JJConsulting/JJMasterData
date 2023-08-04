@@ -250,7 +250,7 @@ internal class DataImportationHelp
     private async Task<string> GetHtmlComboHelp(FormElementField field)
     {
         var defaultValues = await DataImportation.FieldsService.GetDefaultValuesAsync(DataImportation.FormElement,null, PageState.Import);
-        var expOptions = new FormStateData(DataImportation.UserValues, defaultValues, PageState.Import);
+        var expOptions = new FormStateData(defaultValues, DataImportation.UserValues, PageState.Import);
         //TODO: DataItemService is better
         var comboBox = DataImportation.ComboBoxFactory.Create(null,field, new(expOptions,null,null));
         var items = comboBox.GetValues();

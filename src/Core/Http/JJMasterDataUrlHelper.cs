@@ -38,14 +38,7 @@ public class JJMasterDataUrlHelper
         OptionsUrl = options.Value.JJMasterDataUrl;
     }
 #endif
-
-    [Obsolete("Development time workaround, use constructor injection.")]
-    public static JJMasterDataUrlHelper GetInstance()
-    {
-        var scope = JJService.Provider.CreateScope();
-        return scope.ServiceProvider.GetRequiredService<JJMasterDataUrlHelper>();
-    }
-
+    
     public string GetUrl([AspMvcAction]string? action = null, [AspMvcController] string? controller = null,object? values = null)
     {
         if (OptionsUrl is not null)

@@ -7,6 +7,7 @@ using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.Web.Factories;
 

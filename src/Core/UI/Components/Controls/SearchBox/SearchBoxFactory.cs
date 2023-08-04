@@ -74,7 +74,7 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
 
         if (dataItem.HasSqlExpression())
         {
-            formValues = FormValuesService.GetFormValuesWithMergedValuesAsync(formElement,pageState, true).GetAwaiter().GetResult();
+            formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement,pageState, true);
         }
 
         var field = formElement.Fields[fieldName];

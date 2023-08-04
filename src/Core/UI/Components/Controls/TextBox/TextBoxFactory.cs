@@ -9,8 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Core.UI.Components.FormView;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.UI.Components.Widgets;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -20,15 +22,18 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
     private IHttpContext HttpContext { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IExpressionsService ExpressionsService { get; }
+    private LinkButtonFactory LinkButtonFactory { get; }
 
     public TextBoxFactory(IHttpContext httpContext, 
                           IStringLocalizer<JJMasterDataResources> stringLocalizer, 
                           IExpressionsService expressionsService,
+                          LinkButtonFactory linkButtonFactory,
                           JJMasterDataEncryptionService encryptionService)
     {
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
         ExpressionsService = expressionsService;
+        LinkButtonFactory = linkButtonFactory;
         EncryptionService = encryptionService;
     }
     
@@ -64,29 +69,33 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
         if (formStateData.PageState == PageState.Filter)
             textGroup.Actions = textGroup.Actions.Where(a => a.ShowInFilter).ToList();
         else
-            AddUserActions(formElement, parentName, field, formStateData, textGroup);
+            //TODO: make this synchronous passing if the action is visible and enabled;
+            AddUserActions(formElement, field, context, textGroup).GetAwaiter().GetResult();
 
         return textGroup;
     }
 
 
-    private void AddUserActions(FormElement formElement, 
-                                string componentName, 
+    private async Task AddUserActions(
+                                FormElement formElement,
                                 FormElementField field,
-                                FormStateData formStateData, 
+                                ControlContext controlContext, 
                                 JJTextGroup textGroup)
     {
-        var actionManager = new FormViewScripts(
-            formElement,
-            ExpressionsService,
-            componentName,
-            StringLocalizer,
-            EncryptionService);
-
         var actions = field.Actions.GetAllSorted().FindAll(x => x.IsVisible);
+
+        var actionContext = new ActionContext
+        {
+            FormElement = formElement,
+            FormStateData = controlContext.FormStateData,
+            ParentComponentName = controlContext.ParentComponentName,
+            FieldName = field.Name,
+            IsExternalRoute = textGroup.IsExternalRoute
+        };
+        
         foreach (var action in actions)
         {
-            var link = actionManager.GetLinkFieldAsync(action, formStateData, field.Name).GetAwaiter().GetResult();
+            var link = await LinkButtonFactory.CreateFieldLinkAsync(action,actionContext);
             textGroup.Actions.Add(link);
         }
     }

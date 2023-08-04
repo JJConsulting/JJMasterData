@@ -3,6 +3,7 @@ using System.Linq;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
+using JJMasterData.Core.UI.Components.Widgets;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
@@ -14,6 +15,9 @@ public static class FactoriesServiceExtensions
 {
     public static IServiceCollection AddFactories(this IServiceCollection services)
     {
+        services.AddTransient<TextBoxFactory>();
+        services.AddTransient<LinkButtonFactory>();
+        
         services.AddTransient<IControlFactory<JJComboBox>,ComboBoxFactory>();
         services.AddTransient<IControlFactory<JJLookup>,LookupFactory>();
         services.AddTransient<IControlFactory<JJSearchBox>,SearchBoxFactory>();

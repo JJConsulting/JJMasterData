@@ -5,5 +5,5 @@ namespace JJMasterData.Core.Web.Factories;
 
 public record ControlContext(
     FormStateData FormStateData,
-    string ParentName,
+    string ParentComponentName,
     object Value);

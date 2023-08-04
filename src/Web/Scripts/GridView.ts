@@ -6,32 +6,32 @@
         else
             tableOrderElement.value = tableOrder + " ASC";
 
-        document.querySelector<HTMLInputElement>("#current_tableaction_" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#current_formaction_" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-tableAction-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-formAction-" + componentName).value = "";
 
         GridView.refreshGrid(componentName, url);
     }
 
     static pagination(componentName, url, currentPage) {
         document.querySelector<HTMLInputElement>("#current_tablepage_" + componentName).value = currentPage;
-        document.querySelector<HTMLInputElement>("#current_tableaction_" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#current_formaction_" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-tableAction-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-formAction-" + componentName).value = "";
 
         GridView.refreshGrid(componentName, url);
     }
 
     static filter(componentName, url) {
         document.querySelector<HTMLInputElement>("#current_filteraction_" + componentName).value = "FILTERACTION";
-        document.querySelector<HTMLInputElement>("#current_tableaction_" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-tableAction-" + componentName).value = "";
         document.querySelector<HTMLInputElement>("#current_tablepage_" + componentName).value = "1";
-        document.querySelector<HTMLInputElement>("#current_formaction_" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-formAction-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
 
     static refresh(componentName, url) {
-        document.querySelector<HTMLInputElement>("#current_tableaction_" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-tableAction-" + componentName).value = "";
         document.querySelector<HTMLInputElement>("#current_tablerow_" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#current_formaction_" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-formAction-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
 

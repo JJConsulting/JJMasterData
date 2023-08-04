@@ -25,23 +25,23 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
-    private IFormElementComponentFactory<JJGridView> GridViewFactory { get; }
+    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly JJMasterDataCoreOptions _options;
 
-    public ElementService(IFormElementComponentFactory<JJGridView> gridViewFactory,
-        IValidationDictionary validationDictionary, 
-                          IOptions<JJMasterDataCoreOptions> options,
+    public ElementService(IFormElementComponentFactory<JJFormView> formViewFactory,
+        IValidationDictionary validationDictionary,
+        IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-                          IEntityRepository entityRepository, 
-                          IDataDictionaryRepository dataDictionaryRepository) 
-        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
+        IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository)
+        : base(validationDictionary, dataDictionaryRepository, stringLocalizer)
     {
-        GridViewFactory = gridViewFactory;
+        FormViewFactory = formViewFactory;
         _entityRepository = entityRepository;
         _options = options.Value;
     }
-    
+
     #region Add Dictionary
 
     public Element? CreateEntity(string tableName, bool importFields)
@@ -56,7 +56,7 @@ public class ElementService : BaseService
         }
         else
         {
-            element  = new FormElement
+            element = new FormElement
             {
                 TableName = tableName,
                 Name = GetDictionaryName(tableName),
@@ -84,7 +84,6 @@ public class ElementService : BaseService
         {
             if (!_entityRepository.TableExists(tableName))
                 AddError("Name", StringLocalizer["Table not found"]);
-
         }
 
         return IsValid;
@@ -107,7 +106,6 @@ public class ElementService : BaseService
         return dicname;
     }
 
-
     #endregion
 
     #region Duplicate Entity
@@ -119,7 +117,6 @@ public class ElementService : BaseService
             var dicParser = DataDictionaryRepository.GetMetadata(originName);
             dicParser.Name = newName;
             DataDictionaryRepository.InsertOrReplace(dicParser);
-
         }
 
         return IsValid;
@@ -144,14 +141,17 @@ public class ElementService : BaseService
     }
 
 
-    public async Task<JJGridView> GetGridView()
+    public async Task<JJFormView> GetFormViewAsync()
     {
         var element = new Element(_options.DataDictionaryTableName, "Data Dictionaries");
-        element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
-        element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
+        element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false,
+            FilterMode.Equal);
+        element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false,
+            FilterMode.MultValuesContain);
         element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);
         element.Fields.Add(DataDictionaryStructure.Sync, "Sync", FieldType.Varchar, 1, false, FilterMode.None);
-        element.Fields.Add(DataDictionaryStructure.LastModified, "Last Modified", FieldType.DateTime, 15, true, FilterMode.Range);
+        element.Fields.Add(DataDictionaryStructure.LastModified, "Last Modified", FieldType.DateTime, 15, true,
+            FilterMode.Range);
 
         var formElement = new FormElement(element);
         formElement.Fields[DataDictionaryStructure.Sync].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
@@ -162,40 +162,40 @@ public class ElementService : BaseService
         formElement.Fields[DataDictionaryStructure.Sync].DataItem = dataItem;
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Title = "JJMasterData";
-        
+
+        formElement.Options.GridToolbarActions.InsertAction.VisibleExpression = "val:0";
         formElement.Options.GridTableActions.Clear();
 
-        var gridView = GridViewFactory.Create(formElement);
-        gridView.Name = "List";
-        gridView.FilterAction.ExpandedByDefault = true;
+        var formView = FormViewFactory.Create(formElement);
+        formView.Name = "List";
+        formView.GridView.FilterAction.ExpandedByDefault = true;
 
-        gridView.MaintainValuesOnLoad = true;
-        gridView.EnableMultiSelect = true;
-        gridView.ExportAction.SetVisible(false);
+        formView.GridView.MaintainValuesOnLoad = true;
+        formView.GridView.EnableMultiSelect = true;
+        formView.GridView.ExportAction.SetVisible(false);
 
-        var filter = await gridView.GetCurrentFilterAsync();
-        
+        var filter = await formView.GridView.GetCurrentFilterAsync();
+
         if (!filter.ContainsKey("type"))
             filter.Add("type", "F");
 
-        gridView.OnDataLoad += FormViewOnDataLoad;
+        formView.GridView.OnDataLoadAsync += FormViewOnDataLoad;
 
-        return gridView;
+        return formView;
     }
 
-    private void FormViewOnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
+    private async Task FormViewOnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
     {
-        int tot = e.Tot;
         var filter = DataDictionaryFilter.GetInstance(e.Filters);
         string orderBy = string.IsNullOrEmpty(e.OrderBy) ? "name ASC" : e.OrderBy;
-        var list = DataDictionaryRepository.GetMetadataInfoList(filter, orderBy, e.RegporPag, e.CurrentPage, ref tot); 
-        e.DataSource = list.ToDataTable();
-        e.Tot = tot;
+        var result = await DataDictionaryRepository.GetFormElementInfoListAsync(filter, orderBy, e.RegporPag, e.CurrentPage);
+        e.DataSource = result.Data.ToDataTable();
+        e.Tot = result.TotalOfRecords;
     }
 
     #endregion
 
-    public byte[] ExportSingleRow(IDictionary<string,dynamic>row)
+    public byte[] ExportSingleRow(IDictionary<string, dynamic> row)
     {
         string dictionaryName = row["name"].ToString();
         var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
@@ -205,7 +205,7 @@ public class ElementService : BaseService
         return Encoding.Default.GetBytes(json);
     }
 
-    public byte[] ExportMultipleRows(List<IDictionary<string,dynamic>> selectedRows)
+    public byte[] ExportMultipleRows(List<IDictionary<string, dynamic>> selectedRows)
     {
         using var memoryStream = new MemoryStream();
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
@@ -221,6 +221,7 @@ public class ElementService : BaseService
                 streamWriter.Write(json);
             }
         }
+
         return memoryStream.ToArray();
     }
 
@@ -229,10 +230,10 @@ public class ElementService : BaseService
         file.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(file);
         var dicParser = FormElementSerializer.Deserialize(await reader.ReadToEndAsync());
-        
+
         //TODO: Validation
         //FormElement.Validate()
-        
+
         await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
 
 

@@ -60,14 +60,17 @@ public class ControlFactory
         string parentName,
         object value = null)
     {
-        var stateData = new FormStateData(userValues, formValues, pageState);
+        var formStateData = new FormStateData(formValues, userValues, pageState);
 
         if (pageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {
-            return GetFactory<IControlFactory<JJTextRange>>().Create(formElement, field, new ControlContext(stateData, parentName, value));
+            var factory = GetFactory<IControlFactory<JJTextRange>>();
+            return factory.Create(formElement, field, new ControlContext(formStateData, parentName, value));
         }
 
-        var control = Create(formElement, field, stateData, parentName, value);
+        var context = new ControlContext(formStateData, parentName, value);
+        
+        var control = Create(formElement, field, context);
 
         control.Enabled = await FieldVisibilityService.IsEnabledAsync(field, pageState, formValues);
 
@@ -79,18 +82,16 @@ public class ControlFactory
         return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
     }
 
-    public JJBaseControl Create(
+    private JJBaseControl Create(
         FormElement formElement,
         FormElementField field,
-        FormStateData formStateData,
-        string parentName,
-        object value)
+        ControlContext context)
     {
         if (field is null)
             throw new ArgumentNullException(nameof(field));
 
-        var context = new ControlContext(formStateData, parentName, value);
-
+        var formStateData = context.FormStateData;
+        
         JJBaseControl control;
         switch (field.Component)
         {

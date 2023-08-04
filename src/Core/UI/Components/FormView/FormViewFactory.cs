@@ -94,9 +94,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     {
         if (metadataOptions == null)
             return;
-
-        formView.GridView.ToolBarActions = metadataOptions.GridToolbarActions.GetAllSorted();
-        formView.GridView.GridActions = metadataOptions.GridTableActions.GetAllSorted();
+        
         formView.ShowTitle = metadataOptions.Grid.ShowTitle;
         formView.DataPanel.FormUI = metadataOptions.Form;
     }

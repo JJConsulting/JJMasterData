@@ -17,14 +17,39 @@ class ActionManager {
         form.requestSubmit();
         return false;
     }
-    static executeFormAction(actionName, encryptedActionMap, confirmationMessage) {
+    static executeRedirectAction(componentName, encryptedActionMap, confirmMessage) {
+        if (confirmMessage) {
+            const result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        const currentFormActionInput = document.querySelector("#current-formAction-" + componentName);
+        currentFormActionInput.value = encryptedActionMap;
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("t", "geturlaction");
+        urlBuilder.addQueryParameter("objname", componentName);
+        const url = urlBuilder.build();
+        fetch(url, {
+            method: "POST",
+            body: new FormData(document.querySelector("form"))
+        }).then(response => response.json()).then(data => {
+            if (data.UrlAsPopUp) {
+                popup.show(data.PopUpTitle, data.UrlRedirect);
+            }
+            else {
+                window.location.href = data.UrlRedirect;
+            }
+        });
+    }
+    static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
                 return false;
             }
         }
-        const currentTableActionInput = document.querySelector("#current_tableaction_" + actionName);
-        const currentFormActionInput = document.querySelector("#current_formaction_" + actionName);
+        const currentTableActionInput = document.querySelector("#current-tableAction-" + componentName);
+        const currentFormActionInput = document.querySelector("#current-formAction-" + componentName);
         let form = document.querySelector("form");
         if (!form) {
             form = document.forms[0];
@@ -618,27 +643,27 @@ class GridView {
             tableOrderElement.value = tableOrder + " DESC";
         else
             tableOrderElement.value = tableOrder + " ASC";
-        document.querySelector("#current_tableaction_" + componentName).value = "";
-        document.querySelector("#current_formaction_" + componentName).value = "";
+        document.querySelector("#current-tableAction-" + componentName).value = "";
+        document.querySelector("#current-formAction-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
     static pagination(componentName, url, currentPage) {
         document.querySelector("#current_tablepage_" + componentName).value = currentPage;
-        document.querySelector("#current_tableaction_" + componentName).value = "";
-        document.querySelector("#current_formaction_" + componentName).value = "";
+        document.querySelector("#current-tableAction-" + componentName).value = "";
+        document.querySelector("#current-formAction-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
     static filter(componentName, url) {
         document.querySelector("#current_filteraction_" + componentName).value = "FILTERACTION";
-        document.querySelector("#current_tableaction_" + componentName).value = "";
+        document.querySelector("#current-tableAction-" + componentName).value = "";
         document.querySelector("#current_tablepage_" + componentName).value = "1";
-        document.querySelector("#current_formaction_" + componentName).value = "";
+        document.querySelector("#current-formAction-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
     static refresh(componentName, url) {
-        document.querySelector("#current_tableaction_" + componentName).value = "";
+        document.querySelector("#current-tableAction-" + componentName).value = "";
         document.querySelector("#current_tablerow_" + componentName).value = "";
-        document.querySelector("#current_formaction_" + componentName).value = "";
+        document.querySelector("#current-formAction-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
     static selectAllRows(componentName, url) {
@@ -800,8 +825,8 @@ class JJView {
             $(tableOrder).val(v + " DESC");
         else
             $(tableOrder).val(v + " ASC");
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
     static sortItems(objid) {
@@ -821,26 +846,26 @@ class JJView {
         descCommand = descCommand.substring(0, descCommand.length - 1);
         $("#current_tableorder_" + objid).val(descCommand);
         $("#sort_modal_" + objid).modal('hide');
-        $("#current_formaction_" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.refresh(objid, true);
     }
     static paginateGrid(objid, enableAjax, v) {
         $("#current_tablepage_" + objid).val(v);
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
     static refresh(objid, enableAjax) {
-        $("#current_tableaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
         $("#current_tablerow_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
     static openSettingsModal(componentName, encryptedActionMap) {
-        $("#current_tableaction_" + componentName).val(encryptedActionMap);
+        $("#current-tableAction-" + componentName).val(encryptedActionMap);
         $("#current_tablepage_" + componentName).val("1");
         $("#current_tablerow_" + componentName).val("");
-        $("#current_formaction_" + componentName).val("");
+        $("#current-formAction-" + componentName).val("");
         $("form:first").trigger("submit");
     }
     static closeSettingsModal(objid) {
@@ -850,9 +875,9 @@ class JJView {
     }
     static filter(objid, enableAjax) {
         $("#current_filteraction_" + objid).val("FILTERACTION");
-        $("#current_tableaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
         $("#current_tablepage_" + objid).val("1");
-        $("#current_formaction_" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.postFormValues(objid, enableAjax, false);
         return false;
     }
@@ -890,8 +915,8 @@ class JJView {
             }
         });
         $("#current_filteraction_" + objid).val("CLEARACTION");
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         this.postFormValues(objid, enableAjax, false);
     }
     static executeGridAction(componentName, encryptedActionMap, confirmMessage) {
@@ -901,42 +926,9 @@ class JJView {
                 return false;
             }
         }
-        $("#current_tableaction_" + componentName).val(encryptedActionMap);
-        $("#current_formaction_" + componentName).val("");
+        $("#current-tableAction-" + componentName).val(encryptedActionMap);
+        $("#current-formAction-" + componentName).val("");
         $("form:first").trigger("submit");
-    }
-    static executeRedirectAction(componentName, encryptedActionMap, confirmMessage) {
-        if (confirmMessage) {
-            var result = confirm(confirmMessage);
-            if (!result) {
-                return false;
-            }
-        }
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&t=geturlaction&objname=" + componentName;
-        else
-            surl += "?t=geturlaction&objname=" + componentName;
-        $.ajax({
-            async: true,
-            type: "POST",
-            url: surl,
-            data: frm.serialize() + '&criptid=' + encryptedActionMap,
-            success: function (data) {
-                if (data.UrlAsPopUp) {
-                    popup.show(data.PopUpTitle, data.UrlRedirect);
-                }
-                else {
-                    window.location.href = data.UrlRedirect;
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
-            }
-        });
     }
     static executeSqlCommand(objid, criptid, confirmMessage) {
         if (confirmMessage) {
@@ -945,8 +937,8 @@ class JJView {
                 return false;
             }
         }
-        $("#current_tableaction_" + objid).val("");
-        $("#current_formaction_" + objid).val("");
+        $("#current-tableAction-" + objid).val("");
+        $("#current-formAction-" + objid).val("");
         $("#current_tablerow_" + objid).val(criptid);
         $("form:first").trigger("submit");
     }

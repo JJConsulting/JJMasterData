@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Extensions;
 using Newtonsoft.Json;
 using JJMasterData.Commons.Localization;
@@ -140,11 +141,11 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         return Task.CompletedTask;
     }
 
-    public async Task<IEnumerable<FormElementInfo>> GetMetadataInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage)
+    public async Task<EntityResult<IEnumerable<FormElementInfo>>> GetFormElementInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage)
     {
         int total = 0;
         var result = GetMetadataInfoList(filters,orderBy,recordsPerPage,currentPage,ref total);
-        return await Task.FromResult(result);
+        return await Task.FromResult(new EntityResult<IEnumerable<FormElementInfo>>(result,total));
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>

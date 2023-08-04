@@ -12,15 +12,44 @@ class ActionManager {
         return false;
     }
 
-    static executeFormAction(actionName: string, encryptedActionMap: string, confirmationMessage?: string) {
+    static executeRedirectAction(componentName, encryptedActionMap, confirmMessage) {
+        if (confirmMessage) {
+            const result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-formAction-" + componentName);
+        
+        currentFormActionInput.value = encryptedActionMap;
+        
+        const urlBuilder = new UrlBuilder()
+        urlBuilder.addQueryParameter("t","geturlaction")
+        urlBuilder.addQueryParameter("objname",componentName)
+        
+        const url = urlBuilder.build();
+        
+        fetch(url, {
+            method:"POST",
+            body: new FormData(document.querySelector<HTMLFormElement>("form"))
+        }).then(response=>response.json()).then(data=>{
+            if (data.UrlAsPopUp) {
+                popup.show(data.PopUpTitle, data.UrlRedirect);
+            } else {
+                window.location.href = data.UrlRedirect;
+            }
+        })
+    }
+
+    static executeFormAction(componentName: string, encryptedActionMap: string, confirmationMessage?: string) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
                 return false;
             }
         }
 
-        const currentTableActionInput = document.querySelector<HTMLInputElement>("#current_tableaction_" + actionName);
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current_formaction_" + actionName);
+        const currentTableActionInput = document.querySelector<HTMLInputElement>("#current-tableAction-" + componentName);
+        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-formAction-" + componentName);
 
         let form = document.querySelector<HTMLFormElement>("form");
 
