@@ -144,21 +144,21 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoDictionary(ref IDictionary<string,dynamic>newValues, IDictionary<string,dynamic>? valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoDictionary(IDictionary<string,dynamic>valuesToBeReceived, IDictionary<string,dynamic>? valuesToBeCopied, bool replaceIfExistKey)
     {
         if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;
 
         foreach (var entry in valuesToBeCopied)
         {
-            if (newValues.ContainsKey(entry.Key))
+            if (valuesToBeReceived.ContainsKey(entry.Key))
             {
                 if (replaceIfExistKey)
-                    newValues[entry.Key] = entry.Value;
+                    valuesToBeReceived[entry.Key] = entry.Value;
             }
             else
             {
-                newValues.Add(entry.Key, entry.Value);
+                valuesToBeReceived.Add(entry.Key, entry.Value);
             }
         }
     }

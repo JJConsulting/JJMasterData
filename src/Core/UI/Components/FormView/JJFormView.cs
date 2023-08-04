@@ -1003,7 +1003,7 @@ public class JJFormView : JJAsyncBaseView
         if (RelationValues == null)
             return values;
 
-        DataHelper.CopyIntoDictionary(ref values, RelationValues, true);
+        DataHelper.CopyIntoDictionary( values, RelationValues, true);
 
         return values;
     }

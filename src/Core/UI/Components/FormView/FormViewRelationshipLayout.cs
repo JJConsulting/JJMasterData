@@ -143,6 +143,7 @@ internal class FormViewRelationshipLayout
                     var childFormView = ParentFormView.ComponentFactory.JJView.Create(childElement);
                     childFormView.UserValues = ParentFormView.UserValues;
                     childFormView.IsExternalRoute = true;
+                    childFormView.GridView.EnableEditMode = true;
                     childFormView.RelationValues = mappedForeignKeys;
                     await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
                     childFormView.SetOptions(childElement.Options);

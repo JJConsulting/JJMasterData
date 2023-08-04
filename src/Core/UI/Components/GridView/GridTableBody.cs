@@ -50,7 +50,7 @@ internal class GridTableBody
     internal async Task<HtmlBuilder> GetRowHtml(DataRow row, int index)
     {
         var html = new HtmlBuilder(HtmlTag.Tr);
-        var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
+        var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
         html.WithAttribute("id", $"row{index}");
@@ -66,7 +66,7 @@ internal class GridTableBody
     {
         var values = await GetValues(row);
         var formData = new FormStateData(values, GridView.UserValues, PageState.List);
-        var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
+        var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
         string onClickScript = await GetOnClickScript(formData, defaultAction);
@@ -354,6 +354,6 @@ internal class GridTableBody
             return values;
 
         var prefixName = GridView.GetFieldName(string.Empty, values);
-        return await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(GridView.FormElement, PageState.List, GridView.AutoReloadFormFields, prefixName);
+        return await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(GridView.FormElement, PageState.List,values, GridView.AutoReloadFormFields, prefixName);
     }
 }

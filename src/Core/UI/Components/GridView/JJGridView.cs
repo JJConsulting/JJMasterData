@@ -720,14 +720,14 @@ public class JJGridView : JJAsyncBaseView
                 int rowIndex = int.Parse(CurrentContext.Request.QueryString("nRow"));
                 var row = DataSource.Rows[rowIndex];
 
-                string responseHtml = string.Empty;
+                string htmlResponse = string.Empty;
 
                 await foreach (var td in  table.Body.GetTdHtmlList(row, rowIndex))
                 {
-                    responseHtml += td.ToString();
+                    htmlResponse += td.ToString();
                 }
 
-                CurrentContext.Response.SendResponseObsolete(responseHtml);
+                CurrentContext.Response.SendResponseObsolete(htmlResponse);
             }
 
             return true;
@@ -883,7 +883,7 @@ public class JJGridView : JJAsyncBaseView
                 script.AppendLine("\t\t\tsuccess: function (data) { ");
                 script.AppendLine($"\t\t\t\t$(\"#jjgridview_{Name} #row\" + nRow).html(data); ");
                 script.AppendLine($"\t\t\t\tdo_change_{Name}(nRow);");
-                script.AppendLine("\t\t\t\tjjloadform(null, \"#row\" + nRow + \" \"); ");
+                script.AppendLine("\t\t\t\tloadJJMasterData(null, \"#row\" + nRow + \" \"); ");
                 script.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");
                 script.AppendLine("\t\t\t}, ");
                 script.AppendLine("\t\t\terror: function (jqXHR, textStatus, errorThrown) { ");

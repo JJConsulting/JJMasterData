@@ -118,16 +118,16 @@ public class FormValuesService : IFormValuesService
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
-        IDictionary<string,dynamic> newValues = new Dictionary<string,dynamic>();
-        DataHelper.CopyIntoDictionary(ref newValues, values, true);
+        var valuesToBeReceived = new Dictionary<string,dynamic>();
+        DataHelper.CopyIntoDictionary( valuesToBeReceived, values, true);
 
         if (CurrentContext.IsPost && autoReloadFormFields)
         {
             var requestedValues = await GetFormValuesAsync(formElement,pageState, prefix);
-            DataHelper.CopyIntoDictionary(ref newValues, requestedValues, true);
+            DataHelper.CopyIntoDictionary( valuesToBeReceived, requestedValues, true);
         }
         
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement,newValues, pageState, !CurrentContext.IsPost);
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement,valuesToBeReceived, pageState, !CurrentContext.IsPost);
     }
     
     
