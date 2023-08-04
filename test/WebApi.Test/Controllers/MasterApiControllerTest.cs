@@ -50,9 +50,9 @@ public class MasterApiControllerTest
     [Order(4)]
     [Theory]
     [InlineData("ApiTestDictionary","1")]
-    public void GetTest(string elementName, string id)
+    public async Task GetTest(string elementName, string id)
     {
-        var result = _controller.Get(elementName, id).Result as OkObjectResult;
+        var result = (await _controller.Get(elementName, id)).Result as OkObjectResult;
 
         var dictionary = result?.Value as Dictionary<string, object>;
         
@@ -61,9 +61,9 @@ public class MasterApiControllerTest
     [Order(3)]
     [Theory]
     [InlineData("ApiTestDictionary")]
-    public void GetAllTest(string elementName)
+    public async Task GetAllTest(string elementName)
     {
-        var result = _controller.GetAll(elementName).Result as OkObjectResult;
+        var result = (await _controller.GetAll(elementName)).Result as OkObjectResult;
 
         Assert.IsType<MasterApiListResponse>(result?.Value);
     }
@@ -117,9 +117,9 @@ public class MasterApiControllerTest
     [Order(5)]
     [Theory]
     [InlineData("ApiTestDictionary", "1")]
-    public void DeleteTest(string elementName, string id)
+    public async Task DeleteTest(string elementName, string id)
     {
-        var result = _controller.Delete(elementName, id);
+        var result = await _controller.Delete(elementName, id);
 
         var objectResult = result.Result as ObjectResult;
 

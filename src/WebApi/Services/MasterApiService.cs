@@ -298,7 +298,7 @@ public class MasterApiService
             if (currentValues == null)
                 throw new KeyNotFoundException("No records found");
 
-            DataHelper.CopyIntoDictionary(ref currentValues, parsedValues, true);
+            DataHelper.CopyIntoDictionary( currentValues, parsedValues, true);
             ret = await Update(formElement, currentValues);
         }
         catch (Exception ex)

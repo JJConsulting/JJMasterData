@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.MongoDB.Repository;
@@ -81,17 +82,16 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
 
         return query.ToList().Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList();
     }
-
-
-
-    public async Task<IEnumerable<FormElementInfo>> GetMetadataInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage,
-        int totalRecords)
+    
+    public async Task<EntityResult<IEnumerable<FormElementInfo>>> GetFormElementInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage)
     {
+        int totalRecords = 0;
+        
         var query = CreateInfoQuery(filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
 
         var list = await query.ToListAsync();
         
-        return list.Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList();
+        return new EntityResult<IEnumerable<FormElementInfo>>(list.Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList(),totalRecords);
     }
     
     private IFindFluent<MongoDBFormElement, MongoDBFormElement> CreateInfoQuery(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage,

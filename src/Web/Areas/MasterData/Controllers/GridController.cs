@@ -40,5 +40,16 @@ public class GridController : MasterDataController
         
         return Content(await gridView.GetTableHtmlAsync());
     }
+    
+    [HttpPost]
+    [ServiceFilter<FormElementDecryptionFilter>]
+    public async Task<IActionResult> GetTableRowHtml(FormElement formElement, string componentName)
+    {
+        var gridView = GridViewFactory.Create(formElement);
+        gridView.Name = componentName;
+        gridView.IsExternalRoute = true;
+        throw new NotImplementedException("todo");
+        //return Content(await gridView.GetTableRowHtml());
+    }
 
 }
