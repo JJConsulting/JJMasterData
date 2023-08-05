@@ -56,20 +56,7 @@ public class GridScripts
         string enableAjax = _gridView.EnableAjax ? "true" : "false";
         return $"JJView.paginateGrid('{name}', {enableAjax}, {page})";
     }
-
-    public string GetRefreshScript()
-    {
-        string name = _gridView.Name;
-        if (_gridView.IsExternalRoute)
-        {
-            var url = GetUrl();
-            return $"JJGridView.refresh('{name}', '{url}')";
-        }
-
-        string enableAjax = _gridView.EnableAjax ? "true" : "false";
-        return $"JJView.refresh('{name}', {enableAjax})";
-    }
-
+    
     public string GetFilterScript()
     {
         string name = _gridView.Name;
@@ -93,34 +80,6 @@ public class GridScripts
         }
         string enableAjax = _gridView.EnableAjax ? "true" : "false";
         return $"JJView.selectAll('{name}','{enableAjax}')";
-    }
-
-
-    public string GetUrlRedirectToolbarScript(
-        UrlRedirectAction action,
-        IDictionary<string, dynamic> formValues)
-    {
-        int popupSize = (int)action.PopupSize;
-        string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
-        string url = ExpressionsService.ParseExpression(action.UrlRedirect, PageState.List, false, formValues);
-        string popup = action.UrlAsPopUp ? "true" : "false";
-        string popUpTitle = action.PopUpTitle;
-
-        var script = new StringBuilder();
-        script.Append("FormView.doUrlRedirect('");
-        script.Append(url);
-        script.Append("',");
-        script.Append(popup);
-        script.Append(",'");
-        script.Append(popUpTitle);
-        script.Append("','");
-        script.Append(confirmationMessage);
-        script.Append("','");
-        script.Append(popupSize);
-        script.Append("');");
-
-
-        return script.ToString();
     }
     
     public string GetConfigUIScript(ConfigAction action, IDictionary<string, dynamic> formValues)
