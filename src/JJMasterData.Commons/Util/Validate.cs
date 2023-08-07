@@ -253,21 +253,20 @@ public static class Validate
 
     /// <summary>
     /// Valida se o nome do arquivo contém caracteres inválidos 
-    /// ? * / \ | : "
+    /// ? * / \ | "
     /// </summary>
     public static bool ValidFileName(string filename)
     {
-        if (String.IsNullOrEmpty(filename))
+        if (string.IsNullOrEmpty(filename))
             return false;
 
-        if (filename.Contains('?') |
-            filename.Contains('*') |
-            filename.Contains('/') |
-            filename.Contains('\\') |
-            filename.Contains('<') |
-            filename.Contains('>') |
-            filename.Contains('|') |
-            filename.Contains(':') |
+        if (filename.Contains('?') ||
+            filename.Contains('*') ||
+            filename.Contains('/') ||
+            filename.Contains('\\') ||
+            filename.Contains('<') ||
+            filename.Contains('>') ||
+            filename.Contains('|') ||
             filename.Contains('"'))
         {
             return false;
