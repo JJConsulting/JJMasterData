@@ -234,18 +234,7 @@ public class JJTextFile : JJBaseControl
         if (pkFields.Count == 0)
             return false;
 
-        foreach (var pkField in pkFields)
-        {
-
-            if (!FormValues.ContainsKey(pkField.Name))
-                return false;
-
-            string value = FormValues[pkField.Name]!.ToString();
-            if (!Validate.IsFilePathValid(value))
-                return false;
-        }
-
-        return true;
+        return pkFields.All(pkField => FormValues.ContainsKey(pkField.Name));
     }
 
     public string GetFolderPath()
