@@ -223,7 +223,7 @@ public class JJSearchBox : JJAsyncBaseControl
 
     #endregion
 
-    protected override Task<HtmlBuilder> RenderHtmlAsync()
+    protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
 #if NET48
         if (IsSearchBoxRoute(this, JJService.Provider.GetScopedDependentService<IHttpContext>()))
@@ -232,7 +232,7 @@ public class JJSearchBox : JJAsyncBaseControl
             return null;
         }
 #endif
-        return GetSearchBoxHtml();
+        return await GetSearchBoxHtml();
     }
 
 
