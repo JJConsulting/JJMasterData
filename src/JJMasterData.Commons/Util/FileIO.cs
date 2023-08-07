@@ -2,6 +2,7 @@
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using JJMasterData.Commons.Options;
 
@@ -13,7 +14,9 @@ public class FileIO
     {
         var invalidChars = Path.GetInvalidFileNameChars();
         
-        var sanitizedPath = Regex.Replace(inputPath, "[" + Regex.Escape(new string(invalidChars)) + "]", "");
+        var pattern = "[" + Regex.Escape(new string(invalidChars.Except(new[] { '\\', '/' }).ToArray())) + "]";
+        
+        var sanitizedPath = Regex.Replace(inputPath, pattern, "");
 
         return sanitizedPath;
     }
