@@ -1,13 +1,12 @@
-using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -39,17 +38,17 @@ internal class ComboBoxFactory : IControlFactory<JJComboBox>
 
     public JJComboBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)
     {
-        var formStateData = controlContext.FormStateData;
+        if (field.DataItem == null)
+            throw new ArgumentNullException(nameof(field.DataItem));
 
         var comboBox = Create();
         comboBox.DataItem = field.DataItem;
         comboBox.Name = field.Name;
         comboBox.Visible = true;
-        comboBox.FormValues = formStateData.FormValues;
+        comboBox.FormStateData = controlContext.FormStateData;
         comboBox.MultiSelect = field.DataItem!.EnableMultiSelect;
-        comboBox.PageState = formStateData.PageState;
         comboBox.SelectedValue = controlContext.Value?.ToString();
-        comboBox.UserValues = formStateData.UserValues;
+        comboBox.UserValues = controlContext.FormStateData.UserValues;
 
         return comboBox;
     }

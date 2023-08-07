@@ -47,16 +47,23 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
 
     public JJSearchBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)
     {
-        var search = new JJSearchBox(controlContext.FormStateData, HttpContext, EncryptionService, DataItemService, UrlHelper)
+        if (field.DataItem == null)
+            throw new ArgumentNullException(nameof(field.DataItem));
+
+        var search = new JJSearchBox(HttpContext, EncryptionService, DataItemService, UrlHelper)
         {
             DataItem = field.DataItem,
             Name = field.Name,
             FieldName = field.Name,
             DictionaryName = formElement.Name,
-            SelectedValue = controlContext.Value?.ToString(),
             Visible = true,
-            AutoReloadFormFields = false
+            AutoReloadFormFields = false,
+            FormStateData = controlContext.FormStateData,
+            UserValues = controlContext.FormStateData.UserValues
         };
+
+        if (controlContext.Value != null)
+            search.SelectedValue = controlContext.Value.ToString();
 
         return search;
     }

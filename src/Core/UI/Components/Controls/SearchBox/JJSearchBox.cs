@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Configuration;
+﻿#nullable enable
+
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary;
@@ -32,12 +34,12 @@ public class JJSearchBox : JJAsyncBaseControl
     /// <summary>
     /// Evento disparado para recuperar os registros com parte do texto digitado
     /// </summary>  
-    public event EventHandler<SearchBoxQueryEventArgs> OnSearchQuery;
+    public event EventHandler<SearchBoxQueryEventArgs>? OnSearchQuery;
 
     /// <summary>
     /// Evento disparado para recuperar a descrição com base no Id
     /// </summary>
-    public event EventHandler<SearchBoxItemEventArgs> OnSearchId;
+    public event EventHandler<SearchBoxItemEventArgs>? OnSearchId;
 
     #endregion
 
@@ -47,11 +49,10 @@ public class JJSearchBox : JJAsyncBaseControl
     private const string ScrollbarAttribute = "scrollbar";
     private const string TriggerLengthAttribute = "triggerlength";
 
-    private IEnumerable<DataItemValue> _values;
-    private FormElementDataItem _dataItem;
-    private string _selectedValue;
-    private string _text;
-    private string _fieldName;
+    private IEnumerable<DataItemValue>? _values;
+    private string? _selectedValue;
+    private string? _text;
+    private string? _fieldName;
 
     internal string FieldName
     {
@@ -70,7 +71,7 @@ public class JJSearchBox : JJAsyncBaseControl
     internal string Id => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
 
 
-    public new string Text
+    public new string? Text
     {
         get
         {
@@ -140,7 +141,7 @@ public class JJSearchBox : JJAsyncBaseControl
     /// <summary>
     /// Id correspondente ao texto pesquisado
     /// </summary>
-    public async Task<string> GetSelectedValueAsync()
+    public async Task<string?> GetSelectedValueAsync()
     {
         if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPost)
         {
@@ -149,31 +150,30 @@ public class JJSearchBox : JJAsyncBaseControl
 
         if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
         {
-            var values = GetValuesAsync(Text);
-            _selectedValue = (await values.FirstOrDefaultAsync()).Id;
+            var values =await  GetValuesAsync(Text);
+            var item = values.FirstOrDefault();
+            if (item == null)
+                return null;
+
+            _selectedValue = item.Id;
         }
 
         return _selectedValue;
     }
 
-    /// <summary>
-    /// Origem dos dados
-    /// </summary>
-    public FormElementDataItem DataItem
-    {
-        get => _dataItem ??= new FormElementDataItem();
-        set => _dataItem = value;
-    }
+    
+    public FormElementDataItem DataItem { get; set; }
+    
 
     /// <summary>
-    /// Ao recarregar o painel, manter os valores digitados no formuário
+    /// Ao recarregar o painel, manter os valores digitados no formulário
     /// (Default=True)
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
     public IDataItemService DataItemService { get; }
 
-    public FormStateData FormStateData { get; }
+    public FormStateData FormStateData { get; internal set; }
 
     public string SelectedValue
     {
@@ -200,19 +200,9 @@ public class JJSearchBox : JJAsyncBaseControl
         ScrollBar = false;
         AutoReloadFormFields = true;
         Name = "jjsearchbox1";
+        DataItem = new FormElementDataItem();
         var defaultValues = new Dictionary<string, dynamic>();
         FormStateData = new(defaultValues, UserValues, PageState.List);
-    }
-
-    public JJSearchBox(
-        FormStateData formStateData,
-        IHttpContext httpContext,
-        JJMasterDataEncryptionService encryptionService,
-        IDataItemService dataItemService,
-        JJMasterDataUrlHelper urlHelper) : this(httpContext, encryptionService, dataItemService, urlHelper)
-    {
-        FormStateData = formStateData;
-        UserValues = formStateData.UserValues;
     }
 
     #endregion
@@ -237,12 +227,12 @@ public class JJSearchBox : JJAsyncBaseControl
     }
 
 
-    public static HtmlBuilder ResponseJson(JJDataPanel view, IHttpContext httpContext)
+    public static HtmlBuilder? ResponseJson(JJDataPanel view, IHttpContext httpContext)
     {
         return ResponseJson(view, view.FormElement, view.Values, httpContext, view.ControlFactory.GetFactory<SearchBoxFactory>());
     }
 
-    internal static HtmlBuilder ResponseJson(
+    internal static HtmlBuilder? ResponseJson(
         JJBaseView view,
         FormElement formElement,
         IDictionary<string, dynamic> formValues,
@@ -294,9 +284,9 @@ public class JJSearchBox : JJAsyncBaseControl
             input.WithCssClassIf(!string.IsNullOrEmpty(selectedValue), "jj-icon-success");
             input.WithCssClass(CssClass);
 
-            string description = Text;
+            string? description = Text;
             if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(selectedValue))
-                description = await GetDescriptionAsync(selectedValue);
+                description = await GetDescriptionAsync(selectedValue!);
 
             input.WithAttribute("value", description);
 
@@ -346,9 +336,9 @@ public class JJSearchBox : JJAsyncBaseControl
     /// </summary>
     /// <param name="idSearch">Id a ser pesquisado</param>
     /// <returns>Retorna descrição referente ao id</returns>
-    public async Task<string> GetDescriptionAsync(string idSearch)
+    public async Task<string?> GetDescriptionAsync(string idSearch)
     {
-        string description = null;
+        string? description = null;
         if (OnSearchQuery != null)
         {
             var args = new SearchBoxItemEventArgs(idSearch);
@@ -371,25 +361,29 @@ public class JJSearchBox : JJAsyncBaseControl
     /// <summary>
     /// Recover values from the given text.
     /// </summary>
-    public async IAsyncEnumerable<DataItemValue> GetValuesAsync(string searchText)
+    public async Task<List<DataItemValue>>GetValuesAsync(string? searchText)
     {
+        var list = new List<DataItemValue>();
         if (OnSearchQuery != null)
         {
             var args = new SearchBoxQueryEventArgs(searchText);
             OnSearchQuery.Invoke(this, args);
             foreach (var value in args.Values)
             {
-                yield return value;
+                list.Add(value);
             }
         }
         else
         {
             await foreach (var value in DataItemService.GetValuesAsync(DataItem, FormStateData, searchText, null))
             {
-                yield return value;
+                list.Add(value);
             }
         }
+
+        return list;
     }
+
 
     public void ResponseJson()
     {
@@ -407,7 +401,7 @@ public class JJSearchBox : JJAsyncBaseControl
         string componentName = CurrentContext.Request.QueryString("fieldName");
         string textSearch = CurrentContext.Request.Form(componentName);
 
-        var values = await GetValuesAsync(textSearch).ToListAsync();
+        var values = await GetValuesAsync(textSearch);
         var items = DataItemService.GetItems(DataItem, values);
 
         return items.ToList();

@@ -1,14 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using JJMasterData.Commons.Configuration;
+#nullable enable
+
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -17,37 +10,32 @@ using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace JJMasterData.Core.Web.Components;
 
 public class JJComboBox : JJBaseControl
 {
-    private IList<DataItemValue> _values;
-    private string _selectedValue;
-    private FormElementDataItem _dataItem;
+    private IList<DataItemValue>? _values;
+    private string? _selectedValue;
 
-    internal IEntityRepository EntityRepository { get; }
-    internal ILogger<JJComboBox> Logger { get; }
-    
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-
-    internal IDictionary<string,dynamic> FormValues { get; set; }
-
-    internal PageState PageState { get; set; }
+    internal IEntityRepository EntityRepository { get; }
+    internal ILogger<JJComboBox> Logger { get; }
+    internal FormStateData FormStateData { get; set; }
 
     /// <summary>
     /// If the filter is MULTVALUES_EQUALS, enable multiselect.
     /// </summary>
     public bool MultiSelect { get; set; }
 
-    public FormElementDataItem DataItem
-    {
-        get => _dataItem ??= new FormElementDataItem();
-        set => _dataItem = value;
-    }
+    public FormElementDataItem DataItem { get; set; }
 
-    public string SelectedValue
+    public string? SelectedValue
     {
         get
         {
@@ -73,6 +61,9 @@ public class JJComboBox : JJBaseControl
         StringLocalizer = stringLocalizer;
         Enabled = true;
         MultiSelect = false;
+        DataItem = new FormElementDataItem();
+        var defaultValues = new Dictionary<string, dynamic>();
+        FormStateData = new FormStateData(defaultValues, PageState.List);
     }
 
     internal override HtmlBuilder RenderHtml()
@@ -84,7 +75,7 @@ public class JJComboBox : JJBaseControl
 
         if (values == null)
             throw new ArgumentException("Data source not defined for combo", Name);
-        
+
         if (ReadOnly)
         {
             var combobox = new HtmlBuilder(HtmlTag.Div);
@@ -100,11 +91,11 @@ public class JJComboBox : JJBaseControl
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass(CssClass)
             .WithCssClass("form-control ")
-            .WithCssClass(MultiSelect || DataItem.ShowImageLegend ? "selectpicker" : "form-select")
+            .WithCssClass((MultiSelect || DataItem.ShowImageLegend) ? "selectpicker" : "form-select")
             .WithNameAndId(Name)
             .WithAttributeIf(MultiSelect, "multiple")
             .WithAttributeIf(MultiSelect, "title", StringLocalizer["All"])
-            .WithAttributeIf(MultiSelect && PageState == PageState.Filter, "data-live-search", "true")
+            .WithAttributeIf(MultiSelect && FormStateData.PageState == PageState.Filter, "data-live-search", "true")
             .WithAttributeIf(MultiSelect, "multiselect", "multiselect")
             .WithAttributeIf(!Enabled, "disabled", "disabled")
             .WithAttribute("data-style", "form-control")
@@ -116,25 +107,28 @@ public class JJComboBox : JJBaseControl
 
     private IEnumerable<HtmlBuilder> GetOptions(IEnumerable<DataItemValue> values)
     {
+        if (DataItem == null)
+            throw new ArgumentException("[DataItem] properties not defined for combo", Name);
+
         var firstOption = new HtmlBuilder(HtmlTag.Option)
             .WithValue(string.Empty)
             .AppendTextIf(DataItem.FirstOption == FirstOptionMode.All, StringLocalizer["(All)"])
             .AppendTextIf(DataItem.FirstOption == FirstOptionMode.Choose, StringLocalizer["(Choose)"]);
 
         if (DataItem.FirstOption != FirstOptionMode.None)
-             yield return firstOption;
+            yield return firstOption;
 
         foreach (var value in values)
         {
             var label = IsManualValues() ? StringLocalizer[value.Description] : value.Description;
 
             var isSelected = !MultiSelect && SelectedValue != null && SelectedValue.Equals(value.Id);
-            
+
             if (MultiSelect && SelectedValue != null)
             {
                 isSelected = SelectedValue.Split(',').Contains(value.Id);
             }
-            
+
             var option = new HtmlBuilder(HtmlTag.Option)
                 .WithValue(value.Id)
                 .WithAttributeIf(isSelected, "selected")
@@ -166,7 +160,7 @@ public class JJComboBox : JJBaseControl
             .WithAttribute("readonly", "readonly");
 
         yield return readonlyInput;
-        
+
     }
 
 
@@ -190,7 +184,7 @@ public class JJComboBox : JJBaseControl
         return selectedText;
     }
 
-    public IList<DataItemValue> GetValues()
+    public IList<DataItemValue>? GetValues()
     {
         try
         {
@@ -209,7 +203,7 @@ public class JJComboBox : JJBaseControl
     /// <summary>
     /// Recovers the description from the selected value;
     /// </summary>
-    public string GetDescription()
+    public string? GetDescription()
     {
         string description;
         var item = GetValue(SelectedValue);
@@ -245,26 +239,24 @@ public class JJComboBox : JJBaseControl
     }
 
 
-    public DataItemValue GetValue(string searchId)
+    public DataItemValue? GetValue(string? searchId)
     {
         if (searchId == null)
             return null;
 
         var listValues = _values ?? GetValues(searchId);
-
-
-        return listValues?.ToList().Find(x => x.Id.Equals(searchId));
-    }
-
-    private IList<DataItemValue> GetValues(string searchId)
-    {
-        if (DataItem == null)
+        if (listValues == null)
             return null;
 
+        return listValues.ToList().Find(x => x.Id.Equals(searchId));
+    }
+
+    private IList<DataItemValue>? GetValues(string? searchId)
+    {
         IList<DataItemValue> values = new List<DataItemValue>();
         if (DataItem.Command != null && !string.IsNullOrEmpty(DataItem.Command.Sql))
         {
-            string sql = DataItem.Command.Sql;
+            string? sql = DataItem.Command.Sql;
             if (sql.Contains("{"))
             {
                 if (searchId != null)
@@ -277,10 +269,9 @@ public class JJComboBox : JJBaseControl
                     if (!UserValues.ContainsKey("search_id"))
                         UserValues.Add("search_id", null);
                 }
-                
-                sql = ExpressionsService.ParseExpression(sql, PageState, false, FormValues, UserValues);
-            }
 
+                sql = ExpressionsService.ParseExpression(sql, FormStateData, false);
+            }
 
             var dt = EntityRepository.GetDataTable(sql);
             foreach (DataRow row in dt.Rows)
@@ -288,11 +279,11 @@ public class JJComboBox : JJBaseControl
                 var item = new DataItemValue
                 {
                     Id = row[0].ToString(),
-                    Description = row[1].ToString()?.Trim()
+                    Description = row[1].ToString().Trim()
                 };
                 if (DataItem.ShowImageLegend)
                 {
-                    item.Icon = (IconType)int.Parse(row[2].ToString() ?? string.Empty);
+                    item.Icon = (IconType)int.Parse(row[2].ToString());
                     item.ImageColor = row[3].ToString();
                 }
 
@@ -311,7 +302,7 @@ public class JJComboBox : JJBaseControl
 
     private bool IsManualValues()
     {
-        if (DataItem?.Items == null)
+        if (DataItem.Items == null)
             return false;
 
         return DataItem.Items.Count > 0;
