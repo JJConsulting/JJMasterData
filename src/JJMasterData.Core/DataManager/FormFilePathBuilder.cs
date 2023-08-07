@@ -22,7 +22,6 @@ public class FormFilePathBuilder
         if (field.DataFile == null)
             throw new ArgumentException($"{nameof(FormElementField.DataFile)} not defined.", field.Name);
 
-        //Pks concat with  underline
         string pkval = FileIO.SanitizeFileName(DataHelper.ParsePkValues(FormElement, formValues, '_'));
         
         string path = field.DataFile.FolderPath;
