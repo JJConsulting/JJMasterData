@@ -4,11 +4,12 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 
 namespace JJMasterData.Core.Web.Components;
 
 internal class DataPanelExpressionScripts
-{   
+{
     private JJDataPanel DataPanel { get; set; }
 
     private FormElement FormElement => DataPanel.FormElement;
@@ -84,6 +85,7 @@ internal class DataPanelExpressionScripts
 
     private async Task<string> ParseExpression(string exp, List<string> list)
     {
+        var formData = new FormStateData(DataPanel.Values, DataPanel.UserValues, DataPanel.PageState);
         foreach (string fieldName in list)
         {
             string val = null;
@@ -106,7 +108,7 @@ internal class DataPanelExpressionScripts
                 //Campos ocultos
                 if (field != null)
                 {
-                    bool visible = await DataPanel.FieldsService.IsVisibleAsync(field, DataPanel.PageState, DataPanel.Values);
+                    bool visible = await DataPanel.ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
                     if (!visible)
                     {
                         val = $"'{panelValue}'";

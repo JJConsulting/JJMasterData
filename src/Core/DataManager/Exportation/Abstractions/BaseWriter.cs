@@ -18,6 +18,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
@@ -40,8 +41,8 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     private DataExportationReporter _processReporter;
     private List<FormElementField> _fields;
 
-    protected IFieldVisibilityService FieldVisibilityService { get; } =
-        JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
+    protected IExpressionsService ExpressionsService { get; } =
+        JJService.Provider.GetScopedDependentService<IExpressionsService>();
     protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
         JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
 
@@ -59,9 +60,17 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
             if (_fields == null)
             {
                 if (Configuration.ExportAllFields)
+                {
                     _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
+                }
                 else
-                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export && FieldVisibilityService.IsVisibleAsync(x, PageState.List, null).GetAwaiter().GetResult());
+                {
+                    var defaultValues = new Dictionary<string, dynamic>();
+                    var formData = new FormStateData(defaultValues, PageState.Import);
+                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export &&
+                        ExpressionsService.GetBoolValueAsync(x.VisibleExpression, formData).GetAwaiter().GetResult());
+                }
+                    
             }
 
             return _fields;

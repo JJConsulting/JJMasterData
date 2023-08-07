@@ -1,24 +1,25 @@
 ﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Web.Factories;
 
 public class ControlFactory
 {
     private IServiceScopeFactory ServiceScopeFactory { get; }
-    private IFieldVisibilityService FieldVisibilityService { get; }
+    private IExpressionsService ExpressionsService { get; }
     
-    public ControlFactory(IServiceScopeFactory serviceScopeFactory, IFieldVisibilityService fieldVisibilityService)
+    public ControlFactory(IServiceScopeFactory serviceScopeFactory,
+        IExpressionsService expressionsService)
     {
         ServiceScopeFactory = serviceScopeFactory;
-        FieldVisibilityService = fieldVisibilityService;
+        ExpressionsService = expressionsService;
     }
 
     private IServiceProvider ServiceProvider
@@ -69,10 +70,8 @@ public class ControlFactory
         }
 
         var context = new ControlContext(formStateData, parentName, value);
-        
         var control = Create(formElement, field, context);
-
-        control.Enabled = await FieldVisibilityService.IsEnabledAsync(field, pageState, formValues);
+        control.Enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formStateData);
 
         return control;
     }

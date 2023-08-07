@@ -7,33 +7,20 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class FieldsService : IFieldsService
 {
-    private IFieldVisibilityService FieldVisibilityService { get; }
     private IFieldFormattingService FieldFormattingService { get; }
     private IFieldValidationService FieldValidationService { get; }
     private IFieldValuesService  FieldValuesService { get; }
     
     public FieldsService(
-        IFieldVisibilityService fieldVisibilityService,
         IFieldFormattingService fieldFormattingService,
         IFieldValuesService fieldValuesService,
         IFieldValidationService fieldValidationService)
     {
-        FieldVisibilityService = fieldVisibilityService;
         FieldFormattingService = fieldFormattingService;
         FieldValidationService = fieldValidationService;
         FieldValuesService = fieldValuesService;
     }
     
-    public async Task<bool> IsVisibleAsync(FormElementField field, PageState state, IDictionary<string, dynamic> formValues)
-    {
-        return await FieldVisibilityService.IsVisibleAsync(field, state, formValues);
-    }
-
-    public async Task<bool> IsEnabledAsync(FormElementField field, PageState state, IDictionary<string, dynamic> formValues)
-    {
-        return await FieldVisibilityService.IsEnabledAsync(field, state, formValues);
-    }
-
     public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState, bool enableErrorLink)
     {
        return await FieldValidationService.ValidateFieldsAsync(formElement, formValues, pageState, enableErrorLink);
