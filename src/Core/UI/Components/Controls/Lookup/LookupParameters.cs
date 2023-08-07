@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 
@@ -36,7 +37,7 @@ public class LookupParameters
         
     }
     
-    public string ToQueryString(IExpressionsService expressionsService, PageState pageState, IDictionary<string,dynamic> formValues)
+    public string ToQueryString(IExpressionsService expressionsService, FormStateData formStateData)
     {
         var queryString = new StringBuilder();
 
@@ -53,7 +54,7 @@ public class LookupParameters
         {
             foreach (var filter in Filters)
             {
-                string filterParsed = expressionsService.ParseExpression(filter.Value.ToString(), pageState, false, formValues);
+                string filterParsed = expressionsService.ParseExpression(filter.Value.ToString(), formStateData, false);
                 queryString.Append('&');
                 queryString.Append(filter.Key);
                 queryString.Append('=');

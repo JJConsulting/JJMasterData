@@ -37,8 +37,9 @@ public class LookupService : ILookupService
         EncryptionService = encryptionService;
         UrlHelper = urlHelper;
     }
+
     
-    public string GetLookupUrl(FormElementDataItem dataItem, string componentName, PageState pageState, IDictionary<string,dynamic> formValues)
+    public string GetLookupUrl(FormElementDataItem dataItem, FormStateData formStateData, string componentName)
     {
         var elementMap = dataItem.ElementMap;
 
@@ -46,17 +47,15 @@ public class LookupService : ILookupService
             elementMap.EnableElementActions, elementMap.Filters);
 
         var encryptedLookupParameters =
-            EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString(ExpressionsService, pageState,
-                formValues));
+            EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString(ExpressionsService, formStateData));
         
         return UrlHelper.GetUrl("Index", "Lookup", new { lookupParameters = encryptedLookupParameters });
     }
     
     public async Task<string> GetDescriptionAsync(
         FormElementDataItem dataItem,
+        FormStateData formStateData,
         string searchId,
-        PageState pageState, 
-        IDictionary<string,dynamic> formValues,
         bool allowOnlyNumbers)
     {
         if (string.IsNullOrEmpty(searchId))
@@ -72,7 +71,7 @@ public class LookupService : ILookupService
                 return null;
         }
 
-        var filters = GetFilters(dataItem, searchId, pageState, formValues);
+        var filters = GetFilters(dataItem, searchId, formStateData);
 
         var fields = await GetFieldsAsync(dataItem, filters);
 
@@ -85,8 +84,7 @@ public class LookupService : ILookupService
         return fields[dataItem.ElementMap.FieldDescription]?.ToString();
     }
 
-    private IDictionary<string, dynamic> GetFilters(FormElementDataItem dataItem, string searchId, PageState pageState,
-        IDictionary<string, dynamic> formValues)
+    private IDictionary<string, dynamic> GetFilters(FormElementDataItem dataItem, string searchId, FormStateData formStateData)
     {
         var filters = new Dictionary<string, dynamic>();
 
@@ -95,7 +93,7 @@ public class LookupService : ILookupService
             foreach (var filter in dataItem.ElementMap.Filters)
             {
                 string filterParsed =
-                    ExpressionsService.ParseExpression(filter.Value?.ToString(), pageState, false, formValues);
+                    ExpressionsService.ParseExpression(filter.Value?.ToString(), formStateData, false);
                 filters[filter.Key] = StringManager.ClearText(filterParsed);
             }
         }
@@ -111,8 +109,12 @@ public class LookupService : ILookupService
     }
 
 
+    
+
     public object GetSelectedValue(string componentName)
     {
         return HttpContext.IsPost ? HttpContext.Request.Form("id_" + componentName) : null;
     }
+
+    
 }

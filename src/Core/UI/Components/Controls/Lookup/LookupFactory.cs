@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -54,8 +52,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
         lookup.DataItem = field.DataItem;
         lookup.AutoReloadFormFields = false;
         lookup.Attributes.Add("pnlname", controlContext.ParentComponentName);
-        lookup.FormValues = controlContext.FormStateData.FormValues;
-        lookup.PageState = controlContext.FormStateData.PageState;
+        lookup.FormStateData = controlContext.FormStateData;
         lookup.UserValues = controlContext.FormStateData.UserValues;
 
         if (field.DataType is FieldType.Int)
