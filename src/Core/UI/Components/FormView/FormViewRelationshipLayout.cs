@@ -154,7 +154,7 @@ internal class FormViewRelationshipLayout
                     if (htmlBuilder != null)
                     {
                         var filters = ParentFormView.EncryptionService.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(filter));
-                        htmlBuilder.AppendHiddenInput($"jjgridview_{childElement.Name}_filters", filters);
+                        htmlBuilder.AppendHiddenInput($"jjgridview-{childElement.Name}_filters", filters);
                     }
                     
                     return htmlBuilder;

@@ -193,8 +193,8 @@ public class JJAuditLogView : JJAsyncBaseView
                             });
                     divFields.Append(HtmlTag.Div, group =>
                     {
-                        group.WithAttribute("id", "sortable_grid");
-                        group.WithCssClass("list-group sortable_grid");
+                        group.WithAttribute("id", "sortable-grid");
+                        group.WithCssClass("list-group sortable-grid");
                         group.Append(GetHtmlGridInfo(recordsKey, logId));
                     });
                 });

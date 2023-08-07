@@ -35,7 +35,7 @@ public class GridSortingConfig
     {
         var dialog = new JJModalDialog
         {
-            Name = "sort_modal_" + Name,
+            Name = "sort-modal-" + Name,
             Title = "Sort Fields",
             Size = MessageSize.Default
         };
@@ -55,7 +55,7 @@ public class GridSortingConfig
             Text = "Cancel",
             IconClass = IconType.Times.GetCssClass(),
             ShowAsButton = true,
-            OnClientClick = $"$('#sort_modal_{Name}').modal('hide');"
+            OnClientClick = $"$('#sort-modal-{Name}').modal('hide');"
         };
 
         dialog.Buttons.Add(btnCancel);
@@ -106,7 +106,7 @@ public class GridSortingConfig
     private HtmlBuilder GetHtmlBody()
     {
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
-        tbody.WithAttribute("id", $"sortable_{Name}");
+        tbody.WithAttribute("id", $"sortable-{Name}");
         tbody.WithCssClass("ui-sortable jjsortable");
 
         var comboBox = ComboBoxFactory.Create();

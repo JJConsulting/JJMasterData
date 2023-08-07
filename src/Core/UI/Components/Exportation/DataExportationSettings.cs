@@ -162,7 +162,7 @@ internal class DataExportationSettings
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
-            .WithAttribute("id", $"{DataExportation.Name}_div_export_orientation")
+            .WithAttribute("id", $"{DataExportation.Name}-div-export-orientation")
             .WithAttribute("style", "display:none")
             .Append(HtmlTag.Label, label =>
             {
@@ -196,7 +196,7 @@ internal class DataExportationSettings
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
-            .WithAttribute("id", $"{DataExportation.Name}_div_export_all")
+            .WithAttribute("id", $"{DataExportation.Name}-div-export-all")
             .Append(HtmlTag.Label, label =>
             {
                 label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportAll}");
@@ -230,7 +230,7 @@ internal class DataExportationSettings
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
             .WithAttribute("style", "display:none;")
-            .WithAttribute("id", $"{DataExportation.Name}_div_export_delimiter")
+            .WithAttribute("id", $"{DataExportation.Name}-div-export-delimiter")
             .Append(HtmlTag.Label, label =>
             {
                 label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportDelimiter}");
@@ -268,7 +268,7 @@ internal class DataExportationSettings
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} {_bs4Row}")
-            .WithAttribute("id", $"{DataExportation.Name}_div_export_fistline")
+            .WithAttribute("id", $"{DataExportation.Name}-div-export-firstline")
             .Append(HtmlTag.Label, label =>
             {
                 label.WithAttribute("for", $"{DataExportation.Name}{ExportOptions.ExportTableFirstLine}");
@@ -298,7 +298,7 @@ internal class DataExportationSettings
         var alert = new JJAlert
         {
             ShowIcon = true,
-            Name = $"warning_exp_{name}",
+            Name = $"data-exportation-warning{name}",
             ShowCloseButton = true,
             Title = "Warning!",
             Icon = IconType.ExclamationTriangle,

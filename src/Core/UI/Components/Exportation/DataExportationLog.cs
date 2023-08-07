@@ -46,7 +46,7 @@ internal class DataExportationLog
             
             div.Append(HtmlTag.Span, span =>
             {
-                span.WithAttribute("id", "lblStartDate");
+                span.WithAttribute("id", "start-date-label");
             });
             
             div.Append(HtmlTag.Br);

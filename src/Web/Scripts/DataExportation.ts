@@ -45,7 +45,7 @@ class DataExportation{
             method:"POST",
             body: new FormData(document.querySelector<HTMLFormElement>("form"))
         }).then(response=>response.text()).then(async html => {
-            const modalBody = "#export_modal_" + componentName + " .modal-body ";
+            const modalBody = "#export-modal-" + componentName + " .modal-body ";
             document.querySelector<HTMLElement>(modalBody).innerHTML = html;
             
             loadJJMasterData(null, modalBody);
@@ -63,17 +63,16 @@ class DataExportation{
 
             if (data.FinishedMessage) {
                 showWaitOnPost = true;
-                document.querySelector("#export_modal_" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
+                document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
                 const linkFile = document.querySelector<HTMLLinkElement>("#export_link_" + componentName);
                 if (linkFile)
                     linkFile.click();
-
                 return true;
             } else {
                 document.querySelector<HTMLElement>("#divMsgProcess").style.display = "";
                 document.querySelector<HTMLElement>(".progress-bar").style.width = data.PercentProcess + "%";
                 document.querySelector(".progress-bar").textContent = data.PercentProcess + "%";
-                document.querySelector("#lblStartDate").textContent = data.StartDate;
+                document.querySelector("#start-date-label").textContent = data.StartDate;
                 document.querySelector("#lblResumeLog").textContent = data.Message;
 
                 return false;
@@ -81,7 +80,7 @@ class DataExportation{
         } catch (e) {
             showWaitOnPost = true;
             document.querySelector<HTMLElement>("#dataexp_spinner_" + componentName).style.display = "none";
-            document.querySelector("#export_modal_" + componentName + " .modal-body").innerHTML = e.message;
+            document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = e.message;
 
             return false;
         }
@@ -119,7 +118,7 @@ class DataExportation{
     }
     
     private static setSettingsHTML(componentName, html) {
-        const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body ");
+        const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
         loadJJMasterData(null);
 
@@ -127,14 +126,14 @@ class DataExportation{
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
             if (totRows > 50000) {
-                document.querySelector<HTMLElement>("#warning_exp_" + componentName).style.display = "block";
+                document.querySelector<HTMLElement>("#data-exportation-warning" + componentName).style.display = "block";
             }
         }
 
         if (bootstrapVersion < 5) {
-            $("#export_modal_" + componentName).modal();
+            $("#export-modal-" + componentName).modal();
         } else {
-            const modal = new bootstrap.Modal(document.querySelector("#export_modal_" + componentName), {});
+            const modal = new bootstrap.Modal(document.querySelector("#export-modal-" + componentName), {});
             modal.show();
         }
     }
@@ -164,7 +163,7 @@ class DataExportation{
                 }
             })
             .then(data => {
-                const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body");
+                const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body");
                 modalBody.innerHTML = data;
                 loadJJMasterData();
                 DataExportation.startProgressVerification(checkProgressUrl,componentName)

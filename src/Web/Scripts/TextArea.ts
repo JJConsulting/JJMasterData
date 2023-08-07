@@ -1,37 +1,37 @@
 ﻿class TextArea {
     static setup(){
         $("textarea").keydown(function () {
-            var oTextArea = $(this);
-            var iMaxChar : any = oTextArea.attr("maxlength");
-            var strValid : any = oTextArea.attr("strvalid2");
-            var strChars : any = oTextArea.attr("strchars");
+            const jjTextArea = $(this);
+            let maxLength : any = jjTextArea.attr("maxlength");
+            let maximumLimitLabel : any = jjTextArea.attr("maximum-limit-of-characters-label");
+            let charactersRemainingLabel : any = jjTextArea.attr("characters-remaining-label");
 
-            if (isNaN(iMaxChar))
-                iMaxChar = oTextArea.attr("jjmaxlength");
+            if (isNaN(maxLength))
+                maxLength = jjTextArea.attr("jjmaxlength");
 
-            if (isNaN(iMaxChar))
+            if (isNaN(maxLength))
                 return;
 
-            if (isNaN(strValid))
-                strValid = "Maximum limit of {0} characters!";
+            if (isNaN(maximumLimitLabel))
+                maximumLimitLabel = "Maximum limit of {0} characters!";
 
-            if (isNaN(strChars))
-                strChars = "({0} characters remaining)";
+            if (isNaN(charactersRemainingLabel))
+                charactersRemainingLabel = "({0} characters remaining)";
 
-            if (!isNaN(iMaxChar)) {
-                var nId = oTextArea.attr("id");
-                var iTypedChar : number = oTextArea.val().toString().length;
-                if (iTypedChar > iMaxChar) {
-                    alert(strValid.replace("{0}", iMaxChar));
+            if (!isNaN(maxLength)) {
+                var nId = jjTextArea.attr("id");
+                var iTypedChar : number = jjTextArea.val().toString().length;
+                if (iTypedChar > maxLength) {
+                    alert(maximumLimitLabel.replace("{0}", maxLength));
                 }
 
-                strChars = strChars.replace("{0}", (iMaxChar - oTextArea.val().toString().length));
-                strChars += "&nbsp;";
+                charactersRemainingLabel = charactersRemainingLabel.replace("{0}", (maxLength - jjTextArea.val().toString().length));
+                charactersRemainingLabel += "&nbsp;";
 
-                if ($("#spansize_" + nId).length) {
-                    $("#spansize_" + nId).html(strChars);
+                if ($("#span-size-" + nId).length) {
+                    $("#span-size-" + nId).html(charactersRemainingLabel);
                 } else {
-                    $("<span id='spansize_" + nId + "' class='small' style='float: right'>" + strChars + "</span>").insertBefore(oTextArea);
+                    $("<span id='span-size-" + nId + "' class='small' style='float: right'>" + charactersRemainingLabel + "</span>").insertBefore(jjTextArea);
                 }
             }
         });

@@ -135,11 +135,8 @@ public class JJSearchBox : JJAsyncBaseControl
             Attributes[ScrollbarAttribute].ToString().Equals("true");
         set
         {
-            string v = value ? "true" : "false";
-            if (Attributes.ContainsKey(ScrollbarAttribute))
-                Attributes[ScrollbarAttribute] = v;
-            else
-                Attributes.Add(ScrollbarAttribute, v);
+            string booleanString = value ? "true" : "false";
+            Attributes[ScrollbarAttribute] = booleanString;
         }
     }
 
@@ -155,9 +152,8 @@ public class JJSearchBox : JJAsyncBaseControl
 
         if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
         {
-            var list = await GetValuesAsync(Text).ToListAsync();
-            if (list?.Count == 1)
-                _selectedValue = list.First().Id;
+            var values = GetValuesAsync(Text);
+            _selectedValue = (await values.FirstOrDefaultAsync()).Id;
         }
 
         return _selectedValue;

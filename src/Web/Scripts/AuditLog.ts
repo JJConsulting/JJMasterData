@@ -1,5 +1,5 @@
 function loadAuditLog(componentName, logId, url = null) {
-    $("#sortable_grid a").removeClass("active");
+    $("#sortable-grid a").removeClass("active");
 
     if (logId != "")
         $("#" + logId).addClass("active");

@@ -2,11 +2,8 @@
 
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Http;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -144,7 +141,7 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoDictionary(IDictionary<string,dynamic>valuesToBeReceived, IDictionary<string,dynamic>? valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoDictionary(IDictionary<string,dynamic> valuesToBeReceived, IDictionary<string,dynamic>? valuesToBeCopied, bool replaceIfExistKey)
     {
         if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;
