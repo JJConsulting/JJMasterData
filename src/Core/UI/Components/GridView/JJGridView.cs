@@ -44,8 +44,6 @@ namespace JJMasterData.Core.Web.Components;
 /// </example>
 public class JJGridView : JJAsyncBaseView
 {
-
-
     #region "Events"
 
     public event EventHandler<GridCellEventArgs> OnRenderCell;

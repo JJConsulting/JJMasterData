@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration;
+﻿using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
-using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -17,11 +12,11 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components.Widgets;
 using JJMasterData.Core.Web;
-using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using System.Collections.Generic;
+using System.Text;
 
 namespace JJMasterData.Core.UI.Components.FormView;
 
@@ -31,11 +26,11 @@ internal class ActionsScripts
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
-    
+
     public ActionsScripts(
         IExpressionsService expressionsService,
         JJMasterDataUrlHelper urlHelper,
-        JJMasterDataEncryptionService encryptionService, 
+        JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         ExpressionsService = expressionsService;
@@ -81,7 +76,7 @@ internal class ActionsScripts
 
         return $"ActionManager.executeRedirectAction('{url}',{popup},'{popUpTitle}','{confirmationMessage}','{popupSize}');";
     }
-    
+
 
     public string GetUrlRedirectScript(
         UrlRedirectAction action,
@@ -89,17 +84,17 @@ internal class ActionsScripts
         ActionSource actionSource
     )
     {
-        var actionMap = actionContext.ToActionMap(action.Name,actionSource);
+        var actionMap = actionContext.ToActionMap(action.Name, actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
 
         if (actionContext.IsExternalRoute)
         {
             var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(actionContext.FormElement.Name);
-            var url = UrlHelper.GetUrl("GetUrlRedirect", "UrlRedirect", new {dictionaryName = encryptedDictionaryName, componentName = actionContext.ParentComponentName});
+            var url = UrlHelper.GetUrl("GetUrlRedirect", "UrlRedirect", new { dictionaryName = encryptedDictionaryName, componentName = actionContext.ParentComponentName });
             return $"ActionManager.executeRedirectAction('{url}','{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")})";
         }
-        
+
         return
             $"ActionManager.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
@@ -107,7 +102,7 @@ internal class ActionsScripts
     public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource, bool isPopup = false)
     {
         var formElement = actionContext.FormElement;
-        var actionMap = actionContext.ToActionMap(action.Name,actionSource);
+        var actionMap = actionContext.ToActionMap(action.Name, actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
 
@@ -140,7 +135,7 @@ internal class ActionsScripts
             ViewAction => PageState.View,
             _ => PageState.Update
         };
-        
+
         var encryptedActionMap = encryptionService.EncryptActionMap(actionMap);
         return UrlHelper.GetUrl("GetFormView", "Form", new
         {
@@ -150,7 +145,7 @@ internal class ActionsScripts
             Area = "MasterData"
         });
     }
-    
+
     internal string GetUserActionScript(
         UserCreatedAction userCreatedAction,
         ActionContext actionContext,
@@ -158,13 +153,13 @@ internal class ActionsScripts
     {
 
         var formStateData = actionContext.FormStateData;
-        
+
         switch (userCreatedAction)
         {
             case UrlRedirectAction urlRedirectAction:
-                return GetUrlRedirectScript(urlRedirectAction, actionContext,actionSource);
+                return GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource);
             case SqlCommandAction:
-                return GetCommandScript(userCreatedAction,actionContext,actionSource);
+                return GetCommandScript(userCreatedAction, actionContext, actionSource);
             case ScriptAction jsAction:
                 return ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData.PageState, false, formStateData.FormValues, formStateData.UserValues);
             case InternalAction internalAction:
@@ -176,11 +171,22 @@ internal class ActionsScripts
 
     public string GetCommandScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)
     {
-        var actionMap = actionContext.ToActionMap(action.Name,actionSource);
+        var actionMap = actionContext.ToActionMap(action.Name, actionSource);
         string encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
         return
             $"JJView.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+    }
+
+    public string GetRefreshScript(ActionContext actionContext)
+    {
+        string name = actionContext.ParentComponentName;
+        if (actionContext.IsExternalRoute)
+        {
+            string dictionaryNameEncrypted = EncryptionService.EncryptString(actionContext.FormElement.Name);
+            return UrlHelper.GetUrl("GetGridViewTable", "Grid", new { dictionaryName = dictionaryNameEncrypted });
+        }
+        return $"JJView.refresh('{name}', true)";
     }
 }
