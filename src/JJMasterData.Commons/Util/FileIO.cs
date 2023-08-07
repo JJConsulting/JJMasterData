@@ -2,12 +2,25 @@
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using JJMasterData.Commons.Options;
 
 namespace JJMasterData.Commons.Util;
 
 public class FileIO
 {
+    public static string SanitizePath(string inputPath)
+    {
+        var invalidChars = Path.GetInvalidFileNameChars();
+        
+        var pattern = "[" + Regex.Escape(new string(invalidChars.Except(new[] { '\\', '/' }).ToArray())) + "]";
+        
+        var sanitizedPath = Regex.Replace(inputPath, pattern, "");
+
+        return sanitizedPath;
+    }
+    
     /// <summary>
     /// Retorna o tipo do arquivo em minusculo
     /// </summary>
