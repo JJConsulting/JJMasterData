@@ -12,14 +12,11 @@ class ActionManager {
         return false;
     }
 
-    static executeRedirectAction(url: string, componentName: string, encryptedActionMap: string, confirmMessage?: string): boolean;
-    static executeRedirectAction(componentName: string, encryptedActionMap: string, confirmMessage?: string): boolean;
-    static executeRedirectAction(...args: any[]): boolean {
-        let url = args[0];
-        const componentName = args[1];
-        const encryptedActionMap = args[2];
-        const confirmMessage = args[3];
-
+    static executeRedirectActionAtSamePage(componentName: string, encryptedActionMap: string, confirmMessage?: string){
+        this.executeRedirectAction(null,componentName,encryptedActionMap,confirmMessage);
+    }
+    
+    static executeRedirectAction(url: string, componentName: string, encryptedActionMap: string, confirmMessage?: string){
         if (confirmMessage) {
             const result = confirm(confirmMessage);
             if (!result) {
@@ -42,7 +39,6 @@ class ActionManager {
 
         return true;
     }
-
 
     private static executeUrlRedirect(url: string) {
         fetch(url, {
