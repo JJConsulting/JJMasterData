@@ -25,7 +25,7 @@ public class FormFilePathBuilder
         //Pks concat with  underline
         string pkval = DataHelper.ParsePkValues(FormElement, formValues, '_');
         
-        string path = field.DataFile.FolderPath;
+        string path = FileIO.SanitizePath(field.DataFile.FolderPath);
 
         if (string.IsNullOrEmpty(path))
             throw new ArgumentException($"{nameof(FormElementField.DataFile.FolderPath)} cannot be empty.", field.Name);
@@ -40,7 +40,7 @@ public class FormFilePathBuilder
         if (!path.EndsWith(separator.ToString()))
             path += separator;
 
-        return FileIO.SanitizePath(path);
+        return path;
     }
 
    
