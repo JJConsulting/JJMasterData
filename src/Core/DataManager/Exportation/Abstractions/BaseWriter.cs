@@ -142,10 +142,6 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     }
 
     public string UserId { get; set; }
-    public HttpContext CurrentContext { get; internal set; }
-
-    //We need this property because Current.Context.Request is disposed inside a thread.
-    public string AbsoluteUri { get; set; }
 
     #endregion
 
@@ -160,9 +156,6 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         if (FormElement == null) throw new ArgumentNullException(nameof(FormElement));
         await Task.Run(() =>
             {
-#if NETFRAMEWORK
-                HttpContext.Current = CurrentContext;
-#endif
                 try
                 {
                     _processReporter = new DataExportationReporter();
@@ -257,7 +250,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         textFile.FormValues = values;
         textFile.Name = field.Name;
 
-        return textFile.GetDownloadLink(fileName, true, AbsoluteUri);
+        return textFile.GetDownloadLink(fileName, true);
     }
 
 

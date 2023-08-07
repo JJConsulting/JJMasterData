@@ -334,7 +334,7 @@ public class JJTextFile : JJBaseControl
     public string GetDownloadLink(string fileName, bool isExternalLink = false, string absoluteUri = null)
     {
         string filePath = GetFolderPath() + fileName;
-        string url = absoluteUri ?? HttpContext.Current.Request.Url.AbsoluteUri;
+        string url = CurrentContext.Request.AbsoluteUri;
         if (url.Contains('?'))
             url += "&";
         else

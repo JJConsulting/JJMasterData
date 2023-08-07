@@ -132,7 +132,6 @@ public static class ServiceCollectionExtensions
         
         services.AddHttpContextAccessor();
         services.AddSession();
-        services.AddSystemWebAdapters();
         services.AddDistributedMemoryCache();
         services.AddRequestUrlCultureProvider();
         services.AddActionFilters();
