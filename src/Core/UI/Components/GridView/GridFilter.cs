@@ -3,20 +3,16 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Web.Components.Scripts;
+using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web.Factories;
-using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -139,7 +135,8 @@ internal class GridFilter
     public async Task<HtmlBuilder> GetFilterHtml()
     {
         var filterAction = GridView.FilterAction;
-        bool isVisible = await GridView.ExpressionsService.GetBoolValueAsync(filterAction.VisibleExpression,PageState.List,await GridView.GetDefaultValuesAsync());
+        var formData = await GridView.GetFormDataAsync();
+        bool isVisible = await GridView.ExpressionsService.GetBoolValueAsync(filterAction.VisibleExpression, formData);
 
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
@@ -191,10 +188,9 @@ internal class GridFilter
 
         var values = await GetCurrentFilter();
 
-        var dataPanelControl = new DataPanelControl(GridView)
+        var dataPanelControl = new DataPanelControl(GridView, values)
         {
-            FieldNamePrefix = FilterFieldPrefix,
-            Values = values
+            FieldNamePrefix = FilterFieldPrefix
         };
 
         var htmlPanel = await dataPanelControl.GetHtmlForm(fields.DeepCopy());

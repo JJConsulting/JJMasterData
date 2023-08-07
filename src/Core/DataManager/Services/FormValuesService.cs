@@ -44,27 +44,27 @@ public class FormValuesService : IFormValuesService
         if (formElement == null)
             throw new ArgumentException(nameof(FormElement));
 
-        var values = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var values = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var field in formElement.Fields)
         {
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
             var value = field.ValidateRequest
                 ? CurrentContext.Request.Form(fieldName)
                 : CurrentContext.Request.GetUnvalidated(fieldName);
-            
-            
+
+
             switch (field.Component)
             {
                 case FormComponent.Search:
-                {
-                    value = await DataItemService.GetSelectedValueAsync(field,null,values,pageState);
-                    break;
-                }
+                    {
+                        value = await DataItemService.GetSelectedValueAsync(field, null, values, pageState);
+                        break;
+                    }
                 case FormComponent.Lookup:
-                {
-                    value = LookupService.GetSelectedValue(field.Name);
-                    break;
-                }
+                    {
+                        value = LookupService.GetSelectedValue(field.Name);
+                        break;
+                    }
                 case FormComponent.Slider:
                     if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
                             out var doubleValue))
@@ -99,7 +99,7 @@ public class FormValuesService : IFormValuesService
     }
 
     public async Task<IDictionary<string, dynamic>> GetFormValuesWithMergedValuesAsync(
-        FormElement formElement, 
+        FormElement formElement,
         PageState pageState,
         bool autoReloadFormFields,
         string? fieldPrefix = null)
@@ -108,31 +108,31 @@ public class FormValuesService : IFormValuesService
         return await GetFormValuesWithMergedValuesAsync(formElement, pageState, dbValues, autoReloadFormFields, fieldPrefix);
     }
 
-    public async Task<IDictionary<string,dynamic>> GetFormValuesWithMergedValuesAsync(
-        FormElement formElement, 
-        PageState pageState, 
-        IDictionary<string,dynamic>? values,
+    public async Task<IDictionary<string, dynamic>> GetFormValuesWithMergedValuesAsync(
+        FormElement formElement,
+        PageState pageState,
+        IDictionary<string, dynamic>? values,
         bool autoReloadFormFields,
         string? prefix = null)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
-        var valuesToBeReceived = new Dictionary<string,dynamic>();
-        DataHelper.CopyIntoDictionary( valuesToBeReceived, values, true);
+        var valuesToBeReceived = new Dictionary<string, dynamic>();
+        DataHelper.CopyIntoDictionary(valuesToBeReceived, values, true);
 
         if (CurrentContext.IsPost && autoReloadFormFields)
         {
-            var requestedValues = await GetFormValuesAsync(formElement,pageState, prefix);
-            DataHelper.CopyIntoDictionary( valuesToBeReceived, requestedValues, true);
+            var requestedValues = await GetFormValuesAsync(formElement, pageState, prefix);
+            DataHelper.CopyIntoDictionary(valuesToBeReceived, requestedValues, true);
         }
-        
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement,valuesToBeReceived, pageState, !CurrentContext.IsPost);
-    }
-    
-    
 
-    private async Task<IDictionary<string,dynamic>?> GetDbValues(Element element)
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !CurrentContext.IsPost);
+    }
+
+
+
+    private async Task<IDictionary<string, dynamic>?> GetDbValues(Element element)
     {
         if (!CurrentContext.HasContext())
             return null;
@@ -143,7 +143,7 @@ public class FormValuesService : IFormValuesService
 
         string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues);
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
-        
+
         return await EntityRepository.GetDictionaryAsync(element, filters);
     }
 }

@@ -174,19 +174,7 @@ public class ExpressionsService : IExpressionsService
 
         return result;
     }
-
-
-    public async Task<bool> GetBoolValueAsync(
-        string expression,
-        PageState state,
-        IDictionary<string, dynamic> formValues,
-        IDictionary<string, dynamic>? userValues = null)
-    {
-        var formStateData = new FormStateData(formValues, userValues, state);
-        return await GetBoolValueAsync(expression, formStateData);
-    }
-
-
+    
     public async Task<string?> GetTriggerValueAsync(FormElementField field, FormStateData formStateData)
     {
         return await GetExpressionValueAsync(field.TriggerExpression, field, formStateData);
@@ -299,7 +287,6 @@ public class ExpressionsService : IExpressionsService
 
         return retVal;
     }
-
 
     private bool ParseBool(object? value) => StringManager.ParseBool(value);
 }

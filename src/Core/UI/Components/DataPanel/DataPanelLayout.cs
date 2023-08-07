@@ -170,7 +170,7 @@ internal class DataPanelLayout
     private async Task<bool> IsEnabled(FormElementPanel panel)
     {
         bool panelEnable = await DataPanelControl.ExpressionsService.GetBoolValueAsync(
-            panel.EnableExpression, DataPanelControl.PageState, DataPanelControl.Values);
+            panel.EnableExpression, DataPanelControl.FormState);
 
         return panelEnable;
     }
@@ -178,7 +178,7 @@ internal class DataPanelLayout
     private async Task<bool> IsVisible(FormElementPanel panel)
     {
         bool panelEnable = await DataPanelControl.ExpressionsService.GetBoolValueAsync(
-            panel.VisibleExpression, DataPanelControl.PageState, DataPanelControl.Values);
+            panel.VisibleExpression, DataPanelControl.FormState);
 
         return panelEnable;
     }

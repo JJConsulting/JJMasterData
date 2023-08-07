@@ -64,7 +64,7 @@ public class JJGridView : JJAsyncBaseView
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// using the proc informed in the FormElement;
     /// </remarks>
-    
+
     public event EventHandler<GridDataLoadEventArgs> OnDataLoad;
     public event AsyncEventHandler<GridDataLoadEventArgs> OnDataLoadAsync;
     public event EventHandler<ActionEventArgs> OnRenderAction;
@@ -84,6 +84,7 @@ public class JJGridView : JJAsyncBaseView
     private ActionsScripts _actionsScripts;
     private List<FormElementField> _pkFields;
     private IDictionary<string, dynamic> _defaultValues;
+    private FormStateData _formData;
     private ActionMap _currentActionMap;
     private JJDataImportation _dataImportation;
     private JJDataExportation _dataExportation;
@@ -156,7 +157,7 @@ public class JJGridView : JJAsyncBaseView
     }
 
     internal ActionsScripts ActionsScripts =>
-        _actionsScripts ??= new ActionsScripts(ExpressionsService,UrlHelper,EncryptionService,StringLocalizer);
+        _actionsScripts ??= new ActionsScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
 
     internal IFormValuesService FormValuesService { get; }
 
@@ -164,8 +165,8 @@ public class JJGridView : JJAsyncBaseView
     /// <see cref="FormElement"/>
     /// </summary>
     public FormElement FormElement { get; set; }
-    
-    
+
+
 
     /// DataSource is the property responsible for controlling the data source.
     /// The component uses the following rule to retrieve grid data:
@@ -458,6 +459,22 @@ public class JJGridView : JJAsyncBaseView
     internal async Task<IDictionary<string, dynamic>> GetDefaultValuesAsync() => _defaultValues ??=
         await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
 
+    internal async Task<FormStateData> GetFormDataAsync()
+    {
+        if (_formData == null)
+        {
+            var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
+            var userValues = new Dictionary<string, dynamic>(StringComparer.OrdinalIgnoreCase);
+
+            DataHelper.CopyIntoDictionary(userValues, UserValues, false);
+            DataHelper.CopyIntoDictionary(userValues, defaultValues, true);
+
+            _formData = new FormStateData(defaultValues, userValues, PageState.List);
+        }
+
+        return _formData;
+    }
+
     public LegendAction LegendAction => ToolBarActions.LegendAction;
     public RefreshAction RefreshAction => ToolBarActions.RefreshAction;
     public FilterAction FilterAction => ToolBarActions.FilterAction;
@@ -467,7 +484,7 @@ public class JJGridView : JJAsyncBaseView
     public SortAction SortAction => ToolBarActions.SortAction;
     public GridToolbarActionList ToolBarActions => FormElement.Options.GridToolbarActions;
     public GridTableActionList GridActions => FormElement.Options.GridTableActions;
-    
+
     private ActionMap CurrentActionMap
     {
         get
@@ -497,14 +514,14 @@ public class JJGridView : JJAsyncBaseView
     internal ComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
-    
+
     internal GridScripts Scripts => _gridScripts ??= new GridScripts(this);
 
     internal IHttpContext CurrentContext { get; }
     #endregion
 
     #region "Constructors"
-    
+
     public JJGridView(
         FormElement formElement,
         IHttpContext currentContext,
@@ -549,7 +566,7 @@ public class JJGridView : JJAsyncBaseView
         string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + Name);
         if (!string.IsNullOrEmpty(lookupRoute))
             return GetLookupHtml(lookupRoute);
-        
+
         html.AppendIf(ShowTitle, GetTitle(_defaultValues).GetHtmlBuilder);
 
         if (FilterAction.IsVisible)
@@ -566,13 +583,13 @@ public class JJGridView : JJAsyncBaseView
 
         return html;
     }
-    
+
     public async Task<IDictionary<string, dynamic>> GetCurrentFilterAsync() => await Filter.GetCurrentFilter();
 
-    
+
     public void SetCurrentFilter(string key, object value)
     {
-        Filter.SetCurrentFilter(key,value);
+        Filter.SetCurrentFilter(key, value);
     }
 
     public async Task<string> GetTableHtmlAsync() => (await GetTableHtmlBuilder()).ToString();
@@ -595,7 +612,7 @@ public class JJGridView : JJAsyncBaseView
             else
                 html.AppendComponent(errorMessage);
         }
-        
+
         await SetDataSource();
 
         if (await CheckForExportation(requestType))
@@ -607,7 +624,7 @@ public class JJGridView : JJAsyncBaseView
         if (await CheckForSelectAllRows(requestType))
             return null;
 
-        
+
         html.WithAttribute("id", $"jjgridview-{Name}");
         html.AppendIf(SortAction.IsVisible, GetSortingConfig);
 
@@ -691,7 +708,7 @@ public class JJGridView : JJAsyncBaseView
                 int rowIndex = int.Parse(CurrentContext.Request.QueryString("nRow"));
 
                 var htmlResponse = await GetTableRowHtmlAsync(rowIndex);
-                
+
                 CurrentContext.Response.SendResponse(htmlResponse);
             }
 
@@ -700,7 +717,7 @@ public class JJGridView : JJAsyncBaseView
 
         return false;
     }
-    
+
     public async Task<string> GetTableRowHtmlAsync(int rowIndex)
     {
         var row = DataSource.Rows[rowIndex];
@@ -731,7 +748,7 @@ public class JJGridView : JJAsyncBaseView
 
         if (field == null) return null;
 
-        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement,field, new(new FormStateData(null, null, PageState.Filter), null, Name));
+        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(null, null, PageState.Filter), null, Name));
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return lookup.GetHtmlBuilder();
@@ -783,7 +800,7 @@ public class JJGridView : JJAsyncBaseView
         var gridSqlAction = new GridSqlCommandAction(this);
         return gridSqlAction.ExecuteSqlCommand(actionMap, (SqlCommandAction)action);
     }
-    
+
     private void AssertProperties()
     {
         if (FormElement == null)
@@ -804,8 +821,8 @@ public class JJGridView : JJAsyncBaseView
             Icon = IconType.InfoCircle
         };
 
-        var hasFilter =await Filter.HasFilter();
-        
+        var hasFilter = await Filter.HasFilter();
+
         if (!hasFilter) return alert.GetHtmlBuilder();
 
         alert.Messages.Add("There are filters applied for this query.");
@@ -936,8 +953,8 @@ public class JJGridView : JJAsyncBaseView
     private async Task<HtmlBuilder> GetSettingsHtml()
     {
         var action = ConfigAction;
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression,  PageState.List,
-                RelationValues);
+        var formData = await GetFormDataAsync();
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
@@ -974,8 +991,8 @@ public class JJGridView : JJAsyncBaseView
     private async Task<HtmlBuilder> GetExportHtml()
     {
         var action = ExportAction;
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression,  PageState.List,
-                RelationValues);
+        var formData = await GetFormDataAsync();
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
@@ -991,13 +1008,12 @@ public class JJGridView : JJAsyncBaseView
     private async Task<HtmlBuilder> GetLegendHtml()
     {
         var action = LegendAction;
-        bool isVisible =
-            await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, PageState.List,
-                RelationValues);
+        var formData = await GetFormDataAsync();
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var legend = new JJLegendView(ComponentFactory.Controls.GetFactory<ComboBoxFactory>(),StringLocalizer)
+        var legend = new JJLegendView(ComponentFactory.Controls.GetFactory<ComboBoxFactory>(), StringLocalizer)
         {
             ShowAsModal = true,
             FormElement = FormElement,
@@ -1151,8 +1167,8 @@ public class JJGridView : JJAsyncBaseView
     }
 
     private async Task<EntityResult> GetEntityResultAsync(
-        IDictionary<string, dynamic> filters, 
-        string orderBy, 
+        IDictionary<string, dynamic> filters,
+        string orderBy,
         int recordsPerPage,
         int currentPage)
     {
@@ -1181,13 +1197,13 @@ public class JJGridView : JJAsyncBaseView
                 Tot = total
             };
 
-            OnDataLoad?.Invoke(this,args);
-            
+            OnDataLoad?.Invoke(this, args);
+
             if (OnDataLoadAsync != null)
             {
                 await OnDataLoadAsync(this, args);
             }
-            
+
             total = args.Tot;
             dt = args.DataSource;
         }
@@ -1197,7 +1213,7 @@ public class JJGridView : JJAsyncBaseView
             return await EntityRepository.GetEntityResultAsync(FormElement, parameters);
         }
 
-        return new EntityResult(dt,total);
+        return new EntityResult(dt, total);
     }
 
     /// <remarks>

@@ -60,7 +60,8 @@ internal class GridSqlCommandAction
         var listSql = new List<string>();
         foreach (var row in selectedRows)
         {
-            string sql = _gridView.ExpressionsService.ParseExpression(cmdAction.CommandSql, PageState.List, false, row);
+            var formData = new FormStateData(row, _gridView.UserValues, PageState.List);
+            string sql = _gridView.ExpressionsService.ParseExpression(cmdAction.CommandSql, formData, false);
             listSql.Add(sql);
         }
 
@@ -81,8 +82,9 @@ internal class GridSqlCommandAction
             formValues = await _gridView.FieldsService.GetDefaultValuesAsync(formElement, null, PageState.List);
         }
 
-        string sql = _gridView.ExpressionsService.ParseExpression(cmdAction.CommandSql, PageState.List, false, formValues);
+        var formData = new FormStateData(formValues, _gridView.UserValues, PageState.List);
+        string sql = _gridView.ExpressionsService.ParseExpression(cmdAction.CommandSql, formData, false);
         await _gridView.EntityRepository.SetCommandAsync(sql);
     }
-    
+
 }

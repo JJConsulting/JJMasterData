@@ -13,13 +13,13 @@ namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string? GetCurrentUserId(IHttpContext currentContext,IDictionary<string,dynamic>? userValues)
+    public static string? GetCurrentUserId(IHttpContext currentContext, IDictionary<string, dynamic>? userValues)
     {
         if (userValues != null && userValues.TryGetValue("USERID", out var value))
         {
             return value!.ToString();
         }
-        
+
         if (currentContext.HasContext() &&
             currentContext.Session?["USERID"] != null)
         {
@@ -33,7 +33,7 @@ public static class DataHelper
     /// Returns a list with only the primary keys of the table, if the PK value does not exist,
     /// an exception will be thrown
     /// </summary>
-    public static IDictionary<string,dynamic> GetPkValues(Element element, IDictionary<string,dynamic> values)
+    public static IDictionary<string, dynamic> GetPkValues(Element element, IDictionary<string, dynamic> values)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -58,7 +58,7 @@ public static class DataHelper
         return primaryKeys;
     }
 
-    public static Dictionary<string,dynamic> GetPkValues(Element element, string parsedValues, char separator)
+    public static Dictionary<string, dynamic> GetPkValues(Element element, string parsedValues, char separator)
     {
         var primaryKeys = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -69,7 +69,7 @@ public static class DataHelper
         var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
         if (values.Length != elementPks.Count)
             throw new JJMasterDataException("Invalid primary key");
-            
+
         for (int i = 0; i < values.Length; i++)
         {
             primaryKeys.Add(elementPks[i].Name, values[i]);
@@ -81,7 +81,7 @@ public static class DataHelper
     /// <summary>
     /// Concat primary keys with separator characters
     /// </summary>
-    public static string ParsePkValues(FormElement formElement, IDictionary<string,dynamic>formValues, char separator)
+    public static string ParsePkValues(FormElement formElement, IDictionary<string, dynamic> formValues, char separator)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -92,23 +92,23 @@ public static class DataHelper
         var elementPks = formElement.Fields.ToList().FindAll(x => x.IsPk);
         if (elementPks == null || elementPks.Count == 0)
             throw new JJMasterDataException($"Primary key not defined for dictionary {formElement.Name}");
-            
+
         string name = string.Empty;
         foreach (var field in elementPks)
         {
             if (name.Length > 0)
                 name += separator.ToString();
-                
+
             if (!formValues.ContainsKey(field.Name) || formValues[field.Name] == null)
                 throw new JJMasterDataException($"Primary key {field.Name} not entered");
-                    
+
             string value = formValues[field.Name]!.ToString()!;
             if (value.Contains(separator))
                 throw new JJMasterDataException($"Primary key value {value} contains invalid characters.");
-                
+
             name += value;
         }
-            
+
         return name;
     }
 
@@ -125,7 +125,7 @@ public static class DataHelper
     /// Preserves the original name of the field as registered in the dictionary
     /// and validates if the field exists
     /// </summary>
-    public static IDictionary<string,dynamic>? ParseOriginalName(FormElement formElement, IDictionary<string,dynamic>? paramValues)
+    public static IDictionary<string, dynamic>? ParseOriginalName(FormElement formElement, IDictionary<string, dynamic>? paramValues)
     {
         if (paramValues == null)
             return null;
@@ -141,7 +141,7 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoDictionary(IDictionary<string,dynamic> valuesToBeReceived, IDictionary<string,dynamic>? valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoDictionary(IDictionary<string, dynamic> valuesToBeReceived, IDictionary<string, dynamic>? valuesToBeCopied, bool replaceIfExistKey)
     {
         if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;

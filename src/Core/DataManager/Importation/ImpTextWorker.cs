@@ -143,14 +143,15 @@ public class ImpTextWorker : IBackgroundTaskWorker
         string[] rows = PostedText.Split(stringSeparators, StringSplitOptions.None);
         currentProcess.TotalRecords = rows.Length;
         currentProcess.Message = StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
-        //recupera default values
+        
         var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, null, PageState.Import);
+        var formData = new FormStateData(defaultValues, PageState.Import);
 
         //executa script antes da execuçao
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
-            string cmd = ExpressionsService.ParseExpression(ProcessOptions.CommandBeforeProcess, PageState.Import, false, defaultValues);
+            string cmd = ExpressionsService.ParseExpression(ProcessOptions.CommandBeforeProcess, formData, false);
             await EntityRepository.SetCommandAsync(cmd);
         }
 
@@ -214,7 +215,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
             string cmd;
-            cmd = ExpressionsService.ParseExpression(ProcessOptions.CommandAfterProcess, PageState.Import, false, defaultValues);
+            cmd = ExpressionsService.ParseExpression(ProcessOptions.CommandAfterProcess, formData, false);
             EntityRepository.SetCommand(cmd);
         }
 

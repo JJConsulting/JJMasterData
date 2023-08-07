@@ -20,19 +20,23 @@ internal class DataPanelControl
 
     private DataPanelScripts _panelScripts;
 
-
     public string Name { get; }
+
     public FormElement FormElement { get; }
+
     public FormUI FormUI { get; private set; }
 
     public ControlFactory ControlFactory { get; }
-
-    public PageState PageState { get; private set; }
-
+    
     public IDictionary<string, dynamic> Errors { get; private set; }
 
-    public IDictionary<string, dynamic> UserValues { get; set; }
-    public IDictionary<string, dynamic> Values { get; set; }
+    public PageState PageState => FormState.PageState;
+
+    public IDictionary<string, dynamic> UserValues => FormState.UserValues;
+
+    public IDictionary<string, dynamic> Values => FormState.FormValues;
+
+    public FormStateData FormState { get; set; }
 
     public string FieldNamePrefix { get; set; }
 
@@ -44,40 +48,38 @@ internal class DataPanelControl
     internal JJMasterDataEncryptionService EncryptionService { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     internal DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(EncryptionService, UrlHelper);
+
     public DataPanelControl(JJDataPanel dataPanel)
     {
         FormElement = dataPanel.FormElement;
         FormUI = dataPanel.FormUI;
         ControlFactory = dataPanel.ControlFactory;
-        PageState = dataPanel.PageState;
         Errors = dataPanel.Errors;
-        Values = dataPanel.Values;
         EncryptionService = dataPanel.EncryptionService;
         UrlHelper = dataPanel.UrlHelper;
-        UserValues = dataPanel.UserValues;
         FieldsService = dataPanel.FieldsService;
         Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
         IsExternalRoute = dataPanel.IsExternalRoute;
+        FormState = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
     }
 
-    public DataPanelControl(JJGridView gridView)
+    public DataPanelControl(JJGridView gridView, IDictionary<string, dynamic> values)
     {
         FormElement = gridView.FormElement;
         FormUI = new FormUI
         {
             IsVerticalLayout = false
         };
-        PageState = PageState.Filter;
         EncryptionService = gridView.EncryptionService;
         UrlHelper = gridView.UrlHelper;
         Errors = new Dictionary<string, dynamic>();
-        UserValues = gridView.UserValues;
         Name = gridView.Name;
         ControlFactory = gridView.ComponentFactory.Controls;
         ExpressionsService = gridView.ExpressionsService;
         FieldsService = gridView.FieldsService;
         IsExternalRoute = gridView.IsExternalRoute;
+        FormState = new FormStateData(values, gridView.UserValues, PageState.Filter);
     }
 
     public async Task<HtmlBuilder> GetHtmlForm(List<FormElementField> fields)

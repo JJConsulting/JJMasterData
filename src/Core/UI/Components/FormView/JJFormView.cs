@@ -455,8 +455,8 @@ public class JJFormView : JJAsyncBaseView
     private async Task<HtmlBuilder> GetHtmlInsert()
     {
         var action = InsertAction;
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, PageState.List,
-            RelationValues);
+        var formData = new FormStateData(RelationValues, UserValues, PageState.List);
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Insert action not enabled"]);
 
@@ -780,8 +780,8 @@ public class JJFormView : JJAsyncBaseView
     private async Task<HtmlBuilder> GetHtmlDataImp()
     {
         var action = GridView.ImportAction;
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, PageState.List,
-            RelationValues);
+        var formData = await GridView.GetFormDataAsync();
+        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Import action not enabled"]);
 

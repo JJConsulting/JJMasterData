@@ -29,14 +29,14 @@ public class FieldValidationService : IFieldValidationService
             throw new ArgumentNullException(nameof(formValues));
 
         var errors = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
-
+        var formState = new FormStateData(formValues, pageState);
         foreach (var field in formElement.Fields)
         {
-            var isVisible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, pageState, formValues);
+            var isVisible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formState);
             if (!isVisible)
                 continue;
 
-            var isEnabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, pageState, formValues);
+            var isEnabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formState);
             if (!isEnabled)
                 continue;
 

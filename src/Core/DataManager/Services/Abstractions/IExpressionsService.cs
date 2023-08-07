@@ -1,9 +1,9 @@
 #nullable enable
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.DataManager.Services.Abstractions;
 
@@ -23,12 +23,6 @@ public interface IExpressionsService
         bool quotationMarks,
         ExpressionManagerInterval? interval = null);
     
-    Task<bool> GetBoolValueAsync(
-        string expression,
-        PageState state,
-        IDictionary<string, dynamic> formValues,
-        IDictionary<string, dynamic>? userValues = null);
-
     Task<bool> GetBoolValueAsync(string expression, FormStateData formStateData);
     
     Task<string?> GetDefaultValueAsync(ElementField field, FormStateData formStateData);
