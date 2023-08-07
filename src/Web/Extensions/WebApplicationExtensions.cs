@@ -27,7 +27,6 @@ public static class WebApplicationExtensions
         
         app.UseStaticFiles();
         app.UseDefaultFiles();
-        app.UseSystemWebAdapters();
         app.UseJJMasterData();
 
         return app;
@@ -49,9 +48,9 @@ public static class WebApplicationExtensions
         
         if (options.EnableCultureProvider)
             pattern = "/{culture}/" + pattern;
-        
+
         return app.MapControllerRoute(
             name: "JJMasterData",
-            pattern: pattern).BufferResponseStream().PreBufferRequestStream();
+            pattern: pattern);
     }
 }

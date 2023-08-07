@@ -20,26 +20,18 @@ public class JJResponse : IHttpResponse
 #endif
     public void SendResponse(string data, string contentType = null)
     {
-        SendResponseObsolete(data, contentType);
-    }
-
-    /// <inheritdoc cref="SendResponseObsolete"/>
-    public void SendResponseObsolete(string data, string contentType = null)
-    {
-        System.Web.HttpContext.Current!.Response.ClearContent();
 #if NETFRAMEWORK
+        System.Web.HttpContext.Current!.Response.ClearContent();
         if (contentType != null)
         {
-            HttpContext.Current.Response.ContentType = contentType;
+            System.Web.HttpContext.Current.Response.ContentType = contentType;
         }
-#else
-        if (!HttpContext.Response.HasStarted && contentType != null)
-        {
-            HttpContext.Response.ContentType = contentType;
-        }
-#endif
+
         System.Web.HttpContext.Current!.Response.Write(data);
         System.Web.HttpContext.Current!.Response.End();
+#else
+        throw new NotSupportedException("Response.End is not supported at .NET 6/7+. Please change your JJMasterData usage to not use this method.");
+#endif
     }
 
     public void ClearResponse()

@@ -3,7 +3,6 @@
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Extensions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository;
@@ -13,31 +12,37 @@ using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
-using JJMasterData.Core.UI.Components.GridView;
+using JJMasterData.Core.Web;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService : BaseService
 {
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly JJMasterDataCoreOptions _options;
 
-    public ElementService(IFormElementComponentFactory<JJFormView> formViewFactory,
+    public ElementService(
+        IFormElementComponentFactory<JJFormView> formViewFactory,
         IValidationDictionary validationDictionary,
         IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository)
+        IDataDictionaryRepository dataDictionaryRepository,
+        JJMasterDataUrlHelper urlHelper
+        )
         : base(validationDictionary, dataDictionaryRepository, stringLocalizer)
     {
         FormViewFactory = formViewFactory;
+        UrlHelper = urlHelper;
         _entityRepository = entityRepository;
         _options = options.Value;
     }
@@ -181,10 +186,151 @@ public class ElementService : BaseService
 
         formView.GridView.OnDataLoadAsync += FormViewOnDataLoad;
 
+        var acTools = new UrlRedirectAction
+        {
+            Icon = IconType.Pencil,
+            Name = "tools",
+            ToolTip = StringLocalizer["Field Maintenance"],
+            EnableExpression = "exp:'T' <> {type}",
+            IsDefaultOption = true
+        };
+        formView.GridView.AddGridAction(acTools);
+
+        var renderBtn = new ScriptAction
+        {
+            Icon = IconType.Eye,
+            Name = "preview",
+            Text = StringLocalizer["Preview"],
+            EnableExpression = "exp:'T' <> {type}",
+            IsGroup = true
+        };
+        formView.GridView.AddGridAction(renderBtn);
+
+        var btnDuplicate = new UrlRedirectAction
+        {
+            Icon = IconType.FilesO,
+            Name = "duplicate",
+            Text = StringLocalizer["Duplicate"],
+            EnableExpression = "exp:'T' <> {type}",
+            IsGroup = true
+        };
+        formView.GridView.AddGridAction(btnDuplicate);
+
+        var btnAdd = new UrlRedirectAction
+        {
+            Name = "btnadd",
+            Text = StringLocalizer["New"],
+            Icon = IconType.Plus,
+            ShowAsButton = true,
+            UrlRedirect = UrlHelper.GetUrl("Add","Element", new {Area="DataDictionary"})
+        };
+        formView.GridView.AddToolBarAction(btnAdd);
+
+        var btnImport = new UrlRedirectAction
+        {
+            Name = "btnImport",
+            ToolTip = StringLocalizer["Import"],
+            Icon = IconType.Upload,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            PopUpTitle = "Import",
+            UrlRedirect = UrlHelper.GetUrl("Import","Element", new {Area="DataDictionary"}),
+            Order = 11,
+            CssClass = BootstrapHelper.PullRight
+        };
+        formView.GridView.AddToolBarAction(btnImport);
+
+        var btnExport = new ScriptAction
+        {
+            Name = "btnExport",
+            ToolTip = StringLocalizer["Export Selected"],
+            Icon = IconType.Download,
+            ShowAsButton = true,
+            Order = 10,
+            CssClass = BootstrapHelper.PullRight,
+            OnClientClick =
+                $"DataDictionaryUtils.exportElement('{formView.Name}', '{UrlHelper.GetUrl("Export","Element", new {Area="DataDictionary"})}', '{StringLocalizer["Select one or more dictionaries"]}');"
+        };
+        formView.GridView.AddToolBarAction(btnExport);
+
+        var btnAbout = new UrlRedirectAction
+        {
+            Name = "btnAbout",
+            ToolTip = StringLocalizer["About"],
+            Icon = IconType.InfoCircle,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            PopUpTitle = StringLocalizer["About"],
+            UrlRedirect =UrlHelper.GetUrl("Index","About", new {Area="DataDictionary"}),
+            Order = 13,
+            CssClass = BootstrapHelper.PullRight
+        };
+
+        formView.GridView.AddToolBarAction(btnAbout);
+
+        var btnLog = new UrlRedirectAction
+        {
+            Name = "btnLog",
+            ToolTip = StringLocalizer["Log"],
+            Icon = IconType.FileTextO,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            PopUpTitle = StringLocalizer["Log"],
+            UrlRedirect =UrlHelper.GetUrl("Index","Log", new {Area="DataDictionary"}),
+            Order = 11,
+            CssClass = BootstrapHelper.PullRight
+        };
+
+        formView.GridView.AddToolBarAction(btnLog);
+
+        var btnSettings = new UrlRedirectAction
+        {
+            Name = "btnAppSettings",
+            ToolTip = StringLocalizer["Application Options"],
+            Icon = IconType.Code,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            PopUpTitle = StringLocalizer["Application Options"],
+            UrlRedirect = UrlHelper.GetUrl("Index","Options", new {Area="DataDictionary"}),
+            Order = 12,
+            CssClass = BootstrapHelper.PullRight
+        };
+
+        formView.GridView.AddToolBarAction(btnSettings);
+
+        var btnResources = new UrlRedirectAction
+        {
+            Name = "btnResources",
+            ToolTip = StringLocalizer["Resources"],
+            Icon = IconType.Globe,
+            ShowAsButton = true,
+            UrlAsPopUp = true,
+            PopUpTitle = StringLocalizer["Resources"],
+            UrlRedirect = UrlHelper.GetUrl("Index","Resources", new {Area="DataDictionary"}),
+            Order = 11,
+            CssClass = BootstrapHelper.PullRight
+        };
+
+        formView.GridView.AddToolBarAction(btnResources);
+
+        formView.GridView.AddToolBarAction(new SubmitAction()
+        {
+            Name = "btnDeleteMetadata",
+            Order = 0,
+            Icon = IconType.Trash,
+            Text = StringLocalizer["Delete Selected"],
+            IsGroup = false,
+            ConfirmationMessage = StringLocalizer["Do you want to delete ALL selected records?"],
+            ShowAsButton = true,
+            FormAction = UrlHelper.GetUrl("Delete","Element", new {Area="DataDictionary"}),
+        });
+
+        formView.GridView.OnRenderAction += OnRenderAction;
+        
         return formView;
     }
 
-    private async Task FormViewOnDataLoad(object sender, FormEvents.Args.GridDataLoadEventArgs e)
+    private async Task FormViewOnDataLoad(object sender, GridDataLoadEventArgs e)
     {
         var filter = DataDictionaryFilter.GetInstance(e.Filters);
         string orderBy = string.IsNullOrEmpty(e.OrderBy) ? "name ASC" : e.OrderBy;
@@ -243,5 +389,25 @@ public class ElementService : BaseService
     public void CreateStructureIfNotExists()
     {
         DataDictionaryRepository.CreateStructureIfNotExists();
+    }
+    
+    private void OnRenderAction(object? sender, ActionEventArgs e)
+    {
+        var formName = e.FieldValues["name"]?.ToString();
+        switch (e.Action.Name)
+        {
+            case "preview":
+                e.LinkButton.OnClientClick =
+                    $"window.open('{UrlHelper.GetUrl("Render", "Form", new { dictionaryName = formName, Area = "MasterData" })}', '_blank').focus();";
+                break;
+            case "tools":
+                e.LinkButton.UrlAction = UrlHelper.GetUrl("Index", "Entity", new { dictionaryName = formName });
+                e.LinkButton.OnClientClick = "";
+                break;
+            case "duplicate":
+                e.LinkButton.UrlAction = UrlHelper.GetUrl("Duplicate", "Element", new { dictionaryName = formName });
+                e.LinkButton.OnClientClick = "";
+                break;
+        }
     }
 }

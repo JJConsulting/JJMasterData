@@ -17,11 +17,10 @@ class ActionManager {
         form.requestSubmit();
         return false;
     }
-    static executeRedirectAction(...args) {
-        let url = args[0];
-        const componentName = args[1];
-        const encryptedActionMap = args[2];
-        const confirmMessage = args[3];
+    static executeRedirectActionAtSamePage(componentName, encryptedActionMap, confirmMessage) {
+        this.executeRedirectAction(null, componentName, encryptedActionMap, confirmMessage);
+    }
+    static executeRedirectAction(url, componentName, encryptedActionMap, confirmMessage) {
         if (confirmMessage) {
             const result = confirm(confirmMessage);
             if (!result) {

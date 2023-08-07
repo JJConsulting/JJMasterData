@@ -239,8 +239,6 @@ public class JJDataExportation : JJBaseProcess
         var exporter = CreateWriter();
 
         exporter.DataSource = dt;
-        exporter.CurrentContext = HttpContext.Current;
-        exporter.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
         BackgroundTask.Run(ProcessKey, exporter);
     }
 
@@ -250,8 +248,6 @@ public class JJDataExportation : JJBaseProcess
 
         exporter.CurrentFilter = filter;
         exporter.CurrentOrder = order;
-        exporter.CurrentContext = HttpContext.Current;
-        exporter.AbsoluteUri = HttpContext.Current.Request.Url.AbsoluteUri;
 
         BackgroundTask.Run(ProcessKey, exporter);
     }
