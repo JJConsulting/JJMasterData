@@ -86,8 +86,6 @@ public class JJGridView : JJAsyncBaseView
     private ActionsScripts _actionsScripts;
     private List<FormElementField> _pkFields;
     private IDictionary<string, dynamic> _defaultValues;
-    private List<BasicAction> _toolBarActions;
-    private List<BasicAction> _gridActions;
     private ActionMap _currentActionMap;
     private JJDataImportation _dataImportation;
     private JJDataExportation _dataExportation;
@@ -460,25 +458,15 @@ public class JJGridView : JJAsyncBaseView
         await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
 
     public LegendAction LegendAction => ToolBarActions.LegendAction;
-
     public RefreshAction RefreshAction => ToolBarActions.RefreshAction;
-
     public FilterAction FilterAction => ToolBarActions.FilterAction;
-
     public ImportAction ImportAction => ToolBarActions.ImportAction;
-
     public ExportAction ExportAction => ToolBarActions.ExportAction;
-
     public ConfigAction ConfigAction => ToolBarActions.ConfigAction;
-
     public SortAction SortAction => ToolBarActions.SortAction;
-
-    [Obsolete("Please use FormElement.Options.GridToolbarActions")]
     public GridToolbarActionList ToolBarActions => FormElement.Options.GridToolbarActions;
-
-    [Obsolete("Please use FormElement.Options.GridTableActions")]
     public GridTableActionList GridActions => FormElement.Options.GridTableActions;
-
+    
     private ActionMap CurrentActionMap
     {
         get
@@ -673,27 +661,15 @@ public class JJGridView : JJAsyncBaseView
 
     private IEnumerable<HtmlBuilder> GetHiddenInputs(string currentAction)
     {
-        var elementList = new List<HtmlBuilder>();
-        elementList.Add(GetHiddenInput($"current_tableorder_{Name}", CurrentOrder));
-        elementList.Add(GetHiddenInput($"current_tablepage_{Name}", CurrentPage.ToString()));
-        elementList.Add(GetHiddenInput($"current-tableAction-{Name}", currentAction));
-        elementList.Add(GetHiddenInput($"current_tablerow_{Name}", string.Empty));
+        yield return new HtmlBuilder().AppendHiddenInput($"current_tableorder_{Name}", CurrentOrder);
+        yield return new HtmlBuilder().AppendHiddenInput($"current_tablepage_{Name}", CurrentPage.ToString());
+        yield return new HtmlBuilder().AppendHiddenInput($"current-tableAction-{Name}", currentAction);
+        yield return new HtmlBuilder().AppendHiddenInput($"current_tablerow_{Name}", string.Empty);
 
         if (EnableMultiSelect)
         {
-            elementList.Add(GetHiddenInput($"selectedrows_{Name}", SelectedRowsId));
+            yield return new HtmlBuilder().AppendHiddenInput($"selectedrows_{Name}", SelectedRowsId);
         }
-
-        return elementList;
-    }
-
-    private HtmlBuilder GetHiddenInput(string name, string value)
-    {
-        var input = new HtmlBuilder(HtmlTag.Input);
-        input.WithAttribute("hidden", "hidden");
-        input.WithNameAndId(name);
-        input.WithValue(value);
-        return input;
     }
 
     private async Task<bool> CheckForSelectAllRows(string requestType)
