@@ -24,12 +24,12 @@
             <span class="fa fa-search "></span>
         </a>
     }
-    @searchBox.GetHtmlString()
+    @Html.Raw(await searchBox.GetHtmlAsync())
 }
 else
 {
     <div class="input-group">
-        @searchBox.GetHtmlString()
+        @Html.Raw(await searchBox.GetHtmlAsync())
         <span class="@BootstrapHelper.InputGroupBtn">
             <button class="@BootstrapHelper.DefaultButton" type="button" onclick="popup.showHtmlFromUrl('Icons','@Url.Action("Index", "Icons", new {inputId = Model.InputId})');">
                 <span class="fa fa-search"></span>

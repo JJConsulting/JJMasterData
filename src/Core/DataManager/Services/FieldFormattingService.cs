@@ -70,9 +70,9 @@ public class FieldFormattingService : IFieldFormattingService
             case FormComponent.Search  or FormComponent.ComboBox
                  when field.DataItem is { ReplaceTextOnGrid: true }:
             {
-                var searchBoxValues = await DataItemService.GetValues(field.DataItem, null,null,new SearchBoxContext(null, values,PageState.List));
+                var searchBoxValues =  DataItemService.GetValuesAsync(field.DataItem, null,null,new SearchBoxContext(null, values,PageState.List));
 
-                return searchBoxValues.FirstOrDefault(v => v.Id == fieldValue?.ToString())?.Description ?? string.Empty;
+                return (await searchBoxValues.FirstOrDefaultAsync(v => v.Id == fieldValue?.ToString()))?.Description ?? string.Empty;
             }
             default:
                 stringValue = FormatValue(field, value);

@@ -269,12 +269,7 @@ public class JJFormView : JJAsyncBaseView
     }
 
     #endregion
-
-    internal override HtmlBuilder RenderHtml()
-    {
-        return RenderHtmlAsync().GetAwaiter().GetResult();
-    }
-
+    
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
         var requestType = CurrentContext.Request.QueryString("t");

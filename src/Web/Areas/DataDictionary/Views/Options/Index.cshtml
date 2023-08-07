@@ -41,7 +41,7 @@
 
     @if (!ViewData.ModelState.IsValid)
     {
-        @Model.ValidationSummary?.GetHtmlString()
+        @Html.Raw(Model.ValidationSummary)
     }
 
     <jj-collapse-panel

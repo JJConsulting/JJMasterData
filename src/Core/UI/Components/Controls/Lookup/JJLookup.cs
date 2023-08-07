@@ -113,11 +113,7 @@ public class JJLookup : JJAsyncBaseControl
     }
 
     #endregion
-
-    internal override HtmlBuilder RenderHtml()
-    {
-        return RenderHtmlAsync().GetAwaiter().GetResult();
-    }
+    
 
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {

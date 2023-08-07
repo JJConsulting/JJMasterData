@@ -162,7 +162,8 @@ public class JJGridView : JJAsyncBaseView
     /// <see cref="FormElement"/>
     /// </summary>
     public FormElement FormElement { get; set; }
-
+    
+    
 
     /// DataSource is the property responsible for controlling the data source.
     /// The component uses the following rule to retrieve grid data:
@@ -539,12 +540,6 @@ public class JJGridView : JJAsyncBaseView
     }
 
     #endregion
-
-
-    internal override HtmlBuilder RenderHtml()
-    {
-        return RenderHtmlAsync().GetAwaiter().GetResult();
-    }
 
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {

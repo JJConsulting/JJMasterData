@@ -82,11 +82,6 @@ public class JJAuditLogView : JJAsyncBaseView
         StringLocalizer = stringLocalizer;
     }
 
-    internal override HtmlBuilder RenderHtml()
-    {
-        return RenderHtmlAsync().GetAwaiter().GetResult();
-    }
-
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
         string ajax = CurrentContext.Request.QueryString("t");

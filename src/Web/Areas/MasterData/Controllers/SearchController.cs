@@ -48,7 +48,7 @@ public class SearchController : MasterDataController
 
         var context = new SearchBoxContext(formValues, null, (PageState)pageState);
 
-        var values = await Service.GetValues(dataItem,searchText,null,context);
+        var values = await Service.GetValuesAsync(dataItem,searchText,null,context).ToListAsync();
         var items = Service.GetItems(dataItem,values);
         
         return Json(items);

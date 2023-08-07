@@ -338,7 +338,7 @@ internal class DataPanelControl
             }
         }
 
-        return control.RenderHtml();
+        return control.GetHtmlBuilder();
     }
 
     private string GetScriptReload(FormElementField f)

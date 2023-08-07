@@ -8,7 +8,7 @@ public class SearchBoxQueryEventArgs : EventArgs
 {
     public string TextSearch { get; set; }
 
-    public List<DataItemValue> Values { get; set; }
+    public IEnumerable<DataItemValue> Values { get; set; }
 
     public SearchBoxQueryEventArgs(string textSearch)
     {

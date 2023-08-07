@@ -179,12 +179,7 @@ public class JJDataPanel : JJAsyncBaseView
     }
 
     #endregion
-
-    internal override HtmlBuilder RenderHtml()
-    {
-        return RenderHtmlAsync().GetAwaiter().GetResult();
-    }
-
+    
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
         Values ??= await GetFormValuesAsync();

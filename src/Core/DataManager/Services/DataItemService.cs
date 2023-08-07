@@ -34,7 +34,7 @@ public class DataItemService : IDataItemService
                 return value;
         }
         
-        var list = (await GetValues(field.DataItem!,searchText,null ,new SearchBoxContext(values,null,pageState))).ToList();
+        var list = await GetValuesAsync(field.DataItem!,searchText,null ,new SearchBoxContext(values,null,pageState)).ToListAsync();
 
         return list.First().Id;
     }
@@ -51,15 +51,20 @@ public class DataItemService : IDataItemService
         }
     }
 
-    public async Task<IEnumerable<DataItemValue>> GetValues(FormElementDataItem dataItem,
+    public async IAsyncEnumerable<DataItemValue> GetValuesAsync(FormElementDataItem dataItem,
         string? searchText,
         string? searchId,
         SearchBoxContext searchBoxContext)
     {
         if (dataItem.Command == null || string.IsNullOrEmpty(dataItem.Command.Sql))
-            return dataItem.Items;
+        {
+            foreach (var item in dataItem.Items)
+            {
+                yield return item;
+            }
+            yield break;
+        }
 
-        var values = new List<DataItemValue>();
         var sql = GetSqlParsed(dataItem, searchText, searchId, searchBoxContext);
 
         var dt = await EntityRepository.GetDataTableAsync(sql);
@@ -76,10 +81,11 @@ public class DataItemService : IDataItemService
                 item.ImageColor = row[3].ToString();
             }
 
-            values.Add(item);
+            if (searchText == null || item.Description!.ToLower().Contains(searchText))
+            {
+                yield return item;
+            }
         }
-
-        return searchText != null ? values.Where(v=>v.Description.ToLower().Contains(searchText)) : values;
     }
 
     private string? GetSqlParsed(FormElementDataItem dataItem, string? searchText, string? searchId, SearchBoxContext searchBoxContext)

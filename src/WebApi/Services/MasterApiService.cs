@@ -294,7 +294,7 @@ public class MasterApiService
 
             var parsedValues = DataHelper.ParseOriginalName(formElement, values);
             var pkValues = DataHelper.GetPkValues(formElement, parsedValues!);
-            var currentValues = _entityRepository.GetDictionaryAsync(formElement, pkValues).GetAwaiter().GetResult();
+            var currentValues = await _entityRepository.GetDictionaryAsync(formElement, pkValues);
             if (currentValues == null)
                 throw new KeyNotFoundException("No records found");
 
@@ -375,9 +375,9 @@ public class MasterApiService
             {
                 if (field.Component is FormComponent.ComboBox or FormComponent.Search)
                 {
-                    formValues.DataItems = DataItemService
-                        .GetValues(field.DataItem, null, null, new(newvalues, null, pageState)).GetAwaiter().GetResult()
-                        .ToList();
+                    formValues.DataItems = await DataItemService
+                        .GetValuesAsync(field.DataItem, null, null, new(newvalues, null, pageState))
+                        .ToListAsync();
                 }
             }
 

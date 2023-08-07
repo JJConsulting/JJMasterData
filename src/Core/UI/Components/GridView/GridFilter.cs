@@ -392,7 +392,7 @@ internal class GridFilter
                         var search = (JJSearchBox)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement,f, values,GridView.UserValues, PageState.Filter, GridView.Name);
                         search.Name = name;
                         search.AutoReloadFormFields = true;
-                        value = search.SelectedValue;
+                        value = await search.GetSelectedValueAsync();
                         break;
                     case FormComponent.Lookup:
                         var lookup = (JJLookup)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement,f, values,GridView.UserValues, PageState.Filter, GridView.Name);

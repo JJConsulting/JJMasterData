@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Threading.Tasks;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Html;
@@ -15,14 +16,19 @@ public abstract class JJAsyncBaseControl : JJBaseControl
 
     public async Task<string?> GetHtmlAsync()
     {
-        return Visible ? (await RenderHtmlAsync()).ToString() : null;
+        var htmlBuilder = await RenderHtmlAsync();
+        return Visible ? htmlBuilder?.ToString() : null;
     }
-
+    
     public async Task<HtmlBuilder?> GetHtmlBuilderAsync()
     {
         return Visible ? await RenderHtmlAsync() : null;
     }
-    
-    internal abstract override HtmlBuilder RenderHtml();
+
+    [Obsolete("Please use RenderHtmlAsync")]
+    internal override HtmlBuilder RenderHtml()
+    {
+        return RenderHtmlAsync().GetAwaiter().GetResult() ?? new HtmlBuilder();
+    }
     protected abstract Task<HtmlBuilder> RenderHtmlAsync();
 }

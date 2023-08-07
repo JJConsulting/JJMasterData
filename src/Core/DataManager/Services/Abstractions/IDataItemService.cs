@@ -9,7 +9,7 @@ public interface IDataItemService
 {
     IEnumerable<DataItemResult> GetItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values);
     
-    Task<IEnumerable<DataItemValue>> GetValues(FormElementDataItem dataItem,
+    IAsyncEnumerable<DataItemValue> GetValuesAsync(FormElementDataItem dataItem,
         string searchText,
         string searchId,
         SearchBoxContext searchBoxContext);

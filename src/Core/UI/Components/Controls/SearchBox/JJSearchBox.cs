@@ -11,10 +11,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Http.Abstractions;
 
@@ -23,7 +25,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Represents a searchable combobox.
 /// </summary>
-public class JJSearchBox : JJBaseControl
+public class JJSearchBox : JJAsyncBaseControl
 {
     private JJMasterDataEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -144,25 +146,21 @@ public class JJSearchBox : JJBaseControl
     /// <summary>
     /// Id correspondente ao texto pesquisado
     /// </summary>
-    public string SelectedValue
+    public async Task<string> GetSelectedValueAsync()
     {
-        get
+        if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPost)
         {
-            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPost)
-            {
-                _selectedValue = CurrentContext.Request[Name];
-            }
-
-            if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
-            {
-                var list = GetValues(Text);
-                if (list?.Count() == 1)
-                    _selectedValue = list.ToList().First().Id;
-            }
-
-            return _selectedValue;
+            _selectedValue = CurrentContext.Request[Name];
         }
-        set => _selectedValue = value;
+
+        if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
+        {
+            var list = await GetValuesAsync(Text).ToListAsync();
+            if (list?.Count == 1)
+                _selectedValue = list.First().Id;
+        }
+
+        return _selectedValue;
     }
 
     /// <summary>
@@ -182,8 +180,13 @@ public class JJSearchBox : JJBaseControl
 
     public IDataItemService DataItemService { get; } 
     
-    public SearchBoxContext Context { get; } 
-    
+    public SearchBoxContext Context { get; }
+
+    public string SelectedValue
+    {
+        set => _selectedValue = value;
+    }
+
     #endregion
 
     #region "Constructors"
@@ -220,7 +223,7 @@ public class JJSearchBox : JJBaseControl
 
     #endregion
 
-    internal override HtmlBuilder RenderHtml()
+    protected override Task<HtmlBuilder> RenderHtmlAsync()
     {
 #if NET48
         if (IsSearchBoxRoute(this, JJService.Provider.GetScopedDependentService<IHttpContext>()))
@@ -270,45 +273,47 @@ public class JJSearchBox : JJBaseControl
     }
 
 
-    private HtmlBuilder GetSearchBoxHtml()
+    private async Task<HtmlBuilder> GetSearchBoxHtml()
     {
         if (DataItem == null)
             throw new ArgumentException("[DataItem] property not set");
 
-        var div = new HtmlBuilder(HtmlTag.Div)
-            .Append(HtmlTag.Input, input =>
-            {
-                input.WithAttribute("id", Id + "_text");
-                input.WithAttribute("name", Name + "_text");
-                input.WithAttribute("jjid", Name);
-                input.WithAttribute("type", "text");
-                input.WithAttribute("urltypehead", GetUrl());
-                input.WithAttribute("autocomplete", "off");
-                input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
-                input.WithAttributeIf(DataItem.ShowImageLegend, "showimagelegend", "true");
-                input.WithAttributeIf(ReadOnly, "readonly", "readonly");
-                input.WithAttributeIf(!Enabled, "disabled", "disabled");
-                input.WithAttributes(Attributes);
-                input.WithToolTip(ToolTip);
-                input.WithCssClass("form-control jjsearchbox");
-                input.WithCssClassIf(string.IsNullOrEmpty(SelectedValue), "jj-icon-search");
-                input.WithCssClassIf(!string.IsNullOrEmpty(SelectedValue), "jj-icon-success");
-                input.WithCssClass(CssClass);
+        var selectedValue = await GetSelectedValueAsync();
+        
+        var div = new HtmlBuilder(HtmlTag.Div);
+        await div.AppendAsync(HtmlTag.Input, async input =>
+        {
+            input.WithAttribute("id", Id + "_text");
+            input.WithAttribute("name", Name + "_text");
+            input.WithAttribute("jjid", Name);
+            input.WithAttribute("type", "text");
+            input.WithAttribute("urltypehead", GetUrl());
+            input.WithAttribute("autocomplete", "off");
+            input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
+            input.WithAttributeIf(DataItem.ShowImageLegend, "showimagelegend", "true");
+            input.WithAttributeIf(ReadOnly, "readonly", "readonly");
+            input.WithAttributeIf(!Enabled, "disabled", "disabled");
+            input.WithAttributes(Attributes);
+            input.WithToolTip(ToolTip);
+            input.WithCssClass("form-control jjsearchbox");
+            input.WithCssClassIf(string.IsNullOrEmpty(selectedValue), "jj-icon-search");
+            input.WithCssClassIf(!string.IsNullOrEmpty(selectedValue), "jj-icon-success");
+            input.WithCssClass(CssClass);
 
-                string description = Text;
-                if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(SelectedValue))
-                    description = GetDescription(SelectedValue);
+            string description = Text;
+            if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(selectedValue))
+                description = await GetDescriptionAsync(selectedValue);
 
-                input.WithAttribute("value", description);
+            input.WithAttribute("value", description);
 
-            })
-            .Append(HtmlTag.Input, input =>
-            {
-                input.WithAttribute("hidden", "hidden");
-                input.WithAttribute("id", Id);
-                input.WithAttribute("name", Name);
-                input.WithValue(SelectedValue);
-            });
+        });
+        div.Append(HtmlTag.Input, input =>
+        {
+            input.WithAttribute("hidden", "hidden");
+            input.WithAttribute("id", Id);
+            input.WithAttribute("name", Name);
+            input.WithValue(selectedValue);
+        });
 
         return div;
     }
@@ -347,7 +352,7 @@ public class JJSearchBox : JJBaseControl
     /// </summary>
     /// <param name="idSearch">Id a ser pesquisado</param>
     /// <returns>Retorna descrição referente ao id</returns>
-    public string GetDescription(string idSearch)
+    public async Task<string> GetDescriptionAsync(string idSearch)
     {
         string description = null;
         if (OnSearchQuery != null)
@@ -358,7 +363,7 @@ public class JJSearchBox : JJBaseControl
         }
         else
         {
-            _values ??= DataItemService.GetValues(DataItem,null, idSearch, Context).GetAwaiter().GetResult();
+            _values ??= await DataItemService.GetValuesAsync(DataItem,null, idSearch, Context).ToListAsync();
         }
 
         var item = _values?.ToList().Find(x => x.Id.Equals(idSearch));
@@ -372,20 +377,24 @@ public class JJSearchBox : JJBaseControl
     /// <summary>
     /// Recover values from the given text.
     /// </summary>
-    public IEnumerable<DataItemValue> GetValues(string searchText)
+    public async IAsyncEnumerable<DataItemValue> GetValuesAsync(string searchText)
     {
         if (OnSearchQuery != null)
         {
             var args = new SearchBoxQueryEventArgs(searchText);
             OnSearchQuery.Invoke(this, args);
-            _values = args.Values;
+            foreach (var value in args.Values)
+            {
+                yield return value;
+            }
         }
         else
         {
-            _values ??= DataItemService.GetValues(DataItem,searchText, null, Context).GetAwaiter().GetResult();
+            await foreach (var value in DataItemService.GetValuesAsync(DataItem, searchText, null, Context))
+            {
+                yield return value;
+            }
         }
-
-        return _values;
     }
 
     public void ResponseJson()
@@ -393,21 +402,21 @@ public class JJSearchBox : JJBaseControl
         if (!FieldName.Equals(CurrentContext.Request.QueryString("fieldName")))
             return;
 
-        string json = JsonConvert.SerializeObject(GetListBoxItems());
+        string json = JsonConvert.SerializeObject(GetSearchBoxItemsAsync());
 
         CurrentContext.Response.SendResponse(json, "application/json");
 
     }
 
-    public IEnumerable<DataItemResult> GetListBoxItems()
+    public async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
         string componentName = CurrentContext.Request.QueryString("fieldName");
         string textSearch = CurrentContext.Request.Form(componentName);
 
-        var values = GetValues(textSearch);
+        var values = await GetValuesAsync(textSearch).ToListAsync();
         var items = DataItemService.GetItems(DataItem, values);
 
-        return items;
+        return items.ToList();
     }
 
 
