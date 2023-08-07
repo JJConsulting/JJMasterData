@@ -17,22 +17,22 @@ public class FieldValidationService : IFieldValidationService
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> Localizer { get; }
 
-    public FieldValidationService(IExpressionsService expressionsService,IStringLocalizer<JJMasterDataResources> localizer)
+    public FieldValidationService(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> localizer)
     {
         ExpressionsService = expressionsService;
         Localizer = localizer;
     }
-    
-    public async Task<IDictionary<string,dynamic>> ValidateFieldsAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool enableErrorLink)
+
+    public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState, bool enableErrorLink)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 
-        var errors = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var errors = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
 
         foreach (var field in formElement.Fields)
         {
-            var isVisible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression,  pageState, formValues);
+            var isVisible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, pageState, formValues);
             if (!isVisible)
                 continue;
 

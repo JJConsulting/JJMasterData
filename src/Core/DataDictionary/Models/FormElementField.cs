@@ -28,13 +28,13 @@ public class FormElementField : ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("visibleExpression")]
-    public string? VisibleExpression { get; set; }
+    public string VisibleExpression { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("enableExpression")]
-    public string? EnableExpression { get; set; }
+    public string EnableExpression { get; set; }
     
 
     /// <summary>

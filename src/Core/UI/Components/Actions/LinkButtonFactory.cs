@@ -26,11 +26,8 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
-
     private ActionsScripts ActionsScripts => _actionsScripts ??= new ActionsScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
-    //E agora?
-    // private GridScripts GridScripts => _gridScripts ??= new GridScripts(EncryptionService,UrlHelper);
-
+    
     public LinkButtonFactory(IExpressionsService expressionsService,
         JJMasterDataUrlHelper urlHelper,
         JJMasterDataEncryptionService encryptionService,
@@ -117,7 +114,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                 button.OnClientClick =
                     ActionsScripts.GetFormActionScript(toolbarAction, actionContext, ActionSource.GridToolbar);
                 break;
-            case ExportAction exportAction:
+            case ExportAction:
                 var exportationScripts = new DataExportationScripts(UrlHelper, EncryptionService);
                 button.OnClientClick =
                     exportationScripts.GetExportPopupScript(actionContext.FormElement.Name,
@@ -131,7 +128,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                     BootstrapHelper.GetModalScript($"filter_modal_{actionContext.ParentComponentName}");
                 break;
             case InsertAction insertAction:
-                button.OnClientClick = ActionsScripts.GetFormActionScript(toolbarAction, actionContext,
+                button.OnClientClick = ActionsScripts.GetFormActionScript(insertAction, actionContext,
                     ActionSource.GridToolbar, insertAction.ShowAsPopup);
                 break;
             case LegendAction:

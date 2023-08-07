@@ -161,7 +161,7 @@ internal class ActionsScripts
             case SqlCommandAction:
                 return GetCommandScript(userCreatedAction, actionContext, actionSource);
             case ScriptAction jsAction:
-                return ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData.PageState, false, formStateData.FormValues, formStateData.UserValues);
+                return ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData, false);
             case InternalAction internalAction:
                 return GetInternalUrlScript(internalAction, formStateData.FormValues);
             default:

@@ -1,17 +1,14 @@
-using System;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -67,9 +64,9 @@ public class FormService : IFormService
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter> UpdateAsync(FormElement formElement, IDictionary<string,dynamic> values, DataContext dataContext)
+    public async Task<FormLetter> UpdateAsync(FormElement formElement, IDictionary<string, dynamic> values, DataContext dataContext)
     {
-        var errors = await FieldValidationService.ValidateFieldsAsync(formElement,values, PageState.Update, EnableErrorLinks);
+        var errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Update, EnableErrorLinks);
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdate != null)
@@ -89,9 +86,9 @@ public class FormService : IFormService
         }
         catch (Exception e)
         {
-            errors.Add("DbException",ExceptionManager.GetMessage(e));
+            errors.Add("DbException", ExceptionManager.GetMessage(e));
         }
-        
+
         result.NumberOfRowsAffected = rowsAffected;
 
         if (errors.Count > 0)
@@ -100,8 +97,8 @@ public class FormService : IFormService
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
-        if (await IsAuditLogEnabled(formElement, PageState.Update	, values))
-            await AuditLogService.LogAsync(formElement,dataContext, values, CommandOperation.Update);
+        if (await IsAuditLogEnabled(formElement, PageState.Update, values))
+            await AuditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null)
         {
@@ -113,13 +110,13 @@ public class FormService : IFormService
         return result;
     }
 
-    public async Task<FormLetter> InsertAsync(FormElement formElement,IDictionary<string,dynamic> values, DataContext dataContext, bool validateFields = true)
+    public async Task<FormLetter> InsertAsync(FormElement formElement, IDictionary<string, dynamic> values, DataContext dataContext, bool validateFields = true)
     {
-        IDictionary<string,dynamic>errors;
+        IDictionary<string, dynamic> errors;
         if (validateFields)
-            errors = await FieldValidationService.ValidateFieldsAsync(formElement,values, PageState.Insert, EnableErrorLinks);
+            errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Insert, EnableErrorLinks);
         else
-            errors = new Dictionary<string,dynamic>();
+            errors = new Dictionary<string, dynamic>();
 
         var result = new FormLetter(errors);
         if (OnBeforeInsert != null)
@@ -137,7 +134,7 @@ public class FormService : IFormService
         }
         catch (Exception e)
         {
-            errors.Add("DbException",ExceptionManager.GetMessage(e));
+            errors.Add("DbException", ExceptionManager.GetMessage(e));
         }
 
         if (errors.Count > 0)
@@ -147,7 +144,7 @@ public class FormService : IFormService
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
         if (await IsAuditLogEnabled(formElement, PageState.Insert, values))
-            await AuditLogService.LogAsync(formElement,dataContext, values, CommandOperation.Insert);
+            await AuditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
 
         if (OnAfterInsert != null)
         {
@@ -165,9 +162,9 @@ public class FormService : IFormService
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement,IDictionary<string,dynamic> values,  DataContext dataContext)
+    public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement, IDictionary<string, dynamic> values, DataContext dataContext)
     {
-        var errors = await FieldValidationService.ValidateFieldsAsync(formElement,values, PageState.Import, EnableErrorLinks);
+        var errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Import, EnableErrorLinks);
         var result = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImport != null)
@@ -186,15 +183,15 @@ public class FormService : IFormService
         }
         catch (Exception e)
         {
-            errors.Add("DbException",ExceptionManager.GetMessage(e));
+            errors.Add("DbException", ExceptionManager.GetMessage(e));
         }
-        
+
 
         if (errors.Count > 0)
             return result;
 
         if (await IsAuditLogEnabled(formElement, PageState.Import, values))
-            await AuditLogService.LogAsync(formElement,dataContext, values, result.Result);
+            await AuditLogService.LogAsync(formElement, dataContext, values, result.Result);
 
         if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
         {
@@ -227,9 +224,9 @@ public class FormService : IFormService
     /// <param name="primaryKeys">Primary keys to delete records on the database.</param>
     /// <param name="dataContext"></param>
     /// >
-    public async Task<FormLetter> DeleteAsync(FormElement formElement,IDictionary<string,dynamic> primaryKeys,  DataContext dataContext)
+    public async Task<FormLetter> DeleteAsync(FormElement formElement, IDictionary<string, dynamic> primaryKeys, DataContext dataContext)
     {
-        IDictionary<string,dynamic>errors = new Dictionary<string, dynamic>();
+        IDictionary<string, dynamic> errors = new Dictionary<string, dynamic>();
         var result = new FormLetter(errors);
 
         if (OnBeforeDelete != null)
@@ -248,9 +245,9 @@ public class FormService : IFormService
         }
         catch (Exception e)
         {
-            errors.Add("DbException",ExceptionManager.GetMessage(e));
+            errors.Add("DbException", ExceptionManager.GetMessage(e));
         }
-        
+
         if (errors.Count > 0)
             return result;
 
@@ -258,7 +255,7 @@ public class FormService : IFormService
             FormFileService.DeleteFiles(formElement, primaryKeys);
 
         if (await IsAuditLogEnabled(formElement, PageState.Delete, primaryKeys))
-            await AuditLogService.LogAsync(formElement,dataContext, primaryKeys, CommandOperation.Delete);
+            await AuditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null)
         {
@@ -269,7 +266,7 @@ public class FormService : IFormService
 
         return result;
     }
-    
+
     public void AddFormEvent(IFormEvent formEvent)
     {
         if (formEvent != null)
@@ -284,11 +281,12 @@ public class FormService : IFormService
             OnAfterUpdate += formEvent.OnAfterUpdate;
         }
     }
-    
-    private async Task<bool> IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string,dynamic> formValues)
+
+    private async Task<bool> IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string, dynamic> formValues)
     {
+        var formState = new FormStateData(formValues, pageState);
         var auditLogExpression = formElement.Options.GridToolbarActions.LogAction.EnableExpression;
-        var isEnabled = await ExpressionsService.GetBoolValueAsync(auditLogExpression, pageState,formValues);
+        var isEnabled = await ExpressionsService.GetBoolValueAsync(auditLogExpression, formState);
         return isEnabled;
     }
 

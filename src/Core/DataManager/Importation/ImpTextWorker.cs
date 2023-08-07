@@ -1,24 +1,24 @@
-﻿using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Logging;
+﻿using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.DI;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.DataManager.Services.Abstractions;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
+using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.DataManager.Imports;
 
@@ -26,7 +26,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
 {
     #region "Events"
 
-    public  EventHandler<FormAfterActionEventArgs> OnAfterProcess;
+    public EventHandler<FormAfterActionEventArgs> OnAfterProcess;
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
     #endregion
@@ -44,23 +44,23 @@ public class ImpTextWorker : IBackgroundTaskWorker
 
     internal IExpressionsService ExpressionsService { get; } =
         JJService.Provider.GetScopedDependentService<IExpressionsService>();
-    
+
     internal IEntityRepository EntityRepository { get; } =
         JJService.Provider.GetScopedDependentService<IEntityRepository>();
-    
+
     internal IFieldVisibilityService FieldVisibilityService { get; } =
         JJService.Provider.GetScopedDependentService<IFieldVisibilityService>();
-    
+
     internal IFieldValuesService FieldValuesService { get; } =
         JJService.Provider.GetScopedDependentService<IFieldValuesService>();
-    
+
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
         JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
-    
+
     internal ILogger<ImpTextWorker> Logger { get; } =
         JJService.Provider.GetScopedDependentService<ILogger<ImpTextWorker>>();
-    
-    internal IFormService FormService { get; } 
+
+    internal IFormService FormService { get; }
     public string PostedText { get; private set; }
 
     public char SplitChar { get; private set; }
@@ -138,7 +138,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
     {
         Thread.CurrentThread.CurrentUICulture = Culture;
         Thread.CurrentThread.CurrentCulture = Culture;
-        
+
         //recuperando campos a serem importados
         var listField = GetListImportedField();
 
@@ -147,7 +147,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         currentProcess.TotalRecords = rows.Length;
         currentProcess.Message = StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
         //recupera default values
-        var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement,null, PageState.Import);
+        var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, null, PageState.Import);
 
         //executa script antes da execuçao
         if (currentProcess.TotalRecords > 0 &&
@@ -228,7 +228,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
     /// <summary>
     /// Preenche um hashtable com o nome do campor e o valor
     /// </summary>
-    private IDictionary<string,dynamic> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField, string[] cols)
+    private IDictionary<string, dynamic> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField, string[] cols)
     {
         var values = new Dictionary<string, dynamic>();
         for (int i = 0; i < listField.Count; i++)
@@ -237,7 +237,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             string value = cols[i];
             if (field.Component == FormComponent.CheckBox)
             {
-                if (ExpressionsService.ParseBool(value))
+                if (StringManager.ParseBool(value))
                     value = "1";
                 else
                     value = "0";
@@ -272,12 +272,12 @@ public class ImpTextWorker : IBackgroundTaskWorker
     /// Retorna lista de erros
     /// </summary>
     /// <returns>Retorna lista de erros</returns>
-    private async Task SetFormValues(IDictionary<string,dynamic> fileValues, DataImpReporter currentProcess)
+    private async Task SetFormValues(IDictionary<string, dynamic> fileValues, DataImpReporter currentProcess)
     {
         try
         {
-            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,fileValues, PageState.Import, true);
-            var ret = await FormService.InsertOrReplaceAsync(FormElement,values, DataContext);
+            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, fileValues, PageState.Import, true);
+            var ret = await FormService.InsertOrReplaceAsync(FormElement, values, DataContext);
 
             if (ret.IsValid)
             {
