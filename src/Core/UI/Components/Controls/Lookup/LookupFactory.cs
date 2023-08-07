@@ -35,6 +35,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
     public JJLookup Create()
     {
         return new JJLookup(
+            null,
             HttpContext,
             LookupService,
             EncryptionService,
@@ -49,6 +50,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
         lookup.Name = field.Name;
         lookup.SelectedValue = controlContext.Value?.ToString();
         lookup.Visible = true;
+        lookup.FormElement = formElement;
         lookup.DataItem = field.DataItem;
         lookup.AutoReloadFormFields = false;
         lookup.Attributes.Add("pnlname", controlContext.ParentComponentName);

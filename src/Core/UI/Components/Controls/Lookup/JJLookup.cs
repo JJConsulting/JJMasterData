@@ -16,12 +16,12 @@ namespace JJMasterData.Core.Web.Components;
 /// Represents a field with a value from another Data Dictionary accessed via popup.
 public class JJLookup : JJAsyncBaseControl
 {
+    internal FormElement FormElement { get; set; }
     private ILookupService LookupService { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private ILogger<JJLookup> Logger { get; }
-
-
+    
     #region "Properties"
 
     private string _selectedValue;
@@ -94,12 +94,14 @@ public class JJLookup : JJAsyncBaseControl
     #region "Constructors"
 
     public JJLookup(
+        FormElement formElement,
         IHttpContext httpContext,
         ILookupService lookupService,
         JJMasterDataEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         ILogger<JJLookup> logger) : base(httpContext)
     {
+        FormElement = formElement;
         LookupService = lookupService;
         EncryptionService = encryptionService;
         UrlHelper = urlHelper;
@@ -138,20 +140,23 @@ public class JJLookup : JJAsyncBaseControl
 
         var div = new HtmlBuilder(HtmlTag.Div);
 
+
         Attributes["lookup-url"] = LookupService.GetLookupUrl(DataItem, Name, PageState, FormValues);
 
-        // if (IsExternalRoute)
-        // {
-        //     var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(DataItem.ElementMap.ElementName);
-        //     Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup",
-        //         new
-        //         {
-        //             dictionaryName = encryptedDictionaryName, 
-        //             componentName = Name, 
-        //             
-        //             pageState = PageState
-        //         });
-        // }
+        if (IsExternalRoute)
+        {
+            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
+            var componentName = Attributes["pnlname"];
+            Attributes["data-panel-reload-url"] = UrlHelper.GetUrl("ReloadPanel", "Form",
+                new { dictionaryName = encryptedDictionaryName, componentName });
+            Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup",
+                new
+                {
+                    dictionaryName = encryptedDictionaryName, 
+                    componentName = Name,
+                    pageState = PageState
+                });
+        }
 
         var textGroup = new JJTextGroup(CurrentContext)
         {
@@ -206,7 +211,7 @@ public class JJLookup : JJAsyncBaseControl
             Logger.LogError(ex, ex.Message);
         }
 
-        CurrentContext.Response.SendResponseObsolete(dto?.ToJson(), "application/json");
+        CurrentContext.Response.SendResponse(dto?.ToJson(), "application/json");
     }
 
     /// <summary>

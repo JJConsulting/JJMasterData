@@ -1177,15 +1177,10 @@ class Lookup {
             let panelName = lookupInput.attr("pnlname");
             let popupTitle = lookupInput.attr("popuptitle");
             let lookupUrl = lookupInput.attr("lookup-url");
+            let lookupResultUrl = lookupInput.attr("lookup-result-url");
+            let dataPanelReloadUrl = lookupInput.attr("data-panel-reload-url");
             let popupSize = +lookupInput.attr("popupsize");
-            let form = $("form");
-            let url = form.attr("action");
-            if (url.includes("?"))
-                url += "&";
-            else
-                url += "?";
-            url += "jjlookup_";
-            url += panelName + "=" + lookupId;
+            let form = document.querySelector("form");
             const jjLookupSelector = "#" + lookupId + "";
             const jjHiddenLookupSelector = "#id_" + lookupId + "";
             $("#btn_" + lookupId).on("click", function () {
@@ -1208,38 +1203,48 @@ class Lookup {
                 if (lookupInput.val() == "") {
                     return;
                 }
+                if (!lookupResultUrl) {
+                    let urlBuilder = new UrlBuilder();
+                    urlBuilder.addQueryParameter("jjlookup_" + panelName, lookupId);
+                    urlBuilder.addQueryParameter("lkaction", "ajax");
+                    urlBuilder.addQueryParameter("lkid", lookupInput.val().toString());
+                    lookupResultUrl = urlBuilder.build();
+                }
                 lookupInput.addClass("loading-circle");
-                const ajaxUrl = url + "&lkaction=ajax&lkid=" + lookupInput.val();
-                $.ajax({
-                    type: 'POST',
-                    data: form.serialize(),
-                    dataType: "json",
-                    cache: false,
-                    async: true,
-                    url: ajaxUrl,
-                    success: function (data) {
-                        showWaitOnPost = true;
-                        lookupInput.removeClass("loading-circle");
-                        if (data.description == "") {
-                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass);
+                const formData = new FormData(form);
+                fetch(lookupResultUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                    showWaitOnPost = true;
+                    lookupInput.removeClass("loading-circle");
+                    if (data.description === "") {
+                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass);
+                    }
+                    else {
+                        const lookupHiddenInputElement = document.querySelector("#id_" + lookupId);
+                        const lookupInputElement = document.querySelector("#" + lookupId);
+                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
+                        lookupInputElement.value = data.description;
+                        lookupHiddenInputElement.value = data.id;
+                        if (dataPanelReloadUrl) {
+                            DataPanel.Reload(dataPanelReloadUrl, panelName, lookupId);
                         }
                         else {
-                            const lookupHiddenInputElement = document.getElementById("id_" + lookupId);
-                            const lookupInputElement = document.getElementById(lookupId);
-                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
-                            lookupInputElement.value = data.description;
-                            lookupHiddenInputElement.value = data.id;
                             DataPanel.ReloadAtSamePage(panelName, lookupId);
                         }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        showWaitOnPost = true;
-                        lookupInput.removeClass("loading-circle");
-                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass);
-                        console.log(errorThrown);
-                        console.log(textStatus);
-                        console.log(jqXHR);
                     }
+                })
+                    .catch(error => {
+                    showWaitOnPost = true;
+                    lookupInput.removeClass("loading-circle");
+                    FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass);
+                    console.log(error);
                 });
             });
         });
