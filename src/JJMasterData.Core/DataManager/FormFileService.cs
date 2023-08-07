@@ -71,7 +71,7 @@ internal class FormFileService
         if (string.IsNullOrWhiteSpace(newName))
             throw new ArgumentNullException(Translate.Key("Required file name"));
 
-        if (!Validate.ValidFileName(newName))
+        if (!Validate.IsFilePathValid(newName))
             throw new JJMasterDataException(Translate.Key("file name cannot contain [{0}] characters", "* < > | : ? \" / \\"));
 
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))

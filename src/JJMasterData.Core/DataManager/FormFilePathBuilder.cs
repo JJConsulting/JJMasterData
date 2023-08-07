@@ -24,11 +24,7 @@ public class FormFilePathBuilder
 
         //Pks concat with  underline
         string pkval = DataHelper.ParsePkValues(FormElement, formValues, '_');
-        if (!Validate.ValidFileName(pkval))
-            throw new JJMasterDataException(Translate.Key("Error rendering upload! Primary key value {0} contains invalid characters.",
-                pkval));
-
-        //Path configured in the dictionary
+        
         string path = field.DataFile.FolderPath;
 
         if (string.IsNullOrEmpty(path))
@@ -44,7 +40,7 @@ public class FormFilePathBuilder
         if (!path.EndsWith(separator.ToString()))
             path += separator;
 
-        return path;
+        return FileIO.SanitizePath(path);
     }
 
    

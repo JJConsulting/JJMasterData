@@ -241,7 +241,7 @@ public class JJTextFile : JJBaseControl
                 return false;
 
             string value = FormValues[pkField.Name]!.ToString();
-            if (!Validate.ValidFileName(value))
+            if (!Validate.IsFilePathValid(value))
                 return false;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 
 namespace JJMasterData.Commons.Util;
@@ -250,29 +251,15 @@ public static class Validate
         return chaveNFe.EndsWith(digitoRetorno.ToString());
     }
 
-
-    /// <summary>
-    /// Valida se o nome do arquivo contém caracteres inválidos 
-    /// ? * / \ | "
-    /// </summary>
-    public static bool ValidFileName(string filename)
+    
+    public static bool IsFilePathValid(string filename)
     {
         if (string.IsNullOrEmpty(filename))
             return false;
+        
+        var invalidChars = Path.GetInvalidFileNameChars();
 
-        if (filename.Contains('?') ||
-            filename.Contains('*') ||
-            filename.Contains('/') ||
-            filename.Contains('\\') ||
-            filename.Contains('<') ||
-            filename.Contains('>') ||
-            filename.Contains('|') ||
-            filename.Contains('"'))
-        {
-            return false;
-        }
-
-        return true;
+        return invalidChars.All(invalidChar => !filename.Contains(invalidChar));
     }
 
     public static bool IsDatabaseKeyword(string value)
