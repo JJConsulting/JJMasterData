@@ -44,18 +44,18 @@ public class FieldFormattingService : IFieldFormattingService
                 break;
             case FormComponent.Lookup
                  when field.DataItem is { ReplaceTextOnGrid: true }:
-                    var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
-                    var formData = new FormStateData(values, PageState.List);
-                    stringValue = await LookupService.GetDescriptionAsync(field.DataItem, formData, value, allowOnlyNumerics);
-                    break;
+                var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
+                var formData = new FormStateData(values, PageState.List);
+                stringValue = await LookupService.GetDescriptionAsync(field.DataItem, formData, value, allowOnlyNumerics);
+                break;
             case FormComponent.CheckBox:
                 stringValue = StringManager.ParseBool(value) ? "Sim" : "Não";
                 break;
             case FormComponent.Search or FormComponent.ComboBox
                  when field.DataItem is { ReplaceTextOnGrid: true }:
-                    var searchBoxValues = DataItemService.GetValuesAsync(field.DataItem, null, null, new SearchBoxContext(null, values, PageState.List));
-
-                    return (await searchBoxValues.FirstOrDefaultAsync(v => v.Id == fieldValue?.ToString()))?.Description ?? string.Empty;
+                var searchFormData = new FormStateData(values, userValues, PageState.List);
+                var searchBoxValues = DataItemService.GetValuesAsync(field.DataItem, searchFormData, null, null);
+                return (await searchBoxValues.FirstOrDefaultAsync(v => v.Id == fieldValue?.ToString()))?.Description ?? string.Empty;
             default:
                 stringValue = FormatValue(field, value);
                 break;

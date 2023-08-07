@@ -1,24 +1,21 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Components.Abstractions;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
-using Microsoft.Extensions.DependencyInjection;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components.Abstractions;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -174,9 +171,9 @@ public class JJSearchBox : JJAsyncBaseControl
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
-    public IDataItemService DataItemService { get; } 
-    
-    public SearchBoxContext Context { get; }
+    public IDataItemService DataItemService { get; }
+
+    public FormStateData FormStateData { get; }
 
     public string SelectedValue
     {
@@ -203,18 +200,19 @@ public class JJSearchBox : JJAsyncBaseControl
         ScrollBar = false;
         AutoReloadFormFields = true;
         Name = "jjsearchbox1";
-        Context = new(null,UserValues,PageState.List);
+        var defaultValues = new Dictionary<string, dynamic>();
+        FormStateData = new(defaultValues, UserValues, PageState.List);
     }
 
     public JJSearchBox(
-        FormStateData expOptions, 
+        FormStateData formStateData,
         IHttpContext httpContext,
         JJMasterDataEncryptionService encryptionService,
         IDataItemService dataItemService,
-        JJMasterDataUrlHelper urlHelper) : this(httpContext, encryptionService, dataItemService,urlHelper)
+        JJMasterDataUrlHelper urlHelper) : this(httpContext, encryptionService, dataItemService, urlHelper)
     {
-        Context = new(expOptions.FormValues,expOptions.UserValues,expOptions.PageState);
-        UserValues = expOptions.UserValues;
+        FormStateData = formStateData;
+        UserValues = formStateData.UserValues;
     }
 
     #endregion
@@ -247,7 +245,7 @@ public class JJSearchBox : JJAsyncBaseControl
     internal static HtmlBuilder ResponseJson(
         JJBaseView view,
         FormElement formElement,
-        IDictionary<string, dynamic> formValues, 
+        IDictionary<string, dynamic> formValues,
         IHttpContext httpContext,
         SearchBoxFactory searchBoxFactory
         )
@@ -255,14 +253,14 @@ public class JJSearchBox : JJAsyncBaseControl
         string dictionaryName = httpContext.Request.QueryString("dictionaryName");
         string fieldName = httpContext.Request.QueryString("fieldName");
         var pageState = (PageState)int.Parse(httpContext.Request.QueryString("pageState"));
-        
+
         if (!formElement.Name.Equals(dictionaryName))
             return null;
 
         var field = formElement.Fields[fieldName];
         var expOptions = new FormStateData(formValues, view.UserValues, pageState);
-        
-        var searchBox = searchBoxFactory.Create(formElement,field, new(expOptions, view.Name, dictionaryName));
+
+        var searchBox = searchBoxFactory.Create(formElement, field, new(expOptions, view.Name, dictionaryName));
         searchBox.ResponseJson();
 
         return null;
@@ -275,7 +273,7 @@ public class JJSearchBox : JJAsyncBaseControl
             throw new ArgumentException("[DataItem] property not set");
 
         var selectedValue = await GetSelectedValueAsync();
-        
+
         var div = new HtmlBuilder(HtmlTag.Div);
         await div.AppendAsync(HtmlTag.Input, async input =>
         {
@@ -320,13 +318,13 @@ public class JJSearchBox : JJAsyncBaseControl
         if (IsExternalRoute)
         {
             string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEscape(DictionaryName);
-            url.Append(UrlHelper.GetUrl("GetItems","Search", new
+            url.Append(UrlHelper.GetUrl("GetItems", "Search", new
             {
-                dictionaryName = dictionaryNameEncrypted, 
+                dictionaryName = dictionaryNameEncrypted,
                 fieldName = FieldName,
                 fieldSearchName = Name + "_text",
-                pageState = (int)Context.PageState,
-                Area="MasterData"
+                pageState = (int)FormStateData.PageState,
+                Area = "MasterData"
             }));
         }
         else
@@ -335,7 +333,7 @@ public class JJSearchBox : JJAsyncBaseControl
             url.Append($"&dictionaryName={DictionaryName}");
             url.Append($"&fieldName={FieldName}");
             url.Append($"&fieldSearchName={Name + "_text"}");
-            url.Append($"&pageState={(int)Context.PageState}");
+            url.Append($"&pageState={(int)FormStateData.PageState}");
         }
 
 
@@ -359,7 +357,7 @@ public class JJSearchBox : JJAsyncBaseControl
         }
         else
         {
-            _values ??= await DataItemService.GetValuesAsync(DataItem,null, idSearch, Context).ToListAsync();
+            _values ??= await DataItemService.GetValuesAsync(DataItem, FormStateData, null, idSearch).ToListAsync();
         }
 
         var item = _values?.ToList().Find(x => x.Id.Equals(idSearch));
@@ -386,7 +384,7 @@ public class JJSearchBox : JJAsyncBaseControl
         }
         else
         {
-            await foreach (var value in DataItemService.GetValuesAsync(DataItem, searchText, null, Context))
+            await foreach (var value in DataItemService.GetValuesAsync(DataItem, FormStateData, searchText, null))
             {
                 yield return value;
             }
