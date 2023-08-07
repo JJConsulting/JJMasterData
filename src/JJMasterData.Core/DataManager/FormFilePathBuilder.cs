@@ -23,7 +23,7 @@ public class FormFilePathBuilder
             throw new ArgumentException($"{nameof(FormElementField.DataFile)} not defined.", field.Name);
 
         //Pks concat with  underline
-        string pkval = DataHelper.ParsePkValues(FormElement, formValues, '_');
+        string pkval = FileIO.SanitizePath(DataHelper.ParsePkValues(FormElement, formValues, '_'));
         
         string path = FileIO.SanitizePath(field.DataFile.FolderPath);
 
