@@ -1,37 +1,37 @@
 ﻿class GridView {
     static sorting(componentName, url, tableOrder) {
-        const tableOrderElement = document.querySelector<HTMLInputElement>("#current_tableorder_" + componentName);
+        const tableOrderElement = document.querySelector<HTMLInputElement>("#current-table-order-" + componentName);
         if (tableOrder + " ASC" === tableOrderElement.value)
             tableOrderElement.value = tableOrder + " DESC";
         else
             tableOrderElement.value = tableOrder + " ASC";
 
-        document.querySelector<HTMLInputElement>("#current-tableAction-" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#current-formAction-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-table-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-form-action-" + componentName).value = "";
 
         GridView.refreshGrid(componentName, url);
     }
 
     static pagination(componentName, url, currentPage) {
-        document.querySelector<HTMLInputElement>("#current_tablepage_" + componentName).value = currentPage;
-        document.querySelector<HTMLInputElement>("#current-tableAction-" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#current-formAction-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-table-page-" + componentName).value = currentPage;
+        document.querySelector<HTMLInputElement>("#current-table-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-form-action-" + componentName).value = "";
 
         GridView.refreshGrid(componentName, url);
     }
 
     static filter(componentName, url) {
-        document.querySelector<HTMLInputElement>("#current_filteraction_" + componentName).value = "FILTERACTION";
-        document.querySelector<HTMLInputElement>("#current-tableAction-" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#current_tablepage_" + componentName).value = "1";
-        document.querySelector<HTMLInputElement>("#current-formAction-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-filter-action-" + componentName).value = "FILTERACTION";
+        document.querySelector<HTMLInputElement>("#current-table-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-table-page-" + componentName).value = "1";
+        document.querySelector<HTMLInputElement>("#current-form-action-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
 
     static refresh(componentName, url) {
-        document.querySelector<HTMLInputElement>("#current-tableAction-" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#current_tablerow_" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#current-formAction-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-table-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-table-row-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#current-form-action-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
 
@@ -47,11 +47,11 @@
         const checkboxes = document.querySelectorAll<HTMLInputElement>(".jjselect input:not(:disabled)");
         checkboxes.forEach(checkbox => checkbox.checked = true);
 
-        const selectedRowsInput = document.getElementById("selectedrows_" + componentName) as HTMLInputElement;
+        const selectedRowsInput = document.getElementById("selected-rows" + componentName) as HTMLInputElement;
         selectedRowsInput.value = values.join(",");
 
-        const selectedText = document.getElementById("selectedtext_" + componentName);
-        selectedText.textContent = selectedText.getAttribute("paramSelStr").replace("{0}", values.length.toString());
+        const selectedText = document.getElementById("selected-text-" + componentName);
+        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
     }
 
     static refreshGrid(componentName, url) {
@@ -69,14 +69,14 @@
         })
             .then(response => response.text())
             .then(data => {
-                document.querySelector<HTMLInputElement>("#jjgridview_" + componentName).innerHTML = data;
+                document.querySelector<HTMLInputElement>("#jjgridview-" + componentName).innerHTML = data;
                 loadJJMasterData();
-                document.querySelector<HTMLInputElement>("#current_filteraction_" + componentName).value = "";
+                document.querySelector<HTMLInputElement>("#current-filter-action-" + componentName).value = "";
                 SpinnerOverlay.hide();
             })
             .catch(error => {
                 console.log(error);
-                document.querySelector<HTMLInputElement>("#current_filteraction_" + componentName).value = "";
+                document.querySelector<HTMLInputElement>("#current-filter-action-" + componentName).value = "";
             });
     }
 }

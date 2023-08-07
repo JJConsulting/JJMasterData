@@ -66,7 +66,7 @@ class UploadArea {
             },
             afterUploadAll: function (element) {
                 if (options.autoSubmit && element.selectedFiles > 0) {
-                    $("#uploadaction_" + options.componentName).val("afteruploadall");
+                    $("#upload-action-" + options.componentName).val("afteruploadall");
                 }
                 loadJJMasterData()
             },
@@ -82,7 +82,7 @@ class UploadArea {
                     document.querySelector("#btnDoUpload_" + componentName).addEventListener("click", () => {
                         document.querySelector("#preview_modal_" + componentName).classList.add("hide");
 
-                        var filename = document.querySelector<HTMLInputElement>("#preview_filename_" + componentName).value || "image";
+                        var filename = document.querySelector<HTMLInputElement>("#preview_filename-" + componentName).value || "image";
                         filename += ".png";
 
                         const dt = new DataTransfer();
@@ -99,7 +99,7 @@ class UploadArea {
                         document.querySelector<HTMLImageElement>("#pastedimage_" + componentName).src = event.target.result.toString();
 
                         var filename = file.name.replace(/\.[^/.]+$/, "");
-                        document.querySelector<HTMLInputElement>("#preview_filename_" + componentName).value = filename;
+                        document.querySelector<HTMLInputElement>("#preview_filename-" + componentName).value = filename;
                         document.querySelector("#preview_modal_" + componentName).classList.remove("hide");
                     };
                     reader.readAsDataURL(file);

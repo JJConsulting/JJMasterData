@@ -108,7 +108,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
         switch (toolbarAction)
         {
             case ConfigAction:
-                button.OnClientClick = BootstrapHelper.GetModalScript($"config_modal_{actionContext.ParentComponentName}");
+                button.OnClientClick = BootstrapHelper.GetModalScript($"config-modal-{actionContext.ParentComponentName}");
                 break;
             case DeleteSelectedRowsAction or ImportAction or LogAction:
                 button.OnClientClick =
@@ -140,7 +140,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                 break;
             case SortAction:
                 button.OnClientClick =
-                    BootstrapHelper.GetModalScript($"sort_modal_{actionContext.ParentComponentName}");
+                    BootstrapHelper.GetModalScript($"sort-modal-{actionContext.ParentComponentName}");
                 break;
         }
 

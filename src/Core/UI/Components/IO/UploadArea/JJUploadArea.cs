@@ -133,7 +133,7 @@ public class JJUploadArea : JJBaseView
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divupload")
-            .AppendHiddenInput($"uploadaction_{Name}", string.Empty)
+            .AppendHiddenInput($"upload-action-{Name}", string.Empty)
             .Append(HtmlTag.Div,  div =>
                 {
                     div.WithCssClass("fileUpload");
@@ -183,7 +183,7 @@ public class JJUploadArea : JJBaseView
     
     public bool IsPostAfterUploadAllFiles()
     {
-        string nameField = $"uploadaction_{Name}";
+        string nameField = $"upload-action-{Name}";
         string action = CurrentContext.Request[nameField];
         return "afteruploadall".Equals(action);
     }

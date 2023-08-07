@@ -222,7 +222,7 @@ public class JJGridView : JJAsyncBaseView
             }
             else
             {
-                _currentOrder = CurrentContext.Request["current_tableorder_" + Name];
+                _currentOrder = CurrentContext.Request["current-table-order-" + Name];
                 if (_currentOrder == null)
                 {
                     object tableOrder = CurrentContext.Session[$"jjcurrentorder_{Name}"];
@@ -255,7 +255,7 @@ public class JJGridView : JJAsyncBaseView
             if (CurrentContext.IsPost)
             {
                 int currentPage = 1;
-                string tablePageId = "current_tablepage_" + Name;
+                string tablePageId = "current-table-page-" + Name;
                 if (!string.IsNullOrEmpty(CurrentContext.Request[tablePageId]))
                 {
                     if (int.TryParse(CurrentContext.Request[tablePageId], out var page))
@@ -473,7 +473,7 @@ public class JJGridView : JJAsyncBaseView
         get
         {
             if (_currentActionMap != null) return _currentActionMap;
-            var encryptedActionMap = CurrentContext.Request["current-tableAction-" + Name];
+            var encryptedActionMap = CurrentContext.Request["current-table-action-" + Name];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -484,7 +484,7 @@ public class JJGridView : JJAsyncBaseView
 
     private string SelectedRowsId
     {
-        get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("selectedrows_" + Name)?.ToString();
+        get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("selected-rows" + Name)?.ToString();
         set => _selectedRowsId = value ?? "";
     }
     #endregion
@@ -583,7 +583,7 @@ public class JJGridView : JJAsyncBaseView
 
         string requestType = CurrentContext.Request.QueryString("t");
 
-        string currentAction = CurrentContext.Request["current-tableAction-" + Name];
+        string currentAction = CurrentContext.Request["current-table-action-" + Name];
 
         var html = new HtmlBuilder(HtmlTag.Div);
 
@@ -608,7 +608,7 @@ public class JJGridView : JJAsyncBaseView
             return null;
 
         
-        html.WithAttribute("id", $"jjgridview_{Name}");
+        html.WithAttribute("id", $"jjgridview-{Name}");
         html.AppendIf(SortAction.IsVisible, GetSortingConfig);
 
         html.AppendText(GetScriptHtml());
@@ -647,7 +647,7 @@ public class JJGridView : JJAsyncBaseView
         string objName = CurrentContext.Request.QueryString("objname");
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
-            CurrentContext.Response.SendResponseObsolete(html.ToString());
+            CurrentContext.Response.SendResponse(html.ToString());
             return true;
         }
 
@@ -656,14 +656,14 @@ public class JJGridView : JJAsyncBaseView
 
     private IEnumerable<HtmlBuilder> GetHiddenInputs(string currentAction)
     {
-        yield return new HtmlBuilder().AppendHiddenInput($"current_tableorder_{Name}", CurrentOrder);
-        yield return new HtmlBuilder().AppendHiddenInput($"current_tablepage_{Name}", CurrentPage.ToString());
-        yield return new HtmlBuilder().AppendHiddenInput($"current-tableAction-{Name}", currentAction);
-        yield return new HtmlBuilder().AppendHiddenInput($"current_tablerow_{Name}", string.Empty);
+        yield return new HtmlBuilder().AppendHiddenInput($"current-table-order-{Name}", CurrentOrder);
+        yield return new HtmlBuilder().AppendHiddenInput($"current-table-page-{Name}", CurrentPage.ToString());
+        yield return new HtmlBuilder().AppendHiddenInput($"current-table-action-{Name}", currentAction);
+        yield return new HtmlBuilder().AppendHiddenInput($"current-table-row-{Name}", string.Empty);
 
         if (EnableMultiSelect)
         {
-            yield return new HtmlBuilder().AppendHiddenInput($"selectedrows_{Name}", SelectedRowsId);
+            yield return new HtmlBuilder().AppendHiddenInput($"selected-rows{Name}", SelectedRowsId);
         }
     }
 
@@ -855,7 +855,7 @@ public class JJGridView : JJAsyncBaseView
                 script.AppendLine("\t\t\turl: surl, ");
                 script.AppendLine("\t\t\tdata: frm.serialize(), ");
                 script.AppendLine("\t\t\tsuccess: function (data) { ");
-                script.AppendLine($"\t\t\t\t$(\"#jjgridview_{Name} #row\" + nRow).html(data); ");
+                script.AppendLine($"\t\t\t\t$(\"#jjgridview-{Name} #row\" + nRow).html(data); ");
                 script.AppendLine($"\t\t\t\tdo_change_{Name}(nRow);");
                 script.AppendLine("\t\t\t\tloadJJMasterData(null, \"#row\" + nRow + \" \"); ");
                 script.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");
@@ -943,7 +943,7 @@ public class JJGridView : JJAsyncBaseView
 
         var modal = new JJModalDialog
         {
-            Name = "config_modal_" + Name,
+            Name = "config-modal-" + Name,
             Title = "Configure View"
         };
 
@@ -981,7 +981,7 @@ public class JJGridView : JJAsyncBaseView
 
         var modal = new JJModalDialog
         {
-            Name = "export_modal_" + Name,
+            Name = "export-modal-" + Name,
             Title = "Export"
         };
 
@@ -1029,7 +1029,7 @@ public class JJGridView : JJAsyncBaseView
     public IDictionary<string, dynamic> GetSelectedRowId()
     {
         var values = new Dictionary<string, dynamic>();
-        string currentRow = CurrentContext.Request["current_tablerow_" + Name];
+        string currentRow = CurrentContext.Request["current-table-row-" + Name];
 
         if (string.IsNullOrEmpty(currentRow))
             return values;

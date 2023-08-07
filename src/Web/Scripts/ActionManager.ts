@@ -1,7 +1,7 @@
 
 class ActionManager {
     static executePanelAction(name: string, action: string){
-        $("#current-panelAction-" + name).val(action);
+        $("#current-panel-action-" + name).val(action);
         let form = document.querySelector<HTMLFormElement>(`form#${name}`);
 
         if(!form){
@@ -27,7 +27,7 @@ class ActionManager {
             }
         }
 
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-formAction-" + componentName);
+        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-form-action-" + componentName);
         currentFormActionInput.value = encryptedActionMap;
 
         if(!url){
@@ -64,8 +64,8 @@ class ActionManager {
             }
         }
 
-        const currentTableActionInput = document.querySelector<HTMLInputElement>("#current-tableAction-" + componentName);
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-formAction-" + componentName);
+        const currentTableActionInput = document.querySelector<HTMLInputElement>("#current-table-action-" + componentName);
+        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-form-action-" + componentName);
 
         let form = document.querySelector<HTMLFormElement>("form");
 

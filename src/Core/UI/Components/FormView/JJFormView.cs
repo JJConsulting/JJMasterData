@@ -171,7 +171,7 @@ public class JJFormView : JJAsyncBaseView
             if (_currentActionMap != null) 
                 return _currentActionMap;
 
-            string encryptedActionMap = CurrentContext.Request["current-formAction-" + Name.ToLower()];
+            string encryptedActionMap = CurrentContext.Request["current-form-action-" + Name.ToLower()];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -311,9 +311,11 @@ public class JJFormView : JJAsyncBaseView
 
         var htmlForm = await GetHtmlForm();
 
+        
+        //TODO: Is this unused? I didn't find using CTRL+F any ajax call to here, only to the Grid.
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
-            CurrentContext.Response.SendResponseObsolete(htmlForm.ToString());
+            CurrentContext.Response.SendResponse(htmlForm.ToString());
             return null;
         }
 
@@ -378,7 +380,7 @@ public class JJFormView : JJAsyncBaseView
         if (html != null)
         {
             html.AppendHiddenInput($"current-pageState-{Name.ToLower()}", ((int)PageState).ToString());
-            html.AppendHiddenInput($"current-formAction-{Name.ToLower()}", "");
+            html.AppendHiddenInput($"current-form-action-{Name.ToLower()}", "");
         }
 
         return html;
@@ -394,8 +396,8 @@ public class JJFormView : JJAsyncBaseView
     {
         string formAction = "";
 
-        if (CurrentContext.Request["current-panelAction-" + Name] != null)
-            formAction = CurrentContext.Request["current-panelAction-" + Name];
+        if (CurrentContext.Request["current-panel-action-" + Name] != null)
+            formAction = CurrentContext.Request["current-panel-action-" + Name];
 
         if ("OK".Equals(formAction))
         {
@@ -460,8 +462,8 @@ public class JJFormView : JJAsyncBaseView
 
         string formAction = "";
 
-        if (CurrentContext.Request["current-panelAction-" + Name] != null)
-            formAction = CurrentContext.Request["current-panelAction-" + Name];
+        if (CurrentContext.Request["current-panel-action-" + Name] != null)
+            formAction = CurrentContext.Request["current-panel-action-" + Name];
 
         if (formAction.Equals("OK"))
         {
@@ -482,7 +484,7 @@ public class JJFormView : JJAsyncBaseView
 
                     var alert = new JJAlert
                     {
-                        Name = $"pnl_insertmsg_{Name}",
+                        Name = $"insert-message-panel{Name}",
                         Color = PanelColor.Success,
                         ShowIcon = true,
                         Icon = IconType.CheckCircleO
@@ -491,7 +493,7 @@ public class JJFormView : JJAsyncBaseView
                     var alertHtml = alert.GetHtmlBuilder();
                     await alertHtml.AppendAsync(HtmlTag.Div, async div =>
                     {
-                        div.WithAttribute("id", $"pnl_insert_{Name}")
+                        div.WithAttribute("id", $"insert-panel{Name}")
                             .WithAttribute("style", "display:none")
                             .Append(await GetDataPanelHtmlAsync(new(RelationValues, null, PageState.Insert), false));
                     });
@@ -541,8 +543,8 @@ public class JJFormView : JJAsyncBaseView
     private HtmlBuilder GetHtmlElementList(InsertAction action)
     {
         var sHtml = new HtmlBuilder(HtmlTag.Div);
-        sHtml.AppendHiddenInput($"current-panelAction-{Name}", "ELEMENTLIST");
-        sHtml.AppendHiddenInput($"current_selaction_{Name}", "");
+        sHtml.AppendHiddenInput($"current-panel-action-{Name}", "ELEMENTLIST");
+        sHtml.AppendHiddenInput($"current-select-action-values{Name}", "");
 
         var formElement = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
         var selectedForm = ComponentFactory.JJView.Create(formElement);
@@ -581,7 +583,7 @@ public class JJFormView : JJAsyncBaseView
 
     private async Task<HtmlBuilder> GetHtmlElementInsert()
     {
-        string encryptedActionMap = CurrentContext.Request.Form("current_selaction_" + Name);
+        string encryptedActionMap = CurrentContext.Request.Form("current-select-action-values" + Name);
         var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement = await DataDictionaryRepository.GetMetadataAsync(InsertAction.ElementNameToSelect);
@@ -867,7 +869,7 @@ public class JJFormView : JJAsyncBaseView
 
         formHtml.Append(parentPanelHtml);
         formHtml.AppendComponent(toolbar);
-        formHtml.AppendHiddenInput($"current-panelAction-{Name}");
+        formHtml.AppendHiddenInput($"current-panel-action-{Name}");
         return formHtml;
     }
 

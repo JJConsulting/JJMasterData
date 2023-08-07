@@ -252,7 +252,7 @@ public class JJUploadView : JJAsyncBaseView
 
         var html = new HtmlBuilder();
 
-        string uploadAction = CurrentContext.Request["uploadaction_" + Name];
+        string uploadAction = CurrentContext.Request["upload-action-" + Name];
         if (!string.IsNullOrEmpty(uploadAction))
             html.Append(GetResponseAction(uploadAction));
 
@@ -345,7 +345,7 @@ public class JJUploadView : JJAsyncBaseView
 
     private HtmlBuilder GetResponseAction(string uploadAction)
     {
-        string fileName = CurrentContext.Request.Form("filename_" + Name);
+        string fileName = CurrentContext.Request.Form("filename-" + Name);
         try
         {
             if ("DELFILE".Equals(uploadAction))
@@ -366,8 +366,8 @@ public class JJUploadView : JJAsyncBaseView
     private HtmlBuilder GetHtmlForm()
     {
         var html = new HtmlBuilder()
-           .AppendHiddenInput($"uploadaction_{Name}")
-           .AppendHiddenInput($"filename_{Name}");
+           .AppendHiddenInput($"upload-action-{Name}")
+           .AppendHiddenInput($"filename-{Name}");
 
         if (!ShowAddFiles)
             return html;
@@ -617,12 +617,12 @@ public class JJUploadView : JJAsyncBaseView
                 col.WithCssClass("col-sm-12")
                    .AppendComponent(new JJLabel
                    {
-                       LabelFor = $"preview_filename_{Upload.Name}",
+                       LabelFor = $"preview_filename-{Upload.Name}",
                        Text = "File name"
                    })
                    .AppendComponent(new JJTextGroup(CurrentContext)
                    {
-                       Name = $"preview_filename_{Upload.Name}",
+                       Name = $"preview_filename-{Upload.Name}",
                        Addons = new InputAddons(".png"),
                        Text = "image"
                    });

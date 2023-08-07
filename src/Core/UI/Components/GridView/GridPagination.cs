@@ -151,10 +151,10 @@ internal class GridPagination
         string multipleRecordsSelected = GridView.StringLocalizer["{0} selected records", selectedValues?.Count];
 
         var span = new HtmlBuilder(HtmlTag.Span);
-        span.WithAttribute("id", $"selectedtext_{GridView.Name}");
-        span.WithAttribute("noSelStr", noRecordSelected);
-        span.WithAttribute("oneSelStr", oneRecordSelected);
-        span.WithAttribute("paramSelStr", StringLocalizer["{0} selected records"]);
+        span.WithAttribute("id", $"selected-text-{GridView.Name}");
+        span.WithAttribute("no-record-selected-label", noRecordSelected);
+        span.WithAttribute("one-record-selected-label", oneRecordSelected);
+        span.WithAttribute("multiple-records-selected-label", StringLocalizer["{0} selected records"]);
 
         if (selectedValues == null || selectedValues.Count == 0)
         {

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 class ActionManager {
     static executePanelAction(name, action) {
-        $("#current-panelAction-" + name).val(action);
+        $("#current-panel-action-" + name).val(action);
         let form = document.querySelector(`form#${name}`);
         if (!form) {
             form = document.forms[0];
@@ -28,7 +28,7 @@ class ActionManager {
                 return false;
             }
         }
-        const currentFormActionInput = document.querySelector("#current-formAction-" + componentName);
+        const currentFormActionInput = document.querySelector("#current-form-action-" + componentName);
         currentFormActionInput.value = encryptedActionMap;
         if (!url) {
             const urlBuilder = new UrlBuilder();
@@ -58,8 +58,8 @@ class ActionManager {
                 return false;
             }
         }
-        const currentTableActionInput = document.querySelector("#current-tableAction-" + componentName);
-        const currentFormActionInput = document.querySelector("#current-formAction-" + componentName);
+        const currentTableActionInput = document.querySelector("#current-table-action-" + componentName);
+        const currentFormActionInput = document.querySelector("#current-form-action-" + componentName);
         let form = document.querySelector("form");
         if (!form) {
             form = document.forms[0];
@@ -84,7 +84,7 @@ class ActionManager {
     }
 }
 function loadAuditLog(componentName, logId, url = null) {
-    $("#sortable_grid a").removeClass("active");
+    $("#sortable-grid a").removeClass("active");
     if (logId != "")
         $("#" + logId).addClass("active");
     document.querySelector('#logId-' + componentName).value = logId;
@@ -139,7 +139,7 @@ class DataDictionaryUtils {
         }
     }
     static sortAction(context, url, errorStr) {
-        $("#sortable_" + context).sortable({
+        $("#sortable-" + context).sortable({
             update: function () {
                 var order = $(this).sortable('toArray');
                 $.ajax({
@@ -213,7 +213,7 @@ class DataDictionaryUtils {
         $("form:first").attr("action", url).submit();
     }
     static exportElement(id, url, validStr) {
-        var values = $("#selectedrows_" + id).val();
+        var values = $("#selected-rows" + id).val();
         if (values == "") {
             messageBox.show("JJMasterData", validStr, 3);
             return false;
@@ -269,7 +269,7 @@ class DataExportation {
             method: "POST",
             body: new FormData(document.querySelector("form"))
         }).then(response => response.text()).then((html) => __awaiter(this, void 0, void 0, function* () {
-            const modalBody = "#export_modal_" + componentName + " .modal-body ";
+            const modalBody = "#export-modal-" + componentName + " .modal-body ";
             document.querySelector(modalBody).innerHTML = html;
             loadJJMasterData(null, modalBody);
             yield DataExportation.startProgressVerificationAtSamePage(componentName);
@@ -283,7 +283,7 @@ class DataExportation {
                 const data = yield response.json();
                 if (data.FinishedMessage) {
                     showWaitOnPost = true;
-                    document.querySelector("#export_modal_" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
+                    document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
                     const linkFile = document.querySelector("#export_link_" + componentName);
                     if (linkFile)
                         linkFile.click();
@@ -293,7 +293,7 @@ class DataExportation {
                     document.querySelector("#divMsgProcess").style.display = "";
                     document.querySelector(".progress-bar").style.width = data.PercentProcess + "%";
                     document.querySelector(".progress-bar").textContent = data.PercentProcess + "%";
-                    document.querySelector("#lblStartDate").textContent = data.StartDate;
+                    document.querySelector("#start-date-label").textContent = data.StartDate;
                     document.querySelector("#lblResumeLog").textContent = data.Message;
                     return false;
                 }
@@ -301,7 +301,7 @@ class DataExportation {
             catch (e) {
                 showWaitOnPost = true;
                 document.querySelector("#dataexp_spinner_" + componentName).style.display = "none";
-                document.querySelector("#export_modal_" + componentName + " .modal-body").innerHTML = e.message;
+                document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = e.message;
                 return false;
             }
         });
@@ -333,21 +333,21 @@ class DataExportation {
         var spinner = new Spinner(options).spin(target);
     }
     static setSettingsHTML(componentName, html) {
-        const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body ");
+        const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
         loadJJMasterData(null);
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
             if (totRows > 50000) {
-                document.querySelector("#warning_exp_" + componentName).style.display = "block";
+                document.querySelector("#data-exportation-warning" + componentName).style.display = "block";
             }
         }
         if (bootstrapVersion < 5) {
-            $("#export_modal_" + componentName).modal();
+            $("#export-modal-" + componentName).modal();
         }
         else {
-            const modal = new bootstrap.Modal(document.querySelector("#export_modal_" + componentName), {});
+            const modal = new bootstrap.Modal(document.querySelector("#export-modal-" + componentName), {});
             modal.show();
         }
     }
@@ -376,7 +376,7 @@ class DataExportation {
             }
         })
             .then(data => {
-            const modalBody = document.querySelector("#export_modal_" + componentName + " .modal-body");
+            const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body");
             modalBody.innerHTML = data;
             loadJJMasterData();
             DataExportation.startProgressVerification(checkProgressUrl, componentName);
@@ -466,7 +466,7 @@ class DataImportation {
             if (lblResumeLog) {
                 lblResumeLog.textContent = result.Message;
             }
-            const lblStartDate = document.querySelector("#lblStartDate");
+            const lblStartDate = document.querySelector("#start-date-label");
             if (lblStartDate) {
                 lblStartDate.textContent = result.StartDate;
             }
@@ -648,32 +648,32 @@ const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? 
 const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
 class GridView {
     static sorting(componentName, url, tableOrder) {
-        const tableOrderElement = document.querySelector("#current_tableorder_" + componentName);
+        const tableOrderElement = document.querySelector("#current-table-order-" + componentName);
         if (tableOrder + " ASC" === tableOrderElement.value)
             tableOrderElement.value = tableOrder + " DESC";
         else
             tableOrderElement.value = tableOrder + " ASC";
-        document.querySelector("#current-tableAction-" + componentName).value = "";
-        document.querySelector("#current-formAction-" + componentName).value = "";
+        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#current-form-action-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
     static pagination(componentName, url, currentPage) {
-        document.querySelector("#current_tablepage_" + componentName).value = currentPage;
-        document.querySelector("#current-tableAction-" + componentName).value = "";
-        document.querySelector("#current-formAction-" + componentName).value = "";
+        document.querySelector("#current-table-page-" + componentName).value = currentPage;
+        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#current-form-action-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
     static filter(componentName, url) {
-        document.querySelector("#current_filteraction_" + componentName).value = "FILTERACTION";
-        document.querySelector("#current-tableAction-" + componentName).value = "";
-        document.querySelector("#current_tablepage_" + componentName).value = "1";
-        document.querySelector("#current-formAction-" + componentName).value = "";
+        document.querySelector("#current-filter-action-" + componentName).value = "FILTERACTION";
+        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#current-table-page-" + componentName).value = "1";
+        document.querySelector("#current-form-action-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
     static refresh(componentName, url) {
-        document.querySelector("#current-tableAction-" + componentName).value = "";
-        document.querySelector("#current_tablerow_" + componentName).value = "";
-        document.querySelector("#current-formAction-" + componentName).value = "";
+        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#current-table-row-" + componentName).value = "";
+        document.querySelector("#current-form-action-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
     static selectAllRows(componentName, url) {
@@ -685,10 +685,10 @@ class GridView {
         const values = rows.split(",");
         const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
         checkboxes.forEach(checkbox => checkbox.checked = true);
-        const selectedRowsInput = document.getElementById("selectedrows_" + componentName);
+        const selectedRowsInput = document.getElementById("selected-rows" + componentName);
         selectedRowsInput.value = values.join(",");
-        const selectedText = document.getElementById("selectedtext_" + componentName);
-        selectedText.textContent = selectedText.getAttribute("paramSelStr").replace("{0}", values.length.toString());
+        const selectedText = document.getElementById("selected-text-" + componentName);
+        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
     }
     static refreshGrid(componentName, url) {
         const form = document.querySelector("form");
@@ -701,14 +701,14 @@ class GridView {
         })
             .then(response => response.text())
             .then(data => {
-            document.querySelector("#jjgridview_" + componentName).innerHTML = data;
+            document.querySelector("#jjgridview-" + componentName).innerHTML = data;
             loadJJMasterData();
-            document.querySelector("#current_filteraction_" + componentName).value = "";
+            document.querySelector("#current-filter-action-" + componentName).value = "";
             SpinnerOverlay.hide();
         })
             .catch(error => {
             console.log(error);
-            document.querySelector("#current_filteraction_" + componentName).value = "";
+            document.querySelector("#current-filter-action-" + componentName).value = "";
         });
     }
 }
@@ -756,17 +756,17 @@ class JJView {
                         $("form:first").trigger("submit");
                         return;
                     }
-                    $("#jjgridview_" + objid).html(data);
+                    $("#jjgridview-" + objid).html(data);
                     if (loadform) {
                         loadJJMasterData();
                     }
-                    $("#current_filteraction_" + objid).val("");
+                    $("#current-filter-action-" + objid).val("");
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);
                     console.log(textStatus);
                     console.log(jqXHR);
-                    $("#current_filteraction_" + objid).val("");
+                    $("#current-filter-action-" + objid).val("");
                 }
             });
         }
@@ -775,9 +775,9 @@ class JJView {
         }
     }
     static selectItem(objid, obj) {
-        var values = $("#selectedrows_" + objid).val().toString();
+        var values = $("#selected-rows" + objid).val().toString();
         var valuesList = [];
-        if (obj.attr("id") == "jjchk_all")
+        if (obj.attr("id") == "jjcheckbox-select-all-rows")
             return;
         if (values.length > 0) {
             valuesList = values.split(",");
@@ -791,22 +791,22 @@ class JJView {
                 return item !== obj.val();
             });
         }
-        $("#selectedrows_" + objid).val(valuesList);
+        $("#selected-rows" + objid).val(valuesList);
         var textInfo = "";
-        var selectedText = $("#selectedtext_" + objid);
+        var selectedText = $("#selected-text-" + objid);
         if (valuesList.length == 0)
-            textInfo = selectedText.attr("noSelStr");
+            textInfo = selectedText.attr("no-record-selected-label");
         else if (valuesList.length == 1)
-            textInfo = selectedText.attr("oneSelStr");
+            textInfo = selectedText.attr("one-record-selected-label");
         else
-            textInfo = selectedText.attr("paramSelStr").replace("{0}", valuesList.length.toString());
+            textInfo = selectedText.attr("multiple-records-selected-label").replace("{0}", valuesList.length.toString());
         selectedText.text(textInfo);
     }
     static unSelectAll(objid) {
         $(".jjselect input").not(":disabled").prop("checked", false);
-        $("#selectedrows_" + objid).val("");
-        var oSelectedtext = $("#selectedtext_" + objid);
-        oSelectedtext.text(oSelectedtext.attr("noSelStr"));
+        $("#selected-rows" + objid).val("");
+        var oSelectedtext = $("#selected-text-" + objid);
+        oSelectedtext.text(oSelectedtext.attr("no-record-selected-label"));
     }
     static selectAll(objid) {
         var frm = $("form");
@@ -830,18 +830,18 @@ class JJView {
         });
     }
     static sortFormValues(objid, enableAjax, v) {
-        var tableOrder = "#current_tableorder_" + objid;
+        var tableOrder = "#current-table-order-" + objid;
         if (v + " ASC" == $(tableOrder).val())
             $(tableOrder).val(v + " DESC");
         else
             $(tableOrder).val(v + " ASC");
-        $("#current-tableAction-" + objid).val("");
-        $("#current-formAction-" + objid).val("");
+        $("#current-table-action-" + objid).val("");
+        $("#current-form-action-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
     static sortItems(objid) {
         var descCommand = "";
-        var order = $("#sortable_" + objid).sortable("toArray");
+        var order = $("#sortable-" + objid).sortable("toArray");
         for (var i = 0; i < order.length; i++) {
             var tipoOrdenacao = $("#" + order[i] + "_order").children("option:selected").val();
             switch (tipoOrdenacao) {
@@ -854,50 +854,50 @@ class JJView {
             }
         }
         descCommand = descCommand.substring(0, descCommand.length - 1);
-        $("#current_tableorder_" + objid).val(descCommand);
-        $("#sort_modal_" + objid).modal('hide');
-        $("#current-formAction-" + objid).val("");
+        $("#current-table-order-" + objid).val(descCommand);
+        $("#sort-modal-" + objid).modal('hide');
+        $("#current-form-action-" + objid).val("");
         this.refresh(objid, true);
     }
     static paginateGrid(objid, enableAjax, v) {
-        $("#current_tablepage_" + objid).val(v);
-        $("#current-tableAction-" + objid).val("");
-        $("#current-formAction-" + objid).val("");
+        $("#current-table-page-" + objid).val(v);
+        $("#current-table-action-" + objid).val("");
+        $("#current-form-action-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
     static refresh(objid, enableAjax) {
-        $("#current-tableAction-" + objid).val("");
-        $("#current_tablerow_" + objid).val("");
-        $("#current-formAction-" + objid).val("");
+        $("#current-table-action-" + objid).val("");
+        $("#current-table-row-" + objid).val("");
+        $("#current-form-action-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
     static openSettingsModal(componentName, encryptedActionMap) {
-        $("#current-tableAction-" + componentName).val(encryptedActionMap);
-        $("#current_tablepage_" + componentName).val("1");
-        $("#current_tablerow_" + componentName).val("");
-        $("#current-formAction-" + componentName).val("");
+        $("#current-table-action-" + componentName).val(encryptedActionMap);
+        $("#current-table-page-" + componentName).val("1");
+        $("#current-table-row-" + componentName).val("");
+        $("#current-form-action-" + componentName).val("");
         $("form:first").trigger("submit");
     }
     static closeSettingsModal(objid) {
         $("form").trigger("reset");
         $("form :checkbox").change();
-        $("#config_modal_" + objid).modal("hide");
+        $("#config-modal-" + objid).modal("hide");
     }
     static filter(objid, enableAjax) {
-        $("#current_filteraction_" + objid).val("FILTERACTION");
-        $("#current-tableAction-" + objid).val("");
-        $("#current_tablepage_" + objid).val("1");
-        $("#current-formAction-" + objid).val("");
+        $("#current-filter-action-" + objid).val("FILTERACTION");
+        $("#current-table-action-" + objid).val("");
+        $("#current-table-page-" + objid).val("1");
+        $("#current-form-action-" + objid).val("");
         this.postFormValues(objid, enableAjax, false);
         return false;
     }
     static openSelectElementInsert(componentName, encryptedActionMap) {
-        $("#current-panelAction-" + componentName).val("ELEMENTSEL");
-        $("#current_selaction_" + componentName).val(encryptedActionMap);
+        $("#current-panel-action-" + componentName).val("ELEMENTSEL");
+        $("#current-select-action-values" + componentName).val(encryptedActionMap);
         $("form:first").trigger("submit");
     }
     static clearFilter(objid, enableAjax) {
-        var divId = "#gridfilter_" + objid;
+        var divId = "#current-grid-filter-" + objid;
         var selector = divId + " input:enabled, " + divId + " select:enabled";
         $(selector).each(function () {
             let currentObj = $(this);
@@ -924,9 +924,9 @@ class JJView {
                 }
             }
         });
-        $("#current_filteraction_" + objid).val("CLEARACTION");
-        $("#current-tableAction-" + objid).val("");
-        $("#current-formAction-" + objid).val("");
+        $("#current-filter-action-" + objid).val("CLEARACTION");
+        $("#current-table-action-" + objid).val("");
+        $("#current-form-action-" + objid).val("");
         this.postFormValues(objid, enableAjax, false);
     }
     static executeGridAction(componentName, encryptedActionMap, confirmMessage) {
@@ -936,8 +936,8 @@ class JJView {
                 return false;
             }
         }
-        $("#current-tableAction-" + componentName).val(encryptedActionMap);
-        $("#current-formAction-" + componentName).val("");
+        $("#current-table-action-" + componentName).val(encryptedActionMap);
+        $("#current-form-action-" + componentName).val("");
         $("form:first").trigger("submit");
     }
     static executeSqlCommand(objid, criptid, confirmMessage) {
@@ -947,9 +947,9 @@ class JJView {
                 return false;
             }
         }
-        $("#current-tableAction-" + objid).val("");
-        $("#current-formAction-" + objid).val("");
-        $("#current_tablerow_" + objid).val(criptid);
+        $("#current-table-action-" + objid).val("");
+        $("#current-form-action-" + objid).val("");
+        $("#current-table-row-" + objid).val(criptid);
         $("form:first").trigger("submit");
     }
     static setLookup(objid, value) {
@@ -974,8 +974,8 @@ class JJView {
         }
     }
     static showInsertSucess(objid) {
-        $("#pnl_insertmsg_" + objid).fadeOut(2000, function () {
-            $("#pnl_insert_" + objid).slideDown();
+        $("#insert-message-panel" + objid).fadeOut(2000, function () {
+            $("#insert-panel" + objid).slideDown();
         });
     }
     static deleteFile(objid, filename, promptStr) {
@@ -983,24 +983,24 @@ class JJView {
         if (!result) {
             return false;
         }
-        $("#uploadaction_" + objid).val("DELFILE");
-        $("#filename_" + objid).val(filename);
+        $("#upload-action-" + objid).val("DELFILE");
+        $("#filename-" + objid).val(filename);
         $("form:first").trigger("submit");
     }
     static downloadFile(objid, filename) {
-        $("#uploadaction_" + objid).val("DOWNLOADFILE");
-        $("#filename_" + objid).val(filename);
+        $("#upload-action-" + objid).val("DOWNLOADFILE");
+        $("#filename-" + objid).val(filename);
         $("form:first").trigger("submit");
         setTimeout(function () {
             SpinnerOverlay.hide();
-            $("#uploadaction_" + objid).val("");
+            $("#upload-action-" + objid).val("");
         }, 1500);
     }
     static renameFile(objid, filename, promptStr) {
         var newFileName = prompt(promptStr, filename);
         if (newFileName != null && newFileName != filename) {
-            $("#uploadaction_" + objid).val("RENAMEFILE");
-            $("#filename_" + objid).val(filename + ";" + newFileName);
+            $("#upload-action-" + objid).val("RENAMEFILE");
+            $("#filename-" + objid).val(filename + ";" + newFileName);
             $("form:first").trigger("submit");
         }
     }
@@ -1017,22 +1017,22 @@ class JJView {
     }
     static showExportOptions(objid, exportType) {
         if (exportType == "1") {
-            $("#" + objid + "_div_export_orientation").hide();
-            $("#" + objid + "_div_export_all").show();
-            $("#" + objid + "_div_export_delimiter").hide();
-            $("#" + objid + "_div_export_fistline").show();
+            $("#" + objid + "-div-export-orientation").hide();
+            $("#" + objid + "-div-export-all").show();
+            $("#" + objid + "-div-export-delimiter").hide();
+            $("#" + objid + "-div-export-firstline").show();
         }
         else if (exportType == "2") {
-            $("#" + objid + "_div_export_orientation").show();
-            $("#" + objid + "_div_export_all").hide();
-            $("#" + objid + "_div_export_delimiter").hide();
-            $("#" + objid + "_div_export_fistline").hide();
+            $("#" + objid + "-div-export-orientation").show();
+            $("#" + objid + "-div-export-all").hide();
+            $("#" + objid + "-div-export-delimiter").hide();
+            $("#" + objid + "-div-export-firstline").hide();
         }
         else {
-            $("#" + objid + "_div_export_orientation").hide();
-            $("#" + objid + "_div_export_all").show();
-            $("#" + objid + "_div_export_delimiter").show();
-            $("#" + objid + "_div_export_fistline").show();
+            $("#" + objid + "-div-export-orientation").hide();
+            $("#" + objid + "-div-export-all").show();
+            $("#" + objid + "-div-export-delimiter").show();
+            $("#" + objid + "-div-export-firstline").show();
         }
     }
     static viewLog(objid, id) {
@@ -1741,31 +1741,31 @@ class TabNav {
 class TextArea {
     static setup() {
         $("textarea").keydown(function () {
-            var oTextArea = $(this);
-            var iMaxChar = oTextArea.attr("maxlength");
-            var strValid = oTextArea.attr("strvalid2");
-            var strChars = oTextArea.attr("strchars");
-            if (isNaN(iMaxChar))
-                iMaxChar = oTextArea.attr("jjmaxlength");
-            if (isNaN(iMaxChar))
+            const jjTextArea = $(this);
+            let maxLength = jjTextArea.attr("maxlength");
+            let maximumLimitLabel = jjTextArea.attr("maximum-limit-of-characters-label");
+            let charactersRemainingLabel = jjTextArea.attr("characters-remaining-label");
+            if (isNaN(maxLength))
+                maxLength = jjTextArea.attr("jjmaxlength");
+            if (isNaN(maxLength))
                 return;
-            if (isNaN(strValid))
-                strValid = "Maximum limit of {0} characters!";
-            if (isNaN(strChars))
-                strChars = "({0} characters remaining)";
-            if (!isNaN(iMaxChar)) {
-                var nId = oTextArea.attr("id");
-                var iTypedChar = oTextArea.val().toString().length;
-                if (iTypedChar > iMaxChar) {
-                    alert(strValid.replace("{0}", iMaxChar));
+            if (isNaN(maximumLimitLabel))
+                maximumLimitLabel = "Maximum limit of {0} characters!";
+            if (isNaN(charactersRemainingLabel))
+                charactersRemainingLabel = "({0} characters remaining)";
+            if (!isNaN(maxLength)) {
+                var nId = jjTextArea.attr("id");
+                var iTypedChar = jjTextArea.val().toString().length;
+                if (iTypedChar > maxLength) {
+                    alert(maximumLimitLabel.replace("{0}", maxLength));
                 }
-                strChars = strChars.replace("{0}", (iMaxChar - oTextArea.val().toString().length));
-                strChars += "&nbsp;";
-                if ($("#spansize_" + nId).length) {
-                    $("#spansize_" + nId).html(strChars);
+                charactersRemainingLabel = charactersRemainingLabel.replace("{0}", (maxLength - jjTextArea.val().toString().length));
+                charactersRemainingLabel += "&nbsp;";
+                if ($("#span-size-" + nId).length) {
+                    $("#span-size-" + nId).html(charactersRemainingLabel);
                 }
                 else {
-                    $("<span id='spansize_" + nId + "' class='small' style='float: right'>" + strChars + "</span>").insertBefore(oTextArea);
+                    $("<span id='span-size-" + nId + "' class='small' style='float: right'>" + charactersRemainingLabel + "</span>").insertBefore(jjTextArea);
                 }
             }
         });
@@ -1826,7 +1826,7 @@ class UploadArea {
             },
             afterUploadAll: function (element) {
                 if (options.autoSubmit && element.selectedFiles > 0) {
-                    $("#uploadaction_" + options.componentName).val("afteruploadall");
+                    $("#upload-action-" + options.componentName).val("afteruploadall");
                 }
                 loadJJMasterData();
             },
@@ -1840,7 +1840,7 @@ class UploadArea {
                 if (file.type.indexOf("image") !== -1) {
                     document.querySelector("#btnDoUpload_" + componentName).addEventListener("click", () => {
                         document.querySelector("#preview_modal_" + componentName).classList.add("hide");
-                        var filename = document.querySelector("#preview_filename_" + componentName).value || "image";
+                        var filename = document.querySelector("#preview_filename-" + componentName).value || "image";
                         filename += ".png";
                         const dt = new DataTransfer();
                         const myNewFile = new File([file], filename, { type: file.type });
@@ -1853,7 +1853,7 @@ class UploadArea {
                     reader.onload = function (event) {
                         document.querySelector("#pastedimage_" + componentName).src = event.target.result.toString();
                         var filename = file.name.replace(/\.[^/.]+$/, "");
-                        document.querySelector("#preview_filename_" + componentName).value = filename;
+                        document.querySelector("#preview_filename-" + componentName).value = filename;
                         document.querySelector("#preview_modal_" + componentName).classList.remove("hide");
                     };
                     reader.readAsDataURL(file);

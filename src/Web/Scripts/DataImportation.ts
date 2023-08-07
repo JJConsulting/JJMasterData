@@ -76,7 +76,7 @@
                     lblResumeLog.textContent = result.Message;
                 }
                 
-                const lblStartDate = document.querySelector<HTMLElement>("#lblStartDate");
+                const lblStartDate = document.querySelector<HTMLElement>("#start-date-label");
                 if (lblStartDate) {
                     lblStartDate.textContent = result.StartDate;
                 }

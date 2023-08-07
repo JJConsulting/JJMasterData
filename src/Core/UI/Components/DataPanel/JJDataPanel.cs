@@ -208,7 +208,7 @@ public class JJDataPanel : JJAsyncBaseView
 
         if ("geturlaction".Equals(requestType))
         {
-            var encryptedActionMap = CurrentContext.Request["current-formAction-" + Name.ToLower()];
+            var encryptedActionMap = CurrentContext.Request["current-form-action-" + Name.ToLower()];
             await SendUrlRedirect(EncryptionService.DecryptActionMap(encryptedActionMap));
             return null;
         }

@@ -24,7 +24,7 @@
     }
 
     static sortAction(context: string, url: string, errorStr: string): void {
-        $("#sortable_" + context).sortable({
+        $("#sortable-" + context).sortable({
             update: function () {
                 var order = $(this).sortable('toArray');
                 $.ajax({
@@ -98,7 +98,7 @@
     }
 
     static exportElement(id: string, url: string, validStr: string): boolean {
-        var values = $("#selectedrows_" + id).val();
+        var values = $("#selected-rows" + id).val();
         if (values == "") {
             messageBox.show("JJMasterData", validStr, 3);
             return false;

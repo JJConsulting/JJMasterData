@@ -46,7 +46,7 @@ internal class GridFilter
             return _currentFilter;
 
         //Ação é capturada aqui, pois o usuário pode chamar o metodo as antes do GetHtml
-        string currentFilterAction = CurrentContext.Request.Form("current_filteraction_" + GridView.Name);
+        string currentFilterAction = CurrentContext.Request.Form("current-filter-action-" + GridView.Name);
         if (FILTERACTION.Equals(currentFilterAction))
         {
             var formFilters = await GetFilterFormValues();
@@ -67,7 +67,7 @@ internal class GridFilter
             return _currentFilter;
         }
         
-        var filters = CurrentContext.Request.Form($"jjgridview_{GridView.FormElement.Name}_filters");
+        var filters = CurrentContext.Request.Form($"jjgridview-{GridView.FormElement.Name}_filters");
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
@@ -198,11 +198,11 @@ internal class GridFilter
         };
 
         var htmlPanel = await dataPanelControl.GetHtmlForm(fields.DeepCopy());
-        htmlPanel.WithAttribute("id", $"gridfilter_{GridView.Name}");
+        htmlPanel.WithAttribute("id", $"current-grid-filter-{GridView.Name}");
 
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "pnlgridfilter")
-            .AppendHiddenInput($"current_filteraction_{GridView.Name}")
+            .AppendHiddenInput($"current-filter-action-{GridView.Name}")
             .Append(htmlPanel);
 
         var btnDoFilter = new JJLinkButton
@@ -254,10 +254,11 @@ internal class GridFilter
             
             html = modal.GetHtmlBuilder();
         }
-
+        
+        //TODO: Is this unused? I didn't find any AJAX call here using CTRL+F.
         if ("reloadgridfilter".Equals(requestType) && GridView.Name.Equals(panelName))
         {
-            CurrentContext.Response.SendResponseObsolete(html.ToString());
+            CurrentContext.Response.SendResponse(html.ToString());
             return null;
         }
 
@@ -333,7 +334,7 @@ internal class GridFilter
 
         //Relation Filters
         var values = new Dictionary<string, dynamic>();
-        var filters = CurrentContext.Request.Form($"jjgridview_{GridView.FormElement.Name}_filters");
+        var filters = CurrentContext.Request.Form($"jjgridview-{GridView.FormElement.Name}_filters");
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
