@@ -13,17 +13,26 @@ public interface IExpressionsService
         string? expression,
         PageState state,
         bool quotationMarks,
-        IDictionary<string, dynamic?>? values,
-        IDictionary<string,dynamic?>? userValues = null,
+        IDictionary<string, dynamic> values,
+        IDictionary<string,dynamic>? userValues = null,
         ExpressionManagerInterval? interval = null);
 
-    Task<string?> GetDefaultValueAsync(ElementField field, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);
-
-    [Obsolete("Use FormStateData parameter")]
-    Task<bool> GetBoolValueAsync(string expression, PageState state, IDictionary<string,dynamic?>? formValues = null, IDictionary<string,dynamic?>? userValues = null);
+    string? ParseExpression(
+        string? expression,
+        FormStateData formStateData,
+        bool quotationMarks,
+        ExpressionManagerInterval? interval = null);
+    
+    Task<bool> GetBoolValueAsync(
+        string expression,
+        PageState state,
+        IDictionary<string, dynamic> formValues,
+        IDictionary<string, dynamic>? userValues = null);
 
     Task<bool> GetBoolValueAsync(string expression, FormStateData formStateData);
+    
+    Task<string?> GetDefaultValueAsync(ElementField field, FormStateData formStateData);
+    
+    Task<string?> GetTriggerValueAsync(FormElementField field, FormStateData formStateData);
 
-    Task<string?> GetTriggerValueAsync(FormElementField field, PageState state, IDictionary<string,dynamic?> formValues, IDictionary<string,dynamic?>? userValues = null);
-    bool ParseBool(object value);
 }

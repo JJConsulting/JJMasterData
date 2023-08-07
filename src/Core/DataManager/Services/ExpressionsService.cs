@@ -1,9 +1,5 @@
 #nullable enable
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-using System.Threading.Tasks;
+
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
@@ -15,6 +11,12 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Text;
+using System.Threading.Tasks;
+
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -49,13 +51,23 @@ public class ExpressionsService : IExpressionsService
         string? expression,
         PageState state,
         bool quotationMarks,
-        IDictionary<string, dynamic?>? values,
-        IDictionary<string, dynamic?>? userValues = null,
+        IDictionary<string, dynamic> values,
+        IDictionary<string, dynamic>? userValues = null,
+        ExpressionManagerInterval? interval = null)
+    {
+        var formStateData = new FormStateData(values, userValues, state);
+        return ParseExpression(expression, formStateData, quotationMarks, interval);
+    }
+
+    public string? ParseExpression(
+        string? expression,
+        FormStateData formStateData,
+        bool quotationMarks,
         ExpressionManagerInterval? interval = null)
     {
         if (expression is null)
             return null;
-        
+
         var parsedExpression = expression
             .Replace("val:", "")
             .Replace("exp:", "")
@@ -66,10 +78,13 @@ public class ExpressionsService : IExpressionsService
         interval ??= new ExpressionManagerInterval('{', '}');
 
         var list = StringManager.FindValuesByInterval(expression, interval.Begin, interval.End);
+        var userValues = formStateData.UserValues;
+        var state = formStateData.PageState;
+        var values = formStateData.FormValues;
 
         foreach (var field in list)
         {
-            string? val = null;
+            string? val;
             if (userValues != null && userValues.TryGetValue(field, out var value))
             {
                 val = $"{value}";
@@ -114,36 +129,15 @@ public class ExpressionsService : IExpressionsService
         return parsedExpression;
     }
 
-
-    public async Task<string?> GetDefaultValueAsync(ElementField field, PageState state, IDictionary<string, dynamic?> formValues,
-        IDictionary<string, dynamic?>? userValues = null)
+    public async Task<string?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
     {
-        if (field == null)
-            throw new ArgumentNullException(nameof(field), StringLocalizer["ElementField can not be null"]);
-
-        return await GetExpressionValueAsync(field.DefaultValue, field, state, formValues);
+        return await GetExpressionValueAsync(field.DefaultValue, field, formStateData);
     }
 
-
-    public async Task<bool> GetBoolValueAsync(
-        string expression,
-        FormStateData formStateData)
-    {
-        return await GetBoolValueAsync(expression, formStateData.PageState, formStateData.FormValues,
-            formStateData.UserValues);
-    }
-
-    
-    public async Task<bool> GetBoolValueAsync(
-        string expression,
-        PageState state,
-        IDictionary<string, dynamic?>? formValues = null,
-        IDictionary<string, dynamic?>? userValues = null)
+    public async Task<bool> GetBoolValueAsync(string expression, FormStateData formStateData)
     {
         if (string.IsNullOrEmpty(expression))
-        {
             throw new ArgumentNullException(nameof(expression));
-        }
 
         bool result;
         if (expression.StartsWith("val:"))
@@ -155,7 +149,7 @@ public class ExpressionsService : IExpressionsService
             var exp = "";
             try
             {
-                exp = ParseExpression(expression, state, true, formValues);
+                exp = ParseExpression(expression, formStateData, true);
                 var dt = new DataTable("temp");
                 result = (bool)await Task.Run(() => dt.Compute(exp, ""));
                 dt.Dispose();
@@ -169,7 +163,7 @@ public class ExpressionsService : IExpressionsService
         }
         else if (expression.StartsWith("sql:"))
         {
-            var exp = ParseExpression(expression, state, false, formValues);
+            var exp = ParseExpression(expression, formStateData, false);
             var obj = await EntityRepository.GetResultAsync(exp);
             result = ParseBool(obj);
         }
@@ -180,22 +174,28 @@ public class ExpressionsService : IExpressionsService
 
         return result;
     }
-    
 
-    public async Task<string?> GetTriggerValueAsync(FormElementField field, PageState state, IDictionary<string, dynamic?> formValues,
-        IDictionary<string, dynamic?>? userValues = null)
+
+    public async Task<bool> GetBoolValueAsync(
+        string expression,
+        PageState state,
+        IDictionary<string, dynamic> formValues,
+        IDictionary<string, dynamic>? userValues = null)
     {
-        if (field == null)
-            throw new ArgumentNullException(nameof(field), StringLocalizer["FormElementField can not be null"]);
-
-        if (field.TriggerExpression != null) 
-            return await GetExpressionValueAsync(field.TriggerExpression, field, state, formValues);
-
-        return null;
+        var formStateData = new FormStateData(formValues, userValues, state);
+        return await GetBoolValueAsync(expression, formStateData);
     }
 
-    private async Task<string?> GetExpressionValueAsync(string expression, ElementField field, PageState state,
-        IDictionary<string, dynamic?> formValues, IDictionary<string, dynamic?>? userValues = null)
+
+    public async Task<string?> GetTriggerValueAsync(FormElementField field, FormStateData formStateData)
+    {
+        return await GetExpressionValueAsync(field.TriggerExpression, field, formStateData);
+    }
+
+    private async Task<string?> GetExpressionValueAsync(
+        string? expression,
+        ElementField field,
+        FormStateData formStateData)
     {
         if (string.IsNullOrEmpty(expression))
             return null;
@@ -206,10 +206,10 @@ public class ExpressionsService : IExpressionsService
         string? retVal = null;
         try
         {
-            if (expression.StartsWith("val:"))
+            if (expression!.StartsWith("val:"))
             {
                 if (expression.Contains("{"))
-                    retVal = ParseExpression(expression, state, false, formValues);
+                    retVal = ParseExpression(expression, formStateData, false);
                 else
                     retVal = expression.Replace("val:", "").Trim();
             }
@@ -217,7 +217,7 @@ public class ExpressionsService : IExpressionsService
             {
                 try
                 {
-                    var exp = ParseExpression(expression, state, false, formValues);
+                    var exp = ParseExpression(expression, formStateData, false);
                     if (field.DataType == FieldType.Float)
                         exp = exp?.Replace(".", "").Replace(",", ".");
 
@@ -236,7 +236,7 @@ public class ExpressionsService : IExpressionsService
             }
             else if (expression.StartsWith("sql:"))
             {
-                var exp = ParseExpression(expression, state, false, formValues);
+                var exp = ParseExpression(expression, formStateData, false);
                 var obj = await EntityRepository.GetResultAsync(exp);
                 if (obj != null)
                     retVal = obj.ToString();
@@ -247,11 +247,11 @@ public class ExpressionsService : IExpressionsService
                 if (exp.Length < 3)
                     throw new JJMasterDataException(StringLocalizer["Invalid Protheus Request"]);
 
-                var urlProtheus = ParseExpression(exp[0], state, false, formValues);
-                var functionName = ParseExpression(exp[1], state, false, formValues);
+                var urlProtheus = ParseExpression(exp[0], formStateData, false);
+                var functionName = ParseExpression(exp[1], formStateData, false);
                 var parms = "";
                 if (exp.Length >= 3)
-                    parms = ParseExpression(exp[2], state, false, formValues);
+                    parms = ParseExpression(exp[2], formStateData, false);
 
                 retVal = ProtheusManager.CallOrcLib(urlProtheus, functionName, parms);
             }
@@ -301,5 +301,5 @@ public class ExpressionsService : IExpressionsService
     }
 
 
-    public bool ParseBool(object? value) => StringManager.ParseBool(value);
+    private bool ParseBool(object? value) => StringManager.ParseBool(value);
 }

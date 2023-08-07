@@ -1,12 +1,11 @@
-﻿using JJMasterData.Commons.Util;
+﻿using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -63,9 +62,10 @@ public class FieldValuesService : IFieldValuesService
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.DefaultValue));
 
+        var formState = new FormStateData(formValues, state);
         foreach (var e in list)
         {
-            string val = await ExpressionsService.GetDefaultValueAsync(e, state, formValues);
+            string val = await ExpressionsService.GetDefaultValueAsync(e, formState);
             if (!string.IsNullOrEmpty(val))
             {
                 filters.Add(e.Name, val);
@@ -116,9 +116,11 @@ public class FieldValuesService : IFieldValuesService
         var listFields = formElement.Fields
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.TriggerExpression));
+
+        var formState = new FormStateData(formValues, pageState);
         foreach (var e in listFields)
         {
-            string? val = await ExpressionsService.GetTriggerValueAsync(e, pageState, formValues);
+            string? val = await ExpressionsService.GetTriggerValueAsync(e, formState);
             if (val != null)
             {
                 formValues[e.Name] = val;
