@@ -54,10 +54,9 @@ public class LookupController : MasterDataController
         FormElement formElement, 
         string componentName,
         PageState pageState,
-        string fieldName,
         string searchId)
     {
-        var dataItem = formElement.Fields[fieldName].DataItem;
+        var dataItem = formElement.Fields[componentName].DataItem;
 
         var formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement,pageState,true);
 
