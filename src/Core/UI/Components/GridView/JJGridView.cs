@@ -146,9 +146,11 @@ public class JJGridView : JJAsyncBaseView
             throw new ArgumentNullException(nameof(FormElement));
 
         var defaultValues = await GetDefaultValuesAsync();
+        var formData = new FormStateData(defaultValues, UserValues, PageState.List);
         foreach (var f in FormElement.Fields)
         {
-            if (await FieldsService.IsVisibleAsync(f, PageState.List, defaultValues))
+            bool isVisible = await ExpressionsService.GetBoolValueAsync(f.VisibleExpression, formData);
+            if (isVisible)
                 yield return f;
         }
     }
@@ -1313,10 +1315,11 @@ public class JJGridView : JJAsyncBaseView
         foreach (var row in values)
         {
             line++;
+            var formData = new FormStateData(row, UserValues, PageState.List);
             foreach (var field in FormElement.Fields)
             {
-                bool enabled =await FieldsService.IsEnabledAsync(field, PageState.List, row);
-                bool visible =await FieldsService.IsVisibleAsync(field, PageState.List, row);
+                bool enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formData);
+                bool visible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
                 if (enabled && visible && field.DataBehavior is not FieldBehavior.ViewOnly)
                 {
                     string val = string.Empty;

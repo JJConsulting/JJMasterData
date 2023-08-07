@@ -1,6 +1,7 @@
 ﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
@@ -100,9 +101,10 @@ internal class DataPanelControl
         var html = new HtmlBuilder(HtmlTag.Div);
         int lineGroup = int.MinValue;
         HtmlBuilder row = null;
+        var formData = new FormStateData(Values, UserValues, PageState);
         foreach (var field in fields)
         {
-            bool visible = await FieldsService.IsVisibleAsync(field, PageState, Values);
+            bool visible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
             if (!visible)
                 continue;
 
@@ -208,6 +210,7 @@ internal class DataPanelControl
 
         int colCount = 1;
         HtmlBuilder row = null;
+        var formData = new FormStateData(Values, UserValues, PageState);
         foreach (var f in fields)
         {
             if (!string.IsNullOrEmpty(f.CssClass))
@@ -220,7 +223,7 @@ internal class DataPanelControl
             }
 
             //Visible expression
-            bool visible = await FieldsService.IsVisibleAsync(f, PageState, Values);
+            bool visible = await ExpressionsService.GetBoolValueAsync(f.VisibleExpression, formData);
             if (!visible)
                 continue;
 
@@ -305,7 +308,9 @@ internal class DataPanelControl
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             control.Name = FieldNamePrefix + field.Name;
 
-        control.Enabled = await FieldsService.IsEnabledAsync(field, PageState, Values);
+        var formData = new FormStateData(Values, UserValues, PageState);
+        control.Enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formData);
+
         if (BootstrapHelper.Version > 3 && Errors != null && Errors.ContainsKey(field.Name))
         {
             control.CssClass = "is-invalid";

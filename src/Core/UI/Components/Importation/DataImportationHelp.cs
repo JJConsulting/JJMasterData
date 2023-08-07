@@ -313,10 +313,12 @@ internal class DataImportationHelp
         if (DataImportation.FormElement == null)
             throw new ArgumentException(nameof(FormElement));
 
+        var defaultValues = new Dictionary<string, dynamic>();
+        var formData = new FormStateData(defaultValues, PageState.Import);
         var list = new List<FormElementField>();
         foreach (var field in DataImportation.FormElement.Fields)
         {
-            bool visible = await DataImportation.FieldsService.IsVisibleAsync(field, PageState.Import, null);
+            bool visible = await DataImportation.ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }
