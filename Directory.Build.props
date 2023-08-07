@@ -3,7 +3,7 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>3.1.40</Version>
+		<Version>3.1.41</Version>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
@@ -11,7 +11,7 @@
 		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageReleaseNotes>
-			bugfix: Sanitize file path
+			bugfix: Sanitize file path and bugfix at upload file at Web UI
 		</PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>
