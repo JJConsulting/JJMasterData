@@ -107,21 +107,31 @@ public class JJFormUpload : JJBaseView
             if (_gridView != null)
                 return _gridView;
 
-            _gridView = new JJGridView
-            {
-                Name = Name + "_gridview",
-                UserValues = UserValues,
-                ShowPagging = false,
-                ShowTitle = false
-            };
+            var dt = GetDataTableFiles();
+            _gridView = new JJGridView(dt);
+            _gridView.DataSource = dt;
+            _gridView.FormElement.Title = Title;
+            _gridView.FormElement.SubTitle = SubTitle;
+            
+            if(_gridView.FormElement.Fields.Contains("NameJS"))
+                _gridView.FormElement.Fields["NameJS"].VisibleExpression = "val:0";
+
+            if (_gridView.FormElement.Fields.Contains("LastWriteTime"))
+                _gridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";
+            
+            _gridView.Name = Name + "_gridview";
+            _gridView.UserValues = UserValues;
+            _gridView.ShowPagging = false;
+            _gridView.ShowTitle = false;
 
             _gridView.FilterAction.SetVisible(false);
             _gridView.EmptyDataText = "There is no file to display";
             _gridView.ShowHeaderWhenEmpty = false;
 
+            _gridView.GridActions.Clear();
             _gridView.AddGridAction(DownloadAction);
 
-            _gridView.OnRenderAction += (object sender, ActionEventArgs args) =>
+            _gridView.OnRenderAction += (_, args) =>
             {
                 if(args.Action.Name.Equals(_downloadAction.Name))
                 {
@@ -383,23 +393,6 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlGridView()
     {
-        if (GridView.DataSource == null &&
-            GridView.FormElement == null)
-        {
-            var dt = GetDataTableFiles();
-
-            if (dt == null) return GridView.GetHtmlBuilder();
-
-            GridView.FormElement = new FormElement(dt);
-            GridView.DataSource = dt;
-            GridView.FormElement.Title = Title;
-            GridView.FormElement.SubTitle = SubTitle;
-            GridView.FormElement.Fields["NameJS"].VisibleExpression = "val:0";
-
-            if (GridView.FormElement.Fields.Contains("LastWriteTime"))
-                GridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";
-        }
-
         return GridView.GetHtmlBuilder();
     }
 

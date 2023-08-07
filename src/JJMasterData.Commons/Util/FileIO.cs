@@ -10,13 +10,13 @@ namespace JJMasterData.Commons.Util;
 
 public class FileIO
 {
-    public static string SanitizePath(string inputPath)
+    public static string SanitizeFileName(string fileName)
     {
         var invalidChars = Path.GetInvalidFileNameChars();
         
-        var pattern = "[" + Regex.Escape(new string(invalidChars.Except(new[] { '\\', '/' }).ToArray())) + "]";
+        var pattern = "[" + Regex.Escape(new string(invalidChars.ToArray())) + "]";
         
-        var sanitizedPath = Regex.Replace(inputPath, pattern, "");
+        var sanitizedPath = Regex.Replace(fileName, pattern, "");
 
         return sanitizedPath;
     }
