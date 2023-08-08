@@ -74,12 +74,12 @@ public class FileService
             if (!currentFiles.Contains(fileName))
             {
                 currentFiles.Add(fileName);
-                values[field.Name] = string.Join(",", currentFiles);
+                values[field.Name] = string.Join(",", currentFiles).TrimStart(',');
             }
         }
         else
         {
-            values[field.Name] = fileName;
+            values[field.Name] = fileName.TrimStart(',');
         }
 
         _entityRepository.SetValues(formElement, values);
