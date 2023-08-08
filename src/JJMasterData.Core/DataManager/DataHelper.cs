@@ -3,6 +3,7 @@ using JJMasterData.Core.DataDictionary;
 using System;
 using System.Collections;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
@@ -101,8 +102,26 @@ public static class DataHelper
                 
             if (!formValues.Contains(field.Name))
                 throw new JJMasterDataException(Translate.Key("Primary key {0} not entered", field.Name));
-                    
-            string value = formValues[field.Name].ToString();
+
+
+            string value;
+            
+            if (field.DataType is FieldType.DateTime or FieldType.Date)
+            {
+                if (DateTime.TryParse(formValues[field.Name]?.ToString(), out var dateValue))
+                {
+                    value = dateValue.ToString(CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    throw new JJMasterDataException("Invalid DateTime");
+                }
+            }
+            else
+            {
+                value = formValues[field.Name].ToString();
+            }
+            
             if (value.Contains(separator))
                 throw new JJMasterDataException(Translate.Key("Primary key value {0} contains invalid characters.", value));
                 

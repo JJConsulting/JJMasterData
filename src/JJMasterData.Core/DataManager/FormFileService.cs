@@ -307,7 +307,7 @@ internal class FormFileService
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
             return;
-
+        
         var pathBuilder = new FormFilePathBuilder(FormElement);
         foreach (var field in uploadFields)
         {
