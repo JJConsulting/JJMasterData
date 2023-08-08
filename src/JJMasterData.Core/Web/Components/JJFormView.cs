@@ -63,8 +63,8 @@ public class JJFormView : JJGridView
         {
             var dataimp = base.DataImp;
             dataimp.OnAfterDelete = OnAfterDelete;
-            dataimp.OnAfterInsert = OnAfterDelete;
-            dataimp.OnAfterUpdate = OnAfterDelete;
+            dataimp.OnAfterInsert = OnAfterInsert;
+            dataimp.OnAfterUpdate = OnAfterUpdate;
 
             return dataimp;
         }
