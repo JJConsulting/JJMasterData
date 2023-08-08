@@ -34,8 +34,8 @@ public class UrlRedirectService : IUrlRedirectService
         };
 
         var values = await FormValuesService.GetFormValuesAsync(formElement,pageState);
-        
-        var parsedUrl = ExpressionsService.ParseExpression(urlAction.UrlRedirect, pageState, false, values);
+        var formData = new FormStateData(values, pageState);
+        var parsedUrl = ExpressionsService.ParseExpression(urlAction.UrlRedirect, formData, false);
         
         var model = new UrlRedirectModel(urlAction.UrlAsPopUp, urlAction.PopUpTitle, parsedUrl);
         return model;

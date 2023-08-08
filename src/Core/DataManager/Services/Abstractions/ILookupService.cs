@@ -1,19 +1,17 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Components;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 public interface ILookupService
 {
-    string GetLookupUrl(FormElementDataItem dataItem, string componentName, PageState pageState, IDictionary<string,dynamic> formValues);
+    string GetLookupUrl(FormElementDataItem dataItem, FormStateData formStateData, string componentName);
+
     object GetSelectedValue(string componentName);
 
     Task<string> GetDescriptionAsync(
         FormElementDataItem dataItem,
-        string selectedValue,
-        PageState pageState, 
-        IDictionary<string,dynamic> formValues,
+        FormStateData formStateData,
+        string searchId,
         bool allowOnlyNumbers);
 }

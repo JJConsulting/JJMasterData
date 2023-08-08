@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Http.Abstractions;
 using System;
@@ -57,7 +58,8 @@ public class FormValuesService : IFormValuesService
             {
                 case FormComponent.Search:
                     {
-                        value = await DataItemService.GetSelectedValueAsync(field, null, values, pageState);
+                        var formData = new FormStateData(values, pageState);
+                        value = await DataItemService.GetSelectedValueAsync(field, formData, null);
                         break;
                     }
                 case FormComponent.Lookup:

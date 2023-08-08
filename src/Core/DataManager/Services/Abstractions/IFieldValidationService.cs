@@ -11,7 +11,7 @@ public interface IFieldValidationService
     /// </summary>
     /// <param name="formElement">FormElement</param>
     /// <param name="formValues">Form values</param>
-    /// <param name="pageState">Context</param>
+    /// <param name="pageState">FormStateData</param>
     /// <param name="enableErrorLink">Add html link in error fields</param>
     /// <returns>
     /// Key = Field name

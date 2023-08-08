@@ -1,9 +1,10 @@
-using JJMasterData.Core.DataDictionary;
+#nullable enable
+
 using JJMasterData.Core.DataManager;
 
 namespace JJMasterData.Core.Web.Factories;
 
 public record ControlContext(
     FormStateData FormStateData,
-    string ParentComponentName,
-    object Value);
+    string? ParentComponentName,
+    object? Value);

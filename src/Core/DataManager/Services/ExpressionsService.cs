@@ -12,7 +12,6 @@ using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,19 +45,7 @@ public class ExpressionsService : IExpressionsService
     }
 
     #endregion
-
-    public string? ParseExpression(
-        string? expression,
-        PageState state,
-        bool quotationMarks,
-        IDictionary<string, dynamic> values,
-        IDictionary<string, dynamic>? userValues = null,
-        ExpressionManagerInterval? interval = null)
-    {
-        var formStateData = new FormStateData(values, userValues, state);
-        return ParseExpression(expression, formStateData, quotationMarks, interval);
-    }
-
+    
     public string? ParseExpression(
         string? expression,
         FormStateData formStateData,

@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -21,16 +22,14 @@ public class JJLookup : JJAsyncControlBase
     private JJMasterDataEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private ILogger<JJLookup> Logger { get; }
-    
+
     #region "Properties"
 
     private string _selectedValue;
     private string _text;
     private FormElementDataItem _dataItem;
 
-    internal IDictionary<string, dynamic> FormValues { get; set; }
-
-    internal PageState PageState { get; set; }
+    internal FormStateData FormStateData { get; set; }
 
     public bool AutoReloadFormFields { get; set; }
 
@@ -93,7 +92,7 @@ public class JJLookup : JJAsyncControlBase
 
     #region "Constructors"
 
-    public JJLookup(
+    internal JJLookup(
         FormElement formElement,
         IHttpContext httpContext,
         ILookupService lookupService,
@@ -109,13 +108,12 @@ public class JJLookup : JJAsyncControlBase
         Enabled = true;
         AutoReloadFormFields = true;
         Name = "jjlookup1";
-        PageState = PageState.List;
         PopSize = PopupSize.Full;
         PopTitle = "Search";
     }
 
     #endregion
-    
+
 
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
@@ -131,17 +129,14 @@ public class JJLookup : JJAsyncControlBase
     private async Task<HtmlBuilder> GetLookupHtmlElement()
     {
         string inputValue = SelectedValue;
-
         string description = Text;
 
         if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(inputValue))
-            description =
-                await LookupService.GetDescriptionAsync(DataItem, inputValue, PageState, FormValues, OnlyNumbers);
+            description = await LookupService.GetDescriptionAsync(DataItem, FormStateData, inputValue, OnlyNumbers);
 
         var div = new HtmlBuilder(HtmlTag.Div);
 
-
-        Attributes["lookup-url"] = LookupService.GetLookupUrl(DataItem, Name, PageState, FormValues);
+        Attributes["lookup-url"] = LookupService.GetLookupUrl(DataItem, FormStateData, Name);
 
         if (IsExternalRoute)
         {
@@ -152,9 +147,9 @@ public class JJLookup : JJAsyncControlBase
             Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup","MasterData", 
                 new
                 {
-                    dictionaryName = encryptedDictionaryName, 
+                    dictionaryName = encryptedDictionaryName,
                     componentName = Name,
-                    pageState = PageState
+                    pageState = FormStateData.PageState
                 });
         }
 
@@ -220,7 +215,7 @@ public class JJLookup : JJAsyncControlBase
     /// <returns>Returns the description of the id</returns>
     public async Task<string> GetDescriptionAsync()
     {
-        return await LookupService.GetDescriptionAsync(DataItem, SelectedValue, PageState, FormValues, OnlyNumbers);
+        return await LookupService.GetDescriptionAsync(DataItem, FormStateData, SelectedValue, OnlyNumbers);
     }
 
     private bool IsAjaxGetDescription()

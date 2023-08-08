@@ -1,4 +1,5 @@
 #nullable enable
+
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -25,7 +26,7 @@ public class DataItemService : IDataItemService
         HttpContext = httpContext;
     }
     
-    public async Task<string> GetSelectedValueAsync(FormElementField field,string searchText, IDictionary<string,dynamic?> values, PageState pageState)
+    public async Task<string> GetSelectedValueAsync(FormElementField field, FormStateData formStateData, string searchText)
     {
         if (HttpContext.IsPost)
         {
@@ -34,8 +35,7 @@ public class DataItemService : IDataItemService
                 return value;
         }
         
-        var list = await GetValuesAsync(field.DataItem!,searchText,null ,new SearchBoxContext(values,null,pageState)).ToListAsync();
-
+        var list = await GetValuesAsync(field.DataItem!, formStateData, searchText,null).ToListAsync();
         return list.First().Id;
     }
 
@@ -51,10 +51,11 @@ public class DataItemService : IDataItemService
         }
     }
 
-    public async IAsyncEnumerable<DataItemValue> GetValuesAsync(FormElementDataItem dataItem,
+    public async IAsyncEnumerable<DataItemValue> GetValuesAsync(
+        FormElementDataItem dataItem,
+        FormStateData formStateData,
         string? searchText,
-        string? searchId,
-        SearchBoxContext searchBoxContext)
+        string? searchId)
     {
         if (dataItem.Command == null || string.IsNullOrEmpty(dataItem.Command.Sql))
         {
@@ -65,7 +66,7 @@ public class DataItemService : IDataItemService
             yield break;
         }
 
-        var sql = GetSqlParsed(dataItem, searchText, searchId, searchBoxContext);
+        var sql = GetSqlParsed(dataItem, formStateData, searchText, searchId);
 
         var dt = await EntityRepository.GetDataTableAsync(sql);
         foreach (DataRow row in dt.Rows)
@@ -73,11 +74,11 @@ public class DataItemService : IDataItemService
             var item = new DataItemValue
             {
                 Id = row[0].ToString(),
-                Description = row[1].ToString()?.Trim()
+                Description = row[1].ToString().Trim()
             };
             if (dataItem.ShowImageLegend)
             {
-                item.Icon = (IconType)int.Parse(row[2].ToString() ?? string.Empty);
+                item.Icon = (IconType)int.Parse(row[2].ToString());
                 item.ImageColor = row[3].ToString();
             }
 
@@ -88,27 +89,24 @@ public class DataItemService : IDataItemService
         }
     }
 
-    private string? GetSqlParsed(FormElementDataItem dataItem, string? searchText, string? searchId, SearchBoxContext searchBoxContext)
+    private string? GetSqlParsed(FormElementDataItem dataItem, FormStateData formStateData, string? searchText, string? searchId)
     {
-        var ( values, userValues, pageState) = searchBoxContext;
-
         var sql = dataItem.Command.Sql;
         if (sql.Contains("{"))
         {
             if (searchId != null)
             {
-                if (searchBoxContext.UserValues != null && !searchBoxContext.UserValues.ContainsKey("search_id"))
-                    searchBoxContext.UserValues.Add("search_id", StringManager.ClearText(searchId));
+                if (formStateData.UserValues != null && !formStateData.UserValues.ContainsKey("search_id"))
+                    formStateData.UserValues.Add("search_id", StringManager.ClearText(searchId));
             }
 
             if (searchText != null)
             {
-                if (searchBoxContext.UserValues != null && !searchBoxContext.UserValues.ContainsKey("search_text"))
-                    searchBoxContext.UserValues.Add("search_text", StringManager.ClearText(searchText));
+                if (formStateData.UserValues != null && !formStateData.UserValues.ContainsKey("search_text"))
+                    formStateData.UserValues.Add("search_text", StringManager.ClearText(searchText));
             }
 
-            sql = ExpressionsService.ParseExpression(sql, pageState, false,
-                values, userValues);
+            sql = ExpressionsService.ParseExpression(sql, formStateData, false);
         }
 
         return sql;

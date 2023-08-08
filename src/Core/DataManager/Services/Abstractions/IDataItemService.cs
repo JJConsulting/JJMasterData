@@ -7,12 +7,18 @@ namespace JJMasterData.Core.DataManager.Services.Abstractions;
 
 public interface IDataItemService
 {
-    IEnumerable<DataItemResult> GetItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values);
+    IEnumerable<DataItemResult> GetItems(
+        FormElementDataItem dataItem, 
+        IEnumerable<DataItemValue> values);
     
-    IAsyncEnumerable<DataItemValue> GetValuesAsync(FormElementDataItem dataItem,
+    IAsyncEnumerable<DataItemValue> GetValuesAsync(
+        FormElementDataItem dataItem,
+        FormStateData formStateData,
         string searchText,
-        string searchId,
-        SearchBoxContext searchBoxContext);
+        string searchId);
 
-    Task<string> GetSelectedValueAsync(FormElementField field,string searchText, IDictionary<string,dynamic> values, PageState pageState);
+    Task<string> GetSelectedValueAsync(
+        FormElementField field,
+        FormStateData formStateData,
+        string searchText);
 }
