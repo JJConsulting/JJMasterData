@@ -295,6 +295,9 @@ public class JJTextFile : JJBaseControl
         {
             CaretText = $"{files.Length}&nbsp;{Translate.Key("Files")}"
         };
+        
+        btnGroup.Attributes.Add("onclick","event.stopPropagation()");
+
 
         foreach (var filename in files)
         {
