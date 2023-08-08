@@ -114,7 +114,7 @@ public static class DataHelper
                 }
                 else
                 {
-                    throw new JJMasterDataException("Invalid DateTime");
+                    throw new JJMasterDataException($"Invalid DateTime for field {field.Name}: {formValues[field.Name]}");
                 }
             }
             else
