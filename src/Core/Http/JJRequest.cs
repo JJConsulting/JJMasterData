@@ -44,18 +44,7 @@ public class JJRequest : IHttpRequest
         }
 
     }
-
-    public string PathBase
-    {
-        get
-        {
-#if NETFRAMEWORK
-        return "";
-#else
-            return HttpContext.Request.PathBase;
-#endif
-        }
-    }
+    
     public string ApplicationPath
     {
 

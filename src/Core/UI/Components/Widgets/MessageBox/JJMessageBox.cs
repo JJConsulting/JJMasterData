@@ -7,7 +7,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Exibe uma caixa de mensagem (dialog)
 /// </summary>
-public class JJMessageBox : JJBaseView
+public class JJMessageBox : JJComponentBase
 {
     private string _text;
     public string Text

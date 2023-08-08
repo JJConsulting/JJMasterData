@@ -4,7 +4,7 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJSpinner : JJBaseView
+public class JJSpinner : JJComponentBase
 {
     public JJSpinner()
     {

@@ -25,7 +25,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Represents a searchable combobox.
 /// </summary>
-public class JJSearchBox : JJAsyncBaseControl
+public class JJSearchBox : JJAsyncControlBase
 {
     private JJMasterDataEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -232,7 +232,7 @@ public class JJSearchBox : JJAsyncBaseControl
     }
 
 
-    public static bool IsSearchBoxRoute(JJBaseView view, IHttpContext httpContext)
+    public static bool IsSearchBoxRoute(JJComponentBase view, IHttpContext httpContext)
     {
         string requestType = httpContext.Request.QueryString("t");
         return "jjsearchbox".Equals(requestType);
@@ -245,7 +245,7 @@ public class JJSearchBox : JJAsyncBaseControl
     }
 
     internal static HtmlBuilder ResponseJson(
-        JJBaseView view,
+        JJComponentBase view,
         FormElement formElement,
         IDictionary<string, dynamic> formValues, 
         IHttpContext httpContext,
@@ -320,7 +320,7 @@ public class JJSearchBox : JJAsyncBaseControl
         if (IsExternalRoute)
         {
             string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEscape(DictionaryName);
-            url.Append(UrlHelper.GetUrl("GetItems","Search", new
+            url.Append(UrlHelper.GetUrl("GetItems","Search", "MasterData", new
             {
                 dictionaryName = dictionaryNameEncrypted, 
                 fieldName = FieldName,

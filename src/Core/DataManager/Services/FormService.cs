@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Tasks;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -35,11 +36,19 @@ public class FormService : IFormService
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeUpdate;
     public event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
     public event EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeDeleteAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeInsertAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterInsertAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeUpdateAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
 
     #endregion
 
     #region Constructor
 
+    //TODO GUSTAVO: Add async event overloads
     public FormService(
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
@@ -100,10 +109,14 @@ public class FormService : IFormService
         if (await IsAuditLogEnabled(formElement, PageState.Update, values))
             await AuditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
 
-        if (OnAfterUpdate != null)
+        if (OnAfterUpdate != null || OnAfterUpdateAsync != null)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
-            OnAfterUpdate.Invoke(dataContext, afterEventArgs);
+            OnAfterUpdate?.Invoke(dataContext, afterEventArgs);
+            if (OnAfterUpdateAsync != null)
+            {
+                await OnAfterUpdateAsync.Invoke(this, afterEventArgs);
+            }
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
@@ -119,10 +132,15 @@ public class FormService : IFormService
             errors = new Dictionary<string, dynamic>();
 
         var result = new FormLetter(errors);
-        if (OnBeforeInsert != null)
+        if (OnBeforeInsert != null || OnBeforeInsertAsync != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-            OnBeforeInsert.Invoke(dataContext, beforeActionArgs);
+            OnBeforeInsert?.Invoke(dataContext, beforeActionArgs);
+
+            if (OnBeforeInsertAsync != null)
+            {
+                await OnBeforeInsertAsync.Invoke(dataContext, beforeActionArgs);
+            }
         }
 
         if (errors.Count > 0)
@@ -146,12 +164,18 @@ public class FormService : IFormService
         if (await IsAuditLogEnabled(formElement, PageState.Insert, values))
             await AuditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
 
-        if (OnAfterInsert != null)
+        if (OnAfterInsert == null && OnAfterInsertAsync == null) 
+            return result;
+        
+        var afterEventArgs = new FormAfterActionEventArgs(values);
+        OnAfterInsert?.Invoke(dataContext, afterEventArgs);
+
+        if (OnAfterInsertAsync != null)
         {
-            var afterEventArgs = new FormAfterActionEventArgs(values);
-            OnAfterInsert.Invoke(dataContext, afterEventArgs);
-            result.UrlRedirect = afterEventArgs.UrlRedirect;
+            await OnAfterInsertAsync.Invoke(dataContext, afterEventArgs);
         }
+            
+        result.UrlRedirect = afterEventArgs.UrlRedirect;
 
         return result;
     }
@@ -167,16 +191,20 @@ public class FormService : IFormService
         var errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Import, EnableErrorLinks);
         var result = new FormLetter<CommandOperation>(errors);
 
-        if (OnBeforeImport != null)
+        if (OnBeforeImport != null || OnBeforeImportAsync != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-            OnBeforeImport.Invoke(dataContext, beforeActionArgs);
+            OnBeforeImport?.Invoke(dataContext, beforeActionArgs);
+
+            if (OnBeforeImportAsync != null)
+            {
+                await OnBeforeImportAsync.Invoke(dataContext, beforeActionArgs);
+            }
         }
 
         if (errors.Count > 0)
             return result;
-
-
+        
         try
         {
             result.Result = await EntityRepository.SetValuesAsync(formElement, (IDictionary)values);
@@ -186,31 +214,49 @@ public class FormService : IFormService
             errors.Add("DbException", ExceptionManager.GetMessage(e));
         }
 
-
         if (errors.Count > 0)
             return result;
 
         if (await IsAuditLogEnabled(formElement, PageState.Import, values))
             await AuditLogService.LogAsync(formElement, dataContext, values, result.Result);
 
-        if (OnAfterInsert != null && result.Result == CommandOperation.Insert)
+        if ((OnAfterInsert != null || OnAfterInsertAsync != null) && result.Result == CommandOperation.Insert)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
-            OnAfterInsert.Invoke(dataContext, afterEventArgs);
+            OnAfterInsert?.Invoke(dataContext, afterEventArgs);
+
+            if (OnAfterInsertAsync != null)
+            {
+                await OnAfterInsertAsync.Invoke(dataContext, afterEventArgs);
+            }
+            
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
-        if (OnAfterUpdate != null && result.Result == CommandOperation.Update)
+        if ((OnAfterUpdate != null || OnAfterUpdateAsync != null) && result.Result == CommandOperation.Update)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
-            OnAfterUpdate.Invoke(dataContext, afterEventArgs);
+            OnAfterUpdate?.Invoke(dataContext, afterEventArgs);
+
+            if (OnAfterUpdateAsync != null)
+            {
+                await OnAfterUpdateAsync.Invoke(dataContext, afterEventArgs);
+            }
+            
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
-        if (OnAfterDelete != null && result.Result == CommandOperation.Delete)
+        if ((OnAfterDelete != null || OnAfterDeleteAsync != null) && result.Result == CommandOperation.Delete)
         {
             var afterEventArgs = new FormAfterActionEventArgs(values);
             OnAfterDelete.Invoke(dataContext, afterEventArgs);
+            
+            if (OnAfterDeleteAsync != null)
+            {
+                await OnAfterDeleteAsync.Invoke(dataContext, afterEventArgs);
+            }
+
+            
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
@@ -257,28 +303,43 @@ public class FormService : IFormService
         if (await IsAuditLogEnabled(formElement, PageState.Delete, primaryKeys))
             await AuditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);
 
-        if (OnAfterDelete != null)
+        if (OnAfterDelete != null || OnAfterDeleteAsync != null)
         {
             var afterEventArgs = new FormAfterActionEventArgs(primaryKeys);
-            OnAfterDelete.Invoke(dataContext, afterEventArgs);
+            OnAfterDelete?.Invoke(dataContext, afterEventArgs);
+
+            if (OnAfterDeleteAsync != null)
+            {
+                await OnAfterDeleteAsync.Invoke(dataContext, afterEventArgs);
+            }
+            
             result.UrlRedirect = afterEventArgs.UrlRedirect;
         }
 
         return result;
     }
 
-    public void AddFormEvent(IFormEvent formEvent)
+    public void AddFormEventHandler(IFormEventHandler formEventHandler)
     {
-        if (formEvent != null)
+        if (formEventHandler != null)
         {
-            OnBeforeInsert += formEvent.OnBeforeInsert;
-            OnBeforeDelete += formEvent.OnBeforeDelete;
-            OnBeforeUpdate += formEvent.OnBeforeUpdate;
-            OnBeforeImport += formEvent.OnBeforeImport;
+            OnBeforeInsert += formEventHandler.OnBeforeInsert;
+            OnBeforeDelete += formEventHandler.OnBeforeDelete;
+            OnBeforeUpdate += formEventHandler.OnBeforeUpdate;
+            OnBeforeImport += formEventHandler.OnBeforeImport;
 
-            OnAfterDelete += formEvent.OnAfterDelete;
-            OnAfterInsert += formEvent.OnAfterInsert;
-            OnAfterUpdate += formEvent.OnAfterUpdate;
+            OnAfterDelete += formEventHandler.OnAfterDelete;
+            OnAfterInsert += formEventHandler.OnAfterInsert;
+            OnAfterUpdate += formEventHandler.OnAfterUpdate;
+            
+            OnBeforeInsertAsync += formEventHandler.OnBeforeInsertAsync;
+            OnBeforeDeleteAsync += formEventHandler.OnBeforeDeleteAsync;
+            OnBeforeUpdateAsync += formEventHandler.OnBeforeUpdateAsync;
+            OnBeforeImportAsync += formEventHandler.OnBeforeImportAsync;
+
+            OnAfterDeleteAsync += formEventHandler.OnAfterDeleteAsync;
+            OnAfterInsertAsync += formEventHandler.OnAfterInsertAsync;
+            OnAfterUpdateAsync += formEventHandler.OnAfterUpdateAsync;
         }
     }
 

@@ -42,7 +42,7 @@ namespace JJMasterData.Core.Web.Components;
 /// Example
 /// <img src="../media/JJGridViewWithLegend.png"/>
 /// </example>
-public class JJGridView : JJAsyncBaseView
+public class JJGridView : JJAsyncComponentBase
 {
     #region "Events"
 
@@ -68,7 +68,8 @@ public class JJGridView : JJAsyncBaseView
     public event EventHandler<GridDataLoadEventArgs> OnDataLoad;
     public event AsyncEventHandler<GridDataLoadEventArgs> OnDataLoadAsync;
     public event EventHandler<ActionEventArgs> OnRenderAction;
-
+    public event AsyncEventHandler<GridRenderEventArgs> OnRenderHtmlAsync;
+    
     #endregion
 
     #region "Properties"
@@ -562,6 +563,12 @@ public class JJGridView : JJAsyncBaseView
 
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
+        if (OnRenderHtmlAsync != null)
+        {
+            var eventArgs = new GridRenderEventArgs(this);
+            await OnRenderHtmlAsync.Invoke(this,eventArgs);
+        }
+        
         var html = new HtmlBuilder(HtmlTag.Div);
         string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + Name);
         if (!string.IsNullOrEmpty(lookupRoute))
@@ -1201,7 +1208,7 @@ public class JJGridView : JJAsyncBaseView
 
             if (OnDataLoadAsync != null)
             {
-                await OnDataLoadAsync(this, args);
+                await OnDataLoadAsync.Invoke(this, args);
             }
 
             total = args.Tot;

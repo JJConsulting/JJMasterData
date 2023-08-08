@@ -13,7 +13,7 @@ namespace JJMasterData.Core.Web.Components;
 /// The result will look like this:
 /// <img src="../media/JJValidationSumaryExample.png"/>
 /// </example>
-public class JJValidationSummary : JJBaseView
+public class JJValidationSummary : JJComponentBase
 {
     public IList<string> Errors { get; set; }
 

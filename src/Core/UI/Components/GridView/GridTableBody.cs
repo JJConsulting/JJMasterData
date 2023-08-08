@@ -128,7 +128,15 @@ internal class GridTableBody
                         Sender = new JJText(value)
                     };
                     OnRenderCell.Invoke(GridView, args);
-                    td.AppendText(args.HtmlResult);
+
+                    if (args.HtmlResult != null)
+                    {
+                        td.AppendText(args.HtmlResult);
+                    }
+                    else
+                    {
+                        td.AppendText(value.Trim());
+                    }
                 }
                 else
                 {

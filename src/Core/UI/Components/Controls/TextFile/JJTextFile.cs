@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextFile : JJBaseControl
+public class JJTextFile : JJControlBase
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
@@ -156,7 +156,7 @@ public class JJTextFile : JJBaseControl
         if (IsExternalRoute)
         {
             var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
-            url = UrlHelper.GetUrl("GetUploadView", "TextFile",
+            url = UrlHelper.GetUrl("GetUploadView", "TextFile","MasterData", 
                 new
                 {
                     dictionaryName = encryptedDictionaryName, 
@@ -358,7 +358,7 @@ public class JJTextFile : JJBaseControl
         return Name.Equals(lookupRoute);
     }
 
-    public static bool IsUploadViewRoute(JJBaseView view, IHttpContext httpContext)
+    public static bool IsUploadViewRoute(JJComponentBase view, IHttpContext httpContext)
     {
         string dataPanelName;
         if (view is JJFormView formView)

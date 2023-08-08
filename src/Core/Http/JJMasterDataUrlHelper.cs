@@ -1,73 +1,83 @@
 #nullable enable
-using System;
+
 using System.Collections.Generic;
-using System.IO;
+using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Options;
-using Microsoft.Extensions.DependencyInjection;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Options;
-#if NET6_0_OR_GREATER
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-#endif
+using Microsoft.IdentityModel.Tokens;
 
 namespace JJMasterData.Core.Web;
 
 public class JJMasterDataUrlHelper 
 {
-#if NET6_0_OR_GREATER
-    private IUrlHelper UrlHelper { get; }
-#endif
-    private string? OptionsUrl { get; }
-#if NET48 || NETSTANDARD
-    public JJMasterDataUrlHelper(IOptions<JJMasterDataCoreOptions> options)
+    private IHttpContext HttpContext { get; }
+    public string? JJMasterDataUrl { get; }
+    public JJMasterDataUrlHelper(IHttpContext httpContext,IOptions<JJMasterDataCoreOptions> options)
     {
-        OptionsUrl = options.Value.JJMasterDataUrl;
+        JJMasterDataUrl = options.Value.JJMasterDataUrl;
+        HttpContext = httpContext;
     }
-#else
-    public JJMasterDataUrlHelper(
-        IUrlHelperFactory urlHelperFactory,
-        IActionContextAccessor actionContextAccessor, 
-        IOptions<JJMasterDataCoreOptions> options)
+
+    public string GetUrl([AspMvcAction]string? action = null, [AspMvcController] string? controller = null,string? area = null, object? values = null)
     {
-        UrlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext!);
-        OptionsUrl = options.Value.JJMasterDataUrl;
-    }
-#endif
-    
-    public string GetUrl([AspMvcAction]string? action = null, [AspMvcController] string? controller = null,object? values = null)
-    {
-        if (OptionsUrl is not null)
+
+        string baseUrl;
+        
+        if (JJMasterDataUrl is null)
         {
-            var url = Path.Combine(OptionsUrl, "MasterData");
-            if (controller != null)
-            {
-                url += Path.Combine(url, controller);
-            }
+            var appPath = HttpContext.Request.ApplicationPath;
 
-            if (action != null)
-            {
-                url += Path.Combine(url, action);
-            }
-
-            if (values != null)
-            {
-                var dictionary = (IDictionary<string, dynamic>)values;
-                var queryString = string.Join("&", dictionary.Select(kvp => $"{kvp.Key}={kvp.Value}"));
-                url += "?" + queryString;
-            }
-
-            return url;
+            baseUrl = appPath.IsNullOrEmpty() ? "/" : appPath;
         }
-#if NET48 || NETSTANDARD
-        throw new JJMasterDataException("JJMasterDataCoreOptions.JJMasterDataUrl cannot be null at your target framework.");
-#elif NET6_0_OR_GREATER
-        values ??= new  {Area = "MasterData"};
-        return UrlHelper.Action(action, controller, values) ?? throw new JJMasterDataException("Invalid action and/or controller.");
-#endif
+        else
+        {
+            baseUrl = JJMasterDataUrl;
+        }
+
+
+        var valuesDictionary = new Dictionary<string, string?>();
+        
+        if (values != null)
+        {
+            valuesDictionary = values.GetType().GetProperties()
+                .ToDictionary(prop => prop.Name, prop => prop.GetValue(values)?.ToString());
+        }
+        
+        valuesDictionary.TryGetValue("dictionaryName", out var dictionaryName);
+        
+        var url = baseUrl;
+
+        url += CultureInfo.CurrentUICulture + "/";
+        
+        if (!string.IsNullOrEmpty(area))
+        {
+            url += $"{area}/";
+        }
+
+        if (!string.IsNullOrEmpty(controller))
+        {
+            url += $"{controller}/";
+        }
+
+        if (!string.IsNullOrEmpty(action))
+        {
+            url += $"{action}/";
+        }
+
+        if (!string.IsNullOrEmpty(dictionaryName))
+        {
+            url += $"{dictionaryName}";
+        }
+        
+        if (valuesDictionary?.Count > 0)
+        {
+            url += "?" + string.Join("&", valuesDictionary.Select(kv => $"{kv.Key}={kv.Value}"));
+        }
+        
+
+        return url;
     }
 }

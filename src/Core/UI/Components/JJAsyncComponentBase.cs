@@ -7,9 +7,9 @@ using JJMasterData.Core.Web.Html;
 namespace JJMasterData.Core.Web.Components;
 
 /// <summary>
-/// A JJBaseView with asynchronous programming support.
+/// A JJComponentBase with asynchronous programming support.
 /// </summary>
-public abstract class JJAsyncBaseView : JJBaseView
+public abstract class JJAsyncComponentBase : JJComponentBase
 {
     public async Task<string?> GetHtmlAsync()
     {

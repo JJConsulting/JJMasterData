@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJComboBox : JJBaseControl
+public class JJComboBox : JJControlBase
 {
     private IList<DataItemValue> _values;
     private string _selectedValue;

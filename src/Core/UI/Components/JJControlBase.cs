@@ -3,7 +3,7 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public abstract class JJBaseControl : JJBaseView
+public abstract class JJControlBase : JJComponentBase
 {
     private string _text;
 
@@ -51,7 +51,7 @@ public abstract class JJBaseControl : JJBaseView
         set => _text = value;
     }
 
-    protected JJBaseControl(IHttpContext currentContext)
+    protected JJControlBase(IHttpContext currentContext)
     {
         CurrentContext = currentContext;
     }

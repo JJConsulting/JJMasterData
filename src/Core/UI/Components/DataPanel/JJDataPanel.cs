@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Services;
 
 
@@ -25,7 +26,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Render panels with fields
 /// </summary>
-public class JJDataPanel : JJAsyncBaseView
+public class JJDataPanel : JJAsyncComponentBase
 {
     #region "Events"
 

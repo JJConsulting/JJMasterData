@@ -49,7 +49,7 @@ public class LookupService : ILookupService
             EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString(ExpressionsService, pageState,
                 formValues));
         
-        return UrlHelper.GetUrl("Index", "Lookup", new { lookupParameters = encryptedLookupParameters });
+        return UrlHelper.GetUrl("Index", "Lookup", "MasterData",new { lookupParameters = encryptedLookupParameters });
     }
     
     public async Task<string> GetDescriptionAsync(

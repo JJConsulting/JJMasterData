@@ -4,7 +4,7 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextBox : JJBaseControl
+public class JJTextBox : JJControlBase
 {
     public InputType InputType { get; set; }
 

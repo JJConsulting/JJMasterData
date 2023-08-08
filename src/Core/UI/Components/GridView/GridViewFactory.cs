@@ -15,6 +15,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using JJMasterData.Core.Web.FormEvents.Abstractions;
+using JJMasterData.Core.Web.FormEvents.Factories;
 
 namespace JJMasterData.Core.UI.Components.GridView;
 
@@ -26,6 +28,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
     private IExpressionsService ExpressionsService { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IGridEventHandlerFactory GridEventHandlerFactory { get; }
     private ComponentFactory Factory { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
@@ -42,6 +45,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IGridEventHandlerFactory gridEventHandlerFactory,
         ComponentFactory factory)
     {
         UrlHelper = urlHelper;
@@ -52,19 +56,41 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         ExpressionsService = expressionsService;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
+        GridEventHandlerFactory = gridEventHandlerFactory;
         Factory = factory;
         EntityRepository = entityRepository;
     }
-    
+
 
     public JJGridView Create(FormElement formElement)
     {
-        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, UrlHelper, ExpressionsService, EncryptionService,
-            FieldsService, FormValuesService, StringLocalizer, Factory);
+        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, UrlHelper, ExpressionsService,
+            EncryptionService,
+            FieldsService, FormValuesService, StringLocalizer, Factory)
+        {
+            IsExternalRoute = true
+        };
 
+        var eventHandler = GridEventHandlerFactory.GetGridEventHandler(formElement.Name);
+        
         SetGridOptions(gridView, formElement.Options);
 
+        
+        if(eventHandler != null)
+            SetGridEvents(gridView, eventHandler);
+        
         return gridView;
+    }
+
+    //TODO: Check if method is implemented before subscribing
+    private static void SetGridEvents(JJGridView gridView, IGridEventHandler eventHandler)
+    {
+        gridView.OnDataLoad += eventHandler.OnDataLoad;
+        gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
+        gridView.OnRenderAction += eventHandler.OnRenderAction;
+        gridView.OnRenderCell += eventHandler.OnRenderCell;
+        gridView.OnRenderSelectedCell += eventHandler.OnRenderSelectedCell;
+        gridView.OnRenderHtmlAsync += eventHandler.OnRenderHtmlAsync;
     }
 
     public JJGridView Create(DataTable dataTable)
@@ -96,7 +122,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 
         if (gridOptions == null)
             throw new ArgumentNullException(nameof(gridOptions), "Grid Options");
-        
+
         SetGridUiOptions(grid, gridOptions);
     }
 

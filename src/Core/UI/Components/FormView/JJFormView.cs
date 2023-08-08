@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.Web.Components;
@@ -37,7 +38,7 @@ namespace JJMasterData.Core.Web.Components;
 /// The GetHtml method will return something like this:
 /// <img src="../media/JJFormViewExample.png"/>
 /// </example>
-public class JJFormView : JJAsyncBaseView
+public class JJFormView : JJAsyncComponentBase
 {
     #region "Events"
 
@@ -205,7 +206,7 @@ public class JJFormView : JJAsyncBaseView
     internal IFieldValuesService FieldValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    internal IDataDictionaryRepository DataDictionaryRepository { get; }
+    internal IDataDictionaryService DataDictionaryService { get; }
     internal IFormService FormService { get; }
     internal ComponentFactory ComponentFactory { get; }
 
@@ -224,16 +225,16 @@ public class JJFormView : JJAsyncBaseView
         FieldValuesService = JJService.Provider.GetScopedDependentService<IFieldValuesService>();
         ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
         StringLocalizer = JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
-        DataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        DataDictionaryService = JJService.Provider.GetScopedDependentService<IDataDictionaryService>();
     }
 
     public JJFormView(string elementName) : this()
     {
-        var dataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        var dataDictionaryService = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         var factory = JJService.Provider.GetScopedDependentService<FormViewFactory>();
-        FormElement = dataDictionaryRepository.GetMetadata(elementName);
+        FormElement = dataDictionaryService.GetMetadata(elementName);
         IsExternalRoute = false;
-        factory.SetFormViewParams(this, FormElement);
+        factory.SetFormViewParamsAsync(this, FormElement);
     }
 
     public JJFormView(FormElement formElement) : this()
@@ -247,7 +248,7 @@ public class JJFormView : JJAsyncBaseView
         FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
+        IDataDictionaryService dataDictionaryService,
         IFormService formService,
         JJMasterDataEncryptionService encryptionService,
         IFieldValuesService fieldValuesService,
@@ -264,7 +265,7 @@ public class JJFormView : JJAsyncBaseView
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
-        DataDictionaryRepository = dataDictionaryRepository;
+        DataDictionaryService = dataDictionaryService;
         ComponentFactory = componentFactory;
     }
 
@@ -546,7 +547,7 @@ public class JJFormView : JJAsyncBaseView
         sHtml.AppendHiddenInput($"current-panel-action-{Name}", "ELEMENTLIST");
         sHtml.AppendHiddenInput($"current-select-action-values{Name}", "");
 
-        var formElement = DataDictionaryRepository.GetMetadata(action.ElementNameToSelect);
+        var formElement = DataDictionaryService.GetMetadata(action.ElementNameToSelect);
         var selectedForm = ComponentFactory.JJView.Create(formElement);
         selectedForm.UserValues = UserValues;
         selectedForm.Name = action.ElementNameToSelect;
@@ -586,7 +587,7 @@ public class JJFormView : JJAsyncBaseView
         string encryptedActionMap = CurrentContext.Request.Form("current-select-action-values" + Name);
         var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(InsertAction.ElementNameToSelect);
+        var formElement = await DataDictionaryService.GetMetadataAsync(InsertAction.ElementNameToSelect);
         var selValues = await EntityRepository.GetDictionaryAsync(formElement, actionMap.PkFieldValues);
         var values = await FieldValuesService.MergeWithExpressionValuesAsync(formElement, selValues, PageState.Insert, true);
         var erros = await InsertFormValuesAsync(values, false);

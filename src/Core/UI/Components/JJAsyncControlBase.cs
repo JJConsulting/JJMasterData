@@ -8,9 +8,9 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components.Abstractions;
 
-public abstract class JJAsyncBaseControl : JJBaseControl
+public abstract class JJAsyncControlBase : JJControlBase
 {
-    public JJAsyncBaseControl(IHttpContext currentContext) : base(currentContext)
+    public JJAsyncControlBase(IHttpContext currentContext) : base(currentContext)
     {
     }
 

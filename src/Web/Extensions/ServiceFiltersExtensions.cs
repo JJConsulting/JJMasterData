@@ -7,7 +7,6 @@ public static class ServiceFiltersExtensions
 {
     public static IServiceCollection AddActionFilters(this IServiceCollection services)
     {
-        services.AddScoped<DictionaryNameDecryptionFilter>();
         services.AddScoped<ActionMapDecryptionFilter>();
         services.AddScoped<LookupParametersDecryptionFilter>();
         services.AddScoped<FormElementDecryptionFilter>();

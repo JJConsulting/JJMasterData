@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace JJMasterData.Core.Web.Components;
 
 /// Represents a field with a value from another Data Dictionary accessed via popup.
-public class JJLookup : JJAsyncBaseControl
+public class JJLookup : JJAsyncControlBase
 {
     internal FormElement FormElement { get; set; }
     private ILookupService LookupService { get; }
@@ -148,8 +148,8 @@ public class JJLookup : JJAsyncBaseControl
             var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
             var componentName = Attributes["pnlname"];
             Attributes["data-panel-reload-url"] = UrlHelper.GetUrl("ReloadPanel", "Form",
-                new { dictionaryName = encryptedDictionaryName, componentName });
-            Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup",
+                "MasterData", new { dictionaryName = encryptedDictionaryName, componentName });
+            Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup","MasterData", 
                 new
                 {
                     dictionaryName = encryptedDictionaryName, 
@@ -240,7 +240,7 @@ public class JJLookup : JJAsyncBaseControl
         return Name.Equals(lookupRoute);
     }
 
-    public static bool IsLookupRoute(JJBaseView view, IHttpContext context)
+    public static bool IsLookupRoute(JJComponentBase view, IHttpContext context)
     {
         string dataPanelName = string.Empty;
         if (view is JJFormView formView)

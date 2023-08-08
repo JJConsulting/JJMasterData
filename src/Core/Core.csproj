@@ -14,10 +14,6 @@
         <AssemblyName>JJMasterData.Core</AssemblyName>
     </PropertyGroup>
     
-    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    </ItemGroup>
-    
     <ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">
         <Reference Include="System.Web" />
     </ItemGroup>
@@ -53,4 +49,10 @@
     </ItemGroup>
     
 
+    
+    
+    
+    
+    
+    
 </Project>

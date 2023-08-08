@@ -8,7 +8,7 @@ using System;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJUploadArea : JJBaseView
+public class JJUploadArea : JJComponentBase
 {
     /// <summary>
     /// Event fired when the file is posted.
@@ -138,7 +138,7 @@ public class JJUploadArea : JJBaseView
                 {
                     div.WithCssClass("fileUpload");
                     div.WithAttribute("id", Name);
-                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","UploadArea", new {componentName = Name}));
+                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","UploadArea", "MasterData", new {componentName = Name}));
                     div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
                     div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
                     div.WithAttribute("dragDrop", EnableDragDrop.ToString().ToLower());

@@ -19,7 +19,7 @@ public static class Extensions
         if(configure != null)
             builder.Services.Configure(configure);
         
-        builder.Services.AddTransient<IFormEventResolver,PythonFormEventResolver>();
+        builder.Services.AddTransient<IFormEventHandlerFactory,PythonFormEventHandlerFactory>();
         
         return builder;
     }

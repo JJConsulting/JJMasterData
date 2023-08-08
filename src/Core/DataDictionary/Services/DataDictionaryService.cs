@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -6,22 +9,45 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class DataDictionaryService : IDataDictionaryService
 {
     private IDataDictionaryRepository DataDictionaryRepository { get; }
+    private IEnumerable<IFormElementFactory> Factories { get; }
 
-    public DataDictionaryService(IDataDictionaryRepository dataDictionaryRepository)
+    public DataDictionaryService(
+        IDataDictionaryRepository dataDictionaryRepository,
+        IEnumerable<IFormElementFactory> factories)
     {
         DataDictionaryRepository = dataDictionaryRepository;
-    }
-        
-    public FormElement GetMetadata(string dictionaryName)
-    {
-        return DataDictionaryRepository.GetMetadata(dictionaryName);
+        Factories = factories;
     }
 
-    public async Task<FormElement> GetMetadataAsync(string dictionaryName)
+    private IFormElementFactory GetFactory(string elementName)
     {
-        
-        
-        return await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        return Factories.First(f => f.ElementName == elementName);
+    }
+    
+    public FormElement GetMetadata(string elementName)
+    {
+        var formElement = DataDictionaryRepository.GetMetadata(elementName);
+
+        if (formElement is null)
+        {
+            var factory = GetFactory(elementName);
+            return factory.GetFormElement();
+        }
+
+        return formElement;
+    }
+
+    public async Task<FormElement> GetMetadataAsync(string elementName)
+    {
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+
+        if (formElement is null)
+        {
+            var factory = GetFactory(elementName);
+            return factory.GetFormElement();
+        }
+
+        return formElement;
     }
 
     public bool Exists(string dictionaryName)

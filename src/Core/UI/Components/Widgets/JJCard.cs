@@ -7,7 +7,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// This is a simple content container
 /// </summary>
-public class JJCard : JJBaseView
+public class JJCard : JJComponentBase
 {
     public string Title { get; set; }
 

@@ -13,7 +13,6 @@ public interface IHttpRequest
     string HttpMethod { get; }
     string UserAgent { get; }
     string AbsoluteUri { get; }
-    string PathBase { get; }
     string ApplicationPath { get; }
 #if NETFRAMEWORK
     HttpPostedFile GetFile(string file);

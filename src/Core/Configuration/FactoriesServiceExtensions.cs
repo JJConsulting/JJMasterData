@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Core.DataDictionary.Factories;
+using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.UI.Components.Widgets;
@@ -14,6 +16,21 @@ namespace JJMasterData.Core.Configuration;
 public static class FactoriesServiceExtensions
 {
     public static IServiceCollection AddFactories(this IServiceCollection services)
+    {
+        services.AddFormElementFactories();
+        services.AddComponentsFactories();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddFormElementFactories(this IServiceCollection services)
+    {
+        services.AddTransient<IFormElementFactory,JJMasterDataFormElementFactory>();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddComponentsFactories(this IServiceCollection services)
     {
         services.AddTransient<TextBoxFactory>();
         services.AddTransient<LinkButtonFactory>();
