@@ -101,7 +101,7 @@ internal class FormFileService
                 throw new JJMasterDataException(Translate.Key("file {0} not found!", currentName));
 
             file.Content.FileName = newName;
-            if (file.Content.Bytes == null & string.IsNullOrEmpty(file.OriginName))
+            if (file.Content.Bytes == null && string.IsNullOrEmpty(file.OriginName))
                 file.OriginName = currentName;
 
             MemoryFiles = files;

@@ -529,7 +529,7 @@ public class JJFormUpload : JJBaseView
         var fileName = file.FileName;
         
         string src;
-        string filePath = Path.Combine(Service.FolderPath, fileName);
+       
 
         if (file.IsInMemory)
         {
@@ -538,6 +538,7 @@ public class JJFormUpload : JJBaseView
         }
         else
         {
+            string filePath = Path.Combine(Service.FolderPath, fileName);
             src = JJDownloadFile.GetDownloadUrl(filePath);
         }
 
