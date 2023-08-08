@@ -33,7 +33,7 @@ internal class GridToolbar
     private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlElement()
     {
         var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
-        var linkButtonFactory = GridView.ComponentFactory.LinkButtonFactory;
+        var linkButtonFactory = GridView.ComponentFactory.LinkButton;
         var formValues = await GridView.GetDefaultValuesAsync();
         var formStateData = new FormStateData(GridView.UserValues, formValues, PageState.List);
         
