@@ -46,9 +46,9 @@ public class SearchController : MasterDataController
             formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, (PageState)pageState, true);
         }
 
-        var context = new SearchBoxContext(formValues, null, (PageState)pageState);
+        var context = new FormStateData(formValues, null, (PageState)pageState);
 
-        var values = await Service.GetValuesAsync(dataItem,searchText,null,context).ToListAsync();
+        var values = await Service.GetValuesAsync(dataItem,context,searchText,null).ToListAsync();
         var items = Service.GetItems(dataItem,values);
         
         return Json(items);
