@@ -64,8 +64,13 @@ public class FileService
 
         if (field.DataFile!.MultipleFile)
         {
-            var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
+            var currentFiles = new List<string>();
 
+            if (values[field.Name] != null && values[field.Name] is not DBNull)
+            {
+                currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
+            }
+            
             if (!currentFiles.Contains(fileName))
             {
                 currentFiles.Add(fileName);
@@ -83,7 +88,10 @@ public class FileService
     private static void SetPhysicalFile(FormElement formElement, FormElementField field, string pkValues, IFormFile file)
     {
         var builder = new FormFilePathBuilder(formElement);
-        var path = builder.GetFolderPath(field, DataHelper.GetPkValues(formElement, pkValues, ','));
+
+        var hashValues = DataHelper.GetPkValues(formElement, pkValues, ',');
+        
+        var path = builder.GetFolderPath(field, hashValues);
         
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
@@ -92,14 +100,17 @@ public class FileService
         {
             foreach (var fileInfo in new DirectoryInfo(path).EnumerateFiles())
             {
-                fileInfo.Delete();
+                if (fileInfo.Name == file.FileName)
+                {
+                    fileInfo.Delete();
+                }
             }
         }
 
         using var fileStream =
             new FileStream(Path.Combine(path, file.FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-        file.CopyToAsync(fileStream);
+        file.CopyTo(fileStream);
     }
     
     public void DeleteFile(string elementName, string fieldName, string pkValues, string fileName)

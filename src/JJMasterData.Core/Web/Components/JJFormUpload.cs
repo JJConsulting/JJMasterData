@@ -409,7 +409,7 @@ public class JJFormUpload : JJBaseView
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
 
-        foreach (var fileInfo in files)
+        foreach (var fileInfo in files.Where(f=> !f.Deleted))
         {
             var file = fileInfo.Content;
             var col = new HtmlBuilder(HtmlTag.Div);
@@ -417,7 +417,7 @@ public class JJFormUpload : JJBaseView
             col.AppendElement(HtmlTag.Ul, ul =>
             {
                 ul.WithCssClass("list-group list-group-flush");
-                ul.AppendElement(GetHtmlGalleryPreview(file.FileName));
+                ul.AppendElement(GetHtmlGalleryPreview(fileInfo));
                 ul.AppendElement(GetHtmlGalleryListItem("Name", file.FileName));
                 ul.AppendElement(GetHtmlGalleryListItem("Size", file.Length + " Bytes"));
                 ul.AppendElement(GetHtmlGalleryListItem("Last Modified", file.LastWriteTime.ToString(CultureInfo.CurrentCulture)));
@@ -449,21 +449,23 @@ public class JJFormUpload : JJBaseView
             .AppendText(value);
     }
 
-    private HtmlBuilder GetHtmlGalleryPreview(string fileName)
+    private HtmlBuilder GetHtmlGalleryPreview(FormFileInfo fileInfo)
     {
         var html = new HtmlBuilder(HtmlTag.Li)
             .WithCssClass("list-group-item");
 
+        var fileName = fileInfo.FileName;
+        
         switch (Path.GetExtension(fileName))
         {
             case ".png":
             case ".jpg":
             case ".jpeg":
-                html.AppendElement(GetHtmlImageBox(fileName));
+                html.AppendElement(GetHtmlImageBox(fileInfo));
                 break;
             case ".mp4":
                 html.WithCssClass("text-center");
-                html.AppendElement(GetHtmlVideoBox(fileName));
+                html.AppendElement(GetHtmlVideoBox(fileInfo));
                 break;
             case ".pdf":
                 html.WithCssClass("text-center");
@@ -520,11 +522,12 @@ public class JJFormUpload : JJBaseView
         return div;
     }
 
-    private HtmlBuilder GetHtmlImageBox(string fileName)
+    private HtmlBuilder GetHtmlImageBox(FormFileInfo file)
     {
-        var file = Service.GetFile(fileName);
         var url = CurrentContext.Request.AbsoluteUri;
 
+        var fileName = file.FileName;
+        
         string src;
         string filePath = Path.Combine(Service.FolderPath, fileName);
 
@@ -560,10 +563,12 @@ public class JJFormUpload : JJBaseView
         return html;
     }
 
-    private HtmlBuilder GetHtmlVideoBox(string fileName)
+    private HtmlBuilder GetHtmlVideoBox(FormFileInfo file)
     {
         string videoUrl = CurrentContext.Request.AbsoluteUri;
 
+        var fileName = file.FileName;
+        
         if (videoUrl.Contains('?'))
             videoUrl += "&";
         else
