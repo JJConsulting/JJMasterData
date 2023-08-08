@@ -46,7 +46,10 @@ public class JJMasterDataUrlHelper
                 .ToDictionary(prop => prop.Name, prop => prop.GetValue(values)?.ToString());
         }
         
-        valuesDictionary.TryGetValue("dictionaryName", out var dictionaryName);
+        if(valuesDictionary.TryGetValue("dictionaryName", out var dictionaryName))
+        {
+            valuesDictionary.Remove("dictionaryName");
+        }
         
         var url = baseUrl;
 
@@ -78,6 +81,6 @@ public class JJMasterDataUrlHelper
         }
         
 
-        return url;
+         return url;
     }
 }

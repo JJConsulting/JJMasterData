@@ -28,7 +28,7 @@ public class GridScripts
 
     private string GetUrl()
     {
-        string dictionaryNameEncrypted = EncryptionService.EncryptString(_gridView.FormElement.Name);
+        string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEscape(_gridView.FormElement.Name);
         return UrlHelper.GetUrl("GetGridViewTable", "Grid", "MasterData", new { dictionaryName = dictionaryNameEncrypted});
     }
 
