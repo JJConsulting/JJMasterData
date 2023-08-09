@@ -30,16 +30,17 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
     
     public FormElement GetFormElement()
     {
-        var element = new Element(_options.DataDictionaryTableName, "Data Dictionaries");
-        element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false,
-            FilterMode.Equal);
-        element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false,
-            FilterMode.MultValuesContain);
-        element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);
-        element.Fields.Add(DataDictionaryStructure.Sync, "Sync", FieldType.Varchar, 1, false, FilterMode.None);
-        element.Fields.Add(DataDictionaryStructure.LastModified, "Last Modified", FieldType.DateTime, 15, true,
-            FilterMode.Range);
+        var element = GetElement();
 
+        var formElement = GetFormElement(element);
+
+        AddActions(formElement);
+
+        return formElement;
+    }
+
+    private static FormElement GetFormElement(Element element)
+    {
         var formElement = new FormElement(element);
         formElement.Fields[DataDictionaryStructure.Sync].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
         formElement.Fields[DataDictionaryStructure.Sync].Component = FormComponent.ComboBox;
@@ -49,11 +50,35 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
         formElement.Fields[DataDictionaryStructure.Sync].DataItem = dataItem;
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Title = "JJMasterData";
+        return formElement;
+    }
 
+    private Element GetElement()
+    {
+        var element = new Element(_options.DataDictionaryTableName, "Data Dictionaries");
+        element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false,
+            FilterMode.Equal);
+        element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false,
+            FilterMode.MultValuesContain);
+        element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);
+        element.Fields.Add(DataDictionaryStructure.Sync, "Sync", FieldType.Varchar, 1, false, FilterMode.None);
+        element.Fields.Add(DataDictionaryStructure.LastModified, "Last Modified", FieldType.DateTime, 15, true,
+            FilterMode.Range);
+        return element;
+    }
+
+    private void AddActions(FormElement formElement)
+    {
         formElement.Options.GridToolbarActions.InsertAction.VisibleExpression = "val:0";
         formElement.Options.GridTableActions.Clear();
-
         
+        AddGridTableActions(formElement);
+
+        AddGridToolbarActions(formElement);
+    }
+
+    private void AddGridTableActions(FormElement formElement)
+    {
         var acTools = new UrlRedirectAction
         {
             Icon = IconType.Pencil,
@@ -83,14 +108,17 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
             IsGroup = true
         };
         formElement.Options.GridTableActions.Add(btnDuplicate);
+    }
 
+    private void AddGridToolbarActions(FormElement formElement)
+    {
         var btnAdd = new UrlRedirectAction
         {
             Name = "btnadd",
             Text = StringLocalizer["New"],
             Icon = IconType.Plus,
             ShowAsButton = true,
-            UrlRedirect = UrlHelper.GetUrl("Add","Element", "DataDictionary")
+            UrlRedirect = UrlHelper.GetUrl("Add", "Element", "DataDictionary")
         };
         formElement.Options.GridToolbarActions.Add(btnAdd);
 
@@ -102,7 +130,7 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
             ShowAsButton = true,
             UrlAsPopUp = true,
             PopUpTitle = "Import",
-            UrlRedirect = UrlHelper.GetUrl("Import","Element", "DataDictionary"),
+            UrlRedirect = UrlHelper.GetUrl("Import", "Element", "DataDictionary"),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
@@ -117,7 +145,7 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
             OnClientClick =
-                $"DataDictionaryUtils.exportElement('{ElementName}', '{UrlHelper.GetUrl("Export","Element", "DataDictionary")}', '{StringLocalizer["Select one or more dictionaries"]}');"
+                $"DataDictionaryUtils.exportElement('{ElementName}', '{UrlHelper.GetUrl("Export", "Element", "DataDictionary")}', '{StringLocalizer["Select one or more dictionaries"]}');"
         };
         formElement.Options.GridToolbarActions.Add(btnExport);
 
@@ -129,7 +157,7 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
             ShowAsButton = true,
             UrlAsPopUp = true,
             PopUpTitle = StringLocalizer["About"],
-            UrlRedirect =UrlHelper.GetUrl("Index","About", "DataDictionary"),
+            UrlRedirect = UrlHelper.GetUrl("Index", "About", "DataDictionary"),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
         };
@@ -144,7 +172,7 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
             ShowAsButton = true,
             UrlAsPopUp = true,
             PopUpTitle = StringLocalizer["Log"],
-            UrlRedirect =UrlHelper.GetUrl("Index","Log", "DataDictionary"),
+            UrlRedirect = UrlHelper.GetUrl("Index", "Log", "DataDictionary"),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
@@ -159,7 +187,7 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
             ShowAsButton = true,
             UrlAsPopUp = true,
             PopUpTitle = StringLocalizer["Application Options"],
-            UrlRedirect = UrlHelper.GetUrl("Index","Options", "DataDictionary"),
+            UrlRedirect = UrlHelper.GetUrl("Index", "Options", "DataDictionary"),
             Order = 12,
             CssClass = BootstrapHelper.PullRight
         };
@@ -174,7 +202,7 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
             ShowAsButton = true,
             UrlAsPopUp = true,
             PopUpTitle = StringLocalizer["Resources"],
-            UrlRedirect = UrlHelper.GetUrl("Index","Resources", "DataDictionary"),
+            UrlRedirect = UrlHelper.GetUrl("Index", "Resources", "DataDictionary"),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };
@@ -190,9 +218,7 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
             IsGroup = false,
             ConfirmationMessage = StringLocalizer["Do you want to delete ALL selected records?"],
             ShowAsButton = true,
-            FormAction = UrlHelper.GetUrl("Delete","Element", "DataDictionary"),
+            FormAction = UrlHelper.GetUrl("Delete", "Element", "DataDictionary"),
         });
-
-        return formElement;
     }
 }

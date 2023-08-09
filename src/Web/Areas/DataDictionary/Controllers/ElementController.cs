@@ -33,7 +33,7 @@ public class ElementController : DataDictionaryController
         try
         {
             _elementService.CreateStructureIfNotExists();
-            var model = await GetEntityFormView();
+            var model = await _elementService.GetFormViewAsync();
             return View(model);
         }
         catch (DataAccessException)
@@ -49,7 +49,7 @@ public class ElementController : DataDictionaryController
 
     public async Task<IActionResult> Export()
     {
-        var formView = await GetFormView();
+        var formView = await _elementService.GetFormViewAsync();
         var selectedRows = formView.GridView.GetSelectedGridValues();
 
         if(selectedRows.Count == 1)
@@ -72,10 +72,10 @@ public class ElementController : DataDictionaryController
         upload.AddLabel = StringLocalizer["Select Dictionaries"];
         upload.AllowedTypes = "json";
         upload.AutoSubmitAfterUploadAll = false;
-        upload.OnFileUploaded += FileUploaded;
+        upload.OnFileUploadedAsync += FileUploaded;
     }
 
-    private async void FileUploaded(object? sender, FormUploadFileEventArgs e)
+    private async Task FileUploaded(object? sender, FormUploadFileEventArgs e)
     {
         await _elementService.Import(new MemoryStream(e.File.Bytes));
         if (ModelState.IsValid)
@@ -160,16 +160,10 @@ public class ElementController : DataDictionaryController
             return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error };
         }
     }
-
-    public async Task<JJFormView> GetEntityFormView()
-    {
-        var formView = await GetFormView();
-        return formView;
-    }
     
     public async Task<IActionResult> Delete()
     {
-        var formView = await GetEntityFormView();
+        var formView = await _elementService.GetFormViewAsync();
 
         var selectedGridValues = formView.GridView.GetSelectedGridValues();
 
@@ -180,14 +174,5 @@ public class ElementController : DataDictionaryController
 
         return RedirectToAction(nameof(Index));
     }
-
-    private async Task<JJFormView> GetFormView()
-    {
-        var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        var formView = await _elementService.GetFormViewAsync();
-        formView.FormElement.Title =
-            $"<img src=\"{baseUrl}/_content/JJMasterData.Web/images/JJMasterData.png\" style=\"width:8%;height:8%;\"/>";
-
-        return formView;
-    }
+    
 }

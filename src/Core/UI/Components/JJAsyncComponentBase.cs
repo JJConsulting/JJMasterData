@@ -27,5 +27,6 @@ public abstract class JJAsyncComponentBase : JJComponentBase
     {
         return RenderHtmlAsync().GetAwaiter().GetResult() ?? new HtmlBuilder();
     }
+
     protected abstract Task<HtmlBuilder?> RenderHtmlAsync();
 }

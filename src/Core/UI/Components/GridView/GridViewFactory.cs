@@ -74,7 +74,6 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         var eventHandler = GridEventHandlerFactory.GetGridEventHandler(formElement.Name);
         
         SetGridOptions(gridView, formElement.Options);
-
         
         if(eventHandler != null)
             SetGridEvents(gridView, eventHandler);

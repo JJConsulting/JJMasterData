@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
@@ -15,13 +17,14 @@ public class UploadAreaService : IUploadAreaService
 {
     private IHttpContext CurrentContext { get; }
     public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
+    public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
 
     public UploadAreaService(IHttpContext currentContext)
     {
         CurrentContext = currentContext;
     }
     
-    public UploadAreaResultDto UploadFile(string fileName = "file", string? allowedTypes = null)
+    public async Task<UploadAreaResultDto> UploadFileAsync(string fileName = "file", string? allowedTypes = null)
     {
         UploadAreaResultDto dto = new();
         
@@ -35,6 +38,12 @@ public class UploadAreaService : IUploadAreaService
             
             var args = new FormUploadFileEventArgs(file);
             OnFileUploaded?.Invoke(this, args);
+
+            if (OnFileUploadedAsync != null)
+            {
+                await OnFileUploadedAsync.Invoke(this, args);
+            }
+            
             var errorMessage = args.ErrorMessage;
             if (args.SuccessMessage != null)
             {

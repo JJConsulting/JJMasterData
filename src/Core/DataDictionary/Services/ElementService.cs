@@ -148,46 +148,6 @@ public class ElementService : BaseService
 
     public async Task<JJFormView> GetFormViewAsync()
     {
-        // var element = new Element(_options.DataDictionaryTableName, "Data Dictionaries");
-        // element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false,
-        //     FilterMode.Equal);
-        // element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false,
-        //     FilterMode.MultValuesContain);
-        // element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);
-        // element.Fields.Add(DataDictionaryStructure.Sync, "Sync", FieldType.Varchar, 1, false, FilterMode.None);
-        // element.Fields.Add(DataDictionaryStructure.LastModified, "Last Modified", FieldType.DateTime, 15, true,
-        //     FilterMode.Range);
-        //
-        // var formElement = new FormElement(element);
-        // formElement.Fields[DataDictionaryStructure.Sync].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
-        // formElement.Fields[DataDictionaryStructure.Sync].Component = FormComponent.ComboBox;
-        // var dataItem = new FormElementDataItem();
-        // dataItem.Items.Add(new DataItemValue("1", "Yes"));
-        // dataItem.Items.Add(new DataItemValue("0", "No"));
-        // formElement.Fields[DataDictionaryStructure.Sync].DataItem = dataItem;
-        // formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
-        // formElement.Title = "JJMasterData";
-        //
-        // formElement.Options.GridToolbarActions.InsertAction.VisibleExpression = "val:0";
-        // formElement.Options.GridTableActions.Clear();
-        //
-        // var formView = FormViewFactory.Create(formElement);
-        // formView.Name = "List";
-        // formView.GridView.FilterAction.ExpandedByDefault = true;
-        //
-        // formView.GridView.MaintainValuesOnLoad = true;
-        // formView.GridView.EnableMultiSelect = true;
-        // formView.GridView.ExportAction.SetVisible(false);
-        //
-        // var filter = await formView.GridView.GetCurrentFilterAsync();
-        //
-        // if (!filter.ContainsKey("type"))
-        //     filter.Add("type", "F");
-
-        // formView.GridView.OnDataLoadAsync += FormViewOnDataLoad;
-
-
-        // formView.GridView.OnRenderAction += OnRenderAction;
         var formView = await FormViewFactory.CreateAsync(_options.DataDictionaryTableName);
         return formView;
     }
@@ -243,10 +203,5 @@ public class ElementService : BaseService
     public void CreateStructureIfNotExists()
     {
         DataDictionaryRepository.CreateStructureIfNotExists();
-    }
-    
-    private void OnRenderAction(object? sender, ActionEventArgs e)
-    {
-
     }
 }

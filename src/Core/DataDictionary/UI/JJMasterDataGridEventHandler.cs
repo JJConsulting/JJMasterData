@@ -44,11 +44,11 @@ public class JJMasterDataGridEventHandler : GridEventHandlerBase
                     $"window.open('{UrlHelper.GetUrl("Render", "Form", "MasterData",new { dictionaryName = formName })}', '_blank').focus();";
                 break;
             case "tools":
-                eventArgs.LinkButton.UrlAction = UrlHelper.GetUrl("Index", "Entity", "MasterData",new { dictionaryName = formName });
+                eventArgs.LinkButton.UrlAction = UrlHelper.GetUrl("Index", "Entity", "DataDictionary",new { dictionaryName = formName });
                 eventArgs.LinkButton.OnClientClick = "";
                 break;
             case "duplicate":
-                eventArgs.LinkButton.UrlAction = UrlHelper.GetUrl("Duplicate", "Element", "MasterData",new { dictionaryName = formName });
+                eventArgs.LinkButton.UrlAction = UrlHelper.GetUrl("Duplicate", "Element", "DataDictionary",new { dictionaryName = formName });
                 eventArgs.LinkButton.OnClientClick = "";
                 break;
         }
@@ -58,6 +58,8 @@ public class JJMasterDataGridEventHandler : GridEventHandlerBase
     {
         var filter = await eventArgs.GridView.GetCurrentFilterAsync();
         filter["type"] = "F";
+
+        eventArgs.GridView.EnableMultiSelect = true;
         
         eventArgs.GridView.FilterAction.ExpandedByDefault = true;
     }
