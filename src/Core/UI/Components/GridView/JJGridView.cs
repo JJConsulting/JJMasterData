@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Actions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.UI.Components.FormView;
 
 namespace JJMasterData.Core.Web.Components;
@@ -157,7 +158,7 @@ public class JJGridView : JJAsyncBaseView
     }
 
     internal ActionsScripts ActionsScripts =>
-        _actionsScripts ??= new ActionsScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
+        _actionsScripts ??= new ActionsScripts(ExpressionsService, DataDictionaryRepository, UrlHelper, EncryptionService, StringLocalizer);
 
     internal IFormValuesService FormValuesService { get; }
 
@@ -165,9 +166,7 @@ public class JJGridView : JJAsyncBaseView
     /// <see cref="FormElement"/>
     /// </summary>
     public FormElement FormElement { get; set; }
-
-
-
+    
     /// DataSource is the property responsible for controlling the data source.
     /// The component uses the following rule to retrieve grid data:
     /// <para/>1) Use the DataSource property;
@@ -518,13 +517,16 @@ public class JJGridView : JJAsyncBaseView
     internal GridScripts Scripts => _gridScripts ??= new GridScripts(this);
 
     internal IHttpContext CurrentContext { get; }
+    private IDataDictionaryRepository DataDictionaryRepository { get; }
+
     #endregion
 
     #region "Constructors"
 
-    public JJGridView(
+    internal JJGridView(
         FormElement formElement,
         IHttpContext currentContext,
+        IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository,
         JJMasterDataUrlHelper urlHelper,
         IExpressionsService expressionsService,
@@ -555,6 +557,7 @@ public class JJGridView : JJAsyncBaseView
         EntityRepository = entityRepository;
         UrlHelper = urlHelper;
         CurrentContext = currentContext;
+        DataDictionaryRepository = dataDictionaryRepository;
         FormValuesService = formValuesService;
     }
 

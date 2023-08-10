@@ -16,6 +16,7 @@ using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Components.Scripts;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.UI.Components.Widgets;
 
@@ -23,18 +24,21 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 {
     private ActionsScripts _actionsScripts;
     private IExpressionsService ExpressionsService { get; }
+    private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
-    private ActionsScripts ActionsScripts => _actionsScripts ??= new ActionsScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
+    private ActionsScripts ActionsScripts => _actionsScripts ??= new ActionsScripts(ExpressionsService,DataDictionaryRepository, UrlHelper, EncryptionService, StringLocalizer);
     
-    public LinkButtonFactory(IExpressionsService expressionsService,
+    public LinkButtonFactory(
+        IExpressionsService expressionsService,
+        IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        _actionsScripts = new ActionsScripts(expressionsService, urlHelper, encryptionService, stringLocalizer);
         ExpressionsService = expressionsService;
+        DataDictionaryRepository = dataDictionaryRepository;
         StringLocalizer = stringLocalizer;
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;
@@ -78,7 +82,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
         switch (action)
         {
             case UserCreatedAction userCreatedAction:
-                button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.GridTable);
+                button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.GridTable);
                 break;
             case GridTableAction:
                 button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable);
@@ -98,7 +102,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.GridToolbar);
+            button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.GridToolbar);
             return button;
         }
 
@@ -154,7 +158,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.FormToolbar);
+            button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.FormToolbar);
         }
         else if (action is FormToolbarAction)
         {
@@ -190,7 +194,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.Field);
+            button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.Field);
         }
 
         return button;

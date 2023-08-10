@@ -17,34 +17,37 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.UI.Components.FormView;
 
 internal class ActionsScripts
 {
     internal IExpressionsService ExpressionsService { get; }
+    private IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
 
     public ActionsScripts(
         IExpressionsService expressionsService,
+        IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
         JJMasterDataEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         ExpressionsService = expressionsService;
+        DataDictionaryRepository = dataDictionaryRepository;
         StringLocalizer = stringLocalizer;
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;
     }
 
 
-    public string GetInternalUrlScript(InternalAction action, IDictionary<string, dynamic> formValues)
+    public async Task<string> GetInternalUrlScriptAsync(InternalAction action, IDictionary<string, dynamic> formValues)
     {
         var elementRedirect = action.ElementRedirect;
-        var dicRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-        var formElement = dicRepository.GetMetadata(action.ElementRedirect.ElementNameRedirect);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(action.ElementRedirect.ElementNameRedirect);
         string popUpTitle = formElement.Title;
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
         string popup = "true";
@@ -125,8 +128,7 @@ internal class ActionsScripts
 
     private string GetFormViewUrl(string dictionaryName, BasicAction action, ActionMap actionMap)
     {
-        var encryptionService = JJService.Provider.GetService<JJMasterDataEncryptionService>();
-        string encryptedDictionaryName = encryptionService.EncryptStringWithUrlEscape(dictionaryName);
+        string encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
 
 
         var pageState = action switch
@@ -136,7 +138,7 @@ internal class ActionsScripts
             _ => PageState.Update
         };
 
-        var encryptedActionMap = encryptionService.EncryptActionMap(actionMap);
+        var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         return UrlHelper.GetUrl("GetFormView", "Form", new
         {
             dictionaryName = encryptedDictionaryName,
@@ -146,7 +148,7 @@ internal class ActionsScripts
         });
     }
 
-    internal string GetUserActionScript(
+    internal async Task<string> GetUserActionScriptAsync(
         UserCreatedAction userCreatedAction,
         ActionContext actionContext,
         ActionSource actionSource)
@@ -163,7 +165,7 @@ internal class ActionsScripts
             case ScriptAction jsAction:
                 return ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData, false);
             case InternalAction internalAction:
-                return GetInternalUrlScript(internalAction, formStateData.FormValues);
+                return await GetInternalUrlScriptAsync(internalAction, formStateData.FormValues);
             default:
                 return string.Empty;
         }

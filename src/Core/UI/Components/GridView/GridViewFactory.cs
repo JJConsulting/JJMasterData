@@ -59,7 +59,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 
     public JJGridView Create(FormElement formElement)
     {
-        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, UrlHelper, ExpressionsService, EncryptionService,
+        var gridView = new JJGridView(formElement, CurrentContext, DataDictionaryRepository,EntityRepository, UrlHelper, ExpressionsService, EncryptionService,
             FieldsService, FormValuesService, StringLocalizer, Factory);
 
         SetGridOptions(gridView, formElement.Options);
