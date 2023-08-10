@@ -75,6 +75,8 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         
         SetGridOptions(gridView, formElement.Options);
         
+        eventHandler?.OnGridViewCreated(gridView);
+        
         if(eventHandler != null)
             SetGridEvents(gridView, eventHandler);
         
@@ -89,7 +91,6 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         gridView.OnRenderAction += eventHandler.OnRenderAction;
         gridView.OnRenderCell += eventHandler.OnRenderCell;
         gridView.OnRenderSelectedCell += eventHandler.OnRenderSelectedCell;
-        gridView.OnRenderHtmlAsync += eventHandler.OnRenderHtmlAsync;
     }
 
     public JJGridView Create(DataTable dataTable)

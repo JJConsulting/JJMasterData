@@ -47,7 +47,6 @@ public class EventHandlerFactoryBase<T> where T : IEventHandler
 
             if (instance.ElementName == elementName)
                 return instance;
-
         }
 
         return default;

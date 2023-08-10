@@ -6,6 +6,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.FormEvents.Abstractions;
 using JJMasterData.Core.Web;
+using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Factories;
@@ -54,13 +55,12 @@ public class JJMasterDataGridEventHandler : GridEventHandlerBase
         }
     }
 
-    public override async Task OnRenderHtmlAsync(object sender, GridRenderEventArgs eventArgs)
+    public override void OnGridViewCreated(JJGridView gridView)
     {
-        var filter = await eventArgs.GridView.GetCurrentFilterAsync();
-        filter["type"] = "F";
+        gridView.SetCurrentFilter("type","F");
 
-        eventArgs.GridView.EnableMultiSelect = true;
+        gridView.EnableMultiSelect = true;
         
-        eventArgs.GridView.FilterAction.ExpandedByDefault = true;
+        gridView.FilterAction.ExpandedByDefault = true;
     }
 }

@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.FormEvents.Abstractions;
 
@@ -17,7 +18,5 @@ public interface IGridEventHandler : IEventHandler
     
     public void OnRenderAction(object sender, ActionEventArgs eventArgs);
     public Task OnRenderActionAsync(object sender, ActionEventArgs eventArgs);
-    
-    public void OnRenderHtml(object sender, GridRenderEventArgs eventArgs);
-    public Task OnRenderHtmlAsync(object sender, GridRenderEventArgs eventArgs);
+    public void OnGridViewCreated(JJGridView gridView);
 }

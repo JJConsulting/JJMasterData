@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Factories;
 
-public class JJMasterDataFormElementFactory : IFormElementFactory
+public class DataDictionaryFormElementFactory : IFormElementFactory
 {
     public string ElementName => _options.DataDictionaryTableName;
 
@@ -17,7 +17,7 @@ public class JJMasterDataFormElementFactory : IFormElementFactory
     private JJMasterDataUrlHelper UrlHelper { get; }
     private readonly JJMasterDataCoreOptions _options;
 
-    public JJMasterDataFormElementFactory(
+    public DataDictionaryFormElementFactory(
         IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         JJMasterDataUrlHelper urlHelper

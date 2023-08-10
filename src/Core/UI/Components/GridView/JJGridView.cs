@@ -68,8 +68,6 @@ public class JJGridView : JJAsyncComponentBase
     public event EventHandler<GridDataLoadEventArgs> OnDataLoad;
     public event AsyncEventHandler<GridDataLoadEventArgs> OnDataLoadAsync;
     public event EventHandler<ActionEventArgs> OnRenderAction;
-    public event AsyncEventHandler<GridRenderEventArgs> OnRenderHtmlAsync;
-    
     #endregion
 
     #region "Properties"
@@ -523,7 +521,7 @@ public class JJGridView : JJAsyncComponentBase
 
     #region "Constructors"
 
-    public JJGridView(
+    internal JJGridView(
         FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
@@ -563,12 +561,6 @@ public class JJGridView : JJAsyncComponentBase
 
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
-        if (OnRenderHtmlAsync != null)
-        {
-            var eventArgs = new GridRenderEventArgs(this);
-            await OnRenderHtmlAsync.Invoke(this,eventArgs);
-        }
-        
         var html = new HtmlBuilder(HtmlTag.Div);
         string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + Name);
         if (!string.IsNullOrEmpty(lookupRoute))

@@ -25,7 +25,7 @@ public static class FactoriesServiceExtensions
     
     private static IServiceCollection AddFormElementFactories(this IServiceCollection services)
     {
-        services.AddTransient<IFormElementFactory,JJMasterDataFormElementFactory>();
+        services.AddTransient<IFormElementFactory,DataDictionaryFormElementFactory>();
 
         return services;
     }

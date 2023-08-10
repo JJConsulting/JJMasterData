@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.FormEvents.Abstractions;
 
 namespace JJMasterData.Core.UI.FormEvents.Abstractions;
@@ -31,9 +32,7 @@ public abstract class GridEventHandlerBase : IGridEventHandler
     }
 
     public virtual Task OnRenderActionAsync(object sender, ActionEventArgs eventArgs) => Task.CompletedTask;
-    public virtual void OnRenderHtml(object sender, GridRenderEventArgs eventArgs)
+    public virtual void OnGridViewCreated(JJGridView gridView)
     {
     }
-
-    public virtual Task OnRenderHtmlAsync(object sender, GridRenderEventArgs eventArgs) => Task.CompletedTask;
 }
