@@ -73,7 +73,12 @@ public static class DataHelper
             
         for (int i = 0; i < values.Length; i++)
         {
-            primaryKeys.Add(elementPks[i].Name, values[i]);
+            object value = values[i];
+            if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None,out var invariantDateValue))
+            {
+                value = invariantDateValue.ToString(CultureInfo.CurrentCulture);
+            }
+            primaryKeys.Add(elementPks[i].Name, value);
         }
 
         return primaryKeys;
@@ -108,9 +113,13 @@ public static class DataHelper
             
             if (field.DataType is FieldType.DateTime or FieldType.Date)
             {
-                if (DateTime.TryParse(formValues[field.Name]?.ToString(), out var dateValue))
+                if (DateTime.TryParse(formValues[field.Name]?.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None,out var dateValue))
                 {
                     value = dateValue.ToString(CultureInfo.InvariantCulture);
+                }
+                else if (DateTime.TryParse(formValues[field.Name]?.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None,out var invariantDateValue))
+                {
+                    value = invariantDateValue.ToString(CultureInfo.InvariantCulture);
                 }
                 else
                 {
