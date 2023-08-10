@@ -5,7 +5,7 @@ namespace JJMasterData.Xunit.Tester;
 internal class DataDictionaryTester : IDataDictionaryTester
 {
     // private readonly IEntityRepository _entityRepository;
-    // private readonly IFormEventResolver _formEventResolver;
+    // private readonly IFormEventHandlerFactory _formEventResolver;
     // private readonly FormService _formService;
     //
     // public string DictionaryName { get; }
@@ -17,7 +17,7 @@ internal class DataDictionaryTester : IDataDictionaryTester
     //     UserId = userId;
     //     
     //     _entityRepository = JJService.EntityRepository;
-    //     _formEventResolver = JJServiceCore.FormEventResolver;
+    //     _formEventResolver = JJServiceCore.FormEventHandlerFactory;
     //     _formService = GetFormService(formElement);
     // }
     //
@@ -30,8 +30,8 @@ internal class DataDictionaryTester : IDataDictionaryTester
     //     };
     //     
     //     var dataContext = new DataContext(DataContextSource.Form, UserId);
-    //     var formEvent = _formEventResolver.GetFormEvent(formElement.Name);
-    //     formEvent?.OnFormElementLoad(dataContext,new FormElementLoadEventArgs(formElement));
+    //     var formEventHandler = _formEventResolver.GetFormEvent(formElement.Name);
+    //     formEventHandler?.OnFormElementLoad(dataContext,new FormElementLoadEventArgs(formElement));
     //     
     //     var expManager = new ExpressionManager(userValues, _entityRepository);
     //     var formManager = new FieldValuesService(formElement, expManager);
@@ -40,7 +40,7 @@ internal class DataDictionaryTester : IDataDictionaryTester
     //         EnableHistoryLog = logActionIsVisible
     //     };
     //
-    //     service.AddFormEvent(formEvent);
+    //     service.AddFormEvent(formEventHandler);
     //     return service;
     // }
     //

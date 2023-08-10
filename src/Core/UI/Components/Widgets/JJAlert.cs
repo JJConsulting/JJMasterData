@@ -5,7 +5,7 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJAlert : JJBaseView
+public class JJAlert : JJComponentBase
 {
     public PanelColor Color { get; set; }
     public IconType? Icon { get; set; }

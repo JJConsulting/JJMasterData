@@ -1,6 +1,4 @@
-@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
-@using JJMasterData.Web.TagHelpers
-@model LogViewModel
+@model string
 
 @{
     ViewData["Title"] = "Log";
@@ -8,5 +6,5 @@
 
 @using (Html.BeginForm())
 {
-    <jj-grid-view form-element="Model.FormElement" configure="Model.Configuration"/>
+    <jj-form-view element-name="@Model"/>
 }

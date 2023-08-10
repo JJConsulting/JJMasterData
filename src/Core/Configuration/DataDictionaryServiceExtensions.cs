@@ -7,6 +7,7 @@ public static class DataDictionaryServiceExtensions
 {
     public static IServiceCollection AddDataDictionaryServices(this IServiceCollection services)
     {
+        services.AddTransient<IDataDictionaryService, DataDictionaryService>();
         services.AddTransient<ActionsService>();
         services.AddTransient<ApiService>();
         services.AddTransient<ElementService>();

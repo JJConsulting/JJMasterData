@@ -107,21 +107,24 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>
     public FormElement GetMetadata(string dictionaryName)
     {
-        if (string.IsNullOrEmpty(dictionaryName))
-            throw new ArgumentNullException(nameof(dictionaryName), "Invalid FormElement (Data Dictionary) name.");
+        var filter = new Dictionary<string, dynamic> { { "name", dictionaryName },{"type", "F"} };
 
-        var filter = new Hashtable { { "name", dictionaryName },{"type", "F"} };
-        var model = _entityRepository.GetFields(MasterDataElement, filter).ToModel<DataDictionaryModel>();
-
-        return FormElementSerializer.Deserialize(model.Json);
+        var values = _entityRepository.GetFields(MasterDataElement, filter);
+        
+        var model = values?.ToModel<DataDictionaryModel>();
+        
+        return FormElementSerializer.Deserialize(model?.Json);
     }
 
     public async Task<FormElement> GetMetadataAsync(string dictionaryName)
     {
-        var filter = new Hashtable { { "name", dictionaryName },{"type", "F"} };
-        var model = (await _entityRepository.GetFieldsAsync(MasterDataElement, filter)).ToModel<DataDictionaryModel>();
+        var filter = new Dictionary<string, dynamic> { { "name", dictionaryName },{"type", "F"} };
 
-        return FormElementSerializer.Deserialize(model.Json);
+        var values = await _entityRepository.GetDictionaryAsync(MasterDataElement, filter);
+        
+        var model = values?.ToModel<DataDictionaryModel>();
+        
+        return model != null ? FormElementSerializer.Deserialize(model.Json) : null;
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>

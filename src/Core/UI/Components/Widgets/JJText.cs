@@ -5,7 +5,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Represents a plain text.
 /// </summary>
-public class JJText : JJBaseView
+public class JJText : JJComponentBase
 {
     private string Text { get; set; }
 

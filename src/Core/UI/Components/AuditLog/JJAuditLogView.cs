@@ -20,7 +20,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJAuditLogView : JJAsyncBaseView
+public class JJAuditLogView : JJAsyncComponentBase
 {
     private readonly ComponentFactory _componentFactory;
     private JJGridView _gridView;
@@ -347,7 +347,7 @@ public class JJAuditLogView : JJAsyncBaseView
             html.Append(HtmlTag.A, a =>
             {
                 var url = IsExternalRoute
-                    ? UrlHelper.GetUrl("GetDetailsPanel", "AuditLog",
+                    ? UrlHelper.GetUrl("GetDetailsPanel", "AuditLog","MasterData", 
                         new
                         {
                             dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name),

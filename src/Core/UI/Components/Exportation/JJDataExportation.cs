@@ -33,7 +33,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Exporta dados para um arquivo
 /// </summary>
-public class JJDataExportation : JJBaseProcess
+public class JJDataExportation : JJProcessComponentBase
 {
     private readonly JJMasterDataUrlHelper _urlHelper;
     private readonly JJMasterDataEncryptionService _encryptionService;
@@ -90,7 +90,7 @@ public class JJDataExportation : JJBaseProcess
         IHttpContext currentContext,
         JJMasterDataUrlHelper urlHelper, 
         JJMasterDataEncryptionService encryptionService) : 
-        base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(),stringLocalizer)
+        base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<JJProcessComponentBase>(),stringLocalizer)
     {
         _urlHelper = urlHelper;
         _encryptionService = encryptionService;

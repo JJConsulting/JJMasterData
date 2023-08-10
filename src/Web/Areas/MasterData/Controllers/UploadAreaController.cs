@@ -37,7 +37,7 @@ public class UploadAreaController : MasterDataController
             }
         };
         
-        var dto = UploadAreaService.UploadFile();
+        var dto = UploadAreaService.UploadFileAsync();
         return Json(dto);
     }
 }

@@ -27,7 +27,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     private IFieldsService FieldsService { get; }
     private IBackgroundTask BackgroundTask { get; }
     private IFormService FormService { get; }
-    private IFormEventResolver FormEventResolver { get; }
+    private IFormEventHandlerFactory FormEventHandlerFactory { get; }
     private IHttpContext HttpContext { get; }
     private  IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
     private  IControlFactory<JJComboBox> ComboBoxFactory { get; }
@@ -43,7 +43,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         IBackgroundTask backgroundTask,
         IFormService formService,
         IFieldsService fieldsService,
-        IFormEventResolver formEventResolver,
+        IFormEventHandlerFactory formEventHandlerFactory,
         IHttpContext httpContext,
         IComponentFactory<JJUploadArea> uploadAreaFactory,
         IControlFactory<JJComboBox> comboBoxFactory,
@@ -58,7 +58,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         FieldsService = fieldsService;
         BackgroundTask = backgroundTask;
         FormService = formService;
-        FormEventResolver = formEventResolver;
+        FormEventHandlerFactory = formEventHandlerFactory;
         HttpContext = httpContext;
         UploadAreaFactory = uploadAreaFactory;
         ComboBoxFactory = comboBoxFactory;
@@ -85,7 +85,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         var dataContext = new DataContext(HttpContext, DataContextSource.Upload,
             DataHelper.GetCurrentUserId(HttpContext, null));
 
-        var formEvent = FormEventResolver.GetFormEvent(elementName);
+        var formEvent = FormEventHandlerFactory.GetFormEvent(elementName);
         formEvent?.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(formElement));
 
         var dataImp = Create(formElement);

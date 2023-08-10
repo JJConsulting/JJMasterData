@@ -7,7 +7,7 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTabNav : JJBaseView
+public class JJTabNav : JJComponentBase
 {
     private int? _selectedTabIndex;
     public int SelectedTabIndex

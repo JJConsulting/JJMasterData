@@ -9,7 +9,7 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJCheckBox : JJBaseControl
+public class JJCheckBox : JJControlBase
 {
     private bool? _isChecked;
 

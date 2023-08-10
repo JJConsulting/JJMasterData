@@ -42,7 +42,7 @@ namespace JJMasterData.Core.Web.Components;
 /// Example
 /// <img src="../media/JJGridViewWithLegend.png"/>
 /// </example>
-public class JJGridView : JJAsyncBaseView
+public class JJGridView : JJAsyncComponentBase
 {
     #region "Events"
 
@@ -68,7 +68,6 @@ public class JJGridView : JJAsyncBaseView
     public event EventHandler<GridDataLoadEventArgs> OnDataLoad;
     public event AsyncEventHandler<GridDataLoadEventArgs> OnDataLoadAsync;
     public event EventHandler<ActionEventArgs> OnRenderAction;
-
     #endregion
 
     #region "Properties"
@@ -522,7 +521,7 @@ public class JJGridView : JJAsyncBaseView
 
     #region "Constructors"
 
-    public JJGridView(
+    internal JJGridView(
         FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
@@ -1201,7 +1200,7 @@ public class JJGridView : JJAsyncBaseView
 
             if (OnDataLoadAsync != null)
             {
-                await OnDataLoadAsync(this, args);
+                await OnDataLoadAsync.Invoke(this, args);
             }
 
             total = args.Tot;

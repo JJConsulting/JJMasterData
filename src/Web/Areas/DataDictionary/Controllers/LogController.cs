@@ -36,79 +36,17 @@ public class LogController : DataDictionaryController
         {
             EntityRepository.CreateDataModel(LoggerElement);
         }
-
-        var formElement = GetFormElement();
-        var model = new LogViewModel(formElement, ConfigureGridView);
         
-        return View(model);
+        return View(nameof(Index),Options.TableName);
     }
 
     [HttpGet]
-    public ActionResult ClearAll()
+    public async Task<IActionResult> ClearAll()
     {
         string sql = $"TRUNCATE TABLE {Options.TableName}";
         
-        EntityRepository.SetCommand(sql);
+        await EntityRepository.SetCommandAsync(sql);
         
         return RedirectToAction("Index");
     }
-
-    private void ConfigureGridView(JJGridView gridView)
-    {
-        gridView.CurrentOrder = $"{Options.CreatedColumnName} DESC";
-        var btnClearAll = new UrlRedirectAction
-        {
-            Name = "btnClearLog",
-            Icon = IconType.Trash,
-            Text = StringLocalizer["Clear Log"],
-            ShowAsButton = true,
-            ConfirmationMessage = StringLocalizer["Do you want to clear ALL logs?"],
-            UrlRedirect = Url.Action("ClearAll")
-        };
-
-        gridView.OnRenderCell += OnRenderCell;
-        gridView.AddToolBarAction(btnClearAll);
-    }
-    
-    private void OnRenderCell(object? sender, GridCellEventArgs e)
-    {
-        string? message;
-        if (e.Field.Name.Equals(Options.MessageColumnName))
-        {
-            message = e.DataRow[Options.MessageColumnName].ToString()?.Replace("\n", "<br>");
-        }
-        else
-        {
-            message = e.Sender.GetHtml();
-        }
-
-        e.HtmlResult = message;
-    }
-
-    private FormElement GetFormElement()
-    {
-        var formElement = new FormElement(LoggerElement)
-        {
-            Title = StringLocalizer["Application Log"],
-            SubTitle = string.Empty
-        };
-
-        formElement.Fields["Id"].VisibleExpression = "val:0";
-
-        var logLevel = formElement.Fields[Options.LevelColumnName];
-        logLevel.Component = FormComponent.ComboBox;
-
-        logLevel.DataItem!.Items.Add(new DataItemValue("0", LogLevel.Trace.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("1", LogLevel.Debug.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("2", LogLevel.Information.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("3", LogLevel.Warning.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("4", LogLevel.Error.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("5", LogLevel.Critical.ToString()));
-        logLevel.DataItem.Items.Add(new DataItemValue("6", LogLevel.None.ToString()));
-        
-        return formElement;
-    }
-
-
-    
 }

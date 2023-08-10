@@ -8,16 +8,16 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Python.FormEvents;
 
-public class PythonFormEventResolver : IFormEventResolver
+public class PythonFormEventHandlerFactory : IFormEventHandlerFactory
 {
     public string ScriptsPath { get; }
     
-    public PythonFormEventResolver(IOptions<PythonFormEventOptions> options)
+    public PythonFormEventHandlerFactory(IOptions<PythonFormEventOptions> options)
     {
         ScriptsPath = options.Value.ScriptsPath;
     }
     
-    public IFormEvent GetFormEvent(string elementName)
+    public IFormEventHandler GetFormEvent(string elementName)
     {
         var engine = new PythonEngine().GetScriptEngine();
 
@@ -34,6 +34,6 @@ public class PythonFormEventResolver : IFormEventResolver
 
         var formEventInstance = compiled.Engine.Operations.CreateInstance(formEventPythonType);
 
-        return (IFormEvent)formEventInstance;
+        return (IFormEventHandler)formEventInstance;
     }
 }

@@ -25,7 +25,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJDataImportation : JJBaseProcess
+public class JJDataImportation : JJProcessComponentBase
 {
     #region "Events"
 
@@ -87,7 +87,7 @@ public class JJDataImportation : JJBaseProcess
         JJMasterDataEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
-        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<JJBaseProcess>(), stringLocalizer)
+        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<JJProcessComponentBase>(), stringLocalizer)
     {
         CurrentContext = currentContext;
         UploadAreaFactory = uploadAreaFactory;
@@ -181,8 +181,8 @@ public class JJDataImportation : JJBaseProcess
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithAttribute("style", "text-align: center;")
-            .WithAttributeIf(IsExternalRoute,"check-progress-url",UrlHelper.GetUrl("CheckProgress","Importation", new {dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name)}))
-            .WithAttributeIf(IsExternalRoute,"stop-process-url",UrlHelper.GetUrl("StopProcess","Importation",new {dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name)}))
+            .WithAttributeIf(IsExternalRoute,"check-progress-url",UrlHelper.GetUrl("CheckProgress","Importation","MasterData",  new {dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name)}))
+            .WithAttributeIf(IsExternalRoute,"stop-process-url",UrlHelper.GetUrl("StopProcess","Importation","MasterData", new {dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name)}))
             .AppendScript($"DataImportation.startProcess('{Upload.Name}'); ")
             .AppendHiddenInput("current_uploadaction")
             .Append(HtmlTag.Div, spin =>

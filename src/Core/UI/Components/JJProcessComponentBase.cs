@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
-public abstract class JJBaseProcess : JJAsyncBaseView
+public abstract class JJProcessComponentBase : JJAsyncComponentBase
 {
     private string _processKey;
     private ProcessOptions _processOptions;
@@ -60,16 +60,16 @@ public abstract class JJBaseProcess : JJAsyncBaseView
     
     internal IFieldsService FieldsService { get; } 
     internal IBackgroundTask BackgroundTask { get; }
-    private ILogger<JJBaseProcess> Logger { get; }
+    private ILogger<JJProcessComponentBase> Logger { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    protected JJBaseProcess(
+    protected JJProcessComponentBase(
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
         IFieldsService fieldsService,
         IBackgroundTask backgroundTask,
-        ILogger<JJBaseProcess> logger,
+        ILogger<JJProcessComponentBase> logger,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;

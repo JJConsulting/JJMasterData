@@ -36,14 +36,14 @@ public class ControlFactory
         return ServiceProvider.GetRequiredService<TFactory>();
     }
 
-    public TControl Create<TControl>() where TControl : JJBaseControl
+    public TControl Create<TControl>() where TControl : JJControlBase
     {
         var factory = ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
 
         return factory.Create();
     }
 
-    public TControl Create<TControl>(FormElement formElement,FormElementField field, ControlContext controlContext) where TControl : JJBaseControl
+    public TControl Create<TControl>(FormElement formElement,FormElementField field, ControlContext controlContext) where TControl : JJControlBase
     {
         var factory = ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
 
@@ -53,7 +53,7 @@ public class ControlFactory
             controlContext);
     }
 
-    public async Task<JJBaseControl> CreateAsync(FormElement formElement,
+    public async Task<JJControlBase> CreateAsync(FormElement formElement,
         FormElementField field,
         IDictionary<string, dynamic> formValues,
         IDictionary<string, dynamic> userValues,
@@ -81,7 +81,7 @@ public class ControlFactory
         return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
     }
 
-    private JJBaseControl Create(
+    private JJControlBase Create(
         FormElement formElement,
         FormElementField field,
         ControlContext context)
@@ -91,7 +91,7 @@ public class ControlFactory
 
         var formStateData = context.FormStateData;
         
-        JJBaseControl control;
+        JJControlBase control;
         switch (field.Component)
         {
             case FormComponent.ComboBox:

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJLegendView : JJBaseView
+public class JJLegendView : JJComponentBase
 {
     private IControlFactory<JJComboBox> ComboBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }

@@ -4,6 +4,8 @@ using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.DI;
 using JJMasterData.Core.Configuration;
+using JJMasterData.Core.DataDictionary.Factories;
+using JJMasterData.Core.DataDictionary.FormEvents;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exports;
@@ -16,15 +18,14 @@ using JJMasterData.Core.Options;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.Web.FormEvents.Abstractions;
+using JJMasterData.Core.Web.FormEvents.Factories;
 using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-#if NET
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-#endif
 
 namespace JJMasterData.Core.Extensions;
 
@@ -68,13 +69,9 @@ public static class ServiceCollectionExtensions
         services.AddHttpServices();
         services.AddDataDictionaryServices();
         services.AddDataManagerServices();
-   
-        
-        services.AddTransient<IFormEventResolver,FormEventResolver>();
-        services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
+        services.AddEventHandlers();
 
- 
-        
+        services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
         
