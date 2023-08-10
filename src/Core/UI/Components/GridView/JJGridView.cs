@@ -522,11 +522,10 @@ public class JJGridView : JJAsyncComponentBase
 
     #region "Constructors"
 
-    internal JJGridView(
-        FormElement formElement,
+    internal JJGridView(FormElement formElement,
         IHttpContext currentContext,
-        IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
         IExpressionsService expressionsService,
         JJMasterDataEncryptionService encryptionService,

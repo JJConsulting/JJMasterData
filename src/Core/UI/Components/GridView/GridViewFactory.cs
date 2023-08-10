@@ -33,6 +33,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
     private IGridEventHandlerFactory GridEventHandlerFactory { get; }
     private ComponentFactory Factory { get; }
     private IEntityRepository EntityRepository { get; }
+    private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IDataDictionaryService DataDictionaryService { get; }
     private IHttpContext CurrentContext { get; }
 
@@ -41,6 +42,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         IDataDictionaryService dataDictionaryService,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
+        IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
         IExpressionsService expressionsService,
         JJMasterDataEncryptionService encryptionService,
@@ -61,14 +63,15 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         GridEventHandlerFactory = gridEventHandlerFactory;
         Factory = factory;
         EntityRepository = entityRepository;
+        DataDictionaryRepository = dataDictionaryRepository;
     }
 
 
     public JJGridView Create(FormElement formElement)
     {
-        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, UrlHelper, ExpressionsService,
-            EncryptionService,
-            FieldsService, FormValuesService, StringLocalizer, Factory)
+        var gridView = new JJGridView(formElement, CurrentContext,EntityRepository,DataDictionaryRepository, UrlHelper,
+            ExpressionsService,
+            EncryptionService, FieldsService, FormValuesService, StringLocalizer, Factory)
         {
             IsExternalRoute = true
         };
