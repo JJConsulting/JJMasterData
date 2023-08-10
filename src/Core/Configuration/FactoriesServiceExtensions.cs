@@ -3,6 +3,7 @@ using System.Linq;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.DataDictionary.Factories;
 using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.UI.Components.Widgets;
@@ -26,7 +27,9 @@ public static class FactoriesServiceExtensions
     private static IServiceCollection AddFormElementFactories(this IServiceCollection services)
     {
         services.AddTransient<IFormElementFactory,DataDictionaryFormElementFactory>();
-
+        services.AddTransient<IFormElementFactory,LocalizationFormElementFactory>();
+        services.AddTransient<IFormElementFactory,LoggerFormElementFactory>();
+        
         return services;
     }
     

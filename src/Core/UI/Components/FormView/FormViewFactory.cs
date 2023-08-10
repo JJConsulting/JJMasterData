@@ -93,7 +93,6 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
                     
             await formEventHandler.OnFormElementLoadAsync(this, new FormElementLoadEventArgs(formElement))!;
         }
-
         
         SetFormOptions(formView, formElement.Options);
     }

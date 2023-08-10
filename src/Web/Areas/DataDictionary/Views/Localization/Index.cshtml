@@ -1,0 +1,14 @@
+﻿@model string
+
+@{
+    ViewData["Title"] = "Localization";
+}
+
+@{
+    Layout = "_MasterDataLayout.Popup";
+}
+
+@using (Html.BeginForm())
+{
+    <jj-form-view element-name="@Model"/>
+}

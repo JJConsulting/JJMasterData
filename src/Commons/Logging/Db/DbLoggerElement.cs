@@ -14,7 +14,7 @@ public static class DbLoggerElement
 
         _element = new Element
         {
-            Name = "Logging",
+            Name = options.TableName,
             TableName = options.TableName,
             Info = "System Log",
             Fields =

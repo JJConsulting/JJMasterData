@@ -15,6 +15,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Core.UI.FormEvents.Abstractions;
 using JJMasterData.Core.Web.FormEvents.Abstractions;
 using JJMasterData.Core.Web.FormEvents.Factories;
 
@@ -31,12 +33,12 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
     private IGridEventHandlerFactory GridEventHandlerFactory { get; }
     private ComponentFactory Factory { get; }
     private IEntityRepository EntityRepository { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
+    private IDataDictionaryService DataDictionaryService { get; }
     private IHttpContext CurrentContext { get; }
 
 
     public GridViewFactory(
-        IDataDictionaryRepository dataDictionaryRepository,
+        IDataDictionaryService dataDictionaryService,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         JJMasterDataUrlHelper urlHelper,
@@ -49,7 +51,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         ComponentFactory factory)
     {
         UrlHelper = urlHelper;
-        DataDictionaryRepository = dataDictionaryRepository;
+        DataDictionaryService = dataDictionaryService;
         CurrentContext = currentContext;
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
@@ -83,14 +85,40 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         return gridView;
     }
 
-    //TODO: Check if method is implemented before subscribing
     private static void SetGridEvents(JJGridView gridView, IGridEventHandler eventHandler)
     {
-        gridView.OnDataLoad += eventHandler.OnDataLoad;
-        gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
-        gridView.OnRenderAction += eventHandler.OnRenderAction;
-        gridView.OnRenderCell += eventHandler.OnRenderCell;
-        gridView.OnRenderSelectedCell += eventHandler.OnRenderSelectedCell;
+        if (IsMethodImplemented(eventHandler, nameof(eventHandler.OnDataLoad)))
+        {
+            gridView.OnDataLoad += eventHandler.OnDataLoad;
+        }
+
+        if (IsMethodImplemented(eventHandler, nameof(eventHandler.OnDataLoadAsync)))
+        {
+            gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
+        }
+
+        if (IsMethodImplemented(eventHandler, nameof(eventHandler.OnRenderAction)))
+        {
+            gridView.OnRenderAction += eventHandler.OnRenderAction;
+        }
+
+        if (IsMethodImplemented(eventHandler, nameof(eventHandler.OnRenderCell)))
+        {
+            gridView.OnRenderCell += eventHandler.OnRenderCell;
+        }
+
+        if (IsMethodImplemented(eventHandler, nameof(eventHandler.OnRenderSelectedCell)))
+        {
+            gridView.OnRenderSelectedCell += eventHandler.OnRenderSelectedCell;
+        }
+    }
+
+    private static bool IsMethodImplemented(IGridEventHandler eventHandler, string methodName)
+    {
+        var type = eventHandler.GetType();
+        var method = type.GetMethod(methodName);
+
+        return method!.DeclaringType != typeof(GridEventHandlerBase);
     }
 
     public JJGridView Create(DataTable dataTable)
@@ -102,7 +130,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 
     public async Task<JJGridView> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryService.GetMetadataAsync(elementName);
 
         var gridView = Create(formElement);
 

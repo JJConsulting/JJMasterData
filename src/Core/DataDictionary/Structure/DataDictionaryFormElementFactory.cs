@@ -196,13 +196,13 @@ public class DataDictionaryFormElementFactory : IFormElementFactory
 
         var btnResources = new UrlRedirectAction
         {
-            Name = "btnResources",
-            ToolTip = StringLocalizer["Resources"],
+            Name = "btnI18n",
+            ToolTip = StringLocalizer["Internationalization"],
             Icon = IconType.Globe,
             ShowAsButton = true,
             UrlAsPopUp = true,
-            PopUpTitle = StringLocalizer["Resources"],
-            UrlRedirect = UrlHelper.GetUrl("Index", "Resources", "DataDictionary"),
+            PopUpTitle = StringLocalizer["Internationalization"],
+            UrlRedirect = UrlHelper.GetUrl("Index", "Localization", "DataDictionary"),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
         };

@@ -323,24 +323,90 @@ public class FormService : IFormService
     {
         if (formEventHandler != null)
         {
-            OnBeforeInsert += formEventHandler.OnBeforeInsert;
-            OnBeforeDelete += formEventHandler.OnBeforeDelete;
-            OnBeforeUpdate += formEventHandler.OnBeforeUpdate;
-            OnBeforeImport += formEventHandler.OnBeforeImport;
-
-            OnAfterDelete += formEventHandler.OnAfterDelete;
-            OnAfterInsert += formEventHandler.OnAfterInsert;
-            OnAfterUpdate += formEventHandler.OnAfterUpdate;
-            
-            OnBeforeInsertAsync += formEventHandler.OnBeforeInsertAsync;
-            OnBeforeDeleteAsync += formEventHandler.OnBeforeDeleteAsync;
-            OnBeforeUpdateAsync += formEventHandler.OnBeforeUpdateAsync;
-            OnBeforeImportAsync += formEventHandler.OnBeforeImportAsync;
-
-            OnAfterDeleteAsync += formEventHandler.OnAfterDeleteAsync;
-            OnAfterInsertAsync += formEventHandler.OnAfterInsertAsync;
-            OnAfterUpdateAsync += formEventHandler.OnAfterUpdateAsync;
+            AddEventHandlers(formEventHandler);
         }
+    }
+
+    private void AddEventHandlers(IFormEventHandler eventHandler)
+    {
+        var type = eventHandler.GetType();
+    
+        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeInsert)))
+        {
+            OnBeforeInsert += eventHandler.OnBeforeInsert;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeDelete)))
+        {
+            OnBeforeDelete += eventHandler.OnBeforeDelete;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeUpdate)))
+        {
+            OnBeforeUpdate += eventHandler.OnBeforeUpdate;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeImport)))
+        {
+            OnBeforeImport += eventHandler.OnBeforeImport;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterDelete)))
+        {
+            OnAfterDelete += eventHandler.OnAfterDelete;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterInsert)))
+        {
+            OnAfterInsert += eventHandler.OnAfterInsert;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterUpdate)))
+        {
+            OnAfterUpdate += eventHandler.OnAfterUpdate;
+        }
+        
+        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeInsertAsync)))
+        {
+            OnBeforeInsertAsync += eventHandler.OnBeforeInsertAsync;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeDeleteAsync)))
+        {
+            OnBeforeDeleteAsync += eventHandler.OnBeforeDeleteAsync;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeUpdateAsync)))
+        {
+            OnBeforeUpdateAsync += eventHandler.OnBeforeUpdateAsync;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeImportAsync)))
+        {
+            OnBeforeImportAsync += eventHandler.OnBeforeImportAsync;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterDeleteAsync)))
+        {
+            OnAfterDeleteAsync += eventHandler.OnAfterDeleteAsync;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterInsertAsync)))
+        {
+            OnAfterInsertAsync += eventHandler.OnAfterInsertAsync;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterUpdateAsync)))
+        {
+            OnAfterUpdateAsync += eventHandler.OnAfterUpdateAsync;
+        }
+    }
+
+    private static bool IsMethodImplemented(Type type, string methodName)
+    {
+        var method = type.GetMethod(methodName);
+
+        return method!.DeclaringType != typeof(FormEventHandlerBase);
     }
 
     private async Task<bool> IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string, dynamic> formValues)

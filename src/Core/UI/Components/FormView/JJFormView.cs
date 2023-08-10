@@ -124,7 +124,7 @@ public class JJFormView : JJAsyncComponentBase
     /// Key = Field name, Value=Field value
     /// </remarks>
     public IDictionary<string, dynamic> RelationValues { get; set; }
-
+    
     public FormElement FormElement { get; set; }
 
     public JJGridView GridView
