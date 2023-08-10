@@ -28,8 +28,8 @@ public class GridScripts
 
     private string GetUrl()
     {
-        string dictionaryNameEncrypted = EncryptionService.EncryptString(_gridView.FormElement.Name);
-        return UrlHelper.GetUrl("GetGridViewTable", "Grid", new { dictionaryName = dictionaryNameEncrypted });
+        string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEscape(_gridView.FormElement.Name);
+        return UrlHelper.GetUrl("GetGridViewTable", "Grid", "MasterData", new { dictionaryName = dictionaryNameEncrypted});
     }
 
     public string GetSortingScript(string fieldName)
@@ -75,7 +75,7 @@ public class GridScripts
         if (_gridView.IsExternalRoute)
         {
             var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(_gridView.FormElement.Name);
-            var url = UrlHelper.GetUrl("SelectAllRows", "Grid", new { dictionaryName = encryptedDictionaryName });
+            var url = UrlHelper.GetUrl("SelectAllRows", "Grid", "MasterData", new { dictionaryName = encryptedDictionaryName });
             return $"GridView.selectAllRows('{name}', '{url}')";
         }
         string enableAjax = _gridView.EnableAjax ? "true" : "false";

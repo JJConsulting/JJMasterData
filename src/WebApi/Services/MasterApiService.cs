@@ -32,7 +32,7 @@ public class MasterApiService
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
-    private readonly IFormEventResolver? _formEventResolver;
+    private readonly IFormEventHandlerFactory? _formEventResolver;
 
     public MasterApiService(
         AccountService accountService,
@@ -44,7 +44,7 @@ public class MasterApiService
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IFieldsService fieldsService,
-        IFormEventResolver? formEventResolver,
+        IFormEventHandlerFactory? formEventResolver,
         IStringLocalizer<JJMasterDataResources> stringLocalizer
         )
     {

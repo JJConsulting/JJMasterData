@@ -11,7 +11,7 @@ namespace JJMasterData.Core.Web.Components;
 /// Represents a clickable button
 /// </summary>
 
-public class JJLinkButton : JJBaseView
+public class JJLinkButton : JJComponentBase
 {
 
     private JJSpinner _spinner;

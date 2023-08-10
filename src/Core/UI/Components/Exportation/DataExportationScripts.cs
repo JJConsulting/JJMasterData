@@ -21,9 +21,9 @@ public class DataExportationScripts
 
         var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
         
-        var startExportationUrl = UrlHelper.GetUrl("StartExportation","Exportation",new { dictionaryName=encryptedDictionaryName, componentName});
+        var startExportationUrl = UrlHelper.GetUrl("StartExportation","Exportation","MasterData", new { dictionaryName=encryptedDictionaryName, componentName});
         
-        var checkProgressUrl = UrlHelper.GetUrl("CheckProgress","Exportation",new { dictionaryName=encryptedDictionaryName, componentName });
+        var checkProgressUrl = UrlHelper.GetUrl("CheckProgress","Exportation","MasterData", new { dictionaryName=encryptedDictionaryName, componentName });
         
         return $"DataExportation.startExportation('{startExportationUrl}','{checkProgressUrl}', '{componentName}');";
     }
@@ -35,7 +35,7 @@ public class DataExportationScripts
 
         var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
         
-        var stopExportationUrl = UrlHelper.GetUrl("StopExportation","Exportation",new { dictionaryName=encryptedDictionaryName, componentName});
+        var stopExportationUrl = UrlHelper.GetUrl("StopExportation","Exportation","MasterData", new { dictionaryName=encryptedDictionaryName, componentName});
         
         return $"DataExportation.stopExportation('{stopExportationUrl}', '{stopMessage}', '{componentName}');";
 
@@ -48,7 +48,7 @@ public class DataExportationScripts
         
         var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
         
-        var url = UrlHelper.GetUrl("Settings","Exportation",new { dictionaryName=encryptedDictionaryName, componentName});
+        var url = UrlHelper.GetUrl("Settings","Exportation","MasterData", new { dictionaryName=encryptedDictionaryName, componentName});
         
         return $"DataExportation.openExportPopup('{url}', '{componentName}');";
     }

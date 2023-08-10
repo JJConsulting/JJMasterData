@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJFileDownloader : JJBaseView
+public class JJFileDownloader : JJComponentBase
 {
     public const string DirectDownloadParameter = "jjdirectdownload";
     public const string DownloadParameter = "jjdownload";
@@ -136,7 +136,7 @@ public class JJFileDownloader : JJBaseView
     {
         var encryptedFilePath = EncryptionService.EncryptStringWithUrlEscape(filePath);
 
-        return UrlHelper.GetUrl("Download", "File", new {filePath = encryptedFilePath});
+        return UrlHelper.GetUrl("Download", "File", "MasterData", new {filePath = encryptedFilePath});
     }
 
 

@@ -112,7 +112,7 @@ internal class FormViewRelationshipLayout
             return await ParentFormView.GetFormViewWithParentPanelHtml(parentPanel);
         }
 
-        var childElement = await ParentFormView.DataDictionaryRepository.GetMetadataAsync(relationship.ElementRelationship!.ChildElement);
+        var childElement = await ParentFormView.DataDictionaryService.GetMetadataAsync(relationship.ElementRelationship!.ChildElement);
 
         var filter = new Dictionary<string, dynamic>();
         foreach (var col in relationship.ElementRelationship.Columns.Where(col => formContext.Values.ContainsKey(col.PkColumn)))

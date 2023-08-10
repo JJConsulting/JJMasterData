@@ -21,7 +21,6 @@ public class Program
         builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
         builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddJJMasterDataWeb(settingsPath)
-            .WithFormEventResolver()
             .WithPdfExportation();
             // .WithEntityRepository(
             //     "data source=localhost,1433;initial catalog=JJMasterData;user=sa;password=Test@123456",

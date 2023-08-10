@@ -3,7 +3,7 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-internal class JJToolbar : JJBaseView
+internal class JJToolbar : JJComponentBase
 {
     public List<HtmlBuilder> Items { get; set; }
 

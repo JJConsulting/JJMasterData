@@ -8,8 +8,8 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class EntityController : DataDictionaryController
 {
     private readonly EntityService _entityService;
-    private readonly IFormEventResolver? _resolver;
-    public EntityController(EntityService entityService, IFormEventResolver? resolver = null)
+    private readonly IFormEventHandlerFactory? _resolver;
+    public EntityController(EntityService entityService, IFormEventHandlerFactory? resolver = null)
     {
         _entityService = entityService;
         _resolver = resolver;

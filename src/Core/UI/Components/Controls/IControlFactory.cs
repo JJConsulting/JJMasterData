@@ -20,7 +20,7 @@ public interface IControlFactory : IComponentFactory
 /// Factory class used to create instance of JJBaseControls.
 /// </summary>
 /// <typeparam name="TControl"></typeparam>
-public interface IControlFactory<out TControl> : IControlFactory where TControl : JJBaseControl
+public interface IControlFactory<out TControl> : IControlFactory where TControl : JJControlBase
 {
     public TControl Create();
     public TControl Create(FormElement formElement,

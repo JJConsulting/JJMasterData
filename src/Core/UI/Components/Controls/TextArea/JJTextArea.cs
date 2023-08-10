@@ -7,7 +7,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextArea : JJBaseControl
+public class JJTextArea : JJControlBase
 {
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public int Rows { get; set; }

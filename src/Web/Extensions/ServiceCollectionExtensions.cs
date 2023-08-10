@@ -76,7 +76,7 @@ public static class ServiceCollectionExtensions
             options.SecretKey = wrapperOptions.SecretKey;
             options.ReadProcedurePattern = wrapperOptions.ReadProcedurePattern;
             options.WriteProcedurePattern = wrapperOptions.WriteProcedurePattern;
-            options.ResourcesTableName = wrapperOptions.ResourcesTableName;
+            options.LocalizationTableName = wrapperOptions.LocalizationTableName;
         }
         
         void ConfigureJJMasterDataCoreOptions(JJMasterDataCoreOptions options)
@@ -125,7 +125,6 @@ public static class ServiceCollectionExtensions
         
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddTransient<IValidationDictionary, ModelStateWrapper>();
-        services.AddTransient<ResourcesService>();
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<OptionsService>();
         services.AddTransient<AboutService>();

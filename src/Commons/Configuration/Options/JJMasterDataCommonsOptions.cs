@@ -23,7 +23,7 @@ public class JJMasterDataCommonsOptions
     /// <summary>
     /// Default value: JJMasterDataResources <br></br>
     /// </summary>
-    public string ResourcesTableName { get; set; }
+    public string LocalizationTableName { get; set; }
 
     /// <summary>
     /// Default value: {tablename}Get <br></br>
@@ -46,7 +46,7 @@ public class JJMasterDataCommonsOptions
 
     public JJMasterDataCommonsOptions()
     {
-        ResourcesTableName = "JJMasterDataResources";
+        LocalizationTableName = "JJMasterDataResources";
         ReadProcedurePattern = "{tablename}Get";
         WriteProcedurePattern = "{tablename}Set";
     }

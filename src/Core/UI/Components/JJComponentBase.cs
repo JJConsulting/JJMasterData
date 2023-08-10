@@ -12,7 +12,7 @@ namespace JJMasterData.Core.Web.Components;
 /// Base class of every component that renders to HTML.
 /// Every public component inherits from this class.
 /// </summary>
-public abstract class JJBaseView
+public abstract class JJComponentBase
 {
     #region "Properties"
 
@@ -29,7 +29,7 @@ public abstract class JJBaseView
         get => _userValues ??= new Dictionary<string,dynamic>();
         set => _userValues = value;
     }
-
+    
     internal bool IsExternalRoute { get; set; }
 
     public bool Visible { get; set; } = true;

@@ -5,7 +5,7 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJSlider : JJBaseControl
+public class JJSlider : JJControlBase
 {
     public double MinValue { get; set; }
     public double MaxValue { get; set; }

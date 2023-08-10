@@ -156,7 +156,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert a JJ component as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendComponent(JJBaseView component)
+    public HtmlBuilder AppendComponent(JJComponentBase component)
     {
         if (component != null)
             Append(component.GetHtmlBuilder());
@@ -164,7 +164,7 @@ public partial class HtmlBuilder
         return this;
     }
     
-    public async Task<HtmlBuilder> AppendComponentAsync(JJAsyncBaseView component)
+    public async Task<HtmlBuilder> AppendComponentAsync(JJAsyncComponentBase component)
     {
         if (component != null)
             Append(await component.GetHtmlBuilderAsync());

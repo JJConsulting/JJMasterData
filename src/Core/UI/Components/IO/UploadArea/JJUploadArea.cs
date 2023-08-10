@@ -5,16 +5,18 @@ using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Threading.Tasks;
+using JJMasterData.Commons.Tasks;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJUploadArea : JJBaseView
+public class JJUploadArea : JJAsyncComponentBase
 {
     /// <summary>
     /// Event fired when the file is posted.
     /// </summary>  
     public event EventHandler<FormUploadFileEventArgs> OnFileUploaded;
-
+    public event AsyncEventHandler<FormUploadFileEventArgs> OnFileUploadedAsync;
     /// <summary>
     /// Allowed extension type, separated by comma.
     /// Default: *
@@ -114,7 +116,7 @@ public class JJUploadArea : JJBaseView
         MaxFileSize = GetMaxRequestLength();
     }
     
-    internal override HtmlBuilder RenderHtml()
+    protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
         string requestType = CurrentContext.Request.QueryString("t");
         if ("jjupload".Equals(requestType))
@@ -122,7 +124,10 @@ public class JJUploadArea : JJBaseView
             if (OnFileUploaded != null) 
                 UploadAreaService.OnFileUploaded += OnFileUploaded;
             
-            var result = UploadAreaService.UploadFile("file",AllowedTypes);
+            if (OnFileUploadedAsync != null) 
+                UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
+            
+            var result = await UploadAreaService.UploadFileAsync("file",AllowedTypes);
             CurrentContext.Response.SendResponse(result.ToJson(), "application/json");
         }
 
@@ -138,7 +143,7 @@ public class JJUploadArea : JJBaseView
                 {
                     div.WithCssClass("fileUpload");
                     div.WithAttribute("id", Name);
-                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","UploadArea", new {componentName = Name}));
+                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","UploadArea", "MasterData", new {componentName = Name}));
                     div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
                     div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
                     div.WithAttribute("dragDrop", EnableDragDrop.ToString().ToLower());

@@ -6,7 +6,7 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJLinkButtonGroup : JJBaseView
+public class JJLinkButtonGroup : JJComponentBase
 {
     private List<JJLinkButton> _actions;
 

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace JJMasterData.Commons.Util;
@@ -47,7 +49,7 @@ public class ReflectionUtils
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         // try to find manually
-        foreach (Assembly asm in assemblies)
+        foreach (var asm in assemblies)
         {
             type = asm.GetType(typeName, false);
 
@@ -96,5 +98,24 @@ public class ReflectionUtils
         }
 
         return result;
+    }
+
+    public static bool IsMethodImplemented(Type type, string methodName)
+    {
+        var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+        return method != null && method.DeclaringType == type;
+    }
+    
+    public static IEnumerable<TypeInfo> GetDefinedTypes<T>(IEnumerable<Assembly> assemblies)
+    {
+        return assemblies.SelectMany(a => a?.DefinedTypes.Where(x =>
+            x.GetInterfaces().Any(i => i == typeof(T)))).ToList();
+    }
+    
+    public static IEnumerable<TypeInfo> GetTypeFromProperty<T>(IEnumerable<Assembly> assemblies)
+    {
+        return assemblies.SelectMany(a => a?.DefinedTypes.Where(x =>
+            x.GetInterfaces().Any(i => i == typeof(T)))).ToList();
     }
 }

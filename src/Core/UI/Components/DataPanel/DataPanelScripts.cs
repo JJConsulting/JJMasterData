@@ -21,6 +21,6 @@ public class DataPanelScripts
         if(!isExternalRoute)
             return $"DataPanel.ReloadAtSamePage('{componentName}','{fieldName}');";
 
-        return $"DataPanel.Reload('{UrlHelper.GetUrl("ReloadPanel","Form", new {dictionaryName = encryptedDictionaryName, componentName})}','{componentName}','{fieldName}')";
+        return $"DataPanel.Reload('{UrlHelper.GetUrl("ReloadPanel","Form", "MasterData", new {dictionaryName = encryptedDictionaryName, componentName})}','{componentName}','{fieldName}')";
     }
 }

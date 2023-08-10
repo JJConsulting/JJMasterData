@@ -6,6 +6,7 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.DI;
+using JJMasterData.Core.DataDictionary.FormEvents;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
@@ -22,19 +23,16 @@ namespace JJMasterData.Core.Extensions;
 
 public static class JJServiceBuilderExtensions
 {
-    public static JJServiceBuilder WithFormEventResolver(this JJServiceBuilder builder, Action<FormEventOptions>? configure = null)
+    public static JJServiceBuilder WithFormEventHandlerFactory(this JJServiceBuilder builder,Func<IServiceProvider, IDataDictionaryRepository> implementationFactory)
     {
-        if(configure != null)
-            builder.Services.Configure(configure);
-        
-        builder.Services.AddTransient<IFormEventResolver,FormEventResolver>();
+        builder.Services.Replace(ServiceDescriptor.Transient(implementationFactory));
 
         return builder;
     }
     
-    public static JJServiceBuilder WithFormEventResolver<T>(this JJServiceBuilder builder) where  T: class, IFormEventResolver
+    public static JJServiceBuilder WithFormEventHandlerFactory<T>(this JJServiceBuilder builder) where  T: class, IFormEventHandlerFactory
     {
-        builder.Services.AddTransient<IFormEventResolver, T>();
+        builder.Services.Replace(ServiceDescriptor.Transient<IFormEventHandlerFactory, T>());
 
         return builder;
     }

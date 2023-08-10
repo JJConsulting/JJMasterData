@@ -70,11 +70,10 @@ internal class ActionsScripts
                 @params.Append(value);
             }
         }
-        string url = UrlHelper.GetUrl("Index", "InternalRedirect",
+        string url = UrlHelper.GetUrl("Index", "InternalRedirect","MasterData",
             new
             {
-                parameters = EncryptionService.EncryptStringWithUrlEscape(@params.ToString()),
-                Area = "MasterData"
+                parameters = EncryptionService.EncryptStringWithUrlEscape(@params.ToString())
             });
 
         return $"ActionManager.executeRedirectAction('{url}',{popup},'{popUpTitle}','{confirmationMessage}','{popupSize}');";
@@ -94,7 +93,7 @@ internal class ActionsScripts
         if (actionContext.IsExternalRoute)
         {
             var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(actionContext.FormElement.Name);
-            var url = UrlHelper.GetUrl("GetUrlRedirect", "UrlRedirect", new { dictionaryName = encryptedDictionaryName, componentName = actionContext.ParentComponentName });
+            var url = UrlHelper.GetUrl("GetUrlRedirect", "UrlRedirect","MasterData", new { dictionaryName = encryptedDictionaryName, componentName = actionContext.ParentComponentName });
             return $"ActionManager.executeRedirectAction('{url}','{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")})";
         }
 
@@ -139,12 +138,11 @@ internal class ActionsScripts
         };
 
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
-        return UrlHelper.GetUrl("GetFormView", "Form", new
+        return UrlHelper.GetUrl("GetFormView", "Form","MasterData", new
         {
             dictionaryName = encryptedDictionaryName,
             actionMap = encryptedActionMap,
-            pageState,
-            Area = "MasterData"
+            pageState
         });
     }
 
@@ -187,7 +185,7 @@ internal class ActionsScripts
         if (actionContext.IsExternalRoute)
         {
             string dictionaryNameEncrypted = EncryptionService.EncryptString(actionContext.FormElement.Name);
-            return UrlHelper.GetUrl("GetGridViewTable", "Grid", new { dictionaryName = dictionaryNameEncrypted });
+            return UrlHelper.GetUrl("GetGridViewTable", "Grid","MasterData",  new { dictionaryName = dictionaryNameEncrypted });
         }
         return $"JJView.refresh('{name}', true)";
     }

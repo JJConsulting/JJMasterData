@@ -4,7 +4,7 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTitle : JJBaseView
+public class JJTitle : JJComponentBase
 {
     public string Title { get; set; }
     public string SubTitle { get; set; }

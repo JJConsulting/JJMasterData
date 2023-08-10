@@ -9,10 +9,10 @@ public static class JJMasterDataStringLocalizerElement
     {
         var element = new Element
         {
-            Name = options.ResourcesTableName,
-            TableName = options.ResourcesTableName,
-            CustomProcNameGet = options.GetReadProcedureName(options.ResourcesTableName),
-            CustomProcNameSet = options.GetWriteProcedureName(options.ResourcesTableName),
+            Name = options.LocalizationTableName,
+            TableName = options.LocalizationTableName,
+            CustomProcNameGet = options.GetReadProcedureName(options.LocalizationTableName),
+            CustomProcNameSet = options.GetWriteProcedureName(options.LocalizationTableName),
             Info = "Resources"
         };
 
