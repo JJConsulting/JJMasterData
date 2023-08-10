@@ -11,13 +11,13 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Factories;
 
-public class JJMasterDataGridEventHandler : GridEventHandlerBase
+public class DataDictionaryGridEventHandler : GridEventHandlerBase
 {
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private JJMasterDataCoreOptions Options { get; }
 
-    public JJMasterDataGridEventHandler(IDataDictionaryRepository dataDictionaryRepository, JJMasterDataUrlHelper urlHelper, IOptions<JJMasterDataCoreOptions> options)
+    public DataDictionaryGridEventHandler(IDataDictionaryRepository dataDictionaryRepository, JJMasterDataUrlHelper urlHelper, IOptions<JJMasterDataCoreOptions> options)
     {
         DataDictionaryRepository = dataDictionaryRepository;
         UrlHelper = urlHelper;
