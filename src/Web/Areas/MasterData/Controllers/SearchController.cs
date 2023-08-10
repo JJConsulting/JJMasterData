@@ -5,6 +5,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
@@ -39,17 +40,15 @@ public class SearchController : MasterDataController
         var searchText = HttpContext.Request.Form[fieldSearchName];
         var dataItem = formElement.Fields[fieldName].DataItem;
 
-        IDictionary<string, dynamic>? formValues = null;
-
+        IDictionary<string, dynamic>? formValues;
         if (dataItem!.HasSqlExpression())
-        {
             formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, (PageState)pageState, true);
-        }
+        else
+            formValues = new Dictionary<string, dynamic>();
 
-        var context = new FormStateData(formValues, null, (PageState)pageState);
-
-        var values = await Service.GetValuesAsync(dataItem,context,searchText,null).ToListAsync();
-        var items = Service.GetItems(dataItem,values);
+        var formStateData = new FormStateData(formValues, (PageState)pageState);
+        var listValues = await Service.GetValuesAsync(dataItem, formStateData, searchText, null).ToListAsync();
+        var items = Service.GetItems(dataItem, listValues);
         
         return Json(items);
     }
