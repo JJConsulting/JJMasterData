@@ -6,12 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Commons.Configuration;
 
-public static class JJServiceBuilderExtensions
+public static class JJMasterDataServiceBuilderExtensions
 {
-    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, string filePath = "appsettings.json")
+    public static JJMasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, string filePath = "appsettings.json")
     {
         string basePath = Directory.GetCurrentDirectory();
-        var builder = new JJServiceBuilder(services);
+        var builder = new JJMasterDataServiceBuilder(services);
 
         if (File.Exists(Path.Combine(basePath, filePath)))
         {
@@ -27,9 +27,9 @@ public static class JJServiceBuilderExtensions
         return builder;
     }
 
-    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, IConfiguration configuration)
+    public static JJMasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, IConfiguration configuration)
     {
-        var builder = new JJServiceBuilder(services);
+        var builder = new JJMasterDataServiceBuilder(services);
 
         builder.AddDefaultServices(configuration);
         builder.Services.Configure<JJMasterDataCommonsOptions>(configuration.GetJJMasterData());
@@ -37,9 +37,9 @@ public static class JJServiceBuilderExtensions
         return builder;
     }
 
-    public static JJServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, Action<JJMasterDataCommonsOptions> configure, IConfiguration loggingConfiguration = null)
+    public static JJMasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, Action<JJMasterDataCommonsOptions> configure, IConfiguration loggingConfiguration = null)
     {
-        var builder = new JJServiceBuilder(services);
+        var builder = new JJMasterDataServiceBuilder(services);
 
         builder.AddDefaultServices(loggingConfiguration);
         builder.Services.Configure(configure);

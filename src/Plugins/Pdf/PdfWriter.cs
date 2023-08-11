@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using iText.IO.Font;
 using iText.Kernel.Colors;
 using iText.Kernel.Font;
@@ -17,22 +18,24 @@ using iText.Layout;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Options;
+using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Factories;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Pdf;
 
-public class PdfWriter : BaseWriter, IPdfWriter
+public class PdfWriter : ExportationWriterBase, IPdfWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
     
@@ -42,13 +45,11 @@ public class PdfWriter : BaseWriter, IPdfWriter
 
     public bool IsLandscape { get; set; }
 
-    public IEntityRepository EntityRepository { get; } =
-        JJService.Provider.GetScopedDependentService<IEntityRepository>();
+    public IEntityRepository EntityRepository { get; } 
     
-    public IFieldFormattingService FieldFormattingService { get; } =
-        JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
+    public IFieldFormattingService FieldFormattingService { get; }
     
-    public override void GenerateDocument(Stream ms, CancellationToken token)
+    public override async Task GenerateDocument(Stream ms, CancellationToken token)
     {
         using var writer = new iText.Kernel.Pdf.PdfWriter(ms);
 
@@ -81,7 +82,9 @@ public class PdfWriter : BaseWriter, IPdfWriter
         var paragraph = new Paragraph("\n");
         document.Add(paragraph);
 
-        var table = new Table(Fields.Count, true);
+        var fields = await GetVisibleFieldsAsync();
+        
+        var table = new Table(fields.Count, true);
         table.UseAllAvailableWidth();
         document.Add(table);
 
@@ -93,9 +96,11 @@ public class PdfWriter : BaseWriter, IPdfWriter
         pdf.Close();
     }
 
-    private void GenerateHeader(Table table)
+    private async Task GenerateHeader(Table table)
     {
-        foreach (var field in Fields)
+        
+        var fields = await GetVisibleFieldsAsync();
+        foreach (var field in fields)
         {
             Cell cell = new();
             cell.Add(new Paragraph(new Text(field.Label).SetBold()));
@@ -130,17 +135,17 @@ public class PdfWriter : BaseWriter, IPdfWriter
         }
     }
 
-    private void GenerateRows(Table table, CancellationToken token)
+    private async Task GenerateRows(Table table, CancellationToken token)
     {
         foreach (DataRow row in DataSource.Rows)
         {
             var scolor = (ShowRowStriped && (ProcessReporter.TotalProcessed % 2) == 0) ? "white" : "#f2fdff";
             var wcolor = WebColors.GetRGBColor(scolor);
             table.SetBackgroundColor(wcolor);
-
-            foreach (FormElementField field in Fields)
+            var fields = await GetVisibleFieldsAsync();
+            foreach (FormElementField field in fields)
             {
-                var cell = CreateCell(row, field);
+                var cell = await CreateCell(row, field);
                 table.AddCell(cell);
                 table.Flush();
             }
@@ -150,9 +155,8 @@ public class PdfWriter : BaseWriter, IPdfWriter
             token.ThrowIfCancellationRequested();
         }
     }
-
-    [Obsolete("Must be async")]
-    private Cell CreateCell(DataRow row, FormElementField field)
+    
+    private async Task<Cell> CreateCell(DataRow row, FormElementField field)
     {
         string value = string.Empty;
         Text image = null;
@@ -167,11 +171,11 @@ public class PdfWriter : BaseWriter, IPdfWriter
         {
             if (field.Component == FormComponent.ComboBox && field.DataItem != null)
             {
-                value = GetComboBoxValue(field, values, ref image);
+                value = await GetComboBoxValue(field, values, image);
             }
             else
             {
-                value = FieldFormattingService.FormatGridValueAsync(field, values,null).GetAwaiter().GetResult();
+                value = await FieldFormattingService.FormatGridValueAsync(field, values,null);
             }
         }
 
@@ -263,15 +267,14 @@ public class PdfWriter : BaseWriter, IPdfWriter
         }
     }
 
-    private string GetComboBoxValue(FormElementField field, IDictionary<string,dynamic> values, ref Text image)
+    private async Task<string> GetComboBoxValue(FormElementField field, IDictionary<string,dynamic> values, Text image)
     {
         if (values == null || !values.ContainsKey(field.Name) || values[field.Name] == null)
             return string.Empty;
 
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
-        var factory = JJService.Provider.GetScopedDependentService<ControlFactory>();
-        var cbo = (JJComboBox)factory.CreateAsync(FormElement,field, values,null, PageState.List,null, selectedValue).GetAwaiter().GetResult();
+        var cbo = (JJComboBox)(await ControlFactory.CreateAsync(FormElement,field, values,null, PageState.List,null, selectedValue));
         var item = cbo.GetValue(selectedValue);
 
         if (item != null)
@@ -318,5 +321,8 @@ public class PdfWriter : BaseWriter, IPdfWriter
         resFilestream.Read(ba, 0, ba.Length);
         return ba;
     }
-    
+
+    public PdfWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<ExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    {
+    }
 }

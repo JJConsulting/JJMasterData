@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Http.Abstractions;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager;
 

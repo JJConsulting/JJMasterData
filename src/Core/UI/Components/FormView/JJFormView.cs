@@ -1,8 +1,6 @@
-﻿using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions;
@@ -11,7 +9,6 @@ using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
@@ -27,7 +24,10 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Models;
-
+#if NET48
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Commons.Configuration;
+#endif
 namespace JJMasterData.Core.Web.Components;
 
 /// <summary>
@@ -217,21 +217,21 @@ public class JJFormView : JJAsyncComponentBase
 #if NET48
     public JJFormView()
     {
-        CurrentContext = JJService.Provider.GetScopedDependentService<IHttpContext>();
-        EntityRepository = JJService.Provider.GetScopedDependentService<IEntityRepository>();
-        ComponentFactory = JJService.Provider.GetScopedDependentService<ComponentFactory>();
-        FormService = JJService.Provider.GetScopedDependentService<IFormService>();
-        EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
-        FieldValuesService = JJService.Provider.GetScopedDependentService<IFieldValuesService>();
-        ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
-        StringLocalizer = JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
-        DataDictionaryService = JJService.Provider.GetScopedDependentService<IDataDictionaryService>();
+        CurrentContext = StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
+        EntityRepository = StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
+        ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<ComponentFactory>();
+        FormService = StaticServiceLocator.Provider.GetScopedDependentService<IFormService>();
+        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+        FieldValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldValuesService>();
+        ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
+        StringLocalizer = StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+        DataDictionaryService = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryService>();
     }
 
     public JJFormView(string elementName) : this()
     {
-        var dataDictionaryService = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-        var factory = JJService.Provider.GetScopedDependentService<FormViewFactory>();
+        var dataDictionaryService = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        var factory = StaticServiceLocator.Provider.GetScopedDependentService<FormViewFactory>();
         FormElement = dataDictionaryService.GetMetadata(elementName);
         IsExternalRoute = false;
         factory.SetFormViewParamsAsync(this, FormElement);

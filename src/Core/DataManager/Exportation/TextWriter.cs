@@ -5,19 +5,22 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Options;
+using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
-public class TextWriter : BaseWriter, ITextWriter
+public class TextWriter : ExportationWriterBase, ITextWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
@@ -120,5 +123,9 @@ public class TextWriter : BaseWriter, ITextWriter
         }
         await sw.WriteLineAsync("");
         await sw.FlushAsync();
+    }
+
+    public TextWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<ExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    {
     }
 }

@@ -4,6 +4,7 @@ using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.DataDictionary.Factories;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Structure;
+using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.UI.Components.Widgets;
@@ -21,6 +22,8 @@ public static class FactoriesServiceExtensions
         services.AddFormElementFactories();
         services.AddComponentsFactories();
 
+        services.AddTransient<ExportationWriterFactory>();
+        
         return services;
     }
     

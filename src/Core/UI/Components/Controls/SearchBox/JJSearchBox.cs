@@ -1,8 +1,6 @@
 ﻿#nullable enable
 
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
@@ -18,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -209,13 +208,13 @@ public class JJSearchBox : JJAsyncControlBase
 
     protected override async Task<HtmlBuilder> RenderHtmlAsync()
     {
-#if NET48
-        if (IsSearchBoxRoute(this, JJService.Provider.GetScopedDependentService<IHttpContext>()))
+
+        if (IsSearchBoxRoute(this, CurrentContext))
         {
             ResponseJson();
             return null;
         }
-#endif
+
         return await GetSearchBoxHtml();
     }
 

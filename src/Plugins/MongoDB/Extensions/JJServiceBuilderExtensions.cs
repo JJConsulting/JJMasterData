@@ -1,6 +1,4 @@
 ﻿using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.DI;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.MongoDB.Models;
 using JJMasterData.MongoDB.Repository;
@@ -12,21 +10,21 @@ namespace JJMasterData.MongoDB.Extensions;
 
 public static class JJServiceBuilderExtensions
 {
-    public static JJServiceBuilder WithMongoDbDataDictionary(this JJServiceBuilder builder)
+    public static JJMasterDataServiceBuilder WithMongoDbDataDictionary(this JJMasterDataServiceBuilder builder)
     {
         builder.Services.AddOptions<JJMasterDataMongoDBOptions>().BindConfiguration("JJMasterData:MongoDB");
         builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, MongoDbDataDictionaryRepository>());
         return builder;
     }
     
-    public static JJServiceBuilder WithMongoDbDataDictionary(this JJServiceBuilder builder, Action<JJMasterDataMongoDBOptions> options)
+    public static JJMasterDataServiceBuilder WithMongoDbDataDictionary(this JJMasterDataServiceBuilder builder, Action<JJMasterDataMongoDBOptions> options)
     {
         builder.Services.Configure(options);
         builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, MongoDbDataDictionaryRepository>());
         return builder;
     }
 
-    public static JJServiceBuilder WithMongoDbDataDictionary(this JJServiceBuilder builder, IConfiguration configuration)
+    public static JJMasterDataServiceBuilder WithMongoDbDataDictionary(this JJMasterDataServiceBuilder builder, IConfiguration configuration)
     {
         builder.Services.AddOptions<JJMasterDataMongoDBOptions>().Bind(configuration);
         builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, MongoDbDataDictionaryRepository>());

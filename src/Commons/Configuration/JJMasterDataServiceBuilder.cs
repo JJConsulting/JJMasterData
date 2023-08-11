@@ -18,16 +18,16 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Configuration;
-public class JJServiceBuilder
+public class JJMasterDataServiceBuilder
 {
     public IServiceCollection Services { get; }
 
-    public JJServiceBuilder(IServiceCollection services)
+    public JJMasterDataServiceBuilder(IServiceCollection services)
     {
         Services = services;
     }
 
-    public JJServiceBuilder AddDefaultServices(IConfiguration configuration)
+    public JJMasterDataServiceBuilder AddDefaultServices(IConfiguration configuration)
     {
         Services.AddLocalization();
         Services.AddMemoryCache();
@@ -57,13 +57,13 @@ public class JJServiceBuilder
         return this;
     }
 
-    public JJServiceBuilder WithBackgroundTask<T>() where T : class, IBackgroundTask
+    public JJMasterDataServiceBuilder WithBackgroundTask<T>() where T : class, IBackgroundTask
     {
         Services.Replace(ServiceDescriptor.Transient<IBackgroundTask, T>());
         return this;
     }
     
-    public JJServiceBuilder WithEntityRepository(string connectionString, DataAccessProvider provider)
+    public JJMasterDataServiceBuilder WithEntityRepository(string connectionString, DataAccessProvider provider)
     {
         return WithEntityRepository(serviceProvider =>
         {
@@ -74,7 +74,7 @@ public class JJServiceBuilder
         });
     }
     
-    public JJServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
+    public JJMasterDataServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Transient(implementationFactory));
         return this;

@@ -14,7 +14,6 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services => services.AddJJMasterDataConsoleServices())
     .Build();
 
-host.Services.UseJJMasterData();
 
 var rootCommand = new RootCommand("JJMasterData CLI. To learn more visit https://jjconsulting.tech/docs/JJMasterData/.")
 {

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
-public interface IWriter
+public interface IExportationWriter
 {
     Task GenerateDocument(Stream stream, CancellationToken token);
 }

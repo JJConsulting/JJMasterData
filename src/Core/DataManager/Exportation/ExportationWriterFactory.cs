@@ -1,5 +1,4 @@
 ﻿using System;
-using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.Web.Components;
@@ -7,27 +6,33 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
-public static class WriterFactory
+public class ExportationWriterFactory
 {
+    private IServiceProvider ServiceProvider { get; }
 
-    public static IPdfWriter GetPdfWriter()
+    public ExportationWriterFactory(IServiceProvider serviceProvider)
     {
-        return JJService.Provider.GetService<IPdfWriter>();
+        ServiceProvider = serviceProvider;
+    }
+    
+    public IPdfWriter GetPdfWriter()
+    {
+        return ServiceProvider.GetRequiredService<IPdfWriter>();
     }
 
-    public static IExcelWriter GetExcelWriter()
+    public IExcelWriter GetExcelWriter()
     {
-        return JJService.Provider.GetService<IExcelWriter>();
+        return ServiceProvider.GetRequiredService<IExcelWriter>();
     }
 
-    public static ITextWriter GetTextWriter()
+    public ITextWriter GetTextWriter()
     {
-        return JJService.Provider.GetService<ITextWriter>();
+        return ServiceProvider.GetRequiredService<ITextWriter>();
     }
 
-    public static BaseWriter GetInstance(JJDataExportation exporter)
+    public ExportationWriterBase GetInstance(JJDataExportation exporter)
     {
-        BaseWriter writer;
+        ExportationWriterBase writer;
         switch (exporter.ExportOptions.FileExtension)
         {
             case ExportFileExtension.CSV:
@@ -36,7 +41,7 @@ public static class WriterFactory
                 textWriter.Delimiter = exporter.ExportOptions.Delimiter;
                 textWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = (BaseWriter)textWriter;
+                writer = (ExportationWriterBase)textWriter;
                 break;
 
             case ExportFileExtension.XLS:
@@ -45,7 +50,7 @@ public static class WriterFactory
                 excelWriter.ShowBorder = exporter.ShowBorder;
                 excelWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = (BaseWriter)excelWriter;
+                writer = (ExportationWriterBase)excelWriter;
 
                 break;
             case ExportFileExtension.PDF:
@@ -60,7 +65,7 @@ public static class WriterFactory
 
                 // ReSharper disable once SuspiciousTypeConversion.Global;
                 // PdfWriter is dynamic loaded by plugin.
-                writer = pdfWriter as BaseWriter;
+                writer = pdfWriter as ExportationWriterBase;
 
                 break;
             default:
@@ -72,7 +77,7 @@ public static class WriterFactory
         return writer;
     }
 
-    private static void ConfigureWriter(JJDataExportation exporter, BaseWriter writer)
+    private static void ConfigureWriter(JJDataExportation exporter, ExportationWriterBase writer)
     {
         writer.FormElement = exporter.FormElement;
         writer.Configuration = exporter.ExportOptions;

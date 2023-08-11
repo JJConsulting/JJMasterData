@@ -2,8 +2,7 @@
 
 using System;
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.DI;
-using JJMasterData.Core.Extensions;
+
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Python.Engine;
 using JJMasterData.Python.FormEvents;
@@ -14,7 +13,7 @@ namespace JJMasterData.Python.Extensions;
 public static class Extensions
 {
 
-    public static JJServiceBuilder WithPythonFormEventResolver(this JJServiceBuilder builder, Action<PythonFormEventOptions>? configure = null)
+    public static JJMasterDataServiceBuilder WithPythonFormEventResolver(this JJMasterDataServiceBuilder builder, Action<PythonFormEventOptions>? configure = null)
     {
         if(configure != null)
             builder.Services.Configure(configure);

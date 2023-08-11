@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Commons.Logging.File;
 
 [ProviderAlias(ProviderName)]
-public class FileLoggerProvider : ILoggerProvider
+internal class FileLoggerProvider : ILoggerProvider
 {
     public const string ProviderName = "File";
 

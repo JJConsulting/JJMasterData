@@ -1,9 +1,7 @@
 ﻿#nullable enable
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration;
 using JJMasterData.Core.FormEvents.Abstractions;

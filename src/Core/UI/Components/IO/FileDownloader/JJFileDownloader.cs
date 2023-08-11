@@ -1,15 +1,12 @@
 ﻿using System;
 using System.IO;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;

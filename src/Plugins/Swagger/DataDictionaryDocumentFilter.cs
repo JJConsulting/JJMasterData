@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web.Http.Description;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,7 +16,7 @@ namespace JJMasterData.Swagger
     {
         public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
         {
-            var dictionaryRepository  = JJService.Provider.GetRequiredService<IDataDictionaryRepository>();
+            var dictionaryRepository  = StaticServiceLocator.Provider.GetRequiredService<IDataDictionaryRepository>();
             var dictionaries = dictionaryRepository.GetMetadataList();
 
             foreach (var formElement in dictionaries)

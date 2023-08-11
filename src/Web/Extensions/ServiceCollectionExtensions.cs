@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
     /// <param name="filePath">
     /// Path relative to the base path stored in IConfigurationBuilder.Properties.
     /// </param>
-    public static JJServiceBuilder AddJJMasterDataWeb(
+    public static JJMasterDataServiceBuilder AddJJMasterDataWeb(
         this IServiceCollection services,
         string filePath = "appsettings.json")
     {
@@ -53,7 +53,7 @@ public static class ServiceCollectionExtensions
         return services.AddJJMasterDataCore(configuration);
     }
 
-    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration)
+    public static JJMasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration)
     {
         AddDefaultServices(services);
 
@@ -63,7 +63,7 @@ public static class ServiceCollectionExtensions
         return services.AddJJMasterDataCore(configuration);
     }
 
-    public static JJServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
+    public static JJMasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
         Action<JJMasterDataConfigurationOptions> configureOptions)
     {
         var wrapper = new JJMasterDataConfigurationOptions();

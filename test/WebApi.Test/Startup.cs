@@ -27,6 +27,6 @@ public class Startup
 
     private void ConfigureServices(HostBuilderContext host, IServiceCollection services)
     {
-        services.BuildServiceProvider().UseJJMasterData();
+        services.BuildServiceProvider();
     }
 }

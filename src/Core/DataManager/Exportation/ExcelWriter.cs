@@ -5,21 +5,24 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Options;
+using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
-public class ExcelWriter : BaseWriter, IExcelWriter
+public class ExcelWriter : ExportationWriterBase, IExcelWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
@@ -178,5 +181,9 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             await sw.WriteLineAsync("</td>");
         }
         await sw.WriteLineAsync("\t\t\t</tr>");
+    }
+
+    public ExcelWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<ExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    {
     }
 }

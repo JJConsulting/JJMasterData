@@ -15,13 +15,14 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataManager.Exports;
 
 namespace JJMasterData.Core.Web.Factories;
 
 internal class DataExportationFactory : IFormElementComponentFactory<JJDataExportation>
 {
-    private readonly JJMasterDataUrlHelper _urlHelper;
-    private readonly JJMasterDataEncryptionService _encryptionService;
+    private JJMasterDataUrlHelper UrlHelper { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IExpressionsService ExpressionsService { get; }
@@ -30,6 +31,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
     private IBackgroundTask BackgroundTask { get; }
     private IHttpContext HttpContext { get; }
     private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
+    private ExportationWriterFactory ExportationWriterFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
@@ -45,11 +47,12 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         ILoggerFactory loggerFactory,
         IComponentFactory<JJFileDownloader> fileDownloaderFactory,
         JJMasterDataUrlHelper urlHelper,
-        JJMasterDataEncryptionService encryptionService
+        JJMasterDataEncryptionService encryptionService,
+        ExportationWriterFactory exportationWriterFactory
         )
     {
-        _urlHelper = urlHelper;
-        _encryptionService = encryptionService;
+        UrlHelper = urlHelper;
+        EncryptionService = encryptionService;
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         ExpressionsService = expressionsService;
@@ -60,6 +63,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
         FileDownloaderFactory = fileDownloaderFactory;
+        ExportationWriterFactory = exportationWriterFactory;
     }
 
     public async Task<JJDataExportation> CreateAsync(string dictionaryName)
@@ -72,6 +76,6 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
     {
         return new JJDataExportation(formElement, EntityRepository, ExpressionsService, FieldsService, 
             Options, BackgroundTask, StringLocalizer, FileDownloaderFactory,LoggerFactory, HttpContext, 
-            _urlHelper, _encryptionService);
+            UrlHelper, EncryptionService,ExportationWriterFactory);
     }
 }

@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.DI;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 

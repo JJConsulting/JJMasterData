@@ -1,7 +1,5 @@
-﻿using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -17,10 +15,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Services;
-
-
+#if NET48
+using JJMasterData.Commons.Configuration;
+#endif
 namespace JJMasterData.Core.Web.Components;
 
 /// <summary>
@@ -98,16 +96,16 @@ public class JJDataPanel : JJAsyncComponentBase
 #if NET48
     public JJDataPanel()
     {
-        ControlFactory = JJService.Provider.GetScopedDependentService<ControlFactory>();
-        EntityRepository =  JJService.Provider.GetScopedDependentService<IEntityRepository>();
-        DataDictionaryRepository = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-        CurrentContext =  JJService.Provider.GetScopedDependentService<IHttpContext>();
-        EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
-        FieldsService = JJService.Provider.GetScopedDependentService<IFieldsService>();
-        FormValuesService = JJService.Provider.GetScopedDependentService<IFormValuesService>();
-        ExpressionsService = JJService.Provider.GetScopedDependentService<IExpressionsService>();
-        UrlHelper = JJService.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
-        EncryptionService = JJService.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+        ControlFactory = StaticServiceLocator.Provider.GetScopedDependentService<ControlFactory>();
+        EntityRepository =  StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
+        DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        CurrentContext =  StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
+        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+        FieldsService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldsService>();
+        FormValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFormValuesService>();
+        ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
+        UrlHelper = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
+        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
 
         Values = new Dictionary<string,dynamic>();
         Errors =  new Dictionary<string,dynamic>();
@@ -119,7 +117,7 @@ public class JJDataPanel : JJAsyncComponentBase
     public JJDataPanel(string elementName): this()
     {
         Name = "pnl_" + elementName;
-        FormElement = JJService.Provider.GetScopedDependentService<IDataDictionaryRepository>()
+        FormElement = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>()
             .GetMetadata(elementName);
         RenderPanelGroup = FormElement.Panels.Count > 0;
     }

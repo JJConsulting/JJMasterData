@@ -1,10 +1,4 @@
-﻿using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.DI;
-using JJMasterData.Core.FormEvents.Abstractions;
-using JJMasterData.Core.Options;
-using Microsoft.Extensions.Options;
-
-namespace JJMasterData.Core.Web;
+﻿namespace JJMasterData.Core.Web;
 
 /// <summary>
 /// Helper to Bootstrap strings, everything defaults to version 3.

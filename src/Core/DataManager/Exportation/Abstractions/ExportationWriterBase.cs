@@ -7,17 +7,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web;
@@ -29,7 +25,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
-public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
+public abstract class ExportationWriterBase : IBackgroundTaskWorker, IExportationWriter
 {
 
     public event EventHandler<IProgressReporter> OnProgressChanged;
@@ -43,10 +39,10 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     protected IExpressionsService ExpressionsService { get; } 
     protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } 
-
+    protected IOptions<JJMasterDataCoreOptions> Options { get; } 
     protected IControlFactory<JJTextFile> TextFileFactory { get; }
     
-    protected ILogger<BaseWriter> Logger { get; } 
+    protected ILogger<ExportationWriterBase> Logger { get; } 
 
 
     public async Task<List<FormElementField>> GetVisibleFieldsAsync()
@@ -120,7 +116,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     {
         get
         {
-            var path = JJService.Provider.GetScopedDependentService<IOptions<JJMasterDataCoreOptions>>().Value.ExportationFolderPath;
+            var path = Options.Value.ExportationFolderPath;
             string folderPath = Path.Combine(path, FormElement.Name);
 
             if (ProcessOptions.Scope == ProcessScope.User)
@@ -140,8 +136,13 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     #endregion
 
 
-    public BaseWriter()
+    public ExportationWriterBase(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<ExportationWriterBase> logger)
     {
+        ExpressionsService = expressionsService;
+        StringLocalizer = stringLocalizer;
+        Options = options;
+        TextFileFactory = textFileFactory;
+        Logger = logger;
         CurrentFilter = new Dictionary<string,dynamic>();
     }
 

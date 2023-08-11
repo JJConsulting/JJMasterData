@@ -1,13 +1,10 @@
-﻿using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using Microsoft.Extensions.Localization;

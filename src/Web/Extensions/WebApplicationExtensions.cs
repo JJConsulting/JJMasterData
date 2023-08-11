@@ -27,7 +27,6 @@ public static class WebApplicationExtensions
         
         app.UseStaticFiles();
         app.UseDefaultFiles();
-        app.UseJJMasterData();
 
         return app;
     }

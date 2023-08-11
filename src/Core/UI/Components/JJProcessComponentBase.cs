@@ -1,10 +1,7 @@
 ﻿using System.Text;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;

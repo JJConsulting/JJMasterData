@@ -100,8 +100,6 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.Services.UseJJMasterData();
-
 app.UseSession();
 app.UseResponseCompression();
 

@@ -1,7 +1,6 @@
 ﻿#if NET48
 using System;
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.DI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -18,7 +17,7 @@ public static class Log
 
     static Log()
     {
-        _logger = JJService.Provider.GetRequiredService<ILogger<JJServiceBuilder>>();
+        _logger = StaticServiceLocator.Provider.GetRequiredService<ILogger<JJMasterDataServiceBuilder>>();
     }
 
     public static void Configure(ILogger logger)

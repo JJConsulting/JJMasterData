@@ -2,15 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Html;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;

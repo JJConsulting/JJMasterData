@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.DI;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
