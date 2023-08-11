@@ -41,40 +41,34 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
     private DataExportationReporter _processReporter;
     private List<FormElementField> _fields;
 
-    protected IExpressionsService ExpressionsService { get; } =
-        JJService.Provider.GetScopedDependentService<IExpressionsService>();
-    protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
-        JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+    protected IExpressionsService ExpressionsService { get; } 
+    protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } 
 
-    protected IControlFactory<JJTextFile> TextFileFactory { get; } =
-        JJService.Provider.GetScopedDependentService<IControlFactory<JJTextFile>>();
+    protected IControlFactory<JJTextFile> TextFileFactory { get; }
     
-    protected ILogger<BaseWriter> Logger { get; } =
-        JJService.Provider.GetScopedDependentService<ILogger<BaseWriter>>();
-    
-    //TODO: This is bad, async prop.
-    public List<FormElementField> Fields
+    protected ILogger<BaseWriter> Logger { get; } 
+
+
+    public async Task<List<FormElementField>> GetVisibleFieldsAsync()
     {
-        get
+        if (_fields == null)
         {
-            if (_fields == null)
+            if (Configuration.ExportAllFields)
             {
-                if (Configuration.ExportAllFields)
-                {
-                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
-                }
-                else
-                {
-                    var defaultValues = new Dictionary<string, dynamic>();
-                    var formData = new FormStateData(defaultValues, PageState.Import);
-                    _fields = FormElement.Fields.ToList().FindAll(x => x.Export &&
-                        ExpressionsService.GetBoolValueAsync(x.VisibleExpression, formData).GetAwaiter().GetResult());
-                }
-                    
+                _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
             }
-
-            return _fields;
+            else
+            {
+                var defaultValues = new Dictionary<string, dynamic>();
+                var formData = new FormStateData(defaultValues, PageState.Import);
+                _fields = FormElement.Fields.ToList().FindAll(x => x.Export &&
+                                                                   ExpressionsService
+                                                                       .GetBoolValueAsync(x.VisibleExpression, formData)
+                                                                       .GetAwaiter().GetResult());
+            }
         }
+
+        return _fields;
     }
 
     public ProcessOptions ProcessOptions { get; set; }
@@ -83,7 +77,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
 
     public ExportOptions Configuration { get; set; }
 
-    public ControlFactory ControlFactory { get; } = JJService.Provider.GetScopedDependentService<ControlFactory>();
+    public ControlFactory ControlFactory { get; } 
 
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
@@ -220,7 +214,7 @@ public abstract class BaseWriter : IBackgroundTaskWorker, IWriter
         OnProgressChanged?.Invoke(this, processReporter);
     }
 
-    public abstract void GenerateDocument(Stream ms, CancellationToken token);
+    public abstract Task GenerateDocument(Stream ms, CancellationToken token);
 
     public string GetLinkFile(FormElementField field, DataRow row, string value)
     {

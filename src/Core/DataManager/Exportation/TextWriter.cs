@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -21,24 +22,23 @@ public class TextWriter : BaseWriter, ITextWriter
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     public string Delimiter { get; set; }
-    public IEntityRepository EntityRepository { get; } =
-        JJService.Provider.GetScopedDependentService<IEntityRepository>();
-    public override void GenerateDocument(Stream stream, CancellationToken token)
+    public IEntityRepository EntityRepository { get; } 
+    public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
 
         if (Configuration.ExportFirstLine)
         {
-            GenerateHeader(sw);
+            await GenerateHeader(sw);
         }
 
-        GenerateBody(sw, token);
+        await GenerateBody(sw, token);
 
         sw.Close();
     }
 
 
-    private void GenerateBody(StreamWriter sw, CancellationToken token)
+    private async Task GenerateBody(StreamWriter sw, CancellationToken token)
     {
         int tot = 0;
         if (DataSource == null)
@@ -47,33 +47,33 @@ public class TextWriter : BaseWriter, ITextWriter
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
-            GenerateRows(sw, token);
+            await GenerateRows(sw, token);
 
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
                 DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
-                GenerateRows(sw, token);
+                await GenerateRows(sw, token);
             }
         }
         else
         {
             ProcessReporter.TotalRecords = DataSource.Rows.Count;
-            GenerateRows(sw, token);
+            await GenerateRows(sw, token);
         }
     }
 
-    private void GenerateRows(StreamWriter sw, CancellationToken token)
+    private async Task GenerateRows(StreamWriter sw, CancellationToken token)
     {
         foreach (DataRow row in DataSource.Rows)
         {
             bool isFirst = true;
-            foreach (var field in Fields)
+            foreach (var field in await GetVisibleFieldsAsync())
             {
                 if (isFirst)
                     isFirst = false;
                 else
-                    sw.Write(Delimiter);
+                    await sw.WriteAsync(Delimiter);
 
                 string value = string.Empty;
                 if (field.DataBehavior != FieldBehavior.Virtual)
@@ -95,10 +95,10 @@ public class TextWriter : BaseWriter, ITextWriter
                     value = args.HtmlResult;
                 }
 
-                sw.Write(value);
+                await sw.WriteAsync(value);
             }
-            sw.WriteLine("");
-            sw.Flush();
+            await sw.WriteLineAsync("");
+            await sw.FlushAsync();
 
             ProcessReporter.TotalProcessed++;
             Reporter(ProcessReporter);
@@ -106,19 +106,19 @@ public class TextWriter : BaseWriter, ITextWriter
         }
     }
 
-    private void GenerateHeader(System.IO.TextWriter sw)
+    private async Task GenerateHeader(System.IO.TextWriter sw)
     {
         bool isFirst = true;
-        foreach (var field in Fields)
+        foreach (var field in await GetVisibleFieldsAsync())
         {
             if (isFirst)
                 isFirst = false;
             else
-                sw.Write(Delimiter);
+                await sw.WriteAsync(Delimiter);
 
-            sw.Write(StringLocalizer[field.Label]);
+            await sw.WriteAsync(StringLocalizer[field.Label]);
         }
-        sw.WriteLine("");
-        sw.Flush();
+        await sw.WriteLineAsync("");
+        await sw.FlushAsync();
     }
 }
