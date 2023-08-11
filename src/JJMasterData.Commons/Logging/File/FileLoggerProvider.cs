@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using JJMasterData.Commons.Logging.Db;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -11,8 +12,14 @@ public class FileLoggerProvider : ILoggerProvider
 {
 
     private readonly ILogger _logger;
-    
+
+    [ActivatorUtilitiesConstructor]
     public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> options)
+    {
+        _logger = new FileLogger(options);
+    }
+
+    public FileLoggerProvider(FileLoggerOptions options)
     {
         _logger = new FileLogger(options);
     }

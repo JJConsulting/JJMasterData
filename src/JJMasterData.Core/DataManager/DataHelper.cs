@@ -76,7 +76,7 @@ public static class DataHelper
             object value = values[i];
             if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None,out var invariantDateValue))
             {
-                value = invariantDateValue.ToString(CultureInfo.CurrentCulture);
+                value = invariantDateValue;
             }
             primaryKeys.Add(elementPks[i].Name, value);
         }
