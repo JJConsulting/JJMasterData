@@ -669,6 +669,42 @@ class GridView {
         document.querySelector("#current-form-action-" + componentName).value = "";
         GridView.refreshGrid(componentName, url);
     }
+    static clearFilterInputs(componentName) {
+        const divId = "#current-grid-filter-" + componentName;
+        const selector = divId + " input:enabled, " + divId + " select:enabled";
+        $(selector).each(function () {
+            let currentObj = $(this);
+            if (currentObj.hasClass("flatpickr-input")) {
+                currentObj.val("");
+            }
+            let inputType = this.type;
+            if (inputType == "checkbox") {
+                currentObj.prop("checked", false);
+            }
+            else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
+                currentObj.tagsinput('removeAll');
+            }
+            else if (inputType != "hidden") {
+                currentObj.val("");
+                if (currentObj.hasClass("selectpicker")) {
+                    currentObj.selectpicker("render");
+                }
+                else if (currentObj.hasClass("jjsearchbox")) {
+                    currentObj.blur();
+                }
+                else if (currentObj.hasClass("jjlookup")) {
+                    currentObj.blur();
+                }
+            }
+        });
+        document.querySelector("#current-filter-action-" + componentName).value = "CLEARACTION";
+        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#current-form-action-" + componentName).value = "";
+    }
+    static clearFilter(componentName, url) {
+        this.clearFilterInputs(componentName);
+        GridView.refreshGrid(componentName, url);
+    }
     static refresh(componentName, url) {
         document.querySelector("#current-table-action-" + componentName).value = "";
         document.querySelector("#current-table-row-" + componentName).value = "";
@@ -895,38 +931,9 @@ class JJView {
         $("#current-select-action-values" + componentName).val(encryptedActionMap);
         $("form:first").trigger("submit");
     }
-    static clearFilter(objid, enableAjax) {
-        var divId = "#current-grid-filter-" + objid;
-        var selector = divId + " input:enabled, " + divId + " select:enabled";
-        $(selector).each(function () {
-            let currentObj = $(this);
-            if (currentObj.hasClass("flatpickr-input")) {
-                currentObj.val("");
-            }
-            let inputType = this.type;
-            if (inputType == "checkbox") {
-                currentObj.prop("checked", false);
-            }
-            else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
-                currentObj.tagsinput('removeAll');
-            }
-            else if (inputType != "hidden") {
-                currentObj.val("");
-                if (currentObj.hasClass("selectpicker")) {
-                    currentObj.selectpicker("render");
-                }
-                else if (currentObj.hasClass("jjsearchbox")) {
-                    currentObj.blur();
-                }
-                else if (currentObj.hasClass("jjlookup")) {
-                    currentObj.blur();
-                }
-            }
-        });
-        $("#current-filter-action-" + objid).val("CLEARACTION");
-        $("#current-table-action-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
-        this.postFormValues(objid, enableAjax, false);
+    static clearFilter(componentName, enableAjax) {
+        GridView.clearFilterInputs(componentName);
+        this.postFormValues(componentName, enableAjax, false);
     }
     static executeGridAction(componentName, encryptedActionMap, confirmMessage) {
         if (confirmMessage) {

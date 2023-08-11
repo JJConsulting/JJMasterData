@@ -39,9 +39,8 @@ public class GridScripts
             var url = GetUrl();
             return $"GridView.sorting('{_gridView.Name}','{url}','{fieldName}')";
         }
-
-        string ajax = _gridView.EnableAjax ? "true" : "false";
-        return $"JJView.sortFormValues('{_gridView.Name}','{ajax}','{fieldName}')";
+        
+        return $"JJView.sortFormValues('{_gridView.Name}','{_gridView.EnableAjax.ToString().ToLower()}','{fieldName}')";
     }
 
     public string GetPaginationScript(int page)
@@ -53,8 +52,7 @@ public class GridScripts
             return $"GridView.pagination('{name}', '{url}', {page})";
         }
 
-        string enableAjax = _gridView.EnableAjax ? "true" : "false";
-        return $"JJView.paginateGrid('{name}', {enableAjax}, {page})";
+        return $"JJView.paginateGrid('{name}', {_gridView.EnableAjax.ToString().ToLower()}, {page})";
     }
     
     public string GetFilterScript()
@@ -65,8 +63,18 @@ public class GridScripts
             var url = GetUrl();
             return $"GridView.filter('{name}', '{url}')";
         }
-        string enableAjax = _gridView.EnableAjax ? "true" : "false";
-        return $"JJView.filter('{name}','{enableAjax}')";
+        return $"JJView.filter('{name}','{_gridView.EnableAjax.ToString().ToLower()}')";
+    }
+    
+    public string GetClearFilterScript()
+    {
+        string name = _gridView.Name;
+        if (_gridView.IsExternalRoute)
+        {
+            var url = GetUrl();
+            return $"GridView.clearFilter('{name}', '{url}')";
+        }
+        return $"JJView.clearFilter('{_gridView.Name}','{_gridView.EnableAjax.ToString().ToLower()}')";
     }
 
     public string GetSelectAllScript()
@@ -78,8 +86,8 @@ public class GridScripts
             var url = UrlHelper.GetUrl("SelectAllRows", "Grid", "MasterData", new { dictionaryName = encryptedDictionaryName });
             return $"GridView.selectAllRows('{name}', '{url}')";
         }
-        string enableAjax = _gridView.EnableAjax ? "true" : "false";
-        return $"JJView.selectAll('{name}','{enableAjax}')";
+
+        return $"JJView.selectAll('{name}','{_gridView.EnableAjax.ToString().ToLower()}')";
     }
     
     public string GetConfigUIScript(ConfigAction action, IDictionary<string, dynamic> formValues)

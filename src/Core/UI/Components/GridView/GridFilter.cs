@@ -216,7 +216,7 @@ internal class GridFilter
             Text = "Clear Filter",
             IconClass = "fa fa-trash",
             ShowAsButton = true,
-            OnClientClick = $"JJView.clearFilter('{GridView.Name}','{GridView.EnableAjax.ToString().ToLower()}');"
+            OnClientClick = $"{GridView.Scripts.GetClearFilterScript()};return false;"
         };
 
         
