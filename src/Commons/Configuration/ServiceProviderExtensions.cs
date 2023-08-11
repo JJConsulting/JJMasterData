@@ -1,6 +1,5 @@
 ﻿#if NET48
 using System;
-using JJMasterData.Commons.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Commons.Configuration;

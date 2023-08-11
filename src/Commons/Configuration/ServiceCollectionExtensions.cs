@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Commons.Configuration;
 
-public static class JJMasterDataServiceBuilderExtensions
+public static class ServiceCollectionExtensions
 {
     public static JJMasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, string filePath = "appsettings.json")
     {
