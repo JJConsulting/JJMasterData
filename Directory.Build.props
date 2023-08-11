@@ -3,15 +3,15 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>3.1.36</Version>
+		<Version>3.1.47</Version>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
 		<Company>JJ Consulting</Company>
 		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>	
-		fix: Lookup not updating itself at second postback.
+		<PackageReleaseNotes>
+			bugfix: Alterado html do panel do tipo NoDecoration
 		</PackageReleaseNotes>
 	</PropertyGroup>
 	<ItemGroup>

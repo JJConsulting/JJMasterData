@@ -14,5 +14,7 @@ public class FormFileInfo
 
     public string OriginName { get; set; }
 
+    public string FileName => OriginName ?? Content.FileName;
+    
     public bool IsInMemory => Content.Bytes != null;
 }

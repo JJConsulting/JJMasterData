@@ -1,6 +1,7 @@
 ﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
+using System;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -13,7 +14,7 @@ public class JJCard : JJComponentBase
 
     public string SubTitle { get; set; }
 
-    public bool ShowAsWell { get; set; }
+    public PanelLayout ShowLayoutPanel { get; set; }
 
     public PanelColor Color { get; set; }
 
@@ -29,8 +30,10 @@ public class JJCard : JJComponentBase
     internal override HtmlBuilder RenderHtml()
     {
         HtmlBuilder html;
-        if (ShowAsWell)
+        if (ShowLayoutPanel == PanelLayout.Well)
             html = GetHtmlWell();
+        else if (ShowLayoutPanel == PanelLayout.NoDecoration)
+            html = GetHtmlNoDecoration();
         else
             html = GetHtmlPanel();
 
@@ -40,9 +43,11 @@ public class JJCard : JJComponentBase
                 .WithCssClass("mb-3")
                 .Append(html);
         }
-            
+
         return html;
     }
+
+
 
     private HtmlBuilder GetHtmlPanel()
     {
@@ -72,12 +77,31 @@ public class JJCard : JJComponentBase
         return html;
     }
 
+    private HtmlBuilder GetHtmlNoDecoration()
+    {
+        var html = new HtmlBuilder(HtmlTag.Div)
+            .WithAttributes(Attributes)
+            .WithNameAndId(Name)
+            .WithCssClass(CssClass);
+
+        if (HasTitle)
+        {
+            var title = new JJTitle(Title, SubTitle);
+            html.AppendElement(title.GetHtmlBlockquote());
+        }
+
+        html.AppendElement(HtmlBuilderContent);
+
+        return html;
+    }
+
     private HtmlBuilder GetHtmlWell()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass);
+
 
         if (BootstrapHelper.Version == 3)
             html.WithCssClass("well");

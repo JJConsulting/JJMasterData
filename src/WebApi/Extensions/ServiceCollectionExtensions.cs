@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<MasterApiService>();
         services.AddTransient<AccountService>();
         services.AddTransient<FileService>();
+        services.AddTransient<DictionariesService>();
 
         return services;
     }
