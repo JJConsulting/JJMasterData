@@ -29,7 +29,6 @@ public class DbLogger : ILogger
         
         var now = DateTime.Now;
 
-
         var message = GetMessage(eventId, formatter(state, exception), exception);
         
         var entry = new DbLogEntry

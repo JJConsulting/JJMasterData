@@ -239,17 +239,7 @@ public class JJTextFile : JJControlBase
         if (pkFields.Count == 0)
             return false;
 
-        foreach (var pkField in pkFields)
-        {
-            if (!FormValues.ContainsKey(pkField.Name))
-                return false;
-
-            string value = FormValues[pkField.Name]!.ToString();
-            if (!Validate.ValidFileName(value))
-                return false;
-        }
-
-        return true;
+        return pkFields.All(pkField => FormValues.ContainsKey(pkField.Name) && !string.IsNullOrEmpty(FormValues[pkField.Name]?.ToString()));
     }
 
     public string GetFolderPath()
@@ -310,6 +300,8 @@ public class JJTextFile : JJControlBase
             CaretText = $"{files.Length}&nbsp;{StringLocalizer["Files"]}"
         };
 
+        btnGroup.Attributes.Add("onclick","event.stopPropagation()");
+        
         foreach (var filename in files)
         {
             btnGroup.Actions.Add(GetLinkButton(filename));

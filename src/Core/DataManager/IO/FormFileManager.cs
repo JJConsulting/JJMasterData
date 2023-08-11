@@ -88,9 +88,6 @@ public class FormFileManager
         if (string.IsNullOrWhiteSpace(newName))
             throw new ArgumentNullException(StringLocalizer["Required file name"]);
 
-        if (!Validate.ValidFileName(newName))
-            throw new JJMasterDataException(StringLocalizer["file name cannot contain [{0}] characters", "* < > | : ? \" / \\"]);
-
         if (!FileIO.GetFileNameExtension(currentName).Equals(FileIO.GetFileNameExtension(newName)))
             throw new JJMasterDataException(StringLocalizer["The file extension must remain the same"]);
 

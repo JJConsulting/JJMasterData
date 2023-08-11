@@ -83,7 +83,7 @@ internal class FormViewRelationshipLayout
                         Name = "card_" + relationship.Id,
                         Title = relationship.Panel.Title,
                         Color = relationship.Panel.Color,
-                        ShowAsWell = relationship.Panel.Layout == PanelLayout.Well,
+                        Layout = relationship.Panel.Layout,
                         HtmlBuilderContent = content,
                         CssClass = relationship.Panel.CssClass
                     };

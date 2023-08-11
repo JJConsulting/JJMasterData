@@ -6,6 +6,7 @@ using JJMasterData.Core.DataDictionary;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using JJMasterData.Core.Web.Http.Abstractions;
 
@@ -72,7 +73,12 @@ public static class DataHelper
 
         for (int i = 0; i < values.Length; i++)
         {
-            primaryKeys.Add(elementPks[i].Name, values[i]);
+            object value = values[i];
+            if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None,out var invariantDateValue))
+            {
+                value = invariantDateValue;
+            }
+            primaryKeys.Add(elementPks[i].Name, value);
         }
 
         return primaryKeys;
@@ -98,14 +104,36 @@ public static class DataHelper
         {
             if (name.Length > 0)
                 name += separator.ToString();
-
-            if (!formValues.ContainsKey(field.Name) || formValues[field.Name] == null)
+                
+            if (!formValues.ContainsKey(field.Name))
                 throw new JJMasterDataException($"Primary key {field.Name} not entered");
 
-            string value = formValues[field.Name]!.ToString()!;
+
+            string value;
+            
+            if (field.DataType is FieldType.DateTime or FieldType.Date)
+            {
+                if (DateTime.TryParse(formValues[field.Name]?.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None,out DateTime dateValue))
+                {
+                    value = dateValue.ToString(CultureInfo.InvariantCulture);
+                }
+                else if (DateTime.TryParse(formValues[field.Name]?.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None,out DateTime invariantDateValue))
+                {
+                    value = invariantDateValue.ToString(CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    throw new JJMasterDataException($"Invalid DateTime for field {field.Name}: {formValues[field.Name]}");
+                }
+            }
+            else
+            {
+                value = formValues[field.Name].ToString();
+            }
+            
             if (value.Contains(separator))
                 throw new JJMasterDataException($"Primary key value {value} contains invalid characters.");
-
+                
             name += value;
         }
 

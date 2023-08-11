@@ -14,7 +14,7 @@ public class JJCard : JJComponentBase
 
     public string SubTitle { get; set; }
 
-    public PanelLayout ShowLayoutPanel { get; set; }
+    public PanelLayout Layout { get; set; }
 
     public PanelColor Color { get; set; }
 
@@ -30,9 +30,9 @@ public class JJCard : JJComponentBase
     internal override HtmlBuilder RenderHtml()
     {
         HtmlBuilder html;
-        if (ShowLayoutPanel == PanelLayout.Well)
+        if (Layout == PanelLayout.Well)
             html = GetHtmlWell();
-        else if (ShowLayoutPanel == PanelLayout.NoDecoration)
+        else if (Layout == PanelLayout.NoDecoration)
             html = GetHtmlNoDecoration();
         else
             html = GetHtmlPanel();
@@ -87,10 +87,10 @@ public class JJCard : JJComponentBase
         if (HasTitle)
         {
             var title = new JJTitle(Title, SubTitle);
-            html.AppendElement(title.GetHtmlBlockquote());
+            html.Append(title.GetHtmlBlockquote());
         }
 
-        html.AppendElement(HtmlBuilderContent);
+        html.Append(HtmlBuilderContent);
 
         return html;
     }

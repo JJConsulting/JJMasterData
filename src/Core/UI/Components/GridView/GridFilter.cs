@@ -18,8 +18,8 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class GridFilter
 {
-    private const string FILTERACTION = "FILTERACTION";
-    private const string CLEARACTION = "CLEARACTION";
+    private const string FilterActionName = "FILTERACTION";
+    private const string ClearActionName = "CLEARACTION";
     internal const string FilterFieldPrefix = "filter_";
 
     private IDictionary<string,dynamic> _currentFilter;
@@ -38,22 +38,22 @@ internal class GridFilter
     /// <returns></returns>
     public async Task<IDictionary<string, dynamic>> GetCurrentFilter()
     {
-        if (_currentFilter != null)
+        if (_currentFilter is { Count: > 0 })
             return _currentFilter;
 
         //Ação é capturada aqui, pois o usuário pode chamar o metodo as antes do GetHtml
         string currentFilterAction = CurrentContext.Request.Form("current-filter-action-" + GridView.Name);
-        if (FILTERACTION.Equals(currentFilterAction))
+        switch (currentFilterAction)
         {
-            var formFilters = await GetFilterFormValues();
-            await ApplyCurrentFilter(formFilters);
-            return _currentFilter;
-        }
-
-        if (CLEARACTION.Equals(currentFilterAction))
-        {
-            await ApplyCurrentFilter(null);
-            return _currentFilter;
+            case FilterActionName:
+            {
+                var formFilters = await GetFilterFormValues();
+                await ApplyCurrentFilter(formFilters);
+                return _currentFilter;
+            }
+            case ClearActionName:
+                await ApplyCurrentFilter(null);
+                return _currentFilter;
         }
 
         var sessionFilter = CurrentContext.Session.GetSessionValue<Dictionary<string,dynamic>>("jjcurrentfilter_" + GridView.Name);

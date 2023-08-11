@@ -47,7 +47,7 @@ public class FileLogger : ILogger
             return;
 
         var message = new LogEntry<TState>(logLevel, eventId, state!, exception, (s, e) => formatter(s, e));
-        var record = GetLogRecord<TState>(message, _options.CurrentValue.Formatting);
+        var record = GetLogRecord(message, _options.CurrentValue.Formatting);
         _buffer.Enqueue(record.ToCharArray());
     }
     
