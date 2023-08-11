@@ -42,20 +42,15 @@ public class ImpTextWorker : IBackgroundTaskWorker
     public FormElement FormElement { get; set; }
     internal DataContext DataContext { get; private set; }
 
-    internal IExpressionsService ExpressionsService { get; } =
-        JJService.Provider.GetScopedDependentService<IExpressionsService>();
+    internal IExpressionsService ExpressionsService { get; }
 
-    internal IEntityRepository EntityRepository { get; } =
-        JJService.Provider.GetScopedDependentService<IEntityRepository>();
+    internal IEntityRepository EntityRepository { get; }
     
-    internal IFieldValuesService FieldValuesService { get; } =
-        JJService.Provider.GetScopedDependentService<IFieldValuesService>();
+    internal IFieldValuesService FieldValuesService { get; }
 
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } =
-        JJService.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
+    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    internal ILogger<ImpTextWorker> Logger { get; } =
-        JJService.Provider.GetScopedDependentService<ILogger<ImpTextWorker>>();
+    internal ILogger<ImpTextWorker> Logger { get; }
 
     internal IFormService FormService { get; }
     public string PostedText { get; private set; }

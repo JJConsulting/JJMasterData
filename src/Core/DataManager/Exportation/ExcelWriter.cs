@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -33,42 +34,40 @@ public class ExcelWriter : BaseWriter, IExcelWriter
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
-    public IEntityRepository EntityRepository { get; } =
-        JJService.Provider.GetScopedDependentService<IEntityRepository>();
-    public IFieldFormattingService FieldFormattingService { get; } =
-        JJService.Provider.GetScopedDependentService<IFieldFormattingService>();
+    public IEntityRepository EntityRepository { get; } 
+    public IFieldFormattingService FieldFormattingService { get; } 
 
-    public override void GenerateDocument(Stream stream, CancellationToken token)
+    public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
 
-        sw.WriteLine("<html  ");
-        sw.WriteLine("	xmlns:o=\"urn:schemas-microsoft-com:office:office\"  ");
-        sw.WriteLine("	xmlns:x=\"urn:schemas-microsoft-com:office:excel\"  ");
-        sw.WriteLine("	xmlns:v=\"urn:schemas-microsoft-com:vml\"> ");
-        sw.WriteLine("<head> ");
-        sw.WriteLine("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"> ");
-        sw.WriteLine("</head> ");
-        sw.WriteLine("<body>");
-        sw.WriteLine("\t<table>");
+        await sw.WriteLineAsync("<html  ");
+        await sw.WriteLineAsync("	xmlns:o=\"urn:schemas-microsoft-com:office:office\"  ");
+        await sw.WriteLineAsync("	xmlns:x=\"urn:schemas-microsoft-com:office:excel\"  ");
+        await sw.WriteLineAsync("	xmlns:v=\"urn:schemas-microsoft-com:vml\"> ");
+        await sw.WriteLineAsync("<head> ");
+        await sw.WriteLineAsync("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"> ");
+        await sw.WriteLineAsync("</head> ");
+        await sw.WriteLineAsync("<body>");
+        await sw.WriteLineAsync("\t<table>");
 
         if (Configuration.ExportFirstLine)
         {
-            GenerateHeader(sw);
+            await GenerateHeader(sw);
         }
 
-        sw.Flush();
+        await sw.FlushAsync();
 
-        GenerateBody(sw, token);
+        await GenerateBody(sw, token);
 
-        sw.WriteLine("\t</table>");
-        sw.WriteLine("</body>");
-        sw.WriteLine("</html>");
+        await sw.WriteLineAsync("\t</table>");
+        await sw.WriteLineAsync("</body>");
+        await sw.WriteLineAsync("</html>");
 
         sw.Close();
     }
 
-    public void GenerateBody(StreamWriter sw, CancellationToken token)
+    public async Task GenerateBody(StreamWriter sw, CancellationToken token)
     {
         int tot = 0;
         if (DataSource == null)
@@ -77,34 +76,33 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
-            GenerateRows(sw, token);
+            await GenerateRows(sw, token);
 
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
                 DataSource = EntityRepository.GetDataTable(FormElement, CurrentFilter as IDictionary, CurrentOrder, RegPerPag, i, ref tot);
-                GenerateRows(sw, token);
+                await GenerateRows(sw, token);
             }
         }
         else
         {
             ProcessReporter.TotalRecords = DataSource.Rows.Count;
-            GenerateRows(sw, token);
+            await GenerateRows(sw, token);
         }
     }
 
-    public void GenerateRows(StreamWriter sw, CancellationToken token)
+    public async Task GenerateRows(StreamWriter sw, CancellationToken token)
     {
         foreach (DataRow row in DataSource.Rows)
         {
-            sw.Write("\t\t\t<tr>");
-            foreach (var field in Fields)
+            await sw.WriteAsync("\t\t\t<tr>");
+            foreach (var field in await GetVisibleFieldsAsync())
             {
                 string value = CreateCell(row, field);
 
                 string tdStyle;
-                if (field.DataType == FieldType.Float ||
-                    field.DataType == FieldType.Int)
+                if (field.DataType is FieldType.Float or FieldType.Int)
                 {
                     tdStyle = " style=\"text-align:right;\" ";
                 }
@@ -113,13 +111,13 @@ public class ExcelWriter : BaseWriter, IExcelWriter
                     tdStyle = " style=\"mso-number-format:'@';\" ";
                 }
 
-                sw.Write("\t\t\t\t<td" + tdStyle + ">");
-                sw.Write(value);
-                sw.WriteLine("</td>");
+                await sw.WriteAsync("\t\t\t\t<td" + tdStyle + ">");
+                await sw.WriteAsync(value);
+                await sw.WriteLineAsync("</td>");
             }
 
-            sw.WriteLine("\t\t\t</tr>");
-            sw.Flush();
+            await sw.WriteLineAsync("\t\t\t</tr>");
+            await sw.FlushAsync();
             ProcessReporter.TotalProcessed++;
 
             Reporter(ProcessReporter);
@@ -157,17 +155,17 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             args.Field = field;
             args.DataRow = row;
             args.Sender = new JJText(value);
-            OnRenderCell.Invoke(this, args);
+            OnRenderCell?.Invoke(this, args);
             value = args.HtmlResult;
         }
 
         return value;
     }
 
-    private void GenerateHeader(StreamWriter sw)
+    private async Task GenerateHeader(StreamWriter sw)
     {
-        sw.WriteLine("\t\t\t<tr>");
-        foreach (var field in Fields)
+        await sw.WriteLineAsync("\t\t\t<tr>");
+        foreach (var field in await GetVisibleFieldsAsync())
         {
             string thStyle = "";
             if (field.DataType == FieldType.Float ||
@@ -175,10 +173,10 @@ public class ExcelWriter : BaseWriter, IExcelWriter
             {
                 thStyle = " style=\"text-align:right;\" ";
             }
-            sw.Write("\t\t\t\t<td" + thStyle + ">");
-            sw.Write(StringLocalizer[field.Label]);
-            sw.WriteLine("</td>");
+            await sw.WriteAsync("\t\t\t\t<td" + thStyle + ">");
+            await sw.WriteAsync(StringLocalizer[field.Label]);
+            await sw.WriteLineAsync("</td>");
         }
-        sw.WriteLine("\t\t\t</tr>");
+        await sw.WriteLineAsync("\t\t\t</tr>");
     }
 }
