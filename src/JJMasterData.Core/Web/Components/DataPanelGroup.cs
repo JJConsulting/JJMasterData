@@ -78,7 +78,7 @@ internal class DataPanelGroup
         {
             var card = new JJCard
             {
-                ShowAsWell = true,
+                ShowLayoutPanel = PanelLayout.Well,
                 HtmlBuilderContent = GetHtmlForm(null)
             };
             yield return card.GetHtmlBuilder();
@@ -133,7 +133,7 @@ internal class DataPanelGroup
             {
                 Title = panel.Title,
                 SubTitle = panel.SubTitle,
-                ShowAsWell = panel.Layout == PanelLayout.Well,
+                ShowLayoutPanel = panel.Layout,
                 HtmlBuilderContent = GetHtmlForm(panel)
             };
             return card.GetHtmlBuilder();
