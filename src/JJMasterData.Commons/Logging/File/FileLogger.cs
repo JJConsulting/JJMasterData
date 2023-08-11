@@ -1,12 +1,12 @@
+using JJMasterData.Commons.Util;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Util;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Logging.File;
 
@@ -14,16 +14,37 @@ public class FileLogger : ILogger
 {
 
     private readonly BlockingCollection<LogMessage> _queue;
-    private readonly IOptionsMonitor<FileLoggerOptions> _options;
+    private readonly IOptionsMonitor<FileLoggerOptions> _optionsMonitor;
+    private readonly FileLoggerOptions _options;
+
+    private FileLoggerOptions Options
+    {
+        get
+        {
+            if (_options != null)
+                return _options;
+
+            return _optionsMonitor.CurrentValue;
+        }
+    }
+
+    private FileLogger()
+    {
+        _queue = new BlockingCollection<LogMessage>();
+        Task.Factory.StartNew(LogAtFile, TaskCreationOptions.LongRunning);
+    }
 
     /// <summary>
     /// Creates a new instance of <see cref="FileLogger" />.
     /// </summary>
-    public FileLogger(IOptionsMonitor<FileLoggerOptions> options)
+    public FileLogger(IOptionsMonitor<FileLoggerOptions> options) : this()
     {
-        _queue = new BlockingCollection<LogMessage>();
+        _optionsMonitor = options;
+    }
+
+    public FileLogger(FileLoggerOptions options) : this()
+    {
         _options = options;
-        Task.Factory.StartNew(LogAtFile, TaskCreationOptions.LongRunning);
     }
 
     public IDisposable BeginScope<TState>(TState state) => default!;
@@ -58,7 +79,7 @@ public class FileLogger : ILogger
     
     private void LogAtFile()
     {
-        var options = _options.CurrentValue;
+        var options = Options;
         foreach (var message in _queue.GetConsumingEnumerable())
         {
             var path = FileIO.ResolveFilePath(options.FileName);
