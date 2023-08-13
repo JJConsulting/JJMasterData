@@ -177,7 +177,7 @@ public class ExcelWriter : ExportationWriterBase, IExcelWriter
                 thStyle = " style=\"text-align:right;\" ";
             }
             await sw.WriteAsync("\t\t\t\t<td" + thStyle + ">");
-            await sw.WriteAsync(StringLocalizer[field.Label]);
+            await sw.WriteAsync(StringLocalizer[field.LabelOrName]);
             await sw.WriteLineAsync("</td>");
         }
         await sw.WriteLineAsync("\t\t\t</tr>");

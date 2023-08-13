@@ -107,7 +107,7 @@ public class ControlFactory
                 control = Create<JJCheckBox>(formElement, field,context);
 
                 if (formStateData.PageState != PageState.List)
-                    ((JJCheckBox)control).Text = string.IsNullOrEmpty(field.Label) ? field.Name : field.Label;
+                    ((JJCheckBox)control).Text = field.LabelOrName;
 
                 break;
             case FormComponent.TextArea:

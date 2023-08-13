@@ -58,7 +58,7 @@ public class FieldValidationService : IFieldValidationService
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        string fieldName = enableErrorLink ? GetFieldLinkHtml(fieldId, field.Label) : field.Label;
+        string fieldName = enableErrorLink ? GetFieldLinkHtml(fieldId, field.LabelOrName) : field.Label;
 
         string error = null;
 

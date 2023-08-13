@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Localization;
+
+//TODO: Implementar uma nova interface com o LocalizedString permitindo nulo
 
 public class JJMasterDataStringLocalizer : IStringLocalizer
 {
@@ -41,7 +44,7 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
         return GetAllStringsAsDictionary().Select(e=>new LocalizedString(e.Key, e.Value));
     }
 
-    public LocalizedString this[string name]
+    public LocalizedString this[string? name]
     {
         get
         {
@@ -53,7 +56,7 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
         }
     }
 
-    public LocalizedString this[string name, params object[] arguments]
+    public LocalizedString this[string? name, params object[] arguments]
     {
         get
         {

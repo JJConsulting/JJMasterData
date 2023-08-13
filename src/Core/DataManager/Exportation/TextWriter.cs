@@ -119,7 +119,7 @@ public class TextWriter : ExportationWriterBase, ITextWriter
             else
                 await sw.WriteAsync(Delimiter);
 
-            await sw.WriteAsync(StringLocalizer[field.Label]);
+            await sw.WriteAsync(StringLocalizer[field.LabelOrName]);
         }
         await sw.WriteLineAsync("");
         await sw.FlushAsync();

@@ -43,15 +43,15 @@ public class JJLabel : JJComponentBase
     /// <summary>
     /// Inicializa uma nova instância da classe JJLabel a partir de um FormElementField
     /// </summary>
-    public JJLabel(FormElementField f)
+    public JJLabel(FormElementField field)
     {
-        if (f == null)
-            throw new ArgumentNullException(nameof(f), "FormElementField can not be null");
+        if (field == null)
+            throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
 
-        LabelFor = f.Name;
-        Text = string.IsNullOrEmpty(f.Label) ? f.Name : f.Label;
-        ToolTip = f.HelpDescription;
-        IsRequired = f.IsRequired;
+        LabelFor = field.Name;
+        Text = field.LabelOrName;
+        ToolTip = field.HelpDescription;
+        IsRequired = field.IsRequired;
     }
 
     internal override HtmlBuilder RenderHtml()

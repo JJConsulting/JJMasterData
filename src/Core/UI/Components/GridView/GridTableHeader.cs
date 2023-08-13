@@ -69,14 +69,14 @@ internal class GridTableHeader
                 {
                     SetSortAttributes(span, field);
                 }
-                span.Append(HtmlTag.Span, span =>
+                span.Append(HtmlTag.Span, s =>
                 {
                     if (!string.IsNullOrEmpty(field.HelpDescription))
                     {
-                        span.WithToolTip(field.HelpDescription);
+                        s.WithToolTip(field.HelpDescription);
                     }
 
-                    span.AppendText(StringLocalizer[field.Label]);
+                    s.AppendText(StringLocalizer[field.LabelOrName]);
                 });
             });
 
