@@ -116,7 +116,7 @@ internal class DataImportationHelp
             });
             tr.Append(HtmlTag.Td, td =>
             {
-                td.AppendText(string.IsNullOrEmpty(field.Label) ? field.Name : field.Label);
+                td.AppendText(field.LabelOrName);
                 td.AppendIf(field.IsPk, HtmlTag.Span, span =>
                 {
                     span.WithCssClass("fa fa-star")

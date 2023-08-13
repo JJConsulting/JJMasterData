@@ -187,7 +187,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             if (isFirstRow)
             {
                 isFirstRow = false;
-                string colName1 = string.IsNullOrEmpty(listField[0].Label) ? listField[0].Name : listField[0].Label;
+                string colName1 = listField[0].LabelOrName;
                 if (colName1.Trim().ToLower().Equals(cols[0].Trim().ToLower()))
                 {
                     currentProcess.AddError(StringLocalizer["File header ignored"]);

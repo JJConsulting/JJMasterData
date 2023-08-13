@@ -1,12 +1,11 @@
-﻿using System;
-using System.Runtime.Serialization;
-using JJMasterData.Commons.Localization;
+﻿#nullable enable
+
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity;
 
 /// <summary>
-/// Informações do campo
+/// Field Info
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
 public class ElementField
@@ -31,8 +30,10 @@ public class ElementField
     /// Description on the form
     /// </summary>
     [JsonProperty("label")]
-    public string Label { get; set; }
+    public string? Label { get; set; }
 
+    public string LabelOrName => string.IsNullOrEmpty(Label) ? Name : Label!;
+    
     /// <summary>
     /// Data Type
     /// Default NVARCHAR
@@ -64,7 +65,7 @@ public class ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("defaultvalue")]
-    public string DefaultValue { get; set; }
+    public string? DefaultValue { get; set; }
 
     /// <summary>
     /// Required field (Default=false)
@@ -107,5 +108,6 @@ public class ElementField
         Filter = new ElementFilter();
         DataType = FieldType.Varchar;
         DataBehavior = FieldBehavior.Real;
+        Name = string.Empty;
     }
 }

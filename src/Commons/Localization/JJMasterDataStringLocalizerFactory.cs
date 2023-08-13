@@ -30,12 +30,12 @@ public class JJMasterDataStringLocalizerFactory : IStringLocalizerFactory
     public IStringLocalizer Create(Type resourceSource)
     {
         var resourceLocalizer = ResourceManagerStringLocalizerFactory.Create(resourceSource) as ResourceManagerStringLocalizer;
-        return new JJMasterDataStringLocalizer(resourceSource.ToString(),resourceLocalizer, EntityRepository, Cache, Options);
+        return new JJMasterDataStringLocalizer(resourceSource.ToString(), resourceLocalizer, EntityRepository, Cache, Options);
     }
 
     public IStringLocalizer Create(string baseName, string location)
     {
         var resourceLocalizer = ResourceManagerStringLocalizerFactory.Create(baseName,location) as ResourceManagerStringLocalizer;
-        return new JJMasterDataStringLocalizer(baseName + "_" +location,resourceLocalizer, EntityRepository, Cache, Options);
+        return new JJMasterDataStringLocalizer(baseName + "_" +location, resourceLocalizer, EntityRepository, Cache, Options);
     }
 }

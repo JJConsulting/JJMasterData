@@ -149,7 +149,7 @@ public class GridSortingConfig
                 });
                 tr.Append(HtmlTag.Td, td =>
                 {
-                    td.AppendText(StringLocalizer[item.Label ?? item.Name]);
+                    td.AppendText(StringLocalizer[item.LabelOrName]);
                 });
                 tr.Append(HtmlTag.Td, td =>
                 {

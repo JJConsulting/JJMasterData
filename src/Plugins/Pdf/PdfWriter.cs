@@ -103,7 +103,7 @@ public class PdfWriter : ExportationWriterBase, IPdfWriter
         foreach (var field in fields)
         {
             Cell cell = new();
-            cell.Add(new Paragraph(new Text(field.Label).SetBold()));
+            cell.Add(new Paragraph(new Text(field.LabelOrName).SetBold()));
             SetHeaderCellStyle(field, ref cell);
             table.AddHeaderCell(cell);
         }
