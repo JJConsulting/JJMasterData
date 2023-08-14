@@ -10,7 +10,7 @@ using JJMasterData.Commons.Tasks;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJUploadArea : JJAsyncComponentBase
+public class JJUploadArea : AsyncComponent
 {
     /// <summary>
     /// Event fired when the file is posted.

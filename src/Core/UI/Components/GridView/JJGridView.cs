@@ -43,7 +43,7 @@ namespace JJMasterData.Core.Web.Components;
 /// Example
 /// <img src="../media/JJGridViewWithLegend.png"/>
 /// </example>
-public class JJGridView : JJAsyncComponentBase
+public class JJGridView : AsyncComponent
 {
     #region "Events"
 

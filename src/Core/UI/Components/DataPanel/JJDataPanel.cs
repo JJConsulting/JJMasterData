@@ -24,7 +24,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Render panels with fields
 /// </summary>
-public class JJDataPanel : JJAsyncComponentBase
+public class JJDataPanel : AsyncComponent
 {
     #region "Events"
 

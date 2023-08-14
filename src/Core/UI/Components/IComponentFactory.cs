@@ -9,12 +9,12 @@ public interface IComponentFactory
     
 }
 
-public interface IComponentFactory<out TComponent> : IComponentFactory where TComponent : JJComponentBase
+public interface IComponentFactory<out TComponent> : IComponentFactory where TComponent : ComponentBase
 {
     TComponent Create();
 }
 
-public interface IFormElementComponentFactory<TComponent> : IComponentFactory where TComponent : JJComponentBase
+public interface IFormElementComponentFactory<TComponent> : IComponentFactory where TComponent : ComponentBase
 {
     TComponent Create(FormElement formElement);
 

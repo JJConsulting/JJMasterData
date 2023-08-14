@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJFileDownloader : JJComponentBase
+public class JJFileDownloader : ComponentBase
 {
     public const string DirectDownloadParameter = "jjdirectdownload";
     public const string DownloadParameter = "jjdownload";

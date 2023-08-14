@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextFile : JJControlBase
+public class JJTextFile : ControlBase
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
@@ -350,7 +350,7 @@ public class JJTextFile : JJControlBase
         return Name.Equals(lookupRoute);
     }
 
-    public static bool IsUploadViewRoute(JJComponentBase view, IHttpContext httpContext)
+    public static bool IsUploadViewRoute(ComponentBase view, IHttpContext httpContext)
     {
         string dataPanelName;
         if (view is JJFormView formView)

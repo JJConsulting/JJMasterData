@@ -12,7 +12,7 @@ namespace JJMasterData.Core.Web.Components;
 /// Base class of every component that renders to HTML.
 /// Every public component inherits from this class.
 /// </summary>
-public abstract class JJComponentBase
+public abstract class ComponentBase
 {
     #region "Properties"
 

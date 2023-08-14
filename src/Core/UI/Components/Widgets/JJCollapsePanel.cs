@@ -6,7 +6,7 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJCollapsePanel : JJComponentBase
+public class JJCollapsePanel : ComponentBase
 {
     public enum Position
     {

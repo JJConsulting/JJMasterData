@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJComboBox : JJControlBase
+public class JJComboBox : ControlBase
 {
     private IList<DataItemValue>? _values;
     private string? _selectedValue;

@@ -23,7 +23,7 @@ public class GridCellEventArgs : EventArgs
     /// <summary>
     /// Objeto renderizado
     /// </summary>
-    public JJComponentBase Sender { get; set; }
+    public ComponentBase Sender { get; set; }
 
     /// <summary>
     /// Retorno esperado com o conteudo HTML renderizado

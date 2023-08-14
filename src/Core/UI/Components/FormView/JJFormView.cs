@@ -38,7 +38,7 @@ namespace JJMasterData.Core.Web.Components;
 /// The GetHtml method will return something like this:
 /// <img src="../media/JJFormViewExample.png"/>
 /// </example>
-public class JJFormView : JJAsyncComponentBase
+public class JJFormView : AsyncComponent
 {
     #region "Events"
 
