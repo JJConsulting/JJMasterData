@@ -27,8 +27,7 @@ public class Startup
     {
         services.AddJJMasterDataCore()
             .WithFileSystemDataDictionary();
-        
-        services.BuildServiceProvider()
-            .UseJJMasterData();
+
+        services.BuildServiceProvider();
     }
 }

@@ -33,6 +33,7 @@ public class JJMasterDataServiceBuilder
         Services.AddMemoryCache();
         Services.AddSingleton<ResourceManagerStringLocalizerFactory>();
         Services.AddSingleton<IStringLocalizerFactory,JJMasterDataStringLocalizerFactory>();
+        Services.Add(new ServiceDescriptor(typeof(IStringLocalizer<>),typeof(JJMasterDataStringLocalizer<>), ServiceLifetime.Transient));
         Services.AddLogging(builder =>
         {
             if (configuration != null)

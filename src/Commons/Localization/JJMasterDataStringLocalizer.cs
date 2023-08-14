@@ -12,9 +12,34 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
+
 namespace JJMasterData.Commons.Localization;
 
-//TODO: Implementar uma nova interface com o LocalizedString permitindo nulo
+public sealed class JJMasterDataStringLocalizer<TResourceSource> : IStringLocalizer<TResourceSource>
+{
+    private readonly IStringLocalizer _localizer;
+    
+    public JJMasterDataStringLocalizer(IStringLocalizerFactory factory)
+    {
+        if (factory == null)
+        {
+            throw new ArgumentNullException(nameof(factory));
+        }
+
+        _localizer = factory.Create(typeof(TResourceSource));
+    }
+
+    /// <inheritdoc />
+    public LocalizedString this[string? name] => _localizer[name!];
+
+    /// <inheritdoc />
+    public LocalizedString this[string? name, params object[] arguments] => _localizer[name!, arguments];
+
+    /// <inheritdoc />
+    public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) =>
+        _localizer.GetAllStrings(includeParentCultures);
+}
+
 
 public class JJMasterDataStringLocalizer : IStringLocalizer
 {
