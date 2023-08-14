@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Configuration;
+
 public class JJMasterDataServiceBuilder
 {
     public IServiceCollection Services { get; }
@@ -32,8 +33,8 @@ public class JJMasterDataServiceBuilder
         Services.AddLocalization();
         Services.AddMemoryCache();
         Services.AddSingleton<ResourceManagerStringLocalizerFactory>();
-        Services.AddSingleton<IStringLocalizerFactory,JJMasterDataStringLocalizerFactory>();
-        Services.Add(new ServiceDescriptor(typeof(IStringLocalizer<>),typeof(JJMasterDataStringLocalizer<>), ServiceLifetime.Transient));
+        Services.AddSingleton<IStringLocalizerFactory, JJMasterDataStringLocalizerFactory>();
+        Services.Add(new ServiceDescriptor(typeof(IStringLocalizer<>), typeof(JJMasterDataStringLocalizer<>), ServiceLifetime.Transient));
         Services.AddLogging(builder =>
         {
             if (configuration != null)
@@ -41,20 +42,20 @@ public class JJMasterDataServiceBuilder
                 var loggingOptions = configuration.GetSection("Logging");
                 builder.AddConfiguration(loggingOptions);
 
-                if (loggingOptions.GetSection(DbLoggerProvider.ProviderName) != null) 
+                if (loggingOptions.GetSection(DbLoggerProvider.ProviderName) != null)
                     builder.AddDbLoggerProvider();
 
                 if (loggingOptions.GetSection(FileLoggerProvider.ProviderName) != null)
                     builder.AddFileLoggerProvider();
             }
         });
-        
-        Services.AddTransient<IEntityRepository,EntityRepository>();
+
+        Services.AddTransient<IEntityRepository, EntityRepository>();
         Services.AddTransient<IEncryptionService, AesEncryptionService>();
         Services.AddTransient<JJMasterDataEncryptionService>();
-        
+
         Services.AddSingleton<IBackgroundTask, BackgroundTask>();
-        
+
         return this;
     }
 
@@ -63,7 +64,7 @@ public class JJMasterDataServiceBuilder
         Services.Replace(ServiceDescriptor.Transient<IBackgroundTask, T>());
         return this;
     }
-    
+
     public JJMasterDataServiceBuilder WithEntityRepository(string connectionString, DataAccessProvider provider)
     {
         return WithEntityRepository(serviceProvider =>
@@ -71,11 +72,13 @@ public class JJMasterDataServiceBuilder
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
             var options = serviceProvider.GetRequiredService<IOptions<JJMasterDataCommonsOptions>>();
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            return new EntityRepository(configuration.GetConnectionString(connectionString),provider, options,loggerFactory);
+            return new EntityRepository(configuration.GetConnectionString(connectionString), provider, options,
+                loggerFactory);
         });
     }
-    
-    public JJMasterDataServiceBuilder WithEntityRepository(Func<IServiceProvider, IEntityRepository> implementationFactory)
+
+    public JJMasterDataServiceBuilder WithEntityRepository(
+        Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Transient(implementationFactory));
         return this;

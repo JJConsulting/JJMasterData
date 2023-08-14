@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
@@ -12,7 +11,6 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 using System.Text;
@@ -87,7 +85,7 @@ internal class ActionsScripts
     {
         var actionMap = actionContext.ToActionMap(action.Name, actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
-        string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
+        string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
         if (actionContext.IsExternalRoute)
         {
@@ -105,7 +103,7 @@ internal class ActionsScripts
         var formElement = actionContext.FormElement;
         var actionMap = actionContext.ToActionMap(action.Name, actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
-        string confirmationMessage = StringLocalizer[action.ConfirmationMessage ?? string.Empty];
+        string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
         string functionSignature;
         if (isPopup)
