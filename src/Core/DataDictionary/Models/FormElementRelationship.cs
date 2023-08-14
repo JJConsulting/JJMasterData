@@ -33,7 +33,7 @@ public class FormElementRelationship
         IsParent = isParent;
         Panel = new FormElementPanel
         {
-            VisibleExpression = "val:1",
+            VisibleExpression = "exp: {PageState} <> 'INSERT'",
         };
     }
 

@@ -123,7 +123,7 @@ public class JJFormView : AsyncComponent
     /// <remarks>
     /// Key = Field name, Value=Field value
     /// </remarks>
-    public IDictionary<string, dynamic> RelationValues { get; set; }
+    public IDictionary<string, dynamic> RelationValues { get; set; } = new Dictionary<string, dynamic>();
     
     public FormElement FormElement { get; set; }
 
@@ -808,7 +808,9 @@ public class JJFormView : AsyncComponent
 
     private async Task<HtmlBuilder> GetDataPanelHtmlAsync(FormContext formContext, bool autoReloadFormFields)
     {
-        var relationships = FormElement.Relationships.Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
+        var relationships = FormElement
+            .Relationships
+            .Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
             .ToList();
 
         var (values, errors, pageState) = formContext;
@@ -822,7 +824,7 @@ public class JJFormView : AsyncComponent
 
         var actionContext = await ActionContext.FromFormViewAsync(this);
 
-        if (relationships.Count == 0)
+        if (!relationships.Any())
         {
             return await GetFormViewWithParentPanelHtml(parentPanel);
         }
@@ -836,7 +838,6 @@ public class JJFormView : AsyncComponent
         var topActions = FormElement.Options.FormToolbarActions
             .GetAllSorted()
             .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Top).ToList();
-
 
         html.AppendComponent(await GetFormToolbarAsync(topActions));
 

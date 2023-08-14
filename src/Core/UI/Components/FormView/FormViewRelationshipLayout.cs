@@ -21,16 +21,31 @@ internal class FormViewRelationshipLayout
         ParentFormView = parentFormView;
     }
 
+    
+    private async IAsyncEnumerable<FormElementRelationship> GetVisibleRelationships(IEnumerable<FormElementRelationship> relationships)
+    {
+        var formStateData = await ParentFormView.GetFormStateDataAsync();
+        foreach (var relationship in relationships)
+        {
+            var isVisible = await ParentFormView.ExpressionsService.GetBoolValueAsync(relationship.Panel.VisibleExpression, formStateData);
+
+            if (isVisible)
+                yield return relationship;
+        }
+    }
+    
     public async IAsyncEnumerable<HtmlBuilder?> GetRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships, ActionContext actionContext)
     {
-        if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
+        var visibleRelationships = await GetVisibleRelationships(relationships).ToListAsync();
+        
+        if (visibleRelationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
         {
             var tabNav = await GetTabRelationshipsHtml(parentPanel, relationships,actionContext);
 
             yield return tabNav;
         }
 
-        foreach (var relationship in relationships.Where(r => r.Panel.Layout is not PanelLayout.Tab))
+        foreach (var relationship in visibleRelationships.Where(r => r.Panel.Layout is not PanelLayout.Tab))
         {
             var relationshipHtml = await GetRelationshipHtml(parentPanel, relationship,actionContext);
             var panel = GetNonTabRelationshipPanelHtml(relationship, relationshipHtml);
