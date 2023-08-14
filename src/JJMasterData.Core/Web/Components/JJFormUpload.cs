@@ -45,7 +45,7 @@ public class JJFormUpload : JJBaseView
     public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
     public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
     public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
-    
+
     /// <summary>
     /// Render upload colapse panel 
     /// (default is true)
@@ -99,26 +99,30 @@ public class JJFormUpload : JJBaseView
             return _upload;
         }
     }
-    
+
     public JJGridView GridView
     {
         get
         {
             if (_gridView != null)
+            {
+                _gridView.DataSource = GetDataTableFiles();
                 return _gridView;
+            }
+
 
             var dt = GetDataTableFiles();
             _gridView = new JJGridView(dt);
             _gridView.DataSource = dt;
             _gridView.FormElement.Title = Title;
             _gridView.FormElement.SubTitle = SubTitle;
-            
-            if(_gridView.FormElement.Fields.Contains("NameJS"))
+
+            if (_gridView.FormElement.Fields.Contains("NameJS"))
                 _gridView.FormElement.Fields["NameJS"].VisibleExpression = "val:0";
 
             if (_gridView.FormElement.Fields.Contains("LastWriteTime"))
                 _gridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";
-            
+
             _gridView.Name = Name + "_gridview";
             _gridView.UserValues = UserValues;
             _gridView.ShowPagging = false;
@@ -133,10 +137,10 @@ public class JJFormUpload : JJBaseView
 
             _gridView.OnRenderAction += (_, args) =>
             {
-                if(args.Action.Name.Equals(_downloadAction.Name))
+                if (args.Action.Name.Equals(_downloadAction.Name))
                 {
                     var fileName = args.FieldValues["Name"].ToString();
-                    var isInMemory = Service.GetFile(fileName).IsInMemory;
+                    var isInMemory = Service.GetFile(fileName)?.IsInMemory ?? false;
                     if (isInMemory)
                     {
                         args.LinkButton.Enabled = false;
@@ -149,7 +153,7 @@ public class JJFormUpload : JJBaseView
             return _gridView;
         }
     }
-    
+
     public ScriptAction DownloadAction
     {
         get
@@ -166,7 +170,7 @@ public class JJFormUpload : JJBaseView
             return _downloadAction;
         }
     }
-    
+
     public ScriptAction DeleteAction
     {
         get
@@ -185,7 +189,7 @@ public class JJFormUpload : JJBaseView
             return _deleteAction;
         }
     }
-    
+
     public ScriptAction RenameAction
     {
         get
@@ -409,7 +413,7 @@ public class JJFormUpload : JJBaseView
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
 
-        foreach (var fileInfo in files.Where(f=> !f.Deleted))
+        foreach (var fileInfo in files.Where(f => !f.Deleted))
         {
             var file = fileInfo.Content;
             var col = new HtmlBuilder(HtmlTag.Div);
@@ -455,7 +459,7 @@ public class JJFormUpload : JJBaseView
             .WithCssClass("list-group-item");
 
         var fileName = fileInfo.FileName;
-        
+
         switch (Path.GetExtension(fileName))
         {
             case ".png":
@@ -527,9 +531,9 @@ public class JJFormUpload : JJBaseView
         var url = CurrentContext.Request.AbsoluteUri;
 
         var fileName = file.FileName;
-        
+
         string src;
-       
+
 
         if (file.IsInMemory)
         {
@@ -569,7 +573,7 @@ public class JJFormUpload : JJBaseView
         string videoUrl = CurrentContext.Request.AbsoluteUri;
 
         var fileName = file.FileName;
-        
+
         if (videoUrl.Contains('?'))
             videoUrl += "&";
         else
@@ -720,13 +724,13 @@ public class JJFormUpload : JJBaseView
     public void DeleteFile(string fileName) =>
         Service.DeleteFile(fileName);
 
-    internal void DeleteAll() => 
+    internal void DeleteAll() =>
         Service.DeleteAll();
 
-    public List<FormFileInfo> GetFiles() => 
+    public List<FormFileInfo> GetFiles() =>
         Service.GetFiles();
 
-    public void ClearMemoryFiles() => 
+    public void ClearMemoryFiles() =>
         Service.MemoryFiles = null;
 
     public void SaveMemoryFiles(string folderPath) =>
@@ -739,7 +743,7 @@ public class JJFormUpload : JJBaseView
             var args = new FormDownloadFileEventArgs(fileName, null);
             OnBeforeDownloadFile.Invoke(this, args);
 
-            
+
             if (!string.IsNullOrEmpty(args.ErrorMessage))
             {
                 var exception = new JJMasterDataException(args.ErrorMessage);
