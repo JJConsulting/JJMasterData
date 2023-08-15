@@ -640,7 +640,7 @@ public class JJFormView : AsyncComponent
 
             var errors = await DeleteFormValuesAsync(filter);
 
-            if (errors != null && errors.Count > 0)
+            if (errors is { Count: > 0 })
             {
                 var errorMessage = new StringBuilder();
                 foreach (var err in errors)
@@ -821,9 +821,7 @@ public class JJFormView : AsyncComponent
         parentPanel.Values = values;
         parentPanel.IsExternalRoute = IsExternalRoute;
         parentPanel.AutoReloadFormFields = autoReloadFormFields;
-
-        var actionContext = await ActionContext.FromFormViewAsync(this);
-
+        
         if (!relationships.Any())
         {
             return await GetFormViewWithParentPanelHtml(parentPanel);
@@ -841,7 +839,7 @@ public class JJFormView : AsyncComponent
 
         html.AppendComponent(await GetFormToolbarAsync(topActions));
 
-        var layoutHtml = layout.GetRelationshipsHtml(parentPanel, relationships, actionContext);
+        var layoutHtml = layout.GetRelationshipsHtml(parentPanel, relationships);
 
         await html.AppendRangeAsync(layoutHtml);
 
@@ -1087,8 +1085,15 @@ public class JJFormView : AsyncComponent
         };
         return btn;
     }
+    
+    public async Task<FormStateData> GetFormStateDataAsync()
+    {
+        var values = await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, CurrentContext.IsPost);
 
-    #region "Legacy GridView inherited compatibility"
+        return new FormStateData(values, UserValues, PageState);
+    }
+
+    #region "Legacy inherited GridView compatibility"
     [Obsolete("Please use GridView.GridActions")]
     public GridTableActionList GridActions => GridView.GridActions;
 
@@ -1162,14 +1167,7 @@ public class JJFormView : AsyncComponent
         set => GridView.EnableMultiSelect = value;
     }
     #endregion
-
+    
     public static implicit operator JJGridView(JJFormView formView) => formView.GridView;
     public static implicit operator JJDataPanel(JJFormView formView) => formView.DataPanel;
-
-    public async Task<FormStateData> GetFormStateDataAsync()
-    {
-        var values = await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, CurrentContext.IsPost);
-
-        return new FormStateData(values, UserValues, PageState);
-    }
 }
