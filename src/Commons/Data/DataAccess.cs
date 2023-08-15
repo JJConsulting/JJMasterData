@@ -258,18 +258,18 @@ public class DataAccess
             {
                 using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    var dataTable = reader.GetSchemaTable();
-                    while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                    var dataTable = new DataTable();
+                    dataTable.Load(reader);
+            
+                    if (cmd.Parameters != null)
                     {
-                        var dataRow = dataTable!.NewRow();
-                        for (var i = 0; i < dataTable.Columns.Count; i++)
+                        foreach (var parameter in cmd.Parameters)
                         {
-                            dataRow[i] = reader[i];
+                            if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                                parameter.Value = dbCommand.Parameters[parameter.Name].Value;
                         }
-
-                        dataTable.Rows.Add(dataRow);
                     }
-
+                    
                     return dataTable;
                 }
             }
