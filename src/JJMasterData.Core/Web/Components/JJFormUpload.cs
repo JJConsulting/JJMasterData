@@ -678,7 +678,7 @@ public class JJFormUpload : JJBaseView
         var dt = new DataTable();
         dt.Columns.Add(FileName, typeof(string));
         dt.Columns.Add(Size, typeof(string));
-        dt.Columns.Add(LastWriteTime, typeof(string));
+        dt.Columns.Add(LastWriteTime, typeof(DateTime));
         dt.Columns.Add(FileNameJs, typeof(string));
 
         foreach (var fileInfo in files.Where(f => !f.Deleted))
@@ -687,7 +687,7 @@ public class JJFormUpload : JJBaseView
             var dataRow = dt.NewRow();
             dataRow["Name"] = content.FileName;
             dataRow["Size"] = Format.FormatFileSize(content.Length);
-            dataRow["LastWriteTime"] = content.LastWriteTime.ToDateTimeString();
+            dataRow["LastWriteTime"] = content.LastWriteTime;
             dataRow["NameJS"] = content.FileName.Replace("'", "\\'");
             dt.Rows.Add(dataRow);
         }

@@ -106,11 +106,7 @@ public class FormElement : Element
         {
             field.DataType = FieldType.Float;
         }
-        else if (type == typeof(DateTime))
-        {
-            field.DataType = FieldType.Date;
-        }
-        else if (type == typeof(TimeSpan))
+        else if (type == typeof(DateTime) || type == typeof(TimeSpan))
         {
             field.DataType = FieldType.DateTime;
         }
