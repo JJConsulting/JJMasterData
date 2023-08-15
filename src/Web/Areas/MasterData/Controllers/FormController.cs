@@ -54,10 +54,14 @@ public class FormController : MasterDataController
     [HttpPost]
     public async Task<IActionResult> ReloadPanel(
         FormElement formElement,
+        PageState pageState,
+        string fieldNamePrefix,
         string componentName)
     {
         var formView = _formViewFactory.Create(formElement);
         formView.Name = componentName;
+        formView.DataPanel.FieldNamePrefix = fieldNamePrefix;
+        formView.PageState = pageState;
         formView.IsExternalRoute = true;
 
         var html = await formView.GetReloadPanelHtmlAsync();

@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿#nullable enable
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -18,7 +19,7 @@ namespace JJMasterData.Core.Web.Components;
 internal class DataPanelControl
 {
 
-    private DataPanelScripts _panelScripts;
+    private DataPanelScripts? _panelScripts;
 
     public string Name { get; }
 
@@ -32,13 +33,13 @@ internal class DataPanelControl
 
     public PageState PageState => FormState.PageState;
 
-    public IDictionary<string, dynamic> UserValues => FormState.UserValues;
+    public IDictionary<string, dynamic>? UserValues => FormState.UserValues;
 
     public IDictionary<string, dynamic> Values => FormState.FormValues;
 
     public FormStateData FormState { get; set; }
 
-    public string FieldNamePrefix { get; set; }
+    public string? FieldNamePrefix { get; set; }
 
     public bool IsExternalRoute { get; }
 
@@ -47,7 +48,7 @@ internal class DataPanelControl
     private IFieldsService FieldsService { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
-    internal DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(EncryptionService, UrlHelper);
+    internal DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(this);
 
     public DataPanelControl(JJDataPanel dataPanel)
     {
@@ -61,6 +62,7 @@ internal class DataPanelControl
         Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
         IsExternalRoute = dataPanel.IsExternalRoute;
+        FieldNamePrefix = dataPanel.FieldNamePrefix;
         FormState = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
     }
 
@@ -102,7 +104,7 @@ internal class DataPanelControl
 
         var html = new HtmlBuilder(HtmlTag.Div);
         int lineGroup = int.MinValue;
-        HtmlBuilder row = null;
+        HtmlBuilder? row = null;
         var formData = new FormStateData(Values, UserValues, PageState);
         foreach (var field in fields)
         {
@@ -110,7 +112,7 @@ internal class DataPanelControl
             if (!visible)
                 continue;
 
-            object value = null;
+            object? value = null;
             if (Values != null && Values.ContainsKey(field.Name))
             {
                 if (field.Component != FormComponent.Currency)
@@ -211,7 +213,7 @@ internal class DataPanelControl
             .WithCssClass(BootstrapHelper.FormHorizontal);
 
         int colCount = 1;
-        HtmlBuilder row = null;
+        HtmlBuilder? row = null;
         var formData = new FormStateData(Values, UserValues, PageState);
         foreach (var f in fields)
         {
@@ -230,7 +232,7 @@ internal class DataPanelControl
                 continue;
 
             //Value
-            object value = null;
+            object? value = null;
             if (Values != null && Values.TryGetValue(f.Name, out var nonFormattedValue))
                 value = FieldsService.FormatValue(f, nonFormattedValue);
 
@@ -348,19 +350,21 @@ internal class DataPanelControl
         return control.GetHtmlBuilder();
     }
 
-    private string GetScriptReload(FormElementField f)
+    private string GetScriptReload(FormElementField field)
     {
-        //WorkArroud to trigger event on search component
-        if (f.Component == FormComponent.Search)
-        {
-            var script = new StringBuilder();
-            script.Append("setTimeout(function() { ");
-            script.Append(Scripts.GetReloadPanelScript(FormElement.Name, f.Name, Name, IsExternalRoute));
-            script.Append("}, 200);");
-            return script.ToString();
-        }
 
-        return Scripts.GetReloadPanelScript(FormElement.Name, f.Name, Name, IsExternalRoute);
+        var reloadPanelScript = Scripts.GetReloadPanelScript(field.Name);
+        
+        //Workarround to trigger event on search component
+        if (field.Component != FormComponent.Search) 
+            return reloadPanelScript;
+        
+        var script = new StringBuilder();
+        script.Append("setTimeout(function() { ");
+        script.Append(reloadPanelScript);
+        script.Append("}, 200);");
+        return script.ToString();
+
     }
 
 }

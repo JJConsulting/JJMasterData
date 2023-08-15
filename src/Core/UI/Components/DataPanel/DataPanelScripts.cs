@@ -1,26 +1,34 @@
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Extensions;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
-public class DataPanelScripts
+internal class DataPanelScripts
 {
-    private JJMasterDataUrlHelper UrlHelper { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
 
-    public DataPanelScripts(JJMasterDataEncryptionService encryptionService, JJMasterDataUrlHelper urlHelper)
+    private readonly DataPanelControl _dataPanelControl;
+    private JJMasterDataUrlHelper UrlHelper => _dataPanelControl.UrlHelper;
+    private JJMasterDataEncryptionService EncryptionService => _dataPanelControl.EncryptionService;
+    
+
+    public DataPanelScripts(DataPanelControl dataPanelControl)
     {
-        UrlHelper = urlHelper;
-        EncryptionService = encryptionService;
+        _dataPanelControl = dataPanelControl;
     }
 
-    public string GetReloadPanelScript(string dictionaryName, string fieldName, string componentName, bool isExternalRoute)
+    
+    public string GetReloadPanelScript(string fieldName)
     {
-        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
+        var componentName = _dataPanelControl.Name;
+        var fieldNamePrefix = _dataPanelControl.FieldNamePrefix;
+        var pageState = _dataPanelControl.PageState;
         
-        if(!isExternalRoute)
+        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(componentName);
+        
+        if(!_dataPanelControl.IsExternalRoute)
             return $"DataPanel.ReloadAtSamePage('{componentName}','{fieldName}');";
 
-        return $"DataPanel.Reload('{UrlHelper.GetUrl("ReloadPanel","Form", "MasterData", new {dictionaryName = encryptedDictionaryName, componentName})}','{componentName}','{fieldName}')";
+        return $"DataPanel.Reload('{UrlHelper.GetUrl("ReloadPanel","Form", "MasterData", new {dictionaryName = encryptedDictionaryName, componentName, pageState, fieldNamePrefix})}','{componentName}','{fieldName}')";
     }
 }

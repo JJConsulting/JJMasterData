@@ -502,6 +502,7 @@ public class JJGridView : AsyncComponent
         get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("selected-rows" + Name)?.ToString();
         set => _selectedRowsId = value ?? "";
     }
+    
     #endregion
 
     #region Injected Services
@@ -517,6 +518,7 @@ public class JJGridView : AsyncComponent
 
     internal IHttpContext CurrentContext { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
+
 
     #endregion
 

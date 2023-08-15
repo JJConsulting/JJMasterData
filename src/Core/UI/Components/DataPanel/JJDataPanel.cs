@@ -78,6 +78,8 @@ public class JJDataPanel : AsyncComponent
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
 
+    public string FieldNamePrefix { get; set; }
+    
     public IEntityRepository EntityRepository { get; }
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
@@ -89,6 +91,7 @@ public class JJDataPanel : AsyncComponent
     internal IFormValuesService FormValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
     internal ControlFactory ControlFactory { get; }
+
 
     #endregion
 
@@ -266,7 +269,7 @@ public class JJDataPanel : AsyncComponent
     /// </summary>
     public async Task<IDictionary<string, dynamic>> GetFormValuesAsync()
     {
-        return await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields);
+        return await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix);
     }
 
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]
