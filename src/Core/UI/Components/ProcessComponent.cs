@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
-public abstract class ProcessComponentBase : AsyncComponent
+public abstract class ProcessComponent : AsyncComponent
 {
     private string _processKey;
     private ProcessOptions _processOptions;
@@ -42,7 +42,7 @@ public abstract class ProcessComponentBase : AsyncComponent
     /// </remarks>
     internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
 
-    public IHttpContext CurrentContext { get; set; }
+    public IHttpContext CurrentContext { get; init; }
 
     public ProcessOptions ProcessOptions
     {
@@ -57,16 +57,16 @@ public abstract class ProcessComponentBase : AsyncComponent
     
     internal IFieldsService FieldsService { get; } 
     internal IBackgroundTask BackgroundTask { get; }
-    private ILogger<ProcessComponentBase> Logger { get; }
+    private ILogger<ProcessComponent> Logger { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    protected ProcessComponentBase(
+    protected ProcessComponent(
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
         IFieldsService fieldsService,
         IBackgroundTask backgroundTask,
-        ILogger<ProcessComponentBase> logger,
+        ILogger<ProcessComponent> logger,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;

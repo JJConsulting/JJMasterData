@@ -15,7 +15,7 @@ public static class JJMasterDataEncryptionServiceExtensions
     /// <returns></returns>
     public static string EncryptStringWithUrlEscape(this JJMasterDataEncryptionService service, string plainText)
     {
-        return Uri.EscapeUriString(service.EncryptString(plainText));
+        return Uri.EscapeDataString(service.EncryptString(plainText));
     }
     
     /// <summary>
