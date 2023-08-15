@@ -52,16 +52,15 @@
                 {
                     var relationship = Model.Relationships[index];
                     var id = Model.Relationships[index].ElementRelationship?.ChildElement ?? "parent";
-
+                    var title = relationship.ElementRelationship?.ChildElement ?? Model.DictionaryName;
                     <li class="list-group-item" id="@id">
                         <div style="height: 33px;">
                             <div style="float: left; margin-top: 10px;">
                                 <span class="fa-solid @GetRelationshipIconCssClass(relationship)"></span>&nbsp;
-                                @(relationship.ElementRelationship?.ChildElement ?? Model.DictionaryName)
-                                &nbsp;
+                                @title
                             </div>
                             <div class=@BootstrapHelper.PullRight>
-                                <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="popup.show('Layout', '@Url.Action("LayoutDetails", "Relationships", new { dictionaryName = Model.DictionaryName, relationship.Id })')">
+                                <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="popup.show('Layout - @title', '@Url.Action("LayoutDetails", "Relationships", new { dictionaryName = Model.DictionaryName, relationship.Id })')">
                                     <span class="fa fa-pencil"></span>
                                 </button>
                             </div>

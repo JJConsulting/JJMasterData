@@ -3406,4 +3406,7 @@
     <value>Para selecionar mais de um item, coloque os desejados valores separados por vírgula.</value>
     <comment>JJMasterData.Core</comment>
   </data>
+  <data name="Are you sure you want to delete this relationship?" xml:space="preserve">
+    <value>Você tem certeza que deseja deletar este relacionanmento?</value>
+  </data>
 </root>

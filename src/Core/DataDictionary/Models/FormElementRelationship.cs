@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using JJMasterData.Commons.Data.Entity;
 using Newtonsoft.Json;
 
@@ -21,7 +22,6 @@ public class FormElementRelationship
     [JsonProperty("panel")]
     public FormElementPanel Panel { get; set; } = null!;
 
-
     [JsonConstructor]
     private FormElementRelationship()
     {
@@ -31,15 +31,14 @@ public class FormElementRelationship
     public FormElementRelationship(bool isParent = false)
     {
         IsParent = isParent;
-        Panel = new FormElementPanel
-        {
-            VisibleExpression = "exp: {PageState} <> 'INSERT'",
-        };
+        Panel = new FormElementPanel();
+        if (!isParent)
+            Panel.VisibleExpression = "exp:{PageState}<>'INSERT'";
     }
 
-    public FormElementRelationship(ElementRelationship elementRelationship) : this()
+    public FormElementRelationship(ElementRelationship elementRelationship) : this(false)
     {
         ElementRelationship = elementRelationship;
     }
-
+ 
 }

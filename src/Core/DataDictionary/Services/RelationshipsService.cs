@@ -27,26 +27,25 @@ public class RelationshipsService : BaseService
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var relationships = formElement.Relationships;
-        
-        var formElementRelationShip = relationships.FirstOrDefault( r=> r.Id ==id);
-        formElementRelationShip ??= new FormElementRelationship(elementRelationship);
-        
-        if (id != null)
-        {
-            var index = relationships.GetIndexById(id.Value);
-            relationships[index] = formElementRelationShip;
-        }
-        else
-        {
-            relationships.Add(formElementRelationShip);
-        }
 
         if (!relationships.Any(r => r.IsParent))
         {
-            relationships.Add(new FormElementRelationship(true));
+            var relation = new FormElementRelationship(true);
+            relation.Panel.Title = formElement.Title;
+            relationships.Add(relation);
         }
-
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        
+        if (id == null)
+        {
+            relationships.Add(new FormElementRelationship(elementRelationship));
+        }
+        else
+        {
+            var relation = relationships.GetById(id.Value);
+            relation.ElementRelationship = elementRelationship;
+        }
+        
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }
 
     public async Task SaveFormElementRelationship(FormElementPanel panel, RelationshipViewType viewType, int id,
@@ -176,19 +175,18 @@ public class RelationshipsService : BaseService
     }
 
 
-    public void Delete(string dictionaryName, int id)
+    public async Task DeleteAsync(string dictionaryName, int id)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement =  await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var relationship = formElement.Relationships.GetById(id);
 
         formElement.Relationships.Remove(relationship);
-
         if (formElement.Relationships.All(r => r.IsParent))
         {
             formElement.Relationships.Clear();
         }
         
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }
     
 
