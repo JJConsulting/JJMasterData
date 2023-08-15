@@ -97,13 +97,13 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         SetFormOptions(formView, formElement.Options);
     }
 
-    internal static void SetFormOptions(JJFormView formView, FormElementOptions metadataOptions)
+    internal static void SetFormOptions(JJFormView formView, FormElementOptions options)
     {
-        if (metadataOptions == null)
+        if (options == null)
             return;
         
-        formView.ShowTitle = metadataOptions.Grid.ShowTitle;
-        formView.DataPanel.FormUI = metadataOptions.Form;
+        formView.ShowTitle = options.Grid.ShowTitle;
+        formView.DataPanel.FormUI = options.Form;
     }
     
 }

@@ -10,6 +10,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
@@ -18,10 +20,10 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     private readonly IEntityRepository _entityRepository;
     internal Element MasterDataElement { get;  }
 
-    public SqlDataDictionaryRepository(IEntityRepository entityRepository, IConfiguration configuration)
+    public SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options)
     {
         _entityRepository = entityRepository;
-        MasterDataElement = DataDictionaryStructure.GetElement(configuration.GetJJMasterData().GetValue<string>("DataDictionaryTableName"));
+        MasterDataElement = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>

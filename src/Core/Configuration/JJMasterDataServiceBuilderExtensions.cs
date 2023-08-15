@@ -9,6 +9,7 @@ using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -67,7 +68,7 @@ public static class JJMasterDataServiceBuilderExtensions
             var entityRepository = new EntityRepository(configuration.GetConnectionString(connectionString),provider, options,loggerFactory);
             
             return new SqlDataDictionaryRepository(entityRepository,
-                serviceProvider.GetRequiredService<IConfiguration>());
+                serviceProvider.GetRequiredService<IOptions<JJMasterDataCoreOptions>>());
         });
     }
     

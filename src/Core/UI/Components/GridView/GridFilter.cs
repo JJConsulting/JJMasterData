@@ -402,7 +402,7 @@ internal class GridFilter
                 if (!string.IsNullOrEmpty(value))
                 {
                     values ??= new Dictionary<string,dynamic>();
-                    values.Add(f.Name, value);
+                    values[f.Name] = value;
                 }
             }
         }
