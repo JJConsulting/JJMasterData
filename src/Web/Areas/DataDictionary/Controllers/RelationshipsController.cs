@@ -31,10 +31,10 @@ public class RelationshipsController : DataDictionaryController
         return View(model);
     }
 
-    [HttpDelete]
-    public ActionResult Delete(string dictionaryName, int id)
+    [HttpPost]
+    public async Task<ActionResult> Delete(string dictionaryName, int id)
     {
-        _relationshipsService.Delete(dictionaryName, id);
+        await _relationshipsService.DeleteAsync(dictionaryName, id);
         return RedirectToAction("Index", new { dictionaryName });
     }
 
