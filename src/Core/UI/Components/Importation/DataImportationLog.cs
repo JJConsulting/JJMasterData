@@ -12,7 +12,7 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class DataImportationLog
 {
-    internal DataImpReporter Reporter { get; private set; }
+    internal DataImportationReporter Reporter { get; private set; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IHttpContext CurrentContext { get; }
     internal DataImportationLog(JJDataImportation dataImportation)

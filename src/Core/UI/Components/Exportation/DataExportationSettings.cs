@@ -373,5 +373,5 @@ internal class DataExportationSettings
         return list.OrderByDescending(f => f.CreationTime).ToList();
     }
 
-    private bool PdfWriterExists() => DataExportation.ExportationWriterFactory.GetPdfWriter() != null;
+    private bool PdfWriterExists() => DataExportation.DataExportationWriterFactory.GetPdfWriter() != null;
 }

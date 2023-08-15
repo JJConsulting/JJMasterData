@@ -19,11 +19,11 @@ using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.DataManager.Imports;
 
-public class ImpTextWorker : IBackgroundTaskWorker
+public class DataImportationWorker : IBackgroundTaskWorker
 {
     #region "Events"
 
-    public EventHandler<FormAfterActionEventArgs> OnAfterProcess;
+    public event EventHandler<FormAfterActionEventArgs> OnAfterProcess;
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
     #endregion
@@ -32,13 +32,14 @@ public class ImpTextWorker : IBackgroundTaskWorker
 
     public ProcessOptions ProcessOptions { get; set; }
 
-    public bool EnableHistoryLog { get; set; }
-
     public CultureInfo Culture { get; set; }
 
-    public FormElement FormElement { get; set; }
-    internal DataContext DataContext { get; private set; }
+    public FormElement FormElement { get; }
+    internal DataContext DataContext { get; }
 
+    public string RawData { get; }
+    public char Separator { get;}
+    
     internal IExpressionsService ExpressionsService { get; }
 
     internal IEntityRepository EntityRepository { get; }
@@ -47,25 +48,29 @@ public class ImpTextWorker : IBackgroundTaskWorker
 
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    internal ILogger<ImpTextWorker> Logger { get; }
+    internal ILogger<DataImportationWorker> Logger { get; }
 
     internal IFormService FormService { get; }
-    public string PostedText { get; private set; }
-
-    public char SplitChar { get; private set; }
-
-
-    public ImpTextWorker(FormElement formElement,
-                         IFormService formService,
-                         DataContext dataContext,
-                         string postedText,
-                         char splitChar)
+    
+    public DataImportationWorker(
+        DataImportationContext context,
+        IFormService formService, 
+        IExpressionsService expressionsService, 
+        IEntityRepository entityRepository, 
+        IFieldValuesService fieldValuesService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        ILogger<DataImportationWorker> logger)
     {
-        FormElement = formElement;
+        FormElement = context.FormElement;
         FormService = formService;
-        DataContext = dataContext;
-        PostedText = postedText;
-        SplitChar = splitChar;
+        ExpressionsService = expressionsService;
+        EntityRepository = entityRepository;
+        FieldValuesService = fieldValuesService;
+        StringLocalizer = stringLocalizer;
+        Logger = logger;
+        DataContext = context.DataContext;
+        RawData = context.RawData;
+        Separator = context.Separator;
         Culture = Thread.CurrentThread.CurrentUICulture;
     }
 
@@ -73,7 +78,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
     {
         await Task.Run(async () =>
         {
-            var currentProcess = new DataImpReporter();
+            var currentProcess = new DataImportationReporter();
             try
             {
                 currentProcess.StartDate = DateTime.Now;
@@ -118,12 +123,12 @@ public class ImpTextWorker : IBackgroundTaskWorker
         }, token);
     }
 
-    private void Reporter(DataImpReporter reporter)
+    private void Reporter(DataImportationReporter reporter)
     {
         OnProgressChanged?.Invoke(this, reporter);
     }
 
-    private async Task RunWorker(DataImpReporter currentProcess, CancellationToken token)
+    private async Task RunWorker(DataImportationReporter currentProcess, CancellationToken token)
     {
         Thread.CurrentThread.CurrentUICulture = Culture;
         Thread.CurrentThread.CurrentCulture = Culture;
@@ -132,7 +137,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
         var listField = GetListImportedField();
 
         string[] stringSeparators = { "\r\n" };
-        string[] rows = PostedText.Split(stringSeparators, StringSplitOptions.None);
+        string[] rows = RawData.Split(stringSeparators, StringSplitOptions.None);
         currentProcess.TotalRecords = rows.Length;
         currentProcess.Message = StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
         
@@ -160,7 +165,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             }
 
             //Ignora conteudo vazio
-            if (string.IsNullOrWhiteSpace(line.Replace(SplitChar.ToString(), string.Empty)))
+            if (string.IsNullOrWhiteSpace(line.Replace(Separator.ToString(), string.Empty)))
             {
                 currentProcess.AddError(StringLocalizer["Empty line ignored"]);
                 currentProcess.Ignore++;
@@ -168,7 +173,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
             }
 
             //Verifica quantidade de colunas do arquivo
-            string[] cols = line.Split(SplitChar);
+            string[] cols = line.Split(Separator);
             if (cols.Length != listField.Count)
             {
                 currentProcess.Error++;
@@ -264,7 +269,7 @@ public class ImpTextWorker : IBackgroundTaskWorker
     /// Retorna lista de erros
     /// </summary>
     /// <returns>Retorna lista de erros</returns>
-    private async Task SetFormValues(IDictionary<string, dynamic> fileValues, DataImpReporter currentProcess)
+    private async Task SetFormValues(IDictionary<string, dynamic> fileValues, DataImportationReporter currentProcess)
     {
         try
         {

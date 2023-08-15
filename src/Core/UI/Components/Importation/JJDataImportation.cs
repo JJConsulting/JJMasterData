@@ -16,6 +16,7 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Importation;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -67,6 +68,7 @@ public class JJDataImportation : ProcessComponent
 
     internal IFormService FormService { get; }
     internal  IControlFactory<JJComboBox> ComboBoxFactory { get; }
+    private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
 
@@ -83,6 +85,7 @@ public class JJDataImportation : ProcessComponent
         IHttpContext currentContext,
         IComponentFactory<JJUploadArea> uploadAreaFactory,
         IControlFactory<JJComboBox> comboBoxFactory,
+        DataImportationWorkerFactory dataImportationWorkerFactory,
         JJMasterDataUrlHelper urlHelper,
         JJMasterDataEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
@@ -92,6 +95,7 @@ public class JJDataImportation : ProcessComponent
         CurrentContext = currentContext;
         UploadAreaFactory = uploadAreaFactory;
         ComboBoxFactory = comboBoxFactory;
+        DataImportationWorkerFactory = dataImportationWorkerFactory;
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;
         FormService = formService;
@@ -300,48 +304,48 @@ public class JJDataImportation : ProcessComponent
 
         if (!BackgroundTask.IsRunning(ProcessKey))
         {
-            var worker = CreateImpTextWorker(sb.ToString(), ';');
+            var worker = CreateImportationTextWorker(sb.ToString(), ';');
             BackgroundTask.Run(ProcessKey, worker);
         }
     }
 
-    private ImpTextWorker CreateImpTextWorker(string postedText, char splitChar)
+    private DataImportationWorker CreateImportationTextWorker(string postedText, char separator)
     {
         var dataContext = new DataContext(CurrentContext,DataContextSource.Upload, UserId);
-        FormService.OnAfterUpdate += OnAfterUpdate;
-        FormService.OnAfterInsert += OnAfterInsert;
-        FormService.OnAfterDelete += OnAfterDelete;
-        FormService.OnBeforeImport += OnBeforeImport;
-
-        var worker = new ImpTextWorker(FormElement, FormService,dataContext, postedText, splitChar)
-        {
-            UserId = UserId,
-            OnAfterProcess = OnAfterProcess,
-            ProcessOptions = ProcessOptions
-        };
-
+        
+        var worker = DataImportationWorkerFactory.Create(new DataImportationContext(FormElement, dataContext, postedText, separator));
+        worker.UserId = UserId;
+        worker.ProcessOptions = ProcessOptions;
+        
+        worker.FormService.OnAfterUpdate += OnAfterUpdate;
+        worker.FormService.OnAfterInsert += OnAfterInsert;
+        worker.FormService.OnAfterDelete += OnAfterDelete;
+        worker.FormService.OnBeforeImport += OnBeforeImport;
+        
+        worker.OnAfterProcess += OnAfterProcess;
+        
         return worker;
     }
 
-    internal DataImpReporter GetCurrentReporter()
+    internal DataImportationReporter GetCurrentReporter()
     {
-        var progress = BackgroundTask.GetProgress<DataImpReporter>(ProcessKey);
+        var progress = BackgroundTask.GetProgress<DataImportationReporter>(ProcessKey);
         if (progress != null)
             return progress;
-        return new DataImpReporter();
+        return new DataImportationReporter();
     }
 
     internal void ImportInBackground(string pasteValue)
     {
-        var worker = CreateImpTextWorker(pasteValue, '\t');
+        var worker = CreateImportationTextWorker(pasteValue, '\t');
         BackgroundTask.Run(ProcessKey, worker);
     }
 
-    internal DataImpDto GetCurrentProgress()
+    internal DataImportationDto GetCurrentProgress()
     {
         bool isRunning = BackgroundTask.IsRunning(ProcessKey);
-        var reporter = BackgroundTask.GetProgress<DataImpReporter>(ProcessKey);
-        var dto = new DataImpDto();
+        var reporter = BackgroundTask.GetProgress<DataImportationReporter>(ProcessKey);
+        var dto = new DataImportationDto();
         if (reporter != null)
         {
             dto.StartDate = reporter.StartDate.ToDateTimeString();

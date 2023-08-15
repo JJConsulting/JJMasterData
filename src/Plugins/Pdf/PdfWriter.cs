@@ -35,7 +35,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Pdf;
 
-public class PdfWriter : ExportationWriterBase, IPdfWriter
+public class PdfWriter : DataExportationWriterBase, IPdfWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
     
@@ -322,7 +322,7 @@ public class PdfWriter : ExportationWriterBase, IPdfWriter
         return ba;
     }
 
-    public PdfWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<ExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    public PdfWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
     {
     }
 }

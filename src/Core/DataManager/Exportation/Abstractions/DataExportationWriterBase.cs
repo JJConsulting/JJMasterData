@@ -25,7 +25,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
-public abstract class ExportationWriterBase : IBackgroundTaskWorker, IExportationWriter
+public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExportationWriter
 {
 
     public event EventHandler<IProgressReporter> OnProgressChanged;
@@ -42,7 +42,7 @@ public abstract class ExportationWriterBase : IBackgroundTaskWorker, IExportatio
     protected IOptions<JJMasterDataCoreOptions> Options { get; } 
     protected IControlFactory<JJTextFile> TextFileFactory { get; }
     
-    protected ILogger<ExportationWriterBase> Logger { get; } 
+    protected ILogger<DataExportationWriterBase> Logger { get; } 
 
 
     public async Task<List<FormElementField>> GetVisibleFieldsAsync()
@@ -136,7 +136,7 @@ public abstract class ExportationWriterBase : IBackgroundTaskWorker, IExportatio
     #endregion
 
 
-    public ExportationWriterBase(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<ExportationWriterBase> logger)
+    public DataExportationWriterBase(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger)
     {
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;

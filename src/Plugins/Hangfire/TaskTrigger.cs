@@ -42,7 +42,7 @@ internal class TaskTrigger
         {
             jobId = BackgroundJob.Enqueue(() => ExportToCsv(key, token, null));
         }
-        else if (worker is ImpTextWorker)
+        else if (worker is DataImportationWorker)
         {
             jobId = BackgroundJob.Enqueue(() => ImpFile(key, token, null));
         }

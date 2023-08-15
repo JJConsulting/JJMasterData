@@ -2,7 +2,7 @@
 
 namespace JJMasterData.Core.DataManager.Imports;
 
-internal record DataImpDto
+internal record DataImportationDto
 {
     [JsonProperty("StartDate")]
     public string StartDate { get; set; }

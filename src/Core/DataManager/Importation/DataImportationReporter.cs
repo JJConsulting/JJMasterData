@@ -4,7 +4,7 @@ using JJMasterData.Commons.Tasks.Progress;
 
 namespace JJMasterData.Core.DataManager.Imports;
 
-public class DataImpReporter : ProgressReporter
+public class DataImportationReporter : ProgressReporter
 {
     
     private int _totalProcessed;
@@ -42,7 +42,7 @@ public class DataImpReporter : ProgressReporter
     public StringBuilder ErrorLog { get; set; }
 
 
-    public DataImpReporter()
+    public DataImportationReporter()
     {
         ErrorLog = new StringBuilder();
     }
