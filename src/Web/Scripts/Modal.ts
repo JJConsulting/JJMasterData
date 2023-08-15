@@ -164,7 +164,7 @@
     }
 
     hide() {
-        $("#" + this.modalId).modal("hide");
+        window.parent.$("#" + this.modalId).modal("hide");
     }
 
     modal() {

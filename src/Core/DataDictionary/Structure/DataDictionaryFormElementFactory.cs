@@ -4,6 +4,8 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web;
+using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
@@ -14,16 +16,19 @@ public class DataDictionaryFormElementFactory : IFormElementFactory
     public string ElementName => _options.DataDictionaryTableName;
 
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IHttpContext HttpContext { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private readonly JJMasterDataCoreOptions _options;
 
     public DataDictionaryFormElementFactory(
         IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IHttpContext httpContext,
         JJMasterDataUrlHelper urlHelper
     )
     {
         StringLocalizer = stringLocalizer;
+        HttpContext = httpContext;
         UrlHelper = urlHelper;
         _options = options.Value;
     }
@@ -39,23 +44,37 @@ public class DataDictionaryFormElementFactory : IFormElementFactory
         return formElement;
     }
 
-    private static FormElement GetFormElement(Element element)
+    private FormElement GetFormElement(Element element)
     {
         var formElement = new FormElement(element);
+
+        var appPath = HttpContext.Request.ApplicationPath;
+
+        var baseUrl = string.IsNullOrEmpty(appPath) ? "/" : appPath;
+        
+        var image = new HtmlBuilder(HtmlTag.Img)
+            .WithAttribute("src",
+                baseUrl + "_content/JJMasterData.Web/images/JJMasterData.png")
+            .WithAttribute("style", "width:8%;height:8%;");
+        
+        formElement.Title = image.ToString();
+        
         formElement.Fields[DataDictionaryStructure.Sync].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
-        formElement.Fields[DataDictionaryStructure.Sync].Component = FormComponent.ComboBox;
+
         var dataItem = new FormElementDataItem();
         dataItem.Items.Add(new DataItemValue("1", "Yes"));
         dataItem.Items.Add(new DataItemValue("0", "No"));
+        formElement.Fields[DataDictionaryStructure.Sync].Component = FormComponent.ComboBox;
         formElement.Fields[DataDictionaryStructure.Sync].DataItem = dataItem;
+        
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
-        formElement.Title = "JJMasterData";
         return formElement;
     }
 
     private Element GetElement()
     {
         var element = new Element(_options.DataDictionaryTableName, "Data Dictionaries");
+        
         element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false,
             FilterMode.Equal);
         element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false,
@@ -69,7 +88,9 @@ public class DataDictionaryFormElementFactory : IFormElementFactory
 
     private void AddActions(FormElement formElement)
     {
-        formElement.Options.GridToolbarActions.InsertAction.VisibleExpression = "val:0";
+        formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
+        formElement.Options.GridToolbarActions.ExportAction.SetVisible(false);
+        
         formElement.Options.GridTableActions.Clear();
         
         AddGridTableActions(formElement);

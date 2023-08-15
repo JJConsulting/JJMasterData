@@ -4,7 +4,7 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJIcon : JJComponentBase
+public class JJIcon : ComponentBase
 {
 
     /// <remarks>

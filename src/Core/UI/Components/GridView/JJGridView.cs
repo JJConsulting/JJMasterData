@@ -43,7 +43,7 @@ namespace JJMasterData.Core.Web.Components;
 /// Example
 /// <img src="../media/JJGridViewWithLegend.png"/>
 /// </example>
-public class JJGridView : JJAsyncComponentBase
+public class JJGridView : AsyncComponent
 {
     #region "Events"
 
@@ -1195,7 +1195,7 @@ public class JJGridView : JJAsyncComponentBase
                 OrderBy = orderBy,
                 RegporPag = recordsPerPage,
                 CurrentPage = currentPage,
-                Tot = total
+                TotalOfRecords = total
             };
 
             OnDataLoad?.Invoke(this, args);
@@ -1205,7 +1205,7 @@ public class JJGridView : JJAsyncComponentBase
                 await OnDataLoadAsync.Invoke(this, args);
             }
 
-            total = args.Tot;
+            total = args.TotalOfRecords;
             dt = args.DataSource;
         }
         else

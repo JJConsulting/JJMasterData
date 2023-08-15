@@ -21,24 +21,39 @@ internal class FormViewRelationshipLayout
         ParentFormView = parentFormView;
     }
 
-    public async IAsyncEnumerable<HtmlBuilder?> GetRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships, ActionContext actionContext)
+    
+    private async IAsyncEnumerable<FormElementRelationship> GetVisibleRelationships(IEnumerable<FormElementRelationship> relationships)
     {
-        if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
+        var formStateData = await ParentFormView.GetFormStateDataAsync();
+        foreach (var relationship in relationships)
         {
-            var tabNav = await GetTabRelationshipsHtml(parentPanel, relationships,actionContext);
+            var isVisible = await ParentFormView.ExpressionsService.GetBoolValueAsync(relationship.Panel.VisibleExpression, formStateData);
+
+            if (isVisible)
+                yield return relationship;
+        }
+    }
+    
+    public async IAsyncEnumerable<HtmlBuilder?> GetRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
+    {
+        var visibleRelationships = await GetVisibleRelationships(relationships).ToListAsync();
+        
+        if (visibleRelationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
+        {
+            var tabNav = await GetTabRelationshipsHtml(parentPanel, relationships);
 
             yield return tabNav;
         }
 
-        foreach (var relationship in relationships.Where(r => r.Panel.Layout is not PanelLayout.Tab))
+        foreach (var relationship in visibleRelationships.Where(r => r.Panel.Layout is not PanelLayout.Tab))
         {
-            var relationshipHtml = await GetRelationshipHtml(parentPanel, relationship,actionContext);
+            var relationshipHtml = await GetRelationshipHtml(parentPanel, relationship);
             var panel = GetNonTabRelationshipPanelHtml(relationship, relationshipHtml);
             yield return panel;
         }
     }
 
-    private async Task<HtmlBuilder> GetTabRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships, ActionContext actionContext)
+    private async Task<HtmlBuilder> GetTabRelationshipsHtml(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
     {
         var tabNav = new JJTabNav(ParentFormView.CurrentContext)
         {
@@ -47,7 +62,7 @@ internal class FormViewRelationshipLayout
 
         foreach (var relationship in relationships.Where(r => r.Panel.Layout is PanelLayout.Tab))
         {
-            var relationshipHtml = await GetRelationshipHtml(parentPanel, relationship,actionContext);
+            var relationshipHtml = await GetRelationshipHtml(parentPanel, relationship);
             tabNav.ListTab.Add(new NavContent
             {
                 Title = relationship.Panel.Title,
@@ -104,7 +119,7 @@ internal class FormViewRelationshipLayout
         }
     }
 
-    private async Task<HtmlBuilder?> GetRelationshipHtml(JJDataPanel parentPanel, FormElementRelationship relationship, ActionContext actionContext)
+    private async Task<HtmlBuilder?> GetRelationshipHtml(JJDataPanel parentPanel, FormElementRelationship relationship)
     {
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)

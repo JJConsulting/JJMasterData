@@ -33,7 +33,7 @@ public class GridDataLoadEventArgs : EventArgs
     /// <summary>
     /// Retorno do total de Registros
     /// </summary>
-    public int Tot { get; set; }
+    public int TotalOfRecords { get; set; }
 
     /// <summary>
     /// Retorna Objeto DataTable com os dados prontos para preencher a grid

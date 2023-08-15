@@ -23,7 +23,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Represents a searchable combobox.
 /// </summary>
-public class JJSearchBox : JJAsyncControlBase
+public class JJSearchBox : AsyncControl
 {
     private JJMasterDataEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -219,7 +219,7 @@ public class JJSearchBox : JJAsyncControlBase
     }
 
 
-    public static bool IsSearchBoxRoute(JJComponentBase view, IHttpContext httpContext)
+    public static bool IsSearchBoxRoute(ComponentBase view, IHttpContext httpContext)
     {
         string requestType = httpContext.Request.QueryString("t");
         return "jjsearchbox".Equals(requestType);
@@ -232,7 +232,7 @@ public class JJSearchBox : JJAsyncControlBase
     }
 
     internal static HtmlBuilder? ResponseJson(
-        JJComponentBase view,
+        ComponentBase view,
         FormElement formElement,
         IDictionary<string, dynamic> formValues,
         IHttpContext httpContext,

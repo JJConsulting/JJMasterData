@@ -34,7 +34,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <img src="../media/JJFormUploadFileExample.png"/>
 /// </example>
 /// <seealso cref="JJUploadArea"/>
-public class JJUploadView : JJAsyncComponentBase
+public class JJUploadView : AsyncComponent
 {
     private const string FileName = "Name";
     private const string FileNameJs = "NameJS";

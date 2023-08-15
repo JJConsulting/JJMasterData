@@ -1042,17 +1042,17 @@ public class DataAccess
 
         return dbParameter;
     }
-
-    public async Task<IDictionary<string, dynamic>> GetDictionaryAsync(DataAccessCommand cmd,
+    
+    public async Task<IDictionary<string, dynamic>> GetDictionaryAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
-        return await GetAsync<Dictionary<string, dynamic>>(cmd, cancellationToken);
+        return await GetAsync<Dictionary<string, dynamic>>(command, cancellationToken);
     }
 
-    public async Task<List<Dictionary<string, dynamic>>> GetDictionaryListAsync(DataAccessCommand cmd,
+    public async Task<List<Dictionary<string, dynamic>>> GetDictionaryListAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
-        return await GetListAsync<Dictionary<string, dynamic>>(cmd, cancellationToken);
+        return await GetListAsync<Dictionary<string, dynamic>>(command, cancellationToken);
     }
 
     private static DataAccessCommand GetColumnExistsCommand(string tableName, string columnName)

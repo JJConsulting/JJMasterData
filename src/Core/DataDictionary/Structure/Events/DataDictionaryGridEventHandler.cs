@@ -32,7 +32,7 @@ public class DataDictionaryGridEventHandler : GridEventHandlerBase
         string orderBy = string.IsNullOrEmpty(eventArgs.OrderBy) ? "name ASC" : eventArgs.OrderBy;
         var result = await DataDictionaryRepository.GetFormElementInfoListAsync(filter, orderBy, eventArgs.RegporPag, eventArgs.CurrentPage);
         eventArgs.DataSource = result.Data.ToDataTable();
-        eventArgs.Tot = result.TotalOfRecords;
+        eventArgs.TotalOfRecords = result.TotalOfRecords;
     }
 
     public override void OnRenderAction(object sender, ActionEventArgs eventArgs)

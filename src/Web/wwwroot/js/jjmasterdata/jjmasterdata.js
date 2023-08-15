@@ -1571,7 +1571,7 @@ class Modal {
         });
     }
     hide() {
-        $("#" + this.modalId).modal("hide");
+        window.parent.$("#" + this.modalId).modal("hide");
     }
     modal() {
         return $("#" + this.modalId);

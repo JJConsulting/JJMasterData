@@ -20,7 +20,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJAuditLogView : JJAsyncComponentBase
+public class JJAuditLogView : AsyncComponent
 {
     private readonly ComponentFactory _componentFactory;
     private JJGridView _gridView;

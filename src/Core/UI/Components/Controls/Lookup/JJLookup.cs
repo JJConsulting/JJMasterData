@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace JJMasterData.Core.Web.Components;
 
 /// Represents a field with a value from another Data Dictionary accessed via popup.
-public class JJLookup : JJAsyncControlBase
+public class JJLookup : AsyncControl
 {
     internal FormElement FormElement { get; set; }
     private ILookupService LookupService { get; }
@@ -235,7 +235,7 @@ public class JJLookup : JJAsyncControlBase
         return Name.Equals(lookupRoute);
     }
 
-    public static bool IsLookupRoute(JJComponentBase view, IHttpContext context)
+    public static bool IsLookupRoute(ComponentBase view, IHttpContext context)
     {
         string dataPanelName = string.Empty;
         if (view is JJFormView formView)

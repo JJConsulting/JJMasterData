@@ -11,13 +11,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextRange : JJControlBase
+public class JJTextRange : ControlBase
 {
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    internal JJControlBase FromField { get; set; }
-    internal JJControlBase ToField { get; set; }
+    internal ControlBase FromField { get; set; }
+    internal ControlBase ToField { get; set; }
 
     public FieldType FieldType { get; set; }
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;

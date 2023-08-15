@@ -226,6 +226,14 @@ internal class GridTableBody
         {
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
             var linkButton = await factory.CreateGridTableButtonAsync(groupedAction, GridView, formStateData);
+
+            if (OnRenderAction != null)
+            {
+                var args = new ActionEventArgs(groupedAction, linkButton, formStateData.FormValues);
+                
+                OnRenderAction(this,args);
+            }
+            
             btnGroup.Actions.Add(linkButton);
         }
 

@@ -3,7 +3,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
-public class JJModalDialog : JJComponentBase
+public class JJModalDialog : ComponentBase
 {
     public string Title { get; set; }
 

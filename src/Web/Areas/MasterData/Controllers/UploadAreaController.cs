@@ -19,7 +19,7 @@ public class UploadAreaController : MasterDataController
         StringLocalizer = stringLocalizer;
     }
 
-    public IActionResult UploadFile(string componentName)
+    public async Task<IActionResult> UploadFile(string componentName)
     {
         UploadAreaService.OnFileUploaded += (_, args) =>
         {
@@ -37,7 +37,7 @@ public class UploadAreaController : MasterDataController
             }
         };
         
-        var dto = UploadAreaService.UploadFileAsync();
+        var dto = await UploadAreaService.UploadFileAsync();
         return Json(dto);
     }
 }

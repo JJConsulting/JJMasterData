@@ -9,7 +9,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Representa um Label padrão
 /// </summary>
-public class JJLabel : JJComponentBase
+public class JJLabel : ComponentBase
 {
     /// <summary>
     /// Texto exibido quando o ponteiro do mouse passa sobre o controle

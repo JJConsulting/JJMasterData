@@ -23,7 +23,7 @@ public class JJUploadAreaTagHelper : TagHelper
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var upload = UploadAreaFactory.Create();
-
+        upload.IsExternalRoute = true;
         if (!string.IsNullOrEmpty(Name))
         {
             upload.Name = Name;
