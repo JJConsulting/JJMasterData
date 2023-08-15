@@ -25,7 +25,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJDataImportation : ProcessComponentBase
+public class JJDataImportation : ProcessComponent
 {
     #region "Events"
 
@@ -87,7 +87,7 @@ public class JJDataImportation : ProcessComponentBase
         JJMasterDataEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
-        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponentBase>(), stringLocalizer)
+        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(), stringLocalizer)
     {
         CurrentContext = currentContext;
         UploadAreaFactory = uploadAreaFactory;

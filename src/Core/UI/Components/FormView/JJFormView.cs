@@ -1006,10 +1006,8 @@ public class JJFormView : AsyncComponent
     }
     public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(IDictionary<string, dynamic> values, PageState pageState)
     {
-        var painel = DataPanel;
-        painel.Values = values;
-
-        var errors = await painel.ValidateFieldsAsync(values, pageState);
+        DataPanel.Values = values;
+        var errors = await DataPanel.ValidateFieldsAsync(values, pageState);
         return errors;
     }
 
