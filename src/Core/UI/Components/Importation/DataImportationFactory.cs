@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.UI.Components.Importation;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -29,12 +30,16 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     private IFormService FormService { get; }
     private IFormEventHandlerFactory FormEventHandlerFactory { get; }
     private IHttpContext HttpContext { get; }
-    private  IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
-    private  IControlFactory<JJComboBox> ComboBoxFactory { get; }
+    private IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
+    private IControlFactory<JJComboBox> ComboBoxFactory { get; }
+
+    private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
+
     private JJMasterDataUrlHelper UrlHelper { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private ILoggerFactory LoggerFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+
 
     public DataImportationFactory(
         IDataDictionaryRepository dataDictionaryRepository,
@@ -47,6 +52,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         IHttpContext httpContext,
         IComponentFactory<JJUploadArea> uploadAreaFactory,
         IControlFactory<JJComboBox> comboBoxFactory,
+        DataImportationWorkerFactory dataImportationWorkerFactory,
         JJMasterDataUrlHelper urlHelper,
         JJMasterDataEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
@@ -62,6 +68,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         HttpContext = httpContext;
         UploadAreaFactory = uploadAreaFactory;
         ComboBoxFactory = comboBoxFactory;
+        DataImportationWorkerFactory = dataImportationWorkerFactory;
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;
         LoggerFactory = loggerFactory;
@@ -71,7 +78,8 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     public JJDataImportation Create(FormElement formElement)
     {
         return new JJDataImportation(formElement, EntityRepository, ExpressionsService, FormService,
-            FieldsService, BackgroundTask, HttpContext, UploadAreaFactory, ComboBoxFactory,UrlHelper,EncryptionService, LoggerFactory,
+            FieldsService, BackgroundTask, HttpContext, UploadAreaFactory, ComboBoxFactory,
+            DataImportationWorkerFactory, UrlHelper, EncryptionService, LoggerFactory,
             StringLocalizer);
     }
 
@@ -86,13 +94,18 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
             DataHelper.GetCurrentUserId(HttpContext, null));
 
         var formEvent = FormEventHandlerFactory.GetFormEvent(elementName);
-        formEvent?.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(formElement));
-
+        
         var dataImp = Create(formElement);
-
+        
         if (formEvent != null)
+        {
+            // ReSharper disable once MethodHasAsyncOverload
+            formEvent.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(formElement));
+            await formEvent.OnFormElementLoadAsync(dataContext, new FormElementLoadEventArgs(formElement));
+            
             dataImp.OnBeforeImport += formEvent.OnBeforeImport;
-
+        }
+        
         return dataImp;
     }
 }

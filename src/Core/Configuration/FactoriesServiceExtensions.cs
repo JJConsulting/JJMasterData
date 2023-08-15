@@ -7,6 +7,7 @@ using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.GridView;
+using JJMasterData.Core.UI.Components.Importation;
 using JJMasterData.Core.UI.Components.Widgets;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
@@ -21,12 +22,19 @@ public static class FactoriesServiceExtensions
     {
         services.AddFormElementFactories();
         services.AddComponentsFactories();
-
-        services.AddTransient<ExportationWriterFactory>();
+        services.AddDataFactories();
         
         return services;
     }
-    
+
+    private static IServiceCollection AddDataFactories(this IServiceCollection services)
+    {
+        services.AddTransient<DataExportationWriterFactory>();
+        services.AddTransient<DataImportationWorkerFactory>();
+
+        return services;
+    }
+
     private static IServiceCollection AddFormElementFactories(this IServiceCollection services)
     {
         services.AddTransient<IFormElementFactory,DataDictionaryFormElementFactory>();

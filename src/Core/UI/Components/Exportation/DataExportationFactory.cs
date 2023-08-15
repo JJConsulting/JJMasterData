@@ -31,7 +31,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
     private IBackgroundTask BackgroundTask { get; }
     private IHttpContext HttpContext { get; }
     private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
-    private ExportationWriterFactory ExportationWriterFactory { get; }
+    private DataExportationWriterFactory DataExportationWriterFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
@@ -48,7 +48,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         IComponentFactory<JJFileDownloader> fileDownloaderFactory,
         JJMasterDataUrlHelper urlHelper,
         JJMasterDataEncryptionService encryptionService,
-        ExportationWriterFactory exportationWriterFactory
+        DataExportationWriterFactory dataExportationWriterFactory
         )
     {
         UrlHelper = urlHelper;
@@ -63,7 +63,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
         FileDownloaderFactory = fileDownloaderFactory;
-        ExportationWriterFactory = exportationWriterFactory;
+        DataExportationWriterFactory = dataExportationWriterFactory;
     }
 
     public async Task<JJDataExportation> CreateAsync(string dictionaryName)
@@ -76,6 +76,6 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
     {
         return new JJDataExportation(formElement, EntityRepository, ExpressionsService, FieldsService, 
             Options, BackgroundTask, StringLocalizer, FileDownloaderFactory,LoggerFactory, HttpContext, 
-            UrlHelper, EncryptionService,ExportationWriterFactory);
+            UrlHelper, EncryptionService,DataExportationWriterFactory);
     }
 }

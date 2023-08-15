@@ -22,7 +22,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
-public class ExcelWriter : ExportationWriterBase, IExcelWriter
+public class ExcelWriter : DataExportationWriterBase, IExcelWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
@@ -183,7 +183,7 @@ public class ExcelWriter : ExportationWriterBase, IExcelWriter
         await sw.WriteLineAsync("\t\t\t</tr>");
     }
 
-    public ExcelWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<ExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    public ExcelWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
     {
     }
 }

@@ -20,7 +20,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
-public class TextWriter : ExportationWriterBase, ITextWriter
+public class TextWriter : DataExportationWriterBase, ITextWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
@@ -125,7 +125,7 @@ public class TextWriter : ExportationWriterBase, ITextWriter
         await sw.FlushAsync();
     }
 
-    public TextWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<ExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    public TextWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
     {
     }
 }

@@ -73,7 +73,7 @@ public class JJDataExportation : ProcessComponent
 
     internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(_urlHelper, _encryptionService);
     private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
-    public ExportationWriterFactory ExportationWriterFactory { get; }
+    public DataExportationWriterFactory DataExportationWriterFactory { get; }
 
     #endregion
 
@@ -91,12 +91,12 @@ public class JJDataExportation : ProcessComponent
         IHttpContext currentContext,
         JJMasterDataUrlHelper urlHelper, 
         JJMasterDataEncryptionService encryptionService, 
-        ExportationWriterFactory exportationWriterFactory) : 
+        DataExportationWriterFactory dataExportationWriterFactory) : 
         base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(),stringLocalizer)
     {
         _urlHelper = urlHelper;
         _encryptionService = encryptionService;
-        ExportationWriterFactory = exportationWriterFactory;
+        DataExportationWriterFactory = dataExportationWriterFactory;
 
         FileDownloaderFactory = fileDownloaderFactory;
         CurrentContext = currentContext;
@@ -232,9 +232,9 @@ public class JJDataExportation : ProcessComponent
         return alert.GetHtml();
     }
 
-    private ExportationWriterBase CreateWriter()
+    private DataExportationWriterBase CreateWriter()
     {
-        return ExportationWriterFactory.GetInstance(this);
+        return DataExportationWriterFactory.GetInstance(this);
     }
 
     public void StartExportation(DataTable dt)

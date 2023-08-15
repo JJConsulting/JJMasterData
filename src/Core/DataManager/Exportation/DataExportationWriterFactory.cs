@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.DataManager.Exports;
 
-public class ExportationWriterFactory
+public class DataExportationWriterFactory
 {
     private IServiceProvider ServiceProvider { get; }
 
-    public ExportationWriterFactory(IServiceProvider serviceProvider)
+    public DataExportationWriterFactory(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
     }
@@ -30,9 +30,9 @@ public class ExportationWriterFactory
         return ServiceProvider.GetRequiredService<ITextWriter>();
     }
 
-    public ExportationWriterBase GetInstance(JJDataExportation exporter)
+    public DataExportationWriterBase GetInstance(JJDataExportation exporter)
     {
-        ExportationWriterBase writer;
+        DataExportationWriterBase writer;
         switch (exporter.ExportOptions.FileExtension)
         {
             case ExportFileExtension.CSV:
@@ -41,7 +41,7 @@ public class ExportationWriterFactory
                 textWriter.Delimiter = exporter.ExportOptions.Delimiter;
                 textWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = (ExportationWriterBase)textWriter;
+                writer = (DataExportationWriterBase)textWriter;
                 break;
 
             case ExportFileExtension.XLS:
@@ -50,7 +50,7 @@ public class ExportationWriterFactory
                 excelWriter.ShowBorder = exporter.ShowBorder;
                 excelWriter.OnRenderCell += exporter.OnRenderCell;
 
-                writer = (ExportationWriterBase)excelWriter;
+                writer = (DataExportationWriterBase)excelWriter;
 
                 break;
             case ExportFileExtension.PDF:
@@ -65,7 +65,7 @@ public class ExportationWriterFactory
 
                 // ReSharper disable once SuspiciousTypeConversion.Global;
                 // PdfWriter is dynamic loaded by plugin.
-                writer = pdfWriter as ExportationWriterBase;
+                writer = pdfWriter as DataExportationWriterBase;
 
                 break;
             default:
@@ -77,7 +77,7 @@ public class ExportationWriterFactory
         return writer;
     }
 
-    private static void ConfigureWriter(JJDataExportation exporter, ExportationWriterBase writer)
+    private static void ConfigureWriter(JJDataExportation exporter, DataExportationWriterBase writer)
     {
         writer.FormElement = exporter.FormElement;
         writer.Configuration = exporter.ExportOptions;
