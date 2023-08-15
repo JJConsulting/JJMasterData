@@ -87,8 +87,10 @@ public class DataAccess
     public DataAccess()
     {
         ConnectionString =
- System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
-        if (Enum.TryParse<DataAccessProvider>(System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ProviderName, out var provider))
+            System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
+        if (Enum.TryParse<DataAccessProvider>(
+                System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ProviderName,
+                out var provider))
         {
             ConnectionProvider = provider;
         }
@@ -106,8 +108,10 @@ public class DataAccess
     public DataAccess(string connectionStringName)
     {
         ConnectionString =
- System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
-        if (Enum.TryParse<DataAccessProvider>(System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ProviderName, out var provider))
+            System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+        if (Enum.TryParse<DataAccessProvider>(
+                System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ProviderName,
+                out var provider))
         {
             ConnectionProvider = provider;
         }
@@ -251,16 +255,25 @@ public class DataAccess
     {
         try
         {
+#if NET
+            await
+#endif
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
 
+#if NET
+            await
+#endif
             using (dbCommand.Connection)
             {
-                using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
+#if NET
+                await
+#endif
+                using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
                 {
                     var dataTable = new DataTable();
                     dataTable.Load(reader);
-            
+
                     if (cmd.Parameters != null)
                     {
                         foreach (var parameter in cmd.Parameters)
@@ -269,7 +282,7 @@ public class DataAccess
                                 parameter.Value = dbCommand.Parameters[parameter.Name].Value;
                         }
                     }
-                    
+
                     return dataTable;
                 }
             }
@@ -363,9 +376,15 @@ public class DataAccess
         object scalarResult;
         try
         {
+#if NET
+            await
+#endif
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
 
+#if NET
+            await
+#endif
             using (dbCommand.Connection)
             {
                 scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken);
@@ -453,9 +472,14 @@ public class DataAccess
         int rowsAffected;
         try
         {
+#if NET
+            await
+#endif
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-
+#if NET
+            await
+#endif
             using (dbCommand.Connection)
             {
                 rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken);
@@ -520,9 +544,17 @@ public class DataAccess
         DataAccessCommand currentCommand = null;
 
         var connection = await GetConnectionAsync(cancellationToken);
+#if NET
+        await
+#endif
         using (connection)
         {
+#if NET
+            await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+#else
             using var transaction = connection.BeginTransaction();
+#endif
+            
             try
             {
                 foreach (var command in commands)
@@ -695,10 +727,19 @@ public class DataAccess
         var result = default(T);
         try
         {
+#if NET
+            await
+#endif
             using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+#if NET
+            await
+#endif
             using (dbCommand.Connection)
             {
+#if NET
+                await
+#endif
                 using (var dataReader =
                        await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
                 {
@@ -741,11 +782,20 @@ public class DataAccess
 
         try
         {
+#if NET
+            await
+#endif
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
 
+#if NET
+            await
+#endif
             using (dbCommand.Connection)
             {
+#if NET
+                await
+#endif
                 using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
                 {
                     var columnNames = Enumerable.Range(0, dataReader.FieldCount)
@@ -1042,7 +1092,7 @@ public class DataAccess
 
         return dbParameter;
     }
-    
+
     public async Task<IDictionary<string, dynamic>> GetDictionaryAsync(DataAccessCommand command,
         CancellationToken cancellationToken = default)
     {
@@ -1075,10 +1125,19 @@ public class DataAccess
         var command = GetColumnExistsCommand(tableName, columnName);
         try
         {
+#if NET
+            await
+#endif
             using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+#if NET
+            await
+#endif
             using (dbCommand.Connection)
             {
+#if NET
+                await
+#endif
                 using (var reader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
                 {
                     return await reader.ReadAsync(cancellationToken);
