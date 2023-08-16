@@ -23,8 +23,8 @@ internal class DataPanelScripts
         var componentName = _dataPanelControl.Name;
         var fieldNamePrefix = _dataPanelControl.FieldNamePrefix;
         var pageState = _dataPanelControl.PageState;
-        
-        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(componentName);
+
+        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(_dataPanelControl.FormElement.Name);
         
         if(!_dataPanelControl.IsExternalRoute)
             return $"DataPanel.ReloadAtSamePage('{componentName}','{fieldName}');";

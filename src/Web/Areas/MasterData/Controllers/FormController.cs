@@ -45,8 +45,11 @@ public class FormController : MasterDataController
             await formView.DataPanel.LoadValuesFromPkAsync(actionMap.PkFieldValues);
         }
 
-        var form = new HtmlBuilder(HtmlTag.Form);
-        form.Append(formView.GetHtmlBuilder());
+        var form = new HtmlBuilder(HtmlTag.Form)
+            .WithNameAndId(formView.Name)
+            .WithAttribute("action",Url.Action("GetFormView"))
+            .WithAttribute("method", "POST");
+        form.Append(await formView.GetHtmlBuilderAsync());
         return Content(form.ToString());
     }
     
