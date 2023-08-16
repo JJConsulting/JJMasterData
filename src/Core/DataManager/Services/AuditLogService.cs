@@ -8,6 +8,7 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Localization;
@@ -121,16 +122,16 @@ public class AuditLogService : IAuditLogService
 
     public FormElement GetFormElement()
     {
-        var form = new FormElement(GetElement());
-        form.Fields[DicId].VisibleExpression = "val:0";
-        form.Fields[DicName].VisibleExpression = "val:0";
-        form.Fields[DicBrowser].VisibleExpression = "val:0";
-        form.Fields[DicJson].VisibleExpression = "val:0";
-        form.Fields[DicModified].Component = FormComponent.DateTime;
+        var formElement = new FormElement(GetElement());
+        formElement.Fields[DicId].VisibleExpression = "val:0";
+        formElement.Fields[DicName].VisibleExpression = "val:0";
+        formElement.Fields[DicBrowser].VisibleExpression = "val:0";
+        formElement.Fields[DicJson].VisibleExpression = "val:0";
+        formElement.Fields[DicModified].Component = FormComponent.DateTime;
 
-        form.Options.GridTableActions.Clear();
+        formElement.Options.GridTableActions.Clear();
         
-        var origin = form.Fields[DicOrigin];
+        var origin = formElement.Fields[DicOrigin];
         origin.Component = FormComponent.ComboBox;
         origin.DataItem!.ReplaceTextOnGrid = true;
         foreach (int i in Enum.GetValues(typeof(DataContextSource)))
@@ -139,15 +140,23 @@ public class AuditLogService : IAuditLogService
             origin.DataItem.Items.Add(item);
         }
 
-        var action = form.Fields[DicAction];
+        var action = formElement.Fields[DicAction];
         action.Component = FormComponent.ComboBox;
         action.DataItem!.ReplaceTextOnGrid = true;
         action.DataItem.ShowImageLegend = true;
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", IconType.Pencil, "#ffbf00"));
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Delete).ToString(), "Deleted", IconType.Trash, "#b20000"));
+        var btnViewLog = new ScriptAction
+        {
+            Icon = IconType.Eye,
+            ToolTip = "View"
+        };
+        btnViewLog.Name = nameof(btnViewLog);
+        btnViewLog.OnClientClick = $"JJView.viewLog('{formElement.Name}','{{{DicId}}}');";
 
-        return form;
+        formElement.Options.GridTableActions.Add(btnViewLog);
+        return formElement;
     }
 
 }

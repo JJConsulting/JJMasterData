@@ -40,7 +40,7 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IFormElementFactory,DataDictionaryFormElementFactory>();
         services.AddTransient<IFormElementFactory,LocalizationFormElementFactory>();
         services.AddTransient<IFormElementFactory,LoggerFormElementFactory>();
-        
+        services.AddTransient<IFormElementFactory,AuditLogFormElementFactory>();
         return services;
     }
     

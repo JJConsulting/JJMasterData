@@ -72,6 +72,7 @@ public class JJAuditLogView : AsyncComponent
         JJMasterDataUrlHelper urlHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
+        Name = formElement.Name;
         _componentFactory = componentFactory;
         FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
         CurrentContext = currentContext;
@@ -264,16 +265,6 @@ public class JJAuditLogView : AsyncComponent
         {
             fieldKey.HelpDescription = "Primary key separated by semicolons";
         }
-
-        var btnViewLog = new ScriptAction
-        {
-            Icon = IconType.Eye,
-            ToolTip = "View"
-        };
-        btnViewLog.Name = nameof(btnViewLog);
-        btnViewLog.OnClientClick = $"JJView.viewLog('{Name}','{{{DataManager.Services.AuditLogService.DicId}}}');";
-
-        grid.GridActions.Add(btnViewLog);
 
         return grid;
     }

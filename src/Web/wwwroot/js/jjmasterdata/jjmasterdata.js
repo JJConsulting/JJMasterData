@@ -653,20 +653,25 @@ class GridView {
         else
             tableOrderElement.value = tableOrder + " ASC";
         document.querySelector("#current-table-action-" + componentName).value = "";
-        document.querySelector("#current-form-action-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
         GridView.refreshGrid(componentName, url);
+    }
+    static clearCurrentFormAction(componentName) {
+        const currentFormAction = document.querySelector("#current-form-action-" + componentName);
+        if (currentFormAction)
+            currentFormAction.value = "";
     }
     static pagination(componentName, url, currentPage) {
         document.querySelector("#current-table-page-" + componentName).value = currentPage;
         document.querySelector("#current-table-action-" + componentName).value = "";
-        document.querySelector("#current-form-action-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
         GridView.refreshGrid(componentName, url);
     }
     static filter(componentName, url) {
         document.querySelector("#current-filter-action-" + componentName).value = "FILTERACTION";
         document.querySelector("#current-table-action-" + componentName).value = "";
         document.querySelector("#current-table-page-" + componentName).value = "1";
-        document.querySelector("#current-form-action-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
         GridView.refreshGrid(componentName, url);
     }
     static clearFilterInputs(componentName) {
@@ -699,7 +704,7 @@ class GridView {
         });
         document.querySelector("#current-filter-action-" + componentName).value = "CLEARACTION";
         document.querySelector("#current-table-action-" + componentName).value = "";
-        document.querySelector("#current-form-action-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
     }
     static clearFilter(componentName, url) {
         this.clearFilterInputs(componentName);
@@ -708,7 +713,7 @@ class GridView {
     static refresh(componentName, url) {
         document.querySelector("#current-table-action-" + componentName).value = "";
         document.querySelector("#current-table-row-" + componentName).value = "";
-        document.querySelector("#current-form-action-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
         GridView.refreshGrid(componentName, url);
     }
     static selectAllRows(componentName, url) {

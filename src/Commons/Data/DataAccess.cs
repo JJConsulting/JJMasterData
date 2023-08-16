@@ -554,25 +554,35 @@ public class DataAccess
 #else
             using var transaction = connection.BeginTransaction();
 #endif
-            
+
             try
             {
                 foreach (var command in commands)
                 {
                     currentCommand = command;
-
+#if NET
+                    await
+#endif
                     using var dbCommand = CreateDbCommand(command);
                     dbCommand.Connection = connection;
                     dbCommand.Transaction = transaction;
 
                     numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync(cancellationToken);
                 }
-
+#if NET
+                await transaction.CommitAsync(cancellationToken);
+                
+#else
                 transaction.Commit();
+#endif
             }
             catch (Exception ex)
             {
+#if NET
+                await transaction.RollbackAsync(cancellationToken);
+#else
                 transaction.Rollback();
+#endif
                 throw GetDataAccessException(ex, currentCommand);
             }
         }
@@ -943,7 +953,11 @@ public class DataAccess
             {
                 if (connection.State == ConnectionState.Open)
                 {
-                    connection.Close();
+#if NET
+                       await connection.CloseAsync();
+#else
+                       connection.Close();
+#endif
                 }
 
                 connection.Dispose();
@@ -1002,7 +1016,8 @@ public class DataAccess
             markpar = "/";
         }
 
-        if (script.Trim().Length <= 0) return await Task.FromResult(true);
+        if (script.Trim().Length <= 0) 
+            return true;
 
         var sqlList = new List<string>();
         string sqlBatch = string.Empty;
@@ -1026,7 +1041,7 @@ public class DataAccess
         }
 
         await SetCommandAsync(sqlList, cancellationToken);
-        return await Task.FromResult(true);
+        return true;
     }
 
     private static Exception GetDataAccessException(Exception ex, DataAccessCommand cmd)
