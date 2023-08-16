@@ -21,7 +21,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Tag of the current builder.
     /// </summary>
-    public HtmlElementTag Tag { get; private set; }
+    public HtmlBuilderTag Tag { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlBuilder"/> class.
@@ -47,7 +47,7 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder(HtmlTag tag) : this()
     {
-        Tag = new HtmlElementTag(tag);
+        Tag = new HtmlBuilderTag(tag);
     }
 
     /// <summary>

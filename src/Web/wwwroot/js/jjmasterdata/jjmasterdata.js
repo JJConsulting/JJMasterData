@@ -730,6 +730,7 @@ class GridView {
         let urlBuilder = new UrlBuilder(url);
         urlBuilder.addQueryParameter("componentName", componentName);
         SpinnerOverlay.show();
+        const filterAction = document.querySelector("#current-filter-action-" + componentName);
         fetch(urlBuilder.build(), {
             method: form.method,
             body: new FormData(form)
@@ -738,12 +739,14 @@ class GridView {
             .then(data => {
             document.querySelector("#jjgridview-" + componentName).innerHTML = data;
             loadJJMasterData();
-            document.querySelector("#current-filter-action-" + componentName).value = "";
+            if (filterAction)
+                filterAction.value = "";
             SpinnerOverlay.hide();
         })
             .catch(error => {
             console.log(error);
-            document.querySelector("#current-filter-action-" + componentName).value = "";
+            if (filterAction)
+                filterAction.value = "";
         });
     }
 }

@@ -103,6 +103,8 @@
         urlBuilder.addQueryParameter("componentName", componentName)
 
         SpinnerOverlay.show()
+
+        const filterAction = document.querySelector<HTMLInputElement>("#current-filter-action-" + componentName);
         
         fetch(urlBuilder.build(), {
             method: form.method,
@@ -112,12 +114,16 @@
             .then(data => {
                 document.querySelector<HTMLInputElement>("#jjgridview-" + componentName).innerHTML = data;
                 loadJJMasterData();
-                document.querySelector<HTMLInputElement>("#current-filter-action-" + componentName).value = "";
+                
+                if(filterAction)
+                    filterAction.value = "";
+                
                 SpinnerOverlay.hide();
             })
             .catch(error => {
                 console.log(error);
-                document.querySelector<HTMLInputElement>("#current-filter-action-" + componentName).value = "";
+                if(filterAction)
+                    filterAction.value = "";
             });
     }
 }

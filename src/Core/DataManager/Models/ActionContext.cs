@@ -1,5 +1,8 @@
 #nullable enable
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
@@ -36,11 +39,23 @@ public class ActionContext
         };
     }
     
-    public ActionMap ToActionMap(string actionName, ActionSource actionSource) => new()
+    public ActionMap ToActionMap(string actionName, ActionSource actionSource)
     {
-        ActionName = actionName,
-        DictionaryName = FormElement.Name,
-        ActionSource = actionSource,
-        FieldName = FieldName
-    };
+        var actionMap = new ActionMap
+        {
+            ActionName = actionName,
+            DictionaryName = FormElement.Name,
+            ActionSource = actionSource,
+            FieldName = FieldName
+        };
+
+        if (!FormStateData.FormValues.Any()) 
+            return actionMap;
+        
+        var values = FormStateData.FormValues;
+        if(DataHelper.ContainsPkValues(FormElement,values))
+            actionMap.PkFieldValues = DataHelper.GetPkValues(FormElement, values);
+
+        return actionMap;
+    }
 }

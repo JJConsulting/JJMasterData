@@ -18,7 +18,7 @@ public class ActionMap
     public string FieldName { get; set; }
 
     [JsonProperty("pkFieldValues")] 
-    public IDictionary<string, dynamic> PkFieldValues { get; }
+    public IDictionary<string, dynamic> PkFieldValues { get; set; }
 
     [JsonProperty("contextAction")] 
     public required ActionSource ActionSource { get; set; }

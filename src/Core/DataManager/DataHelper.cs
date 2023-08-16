@@ -30,10 +30,14 @@ public static class DataHelper
         return null;
     }
 
-    /// <summary>
-    /// Returns a list with only the primary keys of the table, if the PK value does not exist,
-    /// an exception will be thrown
-    /// </summary>
+    
+    public static bool ContainsPkValues(Element element, IDictionary<string, dynamic> values)
+    {
+        var elementPks = GetElementPrimaryKeys(element);
+
+        return elementPks.Count != 0 && elementPks.All(field => values.ContainsKey(field.Name));
+    }
+
     public static IDictionary<string, dynamic> GetPkValues(Element element, IDictionary<string, dynamic> values)
     {
         if (element == null)
@@ -43,9 +47,9 @@ public static class DataHelper
             throw new ArgumentNullException(nameof(values));
 
         var primaryKeys = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
-        var elementPks = element.Fields.ToList().FindAll(x => x.IsPk);
+        var elementPks = GetElementPrimaryKeys(element);
 
-        if (elementPks == null || elementPks.Count == 0)
+        if (elementPks.Count == 0)
             throw new JJMasterDataException($"Primary key not defined for dictionary {element.Name}");
 
         foreach (var field in elementPks)
@@ -57,6 +61,11 @@ public static class DataHelper
         }
 
         return primaryKeys;
+    }
+
+    public static List<ElementField> GetElementPrimaryKeys(Element element)
+    {
+        return element.Fields.Where(x => x.IsPk).ToList();
     }
 
     public static Dictionary<string, dynamic> GetPkValues(Element element, string parsedValues, char separator)

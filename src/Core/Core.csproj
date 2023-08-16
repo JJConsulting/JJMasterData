@@ -48,13 +48,20 @@
         <InternalsVisibleTo Include="JJMasterData.Web" />
     </ItemGroup>
     
-
-    
-    
-    
-    
-    
-    
+    <ItemGroup>
+      <Compile Update="UI\Components\Widgets\MessageIcon.cs">
+        <DependentUpon>JJMessageBox.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\Widgets\MessageSize.cs">
+        <DependentUpon>JJMessageBox.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\Widgets\NavContent.cs">
+        <DependentUpon>JJTabNav.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\Widgets\HeadingSize.cs">
+        <DependentUpon>JJTitle.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
     
     
     

@@ -7,7 +7,7 @@ using JJMasterData.Core.Web.Html;
 namespace JJMasterData.Core.Web.Components;
 
 /// <summary>
-/// A JJComponentBase with asynchronous programming support.
+/// A ComponentBase with asynchronous programming support.
 /// </summary>
 public abstract class AsyncComponent : ComponentBase
 {

@@ -3,18 +3,18 @@
 /// <summary>
 /// Implementation of HTML tag.
 /// </summary>
-public class HtmlElementTag
+public class HtmlBuilderTag
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="HtmlElementTag"/> class.
+    /// Initializes a new instance of the <see cref="HtmlBuilderTag"/> class.
     /// </summary>
-    public HtmlElementTag(HtmlTag tag)
+    public HtmlBuilderTag(HtmlTag tag)
     {
         TagName = tag;
         HasClosingTag = tag is not (HtmlTag.Br or HtmlTag.Input or HtmlTag.Hr);
     }
 
-    public HtmlElementTag(HtmlTag tag, bool hasClosingTag)
+    public HtmlBuilderTag(HtmlTag tag, bool hasClosingTag)
     {
         TagName = tag;
         HasClosingTag = hasClosingTag;
