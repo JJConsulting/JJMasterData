@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Html;
 
@@ -53,7 +54,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Gets current builder HTML.
     /// </summary>
-    public new string ToString()
+    public override string ToString()
     {
         return GetHtml(0);
     }

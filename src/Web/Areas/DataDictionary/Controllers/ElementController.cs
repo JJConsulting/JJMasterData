@@ -9,31 +9,58 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using JJMasterData.Web.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class ElementController : DataDictionaryController
 {
+    private IControlFactory<JJSearchBox> SearchBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly ElementService _elementService;
     private readonly ClassGenerationService _classGenerationService;
     private readonly ScriptsService _scriptsService;
 
-    public ElementController(ElementService elementService, ClassGenerationService classGenerationService, ScriptsService scriptsService, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public ElementController(
+        ElementService elementService,
+        IControlFactory<JJSearchBox> searchBoxFactory,
+        ClassGenerationService classGenerationService,
+        ScriptsService scriptsService, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
+        SearchBoxFactory = searchBoxFactory;
         StringLocalizer = stringLocalizer;
         _elementService = elementService;
         _classGenerationService = classGenerationService;
         _scriptsService = scriptsService;
     }
 
-    public async Task<ActionResult> Index()
+    public async Task<IActionResult> Index()
     {
         try
         {
             _elementService.CreateStructureIfNotExists();
             var model = await _elementService.GetFormViewAsync();
+
+            var searchBox = SearchBoxFactory.Create();
+            searchBox.IsExternalRoute = false;
+            searchBox.DataItem = new FormElementDataItem
+            {
+                Items = new List<DataItemValue>
+                {
+                    new("1", "pan1"),
+                    new("2", "pan2")
+                }
+            };
+            searchBox.FieldName = "resultExample";
+
+            var result = await searchBox.GetResultAsync();
+
+            if (result.IsDataResult)
+                return result.ToActionResult();
+            
+            ViewBag.SearchBox = result.Content!;
+            
             return View(model);
         }
         catch (DataAccessException)

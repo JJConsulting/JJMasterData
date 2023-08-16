@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Core.UI.Components;
 
 
 namespace JJMasterData.Core.Web.Components;
@@ -211,13 +212,30 @@ public class JJSearchBox : AsyncControl
 
         if (IsSearchBoxRoute(this, CurrentContext))
         {
-            ResponseJson();
+            await ResponseJson();
             return null;
         }
 
         return await GetSearchBoxHtml();
     }
 
+    public async Task<ComponentResult> GetResultAsync()
+    {
+        if (IsSearchBoxRoute(this, CurrentContext))
+        {
+            if (!FieldName.Equals(CurrentContext.Request.QueryString("fieldName")))
+                return ComponentResult.Empty;
+
+            string json = JsonConvert.SerializeObject(await GetSearchBoxItemsAsync());
+
+            return new JsonComponentResult(json);
+        }
+
+        var html = await GetSearchBoxHtml();
+
+        return new RenderedComponentResult(html.ToString());
+    }
+    
 
     public static bool IsSearchBoxRoute(ComponentBase view, IHttpContext httpContext)
     {
@@ -318,7 +336,7 @@ public class JJSearchBox : AsyncControl
         }
         else
         {
-            url.Append("?t=jjsearchbox");
+            url.Append("t=jjsearchbox");
             url.Append($"&dictionaryName={DictionaryName}");
             url.Append($"&fieldName={FieldName}");
             url.Append($"&fieldSearchName={Name + "_text"}");
@@ -384,12 +402,12 @@ public class JJSearchBox : AsyncControl
     }
 
 
-    public void ResponseJson()
+    public async Task ResponseJson()
     {
         if (!FieldName.Equals(CurrentContext.Request.QueryString("fieldName")))
             return;
 
-        string json = JsonConvert.SerializeObject(GetSearchBoxItemsAsync());
+        string json = JsonConvert.SerializeObject(await GetSearchBoxItemsAsync());
 
         CurrentContext.Response.SendResponse(json, "application/json");
 

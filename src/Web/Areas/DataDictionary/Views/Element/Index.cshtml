@@ -5,8 +5,16 @@
     ViewData["Title"] = $"Data Dictionaries";
 }
 
+
+
 @using (Html.BeginForm())
 {
+    
+    <jj-collapse-panel title="Teste Search" expanded-by-default="true">
+        @Html.Raw(ViewBag.SearchBox)
+    </jj-collapse-panel>
+
+    
     @Html.Raw(await Model.GetHtmlAsync())
 }
     

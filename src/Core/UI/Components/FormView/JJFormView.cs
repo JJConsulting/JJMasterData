@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.UI.Components;
 #if NET48
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Commons.Configuration;
@@ -311,8 +312,7 @@ public class JJFormView : AsyncComponent
         }
 
         var htmlForm = await GetHtmlForm();
-
-
+        
         //TODO: Is this unused? I didn't find using CTRL+F any ajax call to here, only to the Grid.
         if ("ajax".Equals(requestType) && Name.Equals(objName))
         {
@@ -322,7 +322,6 @@ public class JJFormView : AsyncComponent
 
         return htmlForm;
     }
-
     internal async Task<string> GetReloadPanelHtmlAsync()
     {
         var filter = GridView.GetSelectedRowId();
