@@ -312,7 +312,7 @@ public class JJFormUpload : JJBaseView
         else
         {
             var filePath = Path.Combine(Service.FolderPath, fileName);
-            src = JJDownloadFile.GetDownloadUrl(filePath);
+            src = JJDownloadFile.GetImageUrl(filePath);
         }
 
         const string script = """
@@ -334,7 +334,7 @@ public class JJFormUpload : JJBaseView
                    .WithCssClass("img-responsive");
             });
         });
-        html.AppendScript(script.ToString());
+        html.AppendScript(script);
         return html;
     }
 
@@ -528,8 +528,6 @@ public class JJFormUpload : JJBaseView
 
     private HtmlBuilder GetHtmlImageBox(FormFileInfo file)
     {
-        var url = CurrentContext.Request.AbsoluteUri;
-
         var fileName = file.FileName;
 
         string src;
@@ -543,19 +541,12 @@ public class JJFormUpload : JJBaseView
         else
         {
             string filePath = Path.Combine(Service.FolderPath, fileName);
-            src = JJDownloadFile.GetDownloadUrl(filePath);
+            src = JJDownloadFile.GetImageUrl(filePath);
         }
-
-        if (url.Contains('?'))
-            url += "&";
-        else
-            url += "?";
-
-        url += "previewImage=";
-        url += Cript.Cript64(fileName);
+        
 
         var html = new HtmlBuilder(HtmlTag.A)
-        .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}', 1);")
+        .WithAttribute("href", $"javascript:popup.show('{fileName}','{src}', 1);")
         .AppendElement(HtmlTag.Img, img =>
         {
             img.WithAttribute("loading", "lazy")

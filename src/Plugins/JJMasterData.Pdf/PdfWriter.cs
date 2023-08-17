@@ -41,7 +41,7 @@ public class PdfWriter : BaseWriter, IPdfWriter
     {
         using var writer = new iText.Kernel.Pdf.PdfWriter(ms);
 
-        var pdf = new PdfDocument(writer);
+        using var pdf = new PdfDocument(writer);
 
         var pageSize = IsLandscape ? PageSize.A4.Rotate() : PageSize.A4;
         pdf.SetDefaultPageSize(pageSize);

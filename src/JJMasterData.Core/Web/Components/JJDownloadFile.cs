@@ -16,10 +16,9 @@ public class JJDownloadFile : JJBaseView
 {
     public const string DirectDownloadParameter = "jjdirectdownload";
     public const string DownloadParameter = "jjdownload";
-    
+
     public JJDownloadFile()
     {
-
     }
 
     public JJDownloadFile(string filePath)
@@ -35,12 +34,12 @@ public class JJDownloadFile : JJBaseView
     {
         if (string.IsNullOrEmpty(FilePath))
             throw new JJMasterDataException(Translate.Key("Invalid file path or badly formatted URL"));
-    
+
         if (IsExternalLink)
             return GetDownloadHtmlElement();
-        
+
         DirectDownload();
-    
+
         return null;
     }
 
@@ -53,7 +52,7 @@ public class JJDownloadFile : JJBaseView
         string url = CurrentContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
 
         var html = new HtmlBuilder(HtmlTag.Div)
-            .AppendElement(new JJTitle(Translate.Key("Downloading"),fileName.ToLower()))
+            .AppendElement(new JJTitle(Translate.Key("Downloading"), fileName.ToLower()))
             .AppendElement(HtmlTag.Section, section =>
             {
                 section.WithCssClass("container mt-3");
@@ -73,10 +72,7 @@ public class JJDownloadFile : JJBaseView
                             p.AppendElement(HtmlTag.Br);
                             p.AppendText($"{Translate.Key("Last write time:")} {lastWriteTime}");
                         });
-                        div.AppendElement(HtmlTag.Hr, hr =>
-                        {
-                            hr.WithCssClass("my-4");
-                        });
+                        div.AppendElement(HtmlTag.Hr, hr => { hr.WithCssClass("my-4"); });
                         div.AppendElement(HtmlTag.P, p =>
                         {
                             p.AppendText(Translate.Key("You are downloading file {0}.", fileName));
@@ -93,7 +89,7 @@ public class JJDownloadFile : JJBaseView
             });
         return html;
     }
-    
+
     internal void DirectDownload()
     {
         if (string.IsNullOrEmpty(FilePath))
@@ -115,7 +111,7 @@ public class JJDownloadFile : JJBaseView
         context.Response.Redirect(GetDownloadUrl(filePath));
     }
 
-    internal static string GetDownloadUrl(string filePath)
+    internal static string GetFileUrl(string filePath, string fileType)
     {
         var appPath = HttpContext.Current!.Request.ApplicationPath;
 
@@ -123,7 +119,17 @@ public class JJDownloadFile : JJBaseView
             appPath += "/";
 
         var culture = CultureInfo.CurrentCulture.Name + "/";
-        return $"{appPath}{culture}MasterData/File/Download?filePath={Cript.Cript64(filePath)}";
+        return $"{appPath}{culture}MasterData/File/{fileType}?filePath={Cript.Cript64(filePath)}";
+    }
+
+    internal static string GetDownloadUrl(string filePath)
+    {
+        return GetFileUrl(filePath, "Download");
+    }
+
+    internal static string GetImageUrl(string filePath)
+    {
+        return GetFileUrl(filePath, "Image");
     }
 
     public static bool IsDownloadRoute(JJBaseView view)
@@ -160,7 +166,4 @@ public class JJDownloadFile : JJBaseView
 
         return download.GetHtmlBuilder();
     }
-
-
-    
 }
