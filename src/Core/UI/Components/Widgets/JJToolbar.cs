@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-internal class JJToolbar : ComponentBase
+internal class JJToolbar : HtmlComponent
 {
     public List<HtmlBuilder> Items { get; set; }
 
@@ -12,7 +13,7 @@ internal class JJToolbar : ComponentBase
         Items = new List<HtmlBuilder>();
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)

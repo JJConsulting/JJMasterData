@@ -55,7 +55,7 @@ public class JJDataImportation : ProcessComponent
 
     public JJUploadArea Upload => _upload ??= GetUploadArea();
     
-    public bool EnableHistoryLog { get; set; }
+    public bool EnableAuditLog { get; set; }
 
     /// <summary>
     /// Default: true (panel is open by default)
@@ -108,13 +108,8 @@ public class JJDataImportation : ProcessComponent
         
     }
     #endregion
-
-    internal override HtmlBuilder RenderHtml()
-    {
-        return RenderHtmlAsync().GetAwaiter().GetResult();
-    }
-
-    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         HtmlBuilder html = null;
         Upload.OnFileUploaded += FileUploaded;
@@ -126,16 +121,12 @@ public class JJDataImportation : ProcessComponent
             case "process_check":
             {
                 var reporterProgress = GetCurrentProgress();
-                string json = JsonConvert.SerializeObject(reporterProgress);
-
-                CurrentContext.Response.SendResponse(json, "text/json");
-
-                break;
+                
+                return JsonComponentResult.FromObject(reporterProgress);
             }
             case "process_stop":
                 StopExportation();
-                CurrentContext.Response.SendResponse("{\"isProcessing\": \"false\"}", "text/json");
-                break;
+                return JsonComponentResult.FromObject(new {isProcessing = false});
             case "process_finished":
                 html = GetHtmlLogProcess();
                 break;
@@ -163,7 +154,7 @@ public class JJDataImportation : ProcessComponent
             }
         }
 
-        return html;
+        return RenderedComponentResult.FromHtmlBuilder(html);
     }
 
     private HtmlBuilder GetHtmlLogProcess()

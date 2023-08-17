@@ -51,29 +51,7 @@ public abstract class ComponentBase
     public string CssClass { get; set; }
 
     #endregion
-
-    /// <summary>
-    /// Returns the object representation of the HTML
-    /// </summary>
-    internal abstract HtmlBuilder RenderHtml();
-
-    public HtmlBuilder GetHtmlBuilder()
-    {
-        return Visible ? RenderHtml() : null;
-    }
-
-    /// <summary>
-    /// Renders the content in HTML.
-    /// </summary>
-    /// <returns>
-    /// The HTML string.
-    /// </returns>
-    public string GetHtml()
-    {
-        return Visible ? RenderHtml()?.ToString(true) : string.Empty;
-    }
-
-
+    
     public string GetAttr(string key)
     {
         return Attributes.TryGetValue(key, out var attribute) ? attribute.ToString() : string.Empty;

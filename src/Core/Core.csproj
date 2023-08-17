@@ -73,6 +73,9 @@
       <Compile Update="UI\Components\RenderedComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
+      <Compile Update="UI\Components\HtmlComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
     
     

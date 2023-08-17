@@ -2,7 +2,9 @@
 
 using System;
 using System.Threading.Tasks;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Commons.Configuration;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -11,22 +13,30 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public abstract class AsyncComponent : ComponentBase
 {
-    public async Task<string?> GetHtmlAsync()
+#if NET48
+    [Obsolete("This method uses Response.End, please use GetResultAsync.")]
+    public string? GetHtml()
     {
-        var htmlBuilder = await RenderHtmlAsync();
-        return Visible ? htmlBuilder?.ToString() : null;
-    }
+        var result = GetResultAsync().GetAwaiter().GetResult();
+        
+        if (result is RenderedComponentResult)
+            return result;
+        
+        var httpContext = StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
+        
+        httpContext.Response.SendResponse(result.Content);
 
-    public async Task<HtmlBuilder?> GetHtmlBuilderAsync()
+        return null;
+    }
+#endif
+    
+    public async Task<ComponentResult> GetResultAsync()
     {
-        return Visible ? await RenderHtmlAsync() : null;
+        if (Visible)
+            return await BuildResultAsync();
+    
+        return ComponentResult.Empty;
     }
     
-    [Obsolete("Please use RenderHtmlAsync")]
-    internal override HtmlBuilder RenderHtml()
-    {
-        return RenderHtmlAsync().GetAwaiter().GetResult() ?? new HtmlBuilder();
-    }
-
-    protected abstract Task<HtmlBuilder?> RenderHtmlAsync();
+    protected abstract Task<ComponentResult> BuildResultAsync();
 }

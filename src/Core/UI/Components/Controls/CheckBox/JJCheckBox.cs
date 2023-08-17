@@ -3,12 +3,13 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJCheckBox : ControlBase
+public class JJCheckBox : HtmlControl
 {
     private bool? _isChecked;
 
@@ -39,7 +40,7 @@ public class JJCheckBox : ControlBase
     }
 
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")
@@ -79,5 +80,4 @@ public class JJCheckBox : ControlBase
 
         return div;
     }
-    
 }

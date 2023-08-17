@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJAlert : ComponentBase
+public class JJAlert : HtmlComponent
 {
     public PanelColor Color { get; set; }
     public IconType? Icon { get; set; }
@@ -23,7 +24,7 @@ public class JJAlert : ComponentBase
         Messages = new List<string>();
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)

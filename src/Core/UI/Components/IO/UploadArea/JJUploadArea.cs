@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -116,7 +117,7 @@ public class JJUploadArea : AsyncComponent
         MaxFileSize = GetMaxRequestLength();
     }
     
-    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         string requestType = CurrentContext.Request.QueryString("t");
         if ("jjupload".Equals(requestType))
@@ -128,10 +129,10 @@ public class JJUploadArea : AsyncComponent
                 UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
             
             var result = await UploadAreaService.UploadFileAsync("file",AllowedTypes);
-            CurrentContext.Response.SendResponse(result.ToJson(), "application/json");
+            return JsonComponentResult.FromObject(result);
         }
 
-        return GetFieldHtmlElement();
+        return RenderedComponentResult.FromHtmlBuilder(GetFieldHtmlElement());
     }
 
     private HtmlBuilder GetFieldHtmlElement()

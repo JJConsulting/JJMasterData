@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
-public class JJModalDialog : ComponentBase
+public class JJModalDialog : HtmlComponent
 {
     public string Title { get; set; }
 
@@ -22,7 +23,7 @@ public class JJModalDialog : ComponentBase
         Buttons = new List<JJLinkButton>();
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)

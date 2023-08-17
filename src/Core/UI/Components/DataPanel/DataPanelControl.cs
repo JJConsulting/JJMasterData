@@ -10,6 +10,9 @@ using JJMasterData.Core.Web.Html;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Abstractions;
+using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -54,7 +57,7 @@ internal class DataPanelControl
     {
         FormElement = dataPanel.FormElement;
         FormUI = dataPanel.FormUI;
-        ControlFactory = dataPanel.ControlFactory;
+        ControlFactory = dataPanel.ComponentFactory.Controls;
         Errors = dataPanel.Errors;
         EncryptionService = dataPanel.EncryptionService;
         UrlHelper = dataPanel.UrlHelper;
@@ -347,7 +350,20 @@ internal class DataPanelControl
             }
         }
 
-        return control.GetHtmlBuilder();
+        switch (control)
+        {
+            case HtmlControl htmlControl:
+                return htmlControl.GetHtmlBuilder();
+            case AsyncControl asyncControl:
+            {
+                var result = await asyncControl.GetResultAsync();
+                if (result is RenderedComponentResult renderedComponentResult)
+                    return renderedComponentResult.Content;
+                break;
+            }
+        }
+
+        return new HtmlBuilder();
     }
 
     private string GetScriptReload(FormElementField field)

@@ -206,20 +206,8 @@ public class JJSearchBox : AsyncControl
     }
 
     #endregion
-
-    protected override async Task<HtmlBuilder> RenderHtmlAsync()
-    {
-
-        if (IsSearchBoxRoute(this, CurrentContext))
-        {
-            await ResponseJson();
-            return null;
-        }
-
-        return await GetSearchBoxHtml();
-    }
-
-    public async Task<ComponentResult> GetResultAsync()
+    
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (IsSearchBoxRoute(this, CurrentContext))
         {
@@ -233,23 +221,21 @@ public class JJSearchBox : AsyncControl
 
         var html = await GetSearchBoxHtml();
 
-        return new RenderedComponentResult(html.ToString());
+        return RenderedComponentResult.FromHtmlBuilder(html);
     }
     
-
     public static bool IsSearchBoxRoute(ComponentBase view, IHttpContext httpContext)
     {
         string requestType = httpContext.Request.QueryString("t");
         return "jjsearchbox".Equals(requestType);
     }
 
-
-    public static HtmlBuilder? ResponseJson(JJDataPanel view, IHttpContext httpContext)
+    public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view, IHttpContext httpContext)
     {
-        return ResponseJson(view, view.FormElement, view.Values, httpContext, view.ControlFactory.GetFactory<SearchBoxFactory>());
+        return await GetResultFromComponent(view, view.FormElement, view.Values, httpContext, view.ComponentFactory.Controls.GetFactory<SearchBoxFactory>());
     }
 
-    internal static HtmlBuilder? ResponseJson(
+    internal static async Task<ComponentResult> GetResultFromComponent(
         ComponentBase view,
         FormElement formElement,
         IDictionary<string, dynamic> formValues,
@@ -262,15 +248,13 @@ public class JJSearchBox : AsyncControl
         var pageState = (PageState)int.Parse(httpContext.Request.QueryString("pageState"));
 
         if (!formElement.Name.Equals(dictionaryName))
-            return null;
+            return ComponentResult.Empty;
 
         var field = formElement.Fields[fieldName];
         var expOptions = new FormStateData(formValues, view.UserValues, pageState);
 
         var searchBox = searchBoxFactory.Create(formElement, field, new(expOptions, view.Name, dictionaryName));
-        searchBox.ResponseJson();
-
-        return null;
+        return await searchBox.GetResultAsync();
     }
 
 
@@ -400,18 +384,7 @@ public class JJSearchBox : AsyncControl
 
         return list;
     }
-
-
-    public async Task ResponseJson()
-    {
-        if (!FieldName.Equals(CurrentContext.Request.QueryString("fieldName")))
-            return;
-
-        string json = JsonConvert.SerializeObject(await GetSearchBoxItemsAsync());
-
-        CurrentContext.Response.SendResponse(json, "application/json");
-
-    }
+    
 
     public async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {

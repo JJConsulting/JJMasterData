@@ -39,7 +39,7 @@ public class JJTextGroup : JJTextBox
         Text = text;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
         if (!Enabled)
@@ -51,7 +51,7 @@ public class JJTextGroup : JJTextBox
             }
         }
 
-        var input = base.RenderHtml();
+        var input = base.BuildHtml();
         bool hasAction = Actions.ToList().Exists(x => x.Visible);
         bool hasAddons = Addons != null;
 
@@ -109,7 +109,7 @@ public class JJTextGroup : JJTextBox
         var html = new HtmlBuilder(HtmlTag.Span)
              .WithCssClass(BootstrapHelper.InputGroupAddon)
              .WithToolTip(Addons.ToolTip)
-             .AppendIf(Addons.Icon != null,()=> Addons.Icon.RenderHtml())
+             .AppendIf(Addons.Icon != null,()=> Addons.Icon.BuildHtml())
              .AppendTextIf(!string.IsNullOrEmpty(Addons.Text), Addons.Text);
 
         return html;

@@ -1,4 +1,6 @@
 #nullable enable
+using System.Diagnostics.CodeAnalysis;
+
 namespace JJMasterData.Core.UI.Components;
 
 public class ComponentResult
@@ -12,15 +14,11 @@ public class ComponentResult
     }
     public ContentType Type { get; }
 
-    public string? Content { get; }
-
-    public bool IsRenderedComponent => Type is ContentType.RenderedComponent;
-
-    public bool IsDataResult => !IsRenderedComponent && Type is not ContentType.Empty;
+    public virtual string? Content { get; }
 
     public static ComponentResult Empty => new(null, ContentType.Empty);
-    
-    public ComponentResult(string? content, ContentType type)
+
+    protected ComponentResult(string? content, ContentType type)
     {
         Type = type;
         Content = content;

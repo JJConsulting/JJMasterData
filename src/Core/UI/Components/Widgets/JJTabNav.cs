@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTabNav : ComponentBase
+public class JJTabNav : HtmlComponent
 {
     private int? _selectedTabIndex;
     public int SelectedTabIndex
@@ -32,7 +33,7 @@ public class JJTabNav : ComponentBase
         CurrentContext = httpContext;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)

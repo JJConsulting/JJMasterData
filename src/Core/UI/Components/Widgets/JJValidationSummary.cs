@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -13,7 +14,7 @@ namespace JJMasterData.Core.Web.Components;
 /// The result will look like this:
 /// <img src="../media/JJValidationSumaryExample.png"/>
 /// </example>
-public class JJValidationSummary : ComponentBase
+public class JJValidationSummary : HtmlComponent
 {
     public IList<string> Errors { get; set; }
 
@@ -58,7 +59,7 @@ public class JJValidationSummary : ComponentBase
         Errors.Add(error);
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var alert = new JJAlert
         {
@@ -69,6 +70,6 @@ public class JJValidationSummary : ComponentBase
             Messages = Errors
         };
 
-        return alert.RenderHtml();
+        return alert.BuildHtml();
     }
 }

@@ -152,7 +152,7 @@ internal class DataImportationLog
                 .Append(HtmlTag.Br)
                 .AppendText(Reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
 
-        return panel.RenderHtml();
+        return panel.BuildHtml();
     }
 
     private JJAlert GetAlertPanel()

@@ -1,13 +1,14 @@
 ﻿using System;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextArea : ControlBase
+public class JJTextArea : HtmlControl
 {
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public int Rows { get; set; }
@@ -19,7 +20,7 @@ public class JJTextArea : ControlBase
         Rows = 5;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var html = new HtmlBuilder(HtmlTag.TextArea)
             .WithAttributes(Attributes)

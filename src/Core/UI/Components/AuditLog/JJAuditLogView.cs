@@ -12,6 +12,7 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -83,7 +84,7 @@ public class JJAuditLogView : AsyncComponent
         StringLocalizer = stringLocalizer;
     }
 
-    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         string ajax = CurrentContext.Request.QueryString("t");
         string viewId = CurrentContext.Request.Form("logId-" + Name);
@@ -99,9 +100,9 @@ public class JJAuditLogView : AsyncComponent
             {
                 var panel = await GetDetailsPanelAsync(viewId);
 
-                CurrentContext.Response.SendResponse(await panel.GetHtmlAsync());
-
-                return null;
+                var panelHtml = (await panel.GetPanelHtmlAsync()).ToString();
+                
+                return new HtmlComponentResult(panelHtml);
             }
 
             html.Append(await GetLogDetailsHtmlAsync(viewId));
@@ -110,7 +111,7 @@ public class JJAuditLogView : AsyncComponent
 
         html.AppendHiddenInput($"logId-{Name}", viewId);
 
-        return html;
+        return RenderedComponentResult.FromHtmlBuilder(html);
     }
 
     private string GetEntryKey(IDictionary<string, dynamic> values)

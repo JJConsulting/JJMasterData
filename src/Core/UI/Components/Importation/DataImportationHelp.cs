@@ -32,7 +32,7 @@ internal class DataImportationHelp
             HtmlBuilderContent = await GetHtmlContent()
         };
 
-        var html = panel.RenderHtml()
+        var html = panel.BuildHtml()
            .AppendHiddenInput("current_uploadaction", "")
            .AppendHiddenInput("filename", "")
            .AppendComponent(GetBackButton());

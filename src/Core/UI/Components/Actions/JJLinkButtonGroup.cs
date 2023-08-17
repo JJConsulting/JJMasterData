@@ -2,11 +2,12 @@
 using System.Linq;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJLinkButtonGroup : ComponentBase
+public class JJLinkButtonGroup : HtmlComponent
 {
     private List<JJLinkButton> _actions;
 
@@ -25,7 +26,7 @@ public class JJLinkButtonGroup : ComponentBase
     
     public string MoreActionsText { get; set; }
     
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var inputGroup = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)

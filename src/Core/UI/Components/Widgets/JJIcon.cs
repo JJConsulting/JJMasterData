@@ -1,10 +1,11 @@
 ﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJIcon : ComponentBase
+public class JJIcon : HtmlComponent
 {
 
     /// <remarks>
@@ -46,7 +47,7 @@ public class JJIcon : ComponentBase
         Title = title;
     }
     
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var element = new HtmlBuilder(HtmlTag.Span)
             .WithNameAndId(Name)

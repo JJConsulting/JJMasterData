@@ -49,7 +49,7 @@ public class FormController : MasterDataController
             .WithNameAndId(formView.Name)
             .WithAttribute("action",Url.Action("GetFormView"))
             .WithAttribute("method", "POST");
-        form.Append(await formView.GetHtmlBuilderAsync());
+        form.Append(await formView.GetResultAsync());
         return Content(form.ToString());
     }
     
@@ -67,7 +67,7 @@ public class FormController : MasterDataController
         formView.PageState = pageState;
         formView.IsExternalRoute = true;
 
-        var html = await formView.GetReloadPanelHtmlAsync();
+        var html = await formView.GetReloadPanelResultAsync();
         
         return Content(html);
     }

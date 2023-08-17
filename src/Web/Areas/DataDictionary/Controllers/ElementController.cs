@@ -41,25 +41,6 @@ public class ElementController : DataDictionaryController
         {
             _elementService.CreateStructureIfNotExists();
             var model = await _elementService.GetFormViewAsync();
-
-            var searchBox = SearchBoxFactory.Create();
-            searchBox.IsExternalRoute = false;
-            searchBox.DataItem = new FormElementDataItem
-            {
-                Items = new List<DataItemValue>
-                {
-                    new("1", "pan1"),
-                    new("2", "pan2")
-                }
-            };
-            searchBox.FieldName = "resultExample";
-
-            var result = await searchBox.GetResultAsync();
-
-            if (result.IsDataResult)
-                return result.ToActionResult();
-            
-            ViewBag.SearchBox = result.Content!;
             
             return View(model);
         }

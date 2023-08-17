@@ -52,7 +52,7 @@ public partial class HtmlBuilder
     }
 
     /// <summary>
-    /// Gets current builder HTML.
+    /// Renders the instance to a String
     /// </summary>
     public override string ToString()
     {

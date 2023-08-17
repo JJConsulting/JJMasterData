@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.UI.Components;
 #if NET48
 using JJMasterData.Commons.Configuration;
 #endif
@@ -90,7 +91,7 @@ public class JJDataPanel : AsyncComponent
     internal IFieldsService FieldsService { get; }
     internal IFormValuesService FormValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
-    internal ControlFactory ControlFactory { get; }
+    internal ComponentFactory ComponentFactory { get; }
 
 
     #endregion
@@ -99,7 +100,7 @@ public class JJDataPanel : AsyncComponent
 #if NET48
     public JJDataPanel()
     {
-        ControlFactory = StaticServiceLocator.Provider.GetScopedDependentService<ControlFactory>();
+        ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<ComponentFactory>();
         EntityRepository =  StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
         DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         CurrentContext =  StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
@@ -144,7 +145,7 @@ public class JJDataPanel : AsyncComponent
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
-        ControlFactory controlFactory
+        ComponentFactory componentFactory
     )
     {
         EntityRepository = entityRepository;
@@ -155,7 +156,7 @@ public class JJDataPanel : AsyncComponent
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
-        ControlFactory = controlFactory;
+        ComponentFactory = componentFactory;
         Values = new Dictionary<string, dynamic>();
         Errors = new Dictionary<string, dynamic>();
         AutoReloadFormFields = true;
@@ -172,8 +173,8 @@ public class JJDataPanel : AsyncComponent
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
-        ControlFactory controlFactory
-    ) : this(entityRepository, dataDictionaryRepository, currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, controlFactory)
+        ComponentFactory componentFactory
+    ) : this(entityRepository, dataDictionaryRepository, currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
     {
         Name = "pnl_" + formElement.Name.ToLower();
         FormElement = formElement;
@@ -182,40 +183,38 @@ public class JJDataPanel : AsyncComponent
 
     #endregion
     
-    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         Values ??= await GetFormValuesAsync();
         string requestType = CurrentContext.Request.QueryString("t");
         string panelName = CurrentContext.Request.QueryString("pnlname");
         
         if (JJLookup.IsLookupRoute(this, CurrentContext))
-            return JJLookup.ResponseRoute(this);
+            return await JJLookup.GetResultFromPanel(this);
         
         if (JJTextFile.IsUploadViewRoute(this, CurrentContext))
-            return JJTextFile.ResponseRoute(this);
+            return await JJTextFile.GetResultFromPanel(this);
         
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))
-            //TODO GUSTAVO INJETAR FILEDOWNLOADER FACTORY OU ARRUMAR
-            return JJFileDownloader.ResponseRoute(CurrentContext, EncryptionService, null);
+            JJFileDownloader.RedirectToDirectDownload(CurrentContext, EncryptionService, ComponentFactory.Downloader);
 
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
-            return JJSearchBox.ResponseJson(this, CurrentContext);
+            return await JJSearchBox.GetResultFromPanel(this, CurrentContext);
 
         if ("reloadPanel".Equals(requestType) && Name.Equals(panelName))
         {
             var html = await GetPanelHtmlAsync();
-            CurrentContext.Response.SendResponse(html.ToString());
-            return null;
+            var panelHtml = html.ToString();
+            return new HtmlComponentResult(panelHtml);
         }
 
         if ("geturlaction".Equals(requestType))
         {
             var encryptedActionMap = CurrentContext.Request["current-form-action-" + Name.ToLower()];
-            await SendUrlRedirect(EncryptionService.DecryptActionMap(encryptedActionMap));
-            return null;
+            return await GetUrlRedirectResult(EncryptionService.DecryptActionMap(encryptedActionMap));
         }
 
-        return await GetPanelHtmlAsync();
+        return RenderedComponentResult.FromHtmlBuilder(await GetPanelHtmlAsync());
     }
 
     internal async Task<HtmlBuilder> GetPanelHtmlAsync()
@@ -307,10 +306,10 @@ public class JJDataPanel : AsyncComponent
         return await FieldsService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink);
     }
     
-    internal async Task SendUrlRedirect(ActionMap actionMap)
+    internal async Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)
     {
         var model = await new UrlRedirectService(FormValuesService, ExpressionsService).GetUrlRedirectAsync(FormElement,actionMap, PageState);
-        
-        CurrentContext.Response.SendResponse(model.ToJson(), "application/json");
+
+        return JsonComponentResult.FromObject(model);
     }
 }

@@ -20,13 +20,13 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
     private IFieldsService FieldsService { get; }
     private IFormValuesService FormValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
-    private ControlFactory ControlFactory { get; }
+    private ComponentFactory ComponentFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public DataPanelFactory(IEntityRepository entityRepository, IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext httpContext, JJMasterDataEncryptionService encryptionService, IFieldsService fieldsService,
         IFormValuesService formValuesService, IExpressionsService expressionsService,
-        ControlFactory controlFactory, JJMasterDataUrlHelper urlHelper)
+        ComponentFactory componentFactory, JJMasterDataUrlHelper urlHelper)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -35,14 +35,14 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
-        ControlFactory = controlFactory;
+        ComponentFactory = componentFactory;
         UrlHelper = urlHelper;
     }
 
     public JJDataPanel Create(FormElement formElement)
     {
         var dataPanel = new JJDataPanel(formElement, EntityRepository, DataDictionaryRepository, HttpContext,
-            EncryptionService, UrlHelper, FieldsService, FormValuesService, ExpressionsService, ControlFactory)
+            EncryptionService, UrlHelper, FieldsService, FormValuesService, ExpressionsService, ComponentFactory)
         {
             IsExternalRoute = true
         };

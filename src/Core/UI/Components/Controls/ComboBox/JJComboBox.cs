@@ -14,10 +14,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJComboBox : ControlBase
+public class JJComboBox : HtmlControl
 {
     private IList<DataItemValue>? _values;
     private string? _selectedValue;
@@ -66,7 +67,7 @@ public class JJComboBox : ControlBase
         FormStateData = new FormStateData(defaultValues, PageState.List);
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         if (DataItem == null)
             throw new ArgumentException("[DataItem] properties not defined for combo", Name);
@@ -219,7 +220,7 @@ public class JJComboBox : ControlBase
             var icon = new JJIcon(item.Icon, item.ImageColor, item.Description)
             {
                 CssClass = "fa-lg fa-fw"
-            }.RenderHtml();
+            }.BuildHtml();
 
             div.Append(icon);
 

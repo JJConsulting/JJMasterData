@@ -1,6 +1,9 @@
+using System;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.UI.FormEvents.Abstractions;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Options;
@@ -26,14 +29,19 @@ public class LoggerGridEventHandler : GridEventHandlerBase
 
     public override void OnRenderCell(object sender, GridCellEventArgs eventArgs)
     {
-        string? message;
+        string message = string.Empty;
         if (eventArgs.Field.Name.Equals(Options.MessageColumnName))
         {
             message = eventArgs.DataRow[Options.MessageColumnName].ToString()?.Replace("\n", "<br>");
         }
         else
         {
-            message = eventArgs.Sender.GetHtml();
+            message = eventArgs.Sender switch
+            {
+                HtmlControl htmlControl => htmlControl.GetHtml(),
+                HtmlComponent htmlComponent => htmlComponent.GetHtml(),
+                _ => message
+            };
         }
 
         eventArgs.HtmlResult = message;

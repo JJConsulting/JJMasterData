@@ -167,7 +167,7 @@ public partial class HtmlBuilder
     public async Task<HtmlBuilder> AppendComponentAsync(AsyncComponent component)
     {
         if (component != null)
-            Append(await component.GetHtmlBuilderAsync());
+            Append(await component.GetResultAsync());
 
         return this;
     }

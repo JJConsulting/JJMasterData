@@ -9,6 +9,7 @@ public interface IHttpResponse
     /// </summary>
     /// <param name="data">Data to the client. Can be a HTML or JSON .</param>
     /// <param name="contentType">Optional. Usually application/json</param>
+    [Obsolete("hello again", true)]
     void SendResponse(string data, string contentType = null);
     void ClearResponse();
     void AddResponseHeader(string key, string value);

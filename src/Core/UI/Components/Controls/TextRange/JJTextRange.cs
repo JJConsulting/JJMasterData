@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -11,7 +12,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextRange : ControlBase
+public class JJTextRange : HtmlControl
 {
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -29,7 +30,7 @@ public class JJTextRange : ControlBase
         StringLocalizer = stringLocalizer;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var div = new HtmlBuilder(string.Empty);
         div.WithCssClass(CssClass);
