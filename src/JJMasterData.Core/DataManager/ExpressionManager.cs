@@ -93,7 +93,7 @@ public class ExpressionManager
                 }
             }
             else if (CurrentContext.HasContext() &&
-                     CurrentContext.Session != null &&
+                     CurrentContext.Session.HasSession() &&
                      CurrentContext.Session[field] != null)
             {
                 val = $"{CurrentContext.Session[field]}";

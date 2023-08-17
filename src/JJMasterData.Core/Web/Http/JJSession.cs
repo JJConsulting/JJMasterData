@@ -1,6 +1,7 @@
 ﻿// ReSharper disable RedundantUsingDirective
 #if NETFRAMEWORK
 using System.Web;
+using System.Windows.Input;
 #endif
 using JJMasterData.Core.Extensions;
 
@@ -22,6 +23,16 @@ public class JJSession
 #else
     private static Microsoft.AspNetCore.Http.HttpContext AspNetCoreCurrent => JJHttpContext.AspNetCoreCurrent;
 #endif
+
+    public bool HasSession()
+    {
+#if NETFRAMEWORK
+        return SystemWebCurrent.Session != null;
+
+#else
+            return AspNetCoreCurrent.Session != null;
+#endif
+    }
 
     public string this[string key]
     {

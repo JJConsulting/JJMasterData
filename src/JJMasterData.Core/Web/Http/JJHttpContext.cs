@@ -77,7 +77,7 @@ public class JJHttpContext
     public bool HasClaimsIdentity()
     {
 #if NETFRAMEWORK
-        return SystemWebCurrent != null && SystemWebCurrent.User.Identity is System.Security.Claims.ClaimsIdentity;
+        return SystemWebCurrent != null && SystemWebCurrent.User?.Identity is System.Security.Claims.ClaimsIdentity;
 #else
         var claims = AspNetCoreCurrent?.User?.Claims;
         return claims != null && claims.Any();
