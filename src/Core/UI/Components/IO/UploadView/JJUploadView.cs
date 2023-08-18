@@ -267,7 +267,7 @@ public class JJUploadView : AsyncComponent
         html.Append(ViewGallery ? await GetHtmlGallery() : await GetHtmlGridView());
         html.AppendComponent(GetHtmlPreviewModal());
 
-        return RenderedComponentResult.FromHtmlBuilder(html);
+        return new RenderedComponentResult(html);
     }
 
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
@@ -408,7 +408,7 @@ public class JJUploadView : AsyncComponent
     {
         var result = await GridView.GetResultAsync();
         if (result is RenderedComponentResult renderedComponentResult)
-            return renderedComponentResult.Content;
+            return renderedComponentResult.HtmlBuilder;
 
         throw new InvalidOperationException("Invalid GridView result");
     }

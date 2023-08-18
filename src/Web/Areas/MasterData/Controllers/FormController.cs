@@ -64,7 +64,7 @@ public class FormController : MasterDataController
                 .WithNameAndId(formView.Name)
                 .WithAttribute("action",Url.Action("GetFormView"))
                 .WithAttribute("method", "POST");
-            form.Append(renderedComponentResult.Content);
+            form.Append(renderedComponentResult.HtmlBuilder);
             return Content(form.ToString());
         }
 

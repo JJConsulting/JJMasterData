@@ -338,7 +338,7 @@ public class JJFormView : AsyncComponent
             var updateResult = await GetUpdateResult();
 
             if (updateResult is RenderedComponentResult renderedComponentResult)
-                html = renderedComponentResult.Content;
+                html = renderedComponentResult.HtmlBuilder;
             else
             {
                 return updateResult;
@@ -349,7 +349,7 @@ public class JJFormView : AsyncComponent
             var insertResult = await GetInsertResult();
 
             if (insertResult is RenderedComponentResult renderedComponentResult)
-                html = renderedComponentResult.Content;
+                html = renderedComponentResult.HtmlBuilder;
             else
             {
                 return insertResult;
@@ -360,7 +360,7 @@ public class JJFormView : AsyncComponent
             var importationResult = await GetImportationResult();
 
             if (importationResult is RenderedComponentResult renderedComponentResult)
-                html = renderedComponentResult.Content;
+                html = renderedComponentResult.HtmlBuilder;
             else
             {
                 return importationResult;
@@ -371,7 +371,7 @@ public class JJFormView : AsyncComponent
             var auditLogResult = await GetAuditLogResult();
 
             if (auditLogResult is RenderedComponentResult renderedComponentResult)
-                html = renderedComponentResult.Content;
+                html = renderedComponentResult.HtmlBuilder;
             else
             {
                 return auditLogResult;
@@ -390,7 +390,7 @@ public class JJFormView : AsyncComponent
             var viewResult = await GetViewResult();
 
             if (viewResult is RenderedComponentResult renderedComponentResult)
-                html = renderedComponentResult.Content;
+                html = renderedComponentResult.HtmlBuilder;
             else
             {
                 return viewResult;
@@ -401,7 +401,7 @@ public class JJFormView : AsyncComponent
             var gridViewResult = await GetGridViewResult();
 
             if (gridViewResult is RenderedComponentResult renderedComponentResult)
-                html = renderedComponentResult.Content;
+                html = renderedComponentResult.HtmlBuilder;
             else
             {
                 return gridViewResult;
@@ -415,7 +415,7 @@ public class JJFormView : AsyncComponent
         }
 
         if (html != null)
-            return RenderedComponentResult.FromHtmlBuilder(html);
+            return new RenderedComponentResult(html);
         return ComponentResult.Empty;
     }
 
@@ -532,10 +532,10 @@ public class JJFormView : AsyncComponent
                         {
                             div.WithAttribute("id", $"insert-panel{Name}")
                                 .WithAttribute("style", "display:none")
-                                .Append(renderedComponentResult.Content);
+                                .Append(renderedComponentResult.HtmlBuilder);
                         });
                         alertHtml.AppendScript($"JJView.showInsertSucess('{Name}');");
-                        return RenderedComponentResult.FromHtmlBuilder(alertHtml);
+                        return new RenderedComponentResult(alertHtml);
                     }
                     else
                     {
@@ -622,14 +622,14 @@ public class JJFormView : AsyncComponent
 
         if (result is RenderedComponentResult renderedComponentResult)
         {
-            html.Append(renderedComponentResult.Content);
+            html.Append(renderedComponentResult.HtmlBuilder);
         }
         else
         {
             return result;
         }
         
-        return RenderedComponentResult.FromHtmlBuilder(html);
+        return new RenderedComponentResult(html);
     }
 
     private async Task<ComponentResult> GetInsertSelectionResult()
@@ -658,7 +658,7 @@ public class JJFormView : AsyncComponent
 
             if (insertSelectionResult is RenderedComponentResult renderedComponentResult)
             {
-                html.Append(renderedComponentResult.Content);
+                html.Append(renderedComponentResult.HtmlBuilder);
             }
             else
             {
@@ -676,7 +676,7 @@ public class JJFormView : AsyncComponent
 
             if (result is RenderedComponentResult renderedComponentResult)
             {
-                html.Append(renderedComponentResult.Content);
+                html.Append(renderedComponentResult.HtmlBuilder);
             }
             else
             {
@@ -684,7 +684,7 @@ public class JJFormView : AsyncComponent
             }
         }
 
-        return RenderedComponentResult.FromHtmlBuilder(html);
+        return new RenderedComponentResult(html);
     }
 
     private async Task<ComponentResult> GetViewResult()
@@ -884,7 +884,7 @@ public class JJFormView : AsyncComponent
 
         if (result is RenderedComponentResult renderedComponentResult)
         {
-            html.Append(renderedComponentResult.Content);
+            html.Append(renderedComponentResult.HtmlBuilder);
         }
         else
         {
@@ -892,7 +892,7 @@ public class JJFormView : AsyncComponent
         }
    
 
-        return RenderedComponentResult.FromHtmlBuilder(html);
+        return new RenderedComponentResult(html);
     }
     
     
@@ -914,7 +914,7 @@ public class JJFormView : AsyncComponent
         
         if (!relationships.Any())
         {
-            return RenderedComponentResult.FromHtmlBuilder(await GetHtmlFromPanel(parentPanel));
+            return new RenderedComponentResult(await GetHtmlFromPanel(parentPanel));
         }
 
         var html = new HtmlBuilder(HtmlTag.Div);
@@ -933,7 +933,7 @@ public class JJFormView : AsyncComponent
 
         if (relationshipsResult is RenderedComponentResult renderedComponentResult)
         {
-            html.Append(renderedComponentResult.Content);
+            html.Append(renderedComponentResult.HtmlBuilder);
         }
         else
         {
@@ -946,7 +946,7 @@ public class JJFormView : AsyncComponent
 
         html.AppendComponent(await GetFormToolbarAsync(bottomActions));
 
-        return RenderedComponentResult.FromHtmlBuilder(html);
+        return new RenderedComponentResult(html);
     }
 
     internal async Task<HtmlBuilder> GetHtmlFromPanel(JJDataPanel panel)

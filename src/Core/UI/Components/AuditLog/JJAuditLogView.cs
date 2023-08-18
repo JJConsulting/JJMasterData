@@ -95,7 +95,7 @@ public class JJAuditLogView : AsyncComponent
             var gridResult = await GridView.GetResultAsync();
             if (gridResult is RenderedComponentResult renderedComponentResult)
             {
-                html.Append(renderedComponentResult.Content);
+                html.Append(renderedComponentResult.HtmlBuilder);
             }
             else
             {
@@ -119,7 +119,7 @@ public class JJAuditLogView : AsyncComponent
 
         html.AppendHiddenInput($"logId-{Name}", viewId);
 
-        return RenderedComponentResult.FromHtmlBuilder(html);
+        return new RenderedComponentResult(html);
     }
 
     private string GetEntryKey(IDictionary<string, dynamic> values)

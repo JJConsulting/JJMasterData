@@ -606,7 +606,7 @@ public class JJGridView : AsyncComponent
         {
             string selectedRows = await GetEncryptedSelectedRowsAsync();
             
-            return JsonComponentResult.FromObject(new {selectedRows});
+            return new JsonComponentResult(new {selectedRows});
         }
         
         if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
@@ -628,7 +628,7 @@ public class JJGridView : AsyncComponent
             return await jjSearchBox.GetResultAsync();
         }
         
-        return RenderedComponentResult.FromHtmlBuilder(await GetHtmlBuilderAsync());
+        return new RenderedComponentResult(await GetHtmlBuilderAsync());
     }
 
     internal async Task<HtmlBuilder> GetHtmlBuilderAsync()
@@ -1103,11 +1103,11 @@ public class JJGridView : AsyncComponent
                 {
                     var dto = DataExportation.GetCurrentProgress();
                     var json = JsonConvert.SerializeObject(dto);
-                    return JsonComponentResult.FromObject(dto);
+                    return new JsonComponentResult(dto);
                 }
             case "stopProcess":
                 DataExportation.StopExportation();
-                return JsonComponentResult.FromObject(new {});
+                return new JsonComponentResult(new {});
         }
 
         return ComponentResult.Empty;

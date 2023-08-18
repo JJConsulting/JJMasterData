@@ -204,7 +204,7 @@ internal class GridTableBody
 
                 if (result is RenderedComponentResult renderedComponentResult)
                 {
-                    div.Append(renderedComponentResult.Content);
+                    div.Append(renderedComponentResult.HtmlBuilder);
                 }
             }
         }

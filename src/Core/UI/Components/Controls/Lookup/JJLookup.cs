@@ -119,10 +119,10 @@ public class JJLookup : AsyncControl
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (!IsLookupRoute())
-            return RenderedComponentResult.FromHtmlBuilder(await GetLookupHtml());
+            return new RenderedComponentResult(await GetLookupHtml());
 
         if (IsAjaxGetDescription())
-            return JsonComponentResult.FromObject(await GetResultAsync());
+            return new JsonComponentResult(await GetResultAsync());
         
         return ComponentResult.Empty;
     }

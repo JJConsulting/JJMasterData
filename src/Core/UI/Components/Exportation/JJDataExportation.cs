@@ -112,7 +112,7 @@ public class JJDataExportation : ProcessComponent
         if (IsRunning())
             result = HtmlComponentResult.FromHtmlBuilder(new DataExportationLog(this).GetHtmlProcess());
         else
-            result = RenderedComponentResult.FromHtmlBuilder(new DataExportationSettings(this).GetHtmlBuilder());
+            result = new RenderedComponentResult(new DataExportationSettings(this).GetHtmlBuilder());
         
         return await Task.FromResult(result);
     }

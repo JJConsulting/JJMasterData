@@ -127,11 +127,11 @@ public class JJDataImportation : ProcessComponent
             {
                 var reporterProgress = GetCurrentProgress();
                 
-                return JsonComponentResult.FromObject(reporterProgress);
+                return new JsonComponentResult(reporterProgress);
             }
             case "process_stop":
                 StopExportation();
-                return JsonComponentResult.FromObject(new {isProcessing = false});
+                return new JsonComponentResult(new {isProcessing = false});
             case "process_finished":
                 html = GetHtmlLogProcess();
                 break;
@@ -159,7 +159,7 @@ public class JJDataImportation : ProcessComponent
             }
         }
 
-        return RenderedComponentResult.FromHtmlBuilder(html);
+        return new RenderedComponentResult(html);
     }
 
     private HtmlBuilder GetHtmlLogProcess()

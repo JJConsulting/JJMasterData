@@ -129,10 +129,10 @@ public class JJUploadArea : AsyncComponent
                 UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
             
             var result = await UploadAreaService.UploadFileAsync("file",AllowedTypes);
-            return JsonComponentResult.FromObject(result);
+            return new JsonComponentResult(result);
         }
 
-        return RenderedComponentResult.FromHtmlBuilder(GetUploadAreaHtml());
+        return new RenderedComponentResult(GetUploadAreaHtml());
     }
 
     internal HtmlBuilder GetUploadAreaHtml()

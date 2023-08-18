@@ -214,7 +214,7 @@ public class JJDataPanel : AsyncComponent
             return await GetUrlRedirectResult(EncryptionService.DecryptActionMap(encryptedActionMap));
         }
 
-        return RenderedComponentResult.FromHtmlBuilder(await GetPanelHtmlAsync());
+        return new RenderedComponentResult(await GetPanelHtmlAsync());
     }
 
     internal async Task<HtmlBuilder> GetPanelHtmlAsync()
@@ -310,6 +310,6 @@ public class JJDataPanel : AsyncComponent
     {
         var model = await new UrlRedirectService(FormValuesService, ExpressionsService).GetUrlRedirectAsync(FormElement,actionMap, PageState);
 
-        return JsonComponentResult.FromObject(model);
+        return new JsonComponentResult(model);
     }
 }

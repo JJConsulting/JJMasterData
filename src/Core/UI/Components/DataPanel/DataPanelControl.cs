@@ -358,7 +358,7 @@ internal class DataPanelControl
             {
                 var result = await asyncControl.GetResultAsync();
                 if (result is RenderedComponentResult renderedComponentResult)
-                    return renderedComponentResult.Content;
+                    return renderedComponentResult.HtmlBuilder;
                 break;
             }
         }

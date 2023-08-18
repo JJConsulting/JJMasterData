@@ -16,14 +16,18 @@ public class ComponentResult
 
     public virtual string? Content { get; }
 
-    public static ComponentResult Empty => new(null, ContentType.Empty);
+    public static ComponentResult Empty => new(ContentType.Empty);
 
-    protected ComponentResult(string? content, ContentType type)
+    internal ComponentResult(string content, ContentType type)
+    {
+        Content = content;
+        Type = type;
+    }
+    
+    protected ComponentResult(ContentType type)
     {
         Type = type;
-        Content = content;
     }
     
     public static implicit operator string?(ComponentResult result) => result.Content;
-    public static explicit operator ComponentResult(string content) => new(content, ContentType.RenderedComponent);
 }

@@ -221,7 +221,7 @@ public class JJSearchBox : AsyncControl
 
         var html = await GetSearchBoxHtml();
 
-        return RenderedComponentResult.FromHtmlBuilder(html);
+        return new RenderedComponentResult(html);
     }
     
     public static bool IsSearchBoxRoute(ComponentBase view, IHttpContext httpContext)

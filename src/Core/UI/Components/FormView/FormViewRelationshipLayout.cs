@@ -34,7 +34,7 @@ internal class FormViewRelationshipLayout
 
             if (tabNavResult is RenderedComponentResult renderedComponentResult)
             {
-                relationshipsDiv.Append(renderedComponentResult.Content);
+                relationshipsDiv.Append(renderedComponentResult.HtmlBuilder);
             }
             else
             {
@@ -48,7 +48,7 @@ internal class FormViewRelationshipLayout
 
             if (relationshipResult is RenderedComponentResult renderedComponentResult)
             {
-                var panel = GetNonTabRelationshipPanelHtml(relationship, renderedComponentResult.Content);
+                var panel = GetNonTabRelationshipPanelHtml(relationship, renderedComponentResult.HtmlBuilder);
                 relationshipsDiv.Append(panel);
             }
             else
@@ -58,7 +58,7 @@ internal class FormViewRelationshipLayout
           
         }
 
-        return RenderedComponentResult.FromHtmlBuilder(relationshipsDiv);
+        return new RenderedComponentResult(relationshipsDiv);
     }
     
     
@@ -90,7 +90,7 @@ internal class FormViewRelationshipLayout
                 tabNav.ListTab.Add(new NavContent
                 {
                     Title = relationship.Panel.Title,
-                    HtmlContent = renderedComponentResult.Content
+                    HtmlContent = renderedComponentResult.HtmlBuilder
                 });
             }
             else
@@ -99,7 +99,7 @@ internal class FormViewRelationshipLayout
             }
         }
 
-        return RenderedComponentResult.FromHtmlBuilder(tabNav.GetHtmlBuilder());
+        return new RenderedComponentResult(tabNav.GetHtmlBuilder());
     }
 
     private HtmlBuilder? GetNonTabRelationshipPanelHtml(FormElementRelationship relationship, HtmlBuilder? content)
@@ -153,7 +153,7 @@ internal class FormViewRelationshipLayout
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
         {
-            return RenderedComponentResult.FromHtmlBuilder(await ParentFormView.GetHtmlFromPanel(parentPanel));
+            return new RenderedComponentResult(await ParentFormView.GetHtmlFromPanel(parentPanel));
         }
 
         var childElement = await ParentFormView.DataDictionaryRepository.GetMetadataAsync(relationship.ElementRelationship!.ChildElement);
@@ -202,7 +202,7 @@ internal class FormViewRelationshipLayout
                     {
                  
                         var filters = ParentFormView.EncryptionService.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(filter));
-                        renderedComponentResult.Content.AppendHiddenInput($"jjgridview-{childElement.Name}_filters", filters);
+                        renderedComponentResult.HtmlBuilder.AppendHiddenInput($"jjgridview-{childElement.Name}_filters", filters);
                     
                         return renderedComponentResult;
                     }

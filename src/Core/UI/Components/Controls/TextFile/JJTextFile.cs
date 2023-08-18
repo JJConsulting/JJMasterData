@@ -71,7 +71,7 @@ public class JJTextFile : AsyncControl
         if (IsUploadViewRoute())
             return await Task.FromResult(await GetUploadViewResult());
 
-        return await Task.FromResult(RenderedComponentResult.FromHtmlBuilder(GetHtmlTextGroup()));
+        return await Task.FromResult(new RenderedComponentResult(GetHtmlTextGroup()));
     }
 
     internal async Task<ComponentResult> GetUploadViewResult()
@@ -88,7 +88,7 @@ public class JJTextFile : AsyncControl
 
         if (result is RenderedComponentResult renderedUpload)
         {
-            html.Append(renderedUpload.Content);
+            html.Append(renderedUpload.HtmlBuilder);
             html.AppendScript(GetRefreshScript(uploadView));
         }
         else
@@ -96,7 +96,7 @@ public class JJTextFile : AsyncControl
             return result;
         }
         
-        return RenderedComponentResult.FromHtmlBuilder(html);
+        return new RenderedComponentResult(html);
     }
 
     private HtmlBuilder GetHtmlTextGroup()
