@@ -209,14 +209,12 @@ public class JJSearchBox : AsyncControl
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (IsSearchBoxRoute(this, CurrentContext))
+        if (IsSearchBoxRoute(DictionaryName, CurrentContext))
         {
             if (!FieldName.Equals(CurrentContext.Request.QueryString("fieldName")))
                 return ComponentResult.Empty;
 
-            string json = JsonConvert.SerializeObject(await GetSearchBoxItemsAsync());
-
-            return new JsonComponentResult(json);
+            return new JsonComponentResult(await GetSearchBoxItemsAsync());
         }
 
         var html = await GetSearchBoxHtml();
@@ -224,15 +222,16 @@ public class JJSearchBox : AsyncControl
         return new RenderedComponentResult(html);
     }
     
-    public static bool IsSearchBoxRoute(ComponentBase view, IHttpContext httpContext)
+    public static bool IsSearchBoxRoute(string? dictionaryName, IHttpContext httpContext)
     {
         string requestType = httpContext.Request.QueryString("t");
-        return "jjsearchbox".Equals(requestType);
+        string requestedDictionaryName = httpContext.Request.QueryString("dictionaryName");
+        return "jjsearchbox".Equals(requestType) && (requestedDictionaryName == dictionaryName || dictionaryName is null);
     }
 
     public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view, IHttpContext httpContext)
     {
-        return await GetResultFromComponent(view, view.FormElement, view.Values, httpContext, view.ComponentFactory.Controls.GetFactory<SearchBoxFactory>());
+        return await GetResultFromComponent(view, view.FormElement, view.Values, httpContext, view.ComponentFactory.Controls.GetFactory<IControlFactory<JJSearchBox>>());
     }
 
     internal static async Task<ComponentResult> GetResultFromComponent(
@@ -240,7 +239,7 @@ public class JJSearchBox : AsyncControl
         FormElement formElement,
         IDictionary<string, dynamic> formValues,
         IHttpContext httpContext,
-        SearchBoxFactory searchBoxFactory
+        IControlFactory<JJSearchBox> searchBoxFactory
         )
     {
         string dictionaryName = httpContext.Request.QueryString("dictionaryName");

@@ -50,6 +50,10 @@
     }
     
     public static hide(): void {
-        document.querySelector<HTMLElement>(this.spinnerOverlayId).style.display = "none";
+        const overlay = document.querySelector<HTMLElement>(this.spinnerOverlayId);
+        
+        if(overlay){
+            overlay.style.display = "none";
+        }
     }
 }

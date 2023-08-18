@@ -1745,7 +1745,10 @@ class SpinnerOverlay {
         document.querySelector(this.spinnerOverlayId).style.display = "";
     }
     static hide() {
-        document.querySelector(this.spinnerOverlayId).style.display = "none";
+        const overlay = document.querySelector(this.spinnerOverlayId);
+        if (overlay) {
+            overlay.style.display = "none";
+        }
     }
 }
 SpinnerOverlay.spinnerOverlayId = "#spinner-overlay";

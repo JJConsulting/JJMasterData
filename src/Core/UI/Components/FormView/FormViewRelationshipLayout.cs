@@ -189,7 +189,7 @@ internal class FormViewRelationshipLayout
                     var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
                     childFormView.DataPanel.FieldNamePrefix = childElement.Name + "_";
                     childFormView.UserValues = ParentFormView.UserValues;
-                    childFormView.IsExternalRoute = true;
+                    childFormView.IsExternalRoute = false;
                     childFormView.RelationValues = mappedForeignKeys;
                     await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
                     childFormView.SetOptions(childElement.Options);
@@ -207,13 +207,11 @@ internal class FormViewRelationshipLayout
                         return renderedComponentResult;
                     }
 
-                    break;
+                    return result;
             }
             default:
                 return ComponentResult.Empty;
         }
-        
-        return ComponentResult.Empty;
     }
 
     private static IDictionary<string, dynamic?> GetMappedForeignKeys(FormElement formElement, Dictionary<string, dynamic> filters)

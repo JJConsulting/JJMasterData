@@ -609,7 +609,7 @@ public class JJGridView : AsyncComponent
             return new JsonComponentResult(new {selectedRows});
         }
         
-        if (JJSearchBox.IsSearchBoxRoute(this, CurrentContext))
+        if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
             return await JJSearchBox.GetResultFromComponent(this,FormElement, await GetCurrentFilterAsync(), CurrentContext,ComponentFactory.Controls.GetFactory<SearchBoxFactory>());
 
         if ("jjsearchbox".Equals(requestType))
