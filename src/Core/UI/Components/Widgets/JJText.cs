@@ -1,11 +1,12 @@
-﻿using JJMasterData.Core.Web.Html;
+﻿using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
 /// <summary>
 /// Represents a plain text.
 /// </summary>
-public class JJText : ComponentBase
+public class JJText : HtmlComponent
 {
     private string Text { get; set; }
 
@@ -20,5 +21,5 @@ public class JJText : ComponentBase
         Text = text;
     }
 
-    internal override HtmlBuilder RenderHtml() => new(Text);
+    internal override HtmlBuilder BuildHtml() => new(Text);
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
@@ -14,7 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJFileDownloader : ComponentBase
+public class JJFileDownloader : HtmlComponent
 {
     public const string DirectDownloadParameter = "jjdirectdownload";
     public const string DownloadParameter = "jjdownload";
@@ -29,7 +30,6 @@ public class JJFileDownloader : ComponentBase
     internal JJMasterDataUrlHelper UrlHelper { get; }
     internal ILogger<JJFileDownloader> Logger { get; }
     internal JJMasterDataEncryptionService EncryptionService { get; }
-    
     
     public JJFileDownloader(
         IHttpContext currentContext,
@@ -46,7 +46,7 @@ public class JJFileDownloader : ComponentBase
     }
 
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         if (string.IsNullOrEmpty(FilePath))
             throw new JJMasterDataException(StringLocalizer["Invalid file path or badly formatted URL"]);
@@ -54,8 +54,8 @@ public class JJFileDownloader : ComponentBase
         if (IsExternalLink)
             return GetDownloadHtmlElement();
         
-        DirectDownload();
-    
+        RedirectToDirectDownload();
+
         return null;
     }
 
@@ -109,7 +109,7 @@ public class JJFileDownloader : ComponentBase
         return html;
     }
     
-    internal void DirectDownload()
+    internal void RedirectToDirectDownload()
     {
         if (string.IsNullOrEmpty(FilePath))
             throw new ArgumentNullException(nameof(FilePath));
@@ -121,10 +121,10 @@ public class JJFileDownloader : ComponentBase
             throw exception;
         }
 
-        DirectDownload(FilePath);
+        RedirectToDirectDownload(FilePath);
     }
 
-    internal void DirectDownload(string filePath)
+    internal void RedirectToDirectDownload(string filePath)
     {
         CurrentContext.Response.Redirect(GetDownloadUrl(filePath));
     }
@@ -146,7 +146,7 @@ public class JJFileDownloader : ComponentBase
         return false;
     }
 
-    public static HtmlBuilder ResponseRoute(
+    public static void RedirectToDirectDownload(
         IHttpContext currentContext, 
         JJMasterDataEncryptionService encryptionService, 
         IComponentFactory<JJFileDownloader> factory)
@@ -160,7 +160,7 @@ public class JJFileDownloader : ComponentBase
         }
 
         if (criptFilePath == null)
-            return null;
+            return;
 
         string filePath = encryptionService.DecryptStringWithUrlUnescape(criptFilePath);
         if (filePath == null)
@@ -170,7 +170,7 @@ public class JJFileDownloader : ComponentBase
         download.FilePath = filePath;
         download.IsExternalLink = isExternalLink;
 
-        return download.GetHtmlBuilder();
+        download.RedirectToDirectDownload();
     }
 
 

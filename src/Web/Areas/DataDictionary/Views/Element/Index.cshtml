@@ -1,12 +1,10 @@
-﻿@using JJMasterData.Web.Extensions
-@model JJMasterData.Core.Web.Components.JJFormView
-
+﻿
 @{
     ViewData["Title"] = $"Data Dictionaries";
 }
 
 @using (Html.BeginForm())
 {
-    @Html.Raw(await Model.GetHtmlAsync())
+    @Html.Raw(ViewBag.FormViewHtml)
 }
     

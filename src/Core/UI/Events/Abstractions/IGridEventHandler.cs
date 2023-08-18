@@ -18,5 +18,4 @@ public interface IGridEventHandler : IEventHandler
     
     public void OnRenderAction(object sender, ActionEventArgs eventArgs);
     public Task OnRenderActionAsync(object sender, ActionEventArgs eventArgs);
-    public void OnGridViewCreated(JJGridView gridView);
 }

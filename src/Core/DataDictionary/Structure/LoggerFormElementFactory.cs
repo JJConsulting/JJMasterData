@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class LoggerFormElementFactory : IFormElementFactory
+public class LoggerFormElementFactory
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }

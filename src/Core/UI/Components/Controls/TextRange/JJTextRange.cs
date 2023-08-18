@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -11,13 +12,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextRange : ControlBase
+public class JJTextRange : HtmlControl
 {
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    internal ControlBase FromField { get; set; }
-    internal ControlBase ToField { get; set; }
+    internal HtmlControl FromField { get; set; }
+    internal HtmlControl ToField { get; set; }
 
     public FieldType FieldType { get; set; }
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
@@ -29,7 +30,7 @@ public class JJTextRange : ControlBase
         StringLocalizer = stringLocalizer;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var div = new HtmlBuilder(string.Empty);
         div.WithCssClass(CssClass);

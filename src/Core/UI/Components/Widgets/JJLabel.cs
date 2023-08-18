@@ -3,13 +3,13 @@ using JetBrains.Annotations;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
-
+using JJMasterData.Core.UI.Components;
 namespace JJMasterData.Core.Web.Components;
 
 /// <summary>
 /// Representa um Label padrão
 /// </summary>
-public class JJLabel : ComponentBase
+public class JJLabel : HtmlComponent
 {
     /// <summary>
     /// Texto exibido quando o ponteiro do mouse passa sobre o controle
@@ -54,7 +54,7 @@ public class JJLabel : ComponentBase
         IsRequired = field.IsRequired;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var element = new HtmlBuilder(HtmlTag.Label)
             .WithNameAndId(Name)

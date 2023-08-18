@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -8,7 +9,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJLegendView : ComponentBase
+public class JJLegendView : HtmlComponent
 {
     private IControlFactory<JJComboBox> ComboBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -28,7 +29,7 @@ public class JJLegendView : ComponentBase
 
     #endregion
     
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         if (ShowAsModal)
         {
@@ -95,7 +96,7 @@ public class JJLegendView : ComponentBase
             HtmlBuilderContent = form
         };
         
-        return dialog.RenderHtml();
+        return dialog.BuildHtml();
     }
     
     private FormElementField GetFieldLegend(FormElement formElement)

@@ -1,11 +1,12 @@
 using System.Globalization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJSlider : ControlBase
+public class JJSlider : HtmlControl
 {
     public double MinValue { get; set; }
     public double MaxValue { get; set; }
@@ -19,7 +20,7 @@ public class JJSlider : ControlBase
 
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()  
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")

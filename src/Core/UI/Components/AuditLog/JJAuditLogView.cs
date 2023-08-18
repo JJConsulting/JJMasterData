@@ -12,6 +12,7 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -83,7 +84,7 @@ public class JJAuditLogView : AsyncComponent
         StringLocalizer = stringLocalizer;
     }
 
-    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         string ajax = CurrentContext.Request.QueryString("t");
         string viewId = CurrentContext.Request.Form("logId-" + Name);
@@ -91,7 +92,15 @@ public class JJAuditLogView : AsyncComponent
 
         if (string.IsNullOrEmpty(viewId))
         {
-            await html.AppendComponentAsync(GridView);
+            var gridResult = await GridView.GetResultAsync();
+            if (gridResult is RenderedComponentResult renderedComponentResult)
+            {
+                html.Append(renderedComponentResult.HtmlBuilder);
+            }
+            else
+            {
+                return gridResult;
+            }
         }
         else
         {
@@ -99,9 +108,9 @@ public class JJAuditLogView : AsyncComponent
             {
                 var panel = await GetDetailsPanelAsync(viewId);
 
-                CurrentContext.Response.SendResponse(await panel.GetHtmlAsync());
-
-                return null;
+                var panelHtml = (await panel.GetPanelHtmlAsync()).ToString();
+                
+                return new HtmlComponentResult(panelHtml);
             }
 
             html.Append(await GetLogDetailsHtmlAsync(viewId));
@@ -110,7 +119,7 @@ public class JJAuditLogView : AsyncComponent
 
         html.AppendHiddenInput($"logId-{Name}", viewId);
 
-        return html;
+        return new RenderedComponentResult(html);
     }
 
     private string GetEntryKey(IDictionary<string, dynamic> values)
@@ -202,13 +211,13 @@ public class JJAuditLogView : AsyncComponent
             });
         });
 
-        row.Append(HtmlTag.Div, d =>
+        await row.AppendAsync(HtmlTag.Div, async d =>
         {
             d.WithCssClass("col-sm-9");
-            d.Append(HtmlTag.Div, div =>
+            await d.AppendAsync(HtmlTag.Div, async div =>
             {
                 div.WithCssClass("jjrelative");
-                div.Append(HtmlTag.Div, divDetail =>
+                await div.AppendAsync(HtmlTag.Div, async divDetail =>
                 {
                     divDetail.WithCssClass("fieldDetail")
                         .Append(HtmlTag.P,
@@ -216,7 +225,7 @@ public class JJAuditLogView : AsyncComponent
                             {
                                 p.Append(HtmlTag.B, b => { b.AppendText($"{StringLocalizer["Record Snapshot"]}:"); });
                             });
-                    divDetail.AppendComponent(panel);
+                    divDetail.Append( await panel.GetPanelHtmlAsync());
                 });
             });
         });

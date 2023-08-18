@@ -1,10 +1,11 @@
 ﻿using JJMasterData.Commons.Localization;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextBox : ControlBase
+public class JJTextBox : HtmlControl
 {
     public InputType InputType { get; set; }
 
@@ -21,7 +22,7 @@ public class JJTextBox : ControlBase
         Enabled = true;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         string inputType = InputType.ToString().ToLower();
         if (NumberOfDecimalPlaces > 0)

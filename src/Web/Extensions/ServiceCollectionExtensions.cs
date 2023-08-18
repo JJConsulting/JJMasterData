@@ -128,7 +128,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<OptionsService>();
         services.AddTransient<AboutService>();
-        
+        services.AddTransient<LocalizationService>();
+            
         services.AddHttpContextAccessor();
         services.AddSession();
         services.AddDistributedMemoryCache();

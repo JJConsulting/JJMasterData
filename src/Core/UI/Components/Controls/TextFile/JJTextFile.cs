@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
@@ -10,6 +11,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -17,7 +19,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextFile : ControlBase
+public class JJTextFile : AsyncControl
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
@@ -64,26 +66,37 @@ public class JJTextFile : ControlBase
         StringLocalizer = stringLocalizer;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (IsUploadViewRoute())
-            return GetUploadViewHtmlBuilder();
+            return await Task.FromResult(await GetUploadViewResult());
 
-        return GetHtmlTextGroup();
+        return await Task.FromResult(new RenderedComponentResult(GetHtmlTextGroup()));
     }
 
-    internal HtmlBuilder GetUploadViewHtmlBuilder()
+    internal async Task<ComponentResult> GetUploadViewResult()
     {
         //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
         //por esse motivo passamos os valores nessários do form anterior por parametro o:)
         LoadValuesFromQuery();
 
-        var formUpload = GetUploadView();
+        var uploadView = GetUploadView();
 
         var html = new HtmlBuilder();
-        html.AppendComponent(formUpload);
-        html.AppendScript(GetRefreshScript(formUpload));
-        return html;
+
+        var result = await uploadView.GetResultAsync();
+
+        if (result is RenderedComponentResult renderedUpload)
+        {
+            html.Append(renderedUpload.HtmlBuilder);
+            html.AppendScript(GetRefreshScript(uploadView));
+        }
+        else
+        {
+            return result;
+        }
+        
+        return new RenderedComponentResult(html);
     }
 
     private HtmlBuilder GetHtmlTextGroup()
@@ -363,7 +376,7 @@ public class JJTextFile : ControlBase
         return httpContext.Request.QueryString(UploadViewParameterName + dataPanelName) != null;
     }
 
-    public static HtmlBuilder ResponseRoute(JJDataPanel view)
+    internal static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
         string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadViewParameterName + view.Name);
         if (uploadFormRoute == null)
@@ -372,9 +385,10 @@ public class JJTextFile : ControlBase
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(uploadFormRoute));
         if (field == null)
             return null;
-        ;
 
-        var upload = view.ControlFactory.CreateAsync(view.FormElement, field, null, view.Values, view.PageState, view.Name).GetAwaiter().GetResult();
-        return upload.GetHtmlBuilder();
+        var textFile = (JJTextFile)await view.ComponentFactory.Controls.CreateAsync(view.FormElement, field, null, view.Values, view.PageState, view.Name);
+        return await textFile.GetResultAsync();
     }
+
+
 }

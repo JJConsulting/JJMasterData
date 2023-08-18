@@ -2,7 +2,7 @@
     static setup(){
         $("input.jjsearchbox").each(function () {
             const componentName = $(this).attr("jjid");
-            let urltypehead = $(this).attr("urltypehead");
+            let urltypehead: string = $(this).attr("urltypehead");
             let triggerlength = $(this).attr("triggerlength");
             let numberofitems = $(this).attr("numberofitems");
             let scrollbar = Boolean($(this).attr("scrollbar"));
@@ -30,6 +30,7 @@
                     url += "?";
 
                 urltypehead = url + urltypehead;
+        
             }
 
             const jjSearchBoxSelector = "#" + componentName + "_text";
@@ -54,7 +55,6 @@
                     preDispatch: function () {
                         $(jjSearchBoxHiddenSelector).val("");
                         FeedbackIcon.setIcon(jjSearchBoxSelector, "")
-                        
                         return frm.serializeArray();
                     },
                 },

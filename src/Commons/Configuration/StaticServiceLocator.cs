@@ -8,8 +8,6 @@ namespace JJMasterData.Commons.Configuration;
 /// This class will be removed at the next version, DON'T USE at your applications, always use constructor injector.
 /// </summary>
 
-[Obsolete("Static service locator can lead to runtime errors.")]
-
 public static class StaticServiceLocator
 {
     public static IServiceProvider Provider { get; internal set; }

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -30,6 +31,24 @@ internal class GridFilter
     public GridFilter(JJGridView grid)
     {
         GridView = grid;
+    }
+    
+    internal async Task<HtmlBuilder> GetFilterHtml()
+    {
+        var filterAction = GridView.FilterAction;
+        var formData = await GridView.GetFormDataAsync();
+        bool isVisible = await GridView.ExpressionsService.GetBoolValueAsync(filterAction.VisibleExpression, formData);
+
+        if (!isVisible)
+            return new HtmlBuilder(string.Empty);
+
+        if (GridView.FilterAction.ShowAsCollapse &&
+            GridView.FilterAction.EnableScreenSearch)
+        {
+            return GetFilterScreenCollapse().BuildHtml();
+        }
+
+        return await GetDefaultFilter();
     }
 
     /// <summary>
@@ -131,49 +150,9 @@ internal class GridFilter
         
         CurrentContext.Session.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
     }
-    
-    public async Task<HtmlBuilder> GetFilterHtml()
+
+    private async Task<HtmlBuilder> GetDefaultFilter()
     {
-        var filterAction = GridView.FilterAction;
-        var formData = await GridView.GetFormDataAsync();
-        bool isVisible = await GridView.ExpressionsService.GetBoolValueAsync(filterAction.VisibleExpression, formData);
-
-        if (!isVisible)
-            return new HtmlBuilder(string.Empty);
-
-        if (GridView.FilterAction.ShowAsCollapse &&
-            GridView.FilterAction.EnableScreenSearch)
-        {
-            return GetFilterScreenHtml().RenderHtml();
-        }
-
-        return await GetDefaultFilterHtml();
-    }
-
-    private async Task<HtmlBuilder> GetDefaultFilterHtml()
-    {
-        var requestType = CurrentContext.Request.QueryString("t");
-        var objName = CurrentContext.Request.QueryString("objname");
-        var panelName = CurrentContext.Request.QueryString("pnlname");
-
-        if (JJSearchBox.IsSearchBoxRoute(GridView, GridView.CurrentContext))
-            return JJSearchBox.ResponseJson(GridView, GridView.FormElement, await GridView.GetCurrentFilterAsync(), GridView.CurrentContext, GridView.ComponentFactory.Controls.GetFactory<SearchBoxFactory>());
-
-        if ("jjsearchbox".Equals(requestType))
-        {
-            if (objName == null || !objName.StartsWith(FilterFieldPrefix))
-                return null;
-
-            string filterName = objName.Substring(FilterFieldPrefix.Length);
-            if (!GridView.FormElement.Fields.Contains(filterName))
-                return null;
-
-            var field = GridView.FormElement.Fields[filterName];
-            var jjSearchBox = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement,field, await GridView.GetCurrentFilterAsync(), GridView.UserValues, PageState.Filter, GridView.Name);
-            jjSearchBox.Name = objName;
-            jjSearchBox.GetHtml();
-        }
-
         var action = GridView.FilterAction;
         var fields = GridView.FormElement.Fields.ToList().FindAll(
             field => field.Filter.Type != FilterMode.None && !field.VisibleExpression.Equals("val:0"));
@@ -250,19 +229,13 @@ internal class GridFilter
             
             html = modal.GetHtmlBuilder();
         }
-        
-        //TODO: Is this unused? I didn't find any AJAX call here using CTRL+F.
-        if ("reloadgridfilter".Equals(requestType) && GridView.Name.Equals(panelName))
-        {
-            CurrentContext.Response.SendResponse(html.ToString());
-            return null;
-        }
+
 
         return html;
     }
 
 
-    private JJCollapsePanel GetFilterScreenHtml()
+    private JJCollapsePanel GetFilterScreenCollapse()
     {
         var body = new HtmlBuilder(HtmlTag.Div);
         body.WithCssClass("col-sm-12");

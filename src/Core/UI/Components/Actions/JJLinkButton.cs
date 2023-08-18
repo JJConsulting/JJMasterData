@@ -3,6 +3,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -11,7 +12,7 @@ namespace JJMasterData.Core.Web.Components;
 /// Represents a clickable button
 /// </summary>
 
-public class JJLinkButton : ComponentBase
+public class JJLinkButton : HtmlComponent
 {
 
     private JJSpinner _spinner;
@@ -95,7 +96,7 @@ public class JJLinkButton : ComponentBase
         };
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var icon = GetIcon();
         var html = new HtmlBuilder(HtmlTag.A);

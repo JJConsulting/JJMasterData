@@ -8,18 +8,28 @@ using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Core.Options;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.Web;
+using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class ActionsController : DataDictionaryController
 {
     private readonly ActionsService _actionsService;
+    private readonly IControlFactory<JJSearchBox> _searchBoxFactory;
+    private readonly JJMasterDataCoreOptions _options;
 
-    public ActionsController(ActionsService actionsService)
+    public ActionsController(ActionsService actionsService, IControlFactory<JJSearchBox> searchBoxFactory, IOptions<JJMasterDataCoreOptions> options)
     {
         _actionsService = actionsService;
+        _searchBoxFactory = searchBoxFactory;
+        _options = options.Value;
     }
 
     public ActionResult Index(string dictionaryName)
@@ -47,7 +57,7 @@ public class ActionsController : DataDictionaryController
 
         var metadata = await _actionsService.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
 
-        BasicAction? action = context switch
+        var action = context switch
         {
             ActionSource.GridTable => metadata.Options.GridTableActions.Get(actionName),
             ActionSource.GridToolbar => metadata.Options.GridToolbarActions.Get(actionName),
@@ -56,10 +66,33 @@ public class ActionsController : DataDictionaryController
             _ => null
         };
 
+        if (action is InsertAction insertAction)
+        {
+          
+            var searchBoxResult = await GetSearchBoxResult(insertAction);
+
+            if (searchBoxResult.IsActionResult())
+                return searchBoxResult.ToActionResult();
+       
+            ViewBag.SearchBoxHtml = searchBoxResult.Content!;
+        }
+
         await PopulateViewBag(dictionaryName, action!, context, fieldName);
 
         return View(action!.GetType().Name, action);
         
+    }
+
+    private async Task<ComponentResult> GetSearchBoxResult(InsertAction insertAction)
+    {
+        var searchBox = _searchBoxFactory.Create();
+        searchBox.Name = "ElementNameToSelect";
+        searchBox.DataItem.Command.Sql =
+            $"select name as cod, name from {_options.DataDictionaryTableName} where type = 'F' order by name";
+        searchBox.SelectedValue = insertAction.ElementNameToSelect;
+
+        var result = await searchBox.GetResultAsync();
+        return result;
     }
 
     public async Task<IActionResult> Add(string dictionaryName, string actionType, ActionSource context, string? fieldName)
@@ -104,11 +137,18 @@ public class ActionsController : DataDictionaryController
     [HttpPost]
     public async Task<IActionResult> InsertAction(string dictionaryName, InsertAction insertAction, ActionSource context, string? originalName, bool isActionSave)
     {
+        var searchBoxResult = await GetSearchBoxResult(insertAction);
+
+        if (searchBoxResult.IsActionResult())
+            return searchBoxResult.ToActionResult();
+       
+        ViewBag.SearchBoxHtml = searchBoxResult.Content!;
+        
         if (isActionSave)
         {
             await SaveAction(dictionaryName, insertAction, context, originalName);
         }
-
+        
         await PopulateViewBag(dictionaryName, insertAction, context);
         return View(insertAction);
     }

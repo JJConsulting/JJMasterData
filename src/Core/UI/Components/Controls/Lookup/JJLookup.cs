@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -115,18 +116,18 @@ public class JJLookup : AsyncControl
     #endregion
 
 
-    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (!IsLookupRoute())
-            return await GetLookupHtmlElement();
+            return new RenderedComponentResult(await GetLookupHtml());
 
         if (IsAjaxGetDescription())
-            await SendResult();
-
-        return null;
+            return new JsonComponentResult(await GetResultAsync());
+        
+        return new EmptyComponentResult();
     }
 
-    private async Task<HtmlBuilder> GetLookupHtmlElement()
+    private async Task<HtmlBuilder> GetLookupHtml()
     {
         string inputValue = SelectedValue;
         string description = Text;
@@ -192,7 +193,7 @@ public class JJLookup : AsyncControl
     }
 
 
-    private async Task SendResult()
+    private async Task<LookupResultDto> GetResultDto()
     {
         LookupResultDto dto = null;
         try
@@ -203,10 +204,10 @@ public class JJLookup : AsyncControl
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, ex.Message);
+            Logger.LogError(ex,"Error while recovering Lookup description");
         }
 
-        CurrentContext.Response.SendResponse(dto?.ToJson(), "application/json");
+        return dto;
     }
 
     /// <summary>
@@ -247,7 +248,7 @@ public class JJLookup : AsyncControl
         return !string.IsNullOrEmpty(lookupRoute);
     }
 
-    public static HtmlBuilder ResponseRoute(JJDataPanel view)
+    public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + view.Name);
         if (string.IsNullOrEmpty(lookupRoute))
@@ -256,9 +257,8 @@ public class JJLookup : AsyncControl
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
         if (field == null)
             return null;
-        var lookup = view.ControlFactory
-            .CreateAsync(view.FormElement, field, null, view.Values, view.PageState, view.Name).GetAwaiter()
-            .GetResult();
-        return lookup.GetHtmlBuilder();
+        var lookup = await view.ComponentFactory.Controls
+            .CreateAsync(view.FormElement, field, null, view.Values, view.PageState, view.Name) as JJLookup;
+        return await lookup!.GetResultAsync();
     }
 }

@@ -20,9 +20,18 @@ public class FormController : MasterDataController
         _formViewFactory = formViewFactory;
     }
     
-    public IActionResult Render(string dictionaryName)
+    public async Task<IActionResult> Render(string dictionaryName)
     {
-        var model = new FormViewModel(dictionaryName, ConfigureFormView);
+        var formView = await _formViewFactory.CreateAsync(dictionaryName);
+        
+        ConfigureFormView(formView);
+        
+        var result = await formView.GetResultAsync();
+
+        if (result.IsActionResult())
+            return result.ToActionResult();
+        
+        var model = new FormViewModel(formView.FormElement.Title ?? formView.FormElement.Name, result.Content!);
         return View(model);
     }
 
@@ -45,12 +54,21 @@ public class FormController : MasterDataController
             await formView.DataPanel.LoadValuesFromPkAsync(actionMap.PkFieldValues);
         }
 
-        var form = new HtmlBuilder(HtmlTag.Form)
-            .WithNameAndId(formView.Name)
-            .WithAttribute("action",Url.Action("GetFormView"))
-            .WithAttribute("method", "POST");
-        form.Append(await formView.GetHtmlBuilderAsync());
-        return Content(form.ToString());
+        var result = await formView.GetResultAsync();
+
+        if (result.IsActionResult())
+            return result.ToActionResult();
+        else if(result is RenderedComponentResult renderedComponentResult)
+        {
+            var form = new HtmlBuilder(HtmlTag.Form)
+                .WithNameAndId(formView.Name)
+                .WithAttribute("action",Url.Action("GetFormView"))
+                .WithAttribute("method", "POST");
+            form.Append(renderedComponentResult.HtmlBuilder);
+            return Content(form.ToString());
+        }
+
+        return new EmptyResult();
     }
     
     [ServiceFilter<FormElementDecryptionFilter>]
@@ -67,7 +85,7 @@ public class FormController : MasterDataController
         formView.PageState = pageState;
         formView.IsExternalRoute = true;
 
-        var html = await formView.GetReloadPanelHtmlAsync();
+        var html = await formView.GetReloadPanelResultAsync();
         
         return Content(html);
     }

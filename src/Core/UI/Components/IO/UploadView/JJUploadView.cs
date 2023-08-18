@@ -233,22 +233,26 @@ public class JJUploadView : AsyncComponent
         ShowAddFiles = true;
         IsCollapseExpandedByDefault = true;
     }
+    
 
-    internal override HtmlBuilder RenderHtml()
-    {
-        return RenderHtmlAsync().GetAwaiter().GetResult();
-    }
-
-    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         Upload.OnFileUploaded += OnFileUploaded;
+        
+        var uploadAreaResult = await Upload.GetResultAsync();
+
+        if (uploadAreaResult is JsonComponentResult)
+        {
+            return uploadAreaResult;
+        }
+        
         string previewImage = CurrentContext.Request["previewImage"];
         if (!string.IsNullOrEmpty(previewImage))
-            return GetHtmlPreviewImage(previewImage);
+            return HtmlComponentResult.FromHtmlBuilder(GetHtmlPreviewImage(previewImage));
 
         string previewVideo = CurrentContext.Request["previewVideo"];
         if (!string.IsNullOrEmpty(previewVideo))
-            return GetHtmlPreviewVideo(previewVideo);
+            return HtmlComponentResult.FromHtmlBuilder(GetHtmlPreviewVideo(previewVideo));
 
         var html = new HtmlBuilder();
 
@@ -263,7 +267,7 @@ public class JJUploadView : AsyncComponent
         html.Append(ViewGallery ? await GetHtmlGallery() : await GetHtmlGridView());
         html.AppendComponent(GetHtmlPreviewModal());
 
-        return html;
+        return new RenderedComponentResult(html);
     }
 
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
@@ -396,13 +400,17 @@ public class JJUploadView : AsyncComponent
         if (!Upload.Multiple && FormFileManager.CountFiles() > 0)
             Upload.AddLabel = StringLocalizer["Update"];
 
-        panelContent.AppendComponent(Upload);
+        panelContent.Append(Upload.GetUploadAreaHtml());
         return panelContent;
     }
 
     private async Task<HtmlBuilder> GetHtmlGridView()
     {
-        return await GridView.GetHtmlBuilderAsync();
+        var result = await GridView.GetResultAsync();
+        if (result is RenderedComponentResult renderedComponentResult)
+            return renderedComponentResult.HtmlBuilder;
+
+        throw new InvalidOperationException("Invalid GridView result");
     }
 
     private async Task<HtmlBuilder> GetHtmlGallery()
@@ -758,7 +766,7 @@ public class JJUploadView : AsyncComponent
         }
         var downloader = ComponentFactory.Downloader.Create();
         downloader.FilePath = fileName;
-        downloader.DirectDownload();
+        downloader.RedirectToDirectDownload();
     }
 
     /// <summary>

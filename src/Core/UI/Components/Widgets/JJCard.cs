@@ -2,13 +2,14 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
 using System;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
 
 /// <summary>
 /// This is a simple content container
 /// </summary>
-public class JJCard : ComponentBase
+public class JJCard : HtmlComponent
 {
     public string Title { get; set; }
 
@@ -27,7 +28,7 @@ public class JJCard : ComponentBase
         Color = PanelColor.Default;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         HtmlBuilder html;
         if (Layout == PanelLayout.Well)

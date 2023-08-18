@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Factories;
 
-public class DataDictionaryFormElementFactory : IFormElementFactory
+public class DataDictionaryFormElementFactory 
 {
     public string ElementName => _options.DataDictionaryTableName;
 

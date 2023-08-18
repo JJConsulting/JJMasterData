@@ -37,10 +37,9 @@ public static class FactoriesServiceExtensions
 
     private static IServiceCollection AddFormElementFactories(this IServiceCollection services)
     {
-        services.AddTransient<IFormElementFactory,DataDictionaryFormElementFactory>();
-        services.AddTransient<IFormElementFactory,LocalizationFormElementFactory>();
-        services.AddTransient<IFormElementFactory,LoggerFormElementFactory>();
-        services.AddTransient<IFormElementFactory,AuditLogFormElementFactory>();
+        services.AddTransient<DataDictionaryFormElementFactory>();
+        services.AddTransient<LocalizationFormElementFactory>();
+        services.AddTransient<LoggerFormElementFactory>();
         return services;
     }
     

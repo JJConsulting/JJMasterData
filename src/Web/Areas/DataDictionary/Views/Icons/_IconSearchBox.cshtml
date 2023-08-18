@@ -7,14 +7,14 @@
 @inject IControlFactory<JJSearchBox> SearchBoxFactory
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.IconViewModel 
 
-@* ReSharper disable once Html.IdNotResolved *@
-@{
-    var searchBox = SearchBoxFactory.Create();
-    searchBox.DataItem.ShowImageLegend = true;
-    searchBox.DataItem.Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
-    searchBox.SelectedValue = ((int)Model.SelectedIcon).ToString();
-    searchBox.Name = Model.InputId;
-}
+@* $1$ ReSharper disable once Html.IdNotResolved #1# *@
+@* @{ *@
+@*     var searchBox = SearchBoxFactory.Create(); *@
+@*     searchBox.DataItem.ShowImageLegend = true; *@
+@*     searchBox.DataItem.Items = Enum.GetValues<IconType>().Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList(); *@
+@*     searchBox.SelectedValue = ((int)Model.SelectedIcon).ToString(); *@
+@*     searchBox.Name = Model.InputId; *@
+@* } *@
 
 @if (BootstrapHelper.Version >= 4)
 {
@@ -24,12 +24,12 @@
             <span class="fa fa-search "></span>
         </a>
     }
-    @Html.Raw(await searchBox.GetHtmlAsync())
+    @* @Html.Raw(await searchBox.GetHtmlAsync()) *@
 }
 else
 {
     <div class="input-group">
-        @Html.Raw(await searchBox.GetHtmlAsync())
+        @* @Html.Raw(await searchBox.GetHtmlAsync()) *@
         <span class="@BootstrapHelper.InputGroupBtn">
             <button class="@BootstrapHelper.DefaultButton" type="button" onclick="popup.showHtmlFromUrl('Icons','@Url.Action("Index", "Icons", new {inputId = Model.InputId})');">
                 <span class="fa fa-search"></span>

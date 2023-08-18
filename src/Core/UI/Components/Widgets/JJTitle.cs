@@ -1,10 +1,11 @@
 ﻿using System;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTitle : ComponentBase
+public class JJTitle : HtmlComponent
 {
     public string Title { get; set; }
     public string SubTitle { get; set; }
@@ -38,7 +39,7 @@ public class JJTitle : ComponentBase
         Size = HeadingSize.H1;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         return new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)

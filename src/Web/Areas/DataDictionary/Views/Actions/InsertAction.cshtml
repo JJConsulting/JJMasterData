@@ -6,7 +6,7 @@
 @using JJMasterData.Core.Web.Components
 @using JJMasterData.Core.Web.Factories
 @inject IOptions<JJMasterDataCoreOptions> Options
-@inject IControlFactory<JJSearchBox> SearchBoxFactory
+
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @model  JJMasterData.Core.DataDictionary.Actions.GridToolbar.InsertAction
 
@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label>@StringLocalizer["Element Name To Select"]</label>
-                    @Html.Raw(BuildElementToSelect().GetHtml())
+                    @Html.Raw(@ViewBag.SearchBoxHtml)
                 </div>
 
                 <div class="col-sm-6">
@@ -85,17 +85,4 @@
     </div>
 
     @await Html.PartialAsync("_Toolbar")
-}
-
-@functions {
-
-    private JJSearchBox BuildElementToSelect()
-    {
-        var cbo = SearchBoxFactory.Create();
-        cbo.Name = "ElementNameToSelect";
-        cbo.DataItem.Command.Sql = $"select name as cod, name from {Options.Value.DataDictionaryTableName} where type = 'F' order by name";
-        cbo.SelectedValue = Model.ElementNameToSelect;
-        return cbo;
-    }
-
 }

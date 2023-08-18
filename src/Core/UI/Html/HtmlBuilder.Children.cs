@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.Html;
@@ -156,7 +158,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert a JJ component as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendComponent(ComponentBase component)
+    public HtmlBuilder AppendComponent(HtmlComponent component)
     {
         if (component != null)
             Append(component.GetHtmlBuilder());
@@ -164,12 +166,11 @@ public partial class HtmlBuilder
         return this;
     }
     
-    public async Task<HtmlBuilder> AppendComponentAsync(AsyncComponent component)
+    public HtmlBuilder AppendComponent(HtmlControl control)
     {
-        if (component != null)
-            Append(await component.GetHtmlBuilderAsync());
+        if (control != null)
+            Append(control.GetHtmlBuilder());
 
         return this;
     }
-
 }

@@ -34,12 +34,11 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
     private ComponentFactory Factory { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IDataDictionaryService DataDictionaryService { get; }
     private IHttpContext CurrentContext { get; }
 
 
     public GridViewFactory(
-        IDataDictionaryService dataDictionaryService,
+        IDataDictionaryRepository dataDictionaryService,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
@@ -53,7 +52,6 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         ComponentFactory factory)
     {
         UrlHelper = urlHelper;
-        DataDictionaryService = dataDictionaryService;
         CurrentContext = currentContext;
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
@@ -69,18 +67,14 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 
     public JJGridView Create(FormElement formElement)
     {
-        var gridView = new JJGridView(formElement, CurrentContext,EntityRepository,DataDictionaryRepository, UrlHelper,
+        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, DataDictionaryRepository,
+            UrlHelper,
             ExpressionsService,
-            EncryptionService, FieldsService, FormValuesService, StringLocalizer, Factory)
-        {
-            IsExternalRoute = true
-        };
+            EncryptionService, FieldsService, FormValuesService, StringLocalizer, Factory);
 
         var eventHandler = GridEventHandlerFactory.GetGridEventHandler(formElement.Name);
         
         SetGridOptions(gridView, formElement.Options);
-        
-        eventHandler?.OnGridViewCreated(gridView);
         
         if(eventHandler != null)
             SetGridEvents(gridView, eventHandler);
@@ -133,7 +127,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 
     public async Task<JJGridView> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryService.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
         var gridView = Create(formElement);
 

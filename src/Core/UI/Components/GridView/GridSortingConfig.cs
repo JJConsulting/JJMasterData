@@ -76,7 +76,7 @@ public class GridSortingConfig
 
         dialog.HtmlBuilderContent = htmlContent;
 
-        return dialog.RenderHtml();
+        return dialog.BuildHtml();
     }
 
     private HtmlBuilder GetHtmlHeader()

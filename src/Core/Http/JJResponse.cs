@@ -18,6 +18,7 @@ public class JJResponse : IHttpResponse
         HttpContext = httpContextAccessor.HttpContext;
     }
 #endif
+
     public void SendResponse(string data, string contentType = null)
     {
 #if NETFRAMEWORK

@@ -104,15 +104,17 @@ public class JJDataExportation : ProcessComponent
         FormElement = formElement;
     }
     #endregion
-
-    internal override HtmlBuilder RenderHtml()
+    
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
-        return RenderHtmlAsync().GetAwaiter().GetResult();
-    }
-
-    protected override async Task<HtmlBuilder> RenderHtmlAsync()
-    {
-        return await Task.FromResult(IsRunning() ? new DataExportationLog(this).GetHtmlProcess() : new DataExportationSettings(this).GetHtmlBuilder());
+        ComponentResult result;
+        
+        if (IsRunning())
+            result = HtmlComponentResult.FromHtmlBuilder(new DataExportationLog(this).GetHtmlProcess());
+        else
+            result = new RenderedComponentResult(new DataExportationSettings(this).GetHtmlBuilder());
+        
+        return await Task.FromResult(result);
     }
 
     internal static JJIcon GetFileIcon(string ext)

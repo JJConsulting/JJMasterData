@@ -28,7 +28,7 @@ internal class GridTable
         Filter = gridView.Filter;
     }
 
-    public async Task<HtmlBuilder> GetHtmlElement()
+    public async Task<HtmlBuilder> GetHtmlBuilder()
     {
         var table = new HtmlBuilder(HtmlTag.Table);
 
@@ -41,7 +41,7 @@ internal class GridTable
         table.WithCssClassIf(Settings.IsHeaderFixed, "table-fix-head");
 
         table.Append(await Header.GetHtmlBuilderAsync());
-        table.Append(await Body.GetHtmlElementAsync());
+        table.Append(await Body.GetHtmlBuilderAsync());
 
         return table;
     }

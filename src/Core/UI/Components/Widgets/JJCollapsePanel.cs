@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJCollapsePanel : ComponentBase
+public class JJCollapsePanel : HtmlComponent
 {
     public enum Position
     {
@@ -52,7 +53,7 @@ public class JJCollapsePanel : ComponentBase
         TitleIcon = null;
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var root = new HtmlBuilder(HtmlTag.Div);
 
@@ -195,7 +196,7 @@ public class JJCollapsePanel : ComponentBase
                 foreach (var btn in Buttons)
                 {
                     div.AppendText("&nbsp;");
-                    div.Append(btn.RenderHtml().WithCssClass("ms-1"));
+                    div.Append(btn.BuildHtml().WithCssClass("ms-1"));
                 }
 
             });

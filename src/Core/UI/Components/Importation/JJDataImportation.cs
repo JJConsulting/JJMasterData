@@ -55,14 +55,12 @@ public class JJDataImportation : ProcessComponent
 
     public JJUploadArea Upload => _upload ??= GetUploadArea();
     
-    public bool EnableHistoryLog { get; set; }
+    public bool EnableAuditLog { get; set; }
 
     /// <summary>
     /// Default: true (panel is open by default)
     /// </summary>
     public bool ExpandedByDefault { get; set; } = true;
-    
-    internal IFieldsService FieldsService { get; }
     
     private  IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
 
@@ -108,34 +106,32 @@ public class JJDataImportation : ProcessComponent
         
     }
     #endregion
-
-    internal override HtmlBuilder RenderHtml()
-    {
-        return RenderHtmlAsync().GetAwaiter().GetResult();
-    }
-
-    protected override async Task<HtmlBuilder> RenderHtmlAsync()
+    
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         HtmlBuilder html = null;
         Upload.OnFileUploaded += FileUploaded;
 
         string action = CurrentContext.Request["current_uploadaction"];
 
+        var uploadAreaResult = await Upload.GetResultAsync();
+
+        if (uploadAreaResult is JsonComponentResult)
+        {
+            return uploadAreaResult;
+        }
+
         switch (action)
         {
             case "process_check":
             {
                 var reporterProgress = GetCurrentProgress();
-                string json = JsonConvert.SerializeObject(reporterProgress);
-
-                CurrentContext.Response.SendResponse(json, "text/json");
-
-                break;
+                
+                return new JsonComponentResult(reporterProgress);
             }
             case "process_stop":
                 StopExportation();
-                CurrentContext.Response.SendResponse("{\"isProcessing\": \"false\"}", "text/json");
-                break;
+                return new JsonComponentResult(new {isProcessing = false});
             case "process_finished":
                 html = GetHtmlLogProcess();
                 break;
@@ -158,12 +154,12 @@ public class JJDataImportation : ProcessComponent
                 if (Upload.IsPostAfterUploadAllFiles() || IsRunning())
                     html = GetHtmlWaitProcess();
                 else
-                    html = GetHtmlForm(ProcessKey);
+                    html = GetUploadAreaCollapse(ProcessKey);
                 break;
             }
         }
 
-        return html;
+        return new RenderedComponentResult(html);
     }
 
     private HtmlBuilder GetHtmlLogProcess()
@@ -242,7 +238,7 @@ public class JJDataImportation : ProcessComponent
         return html;
     }
 
-    private HtmlBuilder GetHtmlForm(string keyprocess)
+    private HtmlBuilder GetUploadAreaCollapse(string keyprocess)
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
@@ -266,7 +262,7 @@ public class JJDataImportation : ProcessComponent
                 {
                     label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes]);
                 })
-                .AppendComponent(Upload)
+                .Append( Upload.GetUploadAreaHtml())
         };
 
         html.AppendComponent(collapsePanel);

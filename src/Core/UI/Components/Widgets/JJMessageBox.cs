@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -7,7 +8,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Exibe uma caixa de mensagem (dialog)
 /// </summary>
-public class JJMessageBox : ComponentBase
+public class JJMessageBox : HtmlComponent
 {
     private string _text;
     public string Text
@@ -47,7 +48,7 @@ public class JJMessageBox : ComponentBase
     {
     }
 
-    internal override HtmlBuilder RenderHtml()
+    internal override HtmlBuilder BuildHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Script)
             .WithAttribute("type", "text/javascript")

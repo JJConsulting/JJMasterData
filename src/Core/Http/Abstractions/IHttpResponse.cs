@@ -4,6 +4,7 @@ namespace JJMasterData.Core.Web.Http.Abstractions;
 
 public interface IHttpResponse
 {
+    #if NET48
     /// <summary>
     /// Ends the HttpResponse and sends the data to the client.
     /// </summary>
@@ -12,5 +13,6 @@ public interface IHttpResponse
     void SendResponse(string data, string contentType = null);
     void ClearResponse();
     void AddResponseHeader(string key, string value);
+    #endif
     void Redirect(string url);
 }

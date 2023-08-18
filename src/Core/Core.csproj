@@ -61,6 +61,24 @@
       <Compile Update="UI\Components\Widgets\HeadingSize.cs">
         <DependentUpon>JJTitle.cs</DependentUpon>
       </Compile>
+      <Compile Update="UI\Html\HtmlBuilder.Attributes.cs">
+        <DependentUpon>HtmlBuilder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Html\HtmlBuilder.Children.cs">
+        <DependentUpon>HtmlBuilder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\JsonComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\RenderedComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\HtmlComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\EmptyComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
     
     
