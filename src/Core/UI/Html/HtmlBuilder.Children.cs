@@ -1,9 +1,10 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
-using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.Html;
 
@@ -12,7 +13,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert a HTML builder as a child of caller builder.
     /// </summary>
-    public HtmlBuilder Append(HtmlBuilder builder)
+    public HtmlBuilder Append(HtmlBuilder? builder)
     {
         if (builder != null)
             _children.Add(builder);
@@ -23,23 +24,19 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert a list of HTML builder as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendRange(IEnumerable<HtmlBuilder> htmlList)
+    public HtmlBuilder AppendRange(IEnumerable<HtmlBuilder> htmlEnumerable)
     {
-        if (htmlList == null) 
-            return this;
-            
-        foreach (var item in htmlList)
+        
+        foreach (var item in htmlEnumerable)
             Append(item);
 
         return this;
     }
     
-    public async Task<HtmlBuilder> AppendRangeAsync(IAsyncEnumerable<HtmlBuilder> htmlList)
+    public async Task<HtmlBuilder> AppendRangeAsync(IAsyncEnumerable<HtmlBuilder> htmlAsyncEnumerable)
     {
-        if (htmlList == null) 
-            return this;
-            
-        await foreach (var item in htmlList)
+        
+        await foreach (var item in htmlAsyncEnumerable)
             Append(item);
 
         return this;
@@ -48,7 +45,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert a HTML builder as a child of caller builder.
     /// </summary>
-    public HtmlBuilder Append(HtmlTag tag, Action<HtmlBuilder> builderAction = null)
+    public HtmlBuilder Append(HtmlTag tag, Action<HtmlBuilder>? builderAction = null)
     {
         var child = new HtmlBuilder(tag);
         builderAction?.Invoke(child);
@@ -56,10 +53,10 @@ public partial class HtmlBuilder
         return this;
     }
     
-    public async Task<HtmlBuilder> AppendAsync(HtmlTag tag, Func<HtmlBuilder,Task> builderAction = null)
+    public async Task<HtmlBuilder> AppendAsync(HtmlTag tag, Func<HtmlBuilder,Task> builderAction)
     {
         var child = new HtmlBuilder(tag);
-        await builderAction?.Invoke(child)!;
+        await builderAction.Invoke(child);
         Append(child);
         return this;
     }
@@ -79,7 +76,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Conditional insert HTML builder as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendIf(bool condition, HtmlTag tag, Action<HtmlBuilder> builderAction = null)
+    public HtmlBuilder AppendIf(bool condition, HtmlTag tag, Action<HtmlBuilder>? builderAction = null)
     {
         if (condition)
             Append(tag, builderAction);
@@ -158,7 +155,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert a JJ component as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendComponent(HtmlComponent component)
+    public HtmlBuilder AppendComponent(HtmlComponent? component)
     {
         if (component != null)
             Append(component.GetHtmlBuilder());
@@ -166,7 +163,7 @@ public partial class HtmlBuilder
         return this;
     }
     
-    public HtmlBuilder AppendComponent(HtmlControl control)
+    public HtmlBuilder AppendComponent(HtmlControl? control)
     {
         if (control != null)
             Append(control.GetHtmlBuilder());

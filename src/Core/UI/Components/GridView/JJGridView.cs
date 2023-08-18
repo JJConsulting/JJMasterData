@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿#nullable enable
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
@@ -18,9 +19,7 @@ using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -48,13 +47,13 @@ public class JJGridView : AsyncComponent
 {
     #region "Events"
 
-    public event EventHandler<GridCellEventArgs> OnRenderCell;
+    public event EventHandler<GridCellEventArgs>? OnRenderCell;
 
     /// <summary>
     /// Event fired when rendering the checkbox used to select the Grid row.
     /// <para/>Fired only when EnableMultSelect property is enabled.
     /// </summary>
-    public event EventHandler<GridSelectedCellEventArgs> OnRenderSelectedCell;
+    public event EventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCell;
 
     /// <summary>
     /// Event fired to retrieve table data
@@ -67,29 +66,29 @@ public class JJGridView : AsyncComponent
     /// using the proc informed in the FormElement;
     /// </remarks>
 
-    public event EventHandler<GridDataLoadEventArgs> OnDataLoad;
-    public event AsyncEventHandler<GridDataLoadEventArgs> OnDataLoadAsync;
-    public event EventHandler<ActionEventArgs> OnRenderAction;
+    public event EventHandler<GridDataLoadEventArgs>? OnDataLoad;
+    public event AsyncEventHandler<GridDataLoadEventArgs>? OnDataLoadAsync;
+    public event EventHandler<ActionEventArgs>? OnRenderAction;
     #endregion
 
     #region "Properties"
 
-    private string _currentOrder;
-    private string _selectedRowsId;
+    private string? _currentOrder;
+    private string? _selectedRowsId;
     private int _currentPage;
-    private GridSettings _currentSettings;
-    private ExportOptions _currentExportConfig;
-    private GridFilter _filter;
-    private GridTable _table;
-    private DataTable _dataSource;
-    private ActionsScripts _actionsScripts;
-    private List<FormElementField> _pkFields;
-    private IDictionary<string, dynamic> _defaultValues;
-    private FormStateData _formData;
-    private ActionMap _currentActionMap;
-    private JJDataImportation _dataImportation;
-    private JJDataExportation _dataExportation;
-    private GridScripts _gridScripts;
+    private GridSettings? _currentSettings;
+    private ExportOptions? _currentExportConfig;
+    private GridFilter? _filter;
+    private GridTable? _table;
+    private DataTable? _dataSource;
+    private ActionsScripts? _actionsScripts;
+    private List<FormElementField>? _pkFields;
+    private IDictionary<string, dynamic>? _defaultValues;
+    private FormStateData? _formData;
+    private ActionMap? _currentActionMap;
+    private JJDataImportation? _dataImportation;
+    private JJDataExportation? _dataExportation;
+    private GridScripts? _gridScripts;
 
     internal JJDataImportation DataImportation
     {
@@ -118,8 +117,8 @@ public class JJGridView : AsyncComponent
             _dataExportation.Name = Name;
             _dataExportation.IsExternalRoute = IsExternalRoute;
             _dataExportation.ExportOptions = CurrentExportConfig;
-            _dataExportation.ShowBorder = CurrentSettings.ShowBorder;
-            _dataExportation.ShowRowStriped = CurrentSettings.ShowRowStriped;
+            _dataExportation.ShowBorder = CurrentSettings?.ShowBorder ?? false;
+            _dataExportation.ShowRowStriped = CurrentSettings?.ShowRowStriped ?? false;
             _dataExportation.UserValues = UserValues;
             _dataExportation.ProcessOptions = ExportAction.ProcessOptions;
 
@@ -131,7 +130,8 @@ public class JJGridView : AsyncComponent
     {
         get
         {
-            if (_pkFields != null) return _pkFields;
+            if (_pkFields != null) 
+                return _pkFields;
 
             if (FormElement == null)
                 throw new ArgumentNullException(nameof(FormElement));
@@ -173,13 +173,14 @@ public class JJGridView : AsyncComponent
     /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// Using the stored procedure informed in the FormElement;
-    public DataTable DataSource
+    public DataTable? DataSource
     {
         get => _dataSource;
         set
         {
             _dataSource = value;
-            if (value == null) return;
+            if (value == null)
+                return;
             IsUserSetDataSource = true;
             TotalRecords = value.Rows.Count;
         }
@@ -204,11 +205,12 @@ public class JJGridView : AsyncComponent
     /// For more than one field use comma ex:
     /// "Field1 ASC, Field2 DESC, Field3 ASC"
     /// </remarks>
-    public string CurrentOrder
+    public string? CurrentOrder
     {
         get
         {
-            if (_currentOrder != null) return _currentOrder;
+            if (_currentOrder != null)
+                return _currentOrder;
             if (!CurrentContext.IsPost)
             {
                 if (MaintainValuesOnLoad)
@@ -310,25 +312,25 @@ public class JJGridView : AsyncComponent
             if (_currentSettings != null)
                 return _currentSettings;
             
-            var action = CurrentActionMap.GetCurrentAction(FormElement);
+            var action = CurrentActionMap?.GetCurrentAction(FormElement);
             var form = new GridFormSettings(CurrentContext, StringLocalizer);
             if (action is ConfigAction)
             {
                 CurrentSettings = form.LoadFromForm();
-                return _currentSettings;
+                return _currentSettings!;
             }
 
-            if (MaintainValuesOnLoad && FormElement != null)
+            if (MaintainValuesOnLoad)
                 CurrentSettings = CurrentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{FormElement.Name}");
 
             if (_currentSettings == null)
                 CurrentSettings = form.LoadFromForm();
-
-            return _currentSettings;
+            
+            return _currentSettings!;
         }
         set
         {
-            if (MaintainValuesOnLoad && FormElement != null)
+            if (MaintainValuesOnLoad)
                 CurrentContext.Session.SetSessionValue($"jjcurrentui_{FormElement.Name}", value);
 
             _currentSettings = value;
@@ -433,7 +435,7 @@ public class JJGridView : AsyncComponent
     /// <summary>
     /// Key-Value pairs with the errors.
     /// </summary>
-    public IDictionary<string, dynamic> Errors { get; set; }
+    public IDictionary<string, dynamic> Errors { get; } = new Dictionary<string, dynamic>();
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form.
@@ -481,12 +483,13 @@ public class JJGridView : AsyncComponent
     public SortAction SortAction => ToolBarActions.SortAction;
     public GridToolbarActionList ToolBarActions => FormElement.Options.GridToolbarActions;
     public GridTableActionList GridActions => FormElement.Options.GridTableActions;
-
-    private ActionMap CurrentActionMap
+    
+    private ActionMap? CurrentActionMap
     {
         get
         {
-            if (_currentActionMap != null) return _currentActionMap;
+            if (_currentActionMap != null) 
+                return _currentActionMap;
             var encryptedActionMap = CurrentContext.Request["current-table-action-" + Name];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
@@ -496,7 +499,7 @@ public class JJGridView : AsyncComponent
         }
     }
 
-    private string SelectedRowsId
+    private string? SelectedRowsId
     {
         get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("selected-rows" + Name)?.ToString();
         set => _selectedRowsId = value ?? "";
@@ -613,11 +616,11 @@ public class JJGridView : AsyncComponent
         {
             var objName = CurrentContext.Request.QueryString("objname");
             if (objName == null || !objName.StartsWith(GridFilter.FilterFieldPrefix))
-                return null;
+                return new EmptyComponentResult();
 
             string filterName = Name[GridFilter.FilterFieldPrefix.Length..];
             if (!FormElement.Fields.Contains(filterName))
-                return null;
+                return new EmptyComponentResult();
 
             var field = FormElement.Fields[filterName];
             var jjSearchBox = await ComponentFactory.Controls.CreateAsync(FormElement,field, await GetCurrentFilterAsync(), UserValues, PageState.Filter, Name) as JJSearchBox;
@@ -662,7 +665,7 @@ public class JJGridView : AsyncComponent
     {
         AssertProperties();
 
-        string currentAction = CurrentContext.Request["current-table-action-" + Name];
+        string? currentAction = CurrentContext.Request["current-table-action-" + Name];
 
         var html = new HtmlBuilder(HtmlTag.Div);
 
@@ -685,7 +688,7 @@ public class JJGridView : AsyncComponent
 
         html.Append(await Table.GetHtmlBuilder());
 
-        if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
+        if (DataSource?.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
             html.Append(await GetNoRecordsAlert());
         }
@@ -707,10 +710,8 @@ public class JJGridView : AsyncComponent
 
         return html;
     }
-
-
-
-    private IEnumerable<HtmlBuilder> GetHiddenInputs(string currentAction)
+    
+    private IEnumerable<HtmlBuilder> GetHiddenInputs(string? currentAction)
     {
         yield return new HtmlBuilder().AppendHiddenInput($"current-table-order-{Name}", CurrentOrder);
         yield return new HtmlBuilder().AppendHiddenInput($"current-table-page-{Name}", CurrentPage.ToString());
@@ -722,18 +723,10 @@ public class JJGridView : AsyncComponent
             yield return new HtmlBuilder().AppendHiddenInput($"selected-rows{Name}", SelectedRowsId);
         }
     }
-
-    private async Task<bool> CheckForSelectAllRows(string requestType)
-    {
-     
-
-        return false;
-    }
     
-
     public async Task<string> GetTableRowHtmlAsync(int rowIndex)
     {
-        var row = DataSource.Rows[rowIndex];
+        var row = DataSource?.Rows[rowIndex];
 
         return await Table.Body
             .GetTdHtmlList(row, rowIndex)
@@ -745,15 +738,16 @@ public class JJGridView : AsyncComponent
         string fieldName = lookupRoute[GridFilter.FilterFieldPrefix.Length..];
         var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(fieldName));
 
-        if (field == null) return null;
+        if (field == null) 
+            return new EmptyComponentResult();
 
-        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(null, null, PageState.Filter), null, Name));
+        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, dynamic>(), null, PageState.Filter), null, Name));
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return await lookup.GetResultAsync();
     }
 
-    internal JJTitle GetTitle(IDictionary<string, dynamic> values = null)
+    internal JJTitle GetTitle(IDictionary<string, dynamic>? values = null)
     {
         var title = FormElement.Title;
         var subTitle = FormElement.SubTitle;
@@ -779,7 +773,7 @@ public class JJGridView : AsyncComponent
 
     public string GetFilterHtml() => Filter.GetFilterHtml().ToString();
 
-    public string GetToolbarHtml() => GetToolbarHtmlBuilder().ToString();
+    public async Task<string> GetToolbarHtml() => (await GetToolbarHtmlBuilder()).ToString();
 
     private HtmlBuilder GetSortingConfig() => new GridSortingConfig(this).GetHtmlElement();
 
@@ -788,15 +782,15 @@ public class JJGridView : AsyncComponent
 
     private bool CheckForSqlCommand()
     {
-        var action = CurrentActionMap.GetCurrentAction(FormElement);
+        var action = CurrentActionMap?.GetCurrentAction(FormElement);
         return action is SqlCommandAction;
     }
 
-    private Task<JJMessageBox> ExecuteSqlCommand()
+    private async Task<JJMessageBox?> ExecuteSqlCommand()
     {
-        var action = CurrentActionMap.GetCurrentAction(FormElement);
+        var action = CurrentActionMap!.GetCurrentAction(FormElement);
         var gridSqlAction = new GridSqlCommandAction(this);
-        return gridSqlAction.ExecuteSqlCommand(CurrentActionMap, (SqlCommandAction)action);
+        return await gridSqlAction.ExecuteSqlCommand(CurrentActionMap, (SqlCommandAction)action);
     }
 
     private void AssertProperties()
@@ -1022,7 +1016,7 @@ public class JJGridView : AsyncComponent
 
     internal string GetFieldName(string fieldName, IDictionary<string, dynamic> row)
     {
-        string name = "";
+        string? name = "";
         foreach (var fpk in PrimaryKeyFields)
         {
             if (name.Length > 0)
@@ -1125,7 +1119,7 @@ public class JJGridView : AsyncComponent
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// Using the stored procedure informed in the <see cref="FormElement"/>;
     /// </returns>
-    public async Task<DataTable> GetDataTableAsync()
+    public async Task<DataTable?> GetDataTableAsync()
     {
         await SetDataSource();
 
@@ -1155,7 +1149,7 @@ public class JJGridView : AsyncComponent
 
     private async Task<EntityResult> GetEntityResultAsync(
         IDictionary<string, dynamic> filters,
-        string orderBy,
+        string? orderBy,
         int recordsPerPage,
         int currentPage)
     {
@@ -1206,7 +1200,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the <see cref="EnableEditMode"/> property
     /// </remarks>
-    public async Task<List<IDictionary<string, dynamic>>> GetGridValues(int recordPerPage, int currentPage)
+    public async Task<List<IDictionary<string, dynamic>>?> GetGridValues(int recordPerPage, int currentPage)
     {
         var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, recordPerPage, currentPage);
 
@@ -1216,17 +1210,17 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    public async Task<List<IDictionary<string, dynamic>>> GetGridValues(DataTable dt = null)
+    public async Task<List<IDictionary<string, dynamic>>?> GetGridValues(DataTable? dataTable = null)
     {
-        if (dt == null)
+        if (dataTable == null)
         {
-            dt = await GetDataTableAsync();
-            if (dt == null)
+            dataTable = await GetDataTableAsync();
+            if (dataTable == null)
                 return null;
         }
 
         var listValues = new List<IDictionary<string, dynamic>>();
-        foreach (DataRow row in dt.Rows)
+        foreach (DataRow row in dataTable.Rows)
         {
             var values = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
             for (int i = 0; i < row.Table.Columns.Count; i++)
@@ -1253,26 +1247,27 @@ public class JJGridView : AsyncComponent
         if (!EnableMultiSelect)
             return listValues;
 
-        string inputHidden = SelectedRowsId;
+        string? inputHidden = SelectedRowsId;
         if (string.IsNullOrEmpty(inputHidden))
             return listValues;
 
-        string[] pkList = inputHidden.Split(',');
+        string[]? pkList = inputHidden?.Split(',');
 
         var pkFields = PrimaryKeyFields;
-        foreach (string pk in pkList)
-        {
-            var values = new Dictionary<string, dynamic>();
-            string descriptval = EncryptionService.DecryptStringWithUrlUnescape(pk);
-            string[] ids = descriptval.Split(';');
-            for (int i = 0; i < pkFields.Count; i++)
+        if (pkList != null)
+            foreach (string pk in pkList)
             {
-                values.Add(pkFields[i].Name, ids[i]);
-            }
+                var values = new Dictionary<string, dynamic>();
+                string descriptval = EncryptionService.DecryptStringWithUrlUnescape(pk);
+                string[] ids = descriptval.Split(';');
+                for (int i = 0; i < pkFields.Count; i++)
+                {
+                    values.Add(pkFields[i].Name, ids[i]);
+                }
 
-            values.Add("INTERNALPK", descriptval);
-            listValues.Add(values);
-        }
+                values.Add("INTERNALPK", descriptval);
+                listValues.Add(values);
+            }
 
         return listValues;
     }

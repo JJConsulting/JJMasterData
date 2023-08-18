@@ -1,4 +1,9 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿#nullable enable
+
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMember.Local
+
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
@@ -23,11 +28,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components;
+
 #if NET48
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Commons.Configuration;
 #endif
 namespace JJMasterData.Core.Web.Components;
@@ -44,34 +48,35 @@ public class JJFormView : AsyncComponent
 {
     #region "Events"
 
-    public event EventHandler<FormBeforeActionEventArgs> OnBeforeInsert;
-    public event EventHandler<FormBeforeActionEventArgs> OnBeforeUpdate;
-    public event EventHandler<FormBeforeActionEventArgs> OnBeforeDelete;
-    public event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
-    public event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
-    public event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
+    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeInsert;
+    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeUpdate;
+    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeDelete;
+    public event EventHandler<FormAfterActionEventArgs>? OnAfterInsert;
+    public event EventHandler<FormAfterActionEventArgs>? OnAfterUpdate;
+    public event EventHandler<FormAfterActionEventArgs>? OnAfterDelete;
 
     #endregion
 
     
     #region "Fields"
-    private JJDataPanel _dataPanel;
-    private JJGridView _gridView;
-    private ActionMap _currentActionMap;
-    private JJAuditLogView _auditLogView;
-    private JJDataImportation _dataImportation;
-    private string _userId;
+    private JJDataPanel? _dataPanel;
+    private JJGridView? _gridView;
+    private ActionMap? _currentActionMap;
+    private JJAuditLogView? _auditLogView;
+    private JJDataImportation? _dataImportation;
+    private string? _userId;
     private bool? _showTitle;
     #endregion
     
     #region "Properties"
-    internal JJAuditLogView AuditLogView =>
+
+    private JJAuditLogView AuditLogView =>
         _auditLogView ??= ComponentFactory.AuditLog.Create(FormElement);
 
     /// <summary>
     /// Url a ser direcionada após os eventos de Update/Delete/Save
     /// </summary>
-    internal string UrlRedirect { get; set; }
+    private string? UrlRedirect { get; set; }
 
 
     /// <summary>
@@ -81,19 +86,19 @@ public class JJFormView : AsyncComponent
     /// Se a variavel não for atribuida diretamente,
     /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
-    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
+    private string? UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
 
     /// <summary>
     /// Configurações de importação
     /// </summary>
-    public JJDataImportation DataImportation
+    private JJDataImportation DataImportation
     {
         get
         {
             if (_dataImportation != null)
                 return _dataImportation;
 
-            _dataImportation = _gridView.DataImportation;
+            _dataImportation = GridView.DataImportation;
             _dataImportation.IsExternalRoute = IsExternalRoute;
             _dataImportation.OnAfterDelete += OnAfterDelete;
             _dataImportation.OnAfterInsert += OnAfterInsert;
@@ -131,7 +136,7 @@ public class JJFormView : AsyncComponent
     /// </remarks>
     public IDictionary<string, dynamic> RelationValues { get; set; } = new Dictionary<string, dynamic>();
     
-    public FormElement FormElement { get; set; }
+    public FormElement FormElement { get; }
 
     public JJGridView GridView
     {
@@ -171,7 +176,7 @@ public class JJFormView : AsyncComponent
         internal set => _pageState = value;
     }
 
-    private ActionMap CurrentActionMap
+    private ActionMap? CurrentActionMap
     {
         get
         {
@@ -229,7 +234,9 @@ public class JJFormView : AsyncComponent
     #region "Constructors"
 
 #if NET48
-    public JJFormView()
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    private JJFormView()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         CurrentContext = StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
         EntityRepository = StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
@@ -306,13 +313,13 @@ public class JJFormView : AsyncComponent
         {
             var panelHtml = await GetReloadPanelResultAsync();
 
-            return new HtmlComponentResult(panelHtml);
+            return new HtmlComponentResult(panelHtml!);
         }
 
         if ("jjupload".Equals(requestType) || "ajaxdataimp".Equals(requestType))
         {
             if (!DataImportation.Upload.Name.Equals(objName))
-                return null;
+                return new EmptyComponentResult();
 
             return await GetImportationResult();
         }
@@ -326,7 +333,7 @@ public class JJFormView : AsyncComponent
     internal async Task<ComponentResult> GetReloadPanelResultAsync()
     {
         var filter = GridView.GetSelectedRowId();
-        IDictionary<string, dynamic> values = null;
+        IDictionary<string, dynamic> values;
         if (filter is { Count: > 0 })
             values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
         else
@@ -340,9 +347,9 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetFormResult()
     {
-        HtmlBuilder html;
+        HtmlBuilder? html;
         
-        var currentAction = CurrentActionMap.GetCurrentAction(FormElement);
+        var currentAction = CurrentActionMap?.GetCurrentAction(FormElement);
 
         if (currentAction is EditAction || PageState is PageState.Update)
         {
@@ -418,16 +425,11 @@ public class JJFormView : AsyncComponent
                 return gridViewResult;
             }
         }
-
-        if (html != null)
-        {
-            html.AppendHiddenInput($"current-page-state-{Name.ToLower()}", ((int)PageState).ToString());
-            html.AppendHiddenInput($"current-form-action-{Name.ToLower()}", "");
-        }
-
-        if (html != null)
-            return new RenderedComponentResult(html);
-        return new EmptyComponentResult();
+        
+        html.AppendHiddenInput($"current-page-state-{Name.ToLower()}", ((int)PageState).ToString());
+        html.AppendHiddenInput($"current-form-action-{Name.ToLower()}", "");
+        
+        return new RenderedComponentResult(html);
     }
 
     private async Task<ComponentResult> GetGridViewResult()
@@ -452,7 +454,7 @@ public class JJFormView : AsyncComponent
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
                     CurrentContext.Response.Redirect(UrlRedirect);
-                    return null;
+                    return new EmptyComponentResult();
                 }
 
                 PageState = PageState.List;
@@ -486,8 +488,7 @@ public class JJFormView : AsyncComponent
             else
             {
                 autoReloadFields = false;
-                var acMap = CurrentActionMap;
-                values = await EntityRepository.GetDictionaryAsync(FormElement, acMap.PkFieldValues);
+                values = await EntityRepository.GetDictionaryAsync(FormElement, CurrentActionMap?.PkFieldValues);
             }
 
             PageState = PageState.Update;
@@ -518,7 +519,7 @@ public class JJFormView : AsyncComponent
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
                     CurrentContext.Response.Redirect(UrlRedirect);
-                    return null;
+                    return new EmptyComponentResult();
                 }
 
                 if (action.ReopenForm)
@@ -700,15 +701,14 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetViewResult()
     {
-        var acMap = CurrentActionMap;
-        if (acMap == null)
+        if (CurrentActionMap == null)
         {
             PageState = PageState.List;
             return await GetGridViewResult();
         }
 
         PageState = PageState.View;
-        var filter = acMap.PkFieldValues;
+        var filter = CurrentActionMap.PkFieldValues;
         var values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
         return await GetFormResultAsync(new(values, null, PageState), false);
     }
@@ -719,7 +719,7 @@ public class JJFormView : AsyncComponent
         try
         {
             var acMap = CurrentActionMap;
-            var filter = acMap.PkFieldValues;
+            var filter = acMap?.PkFieldValues;
 
             var errors = await DeleteFormValuesAsync(filter);
 
@@ -749,7 +749,7 @@ public class JJFormView : AsyncComponent
         if (!string.IsNullOrEmpty(UrlRedirect))
         {
             CurrentContext.Response.Redirect(UrlRedirect);
-            return null;
+            return new HtmlBuilder();
         }
 
         html.Append(await GridView.GetHtmlBuilderAsync());
@@ -827,7 +827,7 @@ public class JJFormView : AsyncComponent
 
             if (gridViewResult is RenderedComponentResult)
             {
-                html.Append(new HtmlBuilder(gridViewResult));
+                html.Append(new HtmlBuilder(gridViewResult!));
             }
             
     
@@ -856,8 +856,11 @@ public class JJFormView : AsyncComponent
 
         if (PageState == PageState.View)
         {
-            var html = await AuditLogView.GetLogDetailsHtmlAsync(actionMap.PkFieldValues);
-            html.AppendComponent(GetFormLogBottomBar(actionMap.PkFieldValues));
+            var html = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues);
+            
+            if (actionMap?.PkFieldValues != null)
+                html.AppendComponent(GetFormLogBottomBar(actionMap.PkFieldValues));
+            
             PageState = PageState.Log;
             return HtmlComponentResult.FromHtmlBuilder(html);
         }
@@ -1091,7 +1094,7 @@ public class JJFormView : AsyncComponent
         return result.Errors;
     }
 
-    public async Task<IDictionary<string, dynamic>> DeleteFormValuesAsync(IDictionary<string, dynamic> filter)
+    public async Task<IDictionary<string, dynamic>> DeleteFormValuesAsync(IDictionary<string, dynamic>? filter)
     {
         var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, filter, PageState.Delete, true);
         var result = await FormService.DeleteAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
@@ -1105,7 +1108,7 @@ public class JJFormView : AsyncComponent
         var painel = DataPanel;
         var values = await painel.GetFormValuesAsync();
 
-        if (RelationValues == null)
+        if (!RelationValues.Any())
             return values;
 
         DataHelper.CopyIntoDictionary(values, RelationValues, true);
@@ -1207,9 +1210,9 @@ public class JJFormView : AsyncComponent
     public GridToolbarActionList ToolBarActions => GridView.ToolBarActions;
 
     [Obsolete("Please use GridView.SetCurrentFilterAsync")]
-    public void SetCurrentFilter(string userid, string userId)
+    public void SetCurrentFilter(string filterKey, string filterValue)
     {
-        GridView.SetCurrentFilterAsync(UserId, UserId).GetAwaiter().GetResult();
+        GridView.SetCurrentFilterAsync(filterKey, filterValue).GetAwaiter().GetResult();
     }
     [Obsolete("Please use GridView.ImportAction")]
     public ImportAction ImportAction => GridView.ImportAction;

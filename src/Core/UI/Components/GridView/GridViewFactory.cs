@@ -158,7 +158,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         if (!GridFormSettings.HasFormValues(grid.CurrentContext) || !grid.ShowToolbar || !grid.ConfigAction.IsVisible)
         {
             GridSettings settings = null;
-            if (grid.MaintainValuesOnLoad && grid.FormElement != null)
+            if (grid.MaintainValuesOnLoad)
                 settings = CurrentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{grid.FormElement.Name}");
 
             if (settings == null)

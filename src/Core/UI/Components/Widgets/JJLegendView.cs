@@ -48,7 +48,9 @@ public class JJLegendView : HtmlComponent
         {
             var cbo = ComboBoxFactory.Create();
             cbo.Name = field.Name;
-            cbo.DataItem = field.DataItem;
+            
+            if (field.DataItem != null)
+                cbo.DataItem = field.DataItem;
 
             var values = cbo.GetValues();
             
@@ -102,7 +104,7 @@ public class JJLegendView : HtmlComponent
     private FormElementField GetFieldLegend(FormElement formElement)
     {
         return formElement.Fields.FirstOrDefault(f 
-            => f.Component == FormComponent.ComboBox && f.DataItem.ShowImageLegend);
+            => f.Component == FormComponent.ComboBox && (f.DataItem?.ShowImageLegend ?? false));
     }
 
 }

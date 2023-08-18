@@ -14,7 +14,7 @@ public record OrderByData(
         return FieldName + " " + Direction.ToString().ToUpper();
     }
     
-    public static OrderByData? FromString(string orderBy)
+    public static OrderByData? FromString(string? orderBy)
     {
         if (string.IsNullOrEmpty(orderBy))
         {

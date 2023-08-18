@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+
+using System.Collections.Generic;
 
 namespace JJMasterData.Core.Web.Html;
 
@@ -100,7 +102,7 @@ public partial class HtmlBuilder
     {
         foreach (var v in attributes)
         {
-            _attributes.Add(v.Key.ToString(), v.Value.ToString());
+            _attributes.Add(v.Key, v.Value.ToString());
         }
 
         return this;
@@ -134,7 +136,7 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder WithDataAttribute(string name, string value)
     {
-        string attributeName = BootstrapHelper.Version >= 5 ? "data-bs-" : "data-";
+        var attributeName = BootstrapHelper.Version >= 5 ? "data-bs-" : "data-";
         attributeName += name;
         return WithAttribute(attributeName, value);
     }

@@ -1,8 +1,9 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Html;
 
@@ -14,7 +15,7 @@ namespace JJMasterData.Core.Web.Html;
 /// </example>
 public partial class HtmlBuilder
 {
-    private readonly string _rawText;
+    private readonly string? _rawText;
     private readonly bool _hasRawText;
     private readonly IDictionary<string, string> _attributes;
     private readonly ICollection<HtmlBuilder> _children;
@@ -22,7 +23,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Tag of the current builder.
     /// </summary>
-    public HtmlBuilderTag Tag { get; private set; }
+    public HtmlBuilderTag? Tag { get; private set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlBuilder"/> class.
@@ -151,7 +152,7 @@ public partial class HtmlBuilder
     {
         return _children.Where(x => x.Tag?.TagName == tagName);
     }
-    public string GetRawText()
+    public string? GetRawText()
     {
         return _rawText;
     }
