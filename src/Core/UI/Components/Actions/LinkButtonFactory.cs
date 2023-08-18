@@ -61,6 +61,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
             ShowAsButton = !action.IsGroup && action.ShowAsButton,
             Type = action is SubmitAction ? LinkButtonType.Submit : default,
             CssClass = action.CssClass,
+            UrlAction = action is SubmitAction submitAction ? submitAction.FormAction : null,
             IconClass = action.Icon.GetCssClass() + " fa-fw",
             Enabled = enabled,
             Visible = visible

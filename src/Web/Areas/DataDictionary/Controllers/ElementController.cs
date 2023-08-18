@@ -171,18 +171,23 @@ public class ElementController : DataDictionaryController
         }
     }
     
-    public IActionResult Delete()
+    public async Task<IActionResult> Delete()
     {
         var formView = _elementService.GetFormView();
-
         var selectedGridValues = formView.GridView.GetSelectedGridValues();
+    
+        var elementNamesToDelete = selectedGridValues
+            .Where(value => value.TryGetValue("name", out var nameValue) && nameValue is string)
+            .Select(value => value["name"]?.ToString())
+            .ToList();
 
-        selectedGridValues
-            .Select(value => value["name"]!.ToString()!)
-            .ToList()
-            .ForEach(metadata => _elementService.DataDictionaryRepository.Delete(metadata));
+        foreach (var elementName in elementNamesToDelete)
+        {
+            await _elementService.DataDictionaryRepository.DeleteAsync(elementName);
+        }
 
         return RedirectToAction(nameof(Index));
     }
+
     
 }
