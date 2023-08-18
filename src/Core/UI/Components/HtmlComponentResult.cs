@@ -5,9 +5,12 @@ namespace JJMasterData.Core.UI.Components;
 
 public class HtmlComponentResult : ComponentResult
 {
-    public HtmlComponentResult(string content) : base(content, ContentType.HtmlData)
+    public override string Content { get; }
+    public HtmlComponentResult(string content)
     {
+        Content = content;
     }
+    
     public static ComponentResult FromHtmlBuilder(HtmlBuilder htmlBuilder)
     {
         var html = htmlBuilder.ToString();

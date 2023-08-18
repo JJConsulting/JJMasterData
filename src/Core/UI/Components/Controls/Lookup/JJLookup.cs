@@ -124,7 +124,7 @@ public class JJLookup : AsyncControl
         if (IsAjaxGetDescription())
             return new JsonComponentResult(await GetResultAsync());
         
-        return ComponentResult.Empty;
+        return new EmptyComponentResult();
     }
 
     private async Task<HtmlBuilder> GetLookupHtml()

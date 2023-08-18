@@ -8,7 +8,8 @@ public class RenderedComponentResult : ComponentResult
 {
     internal HtmlBuilder HtmlBuilder { get; }
     public override string Content => HtmlBuilder.ToString();
-    public RenderedComponentResult(HtmlBuilder htmlBuilder) : base(ContentType.RenderedComponent)
+    public RenderedComponentResult(HtmlBuilder htmlBuilder) 
+    
     {
         HtmlBuilder = htmlBuilder;
     }

@@ -17,7 +17,11 @@ public abstract class AsyncControl : ControlBase
     }
     
 #if NET48
-    [Obsolete("This method uses Response.End, please use GetResultAsync.")]
+    /// <summary>
+    /// This method uses Response.End and don't truly return a HTML everytime, please use GetResultAsync.
+    /// It only exists to legacy compatibility with WebForms.
+    /// </summary>
+    /// <returns>The rendered HTML component or nothing (AJAX response)</returns>
     public string? GetHtml()
     {
         var result = GetResultAsync().GetAwaiter().GetResult();
@@ -38,7 +42,7 @@ public abstract class AsyncControl : ControlBase
         if (Visible)
             return await BuildResultAsync();
     
-        return ComponentResult.Empty;
+        return new EmptyComponentResult();
     }
     
     protected abstract Task<ComponentResult> BuildResultAsync();

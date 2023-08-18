@@ -416,7 +416,7 @@ public class JJFormView : AsyncComponent
 
         if (html != null)
             return new RenderedComponentResult(html);
-        return ComponentResult.Empty;
+        return new EmptyComponentResult();
     }
 
     private async Task<ComponentResult> GetGridViewResult()

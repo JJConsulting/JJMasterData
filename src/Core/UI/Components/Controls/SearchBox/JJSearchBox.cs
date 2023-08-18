@@ -212,7 +212,7 @@ public class JJSearchBox : AsyncControl
         if (IsSearchBoxRoute(DictionaryName, CurrentContext))
         {
             if (!FieldName.Equals(CurrentContext.Request.QueryString("fieldName")))
-                return ComponentResult.Empty;
+                return new EmptyComponentResult();
 
             return new JsonComponentResult(await GetSearchBoxItemsAsync());
         }
@@ -247,7 +247,7 @@ public class JJSearchBox : AsyncControl
         var pageState = (PageState)int.Parse(httpContext.Request.QueryString("pageState"));
 
         if (!formElement.Name.Equals(dictionaryName))
-            return ComponentResult.Empty;
+            return new EmptyComponentResult();
 
         var field = formElement.Fields[fieldName];
         var expOptions = new FormStateData(formValues, view.UserValues, pageState);

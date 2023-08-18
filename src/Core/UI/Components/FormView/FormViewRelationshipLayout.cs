@@ -210,7 +210,7 @@ internal class FormViewRelationshipLayout
                     return result;
             }
             default:
-                return ComponentResult.Empty;
+                return new EmptyComponentResult();
         }
     }
 

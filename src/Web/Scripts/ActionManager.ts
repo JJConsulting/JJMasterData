@@ -71,6 +71,7 @@ class ActionManager {
 
         currentTableActionInput.value = "";
         currentFormActionInput.value = encryptedActionMap;
+        
         form.submit();
     }
 

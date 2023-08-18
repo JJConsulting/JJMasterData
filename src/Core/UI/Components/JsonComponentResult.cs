@@ -5,11 +5,11 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JsonComponentResult : ComponentResult
 {
-    private object Object { get; }
-    public override string Content => JsonConvert.SerializeObject(Object);
+    private object ObjectResult { get; }
+    public override string Content => JsonConvert.SerializeObject(ObjectResult);
 
-    public JsonComponentResult(object @object) : base(ContentType.JsonData)
+    public JsonComponentResult(object objectResult)
     {
-        Object = @object;
+        ObjectResult = objectResult;
     }
 }

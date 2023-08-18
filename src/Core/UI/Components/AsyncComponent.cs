@@ -1,6 +1,5 @@
 #nullable enable
 
-using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.UI.Components;
@@ -14,7 +13,11 @@ namespace JJMasterData.Core.Web.Components;
 public abstract class AsyncComponent : ComponentBase
 {
 #if NET48
-    [Obsolete("This method uses Response.End and don't truly return a HTML everytime, please use GetResultAsync.")]
+    /// <summary>
+    /// This method uses Response.End and don't truly return a HTML everytime, please use GetResultAsync.
+    /// It only exists to legacy compatibility with WebForms.
+    /// </summary>
+    /// <returns>The rendered HTML component or nothing (AJAX response)</returns>
     public string? GetHtml()
     {
         var result = GetResultAsync().GetAwaiter().GetResult();
@@ -35,7 +38,7 @@ public abstract class AsyncComponent : ComponentBase
         if (Visible)
             return await BuildResultAsync();
     
-        return ComponentResult.Empty;
+        return new EmptyComponentResult();
     }
     
     protected abstract Task<ComponentResult> BuildResultAsync();

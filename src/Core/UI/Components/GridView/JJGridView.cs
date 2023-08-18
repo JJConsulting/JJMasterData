@@ -1110,7 +1110,7 @@ public class JJGridView : AsyncComponent
                 return new JsonComponentResult(new {});
         }
 
-        return ComponentResult.Empty;
+        return new EmptyComponentResult();
     }
 
     internal async Task ExportFileInBackground()
