@@ -20,30 +20,29 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class LogController : DataDictionaryController
 {
     private DbLoggerOptions Options { get; }
-    private Element LoggerElement { get;  }
 
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
     private LoggerFormElementFactory LoggerFormElementFactory { get; }
     private IEntityRepository EntityRepository { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public LogController(IFormElementComponentFactory<JJFormView> formViewFactory,LoggerFormElementFactory loggerFormElementFactory, IEntityRepository entityRepository,IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public LogController(IFormElementComponentFactory<JJFormView> formViewFactory,LoggerFormElementFactory loggerFormElementFactory, IEntityRepository entityRepository,IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<DbLoggerOptions> options)
     {
         FormViewFactory = formViewFactory;
         LoggerFormElementFactory = loggerFormElementFactory;
         EntityRepository = entityRepository;
         StringLocalizer = stringLocalizer;
-        LoggerElement = DbLoggerElement.GetInstance(Options);
+        Options = options.Value;
     }
 
     public async Task<IActionResult> Index()
     {
+        var formElement = LoggerFormElementFactory.GetFormElement();
+        
         if (!await EntityRepository.TableExistsAsync(Options.TableName))
         {
-            await EntityRepository.CreateDataModelAsync(LoggerElement);
+            await EntityRepository.CreateDataModelAsync(formElement);
         }
-
-        var formElement = LoggerFormElementFactory.GetFormElement();
         
         var formView = FormViewFactory.Create(formElement);
         formView.GridView.CurrentOrder = $"{Options.CreatedColumnName} DESC";
