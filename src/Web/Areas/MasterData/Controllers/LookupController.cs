@@ -5,8 +5,10 @@ using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
+using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -17,26 +19,37 @@ public class LookupController : MasterDataController
 {
     private ILookupService LookupService { get; }
     private IFormValuesService FormValuesService { get; }
+    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public LookupController(
         ILookupService lookupService,
         IFormValuesService formValuesService,
+        IFormElementComponentFactory<JJFormView> formViewFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer
         )
     {
         LookupService = lookupService;
         FormValuesService = formValuesService;
+        FormViewFactory = formViewFactory;
         StringLocalizer = stringLocalizer;
     }
 
     [ServiceFilter<LookupParametersDecryptionFilter>]
-    public IActionResult Index(LookupParameters lookupParameters)
+    public async Task<IActionResult> Index(LookupParameters lookupParameters)
     {
+        var formView = await FormViewFactory.CreateAsync(lookupParameters.ElementName);
+
+        ConfigureLookupForm(formView, lookupParameters);
+        
+        var result = await formView.GetResultAsync();
+
+        if (result.IsActionResult())
+            return result.ToActionResult();
+        
         return View(new LookupViewModel
         {
-            LookupParameters = lookupParameters,
-            LookupFormConfiguration = ConfigureLookupForm
+            LookupFormHtml = result.Content!
         });
     }
 

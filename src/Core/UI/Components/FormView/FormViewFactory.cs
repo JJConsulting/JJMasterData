@@ -60,8 +60,12 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         var formView = new JJFormView(
             formElement,
             CurrentContext,
-            EntityRepository, DataDictionaryRepository, FormService,
-            EncryptionService, FieldValuesService, ExpressionsService,
+            EntityRepository,
+            DataDictionaryRepository,
+            FormService,
+            EncryptionService, 
+            FieldValuesService, 
+            ExpressionsService,
             StringLocalizer,
             Factory);
 

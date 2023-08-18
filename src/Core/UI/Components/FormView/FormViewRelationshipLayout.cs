@@ -189,7 +189,7 @@ internal class FormViewRelationshipLayout
                     var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
                     childFormView.DataPanel.FieldNamePrefix = childElement.Name + "_";
                     childFormView.UserValues = ParentFormView.UserValues;
-                    childFormView.IsExternalRoute = false;
+                    childFormView.IsExternalRoute = true;
                     childFormView.RelationValues = mappedForeignKeys;
                     await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
                     childFormView.SetOptions(childElement.Options);

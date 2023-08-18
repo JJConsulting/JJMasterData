@@ -258,8 +258,7 @@ public class JJAuditLogView : AsyncComponent
 
         var grid = _componentFactory.GridView.Create(AuditLogService.GetFormElement());
         grid.FormElement.Title = FormElement.Title;
-        grid.SetCurrentFilterAsync(DataManager.Services.AuditLogService.DicName, FormElement.Name).GetAwaiter()
-            .GetResult();
+        grid.SetCurrentFilter(DataManager.Services.AuditLogService.DicName, FormElement.Name);
         grid.CurrentOrder = DataManager.Services.AuditLogService.DicModified + " DESC";
 
         var fieldKey = grid.FormElement.Fields[DataManager.Services.AuditLogService.DicKey];
