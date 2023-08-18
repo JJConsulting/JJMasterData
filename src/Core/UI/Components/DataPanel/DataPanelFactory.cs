@@ -42,10 +42,7 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
     public JJDataPanel Create(FormElement formElement)
     {
         var dataPanel = new JJDataPanel(formElement, EntityRepository, DataDictionaryRepository, HttpContext,
-            EncryptionService, UrlHelper, FieldsService, FormValuesService, ExpressionsService, ComponentFactory)
-        {
-            IsExternalRoute = true
-        };
+            EncryptionService, UrlHelper, FieldsService, FormValuesService, ExpressionsService, ComponentFactory);
         return dataPanel;
     }
 

@@ -4,9 +4,12 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -18,26 +21,38 @@ public class LogController : DataDictionaryController
 {
     private DbLoggerOptions Options { get; }
     private Element LoggerElement { get;  }
-    
+
+    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
+    private LoggerFormElementFactory LoggerFormElementFactory { get; }
     private IEntityRepository EntityRepository { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public LogController(IOptions<DbLoggerOptions> options, IEntityRepository entityRepository,IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public LogController(IFormElementComponentFactory<JJFormView> formViewFactory,LoggerFormElementFactory loggerFormElementFactory, IEntityRepository entityRepository,IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
+        FormViewFactory = formViewFactory;
+        LoggerFormElementFactory = loggerFormElementFactory;
         EntityRepository = entityRepository;
         StringLocalizer = stringLocalizer;
-        Options = options.Value;
         LoggerElement = DbLoggerElement.GetInstance(Options);
     }
 
-    public ActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        if (!EntityRepository.TableExists(Options.TableName))
+        if (!await EntityRepository.TableExistsAsync(Options.TableName))
         {
-            EntityRepository.CreateDataModel(LoggerElement);
+            await EntityRepository.CreateDataModelAsync(LoggerElement);
         }
+
+        var formElement = LoggerFormElementFactory.GetFormElement();
         
-        return View(nameof(Index),Options.TableName);
+        var formView = FormViewFactory.Create(formElement);
+        formView.GridView.CurrentOrder = $"{Options.CreatedColumnName} DESC";
+        var result = await formView.GetResultAsync();
+
+        if (result.IsActionResult())
+            return result.ToActionResult();
+        
+        return View(nameof(Index), result.Content);
     }
 
     [HttpGet]

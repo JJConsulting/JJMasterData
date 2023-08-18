@@ -1,12 +1,9 @@
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.FormEvents.Args;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Actions.UserCreated;
-using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Extensions;
@@ -16,7 +13,6 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class ElementController : DataDictionaryController
 {
-    private IControlFactory<JJSearchBox> SearchBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly ElementService _elementService;
     private readonly ClassGenerationService _classGenerationService;
@@ -24,11 +20,10 @@ public class ElementController : DataDictionaryController
 
     public ElementController(
         ElementService elementService,
-        IControlFactory<JJSearchBox> searchBoxFactory,
         ClassGenerationService classGenerationService,
-        ScriptsService scriptsService, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        ScriptsService scriptsService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        SearchBoxFactory = searchBoxFactory;
         StringLocalizer = stringLocalizer;
         _elementService = elementService;
         _classGenerationService = classGenerationService;
@@ -40,9 +35,16 @@ public class ElementController : DataDictionaryController
         try
         {
             _elementService.CreateStructureIfNotExists();
-            var model = await _elementService.GetFormViewAsync();
             
-            return View(model);
+            var formView = _elementService.GetFormView();
+            var result = await formView.GetResultAsync();
+            
+            if (result.IsActionResult())
+                return result.ToActionResult();
+
+            ViewBag.FormViewHtml = result.Content!;
+            
+            return View();
         }
         catch (DataAccessException)
         {
@@ -55,9 +57,9 @@ public class ElementController : DataDictionaryController
         return View();
     }
 
-    public async Task<IActionResult> Export()
+    public IActionResult Export()
     {
-        var formView = await _elementService.GetFormViewAsync();
+        var formView =  _elementService.GetFormView();
         var selectedRows = formView.GridView.GetSelectedGridValues();
 
         if(selectedRows.Count == 1)
@@ -169,9 +171,9 @@ public class ElementController : DataDictionaryController
         }
     }
     
-    public async Task<IActionResult> Delete()
+    public IActionResult Delete()
     {
-        var formView = await _elementService.GetFormViewAsync();
+        var formView = _elementService.GetFormView();
 
         var selectedGridValues = formView.GridView.GetSelectedGridValues();
 

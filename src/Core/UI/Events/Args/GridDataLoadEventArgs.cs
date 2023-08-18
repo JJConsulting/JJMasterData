@@ -23,7 +23,7 @@ public class GridDataLoadEventArgs : EventArgs
     /// <summary>
     /// Records per page
     /// </summary>
-    public int RegporPag { get; internal set; }
+    public int RecordsPerPage { get; internal set; }
 
     /// <summary>
     /// Página atual

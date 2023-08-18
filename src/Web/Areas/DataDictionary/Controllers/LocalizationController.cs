@@ -1,27 +1,32 @@
 ﻿using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.Options;
+using JJMasterData.Web.Extensions;
+using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class LocalizationController : DataDictionaryController
 {
-    private readonly string? _localizationTableName;
-    public LocalizationController(IOptions<JJMasterDataCommonsOptions> coreOptions)
+    private LocalizationService LocalizationService { get; }
+    public LocalizationController(LocalizationService localizationService)
     {
-        _localizationTableName = coreOptions.Value.LocalizationTableName;
+        LocalizationService = localizationService;
     }
 
-    public ActionResult Index()
+    public async Task<IActionResult> Index()
     {
+        var formView = LocalizationService.GetFormView();
+
+        var result = await formView.GetResultAsync();
+
+        if (result.IsActionResult())
+            return result.ToActionResult();
         
-        if (string.IsNullOrEmpty(_localizationTableName))
-        {
-            throw new JJMasterDataException("Resources table not found.");
-        }
-        
-        return View(nameof(Index),_localizationTableName);
+        return View(nameof(Index),result.Content!);
     }
 
 }

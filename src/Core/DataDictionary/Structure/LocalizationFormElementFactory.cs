@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class LocalizationFormElementFactory : IFormElementFactory
+public class LocalizationFormElementFactory
 {
     private JJMasterDataCommonsOptions Options { get; }
     public string ElementName { get; }

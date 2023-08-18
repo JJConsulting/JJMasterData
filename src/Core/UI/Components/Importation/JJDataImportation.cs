@@ -62,8 +62,6 @@ public class JJDataImportation : ProcessComponent
     /// </summary>
     public bool ExpandedByDefault { get; set; } = true;
     
-    internal IFieldsService FieldsService { get; }
-    
     private  IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
 
     internal IFormService FormService { get; }
@@ -116,6 +114,13 @@ public class JJDataImportation : ProcessComponent
 
         string action = CurrentContext.Request["current_uploadaction"];
 
+        var uploadAreaResult = await Upload.GetResultAsync();
+
+        if (uploadAreaResult is JsonComponentResult)
+        {
+            return uploadAreaResult;
+        }
+
         switch (action)
         {
             case "process_check":
@@ -149,7 +154,7 @@ public class JJDataImportation : ProcessComponent
                 if (Upload.IsPostAfterUploadAllFiles() || IsRunning())
                     html = GetHtmlWaitProcess();
                 else
-                    html = GetHtmlForm(ProcessKey);
+                    html = GetUploadAreaCollapse(ProcessKey);
                 break;
             }
         }
@@ -233,7 +238,7 @@ public class JJDataImportation : ProcessComponent
         return html;
     }
 
-    private HtmlBuilder GetHtmlForm(string keyprocess)
+    private HtmlBuilder GetUploadAreaCollapse(string keyprocess)
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
@@ -257,7 +262,7 @@ public class JJDataImportation : ProcessComponent
                 {
                     label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes]);
                 })
-                .AppendComponent(Upload)
+                .Append( Upload.GetUploadAreaHtml())
         };
 
         html.AppendComponent(collapsePanel);

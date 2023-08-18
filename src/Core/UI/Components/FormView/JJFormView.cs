@@ -22,6 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components;
@@ -207,7 +208,7 @@ public class JJFormView : AsyncComponent
     internal IFieldValuesService FieldValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    internal IDataDictionaryService DataDictionaryService { get; }
+    internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IFormService FormService { get; }
     internal ComponentFactory ComponentFactory { get; }
 
@@ -226,16 +227,16 @@ public class JJFormView : AsyncComponent
         FieldValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldValuesService>();
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
         StringLocalizer = StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
-        DataDictionaryService = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryService>();
+        DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
     }
 
     public JJFormView(string elementName) : this()
     {
-        var dataDictionaryService = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        var dataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         var factory = StaticServiceLocator.Provider.GetScopedDependentService<FormViewFactory>();
-        FormElement = dataDictionaryService.GetMetadata(elementName);
+        FormElement = dataDictionaryRepository.GetMetadata(elementName);
         IsExternalRoute = false;
-        factory.SetFormViewParamsAsync(this, FormElement);
+        factory.SetFormViewParamsAsync(this, FormElement).GetAwaiter().GetResult();
     }
 
     public JJFormView(FormElement formElement) : this()
@@ -249,7 +250,7 @@ public class JJFormView : AsyncComponent
         FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
-        IDataDictionaryService dataDictionaryService,
+        IDataDictionaryRepository dataDictionaryRepository,
         IFormService formService,
         JJMasterDataEncryptionService encryptionService,
         IFieldValuesService fieldValuesService,
@@ -266,7 +267,7 @@ public class JJFormView : AsyncComponent
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
-        DataDictionaryService = dataDictionaryService;
+        DataDictionaryRepository = dataDictionaryRepository;
         ComponentFactory = componentFactory;
     }
 
@@ -305,8 +306,7 @@ public class JJFormView : AsyncComponent
         }
         if ("geturlaction".Equals(requestType))
         {
-            await DataPanel.GetUrlRedirectResult(CurrentActionMap);
-            return null;
+            return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
         }
 
         return await GetFormResult();
@@ -523,14 +523,24 @@ public class JJFormView : AsyncComponent
                     };
                     alert.Messages.Add(StringLocalizer["Record added successfully"]);
                     var alertHtml = alert.GetHtmlBuilder();
-                    await alertHtml.AppendAsync(HtmlTag.Div, async div =>
+
+                    var formResult = await GetFormResultAsync(new(RelationValues, null, PageState.Insert), false);
+
+                    if (formResult is RenderedComponentResult renderedComponentResult)
                     {
-                        div.WithAttribute("id", $"insert-panel{Name}")
-                            .WithAttribute("style", "display:none")
-                            .Append(await GetFormResultAsync(new(RelationValues, null, PageState.Insert), false));
-                    });
-                    alertHtml.AppendScript($"JJView.showInsertSucess('{Name}');");
-                    return alertHtml;
+                        alertHtml.Append(HtmlTag.Div,  div =>
+                        {
+                            div.WithAttribute("id", $"insert-panel{Name}")
+                                .WithAttribute("style", "display:none")
+                                .Append(renderedComponentResult.Content);
+                        });
+                        alertHtml.AppendScript($"JJView.showInsertSucess('{Name}');");
+                        return RenderedComponentResult.FromHtmlBuilder(alertHtml);
+                    }
+                    else
+                    {
+                        return formResult;
+                    }
                 }
 
                 PageState = PageState.List;
@@ -550,13 +560,13 @@ public class JJFormView : AsyncComponent
 
         if (formAction.Equals("ELEMENTSEL"))
         {
-            return await GetInsertFromSelectionResult();
+            return await GetInsertSelectionResult();
         }
 
         if (formAction.Equals("ELEMENTLIST"))
         {
             PageState = PageState.Insert;
-            return RenderedComponentResult.FromHtmlBuilder(GetHtmlElementList(action));
+            return await GetInsertSelectionResult(action);
         }
 
         if (PageState == PageState.Insert)
@@ -569,17 +579,17 @@ public class JJFormView : AsyncComponent
 
         if (string.IsNullOrEmpty(action.ElementNameToSelect))
             return await GetFormResultAsync(new(RelationValues, null, PageState.Insert), false);
-        return RenderedComponentResult.FromHtmlBuilder(GetHtmlElementList(action));
+        return await GetInsertSelectionResult(action);
     }
 
-    private HtmlBuilder GetHtmlElementList(InsertAction action)
+    private async Task<ComponentResult> GetInsertSelectionResult(InsertAction action)
     {
-        var sHtml = new HtmlBuilder(HtmlTag.Div);
-        sHtml.AppendHiddenInput($"current-panel-action-{Name}", "ELEMENTLIST");
-        sHtml.AppendHiddenInput($"current-select-action-values{Name}", "");
+        var html = new HtmlBuilder(HtmlTag.Div);
+        html.AppendHiddenInput($"current-panel-action-{Name}", "ELEMENTLIST");
+        html.AppendHiddenInput($"current-select-action-values{Name}", "");
 
-        var formElement = DataDictionaryService.GetMetadata(action.ElementNameToSelect);
-        var selectedForm = ComponentFactory.JJView.Create(formElement);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(action.ElementNameToSelect);
+        var selectedForm = ComponentFactory.FormView.Create(formElement);
         selectedForm.UserValues = UserValues;
         selectedForm.Name = action.ElementNameToSelect;
         selectedForm.SetOptions(formElement.Options);
@@ -608,17 +618,26 @@ public class JJFormView : AsyncComponent
         };
         selectedForm.GridView.AddGridAction(selAction);
 
-        sHtml.AppendComponent(selectedForm);
+        var result = await selectedForm.GetResultAsync();
 
-        return sHtml;
+        if (result is RenderedComponentResult renderedComponentResult)
+        {
+            html.Append(renderedComponentResult.Content);
+        }
+        else
+        {
+            return result;
+        }
+        
+        return RenderedComponentResult.FromHtmlBuilder(html);
     }
 
-    private async Task<ComponentResult> GetInsertFromSelectionResult()
+    private async Task<ComponentResult> GetInsertSelectionResult()
     {
         string encryptedActionMap = CurrentContext.Request.Form("current-select-action-values" + Name);
         var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
-        var formElement = await DataDictionaryService.GetMetadataAsync(InsertAction.ElementNameToSelect);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(InsertAction.ElementNameToSelect);
         var selValues = await EntityRepository.GetDictionaryAsync(formElement, actionMap.PkFieldValues);
         var values = await FieldValuesService.MergeWithExpressionValuesAsync(formElement, selValues, PageState.Insert, true);
         var erros = await InsertFormValuesAsync(values, false);
@@ -634,7 +653,19 @@ public class JJFormView : AsyncComponent
             }
 
             html.AppendComponent(new JJMessageBox(sMsg.ToString(), MessageIcon.Warning));
-            html.Append(GetHtmlElementList(InsertAction));
+
+            var insertSelectionResult = await GetInsertSelectionResult(InsertAction);
+
+            if (insertSelectionResult is RenderedComponentResult renderedComponentResult)
+            {
+                html.Append(renderedComponentResult.Content);
+            }
+            else
+            {
+                return insertSelectionResult;
+            }
+            
+          
             PageState = PageState.Insert;
         }
         else

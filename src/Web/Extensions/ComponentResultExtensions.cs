@@ -7,6 +7,11 @@ namespace JJMasterData.Web.Extensions;
 
 public static class ComponentResultExtensions
 {
+    public static bool IsActionResult(this ComponentResult componentResult)
+    {
+        return componentResult.Type is ContentType.HtmlData or ContentType.JsonData;
+    }   
+    
     public static IActionResult ToActionResult(this ComponentResult componentResult)
     {
         if (componentResult.Type is not (ContentType.HtmlData or ContentType.JsonData))
@@ -19,6 +24,5 @@ public static class ComponentResultExtensions
         };
         
         return content;
-
     }    
 }

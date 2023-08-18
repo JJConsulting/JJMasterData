@@ -21,7 +21,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
 {
     private IHttpContext CurrentContext { get; }
     private IEntityRepository EntityRepository { get; }
-    private IDataDictionaryService DataDictionaryService { get; }
+    private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IFormService FormService { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IFieldValuesService FieldValuesService { get; }
@@ -33,7 +33,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     public FormViewFactory(
         IHttpContext currentContext,
         IEntityRepository entityRepository,
-        IDataDictionaryService dataDictionaryService,
+        IDataDictionaryRepository dataDictionaryRepository,
         IFormService formService,
         JJMasterDataEncryptionService encryptionService,
         IFieldValuesService fieldValuesService,
@@ -45,7 +45,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     {
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
-        DataDictionaryService = dataDictionaryService;
+        DataDictionaryRepository = dataDictionaryRepository;
         FormService = formService;
         EncryptionService = encryptionService;
         FieldValuesService = fieldValuesService;
@@ -60,20 +60,17 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         var formView = new JJFormView(
             formElement,
             CurrentContext,
-            EntityRepository, DataDictionaryService, FormService,
+            EntityRepository, DataDictionaryRepository, FormService,
             EncryptionService, FieldValuesService, ExpressionsService,
             StringLocalizer,
-            Factory)
-        {
-            IsExternalRoute = true
-        };
+            Factory);
 
         return formView;
     }
 
     public async Task<JJFormView> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryService.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         var form = Create(formElement);
         await SetFormViewParamsAsync(form, formElement);
         return form;

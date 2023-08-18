@@ -686,7 +686,7 @@ public class JJGridView : AsyncComponent
         html.AppendText(GetScriptHtml());
         html.AppendRange(GetHiddenInputs(currentAction));
 
-        html.Append(await Table.GetHtmlElement());
+        html.Append(await Table.GetHtmlBuilder());
 
         if (DataSource.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
@@ -1184,7 +1184,7 @@ public class JJGridView : AsyncComponent
             {
                 Filters = filters,
                 OrderBy = orderBy,
-                RegporPag = recordsPerPage,
+                RecordsPerPage = recordsPerPage,
                 CurrentPage = currentPage,
                 TotalOfRecords = total
             };

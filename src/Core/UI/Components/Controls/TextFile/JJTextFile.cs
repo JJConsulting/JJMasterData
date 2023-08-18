@@ -69,23 +69,34 @@ public class JJTextFile : AsyncControl
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (IsUploadViewRoute())
-            return await Task.FromResult(HtmlComponentResult.FromHtmlBuilder(GetUploadViewHtmlBuilder()));
+            return await Task.FromResult(await GetUploadViewResult());
 
         return await Task.FromResult(RenderedComponentResult.FromHtmlBuilder(GetHtmlTextGroup()));
     }
 
-    internal HtmlBuilder GetUploadViewHtmlBuilder()
+    internal async Task<ComponentResult> GetUploadViewResult()
     {
         //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
         //por esse motivo passamos os valores nessários do form anterior por parametro o:)
         LoadValuesFromQuery();
 
-        var formUpload = GetUploadView();
+        var uploadView = GetUploadView();
 
         var html = new HtmlBuilder();
-        html.AppendComponent(formUpload);
-        html.AppendScript(GetRefreshScript(formUpload));
-        return html;
+
+        var result = await uploadView.GetResultAsync();
+
+        if (result is RenderedComponentResult renderedUpload)
+        {
+            html.Append(renderedUpload.Content);
+            html.AppendScript(GetRefreshScript(uploadView));
+        }
+        else
+        {
+            return result;
+        }
+        
+        return RenderedComponentResult.FromHtmlBuilder(html);
     }
 
     private HtmlBuilder GetHtmlTextGroup()

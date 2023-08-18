@@ -32,7 +32,4 @@ public abstract class GridEventHandlerBase : IGridEventHandler
     }
 
     public virtual Task OnRenderActionAsync(object sender, ActionEventArgs eventArgs) => Task.CompletedTask;
-    public virtual void OnGridViewCreated(JJGridView gridView)
-    {
-    }
 }

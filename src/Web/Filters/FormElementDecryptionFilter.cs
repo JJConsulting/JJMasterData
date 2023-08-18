@@ -8,11 +8,11 @@ namespace JJMasterData.Web.Filters;
 
 public class FormElementDecryptionFilter : ActionFilterAttribute
 {
-    private IDataDictionaryService DataDictionaryService { get; }
+    private IDataDictionaryRepository DataDictionaryRepository { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
-    public FormElementDecryptionFilter(JJMasterDataEncryptionService encryptionService, IDataDictionaryService dataDictionaryService)
+    public FormElementDecryptionFilter(JJMasterDataEncryptionService encryptionService, IDataDictionaryRepository dataDictionaryRepository)
     {
-        DataDictionaryService = dataDictionaryService;
+        DataDictionaryRepository = dataDictionaryRepository;
         EncryptionService = encryptionService;
     }
 
@@ -22,7 +22,7 @@ public class FormElementDecryptionFilter : ActionFilterAttribute
         var dictionaryName = EncryptionService.DecryptStringWithUrlUnescape(encryptedDictionaryName?.ToString());
         if (dictionaryName != null)
         {
-            context.ActionArguments["formElement"] = await DataDictionaryService.GetMetadataAsync(dictionaryName);
+            context.ActionArguments["formElement"] = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         }
         
         await base.OnActionExecutionAsync(context, next);

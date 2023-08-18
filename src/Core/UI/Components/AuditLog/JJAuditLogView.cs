@@ -92,7 +92,15 @@ public class JJAuditLogView : AsyncComponent
 
         if (string.IsNullOrEmpty(viewId))
         {
-            await html.AppendComponentAsync(GridView);
+            var gridResult = await GridView.GetResultAsync();
+            if (gridResult is RenderedComponentResult renderedComponentResult)
+            {
+                html.Append(renderedComponentResult.Content);
+            }
+            else
+            {
+                return gridResult;
+            }
         }
         else
         {
@@ -203,13 +211,13 @@ public class JJAuditLogView : AsyncComponent
             });
         });
 
-        row.Append(HtmlTag.Div, d =>
+        await row.AppendAsync(HtmlTag.Div, async d =>
         {
             d.WithCssClass("col-sm-9");
-            d.Append(HtmlTag.Div, div =>
+            await d.AppendAsync(HtmlTag.Div, async div =>
             {
                 div.WithCssClass("jjrelative");
-                div.Append(HtmlTag.Div, divDetail =>
+                await div.AppendAsync(HtmlTag.Div, async divDetail =>
                 {
                     divDetail.WithCssClass("fieldDetail")
                         .Append(HtmlTag.P,
@@ -217,7 +225,7 @@ public class JJAuditLogView : AsyncComponent
                             {
                                 p.Append(HtmlTag.B, b => { b.AppendText($"{StringLocalizer["Record Snapshot"]}:"); });
                             });
-                    divDetail.AppendComponent(panel);
+                    divDetail.Append( await panel.GetPanelHtmlAsync());
                 });
             });
         });

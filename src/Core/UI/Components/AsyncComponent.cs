@@ -14,7 +14,7 @@ namespace JJMasterData.Core.Web.Components;
 public abstract class AsyncComponent : ComponentBase
 {
 #if NET48
-    [Obsolete("This method uses Response.End, please use GetResultAsync.")]
+    [Obsolete("This method uses Response.End and don't truly return a HTML everytime, please use GetResultAsync.")]
     public string? GetHtml()
     {
         var result = GetResultAsync().GetAwaiter().GetResult();

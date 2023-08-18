@@ -238,6 +238,14 @@ public class JJUploadView : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         Upload.OnFileUploaded += OnFileUploaded;
+        
+        var uploadAreaResult = await Upload.GetResultAsync();
+
+        if (uploadAreaResult is JsonComponentResult)
+        {
+            return uploadAreaResult;
+        }
+        
         string previewImage = CurrentContext.Request["previewImage"];
         if (!string.IsNullOrEmpty(previewImage))
             return HtmlComponentResult.FromHtmlBuilder(GetHtmlPreviewImage(previewImage));
@@ -392,7 +400,7 @@ public class JJUploadView : AsyncComponent
         if (!Upload.Multiple && FormFileManager.CountFiles() > 0)
             Upload.AddLabel = StringLocalizer["Update"];
 
-        panelContent.AppendComponent(Upload);
+        panelContent.Append(Upload.GetUploadAreaHtml());
         return panelContent;
     }
 

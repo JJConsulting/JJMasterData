@@ -156,7 +156,7 @@ internal class FormViewRelationshipLayout
             return RenderedComponentResult.FromHtmlBuilder(await ParentFormView.GetHtmlFromPanel(parentPanel));
         }
 
-        var childElement = await ParentFormView.DataDictionaryService.GetMetadataAsync(relationship.ElementRelationship!.ChildElement);
+        var childElement = await ParentFormView.DataDictionaryRepository.GetMetadataAsync(relationship.ElementRelationship!.ChildElement);
 
         var filter = new Dictionary<string, dynamic>();
         foreach (var col in relationship.ElementRelationship.Columns.Where(col => formContext.Values.ContainsKey(col.PkColumn)))
@@ -178,6 +178,7 @@ internal class FormViewRelationshipLayout
                     childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
                     childDataPanel.UserValues = ParentFormView.UserValues;
                     childDataPanel.Values = childValues;
+                    childDataPanel.IsExternalRoute = true;
                     childDataPanel.RenderPanelGroup = false;
                     childDataPanel.FormUI = childElement.Options.Form;
 
@@ -185,7 +186,7 @@ internal class FormViewRelationshipLayout
                 }
             case RelationshipViewType.List:
             {
-                    var childFormView = ParentFormView.ComponentFactory.JJView.Create(childElement);
+                    var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
                     childFormView.DataPanel.FieldNamePrefix = childElement.Name + "_";
                     childFormView.UserValues = ParentFormView.UserValues;
                     childFormView.IsExternalRoute = true;

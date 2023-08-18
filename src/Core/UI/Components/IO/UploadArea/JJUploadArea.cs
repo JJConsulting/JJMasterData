@@ -132,10 +132,10 @@ public class JJUploadArea : AsyncComponent
             return JsonComponentResult.FromObject(result);
         }
 
-        return RenderedComponentResult.FromHtmlBuilder(GetFieldHtmlElement());
+        return RenderedComponentResult.FromHtmlBuilder(GetUploadAreaHtml());
     }
 
-    private HtmlBuilder GetFieldHtmlElement()
+    internal HtmlBuilder GetUploadAreaHtml()
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divupload")

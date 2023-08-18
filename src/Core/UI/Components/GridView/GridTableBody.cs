@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Abstractions;
+using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -26,7 +29,7 @@ internal class GridTableBody
         GridView = gridView;
     }
 
-    public async Task<HtmlBuilder> GetHtmlElementAsync()
+    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
 
@@ -175,23 +178,37 @@ internal class GridTableBody
             value = value1.ToString();
         }
 
-        var baseField = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, values, GridView.UserValues, PageState.List, GridView.Name, value);
-        baseField.Name = name;
-        baseField.Attributes.Add("nRowId", index);
-        baseField.CssClass = field.Name;
+        var control = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, values, GridView.UserValues, PageState.List, GridView.Name, value);
+        control.Name = name;
+        control.Attributes.Add("nRowId", index);
+        control.CssClass = field.Name;
 
         var renderCell = OnRenderCell;
         if (renderCell != null)
         {
-            var args = new GridCellEventArgs { Field = field, DataRow = row, Sender = baseField };
+            var args = new GridCellEventArgs { Field = field, DataRow = row, Sender = control };
 
             OnRenderCell.Invoke(GridView, args);
             div.AppendText(args.HtmlResult);
         }
         else
         {
-            div.AppendComponent(baseField);
+            //TODO: Handle control external route
+            if (control is HtmlControl htmlControl)
+            {
+                div.AppendComponent(htmlControl);
+            }
+            else if(control is AsyncControl asyncControl)
+            {
+                var result = await asyncControl.GetResultAsync();
+
+                if (result is RenderedComponentResult renderedComponentResult)
+                {
+                    div.Append(renderedComponentResult.Content);
+                }
+            }
         }
+          
 
         return div;
     }

@@ -22,7 +22,7 @@ public class ComponentFactory
     public IFormElementComponentFactory<JJDataPanel> DataPanel =>
         GetFactory<IFormElementComponentFactory<JJDataPanel>>();
 
-    public IFormElementComponentFactory<JJFormView> JJView =>
+    public IFormElementComponentFactory<JJFormView> FormView =>
         GetFactory<IFormElementComponentFactory<JJFormView>>();
 
     public IFormElementComponentFactory<JJGridView> GridView =>

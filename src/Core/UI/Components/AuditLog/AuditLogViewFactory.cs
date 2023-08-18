@@ -46,10 +46,8 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
 
     public JJAuditLogView Create(FormElement formElement)
     {
-        return new JJAuditLogView(formElement, HttpContext, EntityRepository, AuditLogService, ComponentFactory,EncryptionService,UrlHelper,StringLocalizer)
-        {
-            IsExternalRoute = true
-        };
+        return new JJAuditLogView(formElement, HttpContext, EntityRepository, AuditLogService, ComponentFactory,
+            EncryptionService, UrlHelper, StringLocalizer);
     }
     
     public async Task<JJAuditLogView> CreateAsync(string elementName)

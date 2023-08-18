@@ -17,8 +17,8 @@ public class JJTextRange : HtmlControl
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    internal ControlBase FromField { get; set; }
-    internal ControlBase ToField { get; set; }
+    internal HtmlControl FromField { get; set; }
+    internal HtmlControl ToField { get; set; }
 
     public FieldType FieldType { get; set; }
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;

@@ -15,6 +15,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using JJMasterData.Core.DataDictionary.Factories;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
@@ -26,6 +27,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class ElementService : BaseService
 {
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
+    private DataDictionaryFormElementFactory DataDictionaryFormElementFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly JJMasterDataCoreOptions _options;
@@ -37,11 +39,13 @@ public class ElementService : BaseService
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
+        DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
         JJMasterDataUrlHelper urlHelper
         )
         : base(validationDictionary, dataDictionaryRepository, stringLocalizer)
     {
         FormViewFactory = formViewFactory;
+        DataDictionaryFormElementFactory = dataDictionaryFormElementFactory;
         UrlHelper = urlHelper;
         _entityRepository = entityRepository;
         _options = options.Value;
@@ -146,9 +150,47 @@ public class ElementService : BaseService
     }
 
 
-    public async Task<JJFormView> GetFormViewAsync()
+    public JJFormView GetFormView()
     {
-        var formView = await FormViewFactory.CreateAsync(_options.DataDictionaryTableName);
+        var formView = FormViewFactory.Create(DataDictionaryFormElementFactory.GetFormElement());
+        formView.GridView.SetCurrentFilter("type","F");
+
+        formView.GridView.EnableMultiSelect = true;
+        
+        formView.GridView.FilterAction.ExpandedByDefault = true;
+        formView.GridView.OnDataLoadAsync += async (sender, args) =>
+        {
+            var filter = DataDictionaryFilter.GetInstance(args.Filters);
+            string orderBy = string.IsNullOrEmpty(args.OrderBy) ? "name ASC" : args.OrderBy;
+            var result =
+                await DataDictionaryRepository.GetFormElementInfoListAsync(filter, orderBy, args.RecordsPerPage,
+                    args.CurrentPage);
+            args.DataSource = result.Data.ToDataTable();
+            args.TotalOfRecords = result.TotalOfRecords;
+        };
+
+        formView.GridView.OnRenderAction += (sender, args) =>
+        {
+            var formName = args.FieldValues["name"]?.ToString();
+            switch (args.Action.Name)
+            {
+                case "preview":
+                    args.LinkButton.OnClientClick =
+                        $"window.open('{UrlHelper.GetUrl("Render", "Form", "MasterData", new { dictionaryName = formName })}', '_blank').focus();";
+                    break;
+                case "tools":
+                    args.LinkButton.UrlAction = UrlHelper.GetUrl("Index", "Entity", "DataDictionary",
+                        new { dictionaryName = formName });
+                    args.LinkButton.OnClientClick = "";
+                    break;
+                case "duplicate":
+                    args.LinkButton.UrlAction = UrlHelper.GetUrl("Duplicate", "Element", "DataDictionary",
+                        new { dictionaryName = formName });
+                    args.LinkButton.OnClientClick = "";
+                    break;
+            }
+        };
+        
         return formView;
     }
     

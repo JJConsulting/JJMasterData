@@ -28,7 +28,7 @@ public class TextFileController : MasterDataController
         textFile.IsExternalRoute = true;
         textFile.FormElementField = formElement.Fields[fieldName];
         
-        var htmlBuilder = textFile.GetUploadViewHtmlBuilder();
+        var htmlBuilder = textFile.GetUploadViewResult();
 
         return Content(htmlBuilder.ToString());
     }

@@ -18,7 +18,7 @@ public class JJResponse : IHttpResponse
         HttpContext = httpContextAccessor.HttpContext;
     }
 #endif
-    [Obsolete("hello again", true)]
+
     public void SendResponse(string data, string contentType = null)
     {
 #if NETFRAMEWORK

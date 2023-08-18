@@ -28,7 +28,7 @@ public class InternalRedirectController : MasterDataController
         EncryptionService = encryptionService;
     }
     
-    public async Task<ActionResult> Index(string parameters)
+    public async Task<IActionResult> Index(string parameters)
     {
         LoadParameters(parameters);
         var userId = HttpContext.GetUserId();
@@ -40,40 +40,55 @@ public class InternalRedirectController : MasterDataController
         {
             case RelationshipViewType.List:
             {
-                    var form = await ComponentFactory.JJView.CreateAsync(_dictionaryName);
+                    var form = await ComponentFactory.FormView.CreateAsync(_dictionaryName);
+
+                    var result = await form.GetResultAsync();
+
+                    if (result.IsActionResult())
+                        return result.ToActionResult();
+                    
                     form.RelationValues = _relationValues;
 
                     if (userId != null)
                     {
                         form.SetUserValues("USERID", userId);
-                        form.GridView.SetCurrentFilter("USERID", userId);
+                        await form.GridView.SetCurrentFilterAsync("USERID", userId);
                     }
 
-                    model = new(form.GetHtml(), false);
+                    model = new(result.Content!, false);
                     break;
                 }
             case RelationshipViewType.View:
             {
-                var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
+                    var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
                     panel.PageState = PageState.View;
                     if (userId != null)
                         panel.SetUserValues("USERID", userId);
 
+                    var result = await panel.GetResultAsync();
+
+                    if (result.IsActionResult())
+                        return result.ToActionResult();
+
+                    
                     await panel.LoadValuesFromPkAsync(_relationValues);
 
-                    model = new(panel.GetHtml(), false);
+                    model = new(result.Content!, false);
                     break;
                 }
             case RelationshipViewType.Update:
                 {
                     var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
                     panel.PageState = PageState.Update;
+                    
+                    var result = await panel.GetResultAsync();
+                    
                     if (userId != null)
                         panel.SetUserValues("USERID", userId);
 
                     await panel.LoadValuesFromPkAsync(_relationValues);
 
-                    model = new(panel.GetHtml(), !isAjax);
+                    model = new(result.Content!, !isAjax);
                     break;
                 }
             default:
