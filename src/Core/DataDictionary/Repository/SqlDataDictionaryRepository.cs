@@ -267,7 +267,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         return dt.ToModelList<FormElementInfo>();
     }
 
-    public async Task<EntityResult<IEnumerable<FormElementInfo>>> GetFormElementInfoListAsync(DataDictionaryFilter filter,
+    public async Task<EntityResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filter,
         string orderBy, int recordsPerPage, int currentPage)
     {
         var filters = (IDictionary)filter.ToDictionary();
@@ -293,6 +293,6 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             formElementInfoList.Add(info);
         }
 
-        return new EntityResult<IEnumerable<FormElementInfo>>(formElementInfoList, result.Item2);
+        return new EntityResult<FormElementInfo>(formElementInfoList, result.Item2);
     }
 }

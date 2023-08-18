@@ -23,7 +23,7 @@ public abstract class AsyncComponent : ComponentBase
         if (result is RenderedComponentResult)
             return result;
         
-        JJMasterData.Core.Http.SystemWebHelper.SendResult(result);
+        JJMasterData.Core.Http.SystemWebHelper.HandleResult(result);
 
         return null;
     }

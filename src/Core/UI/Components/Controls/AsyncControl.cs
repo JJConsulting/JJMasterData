@@ -26,7 +26,7 @@ public abstract class AsyncControl : ControlBase
         if (result is RenderedComponentResult)
             return result;
         
-        Http.SystemWebHelper.SendResult(result);
+        Http.SystemWebHelper.HandleResult(result);
 
         return null;
     }

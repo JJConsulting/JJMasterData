@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
@@ -102,7 +103,7 @@ public class JJUploadView : AsyncComponent
 
             var dt = GetDataTableFiles();
             _gridView = ComponentFactory.GridView.Create(new FormElement(dt));
-            _gridView.DataSource = dt;
+            _gridView.DataSource = new DataSource(dt,dt.Rows.Count);
             _gridView.FormElement.Title = Title;
             _gridView.FormElement.SubTitle = SubTitle;
             

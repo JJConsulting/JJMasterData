@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
@@ -243,7 +244,7 @@ public class JJDataExportation : ProcessComponent
     {
         var exporter = CreateWriter();
 
-        exporter.DataSource = dt;
+        exporter.DataSource = new DataSource(dt, dt.Rows.Count);
         BackgroundTask.Run(ProcessKey, exporter);
     }
 

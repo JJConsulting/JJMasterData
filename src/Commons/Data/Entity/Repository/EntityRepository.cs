@@ -182,7 +182,7 @@ public class EntityRepository : IEntityRepository
     public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|") =>
         Provider.GetListFieldsAsText(element, filters, orderBy, recordsPerPage, currentPage, showLogInfo, delimiter);
     
-    public async Task<EntityResult> GetEntityResultAsync(
+    public async Task<DataSource> GetDataSourceAsync(
         Element element,
         EntityParameters? parameters = null)
     {
@@ -190,6 +190,6 @@ public class EntityRepository : IEntityRepository
             parameters?.OrderBy?.ToString(), parameters?.PaginationData?.RecordsPerPage ?? 5,
             parameters?.PaginationData?.Page ?? 1);
         
-        return new EntityResult(result.Item1,result.Item2);
+        return new DataSource(result.Item1,result.Item2);
     }
 }

@@ -6,7 +6,7 @@ namespace JJMasterData.Core.Http;
 
 internal static class SystemWebHelper
 {
-    internal static void SendResult(ComponentResult result)
+    internal static void HandleResult(ComponentResult result)
     {
         var currentContext = System.Web.HttpContext.Current;
 

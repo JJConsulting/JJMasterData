@@ -83,7 +83,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
         return query.ToList().Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList();
     }
     
-    public async Task<EntityResult<IEnumerable<FormElementInfo>>> GetFormElementInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage)
+    public async Task<EntityResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage)
     {
         int totalRecords = 0;
         
@@ -91,7 +91,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
 
         var list = await query.ToListAsync();
         
-        return new EntityResult<IEnumerable<FormElementInfo>>(list.Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList(),totalRecords);
+        return new EntityResult<FormElementInfo>(list.Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList(),totalRecords);
     }
     
     private IFindFluent<MongoDBFormElement, MongoDBFormElement> CreateInfoQuery(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage,

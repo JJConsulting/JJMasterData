@@ -88,7 +88,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         table.UseAllAvailableWidth();
         document.Add(table);
 
-        GenerateHeader(table);
+        await GenerateHeader(table);
         GenerateBody(table, token);
 
         table.Complete();
@@ -110,34 +110,36 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         table.Flush();
     }
 
-    private void GenerateBody(Table table, CancellationToken token)
+    private async Task GenerateBody(Table table, CancellationToken token)
     {
         int tot = 0;
         if (DataSource == null)
         {
-            DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
+            var entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,1));
+            DataSource = await EntityRepository.GetDataSourceAsync(FormElement, entityParameters);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
-            GenerateRows(table, token);
+            await GenerateRows(table, token);
 
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
-                GenerateRows(table, token);
+                entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,i));
+                DataSource = await EntityRepository.GetDataSourceAsync(FormElement, entityParameters);
+                await GenerateRows(table, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.Rows.Count;
-            GenerateRows(table, token);
+            ProcessReporter.TotalRecords = DataSource.CurrentCount;
+            await GenerateRows(table, token);
         }
     }
 
     private async Task GenerateRows(Table table, CancellationToken token)
     {
-        foreach (DataRow row in DataSource.Rows)
+        foreach (var row in DataSource.Data)
         {
             var scolor = (ShowRowStriped && (ProcessReporter.TotalProcessed % 2) == 0) ? "white" : "#f2fdff";
             var wcolor = WebColors.GetRGBColor(scolor);
@@ -156,26 +158,20 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         }
     }
     
-    private async Task<Cell> CreateCell(DataRow row, FormElementField field)
+    private async Task<Cell> CreateCell(IDictionary<string,dynamic> row, FormElementField field)
     {
         string value = string.Empty;
         Text image = null;
-
-        var values = new Dictionary<string,dynamic>();
-        for (int i = 0; i < row.Table.Columns.Count; i++)
-        {
-            values.Add(row.Table.Columns[i].ColumnName, row[i]);
-        }
 
         if (field.DataBehavior != FieldBehavior.Virtual)
         {
             if (field.Component == FormComponent.ComboBox && field.DataItem != null)
             {
-                value = await GetComboBoxValue(field, values, image);
+                value = await GetComboBoxValue(field, row, image);
             }
             else
             {
-                value = await FieldFormattingService.FormatGridValueAsync(field, values,null);
+                value = await FieldFormattingService.FormatGridValueAsync(field, row,null);
             }
         }
 

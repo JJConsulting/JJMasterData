@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
@@ -72,32 +73,33 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
 
     public async Task GenerateBody(StreamWriter sw, CancellationToken token)
     {
-        int tot = 0;
         if (DataSource == null)
         {
-            DataSource = EntityRepository.GetDataTable(FormElement, CurrentFilter as IDictionary, CurrentOrder, RegPerPag, 1, ref tot);
-            ProcessReporter.TotalRecords = tot;
-            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
+            var entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,1));
+            DataSource = await EntityRepository.GetDataSourceAsync(FormElement,entityParameters);
+            ProcessReporter.TotalRecords = DataSource.TotalOfRecords;
+            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", DataSource.TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);
             await GenerateRows(sw, token);
 
-            int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
+            int totPag = (int)Math.Ceiling((double)DataSource.CurrentCount / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = EntityRepository.GetDataTable(FormElement, CurrentFilter as IDictionary, CurrentOrder, RegPerPag, i, ref tot);
+                entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,i));
+                DataSource = await EntityRepository.GetDataSourceAsync(FormElement, entityParameters);
                 await GenerateRows(sw, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.Rows.Count;
+            ProcessReporter.TotalRecords = DataSource.TotalOfRecords;
             await GenerateRows(sw, token);
         }
     }
 
     public async Task GenerateRows(StreamWriter sw, CancellationToken token)
     {
-        foreach (DataRow row in DataSource.Rows)
+        foreach (var row in DataSource.Data)
         {
             await sw.WriteAsync("\t\t\t<tr>");
             foreach (var field in await GetVisibleFieldsAsync())
@@ -128,12 +130,12 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         }
     }
 
-    private string CreateCell(DataRow row, FormElementField field)
+    private string CreateCell(IDictionary<string,dynamic> row, FormElementField field)
     {
         string value = string.Empty;
         if (field.DataBehavior != FieldBehavior.Virtual)
         {
-            if (DataSource.Columns.Contains(field.Name))
+            if (row.Keys.Contains(field.Name))
             {
                 value = FieldFormattingService.FormatValue(field, row[field.Name]);
             }

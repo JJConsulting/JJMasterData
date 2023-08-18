@@ -80,7 +80,7 @@ public class JJGridView : AsyncComponent
     private ExportOptions? _currentExportConfig;
     private GridFilter? _filter;
     private GridTable? _table;
-    private DataTable? _dataSource;
+    private DataSource? _dataSource;
     private ActionsScripts? _actionsScripts;
     private List<FormElementField>? _pkFields;
     private IDictionary<string, dynamic>? _defaultValues;
@@ -173,7 +173,7 @@ public class JJGridView : AsyncComponent
     /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// Using the stored procedure informed in the FormElement;
-    public DataTable? DataSource
+    public DataSource? DataSource
     {
         get => _dataSource;
         set
@@ -182,7 +182,7 @@ public class JJGridView : AsyncComponent
             if (value == null)
                 return;
             IsUserSetDataSource = true;
-            TotalRecords = value.Rows.Count;
+            TotalRecords = value.TotalOfRecords;
         }
     }
 
@@ -688,7 +688,7 @@ public class JJGridView : AsyncComponent
 
         html.Append(await Table.GetHtmlBuilder());
 
-        if (DataSource?.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
+        if (DataSource?.TotalOfRecords == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
             html.Append(await GetNoRecordsAlert());
         }
@@ -726,7 +726,7 @@ public class JJGridView : AsyncComponent
     
     public async Task<string> GetTableRowHtmlAsync(int rowIndex)
     {
-        var row = DataSource?.Rows[rowIndex];
+        var row = DataSource?.Data[rowIndex];
 
         return await Table.Body
             .GetTdHtmlList(row, rowIndex)
@@ -1064,7 +1064,7 @@ public class JJGridView : AsyncComponent
                 {
                     if (IsUserSetDataSource || OnDataLoad != null || OnDataLoadAsync != null)
                     {
-                        var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, int.MaxValue, 1);
+                        var result = await GetDataSourceAsync(await GetCurrentFilterAsync(), CurrentOrder, int.MaxValue, 1);
                         DataExportation.StartExportation(result.ToDataTable());
                     }
                     else
@@ -1123,31 +1123,31 @@ public class JJGridView : AsyncComponent
     {
         await SetDataSource();
 
-        return DataSource;
+        return DataSource?.ToDataTable();
     }
 
     private async Task SetDataSource()
     {
         if (_dataSource == null || IsUserSetDataSource)
         {
-            var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder,
+            var result = await GetDataSourceAsync(await GetCurrentFilterAsync(), CurrentOrder,
                 CurrentSettings.TotalPerPage, CurrentPage);
-            _dataSource = result.ToDataTable();
+            _dataSource = result;
             TotalRecords = result.TotalOfRecords;
 
             //Se estiver paginando e não retornar registros volta para pagina inicial
-            if (CurrentPage > 1 && _dataSource.Rows.Count == 0)
+            if (CurrentPage > 1 && _dataSource.TotalOfRecords == 0)
             {
                 CurrentPage = 1;
-                result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder,
+                result = await GetDataSourceAsync(await GetCurrentFilterAsync(), CurrentOrder,
                     CurrentSettings.TotalPerPage, CurrentPage);
-                _dataSource = result.ToDataTable();
+                _dataSource = result;
                 TotalRecords = result.TotalOfRecords;
             }
         }
     }
 
-    private async Task<EntityResult> GetEntityResultAsync(
+    private async Task<DataSource> GetDataSourceAsync(
         IDictionary<string, dynamic> filters,
         string? orderBy,
         int recordsPerPage,
@@ -1159,9 +1159,9 @@ public class JJGridView : AsyncComponent
         {
             var tempdt = DataSource;
             if (tempdt != null)
-                total = tempdt.Rows.Count;
+                total = tempdt.TotalOfRecords;
 
-            var dv = new DataView(tempdt);
+            var dv = new DataView(DataSource?.ToDataTable());
             dv.Sort = orderBy;
 
             dt = dv.ToTable();
@@ -1191,10 +1191,10 @@ public class JJGridView : AsyncComponent
         else
         {
             var parameters = new EntityParameters(filters, OrderByData.FromString(orderBy), new PaginationData(currentPage, recordsPerPage));
-            return await EntityRepository.GetEntityResultAsync(FormElement, parameters);
+            return await EntityRepository.GetDataSourceAsync(FormElement, parameters);
         }
 
-        return new EntityResult(dt, total);
+        return new DataSource(dt, total);
     }
 
     /// <remarks>
@@ -1202,7 +1202,7 @@ public class JJGridView : AsyncComponent
     /// </remarks>
     public async Task<List<IDictionary<string, dynamic>>?> GetGridValues(int recordPerPage, int currentPage)
     {
-        var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, recordPerPage, currentPage);
+        var result = await GetDataSourceAsync(await GetCurrentFilterAsync(), CurrentOrder, recordPerPage, currentPage);
 
         return await GetGridValues(result.ToDataTable());
     }
@@ -1279,7 +1279,7 @@ public class JJGridView : AsyncComponent
 
     public async Task<string> GetEncryptedSelectedRowsAsync()
     {
-        var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, int.MaxValue, 1);
+        var result = await GetDataSourceAsync(await GetCurrentFilterAsync(), CurrentOrder, int.MaxValue, 1);
         var selectedKeys = new StringBuilder();
         var hasVal = false;
         foreach (DataRow row in result.ToDataTable().Rows)

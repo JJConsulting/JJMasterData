@@ -271,7 +271,7 @@ public interface IEntityRepository
 
     Task<bool> ColumnExistsAsync(string tableName, string columnName);
 
-    Task<EntityResult> GetEntityResultAsync(
+    Task<DataSource> GetDataSourceAsync(
         Element element,
         EntityParameters parameters = null);
 }

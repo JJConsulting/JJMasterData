@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text;
@@ -46,7 +47,8 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
         int tot = 0;
         if (DataSource == null)
         {
-            DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
+            var entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,1));
+            DataSource = await EntityRepository.GetDataSourceAsync(FormElement,entityParameters);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
@@ -55,20 +57,21 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
+                entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,i));
+                DataSource = await EntityRepository.GetDataSourceAsync(FormElement, entityParameters);
                 await GenerateRows(sw, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.Rows.Count;
+            ProcessReporter.TotalRecords = DataSource.CurrentCount;
             await GenerateRows(sw, token);
         }
     }
 
     private async Task GenerateRows(StreamWriter sw, CancellationToken token)
     {
-        foreach (DataRow row in DataSource.Rows)
+        foreach (var row in DataSource.Data)
         {
             bool isFirst = true;
             foreach (var field in await GetVisibleFieldsAsync())
@@ -81,7 +84,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                 string value = string.Empty;
                 if (field.DataBehavior != FieldBehavior.Virtual)
                 {
-                    if (DataSource.Columns.Contains(field.Name))
+                    if (row.Keys.Contains(field.Name))
                         value = row[field.Name].ToString();
                 }
 

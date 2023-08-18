@@ -1,5 +1,6 @@
 using System.Data;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
@@ -12,7 +13,7 @@ internal class GridTable
 
     internal GridTableBody Body { get; }
 
-    internal DataTable DataSource { get; }
+    internal DataSource DataSource { get; }
 
     internal string EmptyDataText { get; }
 

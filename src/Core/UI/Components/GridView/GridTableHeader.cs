@@ -23,7 +23,7 @@ internal class GridTableHeader
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Thead);
-        if (GridView.DataSource?.Rows.Count == 0 && !GridView.ShowHeaderWhenEmpty)
+        if (GridView.DataSource?.TotalOfRecords == 0 && !GridView.ShowHeaderWhenEmpty)
             return html;
 
         await html.AppendAsync(HtmlTag.Tr, async tr =>

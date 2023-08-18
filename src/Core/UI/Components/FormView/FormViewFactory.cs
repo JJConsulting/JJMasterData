@@ -90,7 +90,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         if (formEventHandler != null)
         {
             // ReSharper disable once MethodHasAsyncOverload
-            formEventHandler.OnFormElementLoad(this, new FormElementLoadEventArgs(formElement));
+            await formEventHandler.OnFormElementLoadAsync(this, new FormElementLoadEventArgs(formElement));
                     
             await formEventHandler.OnFormElementLoadAsync(this, new FormElementLoadEventArgs(formElement))!;
         }

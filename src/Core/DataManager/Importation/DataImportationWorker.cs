@@ -213,7 +213,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
         {
             string cmd;
             cmd = ExpressionsService.ParseExpression(ProcessOptions.CommandAfterProcess, formData, false);
-            EntityRepository.SetCommand(cmd);
+            await EntityRepository.SetCommandAsync(cmd);
         }
 
         if (OnAfterProcess != null)

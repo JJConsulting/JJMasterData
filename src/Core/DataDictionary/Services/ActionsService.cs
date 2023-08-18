@@ -67,7 +67,7 @@ public class ActionsService : BaseService
 
     public async Task<bool> SaveAction(string elementName, BasicAction action, ActionSource context, string originalName, string fieldName = null)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         ValidateActionName(formElement, action.Name, originalName, context, fieldName);
         ValidateAction(formElement, action);
 

@@ -347,7 +347,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
+        var dictionary = await _dataDictionaryRepository.GetMetadataAsync(elementName);
 
         if (!dictionary.ApiOptions.EnableAdd & !dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();

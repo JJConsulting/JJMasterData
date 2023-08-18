@@ -65,12 +65,12 @@ public class EntityService : BaseService
 
             if (!entityName.Equals(formElement.Name))
             {
-                DataDictionaryRepository.Delete(entityName);
-                DataDictionaryRepository.InsertOrReplace(dicParser);
+                await DataDictionaryRepository.DeleteAsync(entityName);
+                await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
             }
             else
             {
-                DataDictionaryRepository.InsertOrReplace(dicParser);
+                await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
             }
 
             return formElement;
