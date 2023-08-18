@@ -94,17 +94,6 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
                     
             await formEventHandler.OnFormElementLoadAsync(this, new FormElementLoadEventArgs(formElement))!;
         }
-        
-        SetFormOptions(formView, formElement.Options);
-    }
-
-    internal static void SetFormOptions(JJFormView formView, FormElementOptions options)
-    {
-        if (options == null)
-            return;
-        
-        formView.ShowTitle = options.Grid.ShowTitle;
-        formView.DataPanel.FormUI = options.Form;
     }
     
 }

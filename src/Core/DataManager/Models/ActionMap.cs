@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager;
@@ -44,5 +45,17 @@ public class ActionMap
         {
             PkFieldValues.Add(f.Name, row[f.Name].ToString());
         }
+    }
+    
+    internal BasicAction GetCurrentAction(FormElement formElement)
+    {
+        return ActionSource switch
+        {
+            ActionSource.GridTable => formElement.Options.GridTableActions.First(a => a.Name.Equals(ActionName)),
+            ActionSource.GridToolbar =>  formElement.Options.GridToolbarActions.First(a => a.Name.Equals(ActionName)),
+            ActionSource.FormToolbar =>  formElement.Options.FormToolbarActions.First(a => a.Name.Equals(ActionName)),
+            ActionSource.Field => formElement.Fields[FieldName].Actions.Get(ActionName),
+            _ => null,
+        };
     }
 }

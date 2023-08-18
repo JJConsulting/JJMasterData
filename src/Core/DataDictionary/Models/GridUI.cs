@@ -50,7 +50,7 @@ public class GridUI
     /// Quantidade total de registros existentes no banco
     /// </summary>
     [JsonProperty("totalReg")]
-    public int TotalReg { get; set; }
+    public int TotalOfRecords { get; set; }
 
     /// <summary>
     /// Exibir título no cabeçalho da página

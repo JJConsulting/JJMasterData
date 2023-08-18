@@ -145,16 +145,10 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
     {
         var gridOptions = options.Grid;
 
-        if (gridOptions == null)
-            throw new ArgumentNullException(nameof(gridOptions), "Grid Options");
-
         SetGridUiOptions(grid, gridOptions);
     }
-
-    //todo? 
     internal void SetGridUiOptions(JJGridView grid, GridUI gridOptions)
     {
-        grid.EnableAjax = true;
         grid.EnableSorting = gridOptions.EnableSorting;
         grid.EnableMultiSelect = gridOptions.EnableMultSelect;
         grid.MaintainValuesOnLoad = gridOptions.MaintainValuesOnLoad;

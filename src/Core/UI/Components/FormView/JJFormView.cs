@@ -53,15 +53,18 @@ public class JJFormView : AsyncComponent
 
     #endregion
 
-    #region "Properties"
-
+    
+    #region "Fields"
     private JJDataPanel _dataPanel;
     private JJGridView _gridView;
     private ActionMap _currentActionMap;
     private JJAuditLogView _auditLogView;
     private JJDataImportation _dataImportation;
     private string _userId;
-
+    private bool? _showTitle;
+    #endregion
+    
+    #region "Properties"
     internal JJAuditLogView AuditLogView =>
         _auditLogView ??= ComponentFactory.AuditLog.Create(FormElement);
 
@@ -109,6 +112,7 @@ public class JJFormView : AsyncComponent
         {
             _dataPanel ??= ComponentFactory.DataPanel.Create(FormElement);
             _dataPanel.Name = "jjpanel_" + FormElement.Name.ToLower();
+            _dataPanel.FormUI = FormElement.Options.Form;
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
             _dataPanel.IsExternalRoute = IsExternalRoute;
@@ -187,18 +191,26 @@ public class JJFormView : AsyncComponent
     public DeleteSelectedRowsAction DeleteSelectedRowsAction
         => (DeleteSelectedRowsAction)GridView.ToolBarActions.First(x => x is DeleteSelectedRowsAction);
 
-    public InsertAction InsertAction => (InsertAction)GridView.ToolBarActions.InsertAction;
+    public InsertAction InsertAction => GridView.ToolBarActions.InsertAction;
 
-    public EditAction EditAction => (EditAction)GridView.GridActions.EditAction;
+    public EditAction EditAction => GridView.GridActions.EditAction;
 
-    public DeleteAction DeleteAction => (DeleteAction)GridView.GridActions.DeleteAction;
+    public DeleteAction DeleteAction => GridView.GridActions.DeleteAction;
 
-    public ViewAction ViewAction => (ViewAction)GridView.GridActions.ViewAction;
+    public ViewAction ViewAction => GridView.GridActions.ViewAction;
 
-    public LogAction LogAction => (LogAction)GridView.ToolBarActions.LogAction;
+    public LogAction LogAction => GridView.ToolBarActions.LogAction;
 
 
-    public bool ShowTitle { get; set; }
+    public bool ShowTitle
+    {
+        get
+        {
+            _showTitle ??= FormElement.Options.Grid.ShowTitle;
+            return _showTitle.Value;
+        }
+        set => _showTitle = value;
+    }
 
     internal bool IsModal { get; set; }
 
@@ -329,9 +341,8 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetFormResult()
     {
         HtmlBuilder html;
-
-        var actionMap = CurrentActionMap;
-        var currentAction = GridView.GetCurrentAction(actionMap);
+        
+        var currentAction = CurrentActionMap.GetCurrentAction(FormElement);
 
         if (currentAction is EditAction || PageState is PageState.Update)
         {
@@ -1121,7 +1132,7 @@ public class JJFormView : AsyncComponent
 
     public void SetOptions(FormElementOptions options)
     {
-        FormViewFactory.SetFormOptions(this, options);
+        FormElement.Options = options;
     }
 
     private JJLinkButton GetBackButton()

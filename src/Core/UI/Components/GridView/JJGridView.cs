@@ -309,10 +309,8 @@ public class JJGridView : AsyncComponent
         {
             if (_currentSettings != null)
                 return _currentSettings;
-
-            // Removing it from here when calling the GetMetadataInfoList() method outside the class does not respect pagination
-            var actionMap = CurrentActionMap;
-            var action = GetCurrentAction(actionMap);
+            
+            var action = CurrentActionMap.GetCurrentAction(FormElement);
             var form = new GridFormSettings(CurrentContext, StringLocalizer);
             if (action is ConfigAction)
             {
@@ -378,7 +376,7 @@ public class JJGridView : AsyncComponent
         set => _currentExportConfig = value;
     }
 
-    public bool EnableAjax { get; set; }
+    public bool EnableAjax => true;
 
     public bool EnableEditMode { get; set; }
 
@@ -540,7 +538,6 @@ public class JJGridView : AsyncComponent
         Name = "JJView" + formElement.Name.ToLower();
         ShowTitle = true;
         EnableFilter = true;
-        EnableAjax = true;
         EnableSorting = true;
         ShowHeaderWhenEmpty = true;
         ShowPagging = true;
@@ -791,16 +788,15 @@ public class JJGridView : AsyncComponent
 
     private bool CheckForSqlCommand()
     {
-        var action = GetCurrentAction(CurrentActionMap);
+        var action = CurrentActionMap.GetCurrentAction(FormElement);
         return action is SqlCommandAction;
     }
 
     private Task<JJMessageBox> ExecuteSqlCommand()
     {
-        var actionMap = CurrentActionMap;
-        var action = GetCurrentAction(actionMap);
+        var action = CurrentActionMap.GetCurrentAction(FormElement);
         var gridSqlAction = new GridSqlCommandAction(this);
-        return gridSqlAction.ExecuteSqlCommand(actionMap, (SqlCommandAction)action);
+        return gridSqlAction.ExecuteSqlCommand(CurrentActionMap, (SqlCommandAction)action);
     }
 
     private void AssertProperties()
@@ -1496,21 +1492,7 @@ public class JJGridView : AsyncComponent
 
     public void SetGridOptions(GridUI options)
     {
-        // FormElement.Options.Grid = options;
-    }
-
-    internal BasicAction GetCurrentAction(ActionMap actionMap)
-    {
-        if (actionMap == null)
-            return null;
-
-        return actionMap.ActionSource switch
-        {
-            ActionSource.GridTable => GridActions.First(x => x.Name.Equals(actionMap.ActionName)),
-            ActionSource.GridToolbar => ToolBarActions.First(x => x.Name.Equals(actionMap.ActionName)),
-            ActionSource.Field => FormElement.Fields[actionMap.FieldName].Actions.Get(actionMap.ActionName),
-            _ => null,
-        };
+        FormElement.Options.Grid = options;
     }
 
     public bool IsExportPost()
