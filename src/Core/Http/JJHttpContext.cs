@@ -13,8 +13,7 @@ public class JJHttpContext : IHttpContext
     public IHttpSession Session { get; }
 
     public IHttpRequest Request { get; }
-
-    public IHttpResponse Response { get; }
+    
     
     private JJHttpContext()
     {
@@ -26,21 +25,18 @@ public class JJHttpContext : IHttpContext
     public JJHttpContext(
         Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor,
         IHttpSession session,
-        IHttpRequest request,
-        IHttpResponse response)
+        IHttpRequest request)
     {
         HttpContext = httpContextAccessor.HttpContext;
         Session = session;
         Request = request;
-        Response = response;
     }
 #endif
     
 #if NETFRAMEWORK
-    public JJHttpContext(IHttpRequest request, IHttpResponse response, IHttpSession session)
+    public JJHttpContext(IHttpRequest request,IHttpSession session)
     {
         Request = request;
-        Response = response;
         Session = session;
     }
 #endif

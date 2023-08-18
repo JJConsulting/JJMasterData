@@ -304,7 +304,7 @@ public class JJFormView : AsyncComponent
             return await DataPanel.GetResultAsync();
 
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))
-            JJFileDownloader.RedirectToDirectDownload(CurrentContext, EncryptionService, ComponentFactory.Downloader);
+            return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService, ComponentFactory.Downloader);
 
         if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
             return await JJSearchBox.GetResultFromPanel(DataPanel, CurrentContext);
@@ -397,7 +397,14 @@ public class JJFormView : AsyncComponent
         }
         else if (currentAction is DeleteAction)
         {
-            html = await GetHtmlDelete();
+            var deleteResult = await GetDeleteResult();
+
+            if (deleteResult is RenderedComponentResult renderedComponentResult)
+                html = renderedComponentResult.HtmlBuilder;
+            else
+            {
+                return deleteResult;
+            }
         }
         else if (currentAction is DeleteSelectedRowsAction)
         {
@@ -453,8 +460,7 @@ public class JJFormView : AsyncComponent
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    CurrentContext.Response.Redirect(UrlRedirect);
-                    return new EmptyComponentResult();
+                    return new RedirectComponentResult(UrlRedirect!);
                 }
 
                 PageState = PageState.List;
@@ -518,8 +524,7 @@ public class JJFormView : AsyncComponent
             {
                 if (!string.IsNullOrEmpty(UrlRedirect))
                 {
-                    CurrentContext.Response.Redirect(UrlRedirect);
-                    return new EmptyComponentResult();
+                    return new RedirectComponentResult(UrlRedirect!);
                 }
 
                 if (action.ReopenForm)
@@ -713,13 +718,12 @@ public class JJFormView : AsyncComponent
         return await GetFormResultAsync(new(values, null, PageState), false);
     }
 
-    private async Task<HtmlBuilder> GetHtmlDelete()
+    private async Task<ComponentResult> GetDeleteResult()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         try
         {
-            var acMap = CurrentActionMap;
-            var filter = acMap?.PkFieldValues;
+            var filter = CurrentActionMap?.PkFieldValues;
 
             var errors = await DeleteFormValuesAsync(filter);
 
@@ -748,14 +752,13 @@ public class JJFormView : AsyncComponent
 
         if (!string.IsNullOrEmpty(UrlRedirect))
         {
-            CurrentContext.Response.Redirect(UrlRedirect);
-            return new HtmlBuilder();
+            return new RedirectComponentResult(UrlRedirect!);
         }
 
         html.Append(await GridView.GetHtmlBuilderAsync());
         PageState = PageState.List;
 
-        return html;
+        return new RenderedComponentResult(html);
     }
 
 

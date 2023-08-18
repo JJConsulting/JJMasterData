@@ -196,7 +196,7 @@ public class JJDataPanel : AsyncComponent
             return await JJTextFile.GetResultFromPanel(this);
         
         if (JJFileDownloader.IsDownloadRoute(CurrentContext))
-            JJFileDownloader.RedirectToDirectDownload(CurrentContext, EncryptionService, ComponentFactory.Downloader);
+            return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService, ComponentFactory.Downloader);
 
         if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
             return await JJSearchBox.GetResultFromPanel(this, CurrentContext);

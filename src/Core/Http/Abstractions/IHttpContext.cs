@@ -5,7 +5,6 @@ public interface IHttpContext
     bool IsPost { get; }
     IHttpSession Session { get; }
     IHttpRequest Request { get; }
-    IHttpResponse Response { get; }
 
     /// <summary>
     /// Verify if the current User has a valid Claims property.

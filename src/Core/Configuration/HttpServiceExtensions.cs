@@ -16,7 +16,6 @@ public static class HttpServiceExtensions
 
         services.AddScoped<IHttpSession, JJSession>();
         services.AddScoped<IHttpRequest, JJRequest>();
-        services.AddScoped<IHttpResponse, JJResponse>();
         services.AddScoped<IHttpContext, JJHttpContext>();
     }
 }

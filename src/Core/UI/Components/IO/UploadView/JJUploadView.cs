@@ -766,7 +766,7 @@ public class JJUploadView : AsyncComponent
         }
         var downloader = ComponentFactory.Downloader.Create();
         downloader.FilePath = fileName;
-        downloader.RedirectToDirectDownload();
+        downloader.GetDirectDownloadRedirect();
     }
 
     /// <summary>

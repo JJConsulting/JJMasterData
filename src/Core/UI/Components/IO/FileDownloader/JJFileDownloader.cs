@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
@@ -54,7 +53,7 @@ public class JJFileDownloader : HtmlComponent
         if (IsExternalLink)
             return GetDownloadHtmlElement();
         
-        RedirectToDirectDownload();
+        GetDirectDownloadRedirect();
 
         return null;
     }
@@ -109,7 +108,7 @@ public class JJFileDownloader : HtmlComponent
         return html;
     }
     
-    internal void RedirectToDirectDownload()
+    internal RedirectComponentResult GetDirectDownloadRedirect()
     {
         if (string.IsNullOrEmpty(FilePath))
             throw new ArgumentNullException(nameof(FilePath));
@@ -121,12 +120,12 @@ public class JJFileDownloader : HtmlComponent
             throw exception;
         }
 
-        RedirectToDirectDownload(FilePath);
+        return GetDirectDownloadRedirect(FilePath);
     }
 
-    internal void RedirectToDirectDownload(string filePath)
+    internal RedirectComponentResult GetDirectDownloadRedirect(string filePath)
     {
-        CurrentContext.Response.Redirect(GetDownloadUrl(filePath));
+        return new RedirectComponentResult(GetDownloadUrl(filePath));
     }
 
     internal string GetDownloadUrl(string filePath)
@@ -146,7 +145,7 @@ public class JJFileDownloader : HtmlComponent
         return false;
     }
 
-    public static void RedirectToDirectDownload(
+    public static RedirectComponentResult GetDirectDownloadRedirect(
         IHttpContext currentContext, 
         JJMasterDataEncryptionService encryptionService, 
         IComponentFactory<JJFileDownloader> factory)
@@ -160,7 +159,7 @@ public class JJFileDownloader : HtmlComponent
         }
 
         if (criptFilePath == null)
-            return;
+            throw new JJMasterDataException("Invalid file path or badly formatted URL");
 
         string filePath = encryptionService.DecryptStringWithUrlUnescape(criptFilePath);
         if (filePath == null)
@@ -170,7 +169,7 @@ public class JJFileDownloader : HtmlComponent
         download.FilePath = filePath;
         download.IsExternalLink = isExternalLink;
 
-        download.RedirectToDirectDownload();
+        return download.GetDirectDownloadRedirect();
     }
 
 

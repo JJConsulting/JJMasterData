@@ -1,9 +1,7 @@
 #nullable enable
 
 using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -25,9 +23,7 @@ public abstract class AsyncComponent : ComponentBase
         if (result is RenderedComponentResult)
             return result;
         
-        var httpContext = StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
-        
-        httpContext.Response.SendResponse(result.Content);
+        JJMasterData.Core.Http.SystemWebHelper.SendResult(result);
 
         return null;
     }
