@@ -582,17 +582,17 @@ public class JJGridView : AsyncComponent
             }
         }
         
-        if ("tableexp".Equals(requestType))
+        if ("dataExportation".Equals(requestType))
         {
-            string gridName = CurrentContext.Request.QueryString("gridName");
-            if (Name.Equals(gridName))
+            string gridViewName = CurrentContext.Request.QueryString("gridViewName");
+            if (Name.Equals(gridViewName))
                 return await GetExportationResult();
         }
 
-        if ("tablerow".Equals(requestType))
+        if ("gridViewRow".Equals(requestType))
         {
-            string gridName = CurrentContext.Request.QueryString("gridName");
-            if (Name.Equals(gridName))
+            string gridViewName = CurrentContext.Request.QueryString("gridViewName");
+            if (Name.Equals(gridViewName))
             {
                 int rowIndex = int.Parse(CurrentContext.Request.QueryString("nRow"));
 
@@ -862,12 +862,12 @@ public class JJGridView : AsyncComponent
                 script.AppendLine("\t\tvar frm = $('form'); ");
                 script.AppendLine("\t\tvar surl = frm.attr('action'); ");
                 script.AppendLine("\t\tif (surl.includes('?'))");
-                script.AppendLine("\t\t\tsurl += '&t=tablerow&nRow=' + nRow;");
+                script.AppendLine("\t\t\tsurl += '&t=gridViewRow&nRow=' + nRow;");
                 script.AppendLine("\t\telse");
-                script.AppendLine("\t\t\tsurl += '?t=tablerow&nRow=' + nRow;");
+                script.AppendLine("\t\t\tsurl += '?t=gridViewRow&nRow=' + nRow;");
                 script.AppendLine("");
                 script.AppendLine("\t\tsurl += '&objname=' + objname;");
-                script.AppendLine($"\t\tsurl += '&gridName={Name}';");
+                script.AppendLine($"\t\tsurl += '&gridViewName={Name}';");
                 script.AppendLine("\t\t$.ajax({ ");
                 script.AppendLine("\t\tasync: false,");
                 script.AppendLine("\t\t\ttype: frm.attr('method'), ");
@@ -899,7 +899,7 @@ public class JJGridView : AsyncComponent
 
                 foreach (var f in listFieldsPost)
                 {
-                    //WorkArroud para gatilhar o select do search
+                    //Workaround to JJSearch
                     if (f.Component == FormComponent.Search)
                     {
                         script.Append("\t\t$(prefixSelector + \"");
@@ -1065,12 +1065,12 @@ public class JJGridView : AsyncComponent
 
     private async Task<ComponentResult> GetExportationResult()
     {
-        string expressionType = CurrentContext.Request.QueryString("exptype");
+        string expressionType = CurrentContext.Request.QueryString("dataExportationOperation");
         switch (expressionType)
         {
-            case "showoptions":
+            case "showOptions":
                 return await DataExportation.GetResultAsync();
-            case "export":
+            case "startProcess":
                 {
                     if (IsUserSetDataSource || OnDataLoad != null || OnDataLoadAsync != null)
                     {
@@ -1102,7 +1102,6 @@ public class JJGridView : AsyncComponent
             case "checkProgress":
                 {
                     var dto = DataExportation.GetCurrentProgress();
-                    var json = JsonConvert.SerializeObject(dto);
                     return new JsonComponentResult(dto);
                 }
             case "stopProcess":
@@ -1516,6 +1515,6 @@ public class JJGridView : AsyncComponent
 
     public bool IsExportPost()
     {
-        return "export".Equals(CurrentContext.Request["exptype"]) && Name.Equals(CurrentContext.Request["gridName"]);
+        return "export".Equals(CurrentContext.Request["dataExportationOperation"]) && Name.Equals(CurrentContext.Request["gridViewName"]);
     }
 }

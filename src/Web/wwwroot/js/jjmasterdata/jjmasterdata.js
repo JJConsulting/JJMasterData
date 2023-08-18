@@ -233,9 +233,9 @@ class DataExportation {
         return __awaiter(this, void 0, void 0, function* () {
             DataExportation.setLoadMessage();
             let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("t", "tableExp");
-            urlBuilder.addQueryParameter("gridName", componentName);
-            urlBuilder.addQueryParameter("exptype", "checkProgress");
+            urlBuilder.addQueryParameter("t", "dataExportation");
+            urlBuilder.addQueryParameter("gridViewName", componentName);
+            urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
             var isCompleted = false;
             while (!isCompleted) {
                 isCompleted = yield DataExportation.checkProgress(urlBuilder.build(), componentName);
@@ -246,24 +246,24 @@ class DataExportation {
     static stopProcessAtSamePage(componentName, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("t", "tableExp");
-            urlBuilder.addQueryParameter("gridName", componentName);
-            urlBuilder.addQueryParameter("exptype", "stopProcess");
+            urlBuilder.addQueryParameter("t", "dataExportation");
+            urlBuilder.addQueryParameter("gridViewName", componentName);
+            urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
             yield DataExportation.stopExportation(urlBuilder.build(), stopMessage);
         });
     }
     static openExportPopupAtSamePage(componentName) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("t", "tableExp");
-        urlBuilder.addQueryParameter("gridName", componentName);
-        urlBuilder.addQueryParameter("exptype", "showOptions");
+        urlBuilder.addQueryParameter("t", "dataExportation");
+        urlBuilder.addQueryParameter("gridViewName", componentName);
+        urlBuilder.addQueryParameter("dataExportationOperation", "showOptions");
         DataExportation.openExportPopup(urlBuilder.build(), componentName);
     }
     static startExportationAtSamePage(componentName) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("t", "tableExp");
-        urlBuilder.addQueryParameter("gridName", componentName);
-        urlBuilder.addQueryParameter("exptype", "export");
+        urlBuilder.addQueryParameter("t", "dataExportation");
+        urlBuilder.addQueryParameter("gridViewName", componentName);
+        urlBuilder.addQueryParameter("dataExportationOperation", "startProcess");
         fetch(urlBuilder.build(), {
             method: "POST",
             body: new FormData(document.querySelector("form"))

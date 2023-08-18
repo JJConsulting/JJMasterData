@@ -26,7 +26,9 @@ public class LogController : DataDictionaryController
     private IEntityRepository EntityRepository { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public LogController(IFormElementComponentFactory<JJFormView> formViewFactory,LoggerFormElementFactory loggerFormElementFactory, IEntityRepository entityRepository,IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<DbLoggerOptions> options)
+    public LogController(IFormElementComponentFactory<JJFormView> formViewFactory,
+        LoggerFormElementFactory loggerFormElementFactory, IEntityRepository entityRepository,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<DbLoggerOptions> options)
     {
         FormViewFactory = formViewFactory;
         LoggerFormElementFactory = loggerFormElementFactory;
@@ -38,19 +40,19 @@ public class LogController : DataDictionaryController
     public async Task<IActionResult> Index()
     {
         var formElement = LoggerFormElementFactory.GetFormElement();
-        
+
         if (!await EntityRepository.TableExistsAsync(Options.TableName))
         {
             await EntityRepository.CreateDataModelAsync(formElement);
         }
-        
+
         var formView = FormViewFactory.Create(formElement);
         formView.GridView.CurrentOrder = $"{Options.CreatedColumnName} DESC";
         var result = await formView.GetResultAsync();
 
         if (result.IsActionResult())
             return result.ToActionResult();
-        
+
         return View(nameof(Index), result.Content);
     }
 
@@ -58,9 +60,9 @@ public class LogController : DataDictionaryController
     public async Task<IActionResult> ClearAll()
     {
         string sql = $"TRUNCATE TABLE {Options.TableName}";
-        
+
         await EntityRepository.SetCommandAsync(sql);
-        
+
         return RedirectToAction("Index");
     }
 }

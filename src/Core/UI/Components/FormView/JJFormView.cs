@@ -159,8 +159,8 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (CurrentContext.Request["current-pageState-" + Name] != null && _pageState is null)
-                _pageState = (PageState)int.Parse(CurrentContext.Request["current-pageState-" + Name]);
+            if (CurrentContext.Request["current-page-state-" + Name] != null && _pageState is null)
+                _pageState = (PageState)int.Parse(CurrentContext.Request["current-page-state-" + Name]);
 
             return _pageState ?? PageState.List;
         }
@@ -410,7 +410,7 @@ public class JJFormView : AsyncComponent
 
         if (html != null)
         {
-            html.AppendHiddenInput($"current-pageState-{Name.ToLower()}", ((int)PageState).ToString());
+            html.AppendHiddenInput($"current-page-state-{Name.ToLower()}", ((int)PageState).ToString());
             html.AppendHiddenInput($"current-form-action-{Name.ToLower()}", "");
         }
 
@@ -595,7 +595,7 @@ public class JJFormView : AsyncComponent
         selectedForm.SetOptions(formElement.Options);
 
         var goBackScript = new StringBuilder();
-        goBackScript.Append($"$('#current-pageState-{Name}').val('{((int)PageState.List).ToString()}'); ");
+        goBackScript.Append($"$('#current-page-state-{Name}').val('{((int)PageState.List).ToString()}'); ");
         goBackScript.AppendLine("$('form:first').submit(); ");
 
         var goBackAction = new ScriptAction
@@ -831,7 +831,7 @@ public class JJFormView : AsyncComponent
     {
         var actionMap = _currentActionMap;
         var script = new StringBuilder();
-        script.Append($"$('#current-pageState-{Name}').val('{(int)PageState.List}'); ");
+        script.Append($"$('#current-page-state-{Name}').val('{(int)PageState.List}'); ");
         script.AppendLine("$('form:first').submit(); ");
 
         var goBackAction = new ScriptAction
@@ -871,12 +871,12 @@ public class JJFormView : AsyncComponent
             html.AppendComponent(GridView.GetTitle(UserValues));
 
         PageState = PageState.Import;
-        var sScriptImport = new StringBuilder();
-        sScriptImport.Append($"$('#current-pageState-{Name}').val('{(int)PageState.List}'); ");
-        sScriptImport.AppendLine("$('form:first').submit(); ");
+        var importationScript = new StringBuilder();
+        importationScript.Append($"$('#current-page-state-{Name}').val('{(int)PageState.List}'); ");
+        importationScript.AppendLine("$('form:first').submit(); ");
         
         DataImportation.UserValues = UserValues;
-        DataImportation.BackButton.OnClientClick = sScriptImport.ToString();
+        DataImportation.BackButton.OnClientClick = importationScript.ToString();
         DataImportation.ProcessOptions = action.ProcessOptions;
         DataImportation.EnableAuditLog = LogAction.IsVisible;
 
@@ -973,7 +973,7 @@ public class JJFormView : AsyncComponent
     private JJToolbar GetFormLogBottomBar(IDictionary<string, dynamic> values)
     {
         var backScript = new StringBuilder();
-        backScript.Append($"$('#current-pageState-{Name}').val('{(int)PageState.List}'); ");
+        backScript.Append($"$('#current-page-state-{Name}').val('{(int)PageState.List}'); ");
         backScript.AppendLine("$('form:first').submit(); ");
 
         var btnBack = GetBackButton();
@@ -1155,7 +1155,7 @@ public class JJFormView : AsyncComponent
             Text = "Hide Log",
             IconClass = IconType.Film.GetCssClass(),
             CssClass = "btn btn-primary btn-small",
-            OnClientClick = $"$('#current-pageState-{Name}').val('{(int)PageState.List}');{scriptAction}"
+            OnClientClick = $"$('#current-page-state-{Name}').val('{(int)PageState.List}');{scriptAction}"
         };
         return btn;
     }

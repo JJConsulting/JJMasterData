@@ -44,7 +44,7 @@ public class DataExportationScripts
     public string GetExportPopupScript(string dictionaryName,string componentName, bool isExternalRoute)
     {
         if (!isExternalRoute) 
-            return $"DataExportation.openExportPopupSamePage('{componentName}');";
+            return $"DataExportation.openExportPopupAtSamePage('{componentName}');";
         
         var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
         
