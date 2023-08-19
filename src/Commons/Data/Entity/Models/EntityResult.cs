@@ -6,7 +6,7 @@ namespace JJMasterData.Commons.Data.Entity;
 
 public class EntityResult<T>
 {
-    public IList<T> Data { get; }
+    public List<T> Data { get; }
     
     /// <summary>
     /// TotalOfRecords at the EntityResource source.
@@ -15,7 +15,7 @@ public class EntityResult<T>
 
     public int CurrentCount => Data.Count;
     
-    public EntityResult(IList<T> data, int totalOfRecords)
+    public EntityResult(List<T> data, int totalOfRecords)
     {
         Data = data;
         TotalOfRecords = totalOfRecords;

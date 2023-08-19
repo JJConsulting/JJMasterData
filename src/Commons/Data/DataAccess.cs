@@ -814,7 +814,8 @@ public class DataAccess
 
                     while (await dataReader.ReadAsync(cancellationToken))
                     {
-                        var dictionary = Activator.CreateInstance<T>();
+                        var dictionary = (T)Activator.CreateInstance(typeof(T),StringComparer.InvariantCultureIgnoreCase);
+                        
                         foreach (var columnName in columnNames)
                         {
                             var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))

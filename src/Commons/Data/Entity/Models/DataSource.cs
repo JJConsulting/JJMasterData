@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace JJMasterData.Commons.Data.Entity;
 
-public class DataSource : EntityResult<IDictionary<string, dynamic?>>
+public class DataSource : EntityResult<Dictionary<string, dynamic?>>
 {
-    internal DataSource(IList<IDictionary<string, dynamic?>> list, int totalOfRecords) : base(list,totalOfRecords)
+    internal DataSource(List<Dictionary<string, dynamic?>> list, int totalOfRecords) : base(list,totalOfRecords)
     {
     }
     
@@ -16,9 +16,9 @@ public class DataSource : EntityResult<IDictionary<string, dynamic?>>
     {
     }
     
-    private static List<IDictionary<string, dynamic?>> ConvertDataTableToList(DataTable dataTable)
+    private static List<Dictionary<string, dynamic?>> ConvertDataTableToList(DataTable dataTable)
     {
-        var list = new List<IDictionary<string, dynamic?>>();
+        var list = new List<Dictionary<string, dynamic?>>();
 
         foreach (DataRow row in dataTable.Rows)
         {

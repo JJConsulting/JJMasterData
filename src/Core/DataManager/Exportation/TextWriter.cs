@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     public string Delimiter { get; set; }
-    public IEntityRepository EntityRepository { get; } 
+    private IEntityRepository EntityRepository { get; } 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
@@ -128,7 +129,8 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
         await sw.FlushAsync();
     }
 
-    public TextWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    public TextWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILoggerFactory logger, IEntityRepository entityRepository) : base(expressionsService, stringLocalizer, options, textFileFactory, logger.CreateLogger<DataExportationWriterBase>())
     {
+        EntityRepository = entityRepository;
     }
 }

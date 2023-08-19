@@ -240,11 +240,11 @@ public class JJDataExportation : ProcessComponent
         return DataExportationWriterFactory.GetInstance(this);
     }
 
-    public void StartExportation(DataTable dt)
+    public void StartExportation(DataSource dataSource)
     {
         var exporter = CreateWriter();
 
-        exporter.DataSource = new DataSource(dt, dt.Rows.Count);
+        exporter.DataSource = dataSource;
         BackgroundTask.Run(ProcessKey, exporter);
     }
 

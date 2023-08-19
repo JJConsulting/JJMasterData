@@ -1065,7 +1065,7 @@ public class JJGridView : AsyncComponent
                     if (IsUserSetDataSource || OnDataLoad != null || OnDataLoadAsync != null)
                     {
                         var result = await GetDataSourceAsync(await GetCurrentFilterAsync(), CurrentOrder, int.MaxValue, 1);
-                        DataExportation.StartExportation(result.ToDataTable());
+                        DataExportation.StartExportation(result);
                     }
                     else
                     {
@@ -1154,18 +1154,18 @@ public class JJGridView : AsyncComponent
         int currentPage)
     {
         DataTable dt;
-        int total = 0;
+        var total = 0;
         if (IsUserSetDataSource)
         {
-            var tempdt = DataSource;
-            if (tempdt != null)
-                total = tempdt.TotalOfRecords;
+            var dataSource = DataSource;
+            if (dataSource != null)
+                total = dataSource.TotalOfRecords;
 
-            var dv = new DataView(DataSource?.ToDataTable());
-            dv.Sort = orderBy;
+            var dataView = new DataView(DataSource?.ToDataTable());
+            dataView.Sort = orderBy;
 
-            dt = dv.ToTable();
-            dv.Dispose();
+            dt = dataView.ToTable();
+            dataView.Dispose();
         }
         else if (OnDataLoad != null || OnDataLoadAsync != null)
         {
@@ -1174,8 +1174,7 @@ public class JJGridView : AsyncComponent
                 Filters = filters,
                 OrderBy = orderBy,
                 RecordsPerPage = recordsPerPage,
-                CurrentPage = currentPage,
-                TotalOfRecords = total
+                CurrentPage = currentPage
             };
 
             OnDataLoad?.Invoke(this, args);
@@ -1185,8 +1184,7 @@ public class JJGridView : AsyncComponent
                 await OnDataLoadAsync.Invoke(this, args);
             }
 
-            total = args.TotalOfRecords;
-            dt = args.DataSource;
+            return args.DataSource;
         }
         else
         {

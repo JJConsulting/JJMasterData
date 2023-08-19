@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using JJMasterData.Commons.Data.Entity;
 
 namespace JJMasterData.Core.FormEvents.Args;
 
@@ -10,13 +11,10 @@ namespace JJMasterData.Core.FormEvents.Args;
 /// </summary>
 public class GridDataLoadEventArgs : EventArgs
 {
-    /// <summary>
-    /// Filtros atuais
-    /// </summary>
     public IDictionary<string,dynamic> Filters { get; internal set; }
-
+    
     /// <summary>
-    /// Ordem atual
+    /// Current order
     /// </summary>
     public string OrderBy { get; internal set; }
 
@@ -26,17 +24,13 @@ public class GridDataLoadEventArgs : EventArgs
     public int RecordsPerPage { get; internal set; }
 
     /// <summary>
-    /// Página atual
+    /// Current page
     /// </summary>
     public int CurrentPage { get; internal set; }
 
     /// <summary>
-    /// Retorno do total de Registros
+    /// DataSource containing data ready to populate the grid
     /// </summary>
-    public int TotalOfRecords { get; set; }
+    public DataSource DataSource { get; set; }
 
-    /// <summary>
-    /// Retorna Objeto DataTable com os dados prontos para preencher a grid
-    /// </summary>
-    public DataTable DataSource { get; set; }
 }

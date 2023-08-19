@@ -104,7 +104,7 @@ public class EntityRepository : IEntityRepository
         return await Provider.GetDataTableAsync(element, filters, orderBy, recordsPerPage, currentPage);
     }
     
-    public async Task<(List<IDictionary<string, dynamic>>, int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
+    public async Task<(List<Dictionary<string, dynamic>>, int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
     {
         return await Provider.GetDictionaryListAsync(element, filters, orderBy, recordsPerPage, currentPage);
     }

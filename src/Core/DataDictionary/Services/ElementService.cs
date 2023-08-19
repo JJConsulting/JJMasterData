@@ -165,8 +165,24 @@ public class ElementService : BaseService
             var result =
                 await DataDictionaryRepository.GetFormElementInfoListAsync(filter, orderBy, args.RecordsPerPage,
                     args.CurrentPage);
-            args.DataSource = result.Data.ToDataTable();
-            args.TotalOfRecords = result.TotalOfRecords;
+
+            var dictionaryList = new List<Dictionary<string, dynamic?>>();
+            
+            foreach (var info in result.Data)
+            {
+                var dictionary = new Dictionary<string, dynamic?>
+                {
+                    { "info", info.Info },
+                    { "modified", info.Modified },
+                    { "name", info.Name },
+                    { "sync", info.Sync },
+                    { "tablename", info.TableName }
+                };
+    
+                dictionaryList.Add(dictionary);
+            }
+            
+            args.DataSource = new DataSource(dictionaryList,result.TotalOfRecords);
         };
 
         formView.GridView.OnRenderAction += (sender, args) =>
