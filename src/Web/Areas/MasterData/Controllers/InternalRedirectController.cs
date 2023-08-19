@@ -16,81 +16,83 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class InternalRedirectController : MasterDataController
 {
-    private ComponentFactory ComponentFactory { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
     private string? _dictionaryName;
     private RelationshipViewType _relationshipType;
-    private IDictionary<string,dynamic>? _relationValues;
+
+    private ComponentFactory ComponentFactory { get; }
+    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IDictionary<string, dynamic> RelationValues { get; }
 
     public InternalRedirectController(ComponentFactory componentFactory, JJMasterDataEncryptionService encryptionService)
     {
         ComponentFactory = componentFactory;
         EncryptionService = encryptionService;
+        RelationValues = new Dictionary<string, dynamic>();
     }
-    
+
     public async Task<IActionResult> Index(string parameters)
     {
         LoadParameters(parameters);
         var userId = HttpContext.GetUserId();
         bool isAjax = HttpContext.Request.Query.ContainsKey("uploadViewParams");
-        
+
         InternalRedirectViewModel model;
-        
+
         switch (_relationshipType)
         {
             case RelationshipViewType.List:
             {
-                    var form = await ComponentFactory.FormView.CreateAsync(_dictionaryName);
+                var form = await ComponentFactory.FormView.CreateAsync(_dictionaryName);
 
-                    var result = await form.GetResultAsync();
+                var result = await form.GetResultAsync();
 
-                    if (result.IsActionResult())
-                        return result.ToActionResult();
-                    
-                    form.RelationValues = _relationValues;
+                if (result.IsActionResult())
+                    return result.ToActionResult();
 
-                    if (userId != null)
-                    {
-                        form.SetUserValues("USERID", userId);
-                        await form.GridView.SetCurrentFilterAsync("USERID", userId);
-                    }
+                form.RelationValues = RelationValues;
 
-                    model = new(result.Content!, false);
-                    break;
+                if (userId != null)
+                {
+                    form.SetUserValues("USERID", userId);
+                    await form.GridView.SetCurrentFilterAsync("USERID", userId);
                 }
+
+                model = new(result.Content!, false);
+                break;
+            }
             case RelationshipViewType.View:
             {
-                    var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
-                    panel.PageState = PageState.View;
-                    if (userId != null)
-                        panel.SetUserValues("USERID", userId);
+                var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
+                panel.PageState = PageState.View;
+                if (userId != null)
+                    panel.SetUserValues("USERID", userId);
 
-                    var result = await panel.GetResultAsync();
+                var result = await panel.GetResultAsync();
 
-                    if (result.IsActionResult())
-                        return result.ToActionResult();
+                if (result.IsActionResult())
+                    return result.ToActionResult();
 
-                    
-                    await panel.LoadValuesFromPkAsync(_relationValues);
 
-                    model = new(result.Content!, false);
-                    break;
-                }
+                await panel.LoadValuesFromPkAsync(RelationValues);
+
+                model = new(result.Content!, false);
+                break;
+            }
             case RelationshipViewType.Update:
-                {
-                    var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
-                    panel.PageState = PageState.Update;
-                    
-                    var result = await panel.GetResultAsync();
-                    
-                    if (userId != null)
-                        panel.SetUserValues("USERID", userId);
+            {
+                var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
+                panel.PageState = PageState.Update;
 
-                    await panel.LoadValuesFromPkAsync(_relationValues);
+                var result = await panel.GetResultAsync();
 
-                    model = new(result.Content!, !isAjax);
-                    break;
-                }
+                if (userId != null)
+                    panel.SetUserValues("USERID", userId);
+
+                await panel.LoadValuesFromPkAsync(RelationValues);
+
+                model = new(result.Content!, !isAjax);
+                break;
+            }
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -108,7 +110,7 @@ public class InternalRedirectController : MasterDataController
         var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
         panel.PageState = PageState.Update;
 
-        await panel.LoadValuesFromPkAsync(_relationValues);
+        await panel.LoadValuesFromPkAsync(RelationValues);
         if (userId != null)
             panel.SetUserValues("USERID", userId);
 
@@ -147,7 +149,6 @@ public class InternalRedirectController : MasterDataController
 
         _dictionaryName = null;
         _relationshipType = RelationshipViewType.List;
-        _relationValues = new Dictionary<string, dynamic>();
         var @params = HttpUtility.ParseQueryString(EncryptionService.DecryptStringWithUrlUnescape(parameters));
         _dictionaryName = @params.Get("formname");
         foreach (string key in @params)
@@ -161,7 +162,7 @@ public class InternalRedirectController : MasterDataController
                     _relationshipType = (RelationshipViewType)int.Parse(@params.Get(key) ?? string.Empty);
                     break;
                 default:
-                    _relationValues.Add(key, @params.Get(key));
+                    RelationValues.Add(key, @params.Get(key)!);
                     break;
             }
         }

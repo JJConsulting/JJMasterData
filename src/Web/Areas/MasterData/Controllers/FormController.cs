@@ -2,7 +2,6 @@
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
@@ -31,7 +30,7 @@ public class FormController : MasterDataController
         if (result.IsActionResult())
             return result.ToActionResult();
         
-        var model = new FormViewModel(formView.FormElement.Title ?? formView.FormElement.Name, result.Content!);
+        var model = new FormViewModel(formView.FormElement.Title ?? formView.FormElement.Name, result.Content);
         return View(model);
     }
 
@@ -62,7 +61,7 @@ public class FormController : MasterDataController
         {
             var form = new HtmlBuilder(HtmlTag.Form)
                 .WithNameAndId(formView.Name)
-                .WithAttribute("action",Url.Action("GetFormView"))
+                .WithAttribute("action",Url.Action("GetFormView")!)
                 .WithAttribute("method", "POST");
             form.Append(renderedComponentResult.HtmlBuilder);
             return Content(form.ToString());

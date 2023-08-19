@@ -30,7 +30,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
-    public const int RegPerPag = 100000;
+    protected const int RegPerPag = 100000;
 
     #region "Properties"
     

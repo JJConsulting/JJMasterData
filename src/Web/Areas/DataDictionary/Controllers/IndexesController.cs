@@ -39,7 +39,7 @@ public class IndexesController : DataDictionaryController
             ViewBag.IndexName = $"IX_{formElement.Name}_{formElement.Indexes.Count}";
         }
 
-        PopulateCheckBox(dictionaryName, index);
+        await PopulateCheckBoxAsync(dictionaryName, index);
         PopulateViewBag(dictionaryName);
         return View("Detail",  elementIndex);
 
@@ -103,7 +103,7 @@ public class IndexesController : DataDictionaryController
         ViewBag.MenuId = "Indexes";
     }
 
-    private async Task PopulateCheckBox(string dictionaryName, string index)
+    private async Task PopulateCheckBoxAsync(string dictionaryName, string index)
     {
         var formElement = await _indexesService.GetFormElementAsync(dictionaryName);
         var listItems = new List<SelectListItem>();

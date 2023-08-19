@@ -225,14 +225,12 @@ public class DataAccess
                 dataAdapter!.SelectCommand = dbCommand;
                 dataAdapter.Fill(dt);
 
-                if (cmd.Parameters != null)
+                foreach (var parameter in cmd.Parameters)
                 {
-                    foreach (var parameter in cmd.Parameters)
-                    {
-                        if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                            parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                    }
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
                 }
+                
             }
         }
         catch (Exception ex)
@@ -273,16 +271,13 @@ public class DataAccess
                 {
                     var dataTable = new DataTable();
                     dataTable.Load(reader);
-
-                    if (cmd.Parameters != null)
+ 
+                    foreach (var parameter in cmd.Parameters)
                     {
-                        foreach (var parameter in cmd.Parameters)
-                        {
-                            if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                                parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                        }
+                        if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                            parameter.Value = dbCommand.Parameters[parameter.Name].Value;
                     }
-
+               
                     return dataTable;
                 }
             }
@@ -827,14 +822,12 @@ public class DataAccess
                     }
                 }
 
-                if (cmd.Parameters != null)
+                foreach (var param in cmd.Parameters.Where(param =>
+                             param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
                 {
-                    foreach (var param in cmd.Parameters.Where(param =>
-                                 param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
-                    {
-                        param.Value = dbCommand.Parameters[param.Name].Value;
-                    }
+                    param.Value = dbCommand.Parameters[param.Name].Value;
                 }
+                
             }
         }
         catch (Exception ex)

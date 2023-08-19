@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
 
@@ -1037,7 +1036,6 @@ public class SqlServerProvider : BaseProvider
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.StoredProcedure;
         cmd.Sql = Options.GetWriteProcedureName(element);
-        cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter("@action", action, DbType.String, 1));
 
         var fields = element.Fields

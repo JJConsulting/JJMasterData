@@ -276,7 +276,6 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement, filters, orderBy, recordsPerPage,
             currentPage);
 
-
         var formElementInfoList = new List<FormElementInfo>();
 
         foreach (var element in result.Item1)

@@ -1,22 +1,18 @@
 ﻿using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
-using System.Collections;
-using System.Diagnostics;
-using System.Net;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.WebApi.Models;
-using JJMasterData.Core.FormEvents.Abstractions;
-using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
+using System.Collections;
+using System.Diagnostics;
+using System.Net;
 
 namespace JJMasterData.WebApi.Services;
 
@@ -32,7 +28,6 @@ public class MasterApiService
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
-    private readonly IFormEventHandlerFactory? _formEventResolver;
 
     public MasterApiService(
         AccountService accountService,
@@ -44,7 +39,6 @@ public class MasterApiService
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IFieldsService fieldsService,
-        IFormEventHandlerFactory? formEventResolver,
         IStringLocalizer<JJMasterDataResources> stringLocalizer
         )
     {
@@ -58,7 +52,6 @@ public class MasterApiService
         StringLocalizer = stringLocalizer;
         _entityRepository = entityRepository;
         _dataDictionaryRepository = dataDictionaryRepository;
-        _formEventResolver = formEventResolver;
     }
 
     public async Task<string> GetListFieldAsTextAsync(string elementName, int pag, int regporpag, string? orderby)
@@ -290,7 +283,7 @@ public class MasterApiService
         try
         {
             if (values == null || values.Count == 0)
-                throw new ArgumentException("Invalid parameter or not found", nameof(values));
+                throw new ArgumentException(@"Invalid parameter or not found", nameof(values));
 
             var parsedValues = DataHelper.ParseOriginalName(formElement, values);
             var pkValues = DataHelper.GetPkValues(formElement, parsedValues!);
@@ -342,7 +335,9 @@ public class MasterApiService
     /// Fired when triggering the form
     /// </summary>
     public async Task<Dictionary<string, FormValues>> PostTriggerAsync(
-        string elementName, IDictionary<string, dynamic>? paramValues, PageState pageState, string objname = "")
+        string elementName, IDictionary<string, dynamic>? paramValues, 
+        PageState pageState, 
+        string objname = "")
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
@@ -359,7 +354,7 @@ public class MasterApiService
         };
 
         var newValues = await FieldsService.MergeWithExpressionValuesAsync(dictionary, values, pageState, false);
-        var formData = new FormStateData(newValues, pageState);
+        var formData = new FormStateData(newValues, userValues, pageState);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (var field in dictionary.Fields)
         {
@@ -377,7 +372,7 @@ public class MasterApiService
                 if (field.Component is FormComponent.ComboBox or FormComponent.Search)
                 {
                     formValues.DataItems = await DataItemService
-                        .GetValuesAsync(field.DataItem, new(newValues, null, pageState), null,null )
+                        .GetValuesAsync(field.DataItem, formData, null,null )
                         .ToListAsync();
                 }
             }
@@ -399,10 +394,9 @@ public class MasterApiService
 
         foreach (var entry in paramValues)
         {
-            //if field not exists, generate a exception
             var field = metadata.Fields[entry.Key];
-            if (!filters.ContainsKey(entry.Key ?? string.Empty))
-                filters.Add(field.Name, StringManager.ClearText(entry.Value?.ToString()!));
+            if (!filters.ContainsKey(entry.Key))
+                filters.Add(field.Name, StringManager.ClearText(entry.Value.ToString()!));
         }
 
         return filters;
@@ -437,7 +431,7 @@ public class MasterApiService
         }
         else
         {
-            if (!userId.Equals(filters[formElement.ApiOptions.ApplyUserIdOn]!.ToString()))
+            if (!userId.Equals(filters[formElement.ApiOptions.ApplyUserIdOn].ToString()))
             {
                 throw new UnauthorizedAccessException(
                     "Access denied to change user filter on {formElement.Name}");
@@ -449,7 +443,7 @@ public class MasterApiService
 
     private string GetUserId()
     {
-        var tokenInfo = AccountService.GetTokenInfo(_httpContext?.User.Claims.FirstOrDefault()?.Value);
+        var tokenInfo = AccountService.GetTokenInfo(_httpContext.User.Claims.FirstOrDefault()?.Value);
         if (tokenInfo == null)
             throw new UnauthorizedAccessException("Invalid Token");
 
@@ -475,8 +469,6 @@ public class MasterApiService
         return _dataDictionaryRepository.GetMetadata(elementName);
     }
 
-    private FormElement GetFormElement(string elementName) => GetDataDictionary(elementName);
-
     /// <summary>
     /// Compares the values of the fields received with those sent to the bank, returning different records
     /// </summary>
@@ -497,7 +489,7 @@ public class MasterApiService
             if (original.ContainsKey(entry.Key))
             {
                 if (original[entry.Key] == null && entry.Value != null ||
-                    !original[entry.Key]!.Equals(entry.Value))
+                    !original[entry.Key].Equals(entry.Value))
                     newValues.Add(fieldName, entry.Value);
             }
             else
@@ -522,7 +514,7 @@ public class MasterApiService
 
         foreach (var entry in errors)
         {
-            string fieldName = apiOptions.GetFieldNameParsed(entry.Key!.ToString()!);
+            string fieldName = apiOptions.GetFieldNameParsed(entry.Key);
             letter.ValidationList.Add(fieldName, entry.Value);
         }
 

@@ -10,7 +10,7 @@ public interface IEntityRepository
     /// <summary>
     /// Returns database records based on filter.  
     /// </summary>
-    /// <param name="element">Estruture basic from a table</param>
+    /// <param name="element">Structure basic from a table</param>
     /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
     /// <param name="orderBy">Record Order, field followed by ASC or DESC</param>
     /// <param name="recordsPerPage">Number of records to be displayed per page</param>
@@ -30,9 +30,7 @@ public interface IEntityRepository
     /// </returns>
     public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|");
     
-    /// <inheritdoc cref="GetListFieldsAsText"/>
-    // public Task<string> GetListFieldsAsTextAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|");
-
+    
     /// <summary>
     /// Returns records from the database based on the filter.    
     /// </summary>
@@ -178,19 +176,20 @@ public interface IEntityRepository
     public Task CreateDataModelAsync(Element element);
     
     /// <summary>
-    /// Build a struture script to create table
+    /// Build a structure script to create table
     /// </summary>
     public string GetScriptCreateTable(Element element);
 
     /// <summary>
-    /// Build a struture script to procedure of get
+    /// Build a structure script to procedure of get
     /// </summary>
     public string GetScriptReadProcedure(Element element);
 
     /// <summary>
-    /// Build a struture script to procedure of set
+    /// Build a structure script to procedure of set
     /// </summary>
     public string GetScriptWriteProcedure(Element element);
+    
     public string GetAlterTableScript(Element element, IEnumerable<ElementField> fields);
     
     /// <summary>
@@ -251,16 +250,18 @@ public interface IEntityRepository
     /// It's used to run delete scripts
     /// </remarks>
     public int SetCommand(IEnumerable<string> sqlList);
-    
-        
-    /// <inheritdoc cref="SetCommand(IEnumerable)"/>
+
+
+    /// <inheritdoc>
+    ///     <cref>SetCommand(IEnumerable)</cref>
+    /// </inheritdoc>
     public Task<int> SetCommandAsync(IEnumerable<string> sqlList);
 
     /// <summary>
     /// Executes a database script.
     /// </summary>
-    /// <returns>Retorns true if the execution is successful.</returns>
-    /// <remarks>It's used to exec struture scripts</remarks> 
+    /// <returns>Returns true if the execution is successful.</returns>
+    /// <remarks>It's used to exec structure scripts</remarks> 
     public bool ExecuteBatch(string script);
     
     /// <inheritdoc cref="ExecuteBatch"/>

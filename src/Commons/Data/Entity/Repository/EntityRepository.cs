@@ -1,15 +1,13 @@
 ﻿#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Providers;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -130,7 +128,9 @@ public class EntityRepository : IEntityRepository
 
     public async Task SetCommandAsync(string sql) => await DataAccess.SetCommandAsync(sql);
 
-    ///<inheritdoc cref="IEntityRepository.SetCommand(IEnumerable)"/>
+    /// <inheritdoc>
+    ///     <cref>IEntityRepository.SetCommand()</cref>
+    /// </inheritdoc>
     public int SetCommand(IEnumerable<string> sqlList) => DataAccess.SetCommand(sqlList);
 
     public async Task<int> SetCommandAsync(IEnumerable<string> sqlList) => await DataAccess.SetCommandAsync(sqlList);
