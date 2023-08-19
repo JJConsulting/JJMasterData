@@ -34,4 +34,9 @@
 		<InternalsVisibleTo Include="JJMasterData.Commons.Test" />
 		<InternalsVisibleTo Include="JJMasterData.Core" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Data\DataAccessAsync.cs">
+	    <DependentUpon>DataAccess.cs</DependentUpon>
+	  </Compile>
+	</ItemGroup>
 </Project>

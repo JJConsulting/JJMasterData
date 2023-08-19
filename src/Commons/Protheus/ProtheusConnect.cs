@@ -211,7 +211,7 @@ public class ProtheusConnect : IDisposable
         {
             lRet = CallCallProc(objectID, cFunction);
         }
-        catch (AccessViolationException ex)
+        catch (AccessViolationException)
         {
             lRet = false;
         }

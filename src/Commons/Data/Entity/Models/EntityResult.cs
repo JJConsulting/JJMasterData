@@ -1,10 +1,11 @@
 #nullable enable
-using System.Diagnostics.CodeAnalysis;
 
-namespace JJMasterData.Commons.Data.Entity;
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Data;
+
+namespace JJMasterData.Commons.Data.Entity;
 
 public class EntityResult
 {
