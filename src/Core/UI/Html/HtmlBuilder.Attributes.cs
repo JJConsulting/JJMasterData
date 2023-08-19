@@ -97,11 +97,11 @@ public partial class HtmlBuilder
     /// <summary>
     /// Set range of attrs
     /// </summary>
-    internal HtmlBuilder WithAttributes(IDictionary<string,dynamic> attributes)
+    internal HtmlBuilder WithAttributes(IDictionary<string, string> attributes)
     {
         foreach (var v in attributes)
         {
-            _attributes.Add(v.Key, v.Value.ToString());
+            _attributes.Add(v.Key, v.Value);
         }
 
         return this;

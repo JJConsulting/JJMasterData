@@ -124,7 +124,7 @@ public class MasterApiService
         return listRet;
     }
 
-    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<IDictionary<string, object>> paramsList,
         string elementName, bool replace = false)
     {
         if (paramsList == null)
@@ -142,7 +142,7 @@ public class MasterApiService
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<IDictionary<string, object>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -158,7 +158,7 @@ public class MasterApiService
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<IDictionary<string, object>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -178,7 +178,7 @@ public class MasterApiService
         }
     }
 
-    private async Task<ResponseLetter> Insert(FormElement formElement, IDictionary<string, dynamic> apiValues,
+    private async Task<ResponseLetter> Insert(FormElement formElement, IDictionary<string, object> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -208,7 +208,7 @@ public class MasterApiService
         return ret;
     }
 
-    private async Task<ResponseLetter> Update(FormElement formElement, IDictionary<string, dynamic> apiValues)
+    private async Task<ResponseLetter> Update(FormElement formElement, IDictionary<string, object> apiValues)
     {
         ResponseLetter ret;
         try
@@ -240,7 +240,7 @@ public class MasterApiService
         return ret;
     }
 
-    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, IDictionary<string, dynamic> apiValues,
+    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, IDictionary<string, object> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -277,7 +277,7 @@ public class MasterApiService
         return ret;
     }
 
-    private async Task<ResponseLetter> Patch(FormElement formElement, IDictionary<string, dynamic> values)
+    private async Task<ResponseLetter> Patch(FormElement formElement, IDictionary<string, object> values)
     {
         ResponseLetter ret;
         try
@@ -335,7 +335,7 @@ public class MasterApiService
     /// Fired when triggering the form
     /// </summary>
     public async Task<Dictionary<string, FormValues>> PostTriggerAsync(
-        string elementName, IDictionary<string, dynamic>? paramValues, 
+        string elementName, IDictionary<string, object>? paramValues, 
         PageState pageState, 
         string objname = "")
     {
@@ -386,7 +386,7 @@ public class MasterApiService
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private IDictionary<string, dynamic> ParseFilter(FormElement metadata, IDictionary<string, dynamic>? paramValues)
+    private IDictionary<string, object> ParseFilter(FormElement metadata, IDictionary<string, object>? paramValues)
     {
         var filters = GetDefaultFilter(metadata);
         if (paramValues == null)
@@ -402,12 +402,12 @@ public class MasterApiService
         return filters;
     }
 
-    private IDictionary<string, dynamic> GetDefaultFilter(FormElement formElement, bool loadQueryString = false)
+    private IDictionary<string, object> GetDefaultFilter(FormElement formElement, bool loadQueryString = false)
     {
         if (_httpContext == null)
             throw new NullReferenceException(nameof(_httpContext));
 
-        var filters = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var filters = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         if (loadQueryString)
         {
             var qnvp = _httpContext.Request.Query.Keys;
@@ -476,10 +476,10 @@ public class MasterApiService
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private IDictionary<string, dynamic>? GetDiff(IDictionary<string, dynamic> original,
-        IDictionary<string, dynamic> result, FormElementApiOptions apiOptions)
+    private IDictionary<string, object>? GetDiff(IDictionary<string, object> original,
+        IDictionary<string, object> result, FormElementApiOptions apiOptions)
     {
-        var newValues = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var newValues = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entry in result)
         {
             if (entry.Value == null)
@@ -499,14 +499,14 @@ public class MasterApiService
         return newValues.Count > 0 ? newValues : null;
     }
 
-    private ResponseLetter CreateErrorResponseLetter(IDictionary<string, dynamic>? errors,
+    private ResponseLetter CreateErrorResponseLetter(IDictionary<string, object>? errors,
         FormElementApiOptions apiOptions)
     {
         var letter = new ResponseLetter
         {
             Status = 400,
             Message = StringLocalizer["Invalid data"],
-            ValidationList = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase)
+            ValidationList = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase)
         };
 
         if (errors == null)

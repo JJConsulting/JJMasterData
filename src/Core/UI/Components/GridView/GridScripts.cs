@@ -90,7 +90,7 @@ public class GridScripts
         return $"JJView.selectAll('{name}','{_gridView.EnableAjax.ToString().ToLower()}')";
     }
     
-    public string GetConfigUIScript(ConfigAction action, IDictionary<string, dynamic> formValues)
+    public string GetConfigUIScript(ConfigAction action, IDictionary<string, object> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, _gridView.FormElement, formValues, action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);

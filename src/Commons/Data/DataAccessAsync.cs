@@ -427,14 +427,14 @@ public partial class DataAccess
         return true;
     }
     
-    public async Task<IDictionary<string, dynamic>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    public async Task<IDictionary<string, object>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
-        return await GetAsync<Dictionary<string, dynamic>>(command, cancellationToken);
+        return await GetAsync<Dictionary<string, object>>(command, cancellationToken);
     }
 
-    public async Task<List<Dictionary<string, dynamic>>> GetDictionaryListAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    public async Task<List<Dictionary<string, object>>> GetDictionaryListAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
-        return await GetListAsync<Dictionary<string, dynamic>>(command, cancellationToken);
+        return await GetListAsync<Dictionary<string, object>>(command, cancellationToken);
     }
 
     public async Task<bool> ColumnExistsAsync(string tableName, string columnName, CancellationToken cancellationToken = default)

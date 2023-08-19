@@ -25,12 +25,12 @@ public class JJTextFile : AsyncControl
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private const string UploadViewParameterName = "jjuploadview_";
-    private IDictionary<string, dynamic> _formValues;
+    private IDictionary<string, object> _formValues;
     private FormFilePathBuilder _pathBuiler;
 
-    public IDictionary<string, dynamic> FormValues
+    public IDictionary<string, object> FormValues
     {
-        get => _formValues ??= new Dictionary<string, dynamic>();
+        get => _formValues ??= new Dictionary<string, object>();
         set => _formValues = value;
     }
 

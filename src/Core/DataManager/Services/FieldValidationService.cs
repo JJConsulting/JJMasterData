@@ -23,12 +23,12 @@ public class FieldValidationService : IFieldValidationService
         Localizer = localizer;
     }
 
-    public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, dynamic> formValues, PageState pageState, bool enableErrorLink)
+    public async Task<IDictionary<string, object>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool enableErrorLink)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 
-        var errors = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var errors = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         var formState = new FormStateData(formValues, pageState);
         foreach (var field in formElement.Fields)
         {

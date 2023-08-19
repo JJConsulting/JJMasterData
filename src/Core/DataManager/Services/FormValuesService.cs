@@ -39,13 +39,13 @@ public class FormValuesService : IFormValuesService
         CurrentContext = currentContext;
     }
 
-    public async Task<IDictionary<string, dynamic>> GetFormValuesAsync(FormElement formElement, PageState pageState,
+    public async Task<IDictionary<string, object>> GetFormValuesAsync(FormElement formElement, PageState pageState,
         string? fieldPrefix = null)
     {
         if (formElement == null)
             throw new ArgumentException(nameof(FormElement));
 
-        var values = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var field in formElement.Fields)
         {
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
@@ -100,7 +100,7 @@ public class FormValuesService : IFormValuesService
         return values;
     }
 
-    public async Task<IDictionary<string, dynamic>> GetFormValuesWithMergedValuesAsync(
+    public async Task<IDictionary<string, object>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         PageState pageState,
         bool autoReloadFormFields,
@@ -110,17 +110,17 @@ public class FormValuesService : IFormValuesService
         return await GetFormValuesWithMergedValuesAsync(formElement, pageState, dbValues, autoReloadFormFields, fieldPrefix);
     }
 
-    public async Task<IDictionary<string, dynamic>> GetFormValuesWithMergedValuesAsync(
+    public async Task<IDictionary<string, object>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         PageState pageState,
-        IDictionary<string, dynamic>? values,
+        IDictionary<string, object>? values,
         bool autoReloadFormFields,
         string? prefix = null)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
-        var valuesToBeReceived = new Dictionary<string, dynamic>();
+        var valuesToBeReceived = new Dictionary<string, object>();
         DataHelper.CopyIntoDictionary(valuesToBeReceived, values, true);
 
         if (CurrentContext.IsPost && autoReloadFormFields)
@@ -134,7 +134,7 @@ public class FormValuesService : IFormValuesService
 
 
 
-    private async Task<IDictionary<string, dynamic>?> GetDbValues(Element element)
+    private async Task<IDictionary<string, object>?> GetDbValues(Element element)
     {
         if (!CurrentContext.HasContext())
             return null;

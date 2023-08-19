@@ -223,7 +223,7 @@ public class FieldController : DataDictionaryController
     }
     private void RecoverCustomAttibutes(ref FormElementField field)
     {
-        field.Attributes = new Dictionary<string, dynamic>();
+        field.Attributes = new Dictionary<string, object>();
         switch (field.Component)
         {
             case FormComponent.Text

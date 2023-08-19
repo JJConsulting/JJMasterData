@@ -55,7 +55,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
             }
             else
             {
-                var defaultValues = new Dictionary<string, dynamic>();
+                var defaultValues = new Dictionary<string, object>();
                 var formData = new FormStateData(defaultValues, PageState.Import);
                 _fields = FormElement.Fields.ToList().FindAll(x => x.Export &&
                                                                    ExpressionsService
@@ -78,7 +78,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
     /// </summary>
-    public IDictionary<string,dynamic>CurrentFilter { get; set; }
+    public IDictionary<string, object>CurrentFilter { get; set; }
 
     /// <summary>
     /// Recupera a ordenação da tabela, 
@@ -143,7 +143,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
         Options = options;
         TextFileFactory = textFileFactory;
         Logger = logger;
-        CurrentFilter = new Dictionary<string,dynamic>();
+        CurrentFilter = new Dictionary<string, object>();
     }
 
     public async Task RunWorkerAsync(CancellationToken token)
@@ -229,7 +229,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
         if (files.Length != 1)
             return null;
 
-        var values = new Dictionary<string, dynamic>();
+        var values = new Dictionary<string, object>();
 
         for (int i = 0; i < row.Table.Columns.Count; i++)
         {

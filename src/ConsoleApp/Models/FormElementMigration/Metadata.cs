@@ -57,7 +57,7 @@ public class Metadata
             field.NumberOfDecimalPlaces = item.NumberOfDecimalPlaces;
             field.Actions = item.Actions;
             field.Attributes = item.Attributes?.Cast<DictionaryEntry>()
-                .ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value) ?? new Dictionary<string, dynamic>();
+                .ToDictionary(kvp => kvp.Key.ToString(), kvp => kvp.Value) ?? new Dictionary<string, object>();
             field.PanelId = item.PanelId;
             field.InternalNotes = item.InternalNotes;
         }

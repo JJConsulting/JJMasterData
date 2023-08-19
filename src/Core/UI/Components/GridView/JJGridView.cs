@@ -83,7 +83,7 @@ public class JJGridView : AsyncComponent
     private DataTable? _dataSource;
     private ActionsScripts? _actionsScripts;
     private List<FormElementField>? _pkFields;
-    private IDictionary<string, dynamic>? _defaultValues;
+    private IDictionary<string, object>? _defaultValues;
     private FormStateData? _formData;
     private ActionMap? _currentActionMap;
     private JJDataImportation? _dataImportation;
@@ -435,7 +435,7 @@ public class JJGridView : AsyncComponent
     /// <summary>
     /// Key-Value pairs with the errors.
     /// </summary>
-    public IDictionary<string, dynamic> Errors { get; } = new Dictionary<string, dynamic>();
+    public IDictionary<string, object> Errors { get; } = new Dictionary<string, object>();
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form.
@@ -451,11 +451,11 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Key = Field name, Value=Field value
     /// </remarks>
-    public IDictionary<string, dynamic> RelationValues { get; set; }
+    public IDictionary<string, object> RelationValues { get; set; }
 
     public HeadingSize TitleSize { get; set; }
 
-    internal async Task<IDictionary<string, dynamic>> GetDefaultValuesAsync() => _defaultValues ??=
+    internal async Task<IDictionary<string, object>> GetDefaultValuesAsync() => _defaultValues ??=
         await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
 
     internal async Task<FormStateData> GetFormDataAsync()
@@ -463,7 +463,7 @@ public class JJGridView : AsyncComponent
         if (_formData == null)
         {
             var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
-            var userValues = new Dictionary<string, dynamic>(StringComparer.OrdinalIgnoreCase);
+            var userValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
             DataHelper.CopyIntoDictionary(userValues, UserValues, false);
             DataHelper.CopyIntoDictionary(userValues, defaultValues, true);
@@ -547,7 +547,7 @@ public class JJGridView : AsyncComponent
         ShowToolbar = true;
         EmptyDataText = "No records found";
         AutoReloadFormFields = true;
-        RelationValues = new Dictionary<string, dynamic>();
+        RelationValues = new Dictionary<string, object>();
         TitleSize = HeadingSize.H1;
         FormElement = formElement;
         FieldsService = fieldsService;
@@ -651,7 +651,7 @@ public class JJGridView : AsyncComponent
         return html;
     }
 
-    public async Task<IDictionary<string, dynamic>> GetCurrentFilterAsync() => await Filter.GetCurrentFilter();
+    public async Task<IDictionary<string, object>> GetCurrentFilterAsync() => await Filter.GetCurrentFilter();
 
 
     public void SetCurrentFilter(string key, object value)
@@ -741,13 +741,13 @@ public class JJGridView : AsyncComponent
         if (field == null) 
             return new EmptyComponentResult();
 
-        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, dynamic>(), null, PageState.Filter), null, Name));
+        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, object>(), null, PageState.Filter), null, Name));
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return await lookup.GetResultAsync();
     }
 
-    internal JJTitle GetTitle(IDictionary<string, dynamic>? values = null)
+    internal JJTitle GetTitle(IDictionary<string, object>? values = null)
     {
         var title = FormElement.Title;
         var subTitle = FormElement.SubTitle;
@@ -1014,7 +1014,7 @@ public class JJGridView : AsyncComponent
         return legend.GetHtmlBuilder();
     }
 
-    internal string GetFieldName(string fieldName, IDictionary<string, dynamic> row)
+    internal string GetFieldName(string fieldName, IDictionary<string, object> row)
     {
         string? name = "";
         foreach (var fpk in PrimaryKeyFields)
@@ -1034,9 +1034,9 @@ public class JJGridView : AsyncComponent
     }
 
 
-    public IDictionary<string, dynamic> GetSelectedRowId()
+    public IDictionary<string, object> GetSelectedRowId()
     {
-        var values = new Dictionary<string, dynamic>();
+        var values = new Dictionary<string, object>();
         string currentRow = CurrentContext.Request["current-table-row-" + Name];
 
         if (string.IsNullOrEmpty(currentRow))
@@ -1148,7 +1148,7 @@ public class JJGridView : AsyncComponent
     }
 
     private async Task<EntityResult> GetEntityResultAsync(
-        IDictionary<string, dynamic> filters,
+        IDictionary<string, object> filters,
         string? orderBy,
         int recordsPerPage,
         int currentPage)
@@ -1200,7 +1200,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the <see cref="EnableEditMode"/> property
     /// </remarks>
-    public async Task<List<IDictionary<string, dynamic>>?> GetGridValues(int recordPerPage, int currentPage)
+    public async Task<List<IDictionary<string, object>>?> GetGridValues(int recordPerPage, int currentPage)
     {
         var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, recordPerPage, currentPage);
 
@@ -1210,7 +1210,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    public async Task<List<IDictionary<string, dynamic>>?> GetGridValues(DataTable? dataTable = null)
+    public async Task<List<IDictionary<string, object>>?> GetGridValues(DataTable? dataTable = null)
     {
         if (dataTable == null)
         {
@@ -1219,10 +1219,10 @@ public class JJGridView : AsyncComponent
                 return null;
         }
 
-        var listValues = new List<IDictionary<string, dynamic>>();
+        var listValues = new List<IDictionary<string, object>>();
         foreach (DataRow row in dataTable.Rows)
         {
-            var values = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+            var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
             for (int i = 0; i < row.Table.Columns.Count; i++)
             {
                 values.Add(row.Table.Columns[i].ColumnName, row[i]);
@@ -1240,9 +1240,9 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the EnableMultSelect property
     /// </remarks>
-    public List<IDictionary<string, dynamic>> GetSelectedGridValues()
+    public List<IDictionary<string, object>> GetSelectedGridValues()
     {
-        var listValues = new List<IDictionary<string, dynamic>>();
+        var listValues = new List<IDictionary<string, object>>();
 
         if (!EnableMultiSelect)
             return listValues;
@@ -1257,7 +1257,7 @@ public class JJGridView : AsyncComponent
         if (pkList != null)
             foreach (string pk in pkList)
             {
-                var values = new Dictionary<string, dynamic>();
+                var values = new Dictionary<string, object>();
                 string descriptval = EncryptionService.DecryptStringWithUrlUnescape(pk);
                 string[] ids = descriptval.Split(';');
                 for (int i = 0; i < pkFields.Count; i++)
@@ -1303,12 +1303,12 @@ public class JJGridView : AsyncComponent
     /// Key = Field name
     /// Value = Message
     /// </returns>
-    public async Task<IDictionary<string, dynamic>> ValidateGridFieldsAsync(List<IDictionary<string, dynamic>> values)
+    public async Task<IDictionary<string, object>> ValidateGridFieldsAsync(List<IDictionary<string, object>> values)
     {
         if (values == null)
             throw new ArgumentNullException(nameof(values));
 
-        var errors = new Dictionary<string, dynamic>();
+        var errors = new Dictionary<string, object>();
         int line = 0;
         foreach (var row in values)
         {

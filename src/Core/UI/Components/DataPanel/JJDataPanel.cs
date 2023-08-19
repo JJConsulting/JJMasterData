@@ -60,13 +60,13 @@ public class JJDataPanel : AsyncComponent
     /// Fields with error.
     /// Key=Field Name, Value=Error Description
     /// </summary>
-    public IDictionary<string, dynamic> Errors { get; set; }
+    public IDictionary<string, object> Errors { get; set; }
 
     /// <summary>
     /// Field Values.
     /// Key=Field Name, Value=Field Value
     /// </summary>
-    public IDictionary<string, dynamic> Values { get; set; }
+    public IDictionary<string, object> Values { get; set; }
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form
@@ -111,8 +111,8 @@ public class JJDataPanel : AsyncComponent
         UrlHelper = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
         EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
 
-        Values = new Dictionary<string,dynamic>();
-        Errors =  new Dictionary<string,dynamic>();
+        Values = new Dictionary<string, object>();
+        Errors =  new Dictionary<string, object>();
         AutoReloadFormFields = true;
         PageState = PageState.View;
     }
@@ -157,8 +157,8 @@ public class JJDataPanel : AsyncComponent
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
         ComponentFactory = componentFactory;
-        Values = new Dictionary<string, dynamic>();
-        Errors = new Dictionary<string, dynamic>();
+        Values = new Dictionary<string, object>();
+        Errors = new Dictionary<string, object>();
         AutoReloadFormFields = true;
         PageState = PageState.View;
     }
@@ -266,18 +266,18 @@ public class JJDataPanel : AsyncComponent
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
-    public async Task<IDictionary<string, dynamic>> GetFormValuesAsync()
+    public async Task<IDictionary<string, object>> GetFormValuesAsync()
     {
         return await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix);
     }
 
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]
-    public void LoadValuesFromPK(IDictionary<string, dynamic> pks)
+    public void LoadValuesFromPK(IDictionary<string, object> pks)
     {
         Values = EntityRepository.GetDictionaryAsync(FormElement, pks).GetAwaiter().GetResult();
     }
 
-    public async Task LoadValuesFromPkAsync(IDictionary<string, dynamic> pks)
+    public async Task LoadValuesFromPkAsync(IDictionary<string, object> pks)
     {
         Values = await EntityRepository.GetDictionaryAsync(FormElement, pks);
     }
@@ -289,7 +289,7 @@ public class JJDataPanel : AsyncComponent
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(IDictionary<string, dynamic> values, PageState pageState)
+    public async Task<IDictionary<string, object>> ValidateFieldsAsync(IDictionary<string, object> values, PageState pageState)
     {
         return await ValidateFieldsAsync(values, pageState, true);
     }
@@ -301,7 +301,7 @@ public class JJDataPanel : AsyncComponent
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(IDictionary<string, dynamic> values, PageState pageState, bool enableErrorLink)
+    public async Task<IDictionary<string, object>> ValidateFieldsAsync(IDictionary<string, object> values, PageState pageState, bool enableErrorLink)
     {
         return await FieldsService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink);
     }

@@ -55,7 +55,7 @@ internal class GridSqlCommandAction
                && cmdAction.ApplyOnSelected;
     }
 
-    private async Task ExecuteOnList(SqlCommandAction cmdAction, List<IDictionary<string, dynamic>> selectedRows)
+    private async Task ExecuteOnList(SqlCommandAction cmdAction, List<IDictionary<string, object>> selectedRows)
     {
         var listSql = new List<string>();
         foreach (var row in selectedRows)
@@ -71,7 +71,7 @@ internal class GridSqlCommandAction
     private async Task ExecuteOnRecord(ActionMap map, SqlCommandAction cmdAction)
     {
         var formElement = _gridView.FormElement;
-        IDictionary<string, dynamic> formValues;
+        IDictionary<string, object> formValues;
         if (map.PkFieldValues != null && (map.PkFieldValues != null ||
                                           map.PkFieldValues.Count > 0))
         {

@@ -14,7 +14,7 @@ public static class DictionaryExtensions
         return JsonConvert.DeserializeObject<T>(serialized, jsonSerializerSettings);
     }
     
-    public static T? ToModel<T>(this IDictionary<string,dynamic> dictionary, JsonSerializerSettings? jsonSerializerSettings = null)
+    public static T? ToModel<T>(this IDictionary<string, object> dictionary, JsonSerializerSettings? jsonSerializerSettings = null)
     {
         var serialized = JsonConvert.SerializeObject(dictionary, jsonSerializerSettings);
         return JsonConvert.DeserializeObject<T>(serialized, jsonSerializerSettings);

@@ -17,8 +17,8 @@ public interface IFieldValuesService
     /// <returns>
     /// Returns a new hashtable with the updated values
     /// </returns>
-    Task<IDictionary<string,dynamic>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool replaceNullValues);
+    Task<IDictionary<string, object>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool replaceNullValues);
 
-    Task<IDictionary<string,dynamic>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState state);
-    Task<IDictionary<string,dynamic>> MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState);
+    Task<IDictionary<string, object>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState state);
+    Task<IDictionary<string, object>> MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState);
 }

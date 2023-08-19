@@ -19,11 +19,11 @@ public class DataElementMap
     [JsonProperty("popUpSize")]
     public PopupSize PopUpSize { get; set; }
 
-    public IDictionary<string,dynamic> Filters 
+    public IDictionary<string, object> Filters 
     {
         get
         {
-            var filters = new Dictionary<string, dynamic>();
+            var filters = new Dictionary<string, object>();
             
             if (MapFilters != null)
             {

@@ -40,11 +40,11 @@ public class SearchController : MasterDataController
         var searchText = HttpContext.Request.Form[fieldSearchName];
         var dataItem = formElement.Fields[fieldName].DataItem;
 
-        IDictionary<string, dynamic>? formValues;
+        IDictionary<string, object>? formValues;
         if (dataItem!.HasSqlExpression())
             formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, (PageState)pageState, true);
         else
-            formValues = new Dictionary<string, dynamic>();
+            formValues = new Dictionary<string, object>();
 
         var formStateData = new FormStateData(formValues, (PageState)pageState);
         var listValues = await Service.GetValuesAsync(dataItem, formStateData, searchText, null).ToListAsync();

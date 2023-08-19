@@ -102,7 +102,7 @@ public class EntityRepository : IEntityRepository
         return await Provider.GetDataTableAsync(element, filters, orderBy, recordsPerPage, currentPage);
     }
     
-    public async Task<(List<IDictionary<string, dynamic>>, int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
+    public async Task<(List<IDictionary<string, object>>, int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
     {
         return await Provider.GetDictionaryListAsync(element, filters, orderBy, recordsPerPage, currentPage);
     }
@@ -146,7 +146,7 @@ public class EntityRepository : IEntityRepository
     public async Task<bool> ExecuteBatchAsync(string script) => await DataAccess.ExecuteBatchAsync(script);
     
     
-    public async Task<IDictionary<string, dynamic>> GetDictionaryAsync(Element metadata, IDictionary<string, dynamic> filters)
+    public async Task<IDictionary<string, object>> GetDictionaryAsync(Element metadata, IDictionary<string, object> filters)
     {
         var total =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);

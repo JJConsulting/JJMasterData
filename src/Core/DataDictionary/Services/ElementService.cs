@@ -197,7 +197,7 @@ public class ElementService : BaseService
 
     #endregion
 
-    public byte[] ExportSingleRow(IDictionary<string, dynamic> row)
+    public byte[] ExportSingleRow(IDictionary<string, object> row)
     {
         string dictionaryName = row["name"].ToString();
         var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
@@ -207,7 +207,7 @@ public class ElementService : BaseService
         return Encoding.Default.GetBytes(json);
     }
 
-    public byte[] ExportMultipleRows(List<IDictionary<string, dynamic>> selectedRows)
+    public byte[] ExportMultipleRows(List<IDictionary<string, object>> selectedRows)
     {
         using var memoryStream = new MemoryStream();
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))

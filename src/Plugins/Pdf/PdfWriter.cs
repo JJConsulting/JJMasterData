@@ -173,7 +173,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         string value = string.Empty;
         Text image = null;
 
-        var values = new Dictionary<string,dynamic>();
+        var values = new Dictionary<string, object>();
         for (int i = 0; i < row.Table.Columns.Count; i++)
         {
             values.Add(row.Table.Columns[i].ColumnName, row[i]);
@@ -281,7 +281,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         }
     }
 
-    private async Task<(string, Text)> GetComboBoxValueAsync(FormElementField field, IDictionary<string,dynamic> values)
+    private async Task<(string, Text)> GetComboBoxValueAsync(FormElementField field, IDictionary<string, object> values)
     {
         if (values == null || !values.ContainsKey(field.Name) || values[field.Name] == null)
             return (string.Empty, null);

@@ -1,7 +1,5 @@
 #nullable enable
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
@@ -13,7 +11,7 @@ public class ActionContext
 {
     public required FormElement FormElement { get; init; }
     public required FormStateData FormStateData { get; init; }
-    public required string ParentComponentName { get; init; }
+    public required string? ParentComponentName { get; init; }
     public bool IsExternalRoute { get; init; }
     public string? FieldName { get; init; }
     

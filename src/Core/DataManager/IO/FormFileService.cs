@@ -12,7 +12,7 @@ public class FormFileService
     {
         FormFileManagerFactory = formFileManagerFactory;
     }
-    internal void SaveFormMemoryFiles(FormElement formElement, IDictionary<string,dynamic> primaryKeys)
+    internal void SaveFormMemoryFiles(FormElement formElement, IDictionary<string, object> primaryKeys)
     {
         var uploadFields = formElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)
@@ -27,7 +27,7 @@ public class FormFileService
         }
     }
 
-    internal void DeleteFiles(FormElement formElement, IDictionary<string,dynamic> primaryKeys)
+    internal void DeleteFiles(FormElement formElement, IDictionary<string, object> primaryKeys)
     {
         var uploadFields = formElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         if (uploadFields.Count == 0)

@@ -10,9 +10,9 @@ internal class DbLogEntry
     public required string Event { get; init; }
     public required string Message { get; init; }
     
-    public Dictionary<string, dynamic> ToDictionary(DbLoggerOptions options)
+    public Dictionary<string, object> ToDictionary(DbLoggerOptions options)
     {
-        return new Dictionary<string, dynamic>
+        return new Dictionary<string, object>
         {
             [options.CreatedColumnName] = Created,
             [options.LevelColumnName] = LogLevel,

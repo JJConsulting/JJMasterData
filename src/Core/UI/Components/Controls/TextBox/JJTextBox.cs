@@ -1,4 +1,4 @@
-﻿using JJMasterData.Commons.Localization;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -11,9 +11,35 @@ public class JJTextBox : HtmlControl
 
     public int NumberOfDecimalPlaces { get; set; }
 
-    public double? MinValue { get; set; }
+    public double? MinValue
+    {
+        get
+        {
+            if (double.TryParse(GetAttr(FormElementField.MinValueAttribute), out var minVal))
+                return minVal;
+            
+            return null;
+        }
+        set
+        {
+            SetAttr(FormElementField.MinValueAttribute, value);
+        }
+    }
 
-    public double? MaxValue { get; set; }
+    public double? MaxValue
+    {
+        get
+        {
+            if (double.TryParse(GetAttr(FormElementField.MaxValueAttribute), out var minVal))
+                return minVal;
+            
+            return null;
+        }
+        set
+        {
+            SetAttr(FormElementField.MaxValueAttribute, value);
+        }
+    }
 
     public JJTextBox(IHttpContext httpContext) : base(httpContext)
     {
@@ -30,26 +56,25 @@ public class JJTextBox : HtmlControl
             inputType = "text";
             CssClass += " jjdecimal";
         }
-        
+
         var html = new HtmlBuilder(HtmlTag.Input)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
-            .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder)
+            .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder!)
             .WithAttribute("type", inputType)
             .WithCssClass("form-control")
             .WithCssClass(CssClass)
             .WithToolTip(ToolTip)
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
-            .WithAttributeIf(NumberOfDecimalPlaces == 0 && InputType == InputType.Number, "onkeypress", "return jjutil.justNumber(event);")
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jjdecimalplaces", NumberOfDecimalPlaces.ToString())
+            .WithAttributeIf(NumberOfDecimalPlaces == 0 && InputType == InputType.Number, "onkeypress",
+                "return jjutil.justNumber(event);")
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jjdecimalplaces",
+                NumberOfDecimalPlaces.ToString())
             .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jjdecimal")
-            .WithAttributeIf(MinValue != null, "min", MinValue?.ToString())
-            .WithAttributeIf(MaxValue != null, "max", MaxValue?.ToString())
-            .WithAttributeIf(!string.IsNullOrEmpty(Text), "value", Text)
+            .WithAttributeIf(!string.IsNullOrEmpty(Text), "value", Text!)
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
             .WithAttributeIf(!Enabled, "disabled", "disabled");
 
         return html;
     }
-
 }

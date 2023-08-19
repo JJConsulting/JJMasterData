@@ -21,13 +21,13 @@ public class InternalRedirectController : MasterDataController
 
     private ComponentFactory ComponentFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
-    private IDictionary<string, dynamic> RelationValues { get; }
+    private IDictionary<string, object> RelationValues { get; }
 
     public InternalRedirectController(ComponentFactory componentFactory, JJMasterDataEncryptionService encryptionService)
     {
         ComponentFactory = componentFactory;
         EncryptionService = encryptionService;
-        RelationValues = new Dictionary<string, dynamic>();
+        RelationValues = new Dictionary<string, object>();
     }
 
     public async Task<IActionResult> Index(string parameters)

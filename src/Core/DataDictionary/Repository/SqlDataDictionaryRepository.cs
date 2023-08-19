@@ -1,16 +1,13 @@
-﻿using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Extensions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using Microsoft.Extensions.Configuration;
+using JJMasterData.Core.Options;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
@@ -85,7 +82,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     public IEnumerable<string> GetNameList()
     {
         var totalRecords = 10000;
-        var filter = new Dictionary<string,dynamic> { { "type", "F" } };
+        var filter = new Dictionary<string, object> { { "type", "F" } };
 
         var dt = _entityRepository.GetDataTable(MasterDataElement, filter, null, totalRecords, 1, ref totalRecords);
         foreach (DataRow row in dt.Rows)
@@ -97,7 +94,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     public async IAsyncEnumerable<string> GetNameListAsync()
     {
         const int totalRecords = 10000;
-        var filter = new Dictionary<string,dynamic>{ { "type", "F" } };
+        var filter = new Dictionary<string, object>{ { "type", "F" } };
 
         var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, null, totalRecords, 1);
         foreach (DataRow row in dt.Item1.Rows)
@@ -109,7 +106,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>
     public FormElement GetMetadata(string dictionaryName)
     {
-        var filter = new Dictionary<string, dynamic> { { "name", dictionaryName },{"type", "F"} };
+        var filter = new Dictionary<string, object> { { "name", dictionaryName },{"type", "F"} };
 
         var values = _entityRepository.GetFields(MasterDataElement, filter);
         
@@ -120,7 +117,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
     public async Task<FormElement> GetMetadataAsync(string dictionaryName)
     {
-        var filter = new Dictionary<string, dynamic> { { "name", dictionaryName },{"type", "F"} };
+        var filter = new Dictionary<string, object> { { "name", dictionaryName },{"type", "F"} };
 
         var values = await _entityRepository.GetDictionaryAsync(MasterDataElement, filter);
         
@@ -204,7 +201,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         if (string.IsNullOrEmpty(dictionaryName))
             throw new ArgumentException();
 
-        var filters = new Dictionary<string,dynamic> { { "name", dictionaryName } };
+        var filters = new Dictionary<string, object> { { "name", dictionaryName } };
 
         var dataTable = await _entityRepository.GetDataTableAsync(MasterDataElement, filters);
         if (dataTable.Rows.Count == 0)
@@ -212,7 +209,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         foreach (DataRow row in dataTable.Rows)
         {
-            var delFilter = new Dictionary<string,dynamic>()
+            var delFilter = new Dictionary<string, object>()
             {
                 { "name", dictionaryName },
                 { "type", row["type"].ToString() }
@@ -270,8 +267,15 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     public async Task<EntityResult<IEnumerable<FormElementInfo>>> GetFormElementInfoListAsync(DataDictionaryFilter filter,
         string orderBy, int recordsPerPage, int currentPage)
     {
+        
         var filters = (IDictionary)filter.ToDictionary();
-        filters.Add("type", "F");
+        filters.Add("type","F");
+
+        //TODO: Lucio
+        //var dt = _entityRepository.GetDataTable(MasterDataElement, filters, orderBy, recordsPerPage, currentPage, ref totalRecords); 
+        //return dt.ToModelList<FormElementInfo>();
+        
+        
 
         var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement, filters, orderBy, recordsPerPage,
             currentPage);
@@ -282,11 +286,11 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         {
             var info = new FormElementInfo
             {
-                Info = element["info"],
-                Modified = element["modified"],
-                Name = element["name"],
-                Sync = element["sync"],
-                TableName = element["tablename"]
+                Info = (string)element["info"],
+                Modified = (DateTime)element["modified"],
+                Name = (string)element["name"],
+                Sync = (string)element["sync"],
+                TableName = (string)element["tablename"]
             };
             
             formElementInfoList.Add(info);

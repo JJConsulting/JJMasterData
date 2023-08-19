@@ -9,7 +9,7 @@ namespace JJMasterData.Commons.Data.Entity;
 
 public class EntityResult
 {
-    internal List<IDictionary<string, dynamic?>> Data { get; }
+    internal List<IDictionary<string, object?>> Data { get; }
     
     /// <summary>
     /// TotalOfRecords can represent the total count of the data at a external source or the count of the data source.
@@ -25,19 +25,19 @@ public class EntityResult
         TotalOfRecords = totalOfRecords;
     }
     
-    public EntityResult(List<IDictionary<string, dynamic?>> listData, int totalOfRecords)
+    public EntityResult(List<IDictionary<string, object?>> listData, int totalOfRecords)
     {
         Data = listData ?? throw new ArgumentNullException(nameof(listData));
         TotalOfRecords = totalOfRecords;
     }
     
-    private static List<IDictionary<string, dynamic?>> ConvertDataTableToList(DataTable dataTable)
+    private static List<IDictionary<string, object?>> ConvertDataTableToList(DataTable dataTable)
     {
-        var list = new List<IDictionary<string, dynamic?>>();
+        var list = new List<IDictionary<string, object?>>();
 
         foreach (DataRow row in dataTable.Rows)
         {
-            var dict = new Dictionary<string, dynamic?>();
+            var dict = new Dictionary<string, object?>();
 
             foreach (DataColumn col in dataTable.Columns)
             {
@@ -50,12 +50,12 @@ public class EntityResult
         return list;
     }
     
-    public static List<IDictionary<string, dynamic?>> ToList(EntityResult entityResult)
+    public static List<IDictionary<string, object?>> ToList(EntityResult entityResult)
     {
         return entityResult.Data;
     }
 
-    public List<IDictionary<string,dynamic?>> ToList() => ToList(this);
+    public List<IDictionary<string, object?>> ToList() => ToList(this);
     
     public DataTable ToDataTable() => ToDataTable(this);
     
@@ -87,11 +87,11 @@ public class EntityResult
         return new EntityResult(dataTable, dataTable.Rows.Count);
     }
     
-    public static implicit operator EntityResult(List<IDictionary<string, dynamic?>> listData)
+    public static implicit operator EntityResult(List<IDictionary<string, object?>> listData)
     {
         return new EntityResult(listData, listData.Count);
     }
-    public static explicit operator List<IDictionary<string,dynamic?>>(EntityResult entityResult) => ToList(entityResult);
+    public static explicit operator List<IDictionary<string, object?>>(EntityResult entityResult) => ToList(entityResult);
     public static explicit operator DataTable(EntityResult entityResult) => ToDataTable(entityResult);
 }
 

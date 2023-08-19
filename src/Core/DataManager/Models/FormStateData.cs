@@ -9,16 +9,16 @@ namespace JJMasterData.Core.DataManager;
 
 public class FormStateData
 {
-    public required IDictionary<string,dynamic>? UserValues { get; init; }
+    public required IDictionary<string, object>? UserValues { get; init; }
 
-    public required IDictionary<string,dynamic> FormValues { get; init; }
+    public required IDictionary<string, object> FormValues { get; init; }
 
     public required PageState PageState { get; init; }
     
     [SetsRequiredMembers]
     public FormStateData(
-        IDictionary<string, dynamic> formValues, 
-        IDictionary<string, dynamic>? userValues,
+        IDictionary<string, object> formValues, 
+        IDictionary<string, object>? userValues,
         PageState pageState)
     {
         UserValues = userValues.DeepCopy();
@@ -28,7 +28,7 @@ public class FormStateData
 
     [SetsRequiredMembers]
     public FormStateData(
-        IDictionary<string, dynamic> formValues,
+        IDictionary<string, object> formValues,
         PageState pageState)
     {
         FormValues = formValues;

@@ -247,7 +247,7 @@ public class JJDataExportation : ProcessComponent
         BackgroundTask.Run(ProcessKey, exporter);
     }
 
-    internal void ExportFileInBackground(IDictionary<string,dynamic>filter, string order)
+    internal void ExportFileInBackground(IDictionary<string, object>filter, string order)
     {
         var exporter = CreateWriter();
 

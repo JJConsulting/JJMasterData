@@ -134,7 +134,7 @@ public class JJFormView : AsyncComponent
     /// <remarks>
     /// Key = Field name, Value=Field value
     /// </remarks>
-    public IDictionary<string, dynamic> RelationValues { get; set; } = new Dictionary<string, dynamic>();
+    public IDictionary<string, object> RelationValues { get; set; } = new Dictionary<string, object>();
     
     public FormElement FormElement { get; }
 
@@ -333,7 +333,7 @@ public class JJFormView : AsyncComponent
     internal async Task<ComponentResult> GetReloadPanelResultAsync()
     {
         var filter = GridView.GetSelectedRowId();
-        IDictionary<string, dynamic> values;
+        IDictionary<string, object> values;
         if (filter is { Count: > 0 })
             values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
         else
@@ -485,7 +485,7 @@ public class JJFormView : AsyncComponent
         else
         {
             bool autoReloadFields;
-            IDictionary<string, dynamic> values;
+            IDictionary<string, object> values;
             if (PageState is PageState.Update)
             {
                 autoReloadFields = true;
@@ -987,7 +987,7 @@ public class JJFormView : AsyncComponent
         return formHtml;
     }
 
-    private JJToolbar GetFormLogBottomBar(IDictionary<string, dynamic> values)
+    private JJToolbar GetFormLogBottomBar(IDictionary<string, object> values)
     {
         var backScript = new StringBuilder();
         backScript.Append($"$('#current-page-state-{Name}').val('{(int)PageState.List}'); ");
@@ -1077,7 +1077,7 @@ public class JJFormView : AsyncComponent
     /// Insert the records in the database.
     /// </summary>
     /// <returns>The list of errors.</returns>
-    public async Task<IDictionary<string, dynamic>> InsertFormValuesAsync(IDictionary<string, dynamic> values,
+    public async Task<IDictionary<string, object>> InsertFormValuesAsync(IDictionary<string, object> values,
         bool validateFields = true)
     {
         var result = await FormService.InsertAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId),
@@ -1090,14 +1090,14 @@ public class JJFormView : AsyncComponent
     /// Update the records in the database.
     /// </summary>
     /// <returns>The list of errors.</returns>
-    public async Task<IDictionary<string, dynamic>> UpdateFormValuesAsync(IDictionary<string, dynamic> values)
+    public async Task<IDictionary<string, object>> UpdateFormValuesAsync(IDictionary<string, object> values)
     {
         var result = await FormService.UpdateAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
 
-    public async Task<IDictionary<string, dynamic>> DeleteFormValuesAsync(IDictionary<string, dynamic>? filter)
+    public async Task<IDictionary<string, object>> DeleteFormValuesAsync(IDictionary<string, object>? filter)
     {
         var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, filter, PageState.Delete, true);
         var result = await FormService.DeleteAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
@@ -1106,7 +1106,7 @@ public class JJFormView : AsyncComponent
     }
 
 
-    public async Task<IDictionary<string, dynamic>> GetFormValuesAsync()
+    public async Task<IDictionary<string, object>> GetFormValuesAsync()
     {
         var painel = DataPanel;
         var values = await painel.GetFormValuesAsync();
@@ -1118,7 +1118,7 @@ public class JJFormView : AsyncComponent
 
         return values;
     }
-    public async Task<IDictionary<string, dynamic>> ValidateFieldsAsync(IDictionary<string, dynamic> values, PageState pageState)
+    public async Task<IDictionary<string, object>> ValidateFieldsAsync(IDictionary<string, object> values, PageState pageState)
     {
         DataPanel.Values = values;
         var errors = await DataPanel.ValidateFieldsAsync(values, pageState);
@@ -1156,7 +1156,7 @@ public class JJFormView : AsyncComponent
         return btn;
     }
 
-    private JJLinkButton GetButtonHideLog(IDictionary<string, dynamic> values)
+    private JJLinkButton GetButtonHideLog(IDictionary<string, object> values)
     {
         var context = new ActionContext
         {
@@ -1177,7 +1177,7 @@ public class JJFormView : AsyncComponent
         return btn;
     }
 
-    private JJLinkButton GetButtonViewLog(IDictionary<string, dynamic> values)
+    private JJLinkButton GetButtonViewLog(IDictionary<string, object> values)
     {
         var context = new ActionContext
         {
@@ -1224,7 +1224,7 @@ public class JJFormView : AsyncComponent
     public FilterAction FilterAction => GridView.FilterAction;
 
     [Obsolete("Please use GridView.GetSelectedGridValues")]
-    private List<IDictionary<string, dynamic>> GetSelectedGridValues() => GridView.GetSelectedGridValues();
+    private List<IDictionary<string, object>> GetSelectedGridValues() => GridView.GetSelectedGridValues();
 
     [Obsolete("Please use GridView.AddToolBarAction")]
     private void AddToolBarAction(UserCreatedAction userCreatedAction)

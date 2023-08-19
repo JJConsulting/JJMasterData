@@ -5,7 +5,7 @@ namespace JJMasterData.Commons.Extensions;
 
 public static class HashtableInteropExtensions
 {
-    public static Hashtable ToHashtable(this IDictionary<string, dynamic> dictionary)
+    public static Hashtable ToHashtable(this IDictionary<string, object> dictionary)
     {
         var hashtable = new Hashtable();
         foreach (var kvp in dictionary)
@@ -15,9 +15,9 @@ public static class HashtableInteropExtensions
         return hashtable;
     }
 
-    public static IDictionary<string, dynamic> ToDictionary(this Hashtable hashtable)
+    public static IDictionary<string, object> ToDictionary(this Hashtable hashtable)
     {
-        var dictionary = new Dictionary<string, dynamic>();
+        var dictionary = new Dictionary<string, object>();
         foreach (DictionaryEntry entry in hashtable)
         {
             dictionary[entry.Key.ToString()] = entry.Value;

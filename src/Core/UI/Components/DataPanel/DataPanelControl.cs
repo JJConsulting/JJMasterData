@@ -32,13 +32,13 @@ internal class DataPanelControl
 
     public ControlFactory ControlFactory { get; }
     
-    public IDictionary<string, dynamic> Errors { get; private set; }
+    public IDictionary<string, object> Errors { get; private set; }
 
     public PageState PageState => FormState.PageState;
 
-    public IDictionary<string, dynamic>? UserValues => FormState.UserValues;
+    public IDictionary<string, object>? UserValues => FormState.UserValues;
 
-    public IDictionary<string, dynamic> Values => FormState.FormValues;
+    public IDictionary<string, object> Values => FormState.FormValues;
 
     public FormStateData FormState { get; set; }
 
@@ -69,7 +69,7 @@ internal class DataPanelControl
         FormState = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
     }
 
-    public DataPanelControl(JJGridView gridView, IDictionary<string, dynamic> values)
+    public DataPanelControl(JJGridView gridView, IDictionary<string, object> values)
     {
         FormElement = gridView.FormElement;
         FormUI = new FormUI
@@ -78,7 +78,7 @@ internal class DataPanelControl
         };
         EncryptionService = gridView.EncryptionService;
         UrlHelper = gridView.UrlHelper;
-        Errors = new Dictionary<string, dynamic>();
+        Errors = new Dictionary<string, object>();
         Name = gridView.Name;
         ControlFactory = gridView.ComponentFactory.Controls;
         ExpressionsService = gridView.ExpressionsService;
@@ -307,7 +307,7 @@ internal class DataPanelControl
         return html;
     }
 
-    private async Task<HtmlBuilder> GetControlField(FormElementField field, object value)
+    private async Task<HtmlBuilder> GetControlField(FormElementField field, object? value)
     {
         var control = await ControlFactory.CreateAsync(FormElement, field, Values, UserValues, PageState, Name, value);
         control.IsExternalRoute = IsExternalRoute;

@@ -312,7 +312,7 @@ internal class DataImportationHelp
         if (DataImportation.FormElement == null)
             throw new ArgumentException(nameof(FormElement));
 
-        var defaultValues = new Dictionary<string, dynamic>();
+        var defaultValues = new Dictionary<string, object>();
         var formData = new FormStateData(defaultValues, PageState.Import);
         var list = new List<FormElementField>();
         foreach (var field in DataImportation.FormElement.Fields)

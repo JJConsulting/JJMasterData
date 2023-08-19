@@ -223,9 +223,9 @@ public class DataImportationWorker : IBackgroundTaskWorker
     /// <summary>
     /// Preenche um hashtable com o nome do campor e o valor
     /// </summary>
-    private IDictionary<string, dynamic> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField, string[] cols)
+    private IDictionary<string, object> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField, string[] cols)
     {
-        var values = new Dictionary<string, dynamic>();
+        var values = new Dictionary<string, object>();
         for (int i = 0; i < listField.Count; i++)
         {
             var field = listField[i];
@@ -252,7 +252,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
         if (FormElement == null)
             throw new ArgumentException(nameof(FormElement));
 
-        var defaultValues = new Dictionary<string, dynamic>();
+        var defaultValues = new Dictionary<string, object>();
         var formData = new FormStateData(defaultValues, PageState.Import);
         var list = new List<FormElementField>();
         foreach (var field in FormElement.Fields)
@@ -269,7 +269,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
     /// Retorna lista de erros
     /// </summary>
     /// <returns>Retorna lista de erros</returns>
-    private async Task SetFormValues(IDictionary<string, dynamic> fileValues, DataImportationReporter currentProcess)
+    private async Task SetFormValues(IDictionary<string, object> fileValues, DataImportationReporter currentProcess)
     {
         try
         {

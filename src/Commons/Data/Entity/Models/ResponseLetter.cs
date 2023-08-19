@@ -15,10 +15,10 @@ public class ResponseLetter
     public string Message { get; set; }
 
     [JsonProperty("validationList")]
-    public IDictionary<string,dynamic> ValidationList { get; set; }
+    public IDictionary<string, object> ValidationList { get; set; }
 
     [JsonProperty("data")]
-    public IDictionary<string,dynamic>  Data { get; set; }
+    public IDictionary<string, object>  Data { get; set; }
 
     public ResponseLetter() { }
 

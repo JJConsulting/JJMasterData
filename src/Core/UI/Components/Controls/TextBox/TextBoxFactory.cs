@@ -1,40 +1,31 @@
 ﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.UI.Components.Widgets;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.UI.Components.Widgets;
 
 namespace JJMasterData.Core.Web.Factories;
 
 internal class TextBoxFactory : IControlFactory<JJTextGroup>
 {
-    private JJMasterDataEncryptionService EncryptionService { get; }
     private IHttpContext HttpContext { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private IExpressionsService ExpressionsService { get; }
     private LinkButtonFactory LinkButtonFactory { get; }
 
     public TextBoxFactory(IHttpContext httpContext, 
                           IStringLocalizer<JJMasterDataResources> stringLocalizer, 
-                          IExpressionsService expressionsService,
-                          LinkButtonFactory linkButtonFactory,
-                          JJMasterDataEncryptionService encryptionService)
+                          LinkButtonFactory linkButtonFactory)
     {
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
-        ExpressionsService = expressionsService;
         LinkButtonFactory = linkButtonFactory;
-        EncryptionService = encryptionService;
     }
     
     public JJTextGroup Create()
@@ -47,7 +38,7 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
         var textGroup = Create(field);
 
         if (field.Component == FormComponent.Currency)
-            value = value?.ToString().Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
+            value = value?.ToString()?.Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
 
         textGroup.Text = value?.ToString() ?? string.Empty;
         
@@ -57,8 +48,8 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
 
     public JJTextGroup Create(FormElement formElement, FormElementField field, ControlContext context)
     {
-        var (formStateData, parentName, value) = context;
-        
+        var value = context.Value;
+        var formStateData = context.FormStateData;
         var textGroup = Create(field);
 
         if (field.Component == FormComponent.Currency)
@@ -110,18 +101,6 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
         textGroup.MaxLength = field.Size;
         textGroup.NumberOfDecimalPlaces = field.NumberOfDecimalPlaces;
         textGroup.Name = field.Name;
-            
-        if (field.Attributes.TryGetValue(FormElementField.MinValueAttribute, out var minValue))
-        {
-            textGroup.MinValue = minValue;
-        }
-
-        if (field.Attributes.TryGetValue(FormElementField.MaxValueAttribute, out var maxValue))
-        {
-            textGroup.MaxValue = maxValue;
-        }
-            
-
         SetDefaultAttrs(textGroup, field.Component);
 
         return textGroup;

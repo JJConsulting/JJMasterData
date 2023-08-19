@@ -158,7 +158,7 @@ internal class FormViewRelationshipLayout
 
         var childElement = await ParentFormView.DataDictionaryRepository.GetMetadataAsync(relationship.ElementRelationship!.ChildElement);
 
-        var filter = new Dictionary<string, dynamic>();
+        var filter = new Dictionary<string, object>();
         foreach (var col in relationship.ElementRelationship.Columns.Where(col => formContext.Values.ContainsKey(col.PkColumn)))
         {
             var value = formContext.Values[col.PkColumn];
@@ -214,9 +214,9 @@ internal class FormViewRelationshipLayout
         }
     }
 
-    private static IDictionary<string, dynamic?> GetMappedForeignKeys(FormElement formElement, Dictionary<string, dynamic> filters)
+    private static IDictionary<string, object?> GetMappedForeignKeys(FormElement formElement, Dictionary<string, object> filters)
     {
-        var foreignKeys = new Dictionary<string, dynamic?>();
+        var foreignKeys = new Dictionary<string, object?>();
         var relationships = formElement.Relationships.GetElementRelationships();
 
         foreach (var entry in filters)

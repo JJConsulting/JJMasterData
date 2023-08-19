@@ -267,8 +267,8 @@ public interface IEntityRepository
     /// <inheritdoc cref="ExecuteBatch"/>
     public Task<bool> ExecuteBatchAsync(string script);
 
-    Task<IDictionary<string, dynamic>> GetDictionaryAsync(Element metadata, IDictionary<string,dynamic> filters);
-    Task<(List<IDictionary<string, dynamic>>, int)>  GetDictionaryListAsync(Element metadata, IDictionary parametersParameters, string toString, int paginationDataRecordsPerPage, int paginationDataPage);
+    Task<IDictionary<string, object>> GetDictionaryAsync(Element metadata, IDictionary<string, object> filters);
+    Task<(List<IDictionary<string, object>>, int)>  GetDictionaryListAsync(Element metadata, IDictionary parametersParameters, string toString, int paginationDataRecordsPerPage, int paginationDataPage);
 
     Task<bool> ColumnExistsAsync(string tableName, string columnName);
 

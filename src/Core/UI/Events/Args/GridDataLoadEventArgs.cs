@@ -13,7 +13,7 @@ public class GridDataLoadEventArgs : EventArgs
     /// <summary>
     /// Filtros atuais
     /// </summary>
-    public IDictionary<string,dynamic> Filters { get; internal set; }
+    public IDictionary<string, object> Filters { get; internal set; }
 
     /// <summary>
     /// Ordem atual

@@ -122,9 +122,9 @@ public class JJAuditLogView : AsyncComponent
         return new RenderedComponentResult(html);
     }
 
-    private string GetEntryKey(IDictionary<string, dynamic> values)
+    private string GetEntryKey(IDictionary<string, object> values)
     {
-        var filter = new Dictionary<string, dynamic>
+        var filter = new Dictionary<string, object>
         {
             { DataManager.Services.AuditLogService.DicName, FormElement.Name },
             {
@@ -144,7 +144,7 @@ public class JJAuditLogView : AsyncComponent
         return viewId;
     }
 
-    public async Task<HtmlBuilder> GetLogDetailsHtmlAsync(IDictionary<string, dynamic> values)
+    public async Task<HtmlBuilder> GetLogDetailsHtmlAsync(IDictionary<string, object> values)
     {
         string viewId = GetEntryKey(values);
         var html = await GetLogDetailsHtmlAsync(viewId);
@@ -172,12 +172,12 @@ public class JJAuditLogView : AsyncComponent
             return alert.GetHtmlBuilder();
         }
 
-        var filter = new Dictionary<string, dynamic> { { DataManager.Services.AuditLogService.DicId, logId } };
+        var filter = new Dictionary<string, object> { { DataManager.Services.AuditLogService.DicId, logId } };
 
         var values = await EntityRepository.GetDictionaryAsync(AuditLogService.GetElement(), filter);
         string json = values[DataManager.Services.AuditLogService.DicJson]?.ToString();
         string recordsKey = values[DataManager.Services.AuditLogService.DicKey]?.ToString();
-        var fields = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(json ?? string.Empty);
+        var fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json ?? string.Empty);
 
         var panel = DataPanel;
         panel.PageState = PageState.View;
@@ -236,12 +236,12 @@ public class JJAuditLogView : AsyncComponent
 
     public async Task<JJDataPanel> GetDetailsPanelAsync(string logId)
     {
-        var filter = new Dictionary<string, dynamic> { { DataManager.Services.AuditLogService.DicId, logId } };
+        var filter = new Dictionary<string, object> { { DataManager.Services.AuditLogService.DicId, logId } };
 
         var values = await EntityRepository.GetDictionaryAsync(AuditLogService.GetElement(), filter);
         string json = values[DataManager.Services.AuditLogService.DicJson].ToString();
 
-        IDictionary<string, dynamic> fields = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(json);
+        IDictionary<string, object> fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
         var panel = DataPanel;
         panel.PageState = PageState.View;
@@ -295,7 +295,7 @@ public class JJAuditLogView : AsyncComponent
 
     private HtmlBuilder GetHtmlGridInfo(string recordsKey, string viewId)
     {
-        var filter = new Dictionary<string, dynamic>
+        var filter = new Dictionary<string, object>
         {
             { DataManager.Services.AuditLogService.DicKey, recordsKey },
             { DataManager.Services.AuditLogService.DicName, FormElement.Name }

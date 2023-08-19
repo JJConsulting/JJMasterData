@@ -43,10 +43,10 @@ public class EntityResultTest
     public void Constructor_ListData_ValidData()
     {
         // Arrange
-        var listData = new List<IDictionary<string, dynamic?>>()
+        var listData = new List<IDictionary<string, object?>>()
         {
-            new Dictionary<string, dynamic?>() { { "Id", 1 }, { "Name", "John" } },
-            new Dictionary<string, dynamic?>() { { "Id", 2 }, { "Name", "Jane" } }
+            new Dictionary<string, object?>() { { "Id", 1 }, { "Name", "John" } },
+            new Dictionary<string, object?>() { { "Id", 2 }, { "Name", "Jane" } }
         };
 
         // Act
@@ -89,10 +89,10 @@ public class EntityResultTest
     public void ImplicitConversion_From_ListData_ValidData()
     {
         // Arrange
-        var listData = new List<IDictionary<string, dynamic?>>()
+        var listData = new List<IDictionary<string, object?>>()
         {
-            new Dictionary<string, dynamic?>() { { "Id", 1 }, { "Name", "John" } },
-            new Dictionary<string, dynamic?>() { { "Id", 2 }, { "Name", "Jane" } }
+            new Dictionary<string, object?>() { { "Id", 1 }, { "Name", "John" } },
+            new Dictionary<string, object?>() { { "Id", 2 }, { "Name", "Jane" } }
         };
 
         // Act
@@ -111,15 +111,15 @@ public class EntityResultTest
     public void EntityResultToList_WithValidEntityResult_ReturnsListData()
     {
         // Arrange
-        var data = new List<IDictionary<string, dynamic?>>()
+        var data = new List<IDictionary<string, object?>>()
         {
-            new Dictionary<string, dynamic?>()
+            new Dictionary<string, object?>()
             {
                 {"Id", 1},
                 {"Name", "John"},
                 {"Age", null}
             },
-            new Dictionary<string, dynamic?>()
+            new Dictionary<string, object?>()
             {
                 {"Id", 2},
                 {"Name", "Jane"},
@@ -129,7 +129,7 @@ public class EntityResultTest
         var entityResult = new EntityResult(data, data.Count);
 
         // Act
-        var result = (List<IDictionary<string, dynamic?>>)entityResult;
+        var result = (List<IDictionary<string, object?>>)entityResult;
 
         // Assert
         Assert.Equal(data, result);
@@ -139,15 +139,15 @@ public class EntityResultTest
     public void EntityResultToDataTable_WithValidEntityResult_ReturnsDataTable()
     {
         // Arrange
-        var data = new List<IDictionary<string, dynamic?>>()
+        var data = new List<IDictionary<string, object?>>()
         {
-            new Dictionary<string, dynamic?>()
+            new Dictionary<string, object?>()
             {
                 {"Id", 1},
                 {"Name", "John"},
                 {"Age", null}
             },
-            new Dictionary<string, dynamic?>()
+            new Dictionary<string, object?>()
             {
                 {"Id", 2},
                 {"Name", "Jane"},

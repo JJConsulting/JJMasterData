@@ -100,7 +100,7 @@ internal class GridTableBody
         }
     }
     
-    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, IDictionary<string, dynamic> values, string onClickScript)
+    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, IDictionary<string, object> values, string onClickScript)
     {
         await foreach (var field in GridView.GetVisibleFieldsAsync())
         {
@@ -159,7 +159,7 @@ internal class GridTableBody
         }
     }
 
-    private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, DataRow row, int index, IDictionary<string, dynamic> values,
+    private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, DataRow row, int index, IDictionary<string, object> values,
         string value)
     {
         string name = GridView.GetFieldName(field.Name, values);
@@ -180,7 +180,7 @@ internal class GridTableBody
 
         var control = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, values, GridView.UserValues, PageState.List, GridView.Name, value);
         control.Name = name;
-        control.Attributes.Add("nRowId", index);
+        control.Attributes.Add("nRowId", index.ToString());
         control.CssClass = field.Name;
 
         var renderCell = OnRenderCell;
@@ -311,7 +311,7 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private JJCheckBox GetMultiSelect(DataRow row, int index, IDictionary<string, dynamic> values)
+    private JJCheckBox GetMultiSelect(DataRow row, int index, IDictionary<string, object> values)
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -374,9 +374,9 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private async Task<IDictionary<string, dynamic>> GetValues(DataRow row)
+    private async Task<IDictionary<string, object>> GetValues(DataRow row)
     {
-        var values = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         for (int i = 0; i < row.Table.Columns.Count; i++)
         {
             values.Add(row.Table.Columns[i].ColumnName, row[i]);
