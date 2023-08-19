@@ -49,6 +49,19 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
     
     public IFieldFormattingService FieldFormattingService { get; }
     
+    
+    public PdfWriter(IExpressionsService expressionsService, 
+                     IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+                     IOptions<JJMasterDataCoreOptions> options, 
+                     IControlFactory<JJTextFile> textFileFactory, 
+                     ILogger<PdfWriter> logger, 
+                     IEntityRepository entityRepository, 
+                     IFieldFormattingService fieldFormattingService) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    {
+        EntityRepository = entityRepository;
+        FieldFormattingService = fieldFormattingService;
+    }
+    
     public override async Task GenerateDocument(Stream ms, CancellationToken token)
     {
         using var writer = new iText.Kernel.Pdf.PdfWriter(ms);
@@ -88,17 +101,16 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         table.UseAllAvailableWidth();
         document.Add(table);
 
-        GenerateHeader(table);
-        GenerateBody(table, token);
+        await GenerateHeaderAsync(table);
+        await GenerateBodyAsync(table, token);
 
         table.Complete();
         document.Close();
         pdf.Close();
     }
 
-    private async Task GenerateHeader(Table table)
+    private async Task GenerateHeaderAsync(Table table)
     {
-        
         var fields = await GetVisibleFieldsAsync();
         foreach (var field in fields)
         {
@@ -110,7 +122,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         table.Flush();
     }
 
-    private void GenerateBody(Table table, CancellationToken token)
+    private async Task GenerateBodyAsync(Table table, CancellationToken token)
     {
         int tot = 0;
         if (DataSource == null)
@@ -119,23 +131,23 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
-            GenerateRows(table, token);
+            await GenerateRowsAsync(table, token);
 
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
                 DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
-                GenerateRows(table, token);
+                await GenerateRowsAsync(table, token);
             }
         }
         else
         {
             ProcessReporter.TotalRecords = DataSource.Rows.Count;
-            GenerateRows(table, token);
+            await GenerateRowsAsync(table, token);
         }
     }
 
-    private async Task GenerateRows(Table table, CancellationToken token)
+    private async Task GenerateRowsAsync(Table table, CancellationToken token)
     {
         foreach (DataRow row in DataSource.Rows)
         {
@@ -145,7 +157,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
             var fields = await GetVisibleFieldsAsync();
             foreach (FormElementField field in fields)
             {
-                var cell = await CreateCell(row, field);
+                var cell = await CreateCellAsync(row, field);
                 table.AddCell(cell);
                 table.Flush();
             }
@@ -156,7 +168,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         }
     }
     
-    private async Task<Cell> CreateCell(DataRow row, FormElementField field)
+    private async Task<Cell> CreateCellAsync(DataRow row, FormElementField field)
     {
         string value = string.Empty;
         Text image = null;
@@ -171,7 +183,9 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         {
             if (field.Component == FormComponent.ComboBox && field.DataItem != null)
             {
-                value = await GetComboBoxValue(field, values, image);
+                var valRet = await GetComboBoxValueAsync(field, values);
+                value = valRet.Item1;
+                image = valRet.Item2;
             }
             else
             {
@@ -267,11 +281,12 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         }
     }
 
-    private async Task<string> GetComboBoxValue(FormElementField field, IDictionary<string,dynamic> values, Text image)
+    private async Task<(string, Text)> GetComboBoxValueAsync(FormElementField field, IDictionary<string,dynamic> values)
     {
         if (values == null || !values.ContainsKey(field.Name) || values[field.Name] == null)
-            return string.Empty;
-
+            return (string.Empty, null);
+        
+        Text image = null;
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
         var cbo = (JJComboBox)(await ControlFactory.CreateAsync(FormElement,field, values,null, PageState.List,null, selectedValue));
@@ -279,7 +294,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
 
         if (item != null)
         {
-            if (field.DataItem.ReplaceTextOnGrid)
+            if (field.DataItem!.ReplaceTextOnGrid)
             {
                 value = " " + item.Description.Trim();
             }
@@ -299,7 +314,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
             value = selectedValue;
         }
 
-        return value;
+        return (value, image);
     }
 
     private PdfFont CreateFontAwesomeIcon()
@@ -317,12 +332,12 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         
         if (resFilestream == null)
             return null;
+        
         byte[] ba = new byte[resFilestream.Length];
+        // ReSharper disable once MustUseReturnValue
         resFilestream.Read(ba, 0, ba.Length);
         return ba;
     }
 
-    public PdfWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
-    {
-    }
+
 }
