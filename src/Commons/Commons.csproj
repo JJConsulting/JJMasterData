@@ -38,5 +38,8 @@
 	  <Compile Update="Data\DataAccessAsync.cs">
 	    <DependentUpon>DataAccess.cs</DependentUpon>
 	  </Compile>
+	  <Compile Update="Data\DataAccessGenerics.cs">
+	    <DependentUpon>DataAccess.cs</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 </Project>

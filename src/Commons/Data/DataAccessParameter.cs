@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data;

@@ -2,7 +2,6 @@ using System.ComponentModel;
 
 namespace JJMasterData.Commons.Data;
 
-
 public enum DataAccessProvider
 {
     [Description("Microsoft.Data.SqlClient")]

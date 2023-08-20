@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -20,7 +22,7 @@ namespace JJMasterData.Commons.Data;
 /// </example>
 public partial class DataAccess
 {
-    private DbProviderFactory _factory;
+    private DbProviderFactory? _factory;
 
     public DbProviderFactory Factory
     {
@@ -258,7 +260,7 @@ public partial class DataAccess
     /// <remarks>
     /// To execute command with parameters and prevent SQL injection, please use the DataAccessCommand overload.
     /// </remarks>
-    public object GetResult(string sql)
+    public object? GetResult(string sql)
     {
         return GetResult(new DataAccessCommand(sql));
     }
@@ -267,9 +269,9 @@ public partial class DataAccess
     /// ExecuteScalar command and returns the first column of the first row in the result set returned by the query.
     /// All other columns and rows are ignored.
     /// </summary>
-    public object GetResult(DataAccessCommand cmd)
+    public object? GetResult(DataAccessCommand cmd)
     {
-        object scalarResult;
+        object? scalarResult;
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
@@ -304,9 +306,9 @@ public partial class DataAccess
     /// <returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
     /// This method uses a <see cref="DbConnection"/> by ref.
     /// </returns>
-    public object GetResult(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
+    public object? GetResult(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
-        object scalarResult;
+        object? scalarResult;
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
@@ -362,13 +364,13 @@ public partial class DataAccess
     public int SetCommand(IEnumerable<DataAccessCommand> commands)
     {
         int numberOfRowsAffected = 0;
-        DataAccessCommand currentCommand = null;
+        DataAccessCommand? currentCommand = null;
 
         var connection = GetConnection();
 
         using (connection)
         {
-            using var sqlTras = connection.BeginTransaction();
+            using var sqlTransaction = connection.BeginTransaction();
             try
             {
                 foreach (var command in commands)
@@ -377,16 +379,16 @@ public partial class DataAccess
 
                     using var dbCommand = CreateDbCommand(command);
                     dbCommand.Connection = connection;
-                    dbCommand.Transaction = sqlTras;
+                    dbCommand.Transaction = sqlTransaction;
 
                     numberOfRowsAffected += dbCommand.ExecuteNonQuery();
                 }
 
-                sqlTras.Commit();
+                sqlTransaction.Commit();
             }
             catch (Exception ex)
             {
-                sqlTras.Rollback();
+                sqlTransaction.Rollback();
                 throw GetDataAccessException(ex, currentCommand);
             }
         }
@@ -448,13 +450,14 @@ public partial class DataAccess
 
     /// <summary>
     /// Retrieves the first record of the sql statement in a Hashtable object.
-    /// [key(database field), value(value stored in database)] 
+    /// [key(database field), value(value stored in database)]<br/>
+    /// Never concat string to SQL, please see DataAccessCommand<br/>
     /// </summary>
     /// <returns>
     /// Return a Hashtable Object. 
     /// If no record is found it returns null.
     /// </returns>
-    public Hashtable GetFields(string sql) => GetFields(new DataAccessCommand(sql));
+    public Hashtable? GetFields(string sql) => GetFields(new DataAccessCommand(sql));
     
     /// <summary>
     /// Retrieves the first record of the sql statement in a Hashtable object.
@@ -465,9 +468,9 @@ public partial class DataAccess
     /// Return a Hashtable Object. 
     /// If no record is found it returns null.
     /// </returns>
-    public Hashtable GetFields(DataAccessCommand cmd)
+    public Hashtable? GetFields(DataAccessCommand cmd)
     {
-        Hashtable retCollection = null;
+        Hashtable? retCollection = null;
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
@@ -523,10 +526,10 @@ public partial class DataAccess
     /// <summary>Verify the database connection</summary>
     /// <returns>True if the connection is successful.</returns>
     /// <remarks>Author: Lucio Pelinson 28-04-2014</remarks>
-    public bool TryConnection(out string errorMessage)
+    public bool TryConnection(out string? errorMessage)
     {
         bool result;
-        DbConnection connection = null;
+        DbConnection? connection = null;
         errorMessage = null;
         try
         {
@@ -620,13 +623,21 @@ public partial class DataAccess
         return command;
     }
     
-    private static Exception GetDataAccessException(Exception ex, DataAccessCommand cmd)
+    private static Exception GetDataAccessException(Exception ex, DataAccessCommand? cmd)
     {
-        return GetDataAccessException(ex, cmd.Sql, cmd.Parameters);
+        string sql = string.Empty;
+        ICollection<DataAccessParameter>? parameters = null;
+        if (cmd != null)
+        {
+            sql = cmd.Sql;
+            parameters = cmd.Parameters;
+        }
+        return GetDataAccessException(ex, sql, parameters);
     }
 
-    private static Exception GetDataAccessException(Exception ex, string sql,
-        ICollection<DataAccessParameter> parameters = null)
+    private static Exception GetDataAccessException(Exception ex, 
+        string sql,
+        ICollection<DataAccessParameter>? parameters = null)
     {
         ex.Data.Add("DataAccess Query", sql);
 

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -153,7 +155,7 @@ public partial class DataAccess
     public async Task<int> SetCommandAsync(IEnumerable<DataAccessCommand> commands, CancellationToken cancellationToken = default)
     {
         int numberOfRowsAffected = 0;
-        DataAccessCommand currentCommand = null;
+        DataAccessCommand? currentCommand = null;
 
         var connection = await GetConnectionAsync(cancellationToken);
 #if NET
@@ -218,16 +220,16 @@ public partial class DataAccess
     }
     
     /// <inheritdoc cref="GetFields(string)"/>
-    public Task<Hashtable> GetFieldsAsync(string sql, CancellationToken cancellationToken = default) =>
+    public Task<Hashtable?> GetFieldsAsync(string sql, CancellationToken cancellationToken = default) =>
         GetFieldsAsync(new DataAccessCommand(sql), cancellationToken);
     
     /// <inheritdoc cref="GetFields(DataAccessCommand)"/>
-    public async Task<Hashtable> GetFieldsAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    public async Task<Hashtable?> GetFieldsAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
         return await GetAsync<Hashtable>(command, cancellationToken);
     }
 
-    public async Task<T> GetAsync<T>(DataAccessCommand command, CancellationToken cancellationToken = default) 
+    public async Task<T?> GetAsync<T>(DataAccessCommand command, CancellationToken cancellationToken = default) 
         where T : IDictionary, new()
     {
         var result = default(T);
@@ -347,11 +349,11 @@ public partial class DataAccess
     }
     
     /// <inheritdoc cref="TryConnection"/>
-    public async Task<(bool, string)> TryConnectionAsync(CancellationToken cancellationToken = default)
+    public async Task<(bool, string?)> TryConnectionAsync(CancellationToken cancellationToken = default)
     {
         bool result;
-        DbConnection connection = null;
-        string errorMessage = null;
+        DbConnection? connection = null;
+        string? errorMessage = null;
         try
         {
             connection = Factory.CreateConnection();
@@ -427,7 +429,7 @@ public partial class DataAccess
         return true;
     }
     
-    public async Task<IDictionary<string, object>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    public async Task<IDictionary<string, object>?> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
         return await GetAsync<Dictionary<string, object>>(command, cancellationToken);
     }
