@@ -12,8 +12,10 @@ using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Factories;
 using JJMasterData.Core.FormEvents.Args;
@@ -165,8 +167,24 @@ public class ElementService : BaseService
             var result =
                 await DataDictionaryRepository.GetFormElementInfoListAsync(filter, orderBy, args.RecordsPerPage,
                     args.CurrentPage);
-            args.DataSource = result.Data.ToDataTable();
-            args.TotalOfRecords = result.TotalOfRecords;
+
+            var dictionaryList = new List<Dictionary<string, dynamic?>>();
+            
+            foreach (var info in result.Data)
+            {
+                var dictionary = new Dictionary<string, dynamic?>
+                {
+                    { "info", info.Info },
+                    { "modified", info.Modified },
+                    { "name", info.Name },
+                    { "sync", info.Sync },
+                    { "tablename", info.TableName }
+                };
+    
+                dictionaryList.Add(dictionary);
+            }
+            
+            args.DataSource = new DataSource(dictionaryList,result.TotalOfRecords);
         };
 
         formView.GridView.OnRenderAction += (sender, args) =>

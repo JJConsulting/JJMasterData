@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using JJMasterData.Commons.Data.Entity.Repository;
 
 namespace JJMasterData.Core.FormEvents.Args;
 
@@ -31,12 +32,7 @@ public class GridDataLoadEventArgs : EventArgs
     public int CurrentPage { get; internal set; }
 
     /// <summary>
-    /// Retorno do total de Registros
-    /// </summary>
-    public int TotalOfRecords { get; set; }
-
-    /// <summary>
     /// Retorna Objeto DataTable com os dados prontos para preencher a grid
     /// </summary>
-    public DataTable DataSource { get; set; }
+    public DataSource DataSource { get; set; }
 }

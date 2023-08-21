@@ -127,7 +127,8 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         int tot = 0;
         if (DataSource == null)
         {
-            DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
+            var entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,1));
+            DataSource = await EntityRepository.GetDataSourceAsync(FormElement, entityParameters);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
@@ -136,20 +137,21 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
             int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
+                entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,i));
+                DataSource = await EntityRepository.GetDataSourceAsync(FormElement, entityParameters);
                 await GenerateRowsAsync(table, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.Rows.Count;
+            ProcessReporter.TotalRecords = DataSource.CurrentCount;
             await GenerateRowsAsync(table, token);
         }
     }
 
     private async Task GenerateRowsAsync(Table table, CancellationToken token)
     {
-        foreach (DataRow row in DataSource.Rows)
+        foreach (Dictionary<string,object> row in DataSource.Data)
         {
             var scolor = (ShowRowStriped && (ProcessReporter.TotalProcessed % 2) == 0) ? "white" : "#f2fdff";
             var wcolor = WebColors.GetRGBColor(scolor);
@@ -168,28 +170,22 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         }
     }
     
-    private async Task<Cell> CreateCellAsync(DataRow row, FormElementField field)
+    private async Task<Cell> CreateCellAsync(Dictionary<string,object> row, FormElementField field)
     {
         string value = string.Empty;
         Text image = null;
-
-        var values = new Dictionary<string, object>();
-        for (int i = 0; i < row.Table.Columns.Count; i++)
-        {
-            values.Add(row.Table.Columns[i].ColumnName, row[i]);
-        }
 
         if (field.DataBehavior != FieldBehavior.Virtual)
         {
             if (field.Component == FormComponent.ComboBox && field.DataItem != null)
             {
-                var valRet = await GetComboBoxValueAsync(field, values);
+                var valRet = await GetComboBoxValueAsync(field, row);
                 value = valRet.Item1;
                 image = valRet.Item2;
             }
             else
             {
-                value = await FieldFormattingService.FormatGridValueAsync(field, values,null);
+                value = await FieldFormattingService.FormatGridValueAsync(field, row,null);
             }
         }
 

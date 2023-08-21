@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Repository;
 
 namespace JJMasterData.Commons.Data.Entity.Abstractions;
 
@@ -69,7 +70,7 @@ public interface IEntityRepository
     // e passavamos o totalRecords > 0 e isso foi ignorado nos metodos async
     
     /// <inheritdoc cref="GetDataTable(Element, IDictionary, string , int ,int , ref int)"/>
-    public Task<EntityResultTable> GetDataTableAsync(Element element, 
+    public Task<DataTableResult> GetDataTableAsync(Element element, 
         IDictionary filters, 
         string? orderBy, 
         int recordsPerPage, 
@@ -301,11 +302,13 @@ public interface IEntityRepository
     
     //TODO: Lucio Alterei de Tuple(EntityResult<List<Dictionary<string, object>>>, int) para EntityResultList, porém temos que decidir se trabalhamos com lista ou com table, ou altera tudo ou nem rela
     // eu tb não gosto do DataTable, mas podemos alterar outro momento... muito trabalho rs
-    Task<EntityResultList> GetDictionaryListAsync(Element metadata, IDictionary parametersParameters, string toString, int paginationDataRecordsPerPage, int paginationDataPage);
+    Task<EntityResult<Dictionary<string,object>>> GetDictionaryListAsync(Element metadata, IDictionary parametersParameters, string toString, int paginationDataRecordsPerPage, int paginationDataPage);
 
     //TODO: Não gosto disso
     Task<bool> ColumnExistsAsync(string tableName, string columnName);
 
-    
+    Task<DataSource> GetDataSourceAsync(
+        Element element,
+        EntityParameters parameters = null);
     
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
@@ -102,7 +103,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
     /// utilizando a proc informada no FormElement;
     /// </remarks>
-    public DataTable DataSource { get; set; }
+    public DataSource DataSource { get; set; }
 
     /// <summary>
     /// Configurações pré-definidas do formulário
@@ -217,7 +218,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
     public abstract Task GenerateDocument(Stream ms, CancellationToken token);
 
-    public string GetLinkFile(FormElementField field, DataRow row, string value)
+    public string GetLinkFile(FormElementField field, Dictionary<string,object> row, string value)
     {
         if (!field.DataFile.ExportAsLink)
             return null;
@@ -229,20 +230,13 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
         if (files.Length != 1)
             return null;
 
-        var values = new Dictionary<string, object>();
-
-        for (int i = 0; i < row.Table.Columns.Count; i++)
-        {
-            values.Add(row.Table.Columns[i].ColumnName, row[i]);
-        }
-
         string fileName = value;
         var textFile = TextFileFactory.Create();
         textFile.FormElement = FormElement;
         textFile.FormElementField = field;
         textFile.PageState = PageState.List;
         textFile.Text = value;
-        textFile.FormValues = values;
+        textFile.FormValues = row;
         textFile.Name = field.Name;
 
         return textFile.GetDownloadLink(fileName, true);

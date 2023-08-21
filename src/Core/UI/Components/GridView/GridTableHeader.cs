@@ -23,7 +23,7 @@ internal class GridTableHeader
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Thead);
-        if (GridView.DataSource?.Rows.Count == 0 && !GridView.ShowHeaderWhenEmpty)
+        if (GridView.DataSource?.CurrentCount == 0 && !GridView.ShowHeaderWhenEmpty)
             return html;
 
         await html.AppendAsync(HtmlTag.Tr, async tr =>
@@ -183,7 +183,7 @@ internal class GridTableHeader
         }
         else
         {
-            int totalPages = (int)Math.Ceiling(GridView.TotalRecords / (double)GridView.CurrentSettings.TotalPerPage);
+            int totalPages = (int)Math.Ceiling(GridView.TotalOfRecords / (double)GridView.CurrentSettings.TotalPerPage);
             if (totalPages <= 1)
                 hasPages = false;
         }
@@ -224,14 +224,14 @@ internal class GridTableHeader
                         a.AppendText(StringLocalizer["Unmark all selected records"]);
                     });
                 });
-                ul.AppendIf(GridView.TotalRecords <= 50000, HtmlTag.Li, li =>
+                ul.AppendIf(GridView.TotalOfRecords <= 50000, HtmlTag.Li, li =>
                 {
                     li.WithCssClass("dropdown-item");
                     li.Append(HtmlTag.A, a =>
                     {
                         a.WithAttribute("href", "javascript:void(0);");
                         a.WithAttribute("onclick", GridView.Scripts.GetSelectAllScript());
-                        a.AppendText(GridView.StringLocalizer["Mark all {0} records", GridView.TotalRecords]);
+                        a.AppendText(GridView.StringLocalizer["Mark all {0} records", GridView.TotalOfRecords]);
                     });
                 });
             });

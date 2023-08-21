@@ -23,7 +23,7 @@ internal class GridPagination
 
     public HtmlBuilder GetHtmlElement()
     {
-        _totalPages = (int)Math.Ceiling(GridView.TotalRecords / (double)GridView.CurrentSettings.TotalPerPage);
+        _totalPages = (int)Math.Ceiling(GridView.TotalOfRecords  / (double)GridView.CurrentSettings.TotalPerPage);
         _totalButtons = GridView.CurrentSettings.TotalPaginationButtons;
         _startButtonIndex = (int)Math.Floor((GridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
         _endButtonIndex = _startButtonIndex + _totalButtons;
@@ -113,7 +113,7 @@ internal class GridPagination
                 label.Append(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText($" {GridView.TotalRecords:N0} ");
+                    span.AppendText($" {GridView.DataSource?.TotalOfRecords:N0} ");
                     span.AppendText(StringLocalizer["record(s)"]);
                 });
             }
@@ -123,8 +123,8 @@ internal class GridPagination
                     GridView.CurrentSettings.TotalPerPage + 1);
                 label.AppendText("-");
 
-                if (GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage > GridView.TotalRecords)
-                    label.AppendText(GridView.TotalRecords);
+                if (GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage > GridView.DataSource?.TotalOfRecords)
+                    label.AppendText(GridView.TotalOfRecords);
                 else
                     label.AppendText(GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage);
 
@@ -132,7 +132,7 @@ internal class GridPagination
                 label.Append(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText($"&nbsp;{GridView.TotalRecords:N0}");
+                    span.AppendText($"&nbsp;{GridView.TotalOfRecords:N0}");
                 });
             }
         });

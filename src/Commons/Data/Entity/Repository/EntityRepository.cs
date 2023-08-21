@@ -7,6 +7,7 @@ using System.Data;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Providers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -97,16 +98,12 @@ public class EntityRepository : IEntityRepository
     public DataTable GetDataTable(Element element, IDictionary filters, string? orderBy, int recordsPerPage, int currentPage, ref int totalRecords) =>
         Provider.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
 
-    
-    public async Task<EntityResultTable> GetDataTableAsync(Element element, IDictionary filters, string? orderBy, int recordsPerPage, int currentPage, bool recoverTotalOfRecords = true)
+    public Task<DataTableResult> GetDataTableAsync(Element element, IDictionary filters, string? orderBy, int recordsPerPage, int currentPage,
+        bool recoverTotalOfRecords = true)
     {
-        return await Provider.GetDataTableAsync(element, filters, orderBy, recordsPerPage, currentPage);
+        throw new NotImplementedException();
     }
-    
-    public async Task<EntityResultList> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
-    {
-        return await Provider.GetDictionaryListAsync(element, filters, orderBy, recordsPerPage, currentPage);
-    }
+
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary)"/>
     public DataTable GetDataTable(Element element, IDictionary filters) => Provider.GetDataTable(element,filters);
@@ -181,5 +178,21 @@ public class EntityRepository : IEntityRepository
     ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element,IDictionary,string,int,int,bool,string)"/>
     public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|") =>
         Provider.GetListFieldsAsText(element, filters, orderBy, recordsPerPage, currentPage, showLogInfo, delimiter);
+    
+    public async Task<EntityResult<Dictionary<string,object>>> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
+    {
+        return await Provider.GetDictionaryListAsync(element, filters, orderBy, recordsPerPage, currentPage);
+    }
+    
+    public async Task<DataSource> GetDataSourceAsync(
+        Element element,
+        EntityParameters? parameters = null)
+    {
+        var result = await GetDictionaryListAsync(element, parameters?.Parameters as IDictionary,
+            parameters?.OrderBy?.ToString(), parameters?.PaginationData?.RecordsPerPage ?? 5,
+            parameters?.PaginationData?.Page ?? 1);
+        
+        return new DataSource(result.Data,result.TotalOfRecords);
+    }
    
 }

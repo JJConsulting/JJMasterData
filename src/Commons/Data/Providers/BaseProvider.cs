@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Commons.Data.Entity.Repository;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
@@ -221,7 +222,7 @@ public abstract class BaseProvider
     
     
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary,string,int,int,ref int)"/>
-    public async Task<EntityResultTable> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool recoverTotalOfRecords = true)
+    public async Task<DataTableResult> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool recoverTotalOfRecords = true)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -236,11 +237,11 @@ public abstract class BaseProvider
         if (recoverTotalOfRecords && totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
             total = (int)totalParameter.Value;
 
-        return new EntityResultTable(dt, total);
+        return new DataTableResult(dt, total);
     }
     
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary,string,int,int,ref int)"/>
-    public async Task<EntityResultList> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
+    public async Task<EntityResult<Dictionary<string,object>>> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -257,7 +258,7 @@ public abstract class BaseProvider
         if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
             totalRecords = (int)totalParameter.Value;
 
-        return new EntityResultList(list, totalRecords);
+        return new EntityResult<Dictionary<string, object>>(list, totalRecords);
     }
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary)"/>
