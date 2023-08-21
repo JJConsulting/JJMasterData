@@ -43,7 +43,7 @@ public class DictionariesService
     /// Numero máximo de registros permitidos, 
     /// se ultrapassar esse numero uma exeção será disparada
     /// </param>
-    public DicSyncInfo GetSyncInfo(string userId, DicSyncParam[] listSync, bool showLogInfo, long maxRecordsAllowed = 0)
+    public async Task<DicSyncInfo> GetSyncInfoAsync(string userId, DicSyncParam[] listSync, bool showLogInfo, long maxRecordsAllowed = 0)
     {
         if (listSync == null)
             throw new ArgumentNullException(nameof(listSync));
@@ -52,7 +52,7 @@ public class DictionariesService
             throw new ArgumentException("DicSyncParam invalid");
 
         var dStart = DateTime.Now;
-        var dictionaries = _dataDictionaryRepository.GetMetadataList(true);
+        var dictionaries = await _dataDictionaryRepository.GetMetadataListAsync(true);
         var syncInfo = new DicSyncInfo
         {
             ServerDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm")
@@ -66,9 +66,11 @@ public class DictionariesService
                 throw new JJMasterDataException($"Dictionary {os.Name} not found or not configured for sync");
 
             var filters = GetSyncInfoFilter(userId, dictionary, os.Filters);
-            var info = new DicSyncInfoElement();
-            info.Name = os.Name;
-            info.RecordSize = _entityRepository.GetCount(dictionary, filters);
+            var info = new DicSyncInfoElement
+            {
+                Name = os.Name,
+                RecordSize = await _entityRepository.GetCountAsync(dictionary, filters)
+            };
             totRecords += info.RecordSize;
 
             TimeSpan tsObj = DateTime.Now - dStartObj;
@@ -105,9 +107,9 @@ public class DictionariesService
         return syncInfo;
     }
 
-    private Hashtable GetSyncInfoFilter(string? userId, FormElement metadata, Hashtable? metadataFilters)
+    private Dictionary<string,object?> GetSyncInfoFilter(string? userId, FormElement metadata, Hashtable? metadataFilters)
     {
-        var filters = new Hashtable();
+        var filters = new Dictionary<string,object?>();
         var fields = metadata.Fields;
         if (metadataFilters != null)
         {

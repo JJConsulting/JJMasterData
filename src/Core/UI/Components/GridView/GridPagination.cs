@@ -8,8 +8,8 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class GridPagination
 {
-    private JJGridView GridView { get; set; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; set; }
+    private JJGridView GridView { get;  }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get;  }
     private int _totalPages;
     private int _totalButtons;
     private int _startButtonIndex;
@@ -23,7 +23,7 @@ internal class GridPagination
 
     public HtmlBuilder GetHtmlElement()
     {
-        _totalPages = (int)Math.Ceiling(GridView.TotalRecords / (double)GridView.CurrentSettings.TotalPerPage);
+        _totalPages = (int)Math.Ceiling(GridView.TotalOfRecords  / (double)GridView.CurrentSettings.RecordsPerPage);
         _totalButtons = GridView.CurrentSettings.TotalPaginationButtons;
         _startButtonIndex = (int)Math.Floor((GridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
         _endButtonIndex = _startButtonIndex + _totalButtons;
@@ -113,26 +113,26 @@ internal class GridPagination
                 label.Append(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText($" {GridView.TotalRecords:N0} ");
+                    span.AppendText($" {GridView?.TotalOfRecords:N0} ");
                     span.AppendText(StringLocalizer["record(s)"]);
                 });
             }
             else
             {
-                label.AppendText(GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage -
-                    GridView.CurrentSettings.TotalPerPage + 1);
+                label.AppendText(GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage -
+                    GridView.CurrentSettings.RecordsPerPage + 1);
                 label.AppendText("-");
 
-                if (GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage > GridView.TotalRecords)
-                    label.AppendText(GridView.TotalRecords);
+                if (GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage > GridView?.TotalOfRecords)
+                    label.AppendText(GridView.TotalOfRecords);
                 else
-                    label.AppendText(GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage);
+                    label.AppendText(GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage);
 
                 label.AppendText($" {StringLocalizer["From"]}");
                 label.Append(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText($"&nbsp;{GridView.TotalRecords:N0}");
+                    span.AppendText($"&nbsp;{GridView.TotalOfRecords:N0}");
                 });
             }
         });

@@ -1,42 +1,33 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Repository;
 
 namespace JJMasterData.Core.FormEvents.Args;
 
 /// <summary>
-/// Evento utilizado para recuperar os dados da tabela
+/// Event fired when data is ready to be loaded at GridView
 /// </summary>
 public class GridDataLoadEventArgs : EventArgs
 {
     /// <summary>
-    /// Filtros atuais
+    /// Filters sended to the IEntityRepository
     /// </summary>
-    public IDictionary<string,dynamic> Filters { get; internal set; }
-
+    public IDictionary<string, object>? Filters { get; init; }
+    
+    public OrderByData? OrderBy { get; init; }
+    
+    public int RecordsPerPage { get; init; }
+    
+    public int CurrentPage { get; init; }
+    
     /// <summary>
-    /// Ordem atual
-    /// </summary>
-    public string OrderBy { get; internal set; }
-
-    /// <summary>
-    /// Records per page
-    /// </summary>
-    public int RecordsPerPage { get; internal set; }
-
-    /// <summary>
-    /// Página atual
-    /// </summary>
-    public int CurrentPage { get; internal set; }
-
-    /// <summary>
-    /// Retorno do total de Registros
+    /// Total count of records at the entity
     /// </summary>
     public int TotalOfRecords { get; set; }
-
-    /// <summary>
-    /// Retorna Objeto DataTable com os dados prontos para preencher a grid
-    /// </summary>
-    public DataTable DataSource { get; set; }
+    
+    public IList<Dictionary<string,object?>>? DataSource { get; set; }
 }

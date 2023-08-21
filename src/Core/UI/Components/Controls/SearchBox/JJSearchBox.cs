@@ -94,10 +94,10 @@ public class JJSearchBox : AsyncControl
         get
         {
             if (Attributes.TryGetValue(TriggerLengthAttribute, out var attribute))
-                return int.Parse(attribute.ToString());
+                return int.Parse(attribute);
             return 0;
         }
-        set => Attributes[TriggerLengthAttribute] = value;
+        set => Attributes[TriggerLengthAttribute] = value.ToString();
     }
 
     /// <summary>
@@ -109,10 +109,10 @@ public class JJSearchBox : AsyncControl
         get
         {
             if (Attributes.TryGetValue(NumberOfItemsAttribute, out var attribute))
-                return int.Parse(attribute.ToString());
+                return int.Parse(attribute);
             return 0;
         }
-        set => Attributes[NumberOfItemsAttribute] = value;
+        set => Attributes[NumberOfItemsAttribute] = value.ToString();
     }
 
     /// <summary>
@@ -201,7 +201,7 @@ public class JJSearchBox : AsyncControl
         AutoReloadFormFields = true;
         Name = "jjsearchbox1";
         DataItem = new FormElementDataItem();
-        var defaultValues = new Dictionary<string, dynamic>();
+        var defaultValues = new Dictionary<string, object>();
         FormStateData = new(defaultValues, UserValues, PageState.List);
     }
 
@@ -237,7 +237,7 @@ public class JJSearchBox : AsyncControl
     internal static async Task<ComponentResult> GetResultFromComponent(
         ComponentBase view,
         FormElement formElement,
-        IDictionary<string, dynamic> formValues,
+        IDictionary<string, object> formValues,
         IHttpContext httpContext,
         IControlFactory<JJSearchBox> searchBoxFactory
         )

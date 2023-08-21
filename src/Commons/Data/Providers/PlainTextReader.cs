@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Logging;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
@@ -18,8 +17,8 @@ public class PlainTextReader
 {
     private ILogger<PlainTextReader> Logger { get; }
     private readonly BaseProvider _provider;
-    public bool ShowLogInfo { get; set; }
-    public string Delimiter { get; set; }
+    public bool ShowLogInfo { get; init; }
+    public string Delimiter { get; init; }
 
 
     public PlainTextReader(BaseProvider provider, ILogger<PlainTextReader> logger)
@@ -30,7 +29,7 @@ public class PlainTextReader
     }
 
 
-    public string GetListFieldsAsText(Element element, IDictionary filters, string orderby, int regporpag, int pag)
+    public async Task<string> GetFieldsListAsTextAsync(Element element, EntityParameters entityParameters)
     {
         var sRet = new StringBuilder();
         var dStart = DateTime.Now;
@@ -39,20 +38,25 @@ public class PlainTextReader
         string currentField = null;
         DbConnection conn = null;
 
+        var (filters, _, currentPage, recordsPerPage) = entityParameters;
+
         try
         {
-            var pTot = new DataAccessParameter(_provider.VariablePrefix + "qtdtotal", 1, DbType.Int32, 0,
+            var totalParameter = new DataAccessParameter(_provider.VariablePrefix + "qtdtotal", 1, DbType.Int32, 0,
                 ParameterDirection.InputOutput);
-            var cmd = _provider.GetReadCommand(element, filters, orderby, regporpag, pag, pTot);
+            var cmd = _provider.GetReadCommand(element, entityParameters, totalParameter);
             var providerFactory = SqlClientFactory.Instance;
             conn = providerFactory.CreateConnection();
             if (conn == null)
                 throw new JJMasterDataException("Error on create connection object");
 
             conn.ConnectionString = dataAccess.ConnectionString;
-            conn.Open();
+            await conn.OpenAsync();
 
-            using var dbCmd = providerFactory.CreateCommand();
+#if NET
+            await
+#endif
+                using var dbCmd = providerFactory.CreateCommand();
             if (dbCmd == null)
                 throw new JJMasterDataException("Error on create DbCommand");
 
@@ -72,7 +76,7 @@ public class PlainTextReader
             dbCmd.CommandText = cmd.Sql;
             dbCmd.Connection = conn;
             dbCmd.CommandTimeout = dataAccess.TimeOut;
-            var dr = dbCmd.ExecuteReader();
+            var dr = await dbCmd.ExecuteReaderAsync();
 
             int col = 0;
             int qtd = 0;
@@ -85,7 +89,7 @@ public class PlainTextReader
                     columns.Add(dr.GetName(i), i);
                 }
 
-                while (dr.Read())
+                while (await dr.ReadAsync())
                 {
                     qtd++;
                     foreach (ElementField field in element.Fields)
@@ -121,10 +125,11 @@ public class PlainTextReader
                                     sRet.Append(dr.GetInt32(ordinal));
                                     break;
                                 case FieldType.Float:
-                                    sRet.Append(double.Parse(dr.GetValue(ordinal).ToString()).ToString("G", culture));
+                                    sRet.Append(double.Parse(dr.GetValue(ordinal).ToString() ?? string.Empty)
+                                        .ToString("G", culture));
                                     break;
                                 default:
-                                    sRet.Append(dr.GetValue(ordinal).ToString().TrimEnd());
+                                    sRet.Append(dr.GetValue(ordinal).ToString()?.TrimEnd());
                                     break;
                             }
                         }
@@ -136,11 +141,15 @@ public class PlainTextReader
                     col = 0;
                 }
             }
-
+#if NET
+            await dr.CloseAsync();
+            await dr.DisposeAsync();
+#else
             dr.Close();
             dr.Dispose();
+#endif
             dbCmd.Dispose();
-            
+
             if (ShowLogInfo)
             {
                 var ts = DateTime.Now - dStart;
@@ -149,18 +158,18 @@ public class PlainTextReader
                 logMessage.Append(" ");
                 logMessage.AppendLine(element.Name);
 
-                if (filters != null)
+                if (filters.Any())
                 {
                     logMessage.Append("- ");
                     logMessage.Append("Filters");
                     logMessage.Append(": ");
 
-                    foreach (DictionaryEntry val in filters)
+                    foreach (var filter in filters)
                     {
                         logMessage.Append("  ");
-                        logMessage.Append(val.Key);
+                        logMessage.Append(filter.Key);
                         logMessage.Append("=");
-                        logMessage.Append(val.Value);
+                        logMessage.Append(filter.Value);
                     }
 
                     logMessage.AppendLine("");
@@ -169,14 +178,14 @@ public class PlainTextReader
                 logMessage.Append("- ");
                 logMessage.Append("TotPerPage");
                 logMessage.Append(": ");
-                logMessage.AppendLine(regporpag.ToString());
+                logMessage.AppendLine(recordsPerPage.ToString());
                 logMessage.Append("- ");
                 logMessage.Append("CurrentPage");
                 logMessage.Append(": ");
-                logMessage.AppendLine(pag.ToString());
+                logMessage.AppendLine(currentPage.ToString());
 
                 logMessage.AppendLine($"{qtd.ToString()} records sync. Time {ts.TotalMilliseconds:N3}ms");
-                Logger.LogInformation(logMessage.ToString());
+                Logger.LogInformation("Log message {LogMessage}", logMessage.ToString());
             }
         }
         catch (Exception ex)
@@ -185,29 +194,30 @@ public class PlainTextReader
 
             message.AppendLine("Error synchronizing.");
             message.AppendLine($"Object: {element.Name}");
-            message.AppendLine($"Page: {pag}");
+            message.AppendLine($"Page: {currentPage}");
             message.AppendLine($"Field: {currentField}");
             message.AppendLine($"Exception: {ex.Message}");
             message.AppendLine($"Stacktrace: {ex.StackTrace}");
 
-            
+
             var exception = new JJMasterDataException(message.ToString(), ex);
 
             throw exception;
-
-
         }
         finally
         {
             if (conn != null)
             {
+#if NET
+                await conn.CloseAsync();
+                await conn.DisposeAsync();
+#else
                 conn.Close();
                 conn.Dispose();
+#endif
             }
         }
 
         return sRet.ToString();
     }
-
 }
-

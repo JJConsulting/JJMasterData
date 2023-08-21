@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
@@ -27,12 +25,12 @@ public class JJTextFile : AsyncControl
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private const string UploadViewParameterName = "jjuploadview_";
-    private IDictionary<string, dynamic> _formValues;
+    private IDictionary<string, object> _formValues;
     private FormFilePathBuilder _pathBuiler;
 
-    public IDictionary<string, dynamic> FormValues
+    public IDictionary<string, object> FormValues
     {
-        get => _formValues ??= new Dictionary<string, dynamic>();
+        get => _formValues ??= new Dictionary<string, object>();
         set => _formValues = value;
     }
 
@@ -69,12 +67,12 @@ public class JJTextFile : AsyncControl
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (IsUploadViewRoute())
-            return await Task.FromResult(await GetUploadViewResult());
+            return await GetUploadViewResultAsync();
 
         return await Task.FromResult(new RenderedComponentResult(GetHtmlTextGroup()));
     }
 
-    internal async Task<ComponentResult> GetUploadViewResult()
+    internal async Task<ComponentResult> GetUploadViewResultAsync()
     {
         //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
         //por esse motivo passamos os valores nessários do form anterior por parametro o:)

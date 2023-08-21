@@ -9,7 +9,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Set HTML builder name and ID.
     /// </summary>
-    public HtmlBuilder WithNameAndId(string id)
+    public HtmlBuilder WithNameAndId(string? id)
     {
         if (!string.IsNullOrWhiteSpace(id))
             WithAttribute("id", id).WithAttribute("name", id);
@@ -22,7 +22,6 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder WithAttribute(string name, string value)
     {
-            
         _attributes[name] = value;
         return this;
     }
@@ -63,7 +62,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Set CSS classes attributes, if already exists it will be ignored.
     /// </summary>
-    public HtmlBuilder WithCssClass(string classes)
+    public HtmlBuilder WithCssClass(string? classes)
     {
         if (string.IsNullOrWhiteSpace(classes))
             return this;
@@ -87,7 +86,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Conditional to set classes attributes, if already exists it will be ignored.
     /// </summary>
-    public HtmlBuilder WithCssClassIf(bool conditional, string classes)
+    public HtmlBuilder WithCssClassIf(bool conditional, string? classes)
     {
         if (conditional)
             WithCssClass(classes);
@@ -98,11 +97,11 @@ public partial class HtmlBuilder
     /// <summary>
     /// Set range of attrs
     /// </summary>
-    internal HtmlBuilder WithAttributes(IDictionary<string,dynamic> attributes)
+    internal HtmlBuilder WithAttributes(IDictionary<string, string> attributes)
     {
         foreach (var v in attributes)
         {
-            _attributes.Add(v.Key, v.Value.ToString());
+            _attributes.Add(v.Key, v.Value);
         }
 
         return this;
@@ -111,12 +110,11 @@ public partial class HtmlBuilder
     /// <summary>
     /// Sets a tooltip to the HTML Tag
     /// </summary>
-    public HtmlBuilder WithToolTip(string tooltip)
+    public HtmlBuilder WithToolTip(string? tooltip)
     {
         if (!string.IsNullOrEmpty(tooltip))
         {
             _attributes["title"] = tooltip;
-
             _attributes[BootstrapHelper.DataToggle] = "tooltip";
         }
 

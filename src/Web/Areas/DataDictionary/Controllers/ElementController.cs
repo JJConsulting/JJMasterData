@@ -34,7 +34,7 @@ public class ElementController : DataDictionaryController
     {
         try
         {
-            _elementService.CreateStructureIfNotExists();
+            await _elementService.CreateStructureIfNotExistsAsync();
             
             var formView = _elementService.GetFormView();
             var result = await formView.GetResultAsync();
@@ -57,18 +57,18 @@ public class ElementController : DataDictionaryController
         return View();
     }
 
-    public IActionResult Export()
+    public async Task<IActionResult> Export()
     {
         var formView =  _elementService.GetFormView();
         var selectedRows = formView.GridView.GetSelectedGridValues();
 
         if(selectedRows.Count == 1)
         {
-            var jsonBytes = _elementService.ExportSingleRow(selectedRows[0]);
+            var jsonBytes =await  _elementService.ExportSingleRowAsync(selectedRows[0]);
             return File(jsonBytes, "application/json", selectedRows[0]["name"] + ".json");
         }
 
-        var zipBytes = _elementService.ExportMultipleRows(selectedRows);
+        var zipBytes = await _elementService.ExportMultipleRowsAsync(selectedRows);
         return File(zipBytes, "application/zip", "Dictionaries.zip");
     }
 
@@ -130,9 +130,9 @@ public class ElementController : DataDictionaryController
     }
 
     [HttpPost]
-    public IActionResult Add(string tableName, bool importFields)
+    public async Task<IActionResult> Add(string tableName, bool importFields)
     {
-        var element = _elementService.CreateEntity(tableName, importFields);
+        var element = await _elementService.CreateEntityAsync(tableName, importFields);
         if (element != null)
         {
             return RedirectToAction("Index", "Entity", new { dictionaryName = element.Name });
@@ -144,9 +144,9 @@ public class ElementController : DataDictionaryController
     }
 
     [HttpPost]
-    public IActionResult Duplicate(string originName, string newName)
+    public async Task<IActionResult> Duplicate(string originName, string newName)
     {
-        if (_elementService.DuplicateEntity(originName, newName))
+        if (await _elementService.DuplicateEntityAsync(originName, newName))
         {
             return RedirectToAction("Index", new { dictionaryName = newName });
         }

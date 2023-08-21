@@ -46,7 +46,7 @@ public class JJSlider : HtmlControl
                 CssClass = "jjslider-value",
                 Attributes =
                 {
-                    ["step"] = Step
+                    ["step"] = Step.ToString()
                 }
             };
 

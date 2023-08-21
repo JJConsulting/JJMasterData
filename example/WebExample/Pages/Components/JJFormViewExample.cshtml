@@ -10,7 +10,7 @@
 @{
     ViewData["Title"] = "JJFormView";
 
-    bool dictionaryExists = DataDictionaryRepository.Exists("Example");
+    bool dictionaryExists = await DataDictionaryRepository.ExistsAsync("Example");
 
     void Configure(JJFormView formView)
     {

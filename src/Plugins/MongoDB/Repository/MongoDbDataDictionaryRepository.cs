@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.MongoDB.Repository;
@@ -74,16 +75,17 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
             yield return formElement.Name;
         }
     }
+    
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
-    public  IEnumerable<FormElementInfo> GetMetadataInfoList(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
+    public  IEnumerable<FormElementInfo> GetMetadataInfoList(DataDictionaryFilter filters, OrderByData orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var query = CreateInfoQuery(filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
 
         return query.ToList().Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList();
     }
     
-    public async Task<EntityResult<IEnumerable<FormElementInfo>>> GetFormElementInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage)
+    public async Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderBy, int recordsPerPage, int currentPage)
     {
         int totalRecords = 0;
         
@@ -91,10 +93,10 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
 
         var list = await query.ToListAsync();
         
-        return new EntityResult<IEnumerable<FormElementInfo>>(list.Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList(),totalRecords);
+        return new ListResult<FormElementInfo>(list.Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList(),totalRecords);
     }
     
-    private IFindFluent<MongoDBFormElement, MongoDBFormElement> CreateInfoQuery(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage,
+    private IFindFluent<MongoDBFormElement, MongoDBFormElement> CreateInfoQuery(DataDictionaryFilter filters, OrderByData orderBy, int recordsPerPage, int currentPage,
         ref int totalRecords)
     {
         var bsonFilter = new BsonDocument(MapStructureFields(filters));
@@ -110,9 +112,9 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
             formElementFinder = _formElementCollection.Find(bsonFilter);
         }
 
-        if (!string.IsNullOrEmpty(orderBy))
+        if (!string.IsNullOrEmpty(orderBy.ToQueryParameter()))
         {
-            var orderByMapper = MapOrderBy(orderBy);
+            var orderByMapper = MapOrderBy(orderBy.ToQueryParameter()!);
 
             formElementFinder.Sort(new BsonDocument(orderByMapper.ToDictionary()));
         }

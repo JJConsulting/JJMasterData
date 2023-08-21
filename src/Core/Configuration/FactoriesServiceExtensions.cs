@@ -1,8 +1,4 @@
-using System;
-using System.Linq;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.DataDictionary.Factories;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.UI.Components;
@@ -20,11 +16,9 @@ public static class FactoriesServiceExtensions
 {
     public static IServiceCollection AddFactories(this IServiceCollection services)
     {
-        services.AddFormElementFactories();
-        services.AddComponentsFactories();
-        services.AddDataFactories();
-        
-        return services;
+        return services.AddFormElementFactories()
+        .AddComponentsFactories()
+        .AddDataFactories();
     }
 
     private static IServiceCollection AddDataFactories(this IServiceCollection services)

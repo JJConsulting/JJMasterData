@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -27,19 +27,19 @@ public class OracleProvider : BaseProvider
     public override string GetCreateTableScript(Element element)
     {
         if (element == null)
-            throw new ArgumentNullException(nameof(Element));
+            throw new ArgumentNullException(nameof(element));
 
         if (element.Fields == null || element.Fields.Count == 0)
-            throw new ArgumentNullException(nameof(Element.Fields));
+            throw new ArgumentNullException(nameof(element.Fields));
 
-        StringBuilder sSql = new StringBuilder();
-        StringBuilder sKeys = new StringBuilder();
+        var sqlScript = new StringBuilder();
+        var sKeys = new StringBuilder();
 
-        sSql.AppendLine("-- TABLE");
-        sSql.Append("CREATE TABLE ");
-        sSql.Append(element.TableName);
-        sSql.AppendLine(" (");
-        bool isFirst = true;
+        sqlScript.AppendLine("-- TABLE");
+        sqlScript.Append("CREATE TABLE ");
+        sqlScript.Append(element.TableName);
+        sqlScript.AppendLine(" (");
+        var isFirst = true;
         var fields = element.Fields
             .ToList()
             .FindAll(x => x.DataBehavior == FieldBehavior.Real);
@@ -49,23 +49,23 @@ public class OracleProvider : BaseProvider
             if (isFirst)
                 isFirst = false;
             else
-                sSql.AppendLine(",");
+                sqlScript.AppendLine(",");
 
-            sSql.Append(TAB);
-            sSql.Append(f.Name);
-            sSql.Append(" ");
-            sSql.Append(GetStrType(f.DataType));
+            sqlScript.Append(TAB);
+            sqlScript.Append(f.Name);
+            sqlScript.Append(" ");
+            sqlScript.Append(GetStrType(f.DataType));
 
             if (f.DataType == FieldType.Varchar ||
                 f.DataType == FieldType.NVarchar)
             {
-                sSql.Append(" (");
-                sSql.Append(f.Size);
-                sSql.Append(")");
+                sqlScript.Append(" (");
+                sqlScript.Append(f.Size);
+                sqlScript.Append(")");
             }
 
             if (f.IsRequired)
-                sSql.Append(" NOT NULL");
+                sqlScript.Append(" NOT NULL");
 
             if (f.IsPk)
             {
@@ -79,73 +79,73 @@ public class OracleProvider : BaseProvider
 
         if (sKeys.Length > 0)
         {
-            sSql.AppendLine(", ");
-            sSql.Append(TAB);
-            sSql.Append("CONSTRAINT PK_");
-            sSql.Append(element.TableName);
-            sSql.Append(" PRIMARY KEY (");
-            sSql.Append(sKeys);
-            sSql.Append(")");
+            sqlScript.AppendLine(", ");
+            sqlScript.Append(TAB);
+            sqlScript.Append("CONSTRAINT PK_");
+            sqlScript.Append(element.TableName);
+            sqlScript.Append(" PRIMARY KEY (");
+            sqlScript.Append(sKeys);
+            sqlScript.Append(")");
         }
 
 
-        sSql.AppendLine("");
-        sSql.AppendLine(")");
-        sSql.AppendLine("/");
-        sSql.AppendLine("");
-        sSql.AppendLine(GetRelationshipsScript(element));
-        sSql.AppendLine("");
+        sqlScript.AppendLine("");
+        sqlScript.AppendLine(")");
+        sqlScript.AppendLine("/");
+        sqlScript.AppendLine("");
+        sqlScript.AppendLine(GetRelationshipsScript(element));
+        sqlScript.AppendLine("");
 
-        int nIndex = 1;
+        var nIndex = 1;
         if (element.Indexes.Count > 0)
         {
             foreach (var index in element.Indexes)
             {
-                sSql.Append("CREATE");
-                sSql.Append(index.IsUnique ? " UNIQUE" : "");
-                sSql.Append(index.IsClustered ? " CLUSTERED" : "");
-                sSql.Append(" INDEX IX_");
-                sSql.Append(element.TableName);
-                sSql.Append("_");
-                sSql.Append(nIndex);
-                sSql.Append(" ON ");
-                sSql.AppendLine(element.TableName);
+                sqlScript.Append("CREATE");
+                sqlScript.Append(index.IsUnique ? " UNIQUE" : "");
+                sqlScript.Append(index.IsClustered ? " CLUSTERED" : "");
+                sqlScript.Append(" INDEX IX_");
+                sqlScript.Append(element.TableName);
+                sqlScript.Append("_");
+                sqlScript.Append(nIndex);
+                sqlScript.Append(" ON ");
+                sqlScript.AppendLine(element.TableName);
 
-                sSql.Append(TAB);
-                sSql.AppendLine("(");
-                for (int i = 0; i < index.Columns.Count; i++)
+                sqlScript.Append(TAB);
+                sqlScript.AppendLine("(");
+                for (var i = 0; i < index.Columns.Count; i++)
                 {
                     if (i > 0)
-                        sSql.AppendLine(", ");
+                        sqlScript.AppendLine(", ");
 
-                    sSql.Append(TAB);
-                    sSql.Append(index.Columns[i]);
+                    sqlScript.Append(TAB);
+                    sqlScript.Append(index.Columns[i]);
                 }
-                sSql.AppendLine("");
-                sSql.Append(TAB);
-                sSql.AppendLine(")");
-                sSql.AppendLine("/");
+                sqlScript.AppendLine("");
+                sqlScript.Append(TAB);
+                sqlScript.AppendLine(")");
+                sqlScript.AppendLine("/");
                 nIndex++;
             }
         }
-        sSql.AppendLine("");
+        sqlScript.AppendLine("");
 
         //Criando sequencias (IDENTITY)
         var listSeq = element.Fields.ToList().FindAll(x => x.AutoNum);
-        for (int i = 0; i < listSeq.Count; i++)
+        for (var i = 0; i < listSeq.Count; i++)
         {
-            sSql.Append("CREATE SEQUENCE ");
-            sSql.Append(element.TableName);
-            sSql.Append("_seq");
+            sqlScript.Append("CREATE SEQUENCE ");
+            sqlScript.Append(element.TableName);
+            sqlScript.Append("_seq");
             if (i > 0)
-                sSql.Append(i.ToString());
+                sqlScript.Append(i.ToString());
 
-            sSql.AppendLine(" START WITH 1 INCREMENT BY 1;");
-            sSql.AppendLine("/");
+            sqlScript.AppendLine(" START WITH 1 INCREMENT BY 1;");
+            sqlScript.AppendLine("/");
         }
-        sSql.AppendLine("");
+        sqlScript.AppendLine("");
 
-        return sSql.ToString();
+        return sqlScript.ToString();
     }
 
     private string GetRelationshipsScript(Element element)
@@ -158,7 +158,7 @@ public class OracleProvider : BaseProvider
             var listContraint = new List<string>();
             foreach (var r in element.Relationships)
             {
-                string contraintName = string.Format("FK_{0}_{1}", r.ChildElement, element.TableName);
+                var contraintName = $"FK_{r.ChildElement}_{element.TableName}";
 
                 //Tratamento para nome repedido de contraint
                 if (!listContraint.Contains(contraintName))
@@ -167,8 +167,8 @@ public class OracleProvider : BaseProvider
                 }
                 else
                 {
-                    bool hasContraint = true;
-                    int nCount = 1;
+                    var hasContraint = true;
+                    var nCount = 1;
                     while (hasContraint)
                     {
                         if (!listContraint.Contains(contraintName + nCount))
@@ -189,7 +189,7 @@ public class OracleProvider : BaseProvider
                 sql.Append(TAB);
                 sql.Append("FOREIGN KEY (");
 
-                for (int rc = 0; rc < r.Columns.Count; rc++)
+                for (var rc = 0; rc < r.Columns.Count; rc++)
                 {
                     if (rc > 0)
                         sql.Append(", ");
@@ -203,7 +203,7 @@ public class OracleProvider : BaseProvider
                 sql.Append("REFERENCES ");
                 sql.Append(element.TableName);
                 sql.Append(" (");
-                for (int rc = 0; rc < r.Columns.Count; rc++)
+                for (var rc = 0; rc < r.Columns.Count; rc++)
                 {
                     if (rc > 0)
                         sql.Append(", ");
@@ -237,16 +237,16 @@ public class OracleProvider : BaseProvider
     public override string GetWriteProcedureScript(Element element)
     {
         if (element == null)
-            throw new ArgumentNullException(nameof(Element));
+            throw new ArgumentNullException(nameof(element));
 
         if (element.Fields == null || element.Fields.Count == 0)
             throw new ArgumentNullException(nameof(Element.Fields));
 
         var sql = new StringBuilder();
-        bool isFirst = true;
-        bool hasPk = HasPK(element);
-        bool hasUpd = HasUpdateFields(element);
-        string procedureFinalName = Options.GetWriteProcedureName(element);
+        var isFirst = true;
+        var hasPk = HasPK(element);
+        var hasUpd = HasUpdateFields(element);
+        var procedureFinalName = Options.GetWriteProcedureName(element);
 
         sql.AppendLine("-- PROC SET");
 
@@ -488,20 +488,20 @@ public class OracleProvider : BaseProvider
     public override string GetReadProcedureScript(Element element)
     {
         if (element == null)
-            throw new ArgumentNullException(nameof(Element));
+            throw new ArgumentNullException(nameof(element));
 
         if (element.Fields == null || element.Fields.Count == 0)
             throw new ArgumentNullException(nameof(Element.Fields));
 
         //Verificamos se existe chave primaria
-        bool unused = HasPK(element);
+        var unused = HasPK(element);
 
         var fields = element.Fields
             .ToList()
             .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
 
-        StringBuilder sql = new StringBuilder();
-        string procedureFinalName = Options.GetReadProcedureName(element);
+        var sql = new StringBuilder();
+        var procedureFinalName = Options.GetReadProcedureName(element);
 
         sql.AppendLine("-- PROC GET");
 
@@ -565,7 +565,7 @@ public class OracleProvider : BaseProvider
         sql.AppendLine("--COLUMNS");
         sql.Append(TAB);
         sql.AppendLine("v_sqlcolumn := '';");
-        int nAux = 1;
+        var nAux = 1;
         foreach (var f in fields)
         {
             sql.Append(TAB);
@@ -795,22 +795,22 @@ public class OracleProvider : BaseProvider
     }
 
 
-    public override DataAccessCommand GetInsertCommand(Element element, IDictionary values)
+    public override DataAccessCommand GetInsertCommand(Element element, IDictionary<string,object?> values)
     {
         return GetCommandWrite(INSERT, element, values);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary values)
+    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary<string,object?> values)
     {
         return GetCommandWrite(UPDATE, element, values);
     }
 
-    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary filters)
+    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> filters)
     {
-        return GetCommandWrite(DELETE, element, filters);
+        return GetCommandWrite(DELETE, element, filters!);
     }
 
-    public override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values)
+    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values)
     {
         return GetCommandWrite(string.Empty, element, values);
     }
@@ -820,9 +820,9 @@ public class OracleProvider : BaseProvider
         return "Not implemented";
     }
 
-    private DataAccessCommand GetCommandWrite(string action, Element element, IDictionary values)
+    private DataAccessCommand GetCommandWrite(string action, Element element, IDictionary<string,object?> values)
     {
-        DataAccessCommand cmd = new DataAccessCommand();
+        var cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.StoredProcedure;
         cmd.Sql = Options.GetWriteProcedureName(element);
         cmd.Parameters = new List<DataAccessParameter>();
@@ -838,7 +838,7 @@ public class OracleProvider : BaseProvider
             {
                 Name = $"{VariablePrefix}{f.Name}",
                 Size = f.Size,
-                Value = values.Contains(f.Name) ? values[f.Name] : DBNull.Value,
+                Value = values.TryGetValue(f.Name, out var value) ? value : DBNull.Value,
                 Type = GetDbType(f.DataType)
             };
             cmd.Parameters.Add(param);
@@ -855,15 +855,18 @@ public class OracleProvider : BaseProvider
         return cmd;
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, DataAccessParameter pTot)
+    public override DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters, DataAccessParameter totalOfRecordsParameter)
     {
+        
+        var (filters, orderBy, currentPage, recordsPerPage) = entityParameters;
+        
         var cmd = new DataAccessCommand
         {
             CmdType = CommandType.StoredProcedure,
             Sql = Options.GetReadProcedureName(element),
             Parameters = new List<DataAccessParameter>
             {
-                new(VariablePrefix + "orderby", orderBy),
+                new(VariablePrefix + "orderby", orderBy.ToQueryParameter()),
                 new(VariablePrefix + "regporpag", recordsPerPage),
                 new(VariablePrefix + "pag", currentPage)
             }
@@ -875,7 +878,7 @@ public class OracleProvider : BaseProvider
             {
                 object valueFrom = DBNull.Value;
                 if (filters != null &&
-                    filters.Contains(field.Name + "_from") &&
+                    filters.ContainsKey(field.Name + "_from") &&
                     filters[field.Name + "_from"] != null)
                 {
                     valueFrom = filters[field.Name + "_from"];
@@ -892,7 +895,7 @@ public class OracleProvider : BaseProvider
 
                 object valueTo = DBNull.Value;
                 if (filters != null &&
-                    filters.Contains(field.Name + "_to") &&
+                    filters.ContainsKey(field.Name + "_to") &&
                     filters[field.Name + "_to"] != null)
                 {
                     valueTo = filters[field.Name + "_to"];
@@ -911,23 +914,25 @@ public class OracleProvider : BaseProvider
             {
                 object value = DBNull.Value;
                 if (filters != null &&
-                    filters.Contains(field.Name) &&
+                    filters.ContainsKey(field.Name) &&
                     filters[field.Name] != null)
                 {
                     value = filters[field.Name];
                 }
 
-                var p = new DataAccessParameter();
-                p.Direction = ParameterDirection.Input;
-                p.Type = GetDbType(field.DataType);
-                p.Size = field.Size;
-                p.Name = VariablePrefix + field.Name;
-                p.Value = value;
-                cmd.Parameters.Add(p);
+                var parameter = new DataAccessParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    Type = GetDbType(field.DataType),
+                    Size = field.Size,
+                    Name = VariablePrefix + field.Name,
+                    Value = value
+                };
+                cmd.Parameters.Add(parameter);
             }
         }
 
-        cmd.Parameters.Add(pTot);
+        cmd.Parameters.Add(totalOfRecordsParameter);
 
         var pCur = new DataAccessParameter
         {
@@ -944,7 +949,7 @@ public class OracleProvider : BaseProvider
     
     private string GetStrType(FieldType dataType)
     {
-        string sType = dataType.ToString();
+        var sType = dataType.ToString();
         switch (dataType)
         {
             case FieldType.Int:
@@ -971,7 +976,7 @@ public class OracleProvider : BaseProvider
 
     private DbType GetDbType(FieldType dataType)
     {
-        DbType t = DbType.String;
+        var t = DbType.String;
         switch (dataType)
         {
             case FieldType.Date:
@@ -992,7 +997,7 @@ public class OracleProvider : BaseProvider
 
     private bool HasPK(Element element)
     {
-        bool ret = false;
+        var ret = false;
         foreach (var f in element.Fields)
         {
             if (f.IsPk)
@@ -1006,7 +1011,7 @@ public class OracleProvider : BaseProvider
 
     private bool HasUpdateFields(Element element)
     {
-        bool ret = false;
+        var ret = false;
         foreach (var f in element.Fields)
         {
             if (!f.IsPk && f.DataBehavior == FieldBehavior.Real)

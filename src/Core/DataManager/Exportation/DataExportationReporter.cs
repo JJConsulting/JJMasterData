@@ -16,13 +16,13 @@ public class DataExportationReporter : ProgressReporter
         }
     }
 
-    private int _totalRecords;
-    public int TotalRecords
+    private int _totalOfRecords;
+    public int TotalOfRecords
     {
-        get => _totalRecords;
+        get => _totalOfRecords;
         set
         {
-            _totalRecords = value;
+            _totalOfRecords = value;
             UpdatePercentage();
         }
     }
@@ -31,7 +31,7 @@ public class DataExportationReporter : ProgressReporter
 
     private void UpdatePercentage()
     {
-        if (TotalRecords > 0 && TotalProcessed > 0)
-            Percentage = (int)Math.Round((TotalProcessed / (double)TotalRecords) * 100);
+        if (TotalOfRecords > 0 && TotalProcessed > 0)
+            Percentage = (int)Math.Round((TotalProcessed / (double)TotalOfRecords) * 100);
     }
 }

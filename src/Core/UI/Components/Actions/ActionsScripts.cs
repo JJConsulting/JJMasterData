@@ -41,7 +41,7 @@ internal class ActionsScripts
     }
 
 
-    public async Task<string> GetInternalUrlScriptAsync(InternalAction action, IDictionary<string, dynamic> formValues)
+    public async Task<string> GetInternalUrlScriptAsync(InternalAction action, IDictionary<string, object> formValues)
     {
         var elementRedirect = action.ElementRedirect;
         var formElement = await DataDictionaryRepository.GetMetadataAsync(action.ElementRedirect.ElementNameRedirect);

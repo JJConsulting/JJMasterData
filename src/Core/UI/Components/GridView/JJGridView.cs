@@ -20,13 +20,16 @@ using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.UI.Components;
@@ -73,17 +76,17 @@ public class JJGridView : AsyncComponent
 
     #region "Properties"
 
-    private string? _currentOrder;
+    private OrderByData? _currentOrder;
     private string? _selectedRowsId;
     private int _currentPage;
     private GridSettings? _currentSettings;
     private ExportOptions? _currentExportConfig;
     private GridFilter? _filter;
     private GridTable? _table;
-    private DataTable? _dataSource;
+    private IList<Dictionary<string,object?>>? _dataSource;
     private ActionsScripts? _actionsScripts;
     private List<FormElementField>? _pkFields;
-    private IDictionary<string, dynamic>? _defaultValues;
+    private IDictionary<string, object>? _defaultValues;
     private FormStateData? _formData;
     private ActionMap? _currentActionMap;
     private JJDataImportation? _dataImportation;
@@ -173,7 +176,7 @@ public class JJGridView : AsyncComponent
     /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// Using the stored procedure informed in the FormElement;
-    public DataTable? DataSource
+    public IList<Dictionary<string,object?>>? DataSource
     {
         get => _dataSource;
         set
@@ -182,14 +185,10 @@ public class JJGridView : AsyncComponent
             if (value == null)
                 return;
             IsUserSetDataSource = true;
-            TotalRecords = value.Rows.Count;
         }
     }
 
     private bool IsUserSetDataSource { get; set; }
-
-    public int TotalRecords { get; set; }
-
     public bool ShowTitle { get; set; }
 
     public bool EnableFilter { get; set; }
@@ -205,42 +204,47 @@ public class JJGridView : AsyncComponent
     /// For more than one field use comma ex:
     /// "Field1 ASC, Field2 DESC, Field3 ASC"
     /// </remarks>
-    public string? CurrentOrder
+    public OrderByData CurrentOrder
     {
         get
         {
             if (_currentOrder != null)
                 return _currentOrder;
+            
             if (!CurrentContext.IsPost)
             {
                 if (MaintainValuesOnLoad)
                 {
-                    object tableOrder = CurrentContext.Session[$"jjcurrentorder_{Name}"];
+                    var tableOrder = CurrentContext.Session[$"jj-current-table-order-{Name}"];
                     if (tableOrder != null)
                     {
-                        _currentOrder = tableOrder.ToString();
+                        _currentOrder = OrderByData.FromString(tableOrder);
                     }
                 }
             }
             else
             {
-                _currentOrder = CurrentContext.Request["current-table-order-" + Name];
+                _currentOrder = OrderByData.FromString(CurrentContext.Request["current-table-order-" + Name]);
                 if (_currentOrder == null)
                 {
-                    object tableOrder = CurrentContext.Session[$"jjcurrentorder_{Name}"];
+                    var tableOrder = CurrentContext.Session[$"jj-current-table-order-{Name}"];
                     if (tableOrder != null)
                     {
-                        _currentOrder = tableOrder.ToString();
+                        _currentOrder = OrderByData.FromString(tableOrder);
                     }
+                }
+                else
+                {
+                    _currentOrder = new OrderByData();
                 }
             }
 
-            CurrentOrder = _currentOrder;
-            return _currentOrder;
+            CurrentOrder = _currentOrder ?? new OrderByData();
+            return _currentOrder!;
         }
         set
         {
-            CurrentContext.Session[$"jjcurrentorder_{Name}"] = value;
+            CurrentContext.Session[$"jj-current-table-order-{Name}"] = value?.ToQueryParameter();
             _currentOrder = value;
         }
     }
@@ -378,7 +382,7 @@ public class JJGridView : AsyncComponent
         set => _currentExportConfig = value;
     }
 
-    public bool EnableAjax => true;
+    public static bool EnableAjax => true;
 
     public bool EnableEditMode { get; set; }
 
@@ -435,7 +439,7 @@ public class JJGridView : AsyncComponent
     /// <summary>
     /// Key-Value pairs with the errors.
     /// </summary>
-    public IDictionary<string, dynamic> Errors { get; } = new Dictionary<string, dynamic>();
+    public IDictionary<string, object> Errors { get; } = new Dictionary<string, object>();
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form.
@@ -451,28 +455,11 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Key = Field name, Value=Field value
     /// </remarks>
-    public IDictionary<string, dynamic> RelationValues { get; set; }
+    public IDictionary<string, object> RelationValues { get; set; }
 
     public HeadingSize TitleSize { get; set; }
 
-    internal async Task<IDictionary<string, dynamic>> GetDefaultValuesAsync() => _defaultValues ??=
-        await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
-
-    internal async Task<FormStateData> GetFormDataAsync()
-    {
-        if (_formData == null)
-        {
-            var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
-            var userValues = new Dictionary<string, dynamic>(StringComparer.OrdinalIgnoreCase);
-
-            DataHelper.CopyIntoDictionary(userValues, UserValues, false);
-            DataHelper.CopyIntoDictionary(userValues, defaultValues, true);
-
-            _formData = new FormStateData(defaultValues, userValues, PageState.List);
-        }
-
-        return _formData;
-    }
+    public int TotalOfRecords { get; set; }
 
     public LegendAction LegendAction => ToolBarActions.LegendAction;
     public RefreshAction RefreshAction => ToolBarActions.RefreshAction;
@@ -547,7 +534,7 @@ public class JJGridView : AsyncComponent
         ShowToolbar = true;
         EmptyDataText = "No records found";
         AutoReloadFormFields = true;
-        RelationValues = new Dictionary<string, dynamic>();
+        RelationValues = new Dictionary<string, object>();
         TitleSize = HeadingSize.H1;
         FormElement = formElement;
         FieldsService = fieldsService;
@@ -651,7 +638,7 @@ public class JJGridView : AsyncComponent
         return html;
     }
 
-    public async Task<IDictionary<string, dynamic>> GetCurrentFilterAsync() => await Filter.GetCurrentFilter();
+    public async Task<IDictionary<string, object?>> GetCurrentFilterAsync() => await Filter.GetCurrentFilter();
 
 
     public void SetCurrentFilter(string key, object value)
@@ -688,7 +675,7 @@ public class JJGridView : AsyncComponent
 
         html.Append(await Table.GetHtmlBuilder());
 
-        if (DataSource?.Rows.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
+        if (DataSource?.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
         {
             html.Append(await GetNoRecordsAlert());
         }
@@ -713,20 +700,20 @@ public class JJGridView : AsyncComponent
     
     private IEnumerable<HtmlBuilder> GetHiddenInputs(string? currentAction)
     {
-        yield return new HtmlBuilder().AppendHiddenInput($"current-table-order-{Name}", CurrentOrder);
+        yield return new HtmlBuilder().AppendHiddenInput($"current-table-order-{Name}", CurrentOrder?.ToQueryParameter() ?? string.Empty);
         yield return new HtmlBuilder().AppendHiddenInput($"current-table-page-{Name}", CurrentPage.ToString());
-        yield return new HtmlBuilder().AppendHiddenInput($"current-table-action-{Name}", currentAction);
+        yield return new HtmlBuilder().AppendHiddenInput($"current-table-action-{Name}", currentAction ?? string.Empty);
         yield return new HtmlBuilder().AppendHiddenInput($"current-table-row-{Name}", string.Empty);
 
         if (EnableMultiSelect)
         {
-            yield return new HtmlBuilder().AppendHiddenInput($"selected-rows{Name}", SelectedRowsId);
+            yield return new HtmlBuilder().AppendHiddenInput($"selected-rows{Name}", SelectedRowsId ?? string.Empty);
         }
     }
     
     public async Task<string> GetTableRowHtmlAsync(int rowIndex)
     {
-        var row = DataSource?.Rows[rowIndex];
+        var row = DataSource?[rowIndex];
 
         return await Table.Body
             .GetTdHtmlList(row, rowIndex)
@@ -741,13 +728,13 @@ public class JJGridView : AsyncComponent
         if (field == null) 
             return new EmptyComponentResult();
 
-        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, dynamic>(), null, PageState.Filter), null, Name));
+        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, object>(), null, PageState.Filter), null, Name));
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return await lookup.GetResultAsync();
     }
 
-    internal JJTitle GetTitle(IDictionary<string, dynamic>? values = null)
+    internal JJTitle GetTitle(IDictionary<string, object>? values = null)
     {
         var title = FormElement.Title;
         var subTitle = FormElement.SubTitle;
@@ -942,6 +929,25 @@ public class JJGridView : AsyncComponent
         return script.ToString();
     }
 
+    internal async Task<IDictionary<string, object>> GetDefaultValuesAsync() => _defaultValues ??=
+        await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
+
+    internal async Task<FormStateData> GetFormDataAsync()
+    {
+        if (_formData == null)
+        {
+            var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
+            var userValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+            DataHelper.CopyIntoDictionary(userValues, UserValues, false);
+            DataHelper.CopyIntoDictionary(userValues, defaultValues, true);
+
+            _formData = new FormStateData(defaultValues, userValues, PageState.List);
+        }
+
+        return _formData;
+    }
+    
     private async Task<HtmlBuilder> GetSettingsHtml()
     {
         var action = ConfigAction;
@@ -1014,16 +1020,16 @@ public class JJGridView : AsyncComponent
         return legend.GetHtmlBuilder();
     }
 
-    internal string GetFieldName(string fieldName, IDictionary<string, dynamic> row)
+    internal string GetFieldName(string fieldName, IDictionary<string, object?> row)
     {
-        string? name = "";
+        string name = "";
         foreach (var fpk in PrimaryKeyFields)
         {
             if (name.Length > 0)
                 name += "_";
 
-            name += row[fpk.Name].ToString()
-                ?.Replace(" ", "_")
+            name += row[fpk.Name]?.ToString()
+                .Replace(" ", "_")
                 .Replace("'", "")
                 .Replace("\"", "");
         }
@@ -1034,9 +1040,9 @@ public class JJGridView : AsyncComponent
     }
 
 
-    public IDictionary<string, dynamic> GetSelectedRowId()
+    public IDictionary<string, object> GetSelectedRowId()
     {
-        var values = new Dictionary<string, dynamic>();
+        var values = new Dictionary<string, object>();
         string currentRow = CurrentContext.Request["current-table-row-" + Name];
 
         if (string.IsNullOrEmpty(currentRow))
@@ -1064,8 +1070,14 @@ public class JJGridView : AsyncComponent
                 {
                     if (IsUserSetDataSource || OnDataLoad != null || OnDataLoadAsync != null)
                     {
-                        var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, int.MaxValue, 1);
-                        DataExportation.StartExportation(result.ToDataTable());
+                        var result = await GetDataSourceAsync(new EntityParameters()
+                        {
+                            Parameters = await GetCurrentFilterAsync(),
+                            OrderBy = CurrentOrder,
+                            RecordsPerPage = int.MaxValue,
+                            CurrentPage = 1
+                        });
+                        DataExportation.StartExportation(result);
                     }
                     else
                     {
@@ -1102,80 +1114,68 @@ public class JJGridView : AsyncComponent
         return new EmptyComponentResult();
     }
 
-    internal async Task ExportFileInBackground()
+    public async Task ExportFileInBackground()
     {
         DataExportation.ExportFileInBackground(await GetCurrentFilterAsync(), CurrentOrder);
     }
-
-    /// <summary>
-    /// Retrieves database records.
-    /// </summary>
-    /// <returns>
-    /// Returns a DataTable with the found records.
-    /// If no record is found, returns null.
-    /// The component uses the following rule to retrieve grid data:
-    /// <para/>1) Use the DataSource property;
-    /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
-    /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
-    /// Using the stored procedure informed in the <see cref="FormElement"/>;
-    /// </returns>
-    public async Task<DataTable?> GetDataTableAsync()
+    
+    public async Task<IList<Dictionary<string,object?>>?> GetDictionaryListAsync()
     {
         await SetDataSource();
 
         return DataSource;
     }
-
+    
     private async Task SetDataSource()
     {
         if (_dataSource == null || IsUserSetDataSource)
         {
-            var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder,
-                CurrentSettings.TotalPerPage, CurrentPage);
-            _dataSource = result.ToDataTable();
-            TotalRecords = result.TotalOfRecords;
-
+            var result = await GetDataSourceAsync(new EntityParameters
+            {
+                Parameters = await GetCurrentFilterAsync(),
+                OrderBy = CurrentOrder,
+                RecordsPerPage = CurrentSettings.RecordsPerPage,
+                CurrentPage = CurrentPage
+            });
+            _dataSource = result.Data;
+            TotalOfRecords = result.TotalOfRecords;
             //Se estiver paginando e não retornar registros volta para pagina inicial
-            if (CurrentPage > 1 && _dataSource.Rows.Count == 0)
+            if (CurrentPage > 1 && TotalOfRecords == 0)
             {
                 CurrentPage = 1;
-                result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder,
-                    CurrentSettings.TotalPerPage, CurrentPage);
-                _dataSource = result.ToDataTable();
-                TotalRecords = result.TotalOfRecords;
+                result = await GetDataSourceAsync(new EntityParameters
+                {
+                    Parameters = await GetCurrentFilterAsync(),
+                    OrderBy = CurrentOrder,
+                    RecordsPerPage = CurrentSettings.RecordsPerPage,
+                    CurrentPage = CurrentPage
+                });
+                _dataSource = result.Data;
+                TotalOfRecords = result.TotalOfRecords;
             }
         }
     }
 
-    private async Task<EntityResult> GetEntityResultAsync(
-        IDictionary<string, dynamic> filters,
-        string? orderBy,
-        int recordsPerPage,
-        int currentPage)
+    private async Task<DictionaryListResult> GetDataSourceAsync(EntityParameters parameters)
     {
-        DataTable dt;
-        int total = 0;
+        DataTable dataTable;
         if (IsUserSetDataSource)
         {
-            var tempdt = DataSource;
-            if (tempdt != null)
-                total = tempdt.Rows.Count;
 
-            var dv = new DataView(tempdt);
-            dv.Sort = orderBy;
+            var dataView = new DataView(EnumerableHelper.ConvertToDataTable(_dataSource));
+            dataView.Sort = parameters.OrderBy.ToQueryParameter();
 
-            dt = dv.ToTable();
-            dv.Dispose();
+            dataTable = dataView.ToTable();
+            dataView.Dispose();
         }
         else if (OnDataLoad != null || OnDataLoadAsync != null)
         {
             var args = new GridDataLoadEventArgs
             {
-                Filters = filters,
-                OrderBy = orderBy,
-                RecordsPerPage = recordsPerPage,
-                CurrentPage = currentPage,
-                TotalOfRecords = total
+                Filters = parameters.Parameters,
+                OrderBy = parameters.OrderBy,
+                RecordsPerPage = parameters.RecordsPerPage,
+                CurrentPage = parameters.CurrentPage,
             };
 
             OnDataLoad?.Invoke(this, args);
@@ -1185,64 +1185,65 @@ public class JJGridView : AsyncComponent
                 await OnDataLoadAsync.Invoke(this, args);
             }
 
-            total = args.TotalOfRecords;
-            dt = args.DataSource;
+
+            TotalOfRecords = args.TotalOfRecords;
+            
+            return new DictionaryListResult(args.DataSource, args.TotalOfRecords);
         }
         else
         {
-            var parameters = new EntityParameters(filters, OrderByData.FromString(orderBy), new PaginationData(currentPage, recordsPerPage));
-            return await EntityRepository.GetEntityResultAsync(FormElement, parameters);
+            return await EntityRepository.GetDictionaryListAsync(FormElement, parameters);
         }
 
-        return new EntityResult(dt, total);
+        return DictionaryListResult.FromDataTable(dataTable);
     }
 
     /// <remarks>
     /// Used with the <see cref="EnableEditMode"/> property
     /// </remarks>
-    public async Task<List<IDictionary<string, dynamic>>?> GetGridValues(int recordPerPage, int currentPage)
+    public async Task<List<IDictionary<string, object>>?> GetGridValuesAsync(int recordsPerPage, int currentPage)
     {
-        var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, recordPerPage, currentPage);
+        var result = await GetDataSourceAsync(new EntityParameters
+        {
+            Parameters = await GetCurrentFilterAsync(),
+            OrderBy = CurrentOrder,
+            RecordsPerPage = recordsPerPage,
+            CurrentPage = currentPage
+        });
 
-        return await GetGridValues(result.ToDataTable());
+        return await GetGridValuesAsync(result.Data);
     }
 
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    public async Task<List<IDictionary<string, dynamic>>?> GetGridValues(DataTable? dataTable = null)
+    public async Task<List<IDictionary<string, object?>>?> GetGridValuesAsync(IList<Dictionary<string,object?>>? loadedData = null)
     {
-        if (dataTable == null)
+        if (loadedData == null)
         {
-            dataTable = await GetDataTableAsync();
-            if (dataTable == null)
+            loadedData = await GetDictionaryListAsync();
+            if (loadedData == null)
                 return null;
         }
 
-        var listValues = new List<IDictionary<string, dynamic>>();
-        foreach (DataRow row in dataTable.Rows)
+        var gridValues = new List<IDictionary<string, object?>>();
+        foreach (var row in loadedData)
         {
-            var values = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
-            for (int i = 0; i < row.Table.Columns.Count; i++)
-            {
-                values.Add(row.Table.Columns[i].ColumnName, row[i]);
-            }
-
-            string prefixValue = GetFieldName("", values);
-            var newValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState.List, values,
-                AutoReloadFormFields, prefixValue);
-            listValues.Add(newValues);
+            string fieldName = GetFieldName("", row);
+            var newValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState.List, row,
+                AutoReloadFormFields, fieldName);
+            gridValues.Add(newValues);
         }
 
-        return listValues;
+        return gridValues;
     }
 
     /// <remarks>
     /// Used with the EnableMultSelect property
     /// </remarks>
-    public List<IDictionary<string, dynamic>> GetSelectedGridValues()
+    public List<IDictionary<string, object>> GetSelectedGridValues()
     {
-        var listValues = new List<IDictionary<string, dynamic>>();
+        var listValues = new List<IDictionary<string, object>>();
 
         if (!EnableMultiSelect)
             return listValues;
@@ -1257,7 +1258,7 @@ public class JJGridView : AsyncComponent
         if (pkList != null)
             foreach (string pk in pkList)
             {
-                var values = new Dictionary<string, dynamic>();
+                var values = new Dictionary<string, object>();
                 string descriptval = EncryptionService.DecryptStringWithUrlUnescape(pk);
                 string[] ids = descriptval.Split(';');
                 for (int i = 0; i < pkFields.Count; i++)
@@ -1277,12 +1278,18 @@ public class JJGridView : AsyncComponent
         SelectedRowsId = string.Empty;
     }
 
-    public async Task<string> GetEncryptedSelectedRowsAsync()
+    internal async Task<string> GetEncryptedSelectedRowsAsync()
     {
-        var result = await GetEntityResultAsync(await GetCurrentFilterAsync(), CurrentOrder, int.MaxValue, 1);
+        var result = await GetDataSourceAsync(new EntityParameters()
+        {
+            RecordsPerPage = int.MaxValue,
+            CurrentPage = 1,
+            OrderBy = CurrentOrder,
+            Parameters = await GetCurrentFilterAsync()
+        });
         var selectedKeys = new StringBuilder();
         var hasVal = false;
-        foreach (DataRow row in result.ToDataTable().Rows)
+        foreach (var row in result.Data)
         {
             if (!hasVal)
                 hasVal = true;
@@ -1303,12 +1310,12 @@ public class JJGridView : AsyncComponent
     /// Key = Field name
     /// Value = Message
     /// </returns>
-    public async Task<IDictionary<string, dynamic>> ValidateGridFieldsAsync(List<IDictionary<string, dynamic>> values)
+    public async Task<IDictionary<string, object>> ValidateGridFieldsAsync(List<IDictionary<string, object>> values)
     {
         if (values == null)
             throw new ArgumentNullException(nameof(values));
 
-        var errors = new Dictionary<string, dynamic>();
+        var errors = new Dictionary<string, object>();
         int line = 0;
         foreach (var row in values)
         {
@@ -1340,7 +1347,7 @@ public class JJGridView : AsyncComponent
 
     internal bool IsPaggingEnabled()
     {
-        return !(!ShowPagging || CurrentPage == 0 || CurrentSettings.TotalPerPage == 0 || TotalRecords == 0);
+        return !(!ShowPagging || CurrentPage == 0 || CurrentSettings.RecordsPerPage == 0 || TotalOfRecords == 0);
     }
 
     public void AddToolBarAction(SqlCommandAction action)

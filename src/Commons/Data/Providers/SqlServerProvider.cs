@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using Microsoft.Extensions.Logging;
 
@@ -911,24 +910,24 @@ public class SqlServerProvider : BaseProvider
         return sql.ToString();
     }
 
-    public override DataAccessCommand GetInsertCommand(Element element, IDictionary values)
+    public override DataAccessCommand GetInsertCommand(Element element, IDictionary<string,object?> values)
     {
-        return GetCommandWrite(InsertInitial, element, values);
+        return GetWriteCommand(InsertInitial, element, values);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary values)
+    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary<string,object?> values)
     {
-        return GetCommandWrite(UpdateInitial, element, values);
+        return GetWriteCommand(UpdateInitial, element, values);
     }
 
-    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary filters)
+    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> filters)
     {
-        return GetCommandWrite(DeleteInitial, element, filters);
+        return GetWriteCommand(DeleteInitial, element, filters);
     }
 
-    public override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values)
+    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values)
     {
-        return GetCommandWrite(string.Empty, element, values);
+        return GetWriteCommand(string.Empty, element, values);
     }
 
     public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
@@ -954,15 +953,18 @@ public class SqlServerProvider : BaseProvider
         return alterTableScript;
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, DataAccessParameter pTot)
+    public override DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters, DataAccessParameter? totalOfRecordsParameter)
     {
+        
+        var (filters, orderBy, currentPage, recordsPerPage) = entityParameters;
+        
         var command = new DataAccessCommand
         {
             CmdType = CommandType.StoredProcedure,
             Sql = Options.GetReadProcedureName(element),
             Parameters = new List<DataAccessParameter>
             {
-                new("@orderby", orderBy),
+                new("@orderby", orderBy.ToQueryParameter()),
                 new("@regporpag", recordsPerPage),
                 new("@pag", currentPage)
             }
@@ -972,26 +974,28 @@ public class SqlServerProvider : BaseProvider
         {
             if (field.Filter.Type == FilterMode.Range)
             {
-                object valueFrom = DBNull.Value;
+                object? valueFrom = DBNull.Value;
                 if (filters != null &&
-                    filters.Contains(field.Name + "_from") &&
+                    filters.ContainsKey(field.Name + "_from") &&
                     filters[field.Name + "_from"] != null)
                 {
                     valueFrom = filters[field.Name + "_from"];
                     if (valueFrom != null)
                         valueFrom = StringManager.ClearText(valueFrom.ToString());
                 }
-                var pFrom = new DataAccessParameter();
-                pFrom.Direction = ParameterDirection.Input;
-                pFrom.Type = GetDbType(field.DataType);
-                pFrom.Size = field.Size;
-                pFrom.Name = field.Name + "_from";
-                pFrom.Value = valueFrom;
-                command.Parameters.Add(pFrom);
+                var fromParameter = new DataAccessParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    Type = GetDbType(field.DataType),
+                    Size = field.Size,
+                    Name = field.Name + "_from",
+                    Value = valueFrom
+                };
+                command.Parameters.Add(fromParameter);
 
-                object valueTo = DBNull.Value;
+                object? valueTo = DBNull.Value;
                 if (filters != null &&
-                    filters.Contains(field.Name + "_to") &&
+                    filters.ContainsKey(field.Name + "_to") &&
                     filters[field.Name + "_to"] != null)
                 {
                     valueTo = filters[field.Name + "_to"];
@@ -1026,18 +1030,19 @@ public class SqlServerProvider : BaseProvider
             }
         }
 
-        command.Parameters.Add(pTot);
+        command.Parameters.Add(totalOfRecordsParameter);
 
         return command;
     }
 
 
-    private DataAccessCommand GetCommandWrite(string action, Element element, IDictionary values)
+    private DataAccessCommand GetWriteCommand(string action, Element element, IDictionary<string,object?> values)
     {
-        DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = CommandType.StoredProcedure;
-        cmd.Sql = Options.GetWriteProcedureName(element);
-        cmd.Parameters = new List<DataAccessParameter>();
+        DataAccessCommand cmd = new DataAccessCommand
+        {
+            CmdType = CommandType.StoredProcedure,
+            Sql = Options.GetWriteProcedureName(element)
+        };
         cmd.Parameters.Add(new DataAccessParameter("@action", action, DbType.String, 1));
 
         var fields = element.Fields
@@ -1067,11 +1072,11 @@ public class SqlServerProvider : BaseProvider
     }
 
 
-    private object GetElementValue(ElementField f, IDictionary values)
+    private object GetElementValue(ElementField f, IDictionary<string,object?> values)
     {
         object value = DBNull.Value;
         if (values != null &&
-            values.Contains(f.Name) &&
+            values.ContainsKey(f.Name) &&
             values[f.Name] != null)
         {
             if ((f.DataType == FieldType.Date ||

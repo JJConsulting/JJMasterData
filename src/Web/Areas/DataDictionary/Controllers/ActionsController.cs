@@ -32,9 +32,9 @@ public class ActionsController : DataDictionaryController
         _options = options.Value;
     }
 
-    public ActionResult Index(string dictionaryName)
+    public async Task<ActionResult> Index(string dictionaryName)
     {
-        var formElement = _actionsService.DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = await _actionsService.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var model = new ActionsListViewModel(dictionaryName, "Actions")
         {
             GridTableActions = formElement.Options.GridTableActions.GetAllSorted(),
@@ -114,7 +114,7 @@ public class ActionsController : DataDictionaryController
     [HttpPost]
     public ActionResult Remove(string dictionaryName, string actionName, ActionSource context, string? fieldName)
     {
-        _actionsService.DeleteAction(dictionaryName, actionName, context, fieldName);
+        _actionsService.DeleteActionAsync(dictionaryName, actionName, context, fieldName);
         return Json(new { success = true });
     }
 
@@ -122,7 +122,7 @@ public class ActionsController : DataDictionaryController
     [HttpPost]
     public ActionResult Sort(string dictionaryName, string[] orderFields, ActionSource context, string? fieldName)
     {
-        _actionsService.SortActions(dictionaryName, orderFields, context, fieldName);
+        _actionsService.SortActionsAsync(dictionaryName, orderFields, context, fieldName);
         return Json(new { success = true });
     }
 
@@ -436,7 +436,7 @@ public class ActionsController : DataDictionaryController
             }
             case InternalAction internalAction:
             {
-                ViewBag.ElementNameList = _actionsService.GetElementList();
+                ViewBag.ElementNameList = _actionsService.GetElementListAsync();
                 ViewBag.InternalFieldList = _actionsService.GetFieldList(dictionaryName);
                 string elementNameRedirect = internalAction.ElementRedirect.ElementNameRedirect;
                 ViewBag.RedirectFieldList = _actionsService.GetFieldList(elementNameRedirect);

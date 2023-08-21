@@ -1,12 +1,12 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,9 +20,9 @@ namespace JJMasterData.Commons.Data;
 /// <example>
 /// [!include[Test](../../../doc/JJMasterData.Documentation/articles/usages/dataaccess.md)]
 /// </example>
-public class DataAccess
+public partial class DataAccess
 {
-    private DbProviderFactory _factory;
+    private DbProviderFactory? _factory;
 
     public DbProviderFactory Factory
     {
@@ -121,6 +121,7 @@ public class DataAccess
         }
     }
 #endif
+    
     /// <summary>
     /// Initialize a with a connectionString and a specific providerName.
     /// See also <see cref="DataAccessProvider"/>.
@@ -159,7 +160,6 @@ public class DataAccess
                              DataAccessProvider.SqlServer;
     }
 
-
     public DbConnection GetConnection()
     {
         var connection = Factory.CreateConnection();
@@ -168,23 +168,6 @@ public class DataAccess
         {
             connection!.ConnectionString = ConnectionString;
             connection.Open();
-        }
-        catch (Exception ex)
-        {
-            throw new DataAccessException(ex);
-        }
-
-        return connection;
-    }
-
-    public async Task<DbConnection> GetConnectionAsync(CancellationToken cancellationToken = default)
-    {
-        var connection = Factory.CreateConnection();
-
-        try
-        {
-            connection!.ConnectionString = ConnectionString;
-            await connection.OpenAsync(cancellationToken);
         }
         catch (Exception ex)
         {
@@ -225,14 +208,12 @@ public class DataAccess
                 dataAdapter!.SelectCommand = dbCommand;
                 dataAdapter.Fill(dt);
 
-                if (cmd.Parameters != null)
+                foreach (var parameter in cmd.Parameters)
                 {
-                    foreach (var parameter in cmd.Parameters)
-                    {
-                        if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                            parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                    }
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
                 }
+                
             }
         }
         catch (Exception ex)
@@ -242,55 +223,6 @@ public class DataAccess
 
 
         return dt;
-    }
-
-    ///<inheritdoc cref="GetDataTable(string)"/>
-    public async Task<DataTable> GetDataTableAsync(string sql, CancellationToken cancellationToken = default)
-    {
-        return await GetDataTableAsync(new DataAccessCommand(sql), cancellationToken);
-    }
-
-    ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
-    public async Task<DataTable> GetDataTableAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-#if NET
-            await
-#endif
-            using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
-            {
-#if NET
-                await
-#endif
-                using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
-                {
-                    var dataTable = new DataTable();
-                    dataTable.Load(reader);
-
-                    if (cmd.Parameters != null)
-                    {
-                        foreach (var parameter in cmd.Parameters)
-                        {
-                            if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                                parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                        }
-                    }
-
-                    return dataTable;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            throw GetDataAccessException(ex, cmd);
-        }
     }
 
     /// <summary>
@@ -328,7 +260,7 @@ public class DataAccess
     /// <remarks>
     /// To execute command with parameters and prevent SQL injection, please use the DataAccessCommand overload.
     /// </remarks>
-    public object GetResult(string sql)
+    public object? GetResult(string sql)
     {
         return GetResult(new DataAccessCommand(sql));
     }
@@ -337,9 +269,9 @@ public class DataAccess
     /// ExecuteScalar command and returns the first column of the first row in the result set returned by the query.
     /// All other columns and rows are ignored.
     /// </summary>
-    public object GetResult(DataAccessCommand cmd)
+    public object? GetResult(DataAccessCommand cmd)
     {
-        object scalarResult;
+        object? scalarResult;
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
@@ -364,46 +296,6 @@ public class DataAccess
         return scalarResult;
     }
 
-    /// <inheritdoc cref="GetResult(string)"/>
-    public async Task<object> GetResultAsync(string sql, CancellationToken cancellationToken = default)
-    {
-        return await GetResultAsync(new DataAccessCommand(sql), cancellationToken);
-    }
-
-    /// <inheritdoc cref="GetResult(DataAccessCommand)"/>
-    public async Task<object> GetResultAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
-    {
-        object scalarResult;
-        try
-        {
-#if NET
-            await
-#endif
-            using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
-            {
-                scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken);
-
-                foreach (var parameter in cmd.Parameters)
-                {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            throw GetDataAccessException(ex, cmd);
-        }
-
-        return scalarResult;
-    }
-
     /// <summary>
     /// ExecuteScalar command and returns the first column of the first row in the result set returned by the query.
     /// All other columns and rows are ignored.
@@ -414,9 +306,9 @@ public class DataAccess
     /// <returns>Returns a DataTable object populated by a <see cref="DataAccessCommand"/>.
     /// This method uses a <see cref="DbConnection"/> by ref.
     /// </returns>
-    public object GetResult(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
+    public object? GetResult(DataAccessCommand cmd, ref DbConnection sqlConn, ref DbTransaction trans)
     {
-        object scalarResult;
+        object? scalarResult;
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
@@ -466,52 +358,19 @@ public class DataAccess
         return rowsAffected;
     }
 
-    /// <inheritdoc cref="SetCommand(DataAccessCommand)"/>
-    public async Task<int> SetCommandAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
-    {
-        int rowsAffected;
-        try
-        {
-#if NET
-            await
-#endif
-            using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
-            {
-                rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken);
-
-                foreach (var parameter in cmd.Parameters)
-                {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            throw GetDataAccessException(ex, cmd);
-        }
-
-        return rowsAffected;
-    }
-
     /// <summary>Runs one or more commands on the database with transactions.</summary>
     /// <returns>Returns the number of affected records.</returns>
     /// <remarks>Author: Lucio Pelinson 14-04-2012</remarks>
     public int SetCommand(IEnumerable<DataAccessCommand> commands)
     {
         int numberOfRowsAffected = 0;
-        DataAccessCommand currentCommand = null;
+        DataAccessCommand? currentCommand = null;
 
         var connection = GetConnection();
 
         using (connection)
         {
-            using var sqlTras = connection.BeginTransaction();
+            using var sqlTransaction = connection.BeginTransaction();
             try
             {
                 foreach (var command in commands)
@@ -520,69 +379,16 @@ public class DataAccess
 
                     using var dbCommand = CreateDbCommand(command);
                     dbCommand.Connection = connection;
-                    dbCommand.Transaction = sqlTras;
+                    dbCommand.Transaction = sqlTransaction;
 
                     numberOfRowsAffected += dbCommand.ExecuteNonQuery();
                 }
 
-                sqlTras.Commit();
+                sqlTransaction.Commit();
             }
             catch (Exception ex)
             {
-                sqlTras.Rollback();
-                throw GetDataAccessException(ex, currentCommand);
-            }
-        }
-
-        return numberOfRowsAffected;
-    }
-
-    public async Task<int> SetCommandAsync(IEnumerable<DataAccessCommand> commands,
-        CancellationToken cancellationToken = default)
-    {
-        int numberOfRowsAffected = 0;
-        DataAccessCommand currentCommand = null;
-
-        var connection = await GetConnectionAsync(cancellationToken);
-#if NET
-        await
-#endif
-        using (connection)
-        {
-#if NET
-            await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
-#else
-            using var transaction = connection.BeginTransaction();
-#endif
-
-            try
-            {
-                foreach (var command in commands)
-                {
-                    currentCommand = command;
-#if NET
-                    await
-#endif
-                    using var dbCommand = CreateDbCommand(command);
-                    dbCommand.Connection = connection;
-                    dbCommand.Transaction = transaction;
-
-                    numberOfRowsAffected += await dbCommand.ExecuteNonQueryAsync(cancellationToken);
-                }
-#if NET
-                await transaction.CommitAsync(cancellationToken);
-                
-#else
-                transaction.Commit();
-#endif
-            }
-            catch (Exception ex)
-            {
-#if NET
-                await transaction.RollbackAsync(cancellationToken);
-#else
-                transaction.Rollback();
-#endif
+                sqlTransaction.Rollback();
                 throw GetDataAccessException(ex, currentCommand);
             }
         }
@@ -598,12 +404,6 @@ public class DataAccess
         return SetCommand(new DataAccessCommand(sql));
     }
 
-    /// <inheritdoc cref="SetCommand(string)"/>
-    public async Task<int> SetCommandAsync(string sql, CancellationToken cancellationToken = default)
-    {
-        return await SetCommandAsync(new DataAccessCommand(sql), cancellationToken);
-    }
-
     /// <summary>Runs one or more commands on the database with transactions.</summary>
     /// <returns>Returns the number of affected records.</returns>
     /// <remarks>Author: Lucio Pelinson 14-04-2012</remarks>
@@ -612,15 +412,6 @@ public class DataAccess
         var commandList = from string sql in sqlList select new DataAccessCommand(sql);
 
         int numberOfRowsAffected = SetCommand(commandList);
-        return numberOfRowsAffected;
-    }
-
-    /// <inheritdoc cref="SetCommand(IEnumerable&lt;string&gt;)"/>
-    public async Task<int> SetCommandAsync(IEnumerable<string> sqlList, CancellationToken cancellationToken = default)
-    {
-        var commandList = sqlList.Select(sql => new DataAccessCommand(sql));
-
-        int numberOfRowsAffected = await SetCommandAsync(commandList, cancellationToken);
         return numberOfRowsAffected;
     }
 
@@ -659,18 +450,15 @@ public class DataAccess
 
     /// <summary>
     /// Retrieves the first record of the sql statement in a Hashtable object.
-    /// [key(database field), value(value stored in database)] 
+    /// [key(database field), value(value stored in database)]<br/>
+    /// Never concat string to SQL, please see DataAccessCommand<br/>
     /// </summary>
     /// <returns>
     /// Return a Hashtable Object. 
     /// If no record is found it returns null.
     /// </returns>
-    public Hashtable GetFields(string sql) => GetFields(new DataAccessCommand(sql));
-
-    /// <inheritdoc cref="GetFields(string)"/>
-    public Task<Hashtable> GetFieldsAsync(string sql, CancellationToken cancellationToken = default) =>
-        GetFieldsAsync(new DataAccessCommand(sql), cancellationToken);
-
+    public Hashtable? GetFields(string sql) => GetFields(new DataAccessCommand(sql));
+    
     /// <summary>
     /// Retrieves the first record of the sql statement in a Hashtable object.
     /// [key(database field), value(value stored in database)]
@@ -680,9 +468,9 @@ public class DataAccess
     /// Return a Hashtable Object. 
     /// If no record is found it returns null.
     /// </returns>
-    public Hashtable GetFields(DataAccessCommand cmd)
+    public Hashtable? GetFields(DataAccessCommand cmd)
     {
-        Hashtable retCollection = null;
+        Hashtable? retCollection = null;
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
@@ -724,147 +512,6 @@ public class DataAccess
         return retCollection;
     }
 
-    /// <inheritdoc cref="GetFields(DataAccessCommand)"/>
-    public async Task<Hashtable> GetFieldsAsync(DataAccessCommand command,
-        CancellationToken cancellationToken = default)
-    {
-        return await GetAsync<Hashtable>(command, cancellationToken);
-    }
-
-    public async Task<T> GetAsync<T>(DataAccessCommand command,
-        CancellationToken cancellationToken = default) where T : IDictionary, new()
-    {
-        var result = default(T);
-        try
-        {
-#if NET
-            await
-#endif
-            using var dbCommand = CreateDbCommand(command);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
-            {
-#if NET
-                await
-#endif
-                using (var dataReader =
-                       await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
-                {
-                    while (await dataReader.ReadAsync(cancellationToken))
-                    {
-                        result = new T();
-                        int count = 0;
-
-                        while (count < dataReader.FieldCount)
-                        {
-                            string fieldName = dataReader.GetName(count);
-                            if (result.Contains(fieldName))
-                                throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
-
-                            result.Add(fieldName, dataReader.GetValue(count));
-                            count += 1;
-                        }
-                    }
-                }
-
-                foreach (var parameter in command.Parameters)
-                {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            throw GetDataAccessException(ex, command);
-        }
-
-        return result;
-    }
-
-    public async Task<List<T>> GetListAsync<T>(DataAccessCommand cmd, CancellationToken cancellationToken = default)
-        where T : IDictionary, new()
-    {
-        var dictionaryList = new List<T>();
-
-        try
-        {
-#if NET
-            await
-#endif
-            using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
-            {
-#if NET
-                await
-#endif
-                using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
-                {
-                    var columnNames = Enumerable.Range(0, dataReader.FieldCount)
-                        .Select(i => dataReader.GetName(i))
-                        .ToList();
-
-                    while (await dataReader.ReadAsync(cancellationToken))
-                    {
-                        var dictionary = Activator.CreateInstance<T>();
-                        foreach (var columnName in columnNames)
-                        {
-                            var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
-                                ? null
-                                : dataReader.GetValue(dataReader.GetOrdinal(columnName));
-                            dictionary[columnName] = value;
-                        }
-
-                        dictionaryList.Add(dictionary);
-                    }
-                }
-
-                if (cmd.Parameters != null)
-                {
-                    foreach (var param in cmd.Parameters.Where(param =>
-                                 param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
-                    {
-                        param.Value = dbCommand.Parameters[param.Name].Value;
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            throw GetDataAccessException(ex, cmd);
-        }
-
-        return dictionaryList;
-    }
-
-
-    private static DataAccessCommand GetTableExistsCommand(string table)
-    {
-        const string sql = "SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
-        var command = new DataAccessCommand
-        {
-            Sql = sql,
-            Parameters =
-            {
-                new DataAccessParameter
-                {
-                    Name = "@Table",
-                    Value = table
-                }
-            }
-        };
-
-        return command;
-    }
-
     /// <summary>
     /// Check if table exists in the database
     /// </summary>
@@ -876,20 +523,13 @@ public class DataAccess
         return result;
     }
 
-    /// <inheritdoc cref="TableExists"/>
-    public async Task<bool> TableExistsAsync(string tableName, CancellationToken cancellationToken = default)
-    {
-        var result = (int)await GetResultAsync(GetTableExistsCommand(tableName), cancellationToken) == 1;
-        return result;
-    }
-
     /// <summary>Verify the database connection</summary>
     /// <returns>True if the connection is successful.</returns>
     /// <remarks>Author: Lucio Pelinson 28-04-2014</remarks>
-    public bool TryConnection(out string errorMessage)
+    public bool TryConnection(out string? errorMessage)
     {
         bool result;
-        DbConnection connection = null;
+        DbConnection? connection = null;
         errorMessage = null;
         try
         {
@@ -922,49 +562,6 @@ public class DataAccess
         }
 
         return result;
-    }
-
-    /// <inheritdoc cref="TryConnection"/>
-    public async Task<(bool, string)> TryConnectionAsync(CancellationToken cancellationToken = default)
-    {
-        bool result;
-        DbConnection connection = null;
-        string errorMessage = null;
-        try
-        {
-            connection = Factory.CreateConnection();
-            connection!.ConnectionString = ConnectionString;
-            await connection.OpenAsync(cancellationToken);
-            result = true;
-        }
-        catch (Exception ex)
-        {
-            result = false;
-            var error = new StringBuilder();
-            error.AppendLine(ex.Message);
-            if (ex.InnerException is { Message: { } })
-                error.Append(ex.InnerException.Message);
-
-            errorMessage = error.ToString();
-        }
-        finally
-        {
-            if (connection != null)
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-#if NET
-                       await connection.CloseAsync();
-#else
-                       connection.Close();
-#endif
-                }
-
-                connection.Dispose();
-            }
-        }
-
-        return (result, errorMessage);
     }
 
     /// <summary>Executes a database script.</summary>
@@ -1007,50 +604,40 @@ public class DataAccess
         return true;
     }
 
-    /// <inheritdoc cref="ExecuteBatch(string)"/>
-    public async Task<bool> ExecuteBatchAsync(string script, CancellationToken cancellationToken = default)
+    private static DataAccessCommand GetTableExistsCommand(string table)
     {
-        string markpar = "GO";
-        if (ConnectionProvider is DataAccessProvider.Oracle or DataAccessProvider.OracleNetCore)
+        const string sql = "SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @Table";
+        var command = new DataAccessCommand
         {
-            markpar = "/";
-        }
-
-        if (script.Trim().Length <= 0) 
-            return true;
-
-        var sqlList = new List<string>();
-        string sqlBatch = string.Empty;
-        script += "\n" + markpar; // make sure last batch is executed. 
-
-        foreach (string line in script.Split(new[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries))
-        {
-            if (line.ToUpperInvariant().Trim() == markpar)
+            Sql = sql,
+            Parameters =
             {
-                if (sqlBatch.Trim().Length > 0)
+                new DataAccessParameter
                 {
-                    sqlList.Add(sqlBatch);
+                    Name = "@Table",
+                    Value = table
                 }
-
-                sqlBatch = string.Empty;
             }
-            else
-            {
-                sqlBatch += line + "\n";
-            }
-        }
+        };
 
-        await SetCommandAsync(sqlList, cancellationToken);
-        return true;
+        return command;
     }
-
-    private static Exception GetDataAccessException(Exception ex, DataAccessCommand cmd)
+    
+    private static Exception GetDataAccessException(Exception ex, DataAccessCommand? cmd)
     {
-        return GetDataAccessException(ex, cmd.Sql, cmd.Parameters);
+        string sql = string.Empty;
+        ICollection<DataAccessParameter>? parameters = null;
+        if (cmd != null)
+        {
+            sql = cmd.Sql;
+            parameters = cmd.Parameters;
+        }
+        return GetDataAccessException(ex, sql, parameters);
     }
 
-    private static Exception GetDataAccessException(Exception ex, string sql,
-        ICollection<DataAccessParameter> parameters = null)
+    private static Exception GetDataAccessException(Exception ex, 
+        string sql,
+        ICollection<DataAccessParameter>? parameters = null)
     {
         ex.Data.Add("DataAccess Query", sql);
 
@@ -1108,18 +695,6 @@ public class DataAccess
         return dbParameter;
     }
 
-    public async Task<IDictionary<string, dynamic>> GetDictionaryAsync(DataAccessCommand command,
-        CancellationToken cancellationToken = default)
-    {
-        return await GetAsync<Dictionary<string, dynamic>>(command, cancellationToken);
-    }
-
-    public async Task<List<Dictionary<string, dynamic>>> GetDictionaryListAsync(DataAccessCommand command,
-        CancellationToken cancellationToken = default)
-    {
-        return await GetListAsync<Dictionary<string, dynamic>>(command, cancellationToken);
-    }
-
     private static DataAccessCommand GetColumnExistsCommand(string tableName, string columnName)
     {
         var command = new DataAccessCommand
@@ -1134,34 +709,4 @@ public class DataAccess
         return command;
     }
 
-    public async Task<bool> ColumnExistsAsync(string tableName, string columnName,
-        CancellationToken cancellationToken = default)
-    {
-        var command = GetColumnExistsCommand(tableName, columnName);
-        try
-        {
-#if NET
-            await
-#endif
-            using var dbCommand = CreateDbCommand(command);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
-            {
-#if NET
-                await
-#endif
-                using (var reader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
-                {
-                    return await reader.ReadAsync(cancellationToken);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            throw GetDataAccessException(ex, command);
-        }
-    }
 }

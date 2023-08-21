@@ -15,31 +15,31 @@ public class ApiController : DataDictionaryController
         _apiService = apiService;
     }
 
-    public ActionResult Index(string dictionaryName)
+    public async Task<ActionResult> Index(string dictionaryName)
     {
-        var dic = _apiService.DataDictionaryRepository.GetMetadata(dictionaryName);
+        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var model = PopulateViewModel(dic);
 
         return View(model);
     }
 
-    public ActionResult Edit(string dictionaryName)
+    public async Task<ActionResult> Edit(string dictionaryName)
     {
-        var dic = _apiService.DataDictionaryRepository.GetMetadata(dictionaryName);
+        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var model = PopulateViewModel(dic);
 
         return View(model);
     }
 
     [HttpPost]
-    public ActionResult Edit(ApiViewModel apiViewModel)
+    public async Task<ActionResult> Edit(ApiViewModel apiViewModel)
     {
-        var dic = _apiService.DataDictionaryRepository.GetMetadata( apiViewModel.DictionaryName);
+        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync( apiViewModel.DictionaryName);
         dic.ApiOptions = apiViewModel.MetadataApiOptions;
         dic.Sync = apiViewModel.IsSync;
         dic.SyncMode = apiViewModel.Mode;
 
-        if (_apiService.EditApi(dic))
+        if (await _apiService.SetFormElementWithApiValidation(dic))
             return RedirectToAction("Index", new { dictionaryName =  apiViewModel.DictionaryName });
         var model = PopulateViewModel(dic);
         model.ValidationSummary = _apiService.GetValidationSummary();

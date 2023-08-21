@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Logging;
 using Microsoft.Data.SqlClient;
 
 namespace JJMasterData.Commons.Exceptions;
@@ -29,7 +26,7 @@ public static class ExceptionManager
                 string errMsg = GetMessage(exSql);
                 err.Message = errMsg;
                 err.Status = (int)HttpStatusCode.BadRequest;
-                err.ValidationList = new Dictionary<string, dynamic>();
+                err.ValidationList = new Dictionary<string, object>();
                 err.ValidationList.Add("DB", errMsg);
                 break;
             }

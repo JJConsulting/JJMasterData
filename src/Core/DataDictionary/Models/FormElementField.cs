@@ -19,8 +19,8 @@ public class FormElementField : ElementField
     public const string PopUpSizeAttribute = "popupsize";
     public const string PopUpTitleAttribute = "popuptitle";
     public const string AutocompletePickerAttribute = "autocompletePicker";
-    public const string MinValueAttribute = "minValue";
-    public const string MaxValueAttribute = "maxValue";
+    public const string MinValueAttribute = "min";
+    public const string MaxValueAttribute = "max";
     public const string StepAttribute = "step";
     [JsonProperty("component")] public FormComponent Component { get; set; }
 
@@ -91,8 +91,8 @@ public class FormElementField : ElementField
     /// Collection of arbitrary (rendering-only) attributes that do not match control properties
     /// </summary>
     [JsonProperty("attributes")]
-    public IDictionary<string, dynamic> Attributes { get; set; } =
-        new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+    public IDictionary<string, object> Attributes { get; set; } =
+        new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>
     /// Allows exporting the field (Default=true)

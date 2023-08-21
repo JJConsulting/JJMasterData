@@ -37,9 +37,9 @@ public class DictionariesController : ControllerBase
     [HttpGet]
     [Produces(typeof(FormElement[]))]
     [Route("api/dictionaries/")]
-    public ActionResult<FormElement[]> GetAll()
+    public async Task<ActionResult<FormElement[]>> GetAll()
     {
-        var dicList = _dataDictionaryRepository.GetMetadataList(true);
+        var dicList = await _dataDictionaryRepository.GetMetadataListAsync(true);
         if (dicList == null)
             return NotFound();
 
@@ -58,9 +58,9 @@ public class DictionariesController : ControllerBase
     /// <response code="500">Internal Server Error</response>
     [HttpGet]
     [Route("api/dictionaries/{id}")]
-    public FormElement Get(string id)
+    public async Task<FormElement> Get(string id)
     {
-        return _dataDictionaryRepository.GetMetadata(id);
+        return await _dataDictionaryRepository.GetMetadataAsync(id);
     }
 
     /// <summary>
@@ -75,13 +75,13 @@ public class DictionariesController : ControllerBase
     /// <response code="500">Internal Server Error</response>
     [HttpPost]
     [Route("api/dictionaries/count")]
-    public ActionResult<DicSyncInfo> Count([FromBody]DicSyncParam[] param)
+    public async Task<ActionResult<DicSyncInfo>> Count([FromBody]DicSyncParam[] param)
     {
         var userid = AccountService.GetTokenInfo(HttpContext.User.Claims.First().Value)?.UserId;
 
         if (userid == null)
             return Unauthorized();
 
-        return _dictionariesService.GetSyncInfo(userid, param, Debugger.IsAttached);
+        return await _dictionariesService.GetSyncInfoAsync(userid, param, Debugger.IsAttached);
     }
 }

@@ -12,8 +12,10 @@ using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Factories;
 using JJMasterData.Core.FormEvents.Args;
@@ -53,15 +55,15 @@ public class ElementService : BaseService
 
     #region Add Dictionary
 
-    public Element? CreateEntity(string tableName, bool importFields)
+    public async Task<Element?> CreateEntityAsync(string tableName, bool importFields)
     {
-        if (!ValidateEntity(tableName, importFields))
+        if (!await ValidateEntityAsync(tableName, importFields))
             return null;
 
         Element element;
         if (importFields)
         {
-            element = _entityRepository.GetElementFromTable(tableName);
+            element = await _entityRepository.GetElementFromTableAsync(tableName);
         }
         else
         {
@@ -74,16 +76,16 @@ public class ElementService : BaseService
             };
         }
 
-        DataDictionaryRepository.InsertOrReplace(new FormElement(element));
+        await DataDictionaryRepository.InsertOrReplaceAsync(new FormElement(element));
 
         return element;
     }
 
-    public bool ValidateEntity(string tableName, bool importFields)
+    public async Task<bool> ValidateEntityAsync(string tableName, bool importFields)
     {
         if (ValidateName(tableName))
         {
-            if (DataDictionaryRepository.Exists(tableName))
+            if (await DataDictionaryRepository.ExistsAsync(tableName))
             {
                 AddError("Name", StringLocalizer["There is already a dictionary with the name "] + tableName);
             }
@@ -91,7 +93,8 @@ public class ElementService : BaseService
 
         if (importFields & IsValid)
         {
-            if (!_entityRepository.TableExists(tableName))
+            var exists = await _entityRepository.TableExistsAsync(tableName);
+            if (!exists)
                 AddError("Name", StringLocalizer["Table not found"]);
         }
 
@@ -119,19 +122,19 @@ public class ElementService : BaseService
 
     #region Duplicate Entity
 
-    public bool DuplicateEntity(string originName, string newName)
+    public async Task<bool> DuplicateEntityAsync(string originName, string newName)
     {
-        if (ValidateEntity(newName))
+        if (await ValidateEntityAsync(newName))
         {
-            var dicParser = DataDictionaryRepository.GetMetadata(originName);
+            var dicParser = await DataDictionaryRepository.GetMetadataAsync(originName);
             dicParser.Name = newName;
-            DataDictionaryRepository.InsertOrReplace(dicParser);
+            await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
         }
 
         return IsValid;
     }
 
-    public bool ValidateEntity(string name)
+    public async Task<bool> ValidateEntityAsync(string name)
     {
         if (!ValidateName(name))
             return false;
@@ -141,7 +144,7 @@ public class ElementService : BaseService
             AddError("Name", StringLocalizer["Mandatory dictionary name field"]);
         }
 
-        if (DataDictionaryRepository.Exists(name))
+        if (await DataDictionaryRepository.ExistsAsync(name))
         {
             AddError("Name", StringLocalizer["There is already a dictionary with the name "] + name);
         }
@@ -158,14 +161,30 @@ public class ElementService : BaseService
         formView.GridView.EnableMultiSelect = true;
         
         formView.GridView.FilterAction.ExpandedByDefault = true;
-        formView.GridView.OnDataLoadAsync += async (sender, args) =>
+        formView.GridView.OnDataLoadAsync += async (_, args) =>
         {
             var filter = DataDictionaryFilter.GetInstance(args.Filters);
-            string orderBy = string.IsNullOrEmpty(args.OrderBy) ? "name ASC" : args.OrderBy;
             var result =
-                await DataDictionaryRepository.GetFormElementInfoListAsync(filter, orderBy, args.RecordsPerPage,
+                await DataDictionaryRepository.GetFormElementInfoListAsync(filter, args.OrderBy, args.RecordsPerPage,
                     args.CurrentPage);
-            args.DataSource = result.Data.ToDataTable();
+
+            var dictionaryList = new List<Dictionary<string, dynamic?>>();
+            
+            foreach (var info in result.Data)
+            {
+                var dictionary = new Dictionary<string, dynamic?>
+                {
+                    { "info", info.Info },
+                    { "modified", info.Modified },
+                    { "name", info.Name },
+                    { "sync", info.Sync },
+                    { "tablename", info.TableName }
+                };
+    
+                dictionaryList.Add(dictionary);
+            }
+
+            args.DataSource = dictionaryList;
             args.TotalOfRecords = result.TotalOfRecords;
         };
 
@@ -197,17 +216,17 @@ public class ElementService : BaseService
 
     #endregion
 
-    public byte[] ExportSingleRow(IDictionary<string, dynamic> row)
+    public async Task<byte[]> ExportSingleRowAsync(IDictionary<string, object> row)
     {
         string dictionaryName = row["name"].ToString();
-        var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var metadata = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
 
         string json = FormElementSerializer.Serialize(metadata);
 
         return Encoding.Default.GetBytes(json);
     }
 
-    public byte[] ExportMultipleRows(List<IDictionary<string, dynamic>> selectedRows)
+    public async Task<byte[]> ExportMultipleRowsAsync(List<IDictionary<string, object>> selectedRows)
     {
         using var memoryStream = new MemoryStream();
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
@@ -215,7 +234,7 @@ public class ElementService : BaseService
             foreach (var element in selectedRows)
             {
                 string dictionaryName = element["name"].ToString();
-                var metadata = DataDictionaryRepository.GetMetadata(dictionaryName);
+                var metadata = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
                 string json = FormElementSerializer.Serialize(metadata);
 
                 var jsonFile = archive.CreateEntry(dictionaryName + ".json");
@@ -242,8 +261,8 @@ public class ElementService : BaseService
         return IsValid;
     }
 
-    public void CreateStructureIfNotExists()
+    public async Task CreateStructureIfNotExistsAsync()
     {
-        DataDictionaryRepository.CreateStructureIfNotExists();
+       await DataDictionaryRepository.CreateStructureIfNotExistsAsync();
     }
 }

@@ -34,12 +34,12 @@ public class FieldValuesService : IFieldValuesService
     /// <returns>
     /// Returns a new Dictionary with the updated values
     /// </returns>
-    public async Task<IDictionary<string,dynamic>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool replaceNullValues)
+    public async Task<IDictionary<string, object>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool replaceNullValues)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 
-        IDictionary<string,dynamic> newValues = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        IDictionary<string, object> newValues = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var f in formElement.Fields)
         {
             if (formValues.TryGetValue(f.Name, out var value))
@@ -55,9 +55,9 @@ public class FieldValuesService : IFieldValuesService
         return newValues;
     }
 
-    public async Task<IDictionary<string,dynamic>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState state)
+    public async Task<IDictionary<string, object>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState state)
     {
-        var filters = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var filters = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         var list = formElement.Fields
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.DefaultValue));
@@ -75,9 +75,9 @@ public class FieldValuesService : IFieldValuesService
         return filters;
     }
 
-    public async Task<IDictionary<string,dynamic>> MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState)
+    public async Task<IDictionary<string, object>> MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState)
     {
-        IDictionary<string,dynamic> values = new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        IDictionary<string, object> values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         if (formValues != null)
         {
             foreach (var v in formValues)
@@ -88,7 +88,7 @@ public class FieldValuesService : IFieldValuesService
         return values;
     }
 
-    private async Task ApplyDefaultValues(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState, bool replaceNullValues)
+    private async Task ApplyDefaultValues(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool replaceNullValues)
     {
         var defaultValues = await GetDefaultValuesAsync(formElement,formValues, pageState);
         if (defaultValues == null)
@@ -111,7 +111,7 @@ public class FieldValuesService : IFieldValuesService
         }
     }
 
-    private async Task ApplyTriggerValues(FormElement formElement, IDictionary<string,dynamic> formValues, PageState pageState)
+    private async Task ApplyTriggerValues(FormElement formElement, IDictionary<string, object> formValues, PageState pageState)
     {
         var listFields = formElement.Fields
             .ToList()

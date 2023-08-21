@@ -23,7 +23,7 @@ internal class GridFilter
     private const string ClearActionName = "CLEARACTION";
     internal const string FilterFieldPrefix = "filter_";
 
-    private IDictionary<string,dynamic> _currentFilter;
+    private IDictionary<string, object> _currentFilter;
     private JJGridView GridView { get; set; }
 
     private IHttpContext CurrentContext => GridView.CurrentContext;
@@ -55,7 +55,7 @@ internal class GridFilter
     /// Recupera o filtro atual da grid
     /// </summary>
     /// <returns></returns>
-    public async Task<IDictionary<string, dynamic>> GetCurrentFilter()
+    public async Task<IDictionary<string, object>> GetCurrentFilter()
     {
         if (_currentFilter is { Count: > 0 })
             return _currentFilter;
@@ -75,7 +75,7 @@ internal class GridFilter
                 return _currentFilter;
         }
 
-        var sessionFilter = CurrentContext.Session.GetSessionValue<Dictionary<string,dynamic>>("jjcurrentfilter_" + GridView.Name);
+        var sessionFilter = CurrentContext.Session.GetSessionValue<Dictionary<string, object>>("jjcurrentfilter_" + GridView.Name);
         if (sessionFilter != null && GridView.MaintainValuesOnLoad)
         {
             _currentFilter = sessionFilter;
@@ -86,7 +86,7 @@ internal class GridFilter
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
-            _currentFilter = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(filterJson);
+            _currentFilter = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson);
             return _currentFilter;
         }
 
@@ -106,7 +106,7 @@ internal class GridFilter
     /// <returns></returns>
     public void SetCurrentFilter(string name, object value)
     {
-        _currentFilter ??= new Dictionary<string, dynamic>();
+        _currentFilter ??= new Dictionary<string, object>();
         
         if(_currentFilter.ContainsKey(name))
         {
@@ -119,7 +119,7 @@ internal class GridFilter
         return !string.IsNullOrEmpty(CurrentContext.Request.QueryString("t"));
     }
     
-    public async Task ApplyCurrentFilter(IDictionary<string,dynamic> values)
+    public async Task ApplyCurrentFilter(IDictionary<string, object> values)
     {
         if (values == null)
         {
@@ -143,11 +143,8 @@ internal class GridFilter
             }
         }
 
-        if (GridView.FormElement != null)
-        {
-            _currentFilter = await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement,values, PageState.List);
-        }
-        
+        _currentFilter = await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement,values, PageState.List);
+
         CurrentContext.Session.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
     }
 
@@ -296,18 +293,18 @@ internal class GridFilter
         return html;
     }
 
-    public async Task<IDictionary<string, dynamic>> GetFilterFormValues()
+    public async Task<IDictionary<string, object>> GetFilterFormValues()
     {
         if (GridView.FormElement == null)
             throw new NullReferenceException(nameof(GridView.FormElement));
 
         //Relation Filters
-        var values = new Dictionary<string, dynamic>();
+        var values = new Dictionary<string, object>();
         var filters = CurrentContext.Request.Form($"jjgridview-{GridView.FormElement.Name}_filters");
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
-            values = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(filterJson);
+            values = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson);
         }
 
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
@@ -319,7 +316,7 @@ internal class GridFilter
             {
                 string sfrom = CurrentContext.Request.Form(name + "_from");
                 if (values == null && sfrom != null)
-                    values = new Dictionary<string,dynamic>();
+                    values = new Dictionary<string, object>();
 
                 if (!string.IsNullOrEmpty(sfrom))
                 {
@@ -344,7 +341,7 @@ internal class GridFilter
                 string value = CurrentContext.Request.Form(name);
 
                 if (values == null && CurrentContext.Request.Form(name) != null)
-                    values = new Dictionary<string,dynamic>();
+                    values = new Dictionary<string, object>();
 
                 switch (f.Component)
                 {
@@ -374,7 +371,7 @@ internal class GridFilter
 
                 if (!string.IsNullOrEmpty(value))
                 {
-                    values ??= new Dictionary<string,dynamic>();
+                    values ??= new Dictionary<string, object>();
                     values[f.Name] = value;
                 }
             }
@@ -385,12 +382,12 @@ internal class GridFilter
 
 
 
-    public IDictionary<string,dynamic>  GetFilterQueryString()
+    public IDictionary<string, object>  GetFilterQueryString()
     {
         if (GridView.FormElement == null)
             return null;
 
-        IDictionary<string,dynamic>  values = null;
+        IDictionary<string, object>  values = null;
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var f in fieldsFilter)
         {
@@ -400,7 +397,7 @@ internal class GridFilter
             {
                 string sfrom = CurrentContext.Request.QueryString(name + "_from");
                 if (values == null && sfrom != null)
-                    values = new Dictionary<string,dynamic>();
+                    values = new Dictionary<string, object>();
 
                 if (!string.IsNullOrEmpty(sfrom))
                 {
@@ -419,7 +416,7 @@ internal class GridFilter
                 if (!string.IsNullOrEmpty(val))
                 {
                     if (values == null)
-                        values = new Dictionary<string,dynamic>();
+                        values = new Dictionary<string, object>();
 
                     values.Add(f.Name, val);
                 }

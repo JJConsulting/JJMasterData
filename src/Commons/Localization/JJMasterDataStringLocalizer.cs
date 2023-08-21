@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -66,7 +67,7 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
 
     public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
-        return GetAllStringsAsDictionary().Select(e=>new LocalizedString(e.Key, e.Value));
+        return GetAllStringsAsDictionary().GetAwaiter().GetResult().Select(e=>new LocalizedString(e.Key, e.Value));
     }
 
     public LocalizedString this[string? name]
@@ -74,10 +75,10 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
         get
         {
             if (name == null)
-                return new LocalizedString(string.Empty,string.Empty);
+                return new LocalizedString(string.Empty,string.Empty, true);
             
             var value = GetString(name);
-            return new LocalizedString(name, value ?? name, value == null);
+            return new LocalizedString(name, value, false);
         }
     }
 
@@ -108,7 +109,7 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
             return key;
         }
 
-        var localizedStrings = GetAllStringsAsDictionary();
+        var localizedStrings = GetAllStringsAsDictionary().GetAwaiter().GetResult();
         
         Cache.Set(cacheKey, localizedStrings);
 
@@ -117,14 +118,17 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
    
         return key;
     }
-    
-    public IDictionary<string, string> GetAllStringsAsDictionary()
+
+    private async Task<IDictionary<string, string>> GetAllStringsAsDictionary()
     {
         string culture = Thread.CurrentThread.CurrentCulture.Name;
 
         var element = JJMasterDataStringLocalizerElement.GetElement(Options);
-        if (!EntityRepository.TableExists(element.TableName))
-            EntityRepository.CreateDataModel(element);
+
+        var tableExists = await EntityRepository.TableExistsAsync(element.TableName);
+        
+        if (!tableExists)
+            await EntityRepository.CreateDataModelAsync(element);
 
         var stringLocalizerValues = GetStringLocalizerValues();
         var databaseValues = GetDatabaseValues(element, culture);
@@ -133,27 +137,27 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
         {
             foreach (var dbValue in databaseValues.ToList())
             {
-                stringLocalizerValues[dbValue.Key] = dbValue.Value;
+                stringLocalizerValues[dbValue.Key] = dbValue.Value?.ToString() ?? string.Empty;
             }
 
             return stringLocalizerValues;
         }
         
-        SetDatabaseValues(element, ConvertDictionaryToList(stringLocalizerValues, culture));
+        await SetDatabaseValues(element, ConvertDictionaryToList(stringLocalizerValues, culture));
 
         return stringLocalizerValues;
     }
 
-    private void SetDatabaseValues(Element element, IEnumerable<IDictionary> values)
+    private async Task SetDatabaseValues(Element element, IEnumerable<IDictionary<string,object?>> values)
     {
         foreach (var value in values)
-            EntityRepository.SetValues(element, value);
+            await EntityRepository.SetValuesAsync(element, value);
     }
 
-    private IEnumerable<IDictionary> ConvertDictionaryToList(IDictionary<string, string> dictionary,
+    private IEnumerable<IDictionary<string,object?>> ConvertDictionaryToList(IDictionary<string, string> dictionary,
         string culture)
     {
-        return dictionary.Select(pair => new Dictionary<string,string>
+        return dictionary.Select(pair => new Dictionary<string,object?>
         {
             { "cultureCode", culture },
             { "resourceKey", pair.Key },
@@ -182,14 +186,14 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
         }
     }
 
-    private Dictionary<string, string> GetDatabaseValues(Element element, string culture)
+    private Dictionary<string, object?> GetDatabaseValues(Element element, string culture)
     {
-        var values = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-        var filter = new Dictionary<string,string> { { "cultureCode", culture} };
-        var dataTable = EntityRepository.GetDataTable(element, filter);
-        foreach (DataRow row in dataTable.Rows)
+        var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var filter = new Dictionary<string,object?> { { "cultureCode", culture} };
+        var result = EntityRepository.GetDictionaryListAsync(element, new EntityParameters(){Parameters = filter},false).GetAwaiter().GetResult();
+        foreach (var row in result.Data)
         {
-            values.Add(row["resourceKey"].ToString(), row["resourceValue"].ToString());
+            values.Add(row["resourceKey"]!.ToString()!, row["resourceValue"]?.ToString());
         }
 
         return values;

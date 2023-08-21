@@ -12,11 +12,11 @@ public class ActionEventArgs : EventArgs
     
     public JJLinkButton LinkButton { get; set; }
     
-    public IDictionary<string,dynamic> FieldValues { get; internal set; }
+    public IDictionary<string, object> FieldValues { get; internal set; }
     
     public string HtmlResult { get; set; }
 
-    public ActionEventArgs(BasicAction action, JJLinkButton linkButton, IDictionary<string,dynamic> fieldValues)
+    public ActionEventArgs(BasicAction action, JJLinkButton linkButton, IDictionary<string, object> fieldValues)
     {
         Action = action ?? throw new ArgumentNullException(nameof(action));
         Action.Name = action.Name;

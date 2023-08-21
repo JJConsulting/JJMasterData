@@ -1,6 +1,7 @@
 ﻿using System;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,8 @@ public class DataExportationWriterFactory
 {
     private IServiceProvider ServiceProvider { get; }
 
+    public event EventHandler<GridCellEventArgs> OnRenderCell;
+    
     public DataExportationWriterFactory(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
@@ -39,7 +42,7 @@ public class DataExportationWriterFactory
             case ExportFileExtension.TXT:
                 var textWriter = GetTextWriter();
                 textWriter.Delimiter = exporter.ExportOptions.Delimiter;
-                textWriter.OnRenderCell += exporter.OnRenderCell;
+                textWriter.OnRenderCell += OnRenderCell;
 
                 writer = (DataExportationWriterBase)textWriter;
                 break;
@@ -48,7 +51,7 @@ public class DataExportationWriterFactory
                 var excelWriter = GetExcelWriter();
                 excelWriter.ShowRowStriped = exporter.ShowRowStriped;
                 excelWriter.ShowBorder = exporter.ShowBorder;
-                excelWriter.OnRenderCell += exporter.OnRenderCell;
+                excelWriter.OnRenderCell += OnRenderCell;
 
                 writer = (DataExportationWriterBase)excelWriter;
 
@@ -61,7 +64,7 @@ public class DataExportationWriterFactory
 
                 pdfWriter.ShowRowStriped = exporter.ShowRowStriped;
                 pdfWriter.ShowBorder = exporter.ShowBorder;
-                pdfWriter.OnRenderCell += exporter.OnRenderCell;
+                pdfWriter.OnRenderCell += OnRenderCell;
 
                 // ReSharper disable once SuspiciousTypeConversion.Global;
                 // PdfWriter is dynamic loaded by plugin.

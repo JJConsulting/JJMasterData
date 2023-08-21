@@ -86,7 +86,7 @@ function loadAuditLog(componentName, logId, url = null) {
     $("#sortable-grid a").removeClass("active");
     if (logId != "")
         $("#" + logId).addClass("active");
-    document.querySelector('#logId-' + componentName).value = logId;
+    document.querySelector('#audit-log-id-' + componentName).value = logId;
     if (url == null || url.length == 0) {
         let builder = new UrlBuilder();
         builder.addQueryParameter("t", "ajax");
@@ -1050,7 +1050,7 @@ class JJView {
         }
     }
     static viewLog(objid, id) {
-        $("#logId-" + objid).val(id);
+        $("#audit-log-id-" + objid).val(id);
         $("form:first").trigger("submit");
     }
     static searchOnDOM(objid, oDom) {

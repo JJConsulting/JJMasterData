@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 
@@ -26,10 +24,10 @@ internal class SliderFactory : IControlFactory<JJSlider>
         {
             Name =  field.Name,
             NumberOfDecimalPlaces = field.NumberOfDecimalPlaces,
-            MinValue = field.Attributes[FormElementField.MinValueAttribute] ?? 0f,
-            MaxValue = field.Attributes[FormElementField.MaxValueAttribute] ?? 100,
+            MinValue = (double)(field.Attributes[FormElementField.MinValueAttribute] ?? 0f),
+            MaxValue = (double)(field.Attributes[FormElementField.MaxValueAttribute] ?? 100),
             Step = (double)field.Attributes![FormElementField.StepAttribute],
-            Value = !string.IsNullOrEmpty(context.Value?.ToString()) ? double.Parse(context.Value.ToString()) : null
+            Value = !string.IsNullOrEmpty(context.Value?.ToString()) ? double.Parse(context.Value.ToString()!) : null
         };
         return slider;
     }

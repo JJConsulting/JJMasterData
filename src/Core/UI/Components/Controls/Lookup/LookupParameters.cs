@@ -16,14 +16,14 @@ public class LookupParameters
     public string ComponentName { get; set; }
     public string FieldKey { get; set; }
     public bool EnableElementActions { get; set; }
-    public IDictionary<string, dynamic> Filters { get; set; }
+    public IDictionary<string, object> Filters { get; set; }
 
     public LookupParameters(
         string elementName, 
         string componentName, 
         string fieldKey,
         bool enableElementActions,
-        IDictionary<string, dynamic> filters)
+        IDictionary<string, object> filters)
     {
         ElementName = elementName;
         ComponentName = componentName;

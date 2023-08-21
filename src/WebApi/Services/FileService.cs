@@ -18,9 +18,9 @@ public class FileService
         _entityRepository = entityRepository;
     }
 
-    public FileStream GetDictionaryFile(string elementName, string pkValues, string fieldName, string fileName)
+    public async Task<FileStream> GetDictionaryFileAsync(string elementName, string pkValues, string fieldName, string fileName)
     {
-        var formElement = _dictionaryRepository.GetMetadata(elementName);
+        var formElement =await _dictionaryRepository.GetMetadataAsync(elementName);
         if (!formElement.ApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
@@ -40,24 +40,24 @@ public class FileService
         return fileStream;
     }
     
-    public void SetDictionaryFile(string elementName, string fieldName, string pkValues, IFormFile file)
+    public async Task SetDictionaryFileAsync(string elementName, string fieldName, string pkValues, IFormFile file)
     {
-        var formElement = _dictionaryRepository.GetMetadata(elementName);
+        var formElement = await _dictionaryRepository.GetMetadataAsync(elementName);
         
         if (!formElement.ApiOptions.EnableAdd)
             throw new UnauthorizedAccessException();
         
         var field = formElement.Fields.First(f => f.Name == fieldName);
 
-        SetPhysicalFile(formElement, field, pkValues, file);
+        await SetPhysicalFileAsync(formElement, field, pkValues, file);
 
-        SetEntityFile(formElement, field, pkValues, file.FileName);
+        await SetEntityFileAsync(formElement, field, pkValues, file.FileName);
     }
     
-    private void SetEntityFile(FormElement formElement, FormElementField field, string pkValues, string fileName)
+    private async Task SetEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
         var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
-        var values = _entityRepository.GetFields(formElement, primaryKeys);
+        var values = await _entityRepository.GetDictionaryAsync(formElement, primaryKeys);
 
         if (field.DataFile!.MultipleFile)
         {
@@ -79,10 +79,10 @@ public class FileService
             values[field.Name] = fileName.TrimStart(',');
         }
 
-        _entityRepository.SetValues(formElement, values);
+        await _entityRepository.SetValuesAsync(formElement, values);
     }
     
-    private static void SetPhysicalFile(FormElement formElement, FormElementField field, string pkValues, IFormFile file)
+    private static async Task SetPhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, IFormFile file)
     {
         var builder = new FormFilePathBuilder(formElement);
 
@@ -104,15 +104,15 @@ public class FileService
             }
         }
 
-        using var fileStream =
+        await using var fileStream =
             new FileStream(Path.Combine(path, file.FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-        file.CopyTo(fileStream);
+        await file.CopyToAsync(fileStream);
     }
     
-    public void DeleteFile(string elementName, string fieldName, string pkValues, string fileName)
+    public async Task DeleteFileAsync(string elementName, string fieldName, string pkValues, string fileName)
     {
-        var formElement = _dictionaryRepository.GetMetadata(elementName);
+        var formElement = await _dictionaryRepository.GetMetadataAsync(elementName);
         
         if (!formElement.ApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
@@ -137,11 +137,11 @@ public class FileService
             throw new KeyNotFoundException("File not found");
     }
     
-    private void DeleteEntityFile(Element element, FormElementField field, string pkValues, string fileName)
+    private async Task DeleteEntityFile(Element element, FormElementField field, string pkValues, string fileName)
     {
         var primaryKeys = DataHelper.GetPkValues(element, pkValues, ',');
 
-        var values = _entityRepository.GetFields(element, primaryKeys);
+        var values = await _entityRepository.GetDictionaryAsync(element, primaryKeys);
 
         if (field.DataFile!.MultipleFile)
         {
@@ -159,12 +159,12 @@ public class FileService
         }
 
 
-        _entityRepository.SetValues(element, values);
+        await _entityRepository.SetValuesAsync(element, values);
     }
     
-    public void RenameFile(string elementName, string fieldName, string pkValues, string oldName, string newName)
+    public async Task RenameFileAsync(string elementName, string fieldName, string pkValues, string oldName, string newName)
     {
-        var formElement = _dictionaryRepository.GetMetadata(elementName);
+        var formElement = await _dictionaryRepository.GetMetadataAsync(elementName);
         
         if (!formElement.ApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();
@@ -190,12 +190,12 @@ public class FileService
             throw new KeyNotFoundException("File not found");
     }
     
-    private void RenameEntityFile(FormElement formElement, FormElementField field, string pkValues, string oldName,
+    private async Task RenameEntityFile(FormElement formElement, FormElementField field, string pkValues, string oldName,
         string newName)
     {
         var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
 
-        var values = _entityRepository.GetFields(formElement, primaryKeys);
+        var values = await _entityRepository.GetDictionaryAsync(formElement, primaryKeys);
 
         if (field.DataFile!.MultipleFile)
         {
@@ -211,6 +211,6 @@ public class FileService
             values[field.Name] = newName;
         }
 
-        _entityRepository.SetValues(formElement, values);
+        await _entityRepository.SetValuesAsync(formElement, values);
     }
 }

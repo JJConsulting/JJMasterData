@@ -63,7 +63,7 @@ public class MasterApiControllerTest
     [InlineData("[{\"Id\":1, \"Name\":\"new_string\",\"Age\":100}]", "ApiTestDictionary", true)]
     public async Task PostTest(string parametersString, string elementName, bool replace)
     {
-        var parameterList = JsonConvert.DeserializeObject<Dictionary<string,dynamic>[]>(parametersString);
+        var parameterList = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(parametersString);
 
         if (parameterList == null) 
             return;
@@ -80,7 +80,7 @@ public class MasterApiControllerTest
     [InlineData("[{\"Id\":1, \"Name\":\"put_string\",\"Age\":0}]", "ApiTestDictionary")]
     public async Task PutTest(string parametersString, string elementName)
     {
-        var parameterList = JsonConvert.DeserializeObject<Dictionary<string,dynamic>[]>(parametersString);
+        var parameterList = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(parametersString);
         
         var result = await _controller.Put(parameterList!, elementName);
 
@@ -94,7 +94,7 @@ public class MasterApiControllerTest
     [InlineData("[{\"Id\":1, \"Name\":\"patch_string\",\"Age\":0}]", "ApiTestDictionary")]
     public async Task PatchTest(string parametersString, string elementName)
     {
-        var parameterList = JsonConvert.DeserializeObject<Dictionary<string,dynamic>[]>(parametersString);
+        var parameterList = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(parametersString);
         
         var result = await _controller.Patch(parameterList!, elementName);
 

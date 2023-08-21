@@ -318,7 +318,7 @@
 
     static viewLog(objid, id) {
 
-        $("#logId-" + objid).val(id);
+        $("#audit-log-id-" + objid).val(id);
         $("form:first").trigger("submit");
     }
 

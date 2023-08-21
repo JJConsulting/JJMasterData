@@ -103,13 +103,13 @@ public abstract class BaseService
         return hints.ToString();
     }
 
-    public Dictionary<string, string> GetElementList()
+    public async Task<Dictionary<string, string>> GetElementListAsync()
     {
         var dicElement = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
 
-        var list = DataDictionaryRepository.GetNameList();
+        var list = DataDictionaryRepository.GetNameListAsync();
         
-        foreach (string name in list)
+        await foreach (string name in list)
         {
             dicElement.Add(name, name);
         }

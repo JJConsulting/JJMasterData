@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Localization;
+﻿using System.Threading.Tasks;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
@@ -16,24 +17,19 @@ public class ApiService : BaseService
 
     }
 
-    public bool EditApi(FormElement dicParser)
+    public async Task<bool> SetFormElementWithApiValidation(FormElement formElement)
     {
-        if (ValidateApi(dicParser))
-            DataDictionaryRepository.InsertOrReplace(dicParser);
+        if (ValidateApi(formElement))
+            await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
         return IsValid;
     }
 
-    public bool ValidateApi(FormElement dicParser)
+    public bool ValidateApi(FormElement formElement)
     {
-        bool hasApiGetEnabled;
+        var hasApiGetEnabled = formElement.ApiOptions is { EnableGetDetail: true, EnableGetAll: true };
 
-        if (dicParser.ApiOptions.EnableGetDetail & dicParser.ApiOptions.EnableGetAll)
-            hasApiGetEnabled = true;
-        else
-            hasApiGetEnabled = false;
-
-        if (dicParser.ApiOptions.EnableGetAll & !hasApiGetEnabled)
+        if (formElement.ApiOptions.EnableGetAll && !hasApiGetEnabled)
         {
             AddError("Api", StringLocalizer["To enable sync the get APIs must be enabled."]);
         }

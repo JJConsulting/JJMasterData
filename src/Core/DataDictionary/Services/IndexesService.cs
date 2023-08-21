@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Data.Entity;
+﻿using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -15,9 +16,9 @@ public class IndexesService : BaseService
     {
     }
 
-    public bool Save(string id, string index, ElementIndex elementIndex)
+    public async Task<bool> SaveAsync(string id, string index, ElementIndex elementIndex)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(id);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(id);
 
         
         if (!string.IsNullOrEmpty(index))
@@ -31,7 +32,7 @@ public class IndexesService : BaseService
 
         if (Validate(elementIndex))
         {
-            DataDictionaryRepository.InsertOrReplace(formElement);
+            await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
         }
 
         return IsValid;
@@ -46,35 +47,35 @@ public class IndexesService : BaseService
         return IsValid;
     }
 
-    public void Delete(string dictionaryName, string index)
+    public async Task DeleteAsync(string dictionaryName, string index)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var dictionary = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var elementIndex = dictionary.Indexes[int.Parse(index)];
         dictionary.Indexes.Remove(elementIndex);
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        await DataDictionaryRepository.InsertOrReplaceAsync(dictionary);
     }
 
-    public void MoveDown(string dictionaryName, string index)
+    public async Task MoveDownAsync(string dictionaryName, string index)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var dictionary = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var indexes = dictionary.Indexes;
         int indexToMoveDown = int.Parse(index);
         if (indexToMoveDown >= 0 && indexToMoveDown < indexes.Count - 1)
         {
             (indexes[indexToMoveDown + 1], indexes[indexToMoveDown]) = (indexes[indexToMoveDown], indexes[indexToMoveDown + 1]);
-            DataDictionaryRepository.InsertOrReplace(dictionary);
+            await DataDictionaryRepository.InsertOrReplaceAsync(dictionary);
         }
     }
 
-    public void MoveUp(string dictionaryName, string index)
+    public async Task MoveUpAsync(string dictionaryName, string index)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var dictionary = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var indexes = dictionary.Indexes;
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)
         {
             (indexes[indexToMoveUp - 1], indexes[indexToMoveUp]) = (indexes[indexToMoveUp], indexes[indexToMoveUp - 1]);
-            DataDictionaryRepository.InsertOrReplace(dictionary);
+            await DataDictionaryRepository.InsertOrReplaceAsync(dictionary);
         }
     }
 

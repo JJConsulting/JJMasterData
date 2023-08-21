@@ -16,17 +16,17 @@ public abstract class ComponentBase
 {
     #region "Properties"
 
-    private IDictionary<string,dynamic>_userValues;
-    private IDictionary<string,dynamic> _attributes;
+    private IDictionary<string, object>_userValues;
+    private IDictionary<string, string> _attributes;
 
     
     /// <summary>
     /// Values specified by the user.
     /// Used to replace values who support expression during runtime .
     /// </summary>
-    public IDictionary<string,dynamic>UserValues
+    public IDictionary<string, object>UserValues
     {
-        get => _userValues ??= new Dictionary<string,dynamic>();
+        get => _userValues ??= new Dictionary<string, object>();
         set => _userValues = value;
     }
     
@@ -42,9 +42,9 @@ public abstract class ComponentBase
     /// <summary>
     /// HTML attributes represented by key/value pairs
     /// </summary>
-    public IDictionary<string,dynamic> Attributes
+    public IDictionary<string, string> Attributes
     {
-        get => _attributes ??= new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        get => _attributes ??= new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         set => _attributes = value;
     }
 
@@ -54,18 +54,23 @@ public abstract class ComponentBase
     
     public string GetAttr(string key)
     {
-        return Attributes.TryGetValue(key, out var attribute) ? attribute.ToString() : string.Empty;
+        return Attributes.TryGetValue(key, out var attribute) ? attribute : string.Empty;
     }
 
     public void SetAttr(string key, object value)
     {
-        Attributes[key] = value;
-
         if (value == null || string.IsNullOrEmpty(value.ToString()))
-            Attributes.Remove(key);
+        {
+            if (Attributes.ContainsKey(key))
+                Attributes.Remove(key);
+        }
+        else
+        {
+            Attributes[key] = value.ToString();
+        }
     }
 
-    public void SetAttr(IDictionary<string,dynamic> values)
+    public void SetAttr(IDictionary<string, object> values)
     {
         if (values == null)
             return;

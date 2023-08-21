@@ -6,6 +6,7 @@ using JJMasterData.Core.Web.Components;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data;
 
 namespace JJMasterData.Core.UI.Components.GridView;
 
@@ -55,23 +56,23 @@ internal class GridSqlCommandAction
                && cmdAction.ApplyOnSelected;
     }
 
-    private async Task ExecuteOnList(SqlCommandAction cmdAction, List<IDictionary<string, dynamic>> selectedRows)
+    private async Task ExecuteOnList(SqlCommandAction cmdAction, List<IDictionary<string, object>> selectedRows)
     {
-        var listSql = new List<string>();
+        var commandList = new List<DataAccessCommand>();
         foreach (var row in selectedRows)
         {
             var formData = new FormStateData(row, _gridView.UserValues, PageState.List);
             string sql = _gridView.ExpressionsService.ParseExpression(cmdAction.CommandSql, formData, false);
-            listSql.Add(sql);
+            commandList.Add(new DataAccessCommand(sql!));
         }
 
-        await _gridView.EntityRepository.SetCommandAsync(listSql);
+        await _gridView.EntityRepository.SetCommandListAsync(commandList);
     }
 
     private async Task ExecuteOnRecord(ActionMap map, SqlCommandAction cmdAction)
     {
         var formElement = _gridView.FormElement;
-        IDictionary<string, dynamic> formValues;
+        IDictionary<string, object> formValues;
         if (map.PkFieldValues != null && (map.PkFieldValues != null ||
                                           map.PkFieldValues.Count > 0))
         {
@@ -84,7 +85,7 @@ internal class GridSqlCommandAction
 
         var formData = new FormStateData(formValues, _gridView.UserValues, PageState.List);
         string sql = _gridView.ExpressionsService.ParseExpression(cmdAction.CommandSql, formData, false);
-        await _gridView.EntityRepository.SetCommandAsync(sql);
+        await _gridView.EntityRepository.SetCommandAsync(new DataAccessCommand(sql!));
     }
 
 }

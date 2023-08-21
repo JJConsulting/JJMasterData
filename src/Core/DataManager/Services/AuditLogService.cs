@@ -42,9 +42,9 @@ public class AuditLogService : IAuditLogService
         Options = options.Value;
     }
 
-    public async Task LogAsync(Element element,DataContext dataContext, IDictionary<string,dynamic> formValues, CommandOperation action)
+    public async Task LogAsync(Element element,DataContext dataContext, IDictionary<string, object> formValues, CommandOperation action)
     {
-        var values = new Dictionary<string,dynamic>()
+        var values = new Dictionary<string, object>()
         {
             { DicName, element.Name },
             { DicKey, GetKey(element, formValues) },
@@ -74,7 +74,7 @@ public class AuditLogService : IAuditLogService
         }
     }
 
-    private static string GetJsonFields(IDictionary<string,dynamic>formValues)
+    private static string GetJsonFields(IDictionary<string, object>formValues)
     {
         var valuesAux = formValues
             .Where(item => item.Value is not DBNull)
@@ -83,7 +83,7 @@ public class AuditLogService : IAuditLogService
         return JsonConvert.SerializeObject(valuesAux);
     }
 
-    public string GetKey(Element element, IDictionary<string,dynamic>values)
+    public string GetKey(Element element, IDictionary<string, object>values)
     {
         var key = new StringBuilder();
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);

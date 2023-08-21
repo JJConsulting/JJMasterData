@@ -41,15 +41,15 @@ internal class GridTableBody
 
     private async IAsyncEnumerable<HtmlBuilder> GetRowsList()
     {
-        var rows = GridView.DataSource.Rows;
+        var rows = GridView.DataSource;
 
-        for (int i = 0; i < rows.Count; i++)
+        for (int i = 0; i < rows?.Count; i++)
         {
             yield return await GetRowHtml(rows[i], i);
         }
     }
 
-    internal async Task<HtmlBuilder> GetRowHtml(DataRow row, int index)
+    internal async Task<HtmlBuilder> GetRowHtml(IDictionary<string,object> row, int index)
     {
         var html = new HtmlBuilder(HtmlTag.Tr);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
@@ -64,7 +64,7 @@ internal class GridTableBody
         return html;
     }
 
-    internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(DataRow row, int index)
+    internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(IDictionary<string,object> row, int index)
     {
         var values = await GetValues(row);
         var formData = new FormStateData(values, GridView.UserValues, PageState.List);
@@ -100,7 +100,7 @@ internal class GridTableBody
         }
     }
     
-    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(DataRow row, int index, IDictionary<string, dynamic> values, string onClickScript)
+    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(IDictionary<string,object> row, int index, IDictionary<string, object> values, string onClickScript)
     {
         await foreach (var field in GridView.GetVisibleFieldsAsync())
         {
@@ -159,7 +159,7 @@ internal class GridTableBody
         }
     }
 
-    private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, DataRow row, int index, IDictionary<string, dynamic> values,
+    private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, IDictionary<string,object> row, int index, IDictionary<string, object> values,
         string value)
     {
         string name = GridView.GetFieldName(field.Name, values);
@@ -180,7 +180,7 @@ internal class GridTableBody
 
         var control = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, values, GridView.UserValues, PageState.List, GridView.Name, value);
         control.Name = name;
-        control.Attributes.Add("nRowId", index);
+        control.Attributes.Add("nRowId", index.ToString());
         control.CssClass = field.Name;
 
         var renderCell = OnRenderCell;
@@ -311,7 +311,7 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private JJCheckBox GetMultiSelect(DataRow row, int index, IDictionary<string, dynamic> values)
+    private JJCheckBox GetMultiSelect(IDictionary<string,object> row, int index, IDictionary<string, object> values)
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -374,18 +374,12 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private async Task<IDictionary<string, dynamic>> GetValues(DataRow row)
+    private async Task<IDictionary<string, object>> GetValues(IDictionary<string,object> row)
     {
-        var values = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
-        for (int i = 0; i < row.Table.Columns.Count; i++)
-        {
-            values.Add(row.Table.Columns[i].ColumnName, row[i]);
-        }
-
         if (!GridView.EnableEditMode)
-            return values;
+            return row;
 
-        var prefixName = GridView.GetFieldName(string.Empty, values);
-        return await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(GridView.FormElement, PageState.List,values, GridView.AutoReloadFormFields, prefixName);
+        var prefixName = GridView.GetFieldName(string.Empty, row);
+        return await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(GridView.FormElement, PageState.List,row, GridView.AutoReloadFormFields, prefixName);
     }
 }

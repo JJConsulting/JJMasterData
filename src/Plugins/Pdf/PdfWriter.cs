@@ -29,6 +29,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -48,6 +49,20 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
     public IEntityRepository EntityRepository { get; } 
     
     public IFieldFormattingService FieldFormattingService { get; }
+    
+    public ControlFactory ControlFactory { get; }
+    public PdfWriter(IExpressionsService expressionsService, 
+                     IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+                     IOptions<JJMasterDataCoreOptions> options, 
+                     IControlFactory<JJTextFile> textFileFactory, 
+                     ILogger<PdfWriter> logger, 
+                     IEntityRepository entityRepository, 
+                     IFieldFormattingService fieldFormattingService, ControlFactory controlFactory) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    {
+        EntityRepository = entityRepository;
+        FieldFormattingService = fieldFormattingService;
+        ControlFactory = controlFactory;
+    }
     
     public override async Task GenerateDocument(Stream ms, CancellationToken token)
     {
@@ -88,17 +103,16 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         table.UseAllAvailableWidth();
         document.Add(table);
 
-        GenerateHeader(table);
-        GenerateBody(table, token);
+        await GenerateHeaderAsync(table);
+        await GenerateBody(table, token);
 
         table.Complete();
         document.Close();
         pdf.Close();
     }
 
-    private async Task GenerateHeader(Table table)
+    private async Task GenerateHeaderAsync(Table table)
     {
-        
         var fields = await GetVisibleFieldsAsync();
         foreach (var field in fields)
         {
@@ -110,34 +124,51 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         table.Flush();
     }
 
-    private void GenerateBody(Table table, CancellationToken token)
+    private async Task GenerateBody(Table table, CancellationToken token)
     {
-        int tot = 0;
+
         if (DataSource == null)
         {
-            DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
-            ProcessReporter.TotalRecords = tot;
-            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
+            var entityParameters = new EntityParameters
+            {
+                Parameters = CurrentFilter,
+                RecordsPerPage = RecordsPerPage,
+                OrderBy = CurrentOrder,
+                CurrentPage = 1,
+            };
+            var result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+            DataSource = result.Data;
+            ProcessReporter.TotalOfRecords = result.TotalOfRecords;
+            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);
-            GenerateRows(table, token);
+            await GenerateRows(table, token);
 
-            int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
+            int totPag = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
-                GenerateRows(table, token);
+                entityParameters = new EntityParameters
+                {
+                    Parameters = CurrentFilter,
+                    RecordsPerPage = RecordsPerPage,
+                    OrderBy = CurrentOrder,
+                    CurrentPage = i,
+                };
+                result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                DataSource = result.Data;
+                TotalOfRecords = result.TotalOfRecords;
+                await GenerateRows(table, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.Rows.Count;
-            GenerateRows(table, token);
+            ProcessReporter.TotalOfRecords = TotalOfRecords;
+            await GenerateRows(table, token);
         }
     }
 
     private async Task GenerateRows(Table table, CancellationToken token)
     {
-        foreach (DataRow row in DataSource.Rows)
+        foreach (Dictionary<string,object> row in DataSource)
         {
             var scolor = (ShowRowStriped && (ProcessReporter.TotalProcessed % 2) == 0) ? "white" : "#f2fdff";
             var wcolor = WebColors.GetRGBColor(scolor);
@@ -145,7 +176,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
             var fields = await GetVisibleFieldsAsync();
             foreach (FormElementField field in fields)
             {
-                var cell = await CreateCell(row, field);
+                var cell = await CreateCellAsync(row, field);
                 table.AddCell(cell);
                 table.Flush();
             }
@@ -156,26 +187,22 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         }
     }
     
-    private async Task<Cell> CreateCell(DataRow row, FormElementField field)
+    private async Task<Cell> CreateCellAsync(Dictionary<string,object> row, FormElementField field)
     {
         string value = string.Empty;
         Text image = null;
-
-        var values = new Dictionary<string,dynamic>();
-        for (int i = 0; i < row.Table.Columns.Count; i++)
-        {
-            values.Add(row.Table.Columns[i].ColumnName, row[i]);
-        }
 
         if (field.DataBehavior != FieldBehavior.Virtual)
         {
             if (field.Component == FormComponent.ComboBox && field.DataItem != null)
             {
-                value = await GetComboBoxValue(field, values, image);
+                var valRet = await GetComboBoxValueAsync(field, row);
+                value = valRet.Item1;
+                image = valRet.Item2;
             }
             else
             {
-                value = await FieldFormattingService.FormatGridValueAsync(field, values,null);
+                value = await FieldFormattingService.FormatGridValueAsync(field, row,null);
             }
         }
 
@@ -267,11 +294,12 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         }
     }
 
-    private async Task<string> GetComboBoxValue(FormElementField field, IDictionary<string,dynamic> values, Text image)
+    private async Task<(string, Text)> GetComboBoxValueAsync(FormElementField field, IDictionary<string, object> values)
     {
         if (values == null || !values.ContainsKey(field.Name) || values[field.Name] == null)
-            return string.Empty;
-
+            return (string.Empty, null);
+        
+        Text image = null;
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
         var cbo = (JJComboBox)(await ControlFactory.CreateAsync(FormElement,field, values,null, PageState.List,null, selectedValue));
@@ -279,7 +307,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
 
         if (item != null)
         {
-            if (field.DataItem.ReplaceTextOnGrid)
+            if (field.DataItem!.ReplaceTextOnGrid)
             {
                 value = " " + item.Description.Trim();
             }
@@ -299,7 +327,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
             value = selectedValue;
         }
 
-        return value;
+        return (value, image);
     }
 
     private PdfFont CreateFontAwesomeIcon()
@@ -317,12 +345,12 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         
         if (resFilestream == null)
             return null;
+        
         byte[] ba = new byte[resFilestream.Length];
+        // ReSharper disable once MustUseReturnValue
         resFilestream.Read(ba, 0, ba.Length);
         return ba;
     }
 
-    public PdfWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
-    {
-    }
+
 }

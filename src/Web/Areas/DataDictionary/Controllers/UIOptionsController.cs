@@ -13,20 +13,20 @@ public class UIOptionsController : DataDictionaryController
         _optionsService = optionsService;
     }
 
-    public ActionResult Index(string dictionaryName)
+    public async Task<ActionResult> Index(string dictionaryName)
     {
-        return View(Populate(dictionaryName));
+        return View(await Populate(dictionaryName));
     }
 
-    public ActionResult Edit(string dictionaryName)
+    public async Task<ActionResult> Edit(string dictionaryName)
     {
-        return View(Populate(dictionaryName));
+        return View(await Populate(dictionaryName));
     }
 
     [HttpPost]
-    public ActionResult Edit(FormElementOptions uIMetadataOptions, string dictionaryName)
+    public async Task<ActionResult> Edit(FormElementOptions uIMetadataOptions, string dictionaryName)
     {
-        if (_optionsService!.EditOptions(uIMetadataOptions, dictionaryName))
+        if (await _optionsService!.EditOptionsAsync(uIMetadataOptions, dictionaryName))
             return RedirectToAction("Index", new { dictionaryName });
 
         var jjValidationSummary = _optionsService.GetValidationSummary();
@@ -37,9 +37,9 @@ public class UIOptionsController : DataDictionaryController
         return View(uIMetadataOptions);
     }
 
-    private FormElementOptions Populate(string dictionaryName)
+    private async Task<FormElementOptions> Populate(string dictionaryName)
     {
-        var dicParser = _optionsService!.DataDictionaryRepository.GetMetadata(dictionaryName);
+        var dicParser = await _optionsService!.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var uIOptions = dicParser.Options;
         ViewBag.MenuId = "Options";
         ViewBag.DictionaryName = dictionaryName;

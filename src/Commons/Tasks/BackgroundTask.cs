@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks.Progress;
 
 namespace JJMasterData.Commons.Tasks;

@@ -1,6 +1,7 @@
 ﻿using JJMasterData.Commons.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -14,9 +15,9 @@ public class PanelService : BaseService
     {
     }
 
-    public void SavePanel(string dictionaryName, FormElementPanel panel, string[] selectedFields)
+    public async Task SavePanelAsync(string dictionaryName, FormElementPanel panel, string[] selectedFields)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
 
         if (selectedFields?.Length == 0)
         {
@@ -60,7 +61,7 @@ public class PanelService : BaseService
             }
         }
         
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }
 
     public bool ValidatePanel(FormElementPanel panel)
@@ -77,9 +78,9 @@ public class PanelService : BaseService
         return IsValid;
     }
 
-    public bool DeleteField(string dictionaryName, int panelId)
+    public async Task<bool> DeleteFieldAsync(string dictionaryName, int panelId)
     {
-        var dictionary = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var dictionary = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
 
         for (int i = 0; i < dictionary.Panels.Count; i++)
         {
@@ -93,14 +94,14 @@ public class PanelService : BaseService
                 f.PanelId = 0;
         }
 
-        DataDictionaryRepository.InsertOrReplace(dictionary);
+        await DataDictionaryRepository.InsertOrReplaceAsync(dictionary);
 
         return IsValid;
     }
 
-    public bool SortPanels(string elementName, string[] orderFields)
+    public async Task<bool> SortPanelsAsync(string elementName, string[] orderFields)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement =await DataDictionaryRepository.GetMetadataAsync(elementName);
         var newList = new List<FormElementPanel>();
         for (int i = 0; i < orderFields.Length; i++)
         {
@@ -113,18 +114,18 @@ public class PanelService : BaseService
             formElement.Panels[i] = newList[i];
         }
         
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
         return true;
     }
 
-    public FormElementPanel CopyPanel(string dictionaryName, FormElementPanel panel)
+    public async Task<FormElementPanel> CopyPanel(string dictionaryName, FormElementPanel panel)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var newPanel = panel.DeepCopy();
         newPanel.PanelId = 1 + formElement.Panels.Max(x => x.PanelId);
         formElement.Panels.Add(newPanel);
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
         return newPanel;
     }

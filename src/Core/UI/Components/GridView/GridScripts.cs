@@ -40,7 +40,7 @@ public class GridScripts
             return $"GridView.sorting('{_gridView.Name}','{url}','{fieldName}')";
         }
         
-        return $"JJView.sortFormValues('{_gridView.Name}','{_gridView.EnableAjax.ToString().ToLower()}','{fieldName}')";
+        return $"JJView.sortFormValues('{_gridView.Name}','{JJGridView.EnableAjax.ToString().ToLower()}','{fieldName}')";
     }
 
     public string GetPaginationScript(int page)
@@ -52,7 +52,7 @@ public class GridScripts
             return $"GridView.pagination('{name}', '{url}', {page})";
         }
 
-        return $"JJView.paginateGrid('{name}', {_gridView.EnableAjax.ToString().ToLower()}, {page})";
+        return $"JJView.paginateGrid('{name}', {JJGridView.EnableAjax.ToString().ToLower()}, {page})";
     }
     
     public string GetFilterScript()
@@ -63,7 +63,7 @@ public class GridScripts
             var url = GetUrl();
             return $"GridView.filter('{name}', '{url}')";
         }
-        return $"JJView.filter('{name}','{_gridView.EnableAjax.ToString().ToLower()}')";
+        return $"JJView.filter('{name}','{JJGridView.EnableAjax.ToString().ToLower()}')";
     }
     
     public string GetClearFilterScript()
@@ -74,7 +74,7 @@ public class GridScripts
             var url = GetUrl();
             return $"GridView.clearFilter('{name}', '{url}')";
         }
-        return $"JJView.clearFilter('{_gridView.Name}','{_gridView.EnableAjax.ToString().ToLower()}')";
+        return $"JJView.clearFilter('{_gridView.Name}','{JJGridView.EnableAjax.ToString().ToLower()}')";
     }
 
     public string GetSelectAllScript()
@@ -87,10 +87,10 @@ public class GridScripts
             return $"GridView.selectAllRows('{name}', '{url}')";
         }
 
-        return $"JJView.selectAll('{name}','{_gridView.EnableAjax.ToString().ToLower()}')";
+        return $"JJView.selectAll('{name}','{JJGridView.EnableAjax.ToString().ToLower()}')";
     }
     
-    public string GetConfigUIScript(ConfigAction action, IDictionary<string, dynamic> formValues)
+    public string GetConfigUIScript(ConfigAction action, IDictionary<string, object> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, _gridView.FormElement, formValues, action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);

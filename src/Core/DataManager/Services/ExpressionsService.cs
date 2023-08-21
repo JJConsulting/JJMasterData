@@ -15,6 +15,7 @@ using System;
 using System.Data;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data;
 
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -150,8 +151,8 @@ public class ExpressionsService : IExpressionsService
         }
         else if (expression.StartsWith("sql:"))
         {
-            var exp = ParseExpression(expression, formStateData, false);
-            var obj = await EntityRepository.GetResultAsync(exp);
+            var parsedSql = ParseExpression(expression, formStateData, false);
+            var obj = await EntityRepository.GetResultAsync(new DataAccessCommand(parsedSql!));
             result = ParseBool(obj);
         }
         else
@@ -178,15 +179,15 @@ public class ExpressionsService : IExpressionsService
         if (field == null)
             throw new ArgumentNullException(nameof(field), StringLocalizer["FormElementField can not be null"]);
 
-        string? retVal = null;
+        string? result = null;
         try
         {
             if (expression!.StartsWith("val:"))
             {
                 if (expression.Contains("{"))
-                    retVal = ParseExpression(expression, formStateData, false);
+                    result = ParseExpression(expression, formStateData, false);
                 else
-                    retVal = expression.Replace("val:", "").Trim();
+                    result = expression.Replace("val:", "").Trim();
             }
             else if (expression.StartsWith("exp:"))
             {
@@ -196,9 +197,9 @@ public class ExpressionsService : IExpressionsService
                     if (field.DataType == FieldType.Float)
                         exp = exp?.Replace(".", "").Replace(",", ".");
 
-                    retVal = exp; //When parse is string id
+                    result = exp; //When parse is string id
                     var dt = new DataTable();
-                    retVal = dt.Compute(exp, "").ToString();
+                    result = dt.Compute(exp, "").ToString();
                     dt.Dispose();
                 }
                 catch (Exception ex)
@@ -211,10 +212,10 @@ public class ExpressionsService : IExpressionsService
             }
             else if (expression.StartsWith("sql:"))
             {
-                var exp = ParseExpression(expression, formStateData, false);
-                var obj = await EntityRepository.GetResultAsync(exp);
+                var parsedSql = ParseExpression(expression, formStateData, false);
+                var obj = await EntityRepository.GetResultAsync(new DataAccessCommand(parsedSql!));
                 if (obj != null)
-                    retVal = obj.ToString();
+                    result = obj.ToString();
             }
             else if (expression.StartsWith("protheus:"))
             {
@@ -228,7 +229,7 @@ public class ExpressionsService : IExpressionsService
                 if (exp.Length >= 3)
                     parms = ParseExpression(exp[2], formStateData, false);
 
-                retVal = ProtheusManager.CallOrcLib(urlProtheus, functionName, parms);
+                result = ProtheusManager.CallOrcLib(urlProtheus, functionName, parms);
             }
             else
             {
@@ -272,8 +273,8 @@ public class ExpressionsService : IExpressionsService
             throw exception;
         }
 
-        return retVal;
+        return result;
     }
 
-    private bool ParseBool(object? value) => StringManager.ParseBool(value);
+    private static bool ParseBool(object? value) => StringManager.ParseBool(value);
 }

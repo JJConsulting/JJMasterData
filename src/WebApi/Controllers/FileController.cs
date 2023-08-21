@@ -18,40 +18,40 @@ public class FileController : ControllerBase
     
     [HttpGet]
     [Route("{fileName}")]
-    public IActionResult GetFile(string elementName, string id, string fieldName, string fileName)
+    public async Task<IActionResult> GetFile(string elementName, string id, string fieldName, string fileName)
     {
-        var fileStream = _service.GetDictionaryFile(elementName, id, fieldName, fileName);
+        var fileStream = await _service.GetDictionaryFileAsync(elementName, id, fieldName, fileName);
 
         return File(fileStream, "application/octet-stream", fileName);
     }
     
     [HttpPost]
-    public IActionResult PostFile(string elementName, string fieldName, string id, IFormFile file)
+    public async Task<IActionResult> PostFile(string elementName, string fieldName, string id, IFormFile file)
     {
-        _service.SetDictionaryFile(elementName, fieldName, id, file);
+        await _service.SetDictionaryFileAsync(elementName, fieldName, id, file);
 
         return Created($"masterApi/{elementName}/{id}/{fieldName}/{file.FileName}", "File successfully created.");
     }
     
     [HttpPatch]
     [Route("{fileName}")]
-    public IActionResult RenameFile(
+    public async Task<IActionResult> RenameFile(
         string elementName,
         string fieldName,
         string id,
         string fileName,
         [FromQuery] string newName)
     {
-        _service.RenameFile(elementName, fieldName, id, fileName, newName);
+        await _service.RenameFileAsync(elementName, fieldName, id, fileName, newName);
 
         return Ok($"File sucessfuly renamed from {fileName} to {newName}");
     }
     
     [HttpDelete]
     [Route("{fileName}")]
-    public IActionResult DeleteFile(string elementName, string fieldName, string id, string fileName)
+    public async Task<IActionResult> DeleteFile(string elementName, string fieldName, string id, string fileName)
     {
-        _service.DeleteFile(elementName, fieldName, id, fileName);
+        await _service.DeleteFileAsync(elementName, fieldName, id, fileName);
 
         return Ok("File successfully deleted.");
     }

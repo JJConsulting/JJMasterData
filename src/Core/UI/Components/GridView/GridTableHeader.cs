@@ -23,7 +23,7 @@ internal class GridTableHeader
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Thead);
-        if (GridView.DataSource?.Rows.Count == 0 && !GridView.ShowHeaderWhenEmpty)
+        if (GridView.DataSource?.Count == 0 && !GridView.ShowHeaderWhenEmpty)
             return html;
 
         await html.AppendAsync(HtmlTag.Tr, async tr =>
@@ -80,9 +80,10 @@ internal class GridTableHeader
                 });
             });
 
-            if (!string.IsNullOrEmpty(GridView.CurrentOrder))
+            var orderByString = GridView.CurrentOrder.ToQueryParameter();
+            if (!string.IsNullOrEmpty(orderByString))
             {
-                foreach (string orderField in GridView.CurrentOrder.Split(','))
+                foreach (string orderField in orderByString.Split(','))
                 {
                     string order = orderField.Trim();
                     if (string.IsNullOrWhiteSpace(order))
@@ -108,11 +109,12 @@ internal class GridTableHeader
                     th.Append(GetAscendingIcon());
             }
 
-            bool isAppliedFilter = GridView.GetCurrentFilterAsync() != null &&
+            var currentFilter = await GridView.GetCurrentFilterAsync();
+            bool isAppliedFilter = 
                                    field.Filter.Type != FilterMode.None &&
                                    !GridView.RelationValues.ContainsKey(field.Name) &&
-                                   ((await GridView.GetCurrentFilterAsync()).ContainsKey(field.Name) ||
-                                    (await GridView.GetCurrentFilterAsync()).ContainsKey(field.Name + "_from"));
+                                   (currentFilter.ContainsKey(field.Name) ||
+                                    currentFilter.ContainsKey(field.Name + "_from"));
 
             if (isAppliedFilter)
             {
@@ -183,7 +185,7 @@ internal class GridTableHeader
         }
         else
         {
-            int totalPages = (int)Math.Ceiling(GridView.TotalRecords / (double)GridView.CurrentSettings.TotalPerPage);
+            int totalPages = (int)Math.Ceiling(GridView.TotalOfRecords / (double)GridView.CurrentSettings.RecordsPerPage);
             if (totalPages <= 1)
                 hasPages = false;
         }
@@ -224,14 +226,14 @@ internal class GridTableHeader
                         a.AppendText(StringLocalizer["Unmark all selected records"]);
                     });
                 });
-                ul.AppendIf(GridView.TotalRecords <= 50000, HtmlTag.Li, li =>
+                ul.AppendIf(GridView.TotalOfRecords <= 50000, HtmlTag.Li, li =>
                 {
                     li.WithCssClass("dropdown-item");
                     li.Append(HtmlTag.A, a =>
                     {
                         a.WithAttribute("href", "javascript:void(0);");
                         a.WithAttribute("onclick", GridView.Scripts.GetSelectAllScript());
-                        a.AppendText(GridView.StringLocalizer["Mark all {0} records", GridView.TotalRecords]);
+                        a.AppendText(GridView.StringLocalizer["Mark all {0} records", GridView.TotalOfRecords]);
                     });
                 });
             });

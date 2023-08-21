@@ -14,7 +14,7 @@ namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string? GetCurrentUserId(IHttpContext currentContext, IDictionary<string, dynamic>? userValues)
+    public static string? GetCurrentUserId(IHttpContext currentContext, IDictionary<string, object>? userValues)
     {
         if (userValues != null && userValues.TryGetValue("USERID", out var value))
         {
@@ -31,14 +31,14 @@ public static class DataHelper
     }
 
     
-    public static bool ContainsPkValues(Element element, IDictionary<string, dynamic> values)
+    public static bool ContainsPkValues(Element element, IDictionary<string, object> values)
     {
         var elementPks = GetElementPrimaryKeys(element);
 
         return elementPks.Count != 0 && elementPks.All(field => values.ContainsKey(field.Name));
     }
 
-    public static IDictionary<string, dynamic> GetPkValues(Element element, IDictionary<string, dynamic> values)
+    public static IDictionary<string, object> GetPkValues(Element element, IDictionary<string, object> values)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -46,7 +46,7 @@ public static class DataHelper
         if (values == null)
             throw new ArgumentNullException(nameof(values));
 
-        var primaryKeys = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var primaryKeys = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         var elementPks = GetElementPrimaryKeys(element);
 
         if (elementPks.Count == 0)
@@ -68,9 +68,9 @@ public static class DataHelper
         return element.Fields.Where(x => x.IsPk).ToList();
     }
 
-    public static Dictionary<string, dynamic> GetPkValues(Element element, string parsedValues, char separator)
+    public static Dictionary<string, object?> GetPkValues(Element element, string parsedValues, char separator)
     {
-        var primaryKeys = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var primaryKeys = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 
         var values = parsedValues.Split(separator);
         if (values == null || values.Length == 0)
@@ -96,7 +96,7 @@ public static class DataHelper
     /// <summary>
     /// Concat primary keys with separator characters
     /// </summary>
-    public static string ParsePkValues(FormElement formElement, IDictionary<string, dynamic> formValues, char separator)
+    public static string ParsePkValues(FormElement formElement, IDictionary<string, object> formValues, char separator)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -162,12 +162,12 @@ public static class DataHelper
     /// Preserves the original name of the field as registered in the dictionary
     /// and validates if the field exists
     /// </summary>
-    public static IDictionary<string, dynamic>? ParseOriginalName(FormElement formElement, IDictionary<string, dynamic>? paramValues)
+    public static IDictionary<string, object>? ParseOriginalName(FormElement formElement, IDictionary<string, object>? paramValues)
     {
         if (paramValues == null)
             return null;
 
-        var filters = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var filters = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entry in paramValues)
         {
             var field = formElement.Fields[entry.Key];
@@ -178,7 +178,7 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoDictionary(IDictionary<string, dynamic> valuesToBeReceived, IDictionary<string, dynamic>? valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoDictionary(IDictionary<string, object> valuesToBeReceived, IDictionary<string, object>? valuesToBeCopied, bool replaceIfExistKey)
     {
         if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;

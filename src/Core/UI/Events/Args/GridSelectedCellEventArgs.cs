@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using JJMasterData.Core.Web.Components;
 
@@ -12,7 +13,7 @@ public class GridSelectedCellEventArgs : EventArgs
     /// <summary>
     /// Linha atual com o valor de todos os campos
     /// </summary>
-    public DataRow DataRow { get; internal set; }
+    public IDictionary<string,object> DataRow { get; internal set; }
 
     /// <summary>
     /// Objeto renderizado

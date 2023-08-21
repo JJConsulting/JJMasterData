@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,6 +9,26 @@ namespace JJMasterData.Commons.Util;
 
 public static class EnumerableHelper
 {
+    
+    public static List<Dictionary<string, object?>> ConvertToDictionaryList(DataTable dataTable)
+    {
+        var list = new List<Dictionary<string, object?>>();
+
+        foreach (DataRow row in dataTable.Rows)
+        {
+            var dict = new Dictionary<string, object?>();
+
+            foreach (DataColumn col in dataTable.Columns)
+            {
+                dict[col.ColumnName] = row.IsNull(col) ? null : row[col];
+            }
+
+            list.Add(dict);
+        }
+
+        return list;
+    }
+    
     public static DataTable ConvertToDataTable<T>(IEnumerable<T> list)
     {
         var table = CreateDataTable<T>();

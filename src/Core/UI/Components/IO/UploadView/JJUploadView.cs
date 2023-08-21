@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
@@ -102,7 +103,8 @@ public class JJUploadView : AsyncComponent
 
             var dt = GetDataTableFiles();
             _gridView = ComponentFactory.GridView.Create(new FormElement(dt));
-            _gridView.DataSource = dt;
+            _gridView.DataSource = EnumerableHelper.ConvertToDictionaryList(dt);
+            _gridView.TotalOfRecords = dt.Rows.Count;
             _gridView.FormElement.Title = Title;
             _gridView.FormElement.SubTitle = SubTitle;
             
@@ -600,9 +602,9 @@ public class JJUploadView : AsyncComponent
         return html;
     }
 
-    private static IDictionary<string,dynamic> ConvertFormFileToDictionary(FormFileContent file)
+    private static IDictionary<string, object> ConvertFormFileToDictionary(FormFileContent file)
     {
-        var dictionary = new Dictionary<string,dynamic>
+        var dictionary = new Dictionary<string, object>
         {
             { FileName, file.FileName },
             { LastWriteTime, file.LastWriteTime },

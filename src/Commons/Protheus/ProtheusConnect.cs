@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Protheus;
@@ -211,7 +210,7 @@ public class ProtheusConnect : IDisposable
         {
             lRet = CallCallProc(objectID, cFunction);
         }
-        catch (AccessViolationException ex)
+        catch (AccessViolationException)
         {
             lRet = false;
         }

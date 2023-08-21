@@ -8,11 +8,11 @@ namespace JJMasterData.Core.DataManager;
 
 public class FormLetter
 {
-    private IDictionary<string,dynamic>? _errors;
+    private IDictionary<string, object>? _errors;
 
-    public IDictionary<string,dynamic> Errors 
+    public IDictionary<string, object> Errors 
     {
-        get => _errors ??= new Dictionary<string,dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        get => _errors ??= new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         set => _errors = value;
     }
 
@@ -27,7 +27,7 @@ public class FormLetter
             
     }
 
-    public FormLetter(IDictionary<string,dynamic>errors)
+    public FormLetter(IDictionary<string, object>errors)
     {
         _errors = errors;
     }
@@ -38,6 +38,6 @@ public class FormLetter<T> : FormLetter
     public T? Result { get; set; }
     
     public FormLetter() : base() { }
-    public FormLetter(IDictionary<string,dynamic>errors) : base(errors) { }
+    public FormLetter(IDictionary<string, object>errors) : base(errors) { }
     
 }

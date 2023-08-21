@@ -24,7 +24,7 @@ public class FieldFormattingService : IFieldFormattingService
         LookupService = lookupService;
     }
 
-    public async Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, dynamic> values, IDictionary<string, dynamic> userValues)
+    public async Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
     {
         object fieldValue = null;
         if (values.TryGetValue(field.Name, out var value))
@@ -46,7 +46,7 @@ public class FieldFormattingService : IFieldFormattingService
                  when field.DataItem is { ReplaceTextOnGrid: true }:
                 var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
                 var formData = new FormStateData(values, PageState.List);
-                stringValue = await LookupService.GetDescriptionAsync(field.DataItem, formData, value, allowOnlyNumerics);
+                stringValue = await LookupService.GetDescriptionAsync(field.DataItem, formData, value.ToString(), allowOnlyNumerics);
                 break;
             case FormComponent.CheckBox:
                 stringValue = StringManager.ParseBool(value) ? "Sim" : "Não";

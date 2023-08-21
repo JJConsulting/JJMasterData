@@ -4,18 +4,18 @@ using JJMasterData.Commons.Data.Extensions;
 
 namespace JJMasterData.Commons.Test.Extensions;
 
-public class HashtableExtensionsTest
+public class DictionaryExtensionsTest
 {
     [Fact]
     public void ToModel_Test()
     {
-        var hashtable = new Hashtable
+        var dictionary = new Dictionary<string,object?>
         {
             { "Name", "Test" },
             { "Sync", true }
         };
 
-        var model = hashtable.ToModel<Element>();
+        var model = dictionary.ToModel<Element>();
 
         Assert.NotNull(model);
         Assert.Equal("Test", model.Name);

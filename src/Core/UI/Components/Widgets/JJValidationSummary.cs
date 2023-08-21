@@ -38,7 +38,7 @@ public class JJValidationSummary : HtmlComponent
         ShowCloseButton = true;
     }
 
-    public JJValidationSummary(IDictionary<string,dynamic>errors) : this()
+    public JJValidationSummary(IDictionary<string, object>errors) : this()
     {
         if (errors != null)
         {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,10 +28,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
-    /// <summary>
-    /// Exibi borda na grid 
-    /// (Default = false)
-    /// </summary>
+
     public bool ShowBorder { get; set; }
 
     /// <summary>
@@ -37,8 +36,8 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
-    public IEntityRepository EntityRepository { get; } 
-    public IFieldFormattingService FieldFormattingService { get; } 
+    private IEntityRepository EntityRepository { get; } 
+    private IFieldFormattingService FieldFormattingService { get; } 
 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
@@ -70,34 +69,50 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         sw.Close();
     }
 
-    public async Task GenerateBody(StreamWriter sw, CancellationToken token)
+    private async Task GenerateBody(StreamWriter sw, CancellationToken token)
     {
-        int tot = 0;
         if (DataSource == null)
         {
-            DataSource = EntityRepository.GetDataTable(FormElement, CurrentFilter as IDictionary, CurrentOrder, RegPerPag, 1, ref tot);
-            ProcessReporter.TotalRecords = tot;
-            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
+            var entityParameters = new EntityParameters
+            {
+                Parameters = CurrentFilter,
+                RecordsPerPage = RecordsPerPage,
+                OrderBy = CurrentOrder,
+                CurrentPage = 1,
+            };
+            var result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+            DataSource = result.Data;
+            ProcessReporter.TotalOfRecords = result.TotalOfRecords;
+            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);
             await GenerateRows(sw, token);
 
-            int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
+            int totPag = (int)Math.Ceiling((double)DataSource.Count / RecordsPerPage);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = EntityRepository.GetDataTable(FormElement, CurrentFilter as IDictionary, CurrentOrder, RegPerPag, i, ref tot);
+                entityParameters = new EntityParameters
+                {
+                    Parameters = CurrentFilter,
+                    CurrentPage = i,
+                    RecordsPerPage = RecordsPerPage,
+                    OrderBy = CurrentOrder
+                };
+                result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                DataSource = result.Data;
+                TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(sw, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.Rows.Count;
+            ProcessReporter.TotalOfRecords = TotalOfRecords;
             await GenerateRows(sw, token);
         }
     }
 
-    public async Task GenerateRows(StreamWriter sw, CancellationToken token)
+    private async Task GenerateRows(StreamWriter sw, CancellationToken token)
     {
-        foreach (DataRow row in DataSource.Rows)
+        foreach (var row in DataSource)
         {
             await sw.WriteAsync("\t\t\t<tr>");
             foreach (var field in await GetVisibleFieldsAsync())
@@ -128,12 +143,12 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         }
     }
 
-    private string CreateCell(DataRow row, FormElementField field)
+    private string CreateCell(Dictionary<string,object> row, FormElementField field)
     {
         string value = string.Empty;
         if (field.DataBehavior != FieldBehavior.Virtual)
         {
-            if (DataSource.Columns.Contains(field.Name))
+            if (row.Keys.Contains(field.Name))
             {
                 value = FieldFormattingService.FormatValue(field, row[field.Name]);
             }
@@ -171,8 +186,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         foreach (var field in await GetVisibleFieldsAsync())
         {
             string thStyle = "";
-            if (field.DataType == FieldType.Float ||
-                field.DataType == FieldType.Int)
+            if (field.DataType is FieldType.Float or FieldType.Int)
             {
                 thStyle = " style=\"text-align:right;\" ";
             }
@@ -183,7 +197,9 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         await sw.WriteLineAsync("\t\t\t</tr>");
     }
 
-    public ExcelWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    public ExcelWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger, IEntityRepository entityRepository, IFieldFormattingService fieldFormattingService) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
     {
+        EntityRepository = entityRepository;
+        FieldFormattingService = fieldFormattingService;
     }
 }

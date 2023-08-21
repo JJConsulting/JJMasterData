@@ -1,22 +1,18 @@
 ﻿using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataManager;
-using System.Collections;
-using System.Diagnostics;
-using System.Net;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.WebApi.Models;
-using JJMasterData.Core.FormEvents.Abstractions;
-using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
+using System.Collections;
+using System.Diagnostics;
+using System.Net;
 
 namespace JJMasterData.WebApi.Services;
 
@@ -32,7 +28,6 @@ public class MasterApiService
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
-    private readonly IFormEventHandlerFactory? _formEventResolver;
 
     public MasterApiService(
         AccountService accountService,
@@ -44,7 +39,6 @@ public class MasterApiService
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IFieldsService fieldsService,
-        IFormEventHandlerFactory? formEventResolver,
         IStringLocalizer<JJMasterDataResources> stringLocalizer
         )
     {
@@ -58,7 +52,6 @@ public class MasterApiService
         StringLocalizer = stringLocalizer;
         _entityRepository = entityRepository;
         _dataDictionaryRepository = dataDictionaryRepository;
-        _formEventResolver = formEventResolver;
     }
 
     public async Task<string> GetListFieldAsTextAsync(string elementName, int pag, int regporpag, string? orderby)
@@ -72,8 +65,13 @@ public class MasterApiService
 
         var filters = GetDefaultFilter(formElement, true);
         var showLogInfo = Debugger.IsAttached;
-        string text = _entityRepository.GetListFieldsAsText(formElement, filters as IDictionary, orderby, regporpag,
-            pag, showLogInfo);
+        string text = await _entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters()
+        {
+            Parameters = filters,
+            CurrentPage = pag,
+            RecordsPerPage = regporpag,
+            OrderBy = OrderByData.FromString(orderby)
+        }, showLogInfo);
         if (string.IsNullOrEmpty(text))
             throw new KeyNotFoundException("No records found");
 
@@ -92,16 +90,22 @@ public class MasterApiService
 
         var filters = GetDefaultFilter(dictionary, true);
         var element = dictionary;
-        var dt = _entityRepository.GetDataTable(element, filters as IDictionary, orderby, regporpag, pag, ref total);
+        var result = await _entityRepository.GetDictionaryListAsync(element, new EntityParameters
+        {
+            Parameters = filters,
+            CurrentPage = pag,
+            RecordsPerPage = regporpag,
+            OrderBy = OrderByData.FromString(orderby)
+        });
 
-        if (dt == null || dt.Rows.Count == 0)
+        if (result == null || result.Data.Count == 0)
             throw new KeyNotFoundException("No records found");
 
         var ret = new MasterApiListResponse
         {
-            Tot = total
+            TotalOfRecords = total
         };
-        ret.SetDataTableValues(dictionary, dt);
+        ret.SetData(dictionary, result.Data);
 
         return ret;
     }
@@ -131,13 +135,13 @@ public class MasterApiService
         return listRet;
     }
 
-    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<IDictionary<string, object>> paramsList,
         string elementName, bool replace = false)
     {
         if (paramsList == null)
             throw new ArgumentNullException(nameof(paramsList));
 
-        var formElement = GetDataDictionary(elementName);
+        var formElement = await GetDataDictionary(elementName);
         if (!formElement.ApiOptions.EnableAdd | !formElement.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
@@ -149,13 +153,13 @@ public class MasterApiService
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<IDictionary<string, object>> paramsList,
         string elementName)
     {
         if (paramsList == null)
             throw new JJMasterDataException("Invalid parameter or not a list");
 
-        var dictionary = GetDataDictionary(elementName);
+        var dictionary = await GetDataDictionary(elementName);
         if (!dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
@@ -165,13 +169,13 @@ public class MasterApiService
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<IDictionary<string, dynamic>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<IDictionary<string, object>> paramsList,
         string elementName)
     {
         if (paramsList == null)
             throw new ArgumentNullException(nameof(paramsList));
 
-        var formElement = GetDataDictionary(elementName);
+        var formElement = await GetDataDictionary(elementName);
         if (!formElement.ApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();
 
@@ -185,7 +189,7 @@ public class MasterApiService
         }
     }
 
-    private async Task<ResponseLetter> Insert(FormElement formElement, IDictionary<string, dynamic> apiValues,
+    private async Task<ResponseLetter> Insert(FormElement formElement, IDictionary<string, object> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -215,7 +219,7 @@ public class MasterApiService
         return ret;
     }
 
-    private async Task<ResponseLetter> Update(FormElement formElement, IDictionary<string, dynamic> apiValues)
+    private async Task<ResponseLetter> Update(FormElement formElement, IDictionary<string, object> apiValues)
     {
         ResponseLetter ret;
         try
@@ -247,7 +251,7 @@ public class MasterApiService
         return ret;
     }
 
-    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, IDictionary<string, dynamic> apiValues,
+    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, IDictionary<string, object> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -284,13 +288,13 @@ public class MasterApiService
         return ret;
     }
 
-    private async Task<ResponseLetter> Patch(FormElement formElement, IDictionary<string, dynamic> values)
+    private async Task<ResponseLetter> Patch(FormElement formElement, IDictionary<string, object> values)
     {
         ResponseLetter ret;
         try
         {
             if (values == null || values.Count == 0)
-                throw new ArgumentException("Invalid parameter or not found", nameof(values));
+                throw new ArgumentException(@"Invalid parameter or not found", nameof(values));
 
             var parsedValues = DataHelper.ParseOriginalName(formElement, values);
             var pkValues = DataHelper.GetPkValues(formElement, parsedValues!);
@@ -314,7 +318,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(id))
             throw new ArgumentNullException(nameof(id));
 
-        var dictionary = GetDataDictionary(elementName);
+        var dictionary = await GetDataDictionary(elementName);
         if (!dictionary.ApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
 
@@ -342,12 +346,14 @@ public class MasterApiService
     /// Fired when triggering the form
     /// </summary>
     public async Task<Dictionary<string, FormValues>> PostTriggerAsync(
-        string elementName, IDictionary<string, dynamic>? paramValues, PageState pageState, string objname = "")
+        string elementName, IDictionary<string, object>? paramValues, 
+        PageState pageState, 
+        string objname = "")
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
+        var dictionary = await _dataDictionaryRepository.GetMetadataAsync(elementName);
 
         if (!dictionary.ApiOptions.EnableAdd & !dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
@@ -359,7 +365,7 @@ public class MasterApiService
         };
 
         var newValues = await FieldsService.MergeWithExpressionValuesAsync(dictionary, values, pageState, false);
-        var formData = new FormStateData(newValues, pageState);
+        var formData = new FormStateData(newValues, userValues, pageState);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (var field in dictionary.Fields)
         {
@@ -377,7 +383,7 @@ public class MasterApiService
                 if (field.Component is FormComponent.ComboBox or FormComponent.Search)
                 {
                     formValues.DataItems = await DataItemService
-                        .GetValuesAsync(field.DataItem, new(newValues, null, pageState), null,null )
+                        .GetValuesAsync(field.DataItem, formData, null,null )
                         .ToListAsync();
                 }
             }
@@ -391,7 +397,7 @@ public class MasterApiService
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private IDictionary<string, dynamic> ParseFilter(FormElement metadata, IDictionary<string, dynamic>? paramValues)
+    private IDictionary<string, object> ParseFilter(FormElement metadata, IDictionary<string, object>? paramValues)
     {
         var filters = GetDefaultFilter(metadata);
         if (paramValues == null)
@@ -399,21 +405,20 @@ public class MasterApiService
 
         foreach (var entry in paramValues)
         {
-            //if field not exists, generate a exception
             var field = metadata.Fields[entry.Key];
-            if (!filters.ContainsKey(entry.Key ?? string.Empty))
-                filters.Add(field.Name, StringManager.ClearText(entry.Value?.ToString()!));
+            if (!filters.ContainsKey(entry.Key))
+                filters.Add(field.Name, StringManager.ClearText(entry.Value.ToString()!));
         }
 
         return filters;
     }
 
-    private IDictionary<string, dynamic> GetDefaultFilter(FormElement formElement, bool loadQueryString = false)
+    private IDictionary<string, object> GetDefaultFilter(FormElement formElement, bool loadQueryString = false)
     {
         if (_httpContext == null)
             throw new NullReferenceException(nameof(_httpContext));
 
-        var filters = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var filters = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         if (loadQueryString)
         {
             var qnvp = _httpContext.Request.Query.Keys;
@@ -437,7 +442,7 @@ public class MasterApiService
         }
         else
         {
-            if (!userId.Equals(filters[formElement.ApiOptions.ApplyUserIdOn]!.ToString()))
+            if (!userId.Equals(filters[formElement.ApiOptions.ApplyUserIdOn].ToString()))
             {
                 throw new UnauthorizedAccessException(
                     "Access denied to change user filter on {formElement.Name}");
@@ -449,7 +454,7 @@ public class MasterApiService
 
     private string GetUserId()
     {
-        var tokenInfo = AccountService.GetTokenInfo(_httpContext?.User.Claims.FirstOrDefault()?.Value);
+        var tokenInfo = AccountService.GetTokenInfo(_httpContext.User.Claims.FirstOrDefault()?.Value);
         if (tokenInfo == null)
             throw new UnauthorizedAccessException("Invalid Token");
 
@@ -467,15 +472,13 @@ public class MasterApiService
         return new DataContext(HttpContext, DataContextSource.Api, userId);
     }
 
-    private FormElement GetDataDictionary(string elementName)
+    private async Task<FormElement> GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        return _dataDictionaryRepository.GetMetadata(elementName);
+        return await _dataDictionaryRepository.GetMetadataAsync(elementName);
     }
-
-    private FormElement GetFormElement(string elementName) => GetDataDictionary(elementName);
 
     /// <summary>
     /// Compares the values of the fields received with those sent to the bank, returning different records
@@ -484,10 +487,10 @@ public class MasterApiService
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private IDictionary<string, dynamic>? GetDiff(IDictionary<string, dynamic> original,
-        IDictionary<string, dynamic> result, FormElementApiOptions apiOptions)
+    private IDictionary<string, object>? GetDiff(IDictionary<string, object> original,
+        IDictionary<string, object> result, FormElementApiOptions apiOptions)
     {
-        var newValues = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase);
+        var newValues = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entry in result)
         {
             if (entry.Value == null)
@@ -497,7 +500,7 @@ public class MasterApiService
             if (original.ContainsKey(entry.Key))
             {
                 if (original[entry.Key] == null && entry.Value != null ||
-                    !original[entry.Key]!.Equals(entry.Value))
+                    !original[entry.Key].Equals(entry.Value))
                     newValues.Add(fieldName, entry.Value);
             }
             else
@@ -507,14 +510,14 @@ public class MasterApiService
         return newValues.Count > 0 ? newValues : null;
     }
 
-    private ResponseLetter CreateErrorResponseLetter(IDictionary<string, dynamic>? errors,
+    private ResponseLetter CreateErrorResponseLetter(IDictionary<string, object>? errors,
         FormElementApiOptions apiOptions)
     {
         var letter = new ResponseLetter
         {
             Status = 400,
             Message = StringLocalizer["Invalid data"],
-            ValidationList = new Dictionary<string, dynamic>(StringComparer.InvariantCultureIgnoreCase)
+            ValidationList = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase)
         };
 
         if (errors == null)
@@ -522,7 +525,7 @@ public class MasterApiService
 
         foreach (var entry in errors)
         {
-            string fieldName = apiOptions.GetFieldNameParsed(entry.Key!.ToString()!);
+            string fieldName = apiOptions.GetFieldNameParsed(entry.Key);
             letter.ValidationList.Add(fieldName, entry.Value);
         }
 

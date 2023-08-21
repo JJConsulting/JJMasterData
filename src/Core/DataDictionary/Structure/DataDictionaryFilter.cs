@@ -12,7 +12,7 @@ public class DataDictionaryFilter
     public DateTime? LastModifiedFrom { get; set; }
     public DateTime? LastModifiedTo { get; set; }
 
-    public static DataDictionaryFilter GetInstance(IDictionary<string,dynamic>filter)
+    public static DataDictionaryFilter GetInstance(IDictionary<string, object>filter)
     {
         var result = new DataDictionaryFilter();
 
@@ -38,9 +38,9 @@ public class DataDictionaryFilter
 
         return result;
     }
-    public IDictionary<string,dynamic> ToDictionary()
+    public IDictionary<string, object> ToDictionary()
     {
-        var result = new Dictionary<string, dynamic>();
+        var result = new Dictionary<string, object>();
         if (Name != null)
         {
             result[DataDictionaryStructure.NameFilter] = Name;

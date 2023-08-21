@@ -10,10 +10,15 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
 {
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
+    public DataDictionaryDocumentFilter(IDataDictionaryRepository dataDictionaryRepository)
+    {
+        _dataDictionaryRepository = dataDictionaryRepository;
+    }
+    
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
         document.Info.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        var dictionaries = _dataDictionaryRepository.GetMetadataList(true);
+        var dictionaries = _dataDictionaryRepository.GetMetadataListAsync(true).GetAwaiter().GetResult();
 
         foreach (var formElement in dictionaries)
         {

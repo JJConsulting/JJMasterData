@@ -167,7 +167,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
                 settings.ShowRowHover = gridOptions.ShowRowHover;
                 settings.ShowRowStriped = gridOptions.ShowRowStriped;
                 settings.ShowBorder = gridOptions.ShowBorder;
-                settings.TotalPerPage = gridOptions.TotalPerPage;
+                settings.RecordsPerPage = gridOptions.TotalPerPage;
                 settings.TotalPaginationButtons = gridOptions.TotalPaggingButton;
                 settings.IsHeaderFixed = gridOptions.HeaderFixed;
             }

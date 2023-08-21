@@ -190,9 +190,9 @@ public class RelationshipsService : BaseService
     }
     
 
-    public void Sort(string dictionaryName, IEnumerable<string> relationships)
+    public async Task SortAsync(string dictionaryName, IEnumerable<string> relationships)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
 
         FormElementRelationship GetRelationship(string name)
         {
@@ -211,7 +211,7 @@ public class RelationshipsService : BaseService
             formElement.Relationships[i] = newList[i];
         }
         
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }
 
     public bool ValidatePanel(FormElementPanel panel)

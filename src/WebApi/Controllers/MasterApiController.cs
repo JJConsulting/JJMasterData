@@ -46,19 +46,19 @@ public class MasterApiController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<ResponseLetter>> Post([FromBody] Dictionary<string,dynamic>[] listParam, string elementName, bool replace = false)
+    public async Task<ActionResult<ResponseLetter>> Post([FromBody] Dictionary<string, object>[] listParam, string elementName, bool replace = false)
     {
         return GetResponseMessage(await _service.SetFieldsAsync(listParam, elementName, replace).ToListAsync());
     }
     
     [HttpPut]
-    public async Task<ActionResult<ResponseLetter>> Put([FromBody] Dictionary<string,dynamic>[] listParam, string elementName)
+    public async Task<ActionResult<ResponseLetter>> Put([FromBody] Dictionary<string, object>[] listParam, string elementName)
     {
         return GetResponseMessage(await _service.UpdateFieldsAsync(listParam, elementName).ToListAsync());
     }
     
     [HttpPatch]
-    public async Task<ActionResult<ResponseLetter>> Patch([FromBody] Dictionary<string,dynamic>[] listParam, string elementName)
+    public async Task<ActionResult<ResponseLetter>> Patch([FromBody] Dictionary<string, object>[] listParam, string elementName)
     {
         return GetResponseMessage(await _service.UpdatePartAsync(listParam, elementName).ToListAsync());
     }
@@ -72,7 +72,7 @@ public class MasterApiController : ControllerBase
     [HttpPost]
     [Produces(typeof(FormValues[]))]
     [Route("trigger/{pageState?}/{objname?}")]
-    public async Task<ActionResult<ResponseLetter>> PostTrigger(string elementName, [FromBody] IDictionary<string,dynamic>? paramValues,
+    public async Task<ActionResult<ResponseLetter>> PostTrigger(string elementName, [FromBody] IDictionary<string, object>? paramValues,
         PageState pageState, string objname = "")
     {
         return Ok(await _service.PostTriggerAsync(elementName, paramValues, pageState, objname));

@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
     public string Delimiter { get; set; }
-    public IEntityRepository EntityRepository { get; } 
+    private IEntityRepository EntityRepository { get; } 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
@@ -43,32 +42,49 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
 
     private async Task GenerateBody(StreamWriter sw, CancellationToken token)
     {
-        int tot = 0;
+
         if (DataSource == null)
         {
-            DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, 1, ref tot);
-            ProcessReporter.TotalRecords = tot;
-            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
+            var entityParameters = new EntityParameters
+            {
+                Parameters = CurrentFilter,
+                RecordsPerPage = RecordsPerPage,
+                OrderBy = CurrentOrder,
+                CurrentPage = 1,
+            };
+            var result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+            DataSource = result.Data;
+            ProcessReporter.TotalOfRecords = result.TotalOfRecords;
+            ProcessReporter.Message = StringLocalizer["Exporting {0} records...",  result.TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);
             await GenerateRows(sw, token);
 
-            int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
+            int totPag = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
             for (int i = 2; i <= totPag; i++)
             {
-                DataSource = EntityRepository.GetDataTable(FormElement, (IDictionary)CurrentFilter, CurrentOrder, RegPerPag, i, ref tot);
+                entityParameters = new EntityParameters
+                {
+                    Parameters = CurrentFilter,
+                    RecordsPerPage = RecordsPerPage,
+                    OrderBy = CurrentOrder,
+                    CurrentPage = i,
+                };
+                result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                DataSource = result.Data;
+                TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(sw, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.Rows.Count;
+            ProcessReporter.TotalOfRecords = TotalOfRecords;
             await GenerateRows(sw, token);
         }
     }
 
     private async Task GenerateRows(StreamWriter sw, CancellationToken token)
     {
-        foreach (DataRow row in DataSource.Rows)
+        foreach (var row in DataSource)
         {
             bool isFirst = true;
             foreach (var field in await GetVisibleFieldsAsync())
@@ -81,7 +97,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                 string value = string.Empty;
                 if (field.DataBehavior != FieldBehavior.Virtual)
                 {
-                    if (DataSource.Columns.Contains(field.Name))
+                    if (row.Keys.Contains(field.Name))
                         value = row[field.Name].ToString();
                 }
 
@@ -125,7 +141,8 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
         await sw.FlushAsync();
     }
 
-    public TextWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    public TextWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILoggerFactory logger, IEntityRepository entityRepository) : base(expressionsService, stringLocalizer, options, textFileFactory, logger.CreateLogger<DataExportationWriterBase>())
     {
+        EntityRepository = entityRepository;
     }
 }

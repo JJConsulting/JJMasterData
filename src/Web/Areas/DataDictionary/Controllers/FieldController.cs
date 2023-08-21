@@ -55,18 +55,18 @@ public class FieldController : DataDictionaryController
         return PartialView("_Detail", field);
     }
     
-    public IActionResult Delete(string dictionaryName, string fieldName)
+    public async Task<IActionResult> Delete(string dictionaryName, string fieldName)
     {
-        _fieldService.DeleteField(dictionaryName, fieldName);
-        var nextField = _fieldService.GetNextFieldName(dictionaryName, fieldName);
+        await _fieldService.DeleteField(dictionaryName, fieldName);
+        var nextField = _fieldService.GetNextFieldNameAsync(dictionaryName, fieldName);
         return RedirectToAction("Index", new { dictionaryName, fieldName = nextField });
     }
 
     [HttpPost]
-    public IActionResult Save(string dictionaryName, FormElementField field, string? originalName)
+    public async Task<IActionResult> Save(string dictionaryName, FormElementField field, string? originalName)
     {
         RecoverCustomAttibutes(ref field);
-        _fieldService.SaveField(dictionaryName, field, originalName);
+        await _fieldService.SaveFieldAsync(dictionaryName, field, originalName);
         if (ModelState.IsValid)
         {
             return RedirectToIndex(dictionaryName, field);
@@ -86,17 +86,17 @@ public class FieldController : DataDictionaryController
 
 
     [HttpPost]
-    public IActionResult Sort(string dictionaryName, string[] orderFields)
+    public async Task<IActionResult> Sort(string dictionaryName, string[] orderFields)
     {
-        _fieldService.SortFields(dictionaryName, orderFields);
+        await _fieldService.SortFieldsAsync(dictionaryName, orderFields);
         return Json(new { success = true });
     }
 
     [HttpPost]
-    public IActionResult Copy(string dictionaryName, FormElementField? field)
+    public async Task<IActionResult> Copy(string dictionaryName, FormElementField? field)
     {
-        var dictionary = _fieldService.DataDictionaryRepository.GetMetadata(dictionaryName);
-        _fieldService.CopyField(dictionary, field);
+        var dictionary = await  _fieldService.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        await _fieldService.CopyFieldAsync(dictionary, field);
         if (!ModelState.IsValid)
             ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
 
@@ -136,7 +136,7 @@ public class FieldController : DataDictionaryController
     }
 
     [HttpPost]
-    public IActionResult AddElementMapFilter(string dictionaryName, FormElementField field, string mapField, string mapExpressionValue)
+    public async Task<IActionResult> AddElementMapFilter(string dictionaryName, FormElementField field, string mapField, string mapExpressionValue)
     {
         var mapFilter = new DataElementMapFilter
         {
@@ -144,7 +144,7 @@ public class FieldController : DataDictionaryController
             ExpressionValue = mapExpressionValue
         };
 
-        bool isValid = _fieldService.AddElementMapFilter(field, mapFilter);
+        bool isValid = await _fieldService.AddElementMapFilterAsync(field, mapFilter);
         if (!isValid)
         {
             ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
@@ -218,12 +218,12 @@ public class FieldController : DataDictionaryController
 
         if (field.Component != FormComponent.Lookup) return;
 
-        ViewBag.ElementNameList = _fieldService.GetElementList();
-        ViewBag.ElementFieldList = _fieldService.GetElementFieldList(field);
+        ViewBag.ElementNameList = _fieldService.GetElementListAsync();
+        ViewBag.ElementFieldList = _fieldService.GetElementFieldListAsync(field);
     }
     private void RecoverCustomAttibutes(ref FormElementField field)
     {
-        field.Attributes = new Dictionary<string, dynamic>();
+        field.Attributes = new Dictionary<string, object>();
         switch (field.Component)
         {
             case FormComponent.Text

@@ -13,41 +13,25 @@ public class ScriptsService
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
-    public ScriptsService(IEntityRepository entityRepository, IDataDictionaryRepository _dataDictionaryRepository)
+    public ScriptsService(IEntityRepository entityRepository, IDataDictionaryRepository dataDictionaryRepository)
     {
         _entityRepository = entityRepository;
-        this._dataDictionaryRepository = _dataDictionaryRepository;
+        _dataDictionaryRepository = dataDictionaryRepository;
     }
     public async Task<List<string>> GetScriptsListAsync(string id)
     {
         var formElement = await _dataDictionaryRepository.GetMetadataAsync(id);
         Element element = formElement;
-
-        var addedFields = await GetAddedFieldsAsync(element).ToListAsync();
         
         var listScripts = new List<string>
         {
             _entityRepository.GetScriptCreateTable(element),
             _entityRepository.GetScriptReadProcedure(element),
             _entityRepository.GetScriptWriteProcedure(element),
-            _entityRepository.GetAlterTableScript(element, addedFields),
+            await _entityRepository.GetAlterTableScriptAsync(element),
         };
 
         return listScripts;
-    }
-    
-    public async IAsyncEnumerable<ElementField> GetAddedFieldsAsync(Element element)
-    {
-        if (!await _entityRepository.TableExistsAsync(element.TableName))
-            yield break;
-        
-        foreach (var field in element.Fields.Where(f => f.DataBehavior == FieldBehavior.Real))
-        {
-            if (!await _entityRepository.ColumnExistsAsync(element.TableName, field.Name))
-            {
-                yield return field;
-            }
-        }
     }
     
     public async Task ExecuteScriptsAsync(string id, string scriptOption)
@@ -66,8 +50,8 @@ public class ScriptsService
                 await _entityRepository.CreateDataModelAsync(formElement);
                 break;
             case "ExecuteAlterTable":
-                var addedFields = await GetAddedFieldsAsync(formElement).ToListAsync();
-                await _entityRepository.ExecuteBatchAsync(_entityRepository.GetAlterTableScript(formElement,addedFields));
+                var alterTableScript = await _entityRepository.GetAlterTableScriptAsync(formElement);
+                await _entityRepository.ExecuteBatchAsync(alterTableScript);
                 break;
         }
     }

@@ -68,12 +68,12 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
         return search;
     }
 
-    public async Task<JJSearchBox> CreateAsync(string dictionaryName, string fieldName, PageState pageState, IDictionary<string, dynamic> userValues)
+    public async Task<JJSearchBox> CreateAsync(string dictionaryName, string fieldName, PageState pageState, IDictionary<string, object> userValues)
     {
         if (string.IsNullOrEmpty(dictionaryName))
             return null;
 
-        IDictionary<string, dynamic> formValues = null;
+        IDictionary<string, object> formValues = null;
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var dataItem = formElement.Fields[fieldName].DataItem;
         if (dataItem == null)
