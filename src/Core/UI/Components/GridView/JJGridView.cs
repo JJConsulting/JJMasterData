@@ -20,6 +20,7 @@ using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -1190,8 +1191,16 @@ public class JJGridView : AsyncComponent
         }
         else
         {
-            var parameters = new EntityParameters(filters, OrderByData.FromString(orderBy), new PaginationData(currentPage, recordsPerPage));
-            return await EntityRepository.GetEntityResultAsync(FormElement, parameters);
+            var ret = await EntityRepository.GetDataTableAsync(FormElement, filters as IDictionary, orderBy, recordsPerPage, currentPage, true);
+            total = ret.TotalOfRecords;
+            dt = ret.Data;
+            
+            //TODO: Lucio se esta dificil esta errado
+            //TODO: Lucio tinha um método aqui que passava os parametros via classe, na teoria é bom, mas na pratica não gostei então removi
+            // pensar melhor na classe EntityParameters
+            // var parameters = new EntityParameters(filters, OrderByData.FromString(orderBy), new PaginationData(currentPage, recordsPerPage));
+            // return await EntityRepository.GetEntityResultAsync(FormElement, parameters);
+
         }
 
         return new EntityResult(dt, total);

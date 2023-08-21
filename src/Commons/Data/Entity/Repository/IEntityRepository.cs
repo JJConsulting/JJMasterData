@@ -1,9 +1,13 @@
-﻿using System.Collections;
+﻿#nullable enable
+
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 
 namespace JJMasterData.Commons.Data.Entity.Abstractions;
+
+//TODO: Lucio já que é p/ ser assincrono nessa classe todos os metodos deveria ser async. pan
 
 public interface IEntityRepository
 {
@@ -28,8 +32,15 @@ public interface IEntityRepository
     ///   Numbers = en-US<para/>
     ///   Date = yyyy-MM-dd HH:mm:ss
     /// </returns>
-    public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|");
+    public string GetListFieldsAsText(Element element, 
+        IDictionary filters, 
+        string orderBy, 
+        int recordsPerPage, 
+        int currentPage, 
+        bool showLogInfo, 
+        string delimiter = "|");
     
+    //TODO: Lucio não entendi não mas o IDictionary filters, nao deveria ser IDictionary<string, object>
     
     /// <summary>
     /// Returns records from the database based on the filter.    
@@ -39,15 +50,31 @@ public interface IEntityRepository
     /// <param name="orderBy">Record Order, field followed by ASC or DESC</param>
     /// <param name="recordsPerPage">Number of records to be displayed per page</param>
     /// <param name="currentPage">Current page</param>
-    /// <param name="totalRecords">If the value is zero, it returns as a reference the number of records based on the filter.</param>
+    /// <param name="totalRecords">
+    /// If the value is zero, it returns as a reference the number of records based on the filter.
+    /// Otherwise it'll do the count command
+    /// </param>
     /// <returns>
     /// Returns a DataTable with the records found.
     /// If no record is found it returns null.
     /// </returns>
-    public DataTable GetDataTable(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords);
+    public DataTable GetDataTable(Element element, 
+        IDictionary filters, 
+        string? orderBy, 
+        int recordsPerPage, 
+        int currentPage, 
+        ref int totalRecords);
 
+    //TODO: Lucio criei o parametro recoverTotalOfRecords, nesse metodo escondia um erro grave, pois tem momentos que não queremos executar o count
+    // e passavamos o totalRecords > 0 e isso foi ignorado nos metodos async
+    
     /// <inheritdoc cref="GetDataTable(Element, IDictionary, string , int ,int , ref int)"/>
-    public Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage);
+    public Task<EntityResultTable> GetDataTableAsync(Element element, 
+        IDictionary filters, 
+        string? orderBy, 
+        int recordsPerPage, 
+        int currentPage,
+        bool recoverTotalOfRecords = true);
     
     /// <summary>
     /// Returns records from the database based on the filter.  
@@ -59,11 +86,11 @@ public interface IEntityRepository
     /// If no record is found it returns null.
     /// </returns>
     public DataTable GetDataTable(Element element, IDictionary filters);
-
+    //TODO: Lucio método desnecessário
     
     /// <inheritdoc cref=" GetDataTable(Element, IDictionary)"/>
     public Task<DataTable> GetDataTableAsync(Element element, IDictionary filters);
-
+    //TODO: Lucio método desnecessário
     
     /// <summary>
     /// Returns first record based on filter.  
@@ -74,10 +101,12 @@ public interface IEntityRepository
     /// Return a Hashtable Object. 
     /// If no record is found then returns null.
     /// </returns>
-    public Hashtable GetFields(Element element, IDictionary filters);
+    public Hashtable? GetFields(Element element, IDictionary filters);
+    //TODO: Lucio decidir se vai utilizar Hashtable or Idictionary, na minha opnião deveria ser IDictionary
+    // soh não alterar os metodos do DataAccess sem ser asincronos, os asincronos podemos padronizar para IDictionary
 
     /// <inheritdoc cref=" GetFieldsAsync(Element, IDictionary)"/>
-    public Task<Hashtable> GetFieldsAsync(Element element, IDictionary filters);
+    public Task<Hashtable?> GetFieldsAsync(Element element, IDictionary filters);
     
     /// <summary>
     /// Returns the number of records in the database
@@ -218,11 +247,11 @@ public interface IEntityRepository
     /// <remarks>
     /// It's used to return sql expressions commands
     /// </remarks>
-    public object GetResult(string sql);
+    public object? GetResult(string sql);
     
         
     /// <inheritdoc cref="GetResult"/>
-    public Task<object> GetResultAsync(string sql);
+    public Task<object?> GetResultAsync(string sql);
 
     /// <summary>
     /// Check if table exists in the database
@@ -251,7 +280,6 @@ public interface IEntityRepository
     /// </remarks>
     public int SetCommand(IEnumerable<string> sqlList);
 
-
     /// <inheritdoc>
     ///     <cref>SetCommand(IEnumerable)</cref>
     /// </inheritdoc>
@@ -267,12 +295,17 @@ public interface IEntityRepository
     /// <inheritdoc cref="ExecuteBatch"/>
     public Task<bool> ExecuteBatchAsync(string script);
 
-    Task<IDictionary<string, object>> GetDictionaryAsync(Element metadata, IDictionary<string, object> filters);
-    Task<(List<IDictionary<string, object>>, int)>  GetDictionaryListAsync(Element metadata, IDictionary parametersParameters, string toString, int paginationDataRecordsPerPage, int paginationDataPage);
+    //TODO: Lucio nessa interface quantos menos métodos melhor, os métodos abaixo são redundantes
+    
+    Task<IDictionary<string, object>?> GetDictionaryAsync(Element metadata, IDictionary<string, object> filters);
+    
+    //TODO: Lucio Alterei de Tuple(EntityResult<List<Dictionary<string, object>>>, int) para EntityResultList, porém temos que decidir se trabalhamos com lista ou com table, ou altera tudo ou nem rela
+    // eu tb não gosto do DataTable, mas podemos alterar outro momento... muito trabalho rs
+    Task<EntityResultList> GetDictionaryListAsync(Element metadata, IDictionary parametersParameters, string toString, int paginationDataRecordsPerPage, int paginationDataPage);
 
+    //TODO: Não gosto disso
     Task<bool> ColumnExistsAsync(string tableName, string columnName);
 
-    Task<EntityResult> GetEntityResultAsync(
-        Element element,
-        EntityParameters parameters = null);
+    
+    
 }

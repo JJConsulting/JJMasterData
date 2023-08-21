@@ -1,7 +1,6 @@
 ﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -167,7 +166,7 @@ public abstract class BaseProvider
         return await SetValuesAsync(element, values);
     }
 
-    ///<inheritdoc cref="IEntityRepository.Delete(Element, Hashtable)"/>
+    ///<inheritdoc cref="IEntityRepository.Delete(Element, IDictionary)"/>
     public int Delete(Element element, IDictionary filters)
     {
         var cmd = GetDeleteCommand(element, filters);
@@ -175,7 +174,7 @@ public abstract class BaseProvider
         return numberRowsAffected;
     }
     
-    ///<inheritdoc cref="IEntityRepository.Delete(Element, Hashtable)"/>
+    ///<inheritdoc cref="IEntityRepository.Delete(Element, IDictionary)"/>
     public async Task<int> DeleteAsync(Element element, IDictionary filters)
     {
         var cmd = GetDeleteCommand(element, filters);
@@ -183,7 +182,7 @@ public abstract class BaseProvider
         return numberRowsAffected;
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetFields(Element, Hashtable)"/>
+    ///<inheritdoc cref="IEntityRepository.GetFields(Element, IDictionary)"/>
     public Hashtable GetFields(Element element, IDictionary filters)
     {
         var total =
@@ -192,7 +191,7 @@ public abstract class BaseProvider
         return DataAccess.GetFields(cmd);
     }
     
-    ///<inheritdoc cref="IEntityRepository.GetFields(Element, Hashtable)"/>
+    ///<inheritdoc cref="IEntityRepository.GetFields(Element, IDictionary)"/>
     public async Task<Hashtable> GetFieldsAsync(Element element, IDictionary filters)
     {
         var total =
@@ -222,26 +221,26 @@ public abstract class BaseProvider
     
     
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary,string,int,int,ref int)"/>
-    public async Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
+    public async Task<EntityResultTable> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool recoverTotalOfRecords = true)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
 
         if (!ValidateOrderByClause(element, orderBy))
             throw new ArgumentException("[order by] clause is not valid");
-
-        var totalParameter = new DataAccessParameter(VariablePrefix + "qtdtotal", null, DbType.Int32, 0, ParameterDirection.InputOutput);
+        int qtdTotal = recoverTotalOfRecords ? 0 : 1;
+        var totalParameter = new DataAccessParameter(VariablePrefix + "qtdtotal", qtdTotal, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage, totalParameter);
         var dt = await DataAccess.GetDataTableAsync(cmd);
         int total = 0;
-        if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
+        if (recoverTotalOfRecords && totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
             total = (int)totalParameter.Value;
 
-        return (dt, total);
+        return new EntityResultTable(dt, total);
     }
     
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary,string,int,int,ref int)"/>
-    public async Task<(List<IDictionary<string, object>>,int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
+    public async Task<EntityResultList> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -251,30 +250,31 @@ public abstract class BaseProvider
 
         var totalParameter = new DataAccessParameter(VariablePrefix + "qtdtotal", null, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = GetReadCommand(element, filters, orderBy, recordsPerPage, currentPage,  totalParameter);
-        var list = (await DataAccess.GetDictionaryListAsync(cmd)).Select(dict => (IDictionary<string, object>)dict).ToList();
+        var list = await DataAccess.GetDictionaryListAsync(cmd);
 
         int totalRecords = 0;
         
         if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
             totalRecords = (int)totalParameter.Value;
 
-        return (list, totalRecords);
+        return new EntityResultList(list, totalRecords);
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary)"/>
     public DataTable GetDataTable(Element element, IDictionary filters)
     {
         var tot = 1;
         return GetDataTable(element, filters, null, int.MaxValue, 1, ref tot);
     }
     
-    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, Hashtable)"/>
+    ///<inheritdoc cref="IEntityRepository.GetDataTable(Element, IDictionary)"/>
     public async Task<DataTable> GetDataTableAsync(Element element, IDictionary filters)
     {
-        return (await GetDataTableAsync(element, filters, null, int.MaxValue, 1)).Item1;
+        var result = await GetDataTableAsync(element, filters, null, int.MaxValue, 1, false);
+        return result.Data;
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
+    ///<inheritdoc cref="IEntityRepository.GetCount(Element, IDictionary)"/>
     public int GetCount(Element element, IDictionary filters)
     {
         var tot = 0;
@@ -282,11 +282,11 @@ public abstract class BaseProvider
         return tot;
     }
     
-    ///<inheritdoc cref="IEntityRepository.GetCount(Element, Hashtable)"/>
+    ///<inheritdoc cref="IEntityRepository.GetCount(Element, IDictionary)"/>
     public async Task<int> GetCountAsync(Element element, IDictionary filters)
     {
-        var tuple = await GetDataTableAsync(element, filters, null, 1, 1);
-        return tuple.Item2;
+        var tuple = await GetDataTableAsync(element, filters, null, 1, 1, true);
+        return tuple.TotalOfRecords;
     }
 
     ///<inheritdoc cref="IEntityRepository.CreateDataModel(Element)"/>
@@ -312,7 +312,7 @@ public abstract class BaseProvider
         return sqlScripts.ToString();
     }
 
-    ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element, Hashtable, string, int, int, bool, string)"/>
+    ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element, IDictionary, string, int, int, bool, string)"/>
     public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage,
         bool showLogInfo, string delimiter = "|")
     {

@@ -79,15 +79,15 @@ public partial class DataAccess
     }
     
     /// <inheritdoc cref="GetResult(string)"/>
-    public async Task<object> GetResultAsync(string sql, CancellationToken cancellationToken = default)
+    public async Task<object?> GetResultAsync(string sql, CancellationToken cancellationToken = default)
     {
         return await GetResultAsync(new DataAccessCommand(sql), cancellationToken);
     }
 
     /// <inheritdoc cref="GetResult(DataAccessCommand)"/>
-    public async Task<object> GetResultAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
+    public async Task<object?> GetResultAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
-        object scalarResult;
+        object? scalarResult;
         try
         {
 #if NET
@@ -344,8 +344,9 @@ public partial class DataAccess
     /// <inheritdoc cref="TableExists"/>
     public async Task<bool> TableExistsAsync(string tableName, CancellationToken cancellationToken = default)
     {
-        var result = (int)await GetResultAsync(GetTableExistsCommand(tableName), cancellationToken) == 1;
-        return result;
+        var command = GetTableExistsCommand(tableName);
+        var result = await GetResultAsync(command, cancellationToken);
+        return (int)result! == 1;
     }
     
     /// <inheritdoc cref="TryConnection"/>

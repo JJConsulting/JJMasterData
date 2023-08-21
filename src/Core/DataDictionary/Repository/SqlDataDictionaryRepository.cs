@@ -50,9 +50,9 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         const string orderBy = "name, type";
         const string currentName = "";
-        var result = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, orderBy, 10000, 1);
+        var result = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, orderBy, 10000, 1, false);
 
-        return ParseDataTable(result.Item1, currentName, list);
+        return ParseDataTable(result.Data, currentName, list);
     }
 
     private static IEnumerable<FormElement> ParseDataTable(DataTable dt, string currentName, List<FormElement> list)
@@ -96,8 +96,8 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         const int totalRecords = 10000;
         var filter = new Dictionary<string, object>{ { "type", "F" } };
 
-        var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, null, totalRecords, 1);
-        foreach (DataRow row in dt.Item1.Rows)
+        var dt = await _entityRepository.GetDataTableAsync(MasterDataElement, filter, null, totalRecords, 1, false);
+        foreach (DataRow row in dt.Data.Rows)
         {
             yield return row["name"].ToString();
         }
@@ -180,7 +180,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             throw new ArgumentException();
 
         var filters = new Hashtable { { "name", dictionaryName } };
-
+        //TODO: Lucio p/ que isso? era doh remover diretor e validar se qtd no delete é maior que um
         var dataTable = _entityRepository.GetDataTable(MasterDataElement, filters);
         if (dataTable.Rows.Count == 0)
             throw new KeyNotFoundException($"Dictionary {dictionaryName} not found");
@@ -282,7 +282,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         var formElementInfoList = new List<FormElementInfo>();
 
-        foreach (var element in result.Item1)
+        foreach (var element in result.Data)
         {
             var info = new FormElementInfo
             {
@@ -296,6 +296,6 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             formElementInfoList.Add(info);
         }
 
-        return new EntityResult<IEnumerable<FormElementInfo>>(formElementInfoList, result.Item2);
+        return new EntityResult<IEnumerable<FormElementInfo>>(formElementInfoList, result.TotalOfRecords);
     }
 }

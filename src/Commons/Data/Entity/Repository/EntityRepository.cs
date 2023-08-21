@@ -90,19 +90,20 @@ public class EntityRepository : IEntityRepository
     ///<inheritdoc cref="IEntityRepository.GetFields(Element, IDictionary)"/>
     public Hashtable GetFields(Element element, IDictionary filters) => Provider.GetFields(element,filters);
 
-    public async Task<Hashtable> GetFieldsAsync(Element element, IDictionary filters)=>await Provider.GetFieldsAsync(element,filters);
+    public async Task<Hashtable?> GetFieldsAsync(Element element, IDictionary filters)=>await Provider.GetFieldsAsync(element,filters);
     
 
     ///<inheritdoc cref="IEntityRepository.GetDataTable(Element,System.Collections.IDictionary,string,int,int,ref int)"/>
-    public DataTable GetDataTable(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords) =>
+    public DataTable GetDataTable(Element element, IDictionary filters, string? orderBy, int recordsPerPage, int currentPage, ref int totalRecords) =>
         Provider.GetDataTable(element, filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
 
-    public async Task<(DataTable, int)> GetDataTableAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
+    
+    public async Task<EntityResultTable> GetDataTableAsync(Element element, IDictionary filters, string? orderBy, int recordsPerPage, int currentPage, bool recoverTotalOfRecords = true)
     {
         return await Provider.GetDataTableAsync(element, filters, orderBy, recordsPerPage, currentPage);
     }
     
-    public async Task<(List<IDictionary<string, object>>, int)> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
+    public async Task<EntityResultList> GetDictionaryListAsync(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage)
     {
         return await Provider.GetDictionaryListAsync(element, filters, orderBy, recordsPerPage, currentPage);
     }
@@ -118,9 +119,9 @@ public class EntityRepository : IEntityRepository
     public async Task<DataTable> GetDataTableAsync(string sql) => await DataAccess.GetDataTableAsync(sql);
 
     ///<inheritdoc cref="IEntityRepository.GetResult(string)"/>
-    public object GetResult(string sql) => DataAccess.GetResult(sql);
+    public object? GetResult(string sql) => DataAccess.GetResult(sql);
 
-    public async Task<object> GetResultAsync(string sql) => await DataAccess.GetResultAsync(sql);
+    public async Task<object?> GetResultAsync(string sql) => await DataAccess.GetResultAsync(sql);
 
     public async Task<bool> TableExistsAsync(string tableName) => await DataAccess.TableExistsAsync(tableName);
 
@@ -146,7 +147,7 @@ public class EntityRepository : IEntityRepository
     public async Task<bool> ExecuteBatchAsync(string script) => await DataAccess.ExecuteBatchAsync(script);
     
     
-    public async Task<IDictionary<string, object>> GetDictionaryAsync(Element metadata, IDictionary<string, object> filters)
+    public async Task<IDictionary<string, object>?> GetDictionaryAsync(Element metadata, IDictionary<string, object> filters)
     {
         var total =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
@@ -171,7 +172,6 @@ public class EntityRepository : IEntityRepository
 
     public string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields) => Provider.GetAlterTableScript(element, addedFields);
 
-
     ///<inheritdoc cref="IEntityRepository.GetScriptReadProcedure(Element)"/>
     public string GetScriptReadProcedure(Element element) => Provider.GetReadProcedureScript(element);
 
@@ -181,15 +181,5 @@ public class EntityRepository : IEntityRepository
     ///<inheritdoc cref="IEntityRepository.GetListFieldsAsText(Element,IDictionary,string,int,int,bool,string)"/>
     public string GetListFieldsAsText(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, bool showLogInfo, string delimiter = "|") =>
         Provider.GetListFieldsAsText(element, filters, orderBy, recordsPerPage, currentPage, showLogInfo, delimiter);
-    
-    public async Task<EntityResult> GetEntityResultAsync(
-        Element element,
-        EntityParameters? parameters = null)
-    {
-        var result = await GetDictionaryListAsync(element, parameters?.Parameters as IDictionary,
-            parameters?.OrderBy?.ToString(), parameters?.PaginationData?.RecordsPerPage ?? 5,
-            parameters?.PaginationData?.Page ?? 1);
-        
-        return new EntityResult(result.Item1,result.Item2);
-    }
+   
 }
