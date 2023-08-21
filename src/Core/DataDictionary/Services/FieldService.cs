@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
@@ -21,9 +22,9 @@ public class FieldService : BaseService
 
     }
 
-    public bool SaveField(string elementName, FormElementField field, string originalName)
+    public async Task<bool> SaveFieldAsync(string elementName, FormElementField field, string originalName)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
         RemoveUnusedProperties(ref field);
 
@@ -52,7 +53,7 @@ public class FieldService : BaseService
         }
 
         formElement.Fields[field.Name] = field;
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
         return IsValid;
     }
@@ -273,9 +274,9 @@ public class FieldService : BaseService
                 StringLocalizer["The [ExportAsLink] field cannot be enabled with [MultipleFile]"]);
     }
 
-    public bool SortFields(string elementName, string[] orderFields)
+    public async Task<bool> SortFieldsAsync(string elementName, string[] orderFields)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         var newList = orderFields.Select(fieldName => formElement.Fields[fieldName]).ToList();
 
         for (int i = 0; i < formElement.Fields.Count; i++)
@@ -283,11 +284,11 @@ public class FieldService : BaseService
             formElement.Fields[i] = newList[i];
         }
         
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
         return true;
     }
 
-    public bool AddElementMapFilter(FormElementField field, DataElementMapFilter mapFilter)
+    public async Task<bool> AddElementMapFilterAsync(FormElementField field, DataElementMapFilter mapFilter)
     {
         var elementMap = field.DataItem!.ElementMap;
 
@@ -312,7 +313,7 @@ public class FieldService : BaseService
 
         if (IsValid)
         {
-            var dataEntry = DataDictionaryRepository.GetMetadata(elementMap.ElementName);
+            var dataEntry = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
             var fieldKey = dataEntry.Fields[elementMap.FieldKey];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
@@ -331,22 +332,22 @@ public class FieldService : BaseService
         return false;
     }
 
-    public bool DeleteField(string dictionaryName, string fieldName)
+    public async Task<bool> DeleteField(string dictionaryName, string fieldName)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         if (!formElement.Fields.Contains(fieldName))
             return false;
         
         var field = formElement.Fields[fieldName];
         formElement.Fields.Remove(field);
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
         return IsValid;
     }
 
-    public string GetNextFieldName(string dictionaryName, string fieldName)
+    public async Task<string> GetNextFieldNameAsync(string dictionaryName, string fieldName)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         string nextField = null;
         if (formElement.Fields.Contains(fieldName))
         {
@@ -361,7 +362,7 @@ public class FieldService : BaseService
         return nextField;
     }
 
-    public Dictionary<string, string> GetElementFieldList(FormElementField currentField)
+    public async Task<Dictionary<string, string>> GetElementFieldListAsync(FormElementField currentField)
     {
         var dicFields = new Dictionary<string, string>();
         dicFields.Add(string.Empty, StringLocalizer["--Select--"]);
@@ -370,7 +371,7 @@ public class FieldService : BaseService
         if (string.IsNullOrEmpty(map.ElementName))
             return dicFields;
 
-        var dataEntry = DataDictionaryRepository.GetMetadata(map.ElementName);
+        var dataEntry = await DataDictionaryRepository.GetMetadataAsync(map.ElementName);
         if (dataEntry == null)
             return dicFields;
 
@@ -382,7 +383,7 @@ public class FieldService : BaseService
         return dicFields;
     }
 
-    public bool CopyField(FormElement formElement, FormElementField field)
+    public async Task<bool> CopyFieldAsync(FormElement formElement, FormElementField field)
     {
         var newField = field.DeepCopy();
 
@@ -393,7 +394,7 @@ public class FieldService : BaseService
         }
 
         formElement.Fields.Add(newField);
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
         return IsValid;
     }
 }

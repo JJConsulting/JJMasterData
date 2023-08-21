@@ -122,7 +122,7 @@ public class JJDataPanel : AsyncComponent
     {
         Name = "pnl_" + elementName;
         FormElement = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>()
-            .GetMetadata(elementName);
+            .GetMetadataAsync(elementName).GetAwaiter().GetResult();
         RenderPanelGroup = FormElement.Panels.Count > 0;
     }
     

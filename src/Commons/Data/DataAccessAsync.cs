@@ -1,7 +1,6 @@
 #nullable enable
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -152,7 +151,7 @@ public partial class DataAccess
     }
     
     /// <inheritdoc cref="SetCommand(DataAccessCommand)"/>
-    public async Task<int> SetCommandAsync(IEnumerable<DataAccessCommand> commands, CancellationToken cancellationToken = default)
+    public async Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commands, CancellationToken cancellationToken = default)
     {
         int numberOfRowsAffected = 0;
         DataAccessCommand? currentCommand = null;
@@ -215,24 +214,19 @@ public partial class DataAccess
     {
         var commandList = sqlList.Select(sql => new DataAccessCommand(sql));
 
-        int numberOfRowsAffected = await SetCommandAsync(commandList, cancellationToken);
+        int numberOfRowsAffected = await SetCommandListAsync(commandList, cancellationToken);
         return numberOfRowsAffected;
     }
     
     /// <inheritdoc cref="GetFields(string)"/>
-    public Task<Hashtable?> GetFieldsAsync(string sql, CancellationToken cancellationToken = default) =>
-        GetFieldsAsync(new DataAccessCommand(sql), cancellationToken);
+    public Task<Dictionary<string,object?>> GetDictionaryAsync(string sql, CancellationToken cancellationToken = default) =>
+        GetDictionaryAsync(new DataAccessCommand(sql), cancellationToken);
+    
     
     /// <inheritdoc cref="GetFields(DataAccessCommand)"/>
-    public async Task<Hashtable?> GetFieldsAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    public async Task<Dictionary<string,object?>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
-        return await GetAsync<Hashtable>(command, cancellationToken);
-    }
-
-    public async Task<T?> GetAsync<T>(DataAccessCommand command, CancellationToken cancellationToken = default) 
-        where T : IDictionary, new()
-    {
-        var result = default(T);
+        var result = new Dictionary<string, object?>();
         try
         {
 #if NET
@@ -253,13 +247,12 @@ public partial class DataAccess
                 {
                     while (await dataReader.ReadAsync(cancellationToken))
                     {
-                        result = new T();
                         int count = 0;
 
                         while (count < dataReader.FieldCount)
                         {
                             string fieldName = dataReader.GetName(count);
-                            if (result.Contains(fieldName))
+                            if (result.ContainsKey(fieldName))
                                 throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
 
                             result.Add(fieldName, dataReader.GetValue(count));
@@ -283,10 +276,9 @@ public partial class DataAccess
         return result;
     }
 
-    public async Task<List<T>> GetListAsync<T>(DataAccessCommand cmd, CancellationToken cancellationToken = default)
-        where T : IDictionary, new()
+    public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
-        var dictionaryList = new List<T>();
+        var dictionaryList = new List<Dictionary<string, object?>>();
 
         try
         {
@@ -312,7 +304,7 @@ public partial class DataAccess
 
                     while (await dataReader.ReadAsync(cancellationToken))
                     {
-                        var dictionary = Activator.CreateInstance<T>();
+                        var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
                         foreach (var columnName in columnNames)
                         {
                             var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
@@ -430,15 +422,6 @@ public partial class DataAccess
         return true;
     }
     
-    public async Task<IDictionary<string, object>?> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
-    {
-        return await GetAsync<Dictionary<string, object>>(command, cancellationToken);
-    }
-
-    public async Task<List<Dictionary<string, object>>> GetDictionaryListAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
-    {
-        return await GetListAsync<Dictionary<string, object>>(command, cancellationToken);
-    }
 
     public async Task<bool> ColumnExistsAsync(string tableName, string columnName, CancellationToken cancellationToken = default)
     {

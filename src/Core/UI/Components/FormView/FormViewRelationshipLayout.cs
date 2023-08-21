@@ -171,7 +171,7 @@ internal class FormViewRelationshipLayout
         {
             case RelationshipViewType.View or RelationshipViewType.Update:
                 {
-                    var childValues = await ParentFormView.EntityRepository.GetDictionaryAsync(childElement, filter);
+                    var childValues = await ParentFormView.EntityRepository.GetDictionaryAsync((Element)childElement, (IDictionary<string, object>)filter);
 
                     var childDataPanel = ParentFormView.ComponentFactory.DataPanel.Create(childElement);
                     childDataPanel.FieldNamePrefix = childElement.Name + "_";

@@ -121,7 +121,7 @@ public class InternalRedirectController : MasterDataController
         {
             if (errors.Count == 0)
             {
-                await panel.EntityRepository.SetValuesAsync(formElement, (IDictionary)values);
+                await panel.EntityRepository.SetValuesAsync(formElement, values);
             }
         }
         catch (SqlException ex)

@@ -1,14 +1,10 @@
 ﻿#nullable enable
 
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository;
 
 namespace JJMasterData.Commons.Data.Entity.Abstractions;
-
-//TODO: Lucio já que é p/ ser assincrono nessa classe todos os metodos deveria ser async. pan
 
 public interface IEntityRepository
 {
@@ -16,10 +12,7 @@ public interface IEntityRepository
     /// Returns database records based on filter.  
     /// </summary>
     /// <param name="element">Structure basic from a table</param>
-    /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
-    /// <param name="orderBy">Record Order, field followed by ASC or DESC</param>
-    /// <param name="recordsPerPage">Number of records to be displayed per page</param>
-    /// <param name="currentPage">Current page</param>
+    /// <param name="parameters"></param>
     /// <param name="showLogInfo">Records detailed log of each operation</param>
     /// <param name="delimiter">Field delimiter in text file (default is pipe)</param>
     /// <returns>
@@ -33,118 +26,29 @@ public interface IEntityRepository
     ///   Numbers = en-US<para/>
     ///   Date = yyyy-MM-dd HH:mm:ss
     /// </returns>
-    public string GetListFieldsAsText(Element element, 
-        IDictionary filters, 
-        string orderBy, 
-        int recordsPerPage, 
-        int currentPage, 
-        bool showLogInfo, 
+    public Task<string> GetListFieldsAsTextAsync(
+        Element element, 
+        EntityParameters? parameters = null,
+        bool showLogInfo = false, 
         string delimiter = "|");
     
-    //TODO: Lucio não entendi não mas o IDictionary filters, nao deveria ser IDictionary<string, object>
-    
-    /// <summary>
-    /// Returns records from the database based on the filter.    
-    /// </summary>
-    /// <param name="element">Base element with the basic structure of the table.</param>
-    /// <param name="filters">List of filters to be used. [key(database field), value(value stored in database)]</param>
-    /// <param name="orderBy">Record Order, field followed by ASC or DESC</param>
-    /// <param name="recordsPerPage">Number of records to be displayed per page</param>
-    /// <param name="currentPage">Current page</param>
-    /// <param name="totalRecords">
-    /// If the value is zero, it returns as a reference the number of records based on the filter.
-    /// Otherwise it'll do the count command
-    /// </param>
-    /// <returns>
-    /// Returns a DataTable with the records found.
-    /// If no record is found it returns null.
-    /// </returns>
-    public DataTable GetDataTable(Element element, 
-        IDictionary filters, 
-        string? orderBy, 
-        int recordsPerPage, 
-        int currentPage, 
-        ref int totalRecords);
 
-    //TODO: Lucio criei o parametro recoverTotalOfRecords, nesse metodo escondia um erro grave, pois tem momentos que não queremos executar o count
-    // e passavamos o totalRecords > 0 e isso foi ignorado nos metodos async
-    
-    /// <inheritdoc cref="GetDataTable(Element, IDictionary, string , int ,int , ref int)"/>
-    public Task<DataTableResult> GetDataTableAsync(Element element, 
-        IDictionary filters, 
-        string? orderBy, 
-        int recordsPerPage, 
-        int currentPage,
-        bool recoverTotalOfRecords = true);
-    
-    /// <summary>
-    /// Returns records from the database based on the filter.  
-    /// </summary>
-    /// <param name="element">Base element with the basic structure of the table.</param>
-    /// <param name="filters">List of filters to be used. [key(database field), value(value stored in database)]</param>
-    /// <returns>
-    /// Returns a DataTable with the records found. 
-    /// If no record is found it returns null.
-    /// </returns>
-    public DataTable GetDataTable(Element element, IDictionary filters);
-    //TODO: Lucio método desnecessário
-    
-    /// <inheritdoc cref=" GetDataTable(Element, IDictionary)"/>
-    public Task<DataTable> GetDataTableAsync(Element element, IDictionary filters);
-    //TODO: Lucio método desnecessário
-    
-    /// <summary>
-    /// Returns first record based on filter.  
-    /// </summary>
-    /// <param name="element">Base element with the basic structure of the table.</param>
-    /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
-    /// <returns>
-    /// Return a Hashtable Object. 
-    /// If no record is found then returns null.
-    /// </returns>
-    public Hashtable? GetFields(Element element, IDictionary filters);
-    //TODO: Lucio decidir se vai utilizar Hashtable or Idictionary, na minha opnião deveria ser IDictionary
-    // soh não alterar os metodos do DataAccess sem ser asincronos, os asincronos podemos padronizar para IDictionary
-
-    /// <inheritdoc cref=" GetFieldsAsync(Element, IDictionary)"/>
-    public Task<Hashtable?> GetFieldsAsync(Element element, IDictionary filters);
-    
     /// <summary>
     /// Returns the number of records in the database
     /// </summary>
-    /// <param name="element">Base element with the basic structure of the table.</param>
-    /// <param name="filters">List of filters to be used. [key(database field), valor(value stored in database)]</param>
-    /// <returns>
-    /// Returns an integer.
     /// </returns>
-    public int GetCount(Element element, IDictionary filters);
+    public Task<int> GetCountAsync(Element element, IDictionary<string,object?> filters);
 
-    /// <inheritdoc cref=" GetCount(Element, IDictionary)"/>
-    public Task<int> GetCountAsync(Element element, IDictionary filters);
-    
     /// <summary>
-    /// Update a record in the database 
-    /// [key(database field name), value(value to be stored in the database)].
+    /// Update a record in the database
     /// </summary>
-    /// <param name="element">Base element with a basic table structure</param>
-    /// <param name="values">List of values ​​to be stored in the database</param>
-    /// <returns>Return the number of the rows affected</returns>
-    public int Update(Element element, IDictionary values);
-
-    /// <inheritdoc cref="Update(Element, IDictionary)"/>
-    public Task<int> UpdateAsync(Element element, IDictionary values);
+    public Task<int> UpdateAsync(Element element, IDictionary<string,object?> values);
     
-    /// <summary>
-    /// Delete records based on filter.  
-    /// [key(database field), valor(value stored in database)].
-    /// </summary>
-    /// <param name="element">Base element with the basic structure of the table</param>
-    /// <param name="filters">List of filters to be used</param>
-    /// <returns>Return the number of the rows affected</returns>
-    public int Delete(Element element, IDictionary filters);
 
-    /// <inheritdoc cref="Delete(Element, IDictionary)"/>
-    public Task<int> DeleteAsync(Element element, IDictionary filters);
+    /// <summary>
+    /// Delete records based on filter.
+    /// </summary>
+    public Task<int> DeleteAsync(Element element, IDictionary<string,object> filters);
     
     /// <summary>
     /// Add a record to the database.
@@ -156,31 +60,12 @@ public interface IEntityRepository
     /// How to do:
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
-    public void Insert(Element element, IDictionary values);
+    public Task InsertAsync(Element element, IDictionary<string,object?> values);
     
-    /// <inheritdoc cref="Insert(Element, IDictionary)"/>
-    public Task InsertAsync(Element element, IDictionary values);
-    
-    /// <summary>
-    /// Insert or Update a record in the database.
-    /// If it exists then update it, otherwise add.
-    /// Include PK in Hashtable in case of indentity
-    /// </summary>
-    /// <returns>NONE=-1, INSERT=0, UPDATE=1, DELETE=2</returns>
-    /// <param name="element">Base element with the basic structure of the table</param>
-    /// <param name="values">List of values ​​to be stored in the database</param>
-    /// <remarks>
-    /// How to do:
-    /// [key(database field name), value(value to be stored in the database)].
-    /// </remarks>
-    public CommandOperation SetValues(Element element, IDictionary values);
-    
-    /// <inheritdoc cref="SetValues(Element, IDictionary)"/>
-    public Task<CommandOperation> SetValuesAsync(Element element, IDictionary values);
-
     /// <summary>
     /// Set a record in the database.
     /// If it exists then update it, otherwise add.
+    /// Include PK in Hashtable in case of indentity
     /// </summary>
     /// <returns>NONE=-1, INSERT=0, UPDATE=1, DELETE=2</returns>
     /// <param name="element">Base element with the basic structure of the table</param>
@@ -191,18 +76,12 @@ public interface IEntityRepository
     /// How to do:
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
-    public CommandOperation SetValues(Element element, IDictionary values, bool ignoreResults);
-
-    /// <inheritdoc cref="SetValues(Element, IDictionary, bool)"/>
-    public Task<CommandOperation> SetValuesAsync(Element element, IDictionary values, bool ignoreResults);
+    public Task<CommandOperation> SetValuesAsync(Element element, IDictionary<string,object?> values, bool ignoreResults = false);
+    
     
     /// <summary>
     /// Create an element's tables and procedures
     /// </summary>
-    /// <param name="element">Element with table data</param>
-    public void CreateDataModel(Element element);
-    
-    /// <inheritdoc cref="CreateDataModel"/>
     public Task CreateDataModelAsync(Element element);
     
     /// <summary>
@@ -220,47 +99,27 @@ public interface IEntityRepository
     /// </summary>
     public string GetScriptWriteProcedure(Element element);
     
-    public string GetAlterTableScript(Element element, IEnumerable<ElementField> fields);
+    public Task<string> GetAlterTableScriptAsync(Element element);
+
     
     /// <summary>
     /// Build a element from a existing table
     /// </summary>
-    public Element GetElementFromTable(string tableName);
-
-    /// <inheritdoc cref="GetElementFromTable(string)"/>
     public Task<Element> GetElementFromTableAsync(string tableName);
-    
-    ///<summary>
-    ///Returns DataTable object populated by a query with parameters
-    ///</summary>
-    ///<returns>Returns DataTable object populated by a query with parameters</returns>
-    ///<remarks>
-    ///It's used to return a query from data dictionary to populate components how JJComboBox, JJSearchBox etc..
-    ///</remarks>
-    public DataTable GetDataTable(string sql);
-
-    /// <inheritdoc cref="GetDataTable(string)"/>
-    public Task<DataTable> GetDataTableAsync(string sql);
-    
+        
     /// <summary>
     /// Returns a single sql command value with parameters
     /// </summary>
     /// <remarks>
     /// It's used to return sql expressions commands
     /// </remarks>
-    public object? GetResult(string sql);
+    public Task<object?> GetResultAsync(DataAccessCommand command);
     
-        
-    /// <inheritdoc cref="GetResult"/>
-    public Task<object?> GetResultAsync(string sql);
-
     /// <summary>
     /// Check if table exists in the database
     /// </summary>
-    public bool TableExists(string tableName);
-    
-    /// <inheritdoc cref="TableExists(string)"/>
     public Task<bool> TableExistsAsync(string tableName);
+    
 
     /// <summary>
     /// Execute the command in the database.
@@ -268,47 +127,30 @@ public interface IEntityRepository
     /// <remarks>
     /// It's used to run scripts from data dictionary at importation files
     /// </remarks>
-    public void SetCommand(string sql);
-
-    /// <inheritdoc cref="SetCommand(string)"/>
-    public Task SetCommandAsync(string sql);
+    public Task SetCommandAsync(DataAccessCommand command);
     
-    /// <summary>
-    /// Runs one or more commands on the database with transactions.
-    /// </summary>>
-    /// <remarks>
-    /// It's used to run delete scripts
-    /// </remarks>
-    public int SetCommand(IEnumerable<string> sqlList);
-
     /// <inheritdoc>
     ///     <cref>SetCommand(IEnumerable)</cref>
     /// </inheritdoc>
-    public Task<int> SetCommandAsync(IEnumerable<string> sqlList);
-
-    /// <summary>
-    /// Executes a database script.
-    /// </summary>
-    /// <returns>Returns true if the execution is successful.</returns>
-    /// <remarks>It's used to exec structure scripts</remarks> 
-    public bool ExecuteBatch(string script);
+    public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList);
     
     /// <inheritdoc cref="ExecuteBatch"/>
     public Task<bool> ExecuteBatchAsync(string script);
-
-    //TODO: Lucio nessa interface quantos menos métodos melhor, os métodos abaixo são redundantes
     
-    Task<IDictionary<string, object>?> GetDictionaryAsync(Element metadata, IDictionary<string, object> filters);
+    Task<IDictionary<string, object?>> GetDictionaryAsync(DataAccessCommand command);
     
-    //TODO: Lucio Alterei de Tuple(EntityResult<List<Dictionary<string, object>>>, int) para EntityResultList, porém temos que decidir se trabalhamos com lista ou com table, ou altera tudo ou nem rela
-    // eu tb não gosto do DataTable, mas podemos alterar outro momento... muito trabalho rs
-    Task<EntityResult<Dictionary<string,object>>> GetDictionaryListAsync(Element metadata, IDictionary parametersParameters, string toString, int paginationDataRecordsPerPage, int paginationDataPage);
-
-    //TODO: Não gosto disso
-    Task<bool> ColumnExistsAsync(string tableName, string columnName);
-
-    Task<DataSource> GetDataSourceAsync(
+    Task<IDictionary<string, object?>> GetDictionaryAsync(Element metadata, IDictionary<string, object?> filters);
+    
+    Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command);
+    
+    /// <summary>
+    /// Returns records from the database based on the filter.  
+    /// </summary>
+    /// <returns>
+    /// Returns a DictionaryListResult with the records found and the count of records at your data source.
+    /// </returns>
+    Task<DictionaryListResult> GetDictionaryListAsync(
         Element element,
-        EntityParameters parameters = null);
-    
+        EntityParameters? parameters = null,
+        bool recoverTotalOfRecords = true);
 }

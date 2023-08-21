@@ -21,19 +21,16 @@ public class MasterApiListResponse
     public Dictionary<string, object?>[]? Fields { get; set; }
 
 
-    public void SetDataTableValues(FormElement formElement, DataTable? dataTable)
+    public void SetData(FormElement formElement, List<Dictionary<string,object?>> data)
     {
-        if (dataTable == null)
-            return;
-        
         var list = new List<Dictionary<string, object?>>();
-        foreach(DataRow row in dataTable.Rows)
+        foreach(var row in data)
         {
             var cols = new Dictionary<string, object?>();
             foreach(var field in formElement.Fields)
             {
                 string fieldName = formElement.ApiOptions.GetFieldNameParsed(field.Name);
-                object val = row[field.Name];
+                object? val = row[field.Name];
                 if (val == DBNull.Value)
                     cols.Add(fieldName, null);
                 else

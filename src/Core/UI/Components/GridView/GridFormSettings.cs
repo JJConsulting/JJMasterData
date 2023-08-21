@@ -37,7 +37,7 @@ internal class GridFormSettings
         string tableIsHeaderFixed = _currentContext.Request[TableIsHeaderFixed];
 
         if (int.TryParse(tableRegPerPage, out int totalPerPage))
-            gridSettings.TotalPerPage = totalPerPage;
+            gridSettings.RecordsPerPage = totalPerPage;
 
         if (int.TryParse(tableTotalPageButtons, out int totalPaggingButtons))
             gridSettings.TotalPaginationButtons = totalPaggingButtons;
@@ -67,7 +67,7 @@ internal class GridFormSettings
         }
         else
         {
-            div.AppendHiddenInput(TableTotalPerPage, gridSettings.TotalPerPage.ToString());
+            div.AppendHiddenInput(TableTotalPerPage, gridSettings.RecordsPerPage.ToString());
         }
 
         div.Append(GetShowBorderElement(gridSettings));
@@ -167,7 +167,7 @@ internal class GridFormSettings
             int page = i * 5;
             select.Append(HtmlTag.Option, option =>
             {
-                option.WithAttributeIf(gridSettings.TotalPerPage == page, "selected", "selected");
+                option.WithAttributeIf(gridSettings.RecordsPerPage == page, "selected", "selected");
                 option.WithValue(page.ToString());
                 option.AppendText(page.ToString());
             });

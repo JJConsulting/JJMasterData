@@ -20,11 +20,11 @@ public class EntityService : BaseService
 
     }
 
-    private bool ValidateEntity(Element formElement, string originName)
+    private async Task<bool> ValidateEntity(Element formElement, string originName)
     {
         if (ValidateName(formElement.Name) && !originName.ToLower().Equals(formElement.Name.ToLower()))
         {
-            if (DataDictionaryRepository.Exists(formElement.Name))
+            if (await DataDictionaryRepository.ExistsAsync(formElement.Name))
                 AddError("Name", StringLocalizer["There is already a dictionary with the name {0}",formElement.Name]);
         }
 
@@ -48,7 +48,8 @@ public class EntityService : BaseService
 
     public async Task<FormElement> EditEntityAsync(FormElement formElement, string entityName)
     {
-        if (!ValidateEntity(formElement, entityName))
+        var isValid = await ValidateEntity(formElement, entityName);
+        if (!isValid)
             return null;
         
         try
@@ -65,12 +66,12 @@ public class EntityService : BaseService
 
             if (!entityName.Equals(formElement.Name))
             {
-                DataDictionaryRepository.Delete(entityName);
-                DataDictionaryRepository.InsertOrReplace(dicParser);
+                await DataDictionaryRepository.DeleteAsync(entityName);
+                await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
             }
             else
             {
-                DataDictionaryRepository.InsertOrReplace(dicParser);
+                await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
             }
 
             return formElement;

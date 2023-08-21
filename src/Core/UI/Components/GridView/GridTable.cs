@@ -13,7 +13,7 @@ internal class GridTable
 
     internal GridTableBody Body { get; }
 
-    internal DataSource DataSource { get; }
+    internal DictionaryListResult DataSource { get; }
 
     internal string EmptyDataText { get; }
 

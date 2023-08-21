@@ -41,43 +41,43 @@ public class FileSystemDataDictionaryRepositoryTests : IDisposable
     }
 
     [Fact]
-    public void GetMetadataListTest()
+    public async Task GetMetadataListTest()
     {
         // Arrange
         CreateMetadataIfNotExists();
         
         // Act
-        var metadataList = _repository.GetMetadataList();
+        var metadataList = await _repository.GetMetadataListAsync();
         
         // Assert
         Assert.True(metadataList.Any());
     }
     
     [Fact]
-    public void GetMetadataTest()
+    public async Task GetMetadataTest()
     {
         // Arrange
         CreateMetadataIfNotExists();
         
         // Act
-        var metadata = _repository.GetMetadata(DictionaryName);
+        var metadata = await _repository.GetMetadataAsync(DictionaryName);
         
         // Assert
         Assert.Equal(DictionaryName, metadata.Name);
     }
     
     [Fact]
-    public void InsertOrReplaceTest()
+    public async Task InsertOrReplaceTest()
     {
         // Arrange
         CreateMetadataIfNotExists();
         var testData = "Test: " + DateTime.Now;
-        var metadata = _repository.GetMetadata(DictionaryName);
+        var metadata = await _repository.GetMetadataAsync(DictionaryName);
         metadata.Info = testData;
         
         // Act
-        _repository.InsertOrReplace(metadata);
-        metadata = _repository.GetMetadata(DictionaryName);
+        await _repository.InsertOrReplaceAsync(metadata);
+        metadata = await _repository.GetMetadataAsync(DictionaryName);
         
         // Assert
         Assert.Equal(testData, metadata.Info);

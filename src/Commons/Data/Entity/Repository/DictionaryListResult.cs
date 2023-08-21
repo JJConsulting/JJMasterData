@@ -4,17 +4,13 @@ using System.Data;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
-public class DataSource : EntityResult<Dictionary<string, object?>>
+public class DictionaryListResult : ListResult<Dictionary<string, object?>>
 {
-    internal DataSource(List<Dictionary<string, object?>> list, int totalOfRecords) : base(list,totalOfRecords)
+    internal DictionaryListResult(List<Dictionary<string, object?>> list, int totalOfRecords) : base(list,totalOfRecords)
     {
     }
-    
-    internal DataSource(DataTable dataTable, int totalOfRecords) : base(ConvertDataTableToList(dataTable),totalOfRecords)
-    {
-    }
-    
-    private static List<Dictionary<string, object?>> ConvertDataTableToList(DataTable dataTable)
+
+    public static DictionaryListResult FromDataTable(DataTable dataTable)
     {
         var list = new List<Dictionary<string, object?>>();
 
@@ -30,8 +26,9 @@ public class DataSource : EntityResult<Dictionary<string, object?>>
             list.Add(dict);
         }
 
-        return list;
+        return new DictionaryListResult(list,list.Count);
     }
+    
     
     public DataTable ToDataTable()
     {

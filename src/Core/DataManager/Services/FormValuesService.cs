@@ -146,6 +146,6 @@ public class FormValuesService : IFormValuesService
         string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues);
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
 
-        return await EntityRepository.GetDictionaryAsync(element, filters);
+        return await EntityRepository.GetDictionaryAsync(element, (IDictionary<string, object>)filters);
     }
 }

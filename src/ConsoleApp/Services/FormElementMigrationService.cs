@@ -36,7 +36,7 @@ public class FormElementMigrationService
         foreach (var metadata in databaseDictionaries)
         {
             var formElement = metadata.GetFormElement();
-            DataDictionaryRepository.InsertOrReplace(formElement);
+            DataDictionaryRepository.InsertOrReplaceAsync(formElement).GetAwaiter().GetResult();
             Console.WriteLine(@"✅ " + formElement.Name);
         }
 

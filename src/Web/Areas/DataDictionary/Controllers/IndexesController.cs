@@ -46,13 +46,13 @@ public class IndexesController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult Detail(string dictionaryName, string? index, List<SelectListItem> checkBoxList, ElementIndex elementIndex)
+    public async Task<ActionResult> Detail(string dictionaryName, string? index, List<SelectListItem> checkBoxList, ElementIndex elementIndex)
     {
         List<string> indexColumns = (from item in checkBoxList where item.Selected select item.Value).ToList();
 
         elementIndex.Columns = indexColumns;
 
-        if (_indexesService.Save(dictionaryName, index, elementIndex))
+        if (await _indexesService.SaveAsync(dictionaryName, index, elementIndex))
         {
             return Json(new { success = true });
         }
@@ -77,14 +77,14 @@ public class IndexesController : DataDictionaryController
     [HttpPost]
     public ActionResult Delete(string dictionaryName, string index)
     {
-        _indexesService.Delete(dictionaryName, index);
+        _indexesService.DeleteAsync(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
     }
 
     [HttpPost]
     public ActionResult MoveDown(string dictionaryName, string index)
     {
-        _indexesService.MoveDown(dictionaryName, index);
+        _indexesService.MoveDownAsync(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
 
     }
@@ -92,7 +92,7 @@ public class IndexesController : DataDictionaryController
     [HttpPost]
     public ActionResult MoveUp(string dictionaryName, string index)
     {
-        _indexesService.MoveUp(dictionaryName, index);
+        _indexesService.MoveUpAsync(dictionaryName, index);
         return RedirectToAction("Index", new { dictionaryName });
 
     }

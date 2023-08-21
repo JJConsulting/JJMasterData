@@ -15,6 +15,7 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.DataManager.Imports;
@@ -148,8 +149,8 @@ public class DataImportationWorker : IBackgroundTaskWorker
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
-            string cmd = ExpressionsService.ParseExpression(ProcessOptions.CommandBeforeProcess, formData, false);
-            await EntityRepository.SetCommandAsync(cmd);
+            var parsedSql = ExpressionsService.ParseExpression(ProcessOptions.CommandBeforeProcess, formData, false);
+            await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql));
         }
 
         token.ThrowIfCancellationRequested();
@@ -211,9 +212,8 @@ public class DataImportationWorker : IBackgroundTaskWorker
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
-            string cmd;
-            cmd = ExpressionsService.ParseExpression(ProcessOptions.CommandAfterProcess, formData, false);
-            EntityRepository.SetCommand(cmd);
+            string parsedSql = ExpressionsService.ParseExpression(ProcessOptions.CommandAfterProcess, formData, false);
+            await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
         }
 
         if (OnAfterProcess != null)

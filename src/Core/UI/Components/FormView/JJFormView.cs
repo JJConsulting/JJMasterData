@@ -253,7 +253,7 @@ public class JJFormView : AsyncComponent
     {
         var dataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         var factory = StaticServiceLocator.Provider.GetScopedDependentService<FormViewFactory>();
-        FormElement = dataDictionaryRepository.GetMetadata(elementName);
+        FormElement = dataDictionaryRepository.GetMetadataAsync(elementName).GetAwaiter().GetResult();
         IsExternalRoute = false;
         factory.SetFormViewParamsAsync(this, FormElement).GetAwaiter().GetResult();
     }

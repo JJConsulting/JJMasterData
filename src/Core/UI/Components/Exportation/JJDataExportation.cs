@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Extensions;
@@ -46,7 +47,7 @@ public class JJDataExportation : ProcessComponent
     /// <summary>
     /// Event fired when the cell is rendered.
     /// </summary>
-    public EventHandler<GridCellEventArgs> OnRenderCell = null;
+    public event EventHandler<GridCellEventArgs> OnRenderCell = null;
 
     #endregion
 
@@ -237,10 +238,11 @@ public class JJDataExportation : ProcessComponent
 
     private DataExportationWriterBase CreateWriter()
     {
+        DataExportationWriterFactory.OnRenderCell += OnRenderCell;
         return DataExportationWriterFactory.GetInstance(this);
     }
 
-    public void StartExportation(DataSource dt)
+    public void StartExportation(DictionaryListResult dt)
     {
         var exporter = CreateWriter();
 
@@ -248,12 +250,12 @@ public class JJDataExportation : ProcessComponent
         BackgroundTask.Run(ProcessKey, exporter);
     }
 
-    internal void ExportFileInBackground(IDictionary<string, object>filter, string order)
+    internal void ExportFileInBackground(IDictionary<string, object>filter, OrderByData orderByData)
     {
         var exporter = CreateWriter();
 
         exporter.CurrentFilter = filter;
-        exporter.CurrentOrder = order;
+        exporter.CurrentOrder = orderByData;
 
         BackgroundTask.Run(ProcessKey, exporter);
     }

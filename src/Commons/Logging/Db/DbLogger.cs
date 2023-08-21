@@ -2,7 +2,6 @@
 using System;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.Db;
 

@@ -55,9 +55,9 @@ public class MetadataRepository
         const string orderBy = "name, type";
         string currentName = "";
         int tot = 1;
-        var dt = _entityRepository.GetDataTable(MasterDataElement, filter, orderBy, 10000, 1, ref tot);
+        var dt = _entityRepository.GetDictionaryListAsync(MasterDataElement).GetAwaiter().GetResult();
         Metadata currentParser = null;
-        foreach (DataRow row in dt.Rows)
+        foreach (var row in dt.Data)
         {
             string name = row["name"].ToString();
             if (!currentName.Equals(name))
@@ -66,7 +66,7 @@ public class MetadataRepository
 
                 currentName = name;
                 list.Add(new Metadata());
-                currentParser = list[list.Count - 1];
+                currentParser = list[^1];
             }
 
             string json = row["json"].ToString();
@@ -96,180 +96,6 @@ public class MetadataRepository
         ApplyCompatibility(currentParser);
 
         return list;
-    }
-
-    ///<inheritdoc cref="IDataDictionaryRepository.GetNameList"/>
-    public IEnumerable<string> GetNameList()
-    {
-        int totalRecords = 10000;
-        var filter = new Hashtable { { "type", "F" } };
-
-        var dt = _entityRepository.GetDataTable(MasterDataElement, filter, null, totalRecords, 1, ref totalRecords);
-        foreach (DataRow row in dt.Rows)
-        {
-            yield return row["name"].ToString();
-        }
-    }
-
-    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>
-    public Metadata GetMetadata(string dictionaryName)
-    {
-        if (string.IsNullOrEmpty(dictionaryName))
-            throw new ArgumentNullException(nameof(dictionaryName), "Dictionary invalid");
-
-        var filter = new Hashtable { { "name", dictionaryName } };
-        var dataTable = _entityRepository.GetDataTable(MasterDataElement, filter);
-        if (dataTable.Rows.Count == 0)
-            throw new KeyNotFoundException("Dictionary not found");
-
-        var metadata = new Metadata();
-        foreach (DataRow row in dataTable.Rows)
-        {
-            string json = row["json"].ToString();
-            
-            switch (row["type"].ToString())
-            {
-                case "T":
-                    metadata.Table = JsonConvert.DeserializeObject<Element>(json);
-                    break;
-                case "F":
-                    metadata.Form = JsonConvert.DeserializeObject<MetadataForm>(json);
-                    break;
-                case "L":
-                    metadata.Options = JsonConvert.DeserializeObject<MetadataOptions>(json);
-                    break;
-                case "A":
-                    metadata.ApiOptions = JsonConvert.DeserializeObject<MetadataApiOptions>(json);
-                    break;
-            }
-        }
-
-        ApplyCompatibility(metadata);
-
-        return metadata;
-    }
-
-    ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>
-    public void InsertOrReplace(Metadata metadata)
-    {
-        if (metadata == null)
-            throw new ArgumentNullException(nameof(metadata));
-
-        if (metadata.Table == null)
-            throw new ArgumentNullException(nameof(metadata.Table));
-
-        if (string.IsNullOrEmpty(metadata.Table.Name))
-            throw new ArgumentNullException(nameof(metadata.Table.Name));
-        
-        string name = metadata.Table.Name;
-        string jsonTable = JsonConvert.SerializeObject(metadata.Table);
-
-        DateTime dNow = DateTime.Now;
-
-        var values = new Hashtable
-        {
-            { "name", name },
-            { "tablename", metadata.Table.TableName },
-            { "info", metadata.Table.Info },
-            { "type", "T" },
-            { "json", jsonTable },
-            { "sync", metadata.Table.Sync ? "1" : "0" },
-            { "modified", dNow }
-        };
-        _entityRepository.SetValues(MasterDataElement, values);
-
-        if (metadata.Form != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.Form);
-            values.Clear();
-            values.Add("name", name);
-            values.Add("tablename", metadata.Table.TableName);
-            values.Add("info", "");
-            values.Add("type", "F");
-            values.Add("owner", name);
-            values.Add("json", jsonForm);
-            values.Add("sync", metadata.Table.Sync ? "1" : "0");
-            values.Add("modified", dNow);
-            _entityRepository.SetValues(MasterDataElement, values);
-        }
-
-        if (metadata.Options != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.Options);
-            values.Clear();
-            values.Add("name", name);
-            values.Add("tablename", metadata.Table.TableName);
-            values.Add("info", "");
-            values.Add("type", "L");
-            values.Add("owner", name);
-            values.Add("json", jsonForm);
-            values.Add("sync", metadata.Table.Sync ? "1" : "0");
-            values.Add("modified", dNow);
-            _entityRepository.SetValues(MasterDataElement, values);
-        }
-
-        if (metadata.ApiOptions != null)
-        {
-            string jsonForm = JsonConvert.SerializeObject(metadata.ApiOptions);
-            values.Clear();
-            values.Add("name", name);
-            values.Add("info", "");
-            values.Add("type", "A");
-            values.Add("owner", name);
-            values.Add("json", jsonForm);
-            values.Add("sync", metadata.Table.Sync ? "1" : "0");
-            values.Add("modified", dNow);
-            _entityRepository.SetValues(MasterDataElement, values);
-        }
-    }
-
-    ///<inheritdoc cref="IDataDictionaryRepository.Delete"/>
-    public void Delete(string dictionaryName)
-    {
-        if (string.IsNullOrEmpty(dictionaryName))
-            throw new ArgumentException();
-
-        var filters = new Hashtable { { "name", dictionaryName } };
-
-        var dataTable = _entityRepository.GetDataTable(MasterDataElement, filters);
-        if (dataTable.Rows.Count == 0)
-            throw new KeyNotFoundException("Dictionary not found");
-
-        foreach (DataRow row in dataTable.Rows)
-        {
-            var delFilter = new Hashtable();
-            delFilter.Add("name", dictionaryName);
-            delFilter.Add("type", row["type"].ToString());
-            _entityRepository.Delete(MasterDataElement, delFilter);
-        }
-    }
-    
-    ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
-    public bool Exists(string elementName)
-    {
-        if (string.IsNullOrEmpty(elementName))
-            throw new ArgumentNullException(nameof(elementName));
-
-        var filter = new Hashtable { { "name", elementName } };
-        int count = _entityRepository.GetCount(MasterDataElement, filter);
-        return count > 0;
-    }
-
-    ///<inheritdoc cref="IDataDictionaryRepository.CreateStructureIfNotExists"/>
-    public void CreateStructureIfNotExists()
-    {
-        if(!_entityRepository.TableExists(MasterDataElement.Name))
-            _entityRepository.CreateDataModel(MasterDataElement);
-    }
-
-    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
-    public IEnumerable<MetadataInfo> GetMetadataInfoList(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
-    {
-        var filters = filter.ToDictionary();
-        filters.Add("type","F");
-
-        var dt = _entityRepository.GetDataTable(MasterDataElement, filters as IDictionary, orderBy, recordsPerPage, currentPage, ref totalRecords); 
-        return dt.ToModelList<MetadataInfo>();
     }
     
         

@@ -29,6 +29,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -49,17 +50,18 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
     
     public IFieldFormattingService FieldFormattingService { get; }
     
-    
+    public ControlFactory ControlFactory { get; }
     public PdfWriter(IExpressionsService expressionsService, 
                      IStringLocalizer<JJMasterDataResources> stringLocalizer, 
                      IOptions<JJMasterDataCoreOptions> options, 
                      IControlFactory<JJTextFile> textFileFactory, 
                      ILogger<PdfWriter> logger, 
                      IEntityRepository entityRepository, 
-                     IFieldFormattingService fieldFormattingService) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+                     IFieldFormattingService fieldFormattingService, ControlFactory controlFactory) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
     {
         EntityRepository = entityRepository;
         FieldFormattingService = fieldFormattingService;
+        ControlFactory = controlFactory;
     }
     
     public override async Task GenerateDocument(Stream ms, CancellationToken token)
@@ -102,7 +104,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         document.Add(table);
 
         await GenerateHeaderAsync(table);
-        await GenerateBodyAsync(table, token);
+        await GenerateBody(table, token);
 
         table.Complete();
         document.Close();
@@ -122,34 +124,46 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         table.Flush();
     }
 
-    private async Task GenerateBodyAsync(Table table, CancellationToken token)
+    private async Task GenerateBody(Table table, CancellationToken token)
     {
         int tot = 0;
         if (DataSource == null)
         {
-            var entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,1));
-            DataSource = await EntityRepository.GetDataSourceAsync(FormElement, entityParameters);
+            var entityParameters = new EntityParameters
+            {
+                Parameters = CurrentFilter,
+                RecordsPerPage = RecordsPerPage,
+                OrderBy = CurrentOrder,
+                CurrentPage = 1,
+            };
+            DataSource = await EntityRepository.GetDictionaryListAsync(FormElement,entityParameters);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
-            await GenerateRowsAsync(table, token);
+            await GenerateRows(table, token);
 
-            int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
+            int totPag = (int)Math.Ceiling((double)tot / RecordsPerPage);
             for (int i = 2; i <= totPag; i++)
             {
-                entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,i));
-                DataSource = await EntityRepository.GetDataSourceAsync(FormElement, entityParameters);
-                await GenerateRowsAsync(table, token);
+                entityParameters = new EntityParameters
+                {
+                    Parameters = CurrentFilter,
+                    RecordsPerPage = RecordsPerPage,
+                    OrderBy = CurrentOrder,
+                    CurrentPage = i,
+                };
+                DataSource = await EntityRepository.GetDictionaryListAsync(FormElement,entityParameters);
+                await GenerateRows(table, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.CurrentCount;
-            await GenerateRowsAsync(table, token);
+            ProcessReporter.TotalRecords = DataSource.Count;
+            await GenerateRows(table, token);
         }
     }
 
-    private async Task GenerateRowsAsync(Table table, CancellationToken token)
+    private async Task GenerateRows(Table table, CancellationToken token)
     {
         foreach (Dictionary<string,object> row in DataSource.Data)
         {

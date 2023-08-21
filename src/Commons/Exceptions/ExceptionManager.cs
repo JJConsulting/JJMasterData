@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Logging;
 using Microsoft.Data.SqlClient;
 
 namespace JJMasterData.Commons.Exceptions;

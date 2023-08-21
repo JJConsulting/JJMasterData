@@ -65,8 +65,13 @@ public class MasterApiService
 
         var filters = GetDefaultFilter(formElement, true);
         var showLogInfo = Debugger.IsAttached;
-        string text = _entityRepository.GetListFieldsAsText(formElement, filters as IDictionary, orderby, regporpag,
-            pag, showLogInfo);
+        string text = await _entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters()
+        {
+            Parameters = filters,
+            CurrentPage = pag,
+            RecordsPerPage = regporpag,
+            OrderBy = OrderByData.FromString(orderby)
+        }, showLogInfo);
         if (string.IsNullOrEmpty(text))
             throw new KeyNotFoundException("No records found");
 
@@ -85,16 +90,22 @@ public class MasterApiService
 
         var filters = GetDefaultFilter(dictionary, true);
         var element = dictionary;
-        var dt = _entityRepository.GetDataTable(element, filters as IDictionary, orderby, regporpag, pag, ref total);
+        var result = await _entityRepository.GetDictionaryListAsync(element, new EntityParameters
+        {
+            Parameters = filters,
+            CurrentPage = pag,
+            RecordsPerPage = regporpag,
+            OrderBy = OrderByData.FromString(orderby)
+        });
 
-        if (dt == null || dt.Rows.Count == 0)
+        if (result == null || result.Data.Count == 0)
             throw new KeyNotFoundException("No records found");
 
         var ret = new MasterApiListResponse
         {
             Tot = total
         };
-        ret.SetDataTableValues(dictionary, dt);
+        ret.SetData(dictionary, result.Data);
 
         return ret;
     }
@@ -130,7 +141,7 @@ public class MasterApiService
         if (paramsList == null)
             throw new ArgumentNullException(nameof(paramsList));
 
-        var formElement = GetDataDictionary(elementName);
+        var formElement = await GetDataDictionary(elementName);
         if (!formElement.ApiOptions.EnableAdd | !formElement.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
@@ -148,7 +159,7 @@ public class MasterApiService
         if (paramsList == null)
             throw new JJMasterDataException("Invalid parameter or not a list");
 
-        var dictionary = GetDataDictionary(elementName);
+        var dictionary = await GetDataDictionary(elementName);
         if (!dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
 
@@ -164,7 +175,7 @@ public class MasterApiService
         if (paramsList == null)
             throw new ArgumentNullException(nameof(paramsList));
 
-        var formElement = GetDataDictionary(elementName);
+        var formElement = await GetDataDictionary(elementName);
         if (!formElement.ApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();
 
@@ -307,7 +318,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(id))
             throw new ArgumentNullException(nameof(id));
 
-        var dictionary = GetDataDictionary(elementName);
+        var dictionary = await GetDataDictionary(elementName);
         if (!dictionary.ApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
 
@@ -342,7 +353,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = _dataDictionaryRepository.GetMetadata(elementName);
+        var dictionary = await _dataDictionaryRepository.GetMetadataAsync(elementName);
 
         if (!dictionary.ApiOptions.EnableAdd & !dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
@@ -461,12 +472,12 @@ public class MasterApiService
         return new DataContext(HttpContext, DataContextSource.Api, userId);
     }
 
-    private FormElement GetDataDictionary(string elementName)
+    private async Task<FormElement> GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        return _dataDictionaryRepository.GetMetadata(elementName);
+        return await _dataDictionaryRepository.GetMetadataAsync(elementName);
     }
 
     /// <summary>

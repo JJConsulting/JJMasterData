@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
@@ -31,50 +32,55 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
-    protected const int RegPerPag = 100000;
+    protected const int RecordsPerPage = 100000;
 
     #region "Properties"
     
     private DataExportationReporter _processReporter;
     private List<FormElementField> _fields;
 
-    protected IExpressionsService ExpressionsService { get; } 
+    private IExpressionsService ExpressionsService { get; } 
     protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } 
-    protected IOptions<JJMasterDataCoreOptions> Options { get; } 
-    protected IControlFactory<JJTextFile> TextFileFactory { get; }
+    private IOptions<JJMasterDataCoreOptions> Options { get; } 
+    private IControlFactory<JJTextFile> TextFileFactory { get; }
     
-    protected ILogger<DataExportationWriterBase> Logger { get; } 
+    private ILogger<DataExportationWriterBase> Logger { get; }
 
+    
+    
 
-    public async Task<List<FormElementField>> GetVisibleFieldsAsync()
+    protected async Task<List<FormElementField>> GetVisibleFieldsAsync()
     {
-        if (_fields == null)
+        if (_fields != null)
+            return _fields;
+        if (Configuration.ExportAllFields)
         {
-            if (Configuration.ExportAllFields)
+            _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
+        }
+        
+        else
+        {
+            var defaultValues = new Dictionary<string, object>();
+            var formData = new FormStateData(defaultValues, PageState.Import);
+            _fields = new List<FormElementField>();
+
+            foreach (var field in FormElement.Fields)
             {
-                _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
-            }
-            else
-            {
-                var defaultValues = new Dictionary<string, object>();
-                var formData = new FormStateData(defaultValues, PageState.Import);
-                _fields = FormElement.Fields.ToList().FindAll(x => x.Export &&
-                                                                   ExpressionsService
-                                                                       .GetBoolValueAsync(x.VisibleExpression, formData)
-                                                                       .GetAwaiter().GetResult());
+                if (field.Export && await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData))
+                {
+                    _fields.Add(field);
+                }
             }
         }
 
         return _fields;
     }
-
     public ProcessOptions ProcessOptions { get; set; }
 
     public DataExportationReporter ProcessReporter => _processReporter ??= new DataExportationReporter();
 
     public ExportOptions Configuration { get; set; }
-
-    public ControlFactory ControlFactory { get; } 
+    
 
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
@@ -90,7 +96,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     /// Para mais de um campo utilize virgula ex:
     /// "Campo1 ASC, Campo2 DESC, Campo3 ASC"
     /// </remarks>
-    public string CurrentOrder { get; set; }
+    public OrderByData CurrentOrder { get; set; }
 
     /// <summary>
     /// Tabela com os dados
@@ -103,7 +109,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
     /// utilizando a proc informada no FormElement;
     /// </remarks>
-    public DataSource DataSource { get; set; }
+    public DictionaryListResult DataSource { get; set; }
 
     /// <summary>
     /// Configurações pré-definidas do formulário

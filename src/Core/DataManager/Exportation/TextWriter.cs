@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -48,24 +45,36 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
         int tot = 0;
         if (DataSource == null)
         {
-            var entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,1));
-            DataSource = await EntityRepository.GetDataSourceAsync(FormElement,entityParameters);
+            var entityParameters = new EntityParameters
+            {
+                Parameters = CurrentFilter,
+                RecordsPerPage = RecordsPerPage,
+                OrderBy = CurrentOrder,
+                CurrentPage = 1,
+            };
+            DataSource = await EntityRepository.GetDictionaryListAsync(FormElement,entityParameters);
             ProcessReporter.TotalRecords = tot;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
             Reporter(ProcessReporter);
             await GenerateRows(sw, token);
 
-            int totPag = (int)Math.Ceiling((double)tot / RegPerPag);
+            int totPag = (int)Math.Ceiling((double)tot / RecordsPerPage);
             for (int i = 2; i <= totPag; i++)
             {
-                entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,i));
-                DataSource = await EntityRepository.GetDataSourceAsync(FormElement, entityParameters);
+                entityParameters = new EntityParameters
+                {
+                    Parameters = CurrentFilter,
+                    RecordsPerPage = RecordsPerPage,
+                    OrderBy = CurrentOrder,
+                    CurrentPage = i,
+                };
+                DataSource = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
                 await GenerateRows(sw, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.CurrentCount;
+            ProcessReporter.TotalRecords = DataSource.Data.Count;
             await GenerateRows(sw, token);
         }
     }

@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging.Db;
@@ -47,7 +48,7 @@ public class LogController : DataDictionaryController
         }
 
         var formView = FormViewFactory.Create(formElement);
-        formView.GridView.CurrentOrder = $"{Options.CreatedColumnName} DESC";
+        formView.GridView.CurrentOrder = OrderByData.FromString($"{Options.CreatedColumnName} DESC");
         var result = await formView.GetResultAsync();
 
         if (result.IsActionResult())
@@ -61,7 +62,7 @@ public class LogController : DataDictionaryController
     {
         string sql = $"TRUNCATE TABLE {Options.TableName}";
 
-        await EntityRepository.SetCommandAsync(sql);
+        await EntityRepository.SetCommandAsync(new DataAccessCommand(sql));
 
         return RedirectToAction("Index");
     }

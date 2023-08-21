@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using JJMasterData.Commons.Data;
 using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Components;
@@ -143,12 +144,15 @@ public class JJComboBox : HtmlControl
 
     private IEnumerable<HtmlBuilder> GetReadOnlyInputs(IEnumerable<DataItemValue> values)
     {
-        var hiddenInput = new HtmlBuilder(HtmlTag.Input)
-            .WithAttribute("type", "hidden")
-            .WithNameAndId(Name)
-            .WithValue(SelectedValue);
+        if (SelectedValue != null)
+        {
+            var hiddenInput = new HtmlBuilder(HtmlTag.Input)
+                .WithAttribute("type", "hidden")
+                .WithNameAndId(Name)
+                .WithValue(SelectedValue);
 
-        yield return hiddenInput;
+            yield return hiddenInput;
+        }
 
         var selectedText = GetSelectedText(values);
 
@@ -274,18 +278,18 @@ public class JJComboBox : HtmlControl
                 sql = ExpressionsService.ParseExpression(sql, FormStateData, false);
             }
 
-            var dt = EntityRepository.GetDataTable(sql);
-            foreach (DataRow row in dt.Rows)
+            var dt = EntityRepository.GetDictionaryListAsync(new DataAccessCommand(sql!)).GetAwaiter().GetResult();
+            foreach (var row in dt)
             {
                 var item = new DataItemValue
                 {
-                    Id = row[0].ToString(),
-                    Description = row[1].ToString().Trim()
+                    Id = row.ElementAt(0).Value?.ToString(),
+                    Description = row.ElementAt(1).Value?.ToString()?.Trim()
                 };
                 if (DataItem.ShowImageLegend)
                 {
-                    item.Icon = (IconType)int.Parse(row[2].ToString());
-                    item.ImageColor = row[3].ToString();
+                    item.Icon = (IconType)int.Parse(row.ElementAt(2).Value?.ToString() ?? string.Empty);
+                    item.ImageColor = row.ElementAt(3).Value?.ToString();
                 }
 
                 values.Add(item);

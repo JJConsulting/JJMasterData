@@ -28,10 +28,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
 
-    /// <summary>
-    /// Exibi borda na grid 
-    /// (Default = false)
-    /// </summary>
+
     public bool ShowBorder { get; set; }
 
     /// <summary>
@@ -39,8 +36,8 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
-    public IEntityRepository EntityRepository { get; } 
-    public IFieldFormattingService FieldFormattingService { get; } 
+    private IEntityRepository EntityRepository { get; } 
+    private IFieldFormattingService FieldFormattingService { get; } 
 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
@@ -72,22 +69,34 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         sw.Close();
     }
 
-    public async Task GenerateBody(StreamWriter sw, CancellationToken token)
+    private async Task GenerateBody(StreamWriter sw, CancellationToken token)
     {
         if (DataSource == null)
         {
-            var entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,1));
-            DataSource = await EntityRepository.GetDataSourceAsync(FormElement,entityParameters);
+            var entityParameters = new EntityParameters
+            {
+                Parameters = CurrentFilter,
+                RecordsPerPage = RecordsPerPage,
+                OrderBy = CurrentOrder,
+                CurrentPage = 1,
+            };
+            DataSource = await EntityRepository.GetDictionaryListAsync(FormElement,entityParameters);
             ProcessReporter.TotalRecords = DataSource.TotalOfRecords;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", DataSource.TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);
             await GenerateRows(sw, token);
 
-            int totPag = (int)Math.Ceiling((double)DataSource.CurrentCount / RegPerPag);
+            int totPag = (int)Math.Ceiling((double)DataSource.Data.Count / RecordsPerPage);
             for (int i = 2; i <= totPag; i++)
             {
-                entityParameters = new EntityParameters(CurrentFilter, OrderByData.FromString(CurrentOrder), new PaginationData(RegPerPag,i));
-                DataSource = await EntityRepository.GetDataSourceAsync(FormElement, entityParameters);
+                entityParameters = new EntityParameters
+                {
+                    Parameters = CurrentFilter,
+                    CurrentPage = i,
+                    RecordsPerPage = RecordsPerPage,
+                    OrderBy = CurrentOrder
+                };
+                DataSource = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
                 await GenerateRows(sw, token);
             }
         }
@@ -98,7 +107,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         }
     }
 
-    public async Task GenerateRows(StreamWriter sw, CancellationToken token)
+    private async Task GenerateRows(StreamWriter sw, CancellationToken token)
     {
         foreach (var row in DataSource.Data)
         {
@@ -186,7 +195,9 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         await sw.WriteLineAsync("\t\t\t</tr>");
     }
 
-    public ExcelWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+    public ExcelWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger, IEntityRepository entityRepository, IFieldFormattingService fieldFormattingService) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
     {
+        EntityRepository = entityRepository;
+        FieldFormattingService = fieldFormattingService;
     }
 }

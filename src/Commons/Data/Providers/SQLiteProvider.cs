@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -247,107 +247,93 @@ public class ProviderSQLite : BaseProvider
         throw new NotImplementedException();
     }
 
-    public override DataAccessCommand GetInsertCommand(Element element, IDictionary values)
+    public override DataAccessCommand GetInsertCommand(Element element, IDictionary<string,object?> values)
     {
         return GetScriptInsert(element, values, false);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary values)
+    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary<string,object?> values)
     {
         return GetScriptUpdate(element, values);
     }
 
-    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary filters)
+    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> filters)
     {
         return GetScriptDelete(element, filters);
     }
 
-    public override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary values)
+    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values)
     {
         return GetScriptInsert(element, values, true);
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, IDictionary filters, string orderBy, int recordsPerPage, int currentPage, DataAccessParameter pTot)
+    public override DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters, DataAccessParameter totalOfRecordsParameter)
     {
+        var (filters, orderBy, currentPage, recordsPerPage) = entityParameters;
         var isFirst = true;
-        var sSql = new StringBuilder();
+        var sqlScript = new StringBuilder();
 
-        sSql.Append("SELECT * FROM ");
-        sSql.Append(element.TableName);
+        sqlScript.Append("SELECT * FROM ");
+        sqlScript.Append(element.TableName);
 
-        foreach (DictionaryEntry filter in filters)
+        foreach (var filter in filters)
         {
             if (isFirst)
             {
-                sSql.Append(Tab).Append(Tab);
-                sSql.Append(" WHERE ");
+                sqlScript.Append(Tab).Append(Tab);
+                sqlScript.Append(" WHERE ");
                 isFirst = false;
             }
             else
             {
-                sSql.Append(Tab).Append(Tab);
-                sSql.Append("AND ");
+                sqlScript.Append(Tab).Append(Tab);
+                sqlScript.Append("AND ");
             }
 
-            sSql.Append(filter.Key);
-            sSql.Append(" = ");
-            sSql.AppendLine("?");
+            sqlScript.Append(filter.Key);
+            sqlScript.Append(" = ");
+            sqlScript.AppendLine("?");
 
         }
 
-        if (!string.IsNullOrEmpty(orderBy))
+        if (!string.IsNullOrEmpty(orderBy.ToQueryParameter()))
         {
-            sSql.Append(" ORDER BY ");
-            sSql.Append(orderBy);
+            sqlScript.Append(" ORDER BY ");
+            sqlScript.Append(orderBy);
         }
 
-        if (pTot != null && (int)pTot.Value == 0 && recordsPerPage > 0)
+        if ((int)totalOfRecordsParameter.Value == 0 && recordsPerPage > 0)
         {
             var offset = (currentPage - 1) * recordsPerPage;
-            sSql.Append("LIMIT ");
-            sSql.Append(recordsPerPage);
-            sSql.Append(" OFFSET");
-            sSql.Append(offset);
+            sqlScript.Append("LIMIT ");
+            sqlScript.Append(recordsPerPage);
+            sqlScript.Append(" OFFSET");
+            sqlScript.Append(offset);
         }
 
-        DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = CommandType.Text;
-        cmd.Sql = sSql.ToString();
-        cmd.Parameters = new List<DataAccessParameter>();
-
-        foreach (DictionaryEntry filter in filters)
+        DataAccessCommand command = new DataAccessCommand
         {
-            ElementField f = element.Fields[filter.Key.ToString()];
-            var param = new DataAccessParameter();
-            //param.Name = string.Format(f.Name);
-            //param.Size = f.Size;
-            param.Direction = ParameterDirection.Input;
-            param.Value = filter.Value;
-            param.Type = GetDbType(f.DataType);
-            cmd.Parameters.Add(param);
+            CmdType = CommandType.Text,
+            Sql = sqlScript.ToString(),
+            Parameters = new List<DataAccessParameter>()
+        };
+
+        foreach (var filter in filters)
+        {
+            ElementField f = element.Fields[filter.Key];
+            var param = new DataAccessParameter
+            {
+                Direction = ParameterDirection.Input,
+                Value = filter.Value,
+                Type = GetDbType(f.DataType)
+            };
+            command.Parameters.Add(param);
         }
 
-        return cmd;
+        return command;
     }
 
-    public new DataTable GetDataTable(Element element, IDictionary filters, string orderby, int regporpag, int pag, ref int tot)
-    {
-        DataAccessParameter pTot = null;
-        var cmd = GetReadCommand(element, filters, orderby, regporpag, pag,  pTot);
-        DataTable dt = DataAccess.GetDataTable(cmd);
-        tot = 0;
-
-        if (regporpag > 0 && tot == 0)
-        {
-            var obj = DataAccess.GetResult(GetScriptCount(element, filters));
-            if (obj != null)
-                tot = int.Parse(obj.ToString());
-        }
-
-        return dt;
-    }
-
-    private DataAccessCommand GetScriptInsert(Element element, IDictionary values, bool isReplace)
+    private DataAccessCommand GetScriptInsert(Element element, IDictionary<string,object?> values, bool isReplace)
     {
         var fields = element.Fields
             .ToList()
@@ -408,7 +394,7 @@ public class ProviderSQLite : BaseProvider
         return cmd;
     }
 
-    private DataAccessCommand GetScriptUpdate(Element element, IDictionary values)
+    private DataAccessCommand GetScriptUpdate(Element element, IDictionary<string,object?> values)
     {
         var fields = element.Fields
             .ToList()
@@ -480,68 +466,68 @@ public class ProviderSQLite : BaseProvider
 
     }
 
-    private DataAccessCommand GetScriptDelete(Element element, IDictionary values)
+    private DataAccessCommand GetScriptDelete(Element element, IDictionary<string,object?> values)
     {
         var fields = element.Fields
             .ToList()
             .FindAll(x => x.DataBehavior == FieldBehavior.Real);
 
         bool isFirst = true;
-        var sSql = new StringBuilder();
+        var sqlScript = new StringBuilder();
 
-        sSql.Append("DELETE FROM ");
-        sSql.Append(element.TableName);
+        sqlScript.Append("DELETE FROM ");
+        sqlScript.Append(element.TableName);
         foreach (var f in fields)
         {
             if (f.IsPk)
             {
                 if (isFirst)
                 {
-                    sSql.Append(Tab).Append(Tab);
-                    sSql.Append(" WHERE ");
+                    sqlScript.Append(Tab).Append(Tab);
+                    sqlScript.Append(" WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sSql.Append(Tab).Append(Tab);
-                    sSql.Append("AND ");
+                    sqlScript.Append(Tab).Append(Tab);
+                    sqlScript.Append("AND ");
                 }
 
-                sSql.Append(f.Name);
-                sSql.Append(" = ");
-                sSql.AppendLine(VariablePrefix + f.Name);
+                sqlScript.Append(f.Name);
+                sqlScript.Append(" = ");
+                sqlScript.AppendLine(VariablePrefix + f.Name);
             }
         }
 
-        DataAccessCommand cmd = new DataAccessCommand();
+        var cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.Text;
-        cmd.Sql = sSql.ToString();
+        cmd.Sql = sqlScript.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
         foreach (var f in fields)
         {
-            object value = GetElementValue(f, values);
-            var param = new DataAccessParameter();
-            param.Name = string.Format(VariablePrefix + f.Name);
-            //param.Size = f.Size;
-            param.Direction = ParameterDirection.Input;
-            param.Value = value;
-            param.Type = GetDbType(f.DataType);
+            object? value = GetElementValue(f, values);
+            var param = new DataAccessParameter
+            {
+                Name = string.Format(VariablePrefix + f.Name),
+                Direction = ParameterDirection.Input,
+                Value = value,
+                Type = GetDbType(f.DataType)
+            };
             cmd.Parameters.Add(param);
         }
 
         return cmd;
     }
 
-    private object GetElementValue(ElementField f, IDictionary values)
+    private static object? GetElementValue(ElementField f, IDictionary<string,object?> values)
     {
-        object value = DBNull.Value;
-        if (values != null &&
-            values.Contains(f.Name) &&
+        object? value = DBNull.Value;
+        if (values.ContainsKey(f.Name) &&
             values[f.Name] != null)
         {
             if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
-                values[f.Name].ToString().Trim().Length == 0)
+                values[f.Name]?.ToString()?.Trim().Length == 0)
             {
 
                 value = DBNull.Value;
@@ -579,17 +565,17 @@ public class ProviderSQLite : BaseProvider
         return t;
     }
 
-    private DataAccessCommand GetScriptCount(Element element, IDictionary filters)
+    private DataAccessCommand GetScriptCount(Element element, IDictionary<string,object?> filters)
     {
         var fields = element.Fields
             .ToList()
             .FindAll(x => x.DataBehavior == FieldBehavior.Real);
 
         var isFirst = true;
-        var sSql = new StringBuilder();
+        var sqlScript = new StringBuilder();
 
-        sSql.Append("SELECT Count(*) FROM ");
-        sSql.Append(element.TableName);
+        sqlScript.Append("SELECT Count(*) FROM ");
+        sqlScript.Append(element.TableName);
 
         foreach (var f in fields)
         {
@@ -597,25 +583,25 @@ public class ProviderSQLite : BaseProvider
             {
                 if (isFirst)
                 {
-                    sSql.Append(Tab).Append(Tab);
-                    sSql.Append(" WHERE ");
+                    sqlScript.Append(Tab).Append(Tab);
+                    sqlScript.Append(" WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sSql.Append(Tab).Append(Tab);
-                    sSql.Append("AND ");
+                    sqlScript.Append(Tab).Append(Tab);
+                    sqlScript.Append("AND ");
                 }
 
-                sSql.Append(f.Name);
-                sSql.Append(" = ");
-                sSql.AppendLine("?");
+                sqlScript.Append(f.Name);
+                sqlScript.Append(" = ");
+                sqlScript.AppendLine("?");
             }
         }
 
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.CmdType = CommandType.Text;
-        cmd.Sql = sSql.ToString();
+        cmd.Sql = sqlScript.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
         foreach (var f in fields)

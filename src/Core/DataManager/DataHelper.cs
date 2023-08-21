@@ -68,7 +68,7 @@ public static class DataHelper
         return element.Fields.Where(x => x.IsPk).ToList();
     }
 
-    public static Dictionary<string, object> GetPkValues(Element element, string parsedValues, char separator)
+    public static Dictionary<string, object?> GetPkValues(Element element, string parsedValues, char separator)
     {
         var primaryKeys = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 

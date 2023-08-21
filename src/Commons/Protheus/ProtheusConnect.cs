@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Protheus;

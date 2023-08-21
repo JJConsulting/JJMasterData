@@ -25,7 +25,7 @@ public class ImportService
 
         var start = DateTime.Now;
         
-        var databaseDictionaries = DataDictionaryRepository.GetMetadataList(false);
+        var databaseDictionaries = DataDictionaryRepository.GetMetadataListAsync(false).GetAwaiter().GetResult();
         var folderDictionaries = new List<FormElement>();
 
         if (DictionariesPath != null)
@@ -39,7 +39,7 @@ public class ImportService
                 if (dicParser != null)
                 {
                     Console.WriteLine($@"SetDictionary: {dicParser.Name}");
-                    DataDictionaryRepository.InsertOrReplace(dicParser);
+                    DataDictionaryRepository.InsertOrReplaceAsync(dicParser).GetAwaiter().GetResult();
 
                     folderDictionaries.Add(dicParser);
                 }
@@ -51,7 +51,7 @@ public class ImportService
             if (!folderDictionaries.Exists(dic => dic.Name.Equals(dicParser.Name)))
             {
                 Console.WriteLine($@"DelDictionary: {dicParser.Name}");
-                DataDictionaryRepository.Delete(dicParser.Name);
+                DataDictionaryRepository.DeleteAsync(dicParser.Name).GetAwaiter().GetResult();
 
             }
         }

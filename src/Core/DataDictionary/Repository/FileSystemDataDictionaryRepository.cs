@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Extensions;
 using Newtonsoft.Json;
 using JJMasterData.Commons.Localization;
@@ -55,7 +56,7 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         return list;
     }
 
-    public async Task<IEnumerable<FormElement>> GetMetadataListAsync(bool? sync = null)
+    public async Task<IEnumerable<FormElement>> GetMetadataListAsync(bool? apiEnabled = null)
     {
         var result = GetMetadataList();
         return await Task.FromResult(result);
@@ -92,6 +93,8 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
             yield return await Task.FromResult(name);
         }
     }
+    
+
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>
     public FormElement GetMetadata(string dictionaryName)
@@ -141,11 +144,11 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         return Task.CompletedTask;
     }
 
-    public async Task<EntityResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, string orderBy, int recordsPerPage, int currentPage)
+    public async Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderBy, int recordsPerPage, int currentPage)
     {
         int total = 0;
         var result = GetMetadataInfoList(filters,orderBy,recordsPerPage,currentPage,ref total);
-        return await Task.FromResult(new EntityResult<FormElementInfo>(result.ToList(),total));
+        return await Task.FromResult(new ListResult<FormElementInfo>(result.ToList(),total));
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
@@ -176,7 +179,7 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
-    public IEnumerable<FormElementInfo> GetMetadataInfoList(DataDictionaryFilter filter, string orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
+    public IEnumerable<FormElementInfo> GetMetadataInfoList(DataDictionaryFilter filter, OrderByData orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
     {
         var list = new List<FormElementInfo>();
         
@@ -218,7 +221,7 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         }
 
         totalRecords = list.Count;
-        return list.OrderBy(orderBy).Skip((currentPage - 1) * recordsPerPage).Take(recordsPerPage);
+        return list.OrderBy(orderBy.ToQueryParameter()).Skip((currentPage - 1) * recordsPerPage).Take(recordsPerPage);
     }
 
     private string GetFullFileName(string dictionaryName)

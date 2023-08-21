@@ -143,11 +143,8 @@ internal class GridFilter
             }
         }
 
-        if (GridView.FormElement != null)
-        {
-            _currentFilter = await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement,values, PageState.List);
-        }
-        
+        _currentFilter = await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement,values, PageState.List);
+
         CurrentContext.Session.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
     }
 

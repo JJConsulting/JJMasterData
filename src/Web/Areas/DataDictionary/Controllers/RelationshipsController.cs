@@ -41,7 +41,7 @@ public class RelationshipsController : DataDictionaryController
     [HttpPost]
     public ActionResult Sort(string dictionaryName, [FromBody] string[] relationships)
     {
-        _relationshipsService.Sort(dictionaryName, relationships);
+        _relationshipsService.SortAsync(dictionaryName, relationships);
         return Ok();
     }
 
@@ -122,8 +122,8 @@ public class RelationshipsController : DataDictionaryController
 
     private async Task PopulateSelectLists(RelationshipsElementDetailsViewModel model)
     {
-        model.ElementsSelectList = GetElementsSelectList(model.Relationship.ChildElement);
-        model.ForeignKeysSelectList = GetForeignKeysSelectList(model.Relationship.ChildElement);
+        model.ElementsSelectList = await GetElementsSelectList(model.Relationship.ChildElement);
+        model.ForeignKeysSelectList = await GetForeignKeysSelectList(model.Relationship.ChildElement);
         model.PrimaryKeysSelectList = await GetPrimaryKeysSelectList(model.DictionaryName);
     }
 
@@ -135,9 +135,9 @@ public class RelationshipsController : DataDictionaryController
         {
             Id = id,
             Relationship = relationship,
-            ElementsSelectList = GetElementsSelectList(relationship.ChildElement),
+            ElementsSelectList = await GetElementsSelectList(relationship.ChildElement),
             PrimaryKeysSelectList = await GetPrimaryKeysSelectList(dictionaryName),
-            ForeignKeysSelectList = GetForeignKeysSelectList(relationship.ChildElement)
+            ForeignKeysSelectList = await GetForeignKeysSelectList(relationship.ChildElement)
         };
     }
 
@@ -149,7 +149,7 @@ public class RelationshipsController : DataDictionaryController
         return selectList;
     }
 
-    private List<SelectListItem> GetForeignKeysSelectList(string childDictionaryName)
+    private async Task<List<SelectListItem>> GetForeignKeysSelectList(string childDictionaryName)
     {
         var selectList = new List<SelectListItem>();
 
@@ -159,16 +159,16 @@ public class RelationshipsController : DataDictionaryController
         }
         else
         {
-            var formElement = _relationshipsService.DataDictionaryRepository.GetMetadata(childDictionaryName);
+            var formElement = await _relationshipsService.DataDictionaryRepository.GetMetadataAsync(childDictionaryName);
             selectList.AddRange(formElement.Fields.Select(field => new SelectListItem(field.Name, field.Name)));
         }
 
         return selectList;
     }
 
-    private List<SelectListItem> GetElementsSelectList(string childDictionaryName)
+    private async Task<List<SelectListItem>> GetElementsSelectList(string childDictionaryName)
     {
-        IEnumerable<string> list = _relationshipsService.DataDictionaryRepository.GetNameList();
+        IEnumerable<string> list = await _relationshipsService.DataDictionaryRepository.GetNameListAsync().ToListAsync();
 
         var selectList = list.Select(name => new SelectListItem(name, name)).ToList();
 
@@ -185,9 +185,9 @@ public class RelationshipsController : DataDictionaryController
     #region LayoutDetails
 
     [HttpGet]
-    public IActionResult LayoutDetails(string dictionaryName, int id)
+    public async Task<IActionResult> LayoutDetails(string dictionaryName, int id)
     {
-        var model = CreateLayoutDetailsViewModel(dictionaryName, id);
+        var model = await CreateLayoutDetailsViewModel(dictionaryName, id);
         return View("DetailLayout", model);
     }
     
@@ -210,11 +210,11 @@ public class RelationshipsController : DataDictionaryController
         return Json(new { success = false, errorMessage = jjSummary.GetHtml() });
     }
 
-    private RelationshipsLayoutDetailsViewModel CreateLayoutDetailsViewModel(
+    private async Task<RelationshipsLayoutDetailsViewModel> CreateLayoutDetailsViewModel(
         string dictionaryName,
         int id)
     {
-        var formElement = _relationshipsService.DataDictionaryRepository.GetMetadata(dictionaryName);
+        var formElement = await _relationshipsService.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
 
         var relationship = formElement.Relationships.GetById(id);
         

@@ -21,11 +21,11 @@ public class ActionsService : BaseService
 
     }
 
-    public bool DeleteAction(string elementName, string actionName, ActionSource context, string fieldName = null)
+    public async Task<bool> DeleteActionAsync(string elementName, string actionName, ActionSource context, string fieldName = null)
     {
-        var dicParser = DataDictionaryRepository.GetMetadata(elementName);
+        var dicParser = await DataDictionaryRepository.GetMetadataAsync(elementName);
         DeleteAction(dicParser, actionName, context, fieldName);
-        DataDictionaryRepository.InsertOrReplace(dicParser);
+        await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
 
         return true;
     }
@@ -67,7 +67,7 @@ public class ActionsService : BaseService
 
     public async Task<bool> SaveAction(string elementName, BasicAction action, ActionSource context, string originalName, string fieldName = null)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         ValidateActionName(formElement, action.Name, originalName, context, fieldName);
         ValidateAction(formElement, action);
 
@@ -189,9 +189,9 @@ public class ActionsService : BaseService
         }
     }
 
-    public bool SortActions(string elementName, string[] listAction, ActionSource actionContext, string fieldName)
+    public async Task<bool> SortActionsAsync(string elementName, string[] listAction, ActionSource actionContext, string fieldName)
     {
-        var formElement = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         for (int i = 0; i < listAction.Length; i++)
         {
             string actionName = listAction[i];
@@ -206,14 +206,14 @@ public class ActionsService : BaseService
             };
             action.Order = i + 1;
         }
-        DataDictionaryRepository.InsertOrReplace(formElement);
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
         return true;
     }
 
-    public bool EnableDisable(string elementName, string actionName, ActionSource actionContext, bool visible)
+    public async Task<bool> EnableDisable(string elementName, string actionName, ActionSource actionContext, bool visible)
     {
-        var dicParser = DataDictionaryRepository.GetMetadata(elementName);
+        var dicParser = await DataDictionaryRepository.GetMetadataAsync(elementName);
         BasicAction action = actionContext switch
         {
             ActionSource.GridTable => dicParser.Options.GridTableActions.Get(actionName),
@@ -223,19 +223,19 @@ public class ActionsService : BaseService
         };
 
         action!.SetVisible(visible);
-        DataDictionaryRepository.InsertOrReplace(dicParser);
+        await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
 
         return true;
     }
 
-    public Dictionary<string, string> GetFieldList(string elementName)
+    public async Task<Dictionary<string, string>> GetFieldList(string elementName)
     {
         var dicFields = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
 
         if (string.IsNullOrEmpty(elementName))
             return dicFields;
 
-        var formElement = DataDictionaryRepository.GetMetadata(elementName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         if (formElement == null)
             return dicFields;
 

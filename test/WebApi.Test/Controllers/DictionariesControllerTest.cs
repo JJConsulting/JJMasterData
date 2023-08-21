@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using JJMasterData.WebApi.Controllers;
 using JJMasterData.WebApi.Services;
 using JJMasterData.Core.DataDictionary;
@@ -21,18 +22,18 @@ public class DictionariesControllerTest
     }
     
     [Fact]
-    public void GetAllTest()
+    public async Task GetAllTest()
     {
-        var dictionaries = _controller.GetAll().Value;
+        var dictionaries = (await _controller.GetAll()).Value;
 
         Assert.IsType<FormElement[]>(dictionaries);
     }
     
     [Theory]
     [InlineData("ApiTestDictionary")]
-    public void GetTest(string id)
+    public async Task GetTest(string id)
     {
-        var dictionary = _controller.Get(id);
+        var dictionary = await _controller.Get(id);
 
         Assert.IsType<FormElement>(dictionary);
         Assert.Equal(id,dictionary.Name);

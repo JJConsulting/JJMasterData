@@ -91,7 +91,7 @@ public class FormService : IFormService
 
         try
         {
-            rowsAffected = await EntityRepository.UpdateAsync(formElement, (IDictionary)values);
+            rowsAffected = await EntityRepository.UpdateAsync(formElement, values);
         }
         catch (Exception e)
         {
@@ -148,7 +148,7 @@ public class FormService : IFormService
 
         try
         {
-            await EntityRepository.InsertAsync(formElement, values as IDictionary);
+            await EntityRepository.InsertAsync(formElement, values);
         }
         catch (Exception e)
         {
@@ -207,7 +207,7 @@ public class FormService : IFormService
         
         try
         {
-            result.Result = await EntityRepository.SetValuesAsync(formElement, (IDictionary)values);
+            result.Result = await EntityRepository.SetValuesAsync(formElement, values);
         }
         catch (Exception e)
         {
@@ -286,7 +286,7 @@ public class FormService : IFormService
 
         try
         {
-            int rowsAffected = await EntityRepository.DeleteAsync(formElement, (IDictionary)primaryKeys);
+            int rowsAffected = await EntityRepository.DeleteAsync(formElement, primaryKeys);
             result.NumberOfRowsAffected = rowsAffected;
         }
         catch (Exception e)

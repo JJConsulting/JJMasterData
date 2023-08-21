@@ -10,7 +10,7 @@ public class GridSettings
     /// <remarks>
     /// (Default = 5)
     /// </remarks>
-    public int TotalPerPage { get; set; }
+    public int RecordsPerPage { get; set; }
 
     public int TotalPaginationButtons { get; set; }
 
@@ -26,7 +26,7 @@ public class GridSettings
     
     public GridSettings()
     {
-        TotalPerPage = 5;
+        RecordsPerPage = 5;
         TotalPaginationButtons = 5;
         ShowBorder = false;
         ShowRowStriped = true;

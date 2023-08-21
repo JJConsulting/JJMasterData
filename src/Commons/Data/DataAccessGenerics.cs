@@ -11,17 +11,11 @@ namespace JJMasterData.Commons.Data;
 
 public partial class DataAccess
 {
-    public T? GetModel<T>(DataAccessCommand cmd, JsonSerializerSettings? serializerSettings = null)
-    {
-        var fields = GetFields(cmd);
-        return fields == null ? default : fields.ToModel<T>(serializerSettings);
-    }
-
     public async Task<T?> GetModelAsync<T>(DataAccessCommand cmd,
         JsonSerializerSettings? serializerSettings = null,
         CancellationToken cancellationToken = default)
     {
-        var fields = await GetFieldsAsync(cmd, cancellationToken);
+        var fields = await GetDictionaryAsync(cmd, cancellationToken);
         return fields == null ? default : fields.ToModel<T>(serializerSettings);
     }
 

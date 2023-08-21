@@ -22,7 +22,7 @@ public class DataSourceTest
         dataTable.Rows.Add(2, "Jane");
 
         // Act
-        DataSource dataSource = new DataSource(dataTable,dataTable.Rows.Count);
+        DictionaryListResult dataSource = DictionaryListResult.FromDataTable(dataTable);
 
         // Assert
         Assert.NotNull(dataSource.Data);
@@ -44,7 +44,7 @@ public class DataSourceTest
         };
 
         // Act
-        var dataSource = new DataSource(listData,listData.Count);
+        var dataSource = new DictionaryListResult(listData,listData.Count);
 
         // Assert
         Assert.NotNull(dataSource.Data);
@@ -74,7 +74,7 @@ public class DataSourceTest
                 {"Age", 30}
             }
         };
-        var dataSource = new DataSource(data, data.Count);
+        var dataSource = new DictionaryListResult(data, data.Count);
 
         // Act
         var result = dataSource.ToDataTable();

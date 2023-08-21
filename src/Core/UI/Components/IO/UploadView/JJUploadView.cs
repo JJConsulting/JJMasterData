@@ -103,7 +103,7 @@ public class JJUploadView : AsyncComponent
 
             var dt = GetDataTableFiles();
             _gridView = ComponentFactory.GridView.Create(new FormElement(dt));
-            _gridView.DataSource = new DataSource(dt,dt.Rows.Count);
+            _gridView.DataSource = DictionaryListResult.FromDataTable(dt);
             _gridView.FormElement.Title = Title;
             _gridView.FormElement.SubTitle = SubTitle;
             

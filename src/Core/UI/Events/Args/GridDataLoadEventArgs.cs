@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Repository;
 
 namespace JJMasterData.Core.FormEvents.Args;
@@ -19,7 +20,7 @@ public class GridDataLoadEventArgs : EventArgs
     /// <summary>
     /// Ordem atual
     /// </summary>
-    public string OrderBy { get; internal set; }
+    public OrderByData OrderBy { get; internal set; }
 
     /// <summary>
     /// Records per page
@@ -34,5 +35,5 @@ public class GridDataLoadEventArgs : EventArgs
     /// <summary>
     /// Retorna Objeto DataTable com os dados prontos para preencher a grid
     /// </summary>
-    public DataSource DataSource { get; set; }
+    public DictionaryListResult DataSource { get; set; }
 }

@@ -28,15 +28,10 @@ public interface IFormValuesService
     /// <summary>
     /// Recover form values with database values.
     /// </summary>
-    /// <param name="formElement"></param>
-    /// <param name="pageState"></param>
-    /// <param name="autoReloadFormFields"></param>
-    /// <param name="fieldPrefix"></param>
-    /// <returns></returns>
-    public Task<IDictionary<string, object>> GetFormValuesWithMergedValuesAsync(
+    public Task<IDictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement, 
         PageState pageState, 
-        IDictionary<string, object>? values,
+        IDictionary<string, object?>? values,
         bool autoReloadFormFields,
         string? prefix = null);
 }

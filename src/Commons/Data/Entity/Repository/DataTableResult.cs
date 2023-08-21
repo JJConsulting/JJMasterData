@@ -2,13 +2,9 @@ using System.Data;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
-public class DataTableResult
+public class DataTableResult : EntityResult<DataTable>
 {
-    public DataTable Data { get; }
-    public int TotalOfRecords { get; }
-    public DataTableResult(DataTable data, int totalOfRecords)
+    public DataTableResult(DataTable data, int totalOfRecords) : base(data,totalOfRecords)
     {
-        Data = data;
-        TotalOfRecords = totalOfRecords;
     }
 }

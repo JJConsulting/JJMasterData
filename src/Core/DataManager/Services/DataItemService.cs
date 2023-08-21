@@ -1,9 +1,11 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -68,18 +70,19 @@ public class DataItemService : IDataItemService
 
         var sql = GetSqlParsed(dataItem, formStateData, searchText, searchId);
 
-        var dt = await EntityRepository.GetDataTableAsync(sql);
-        foreach (DataRow row in dt.Rows)
+        var dictionary = await EntityRepository.GetDictionaryListAsync(new DataAccessCommand(sql!));
+        
+        foreach (var row in dictionary)
         {
             var item = new DataItemValue
             {
-                Id = row[0].ToString(),
-                Description = row[1].ToString().Trim()
+                Id = row.ElementAt(0).Value?.ToString(),
+                Description = row.ElementAt(1).Value?.ToString().Trim()
             };
             if (dataItem.ShowImageLegend)
             {
-                item.Icon = (IconType)int.Parse(row[2].ToString());
-                item.ImageColor = row[3].ToString();
+                item.Icon = (IconType)int.Parse(row.ElementAt(2).Value?.ToString() ?? string.Empty);
+                item.ImageColor = row.ElementAt(3).Value?.ToString();
             }
 
             if (searchText == null || item.Description!.ToLower().Contains(searchText))

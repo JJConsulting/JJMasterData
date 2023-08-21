@@ -4,7 +4,7 @@ function loadAuditLog(componentName, logId, url = null) {
     if (logId != "")
         $("#" + logId).addClass("active");
 
-    document.querySelector<HTMLInputElement>('#logId-' + componentName).value = logId;
+    document.querySelector<HTMLInputElement>('#audit-log-id-' + componentName).value = logId;
 
     if(url == null || url.length == 0){
         let builder = new UrlBuilder();

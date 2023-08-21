@@ -23,7 +23,7 @@ internal class GridPagination
 
     public HtmlBuilder GetHtmlElement()
     {
-        _totalPages = (int)Math.Ceiling(GridView.TotalOfRecords  / (double)GridView.CurrentSettings.TotalPerPage);
+        _totalPages = (int)Math.Ceiling(GridView.TotalOfRecords  / (double)GridView.CurrentSettings.RecordsPerPage);
         _totalButtons = GridView.CurrentSettings.TotalPaginationButtons;
         _startButtonIndex = (int)Math.Floor((GridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
         _endButtonIndex = _startButtonIndex + _totalButtons;
@@ -119,14 +119,14 @@ internal class GridPagination
             }
             else
             {
-                label.AppendText(GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage -
-                    GridView.CurrentSettings.TotalPerPage + 1);
+                label.AppendText(GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage -
+                    GridView.CurrentSettings.RecordsPerPage + 1);
                 label.AppendText("-");
 
-                if (GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage > GridView.DataSource?.TotalOfRecords)
+                if (GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage > GridView.DataSource?.TotalOfRecords)
                     label.AppendText(GridView.TotalOfRecords);
                 else
-                    label.AppendText(GridView.CurrentSettings.TotalPerPage * GridView.CurrentPage);
+                    label.AppendText(GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage);
 
                 label.AppendText($" {StringLocalizer["From"]}");
                 label.Append(HtmlTag.Span, span =>
