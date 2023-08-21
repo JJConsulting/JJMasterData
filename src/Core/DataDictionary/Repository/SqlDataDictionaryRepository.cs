@@ -43,7 +43,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         return ParseDictionaryList(result.Data);
     }
 
-    private static IEnumerable<FormElement> ParseDictionaryList(List<Dictionary<string, object?>> result)
+    private static IEnumerable<FormElement> ParseDictionaryList(IEnumerable<Dictionary<string, object?>> result)
     {
         foreach (var row in result)
         {

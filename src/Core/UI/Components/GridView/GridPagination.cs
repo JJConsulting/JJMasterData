@@ -8,8 +8,8 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class GridPagination
 {
-    private JJGridView GridView { get; set; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; set; }
+    private JJGridView GridView { get;  }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get;  }
     private int _totalPages;
     private int _totalButtons;
     private int _startButtonIndex;
@@ -113,7 +113,7 @@ internal class GridPagination
                 label.Append(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText($" {GridView.DataSource?.TotalOfRecords:N0} ");
+                    span.AppendText($" {GridView?.TotalOfRecords:N0} ");
                     span.AppendText(StringLocalizer["record(s)"]);
                 });
             }
@@ -123,7 +123,7 @@ internal class GridPagination
                     GridView.CurrentSettings.RecordsPerPage + 1);
                 label.AppendText("-");
 
-                if (GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage > GridView.DataSource?.TotalOfRecords)
+                if (GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage > GridView?.TotalOfRecords)
                     label.AppendText(GridView.TotalOfRecords);
                 else
                     label.AppendText(GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage);

@@ -242,15 +242,16 @@ public class JJDataExportation : ProcessComponent
         return DataExportationWriterFactory.GetInstance(this);
     }
 
-    public void StartExportation(DictionaryListResult dt)
+    public void StartExportation(DictionaryListResult result)
     {
         var exporter = CreateWriter();
 
-        exporter.DataSource = dt;
+        exporter.DataSource = result.Data;
+        exporter.TotalOfRecords = result.TotalOfRecords;
         BackgroundTask.Run(ProcessKey, exporter);
     }
 
-    internal void ExportFileInBackground(IDictionary<string, object>filter, OrderByData orderByData)
+    internal void ExportFileInBackground(IDictionary<string, object> filter, OrderByData orderByData)
     {
         var exporter = CreateWriter();
 

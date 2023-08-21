@@ -103,7 +103,7 @@ public class MasterApiService
 
         var ret = new MasterApiListResponse
         {
-            Tot = total
+            TotalOfRecords = total
         };
         ret.SetData(dictionary, result.Data);
 

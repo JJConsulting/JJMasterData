@@ -109,8 +109,10 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
     /// utilizando a proc informada no FormElement;
     /// </remarks>
-    public DictionaryListResult DataSource { get; set; }
+    public IList<Dictionary<string,object>> DataSource { get; set; }
 
+    public int TotalOfRecords { get; set; }
+    
     /// <summary>
     /// Configurações pré-definidas do formulário
     /// </summary>

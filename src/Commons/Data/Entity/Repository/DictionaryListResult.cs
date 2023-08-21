@@ -1,34 +1,21 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Data;
+using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
 public class DictionaryListResult : ListResult<Dictionary<string, object?>>
 {
-    internal DictionaryListResult(List<Dictionary<string, object?>> list, int totalOfRecords) : base(list,totalOfRecords)
+    internal DictionaryListResult(IList<Dictionary<string, object?>> list, int totalOfRecords) : base(list,totalOfRecords)
     {
     }
 
     public static DictionaryListResult FromDataTable(DataTable dataTable)
     {
-        var list = new List<Dictionary<string, object?>>();
-
-        foreach (DataRow row in dataTable.Rows)
-        {
-            var dict = new Dictionary<string, object?>();
-
-            foreach (DataColumn col in dataTable.Columns)
-            {
-                dict[col.ColumnName] = row.IsNull(col) ? null : row[col];
-            }
-
-            list.Add(dict);
-        }
-
+        var list = EnumerableHelper.ConvertToDictionaryList(dataTable);
         return new DictionaryListResult(list,list.Count);
     }
-    
     
     public DataTable ToDataTable()
     {

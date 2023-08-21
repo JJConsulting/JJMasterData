@@ -183,8 +183,9 @@ public class ElementService : BaseService
     
                 dictionaryList.Add(dictionary);
             }
-            
-            args.DataSource = new DictionaryListResult(dictionaryList,result.TotalOfRecords);
+
+            args.DataSource = dictionaryList;
+            args.TotalOfRecords = result.TotalOfRecords;
         };
 
         formView.GridView.OnRenderAction += (sender, args) =>

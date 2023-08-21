@@ -126,7 +126,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
 
     private async Task GenerateBody(Table table, CancellationToken token)
     {
-        int tot = 0;
+
         if (DataSource == null)
         {
             var entityParameters = new EntityParameters
@@ -136,13 +136,14 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
             };
-            DataSource = await EntityRepository.GetDictionaryListAsync(FormElement,entityParameters);
-            ProcessReporter.TotalRecords = tot;
-            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
+            var result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+            DataSource = result.Data;
+            ProcessReporter.TotalOfRecords = result.TotalOfRecords;
+            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);
             await GenerateRows(table, token);
 
-            int totPag = (int)Math.Ceiling((double)tot / RecordsPerPage);
+            int totPag = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
             for (int i = 2; i <= totPag; i++)
             {
                 entityParameters = new EntityParameters
@@ -152,20 +153,22 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
                     OrderBy = CurrentOrder,
                     CurrentPage = i,
                 };
-                DataSource = await EntityRepository.GetDictionaryListAsync(FormElement,entityParameters);
+                result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                DataSource = result.Data;
+                TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(table, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.Count;
+            ProcessReporter.TotalOfRecords = TotalOfRecords;
             await GenerateRows(table, token);
         }
     }
 
     private async Task GenerateRows(Table table, CancellationToken token)
     {
-        foreach (Dictionary<string,object> row in DataSource.Data)
+        foreach (Dictionary<string,object> row in DataSource)
         {
             var scolor = (ShowRowStriped && (ProcessReporter.TotalProcessed % 2) == 0) ? "white" : "#f2fdff";
             var wcolor = WebColors.GetRGBColor(scolor);

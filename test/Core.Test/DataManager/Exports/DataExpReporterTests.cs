@@ -10,7 +10,7 @@ public class DataExpReporterTests
         // Arrange
         var reporter = new DataExportationReporter
         {
-            TotalRecords = 100,
+            TotalOfRecords = 100,
             TotalProcessed = 50
         };
 
@@ -27,7 +27,7 @@ public class DataExpReporterTests
         // Arrange
         var reporter = new DataExportationReporter
         {
-            TotalRecords = 100,
+            TotalOfRecords = 100,
             TotalProcessed = 0
         };
 
@@ -48,7 +48,7 @@ public class DataExpReporterTests
         // Arrange
         var reporter = new DataExportationReporter
         {
-            TotalRecords = totalRecords,
+            TotalOfRecords = totalRecords,
             TotalProcessed = totalProcessed
         };
 

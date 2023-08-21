@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.UI.Components;
@@ -82,7 +83,7 @@ public class JJGridView : AsyncComponent
     private ExportOptions? _currentExportConfig;
     private GridFilter? _filter;
     private GridTable? _table;
-    private DictionaryListResult? _dataSource;
+    private IList<Dictionary<string,object?>>? _dataSource;
     private ActionsScripts? _actionsScripts;
     private List<FormElementField>? _pkFields;
     private IDictionary<string, object>? _defaultValues;
@@ -175,7 +176,7 @@ public class JJGridView : AsyncComponent
     /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// Using the stored procedure informed in the FormElement;
-    public DictionaryListResult? DataSource
+    public IList<Dictionary<string,object?>>? DataSource
     {
         get => _dataSource;
         set
@@ -458,7 +459,7 @@ public class JJGridView : AsyncComponent
 
     public HeadingSize TitleSize { get; set; }
 
-    public int TotalOfRecords => DataSource?.TotalOfRecords ?? default;
+    public int TotalOfRecords { get; set; }
 
     public LegendAction LegendAction => ToolBarActions.LegendAction;
     public RefreshAction RefreshAction => ToolBarActions.RefreshAction;
@@ -712,7 +713,7 @@ public class JJGridView : AsyncComponent
     
     public async Task<string> GetTableRowHtmlAsync(int rowIndex)
     {
-        var row = DataSource?.Data[rowIndex];
+        var row = DataSource?[rowIndex];
 
         return await Table.Body
             .GetTdHtmlList(row, rowIndex)
@@ -1113,38 +1114,18 @@ public class JJGridView : AsyncComponent
         return new EmptyComponentResult();
     }
 
-    internal async Task ExportFileInBackground()
+    public async Task ExportFileInBackground()
     {
         DataExportation.ExportFileInBackground(await GetCurrentFilterAsync(), CurrentOrder);
     }
-
-    /// <summary>
-    /// Retrieves database records.
-    /// </summary>
-    /// <returns>
-    /// Returns a DataTable with the found records.
-    /// If no record is found, returns null.
-    /// The component uses the following rule to retrieve grid data:
-    /// <para/>1) Use the DataSource property;
-    /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
-    /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
-    /// Using the stored procedure informed in the <see cref="FormElement"/>;
-    /// </returns>
-    public async Task<DataTable?> GetDataTableAsync()
+    
+    public async Task<IList<Dictionary<string,object?>>?> GetDictionaryListAsync()
     {
         await SetDataSource();
 
-        return DataSource?.ToDataTable();
-    }
-
-    public async Task<List<Dictionary<string,object?>>?> GetDictionaryListAsync()
-    {
-        await SetDataSource();
-
-        return DataSource?.Data;
+        return DataSource;
     }
     
-
     private async Task SetDataSource()
     {
         if (_dataSource == null || IsUserSetDataSource)
@@ -1156,10 +1137,10 @@ public class JJGridView : AsyncComponent
                 RecordsPerPage = CurrentSettings.RecordsPerPage,
                 CurrentPage = CurrentPage
             });
-            _dataSource = result;
-
+            _dataSource = result.Data;
+            TotalOfRecords = result.TotalOfRecords;
             //Se estiver paginando e não retornar registros volta para pagina inicial
-            if (CurrentPage > 1 && _dataSource.TotalOfRecords == 0)
+            if (CurrentPage > 1 && TotalOfRecords == 0)
             {
                 CurrentPage = 1;
                 result = await GetDataSourceAsync(new EntityParameters
@@ -1169,7 +1150,8 @@ public class JJGridView : AsyncComponent
                     RecordsPerPage = CurrentSettings.RecordsPerPage,
                     CurrentPage = CurrentPage
                 });
-                _dataSource = result;
+                _dataSource = result.Data;
+                TotalOfRecords = result.TotalOfRecords;
             }
         }
     }
@@ -1180,7 +1162,7 @@ public class JJGridView : AsyncComponent
         if (IsUserSetDataSource)
         {
 
-            var dataView = new DataView(DataSource?.ToDataTable());
+            var dataView = new DataView(EnumerableHelper.ConvertToDataTable(_dataSource));
             dataView.Sort = parameters.OrderBy.ToQueryParameter();
 
             dataTable = dataView.ToTable();
@@ -1193,7 +1175,7 @@ public class JJGridView : AsyncComponent
                 Filters = parameters.Parameters,
                 OrderBy = parameters.OrderBy,
                 RecordsPerPage = parameters.RecordsPerPage,
-                CurrentPage = parameters.CurrentPage
+                CurrentPage = parameters.CurrentPage,
             };
 
             OnDataLoad?.Invoke(this, args);
@@ -1203,7 +1185,10 @@ public class JJGridView : AsyncComponent
                 await OnDataLoadAsync.Invoke(this, args);
             }
 
-            return args.DataSource;
+
+            TotalOfRecords = args.TotalOfRecords;
+            
+            return new DictionaryListResult(args.DataSource, args.TotalOfRecords);
         }
         else
         {
@@ -1232,7 +1217,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    public async Task<List<IDictionary<string, object?>>?> GetGridValuesAsync(List<Dictionary<string,object?>>? loadedData = null)
+    public async Task<List<IDictionary<string, object?>>?> GetGridValuesAsync(IList<Dictionary<string,object?>>? loadedData = null)
     {
         if (loadedData == null)
         {

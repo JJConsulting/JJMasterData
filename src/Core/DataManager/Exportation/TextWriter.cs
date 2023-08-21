@@ -42,7 +42,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
 
     private async Task GenerateBody(StreamWriter sw, CancellationToken token)
     {
-        int tot = 0;
+
         if (DataSource == null)
         {
             var entityParameters = new EntityParameters
@@ -52,13 +52,14 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
             };
-            DataSource = await EntityRepository.GetDictionaryListAsync(FormElement,entityParameters);
-            ProcessReporter.TotalRecords = tot;
-            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", tot.ToString("N0")];
+            var result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+            DataSource = result.Data;
+            ProcessReporter.TotalOfRecords = result.TotalOfRecords;
+            ProcessReporter.Message = StringLocalizer["Exporting {0} records...",  result.TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);
             await GenerateRows(sw, token);
 
-            int totPag = (int)Math.Ceiling((double)tot / RecordsPerPage);
+            int totPag = (int)Math.Ceiling((double)TotalOfRecords / RecordsPerPage);
             for (int i = 2; i <= totPag; i++)
             {
                 entityParameters = new EntityParameters
@@ -68,20 +69,22 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                     OrderBy = CurrentOrder,
                     CurrentPage = i,
                 };
-                DataSource = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                DataSource = result.Data;
+                TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(sw, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.Data.Count;
+            ProcessReporter.TotalOfRecords = TotalOfRecords;
             await GenerateRows(sw, token);
         }
     }
 
     private async Task GenerateRows(StreamWriter sw, CancellationToken token)
     {
-        foreach (var row in DataSource.Data)
+        foreach (var row in DataSource)
         {
             bool isFirst = true;
             foreach (var field in await GetVisibleFieldsAsync())

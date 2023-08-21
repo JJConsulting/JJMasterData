@@ -80,13 +80,14 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
             };
-            DataSource = await EntityRepository.GetDictionaryListAsync(FormElement,entityParameters);
-            ProcessReporter.TotalRecords = DataSource.TotalOfRecords;
-            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", DataSource.TotalOfRecords.ToString("N0")];
+            var result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+            DataSource = result.Data;
+            ProcessReporter.TotalOfRecords = result.TotalOfRecords;
+            ProcessReporter.Message = StringLocalizer["Exporting {0} records...", TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);
             await GenerateRows(sw, token);
 
-            int totPag = (int)Math.Ceiling((double)DataSource.Data.Count / RecordsPerPage);
+            int totPag = (int)Math.Ceiling((double)DataSource.Count / RecordsPerPage);
             for (int i = 2; i <= totPag; i++)
             {
                 entityParameters = new EntityParameters
@@ -96,20 +97,22 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                     RecordsPerPage = RecordsPerPage,
                     OrderBy = CurrentOrder
                 };
-                DataSource = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                DataSource = result.Data;
+                TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(sw, token);
             }
         }
         else
         {
-            ProcessReporter.TotalRecords = DataSource.TotalOfRecords;
+            ProcessReporter.TotalOfRecords = TotalOfRecords;
             await GenerateRows(sw, token);
         }
     }
 
     private async Task GenerateRows(StreamWriter sw, CancellationToken token)
     {
-        foreach (var row in DataSource.Data)
+        foreach (var row in DataSource)
         {
             await sw.WriteAsync("\t\t\t<tr>");
             foreach (var field in await GetVisibleFieldsAsync())
@@ -183,8 +186,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         foreach (var field in await GetVisibleFieldsAsync())
         {
             string thStyle = "";
-            if (field.DataType == FieldType.Float ||
-                field.DataType == FieldType.Int)
+            if (field.DataType is FieldType.Float or FieldType.Int)
             {
                 thStyle = " style=\"text-align:right;\" ";
             }

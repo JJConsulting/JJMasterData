@@ -41,9 +41,9 @@ internal class GridTableBody
 
     private async IAsyncEnumerable<HtmlBuilder> GetRowsList()
     {
-        var rows = GridView.DataSource?.Data;
+        var rows = GridView.DataSource;
 
-        for (int i = 0; i < rows.Count; i++)
+        for (int i = 0; i < rows?.Count; i++)
         {
             yield return await GetRowHtml(rows[i], i);
         }
