@@ -8,9 +8,9 @@ namespace JJMasterData.Core.DataManager.Services.Abstractions;
 
 public interface IAuditLogService
 {
-    Task LogAsync(Element element,DataContext dataContext, IDictionary<string, object>formValues, CommandOperation action);
+    Task LogAsync(Element element,DataContext dataContext, IDictionary<string, object?>formValues, CommandOperation action);
     Task CreateTableIfNotExistsAsync();
-    string GetKey(Element element, IDictionary<string, object>values);
+    string GetKey(Element element, IDictionary<string, object?>values);
     Element GetElement();
     FormElement GetFormElement();
 }

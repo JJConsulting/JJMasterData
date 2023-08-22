@@ -19,7 +19,7 @@ internal class GridSqlCommandAction
         _gridView = gridView;
     }
 
-    public async Task<JJMessageBox> ExecuteSqlCommand(ActionMap map, SqlCommandAction cmdAction)
+    public async Task<JJMessageBox?> ExecuteSqlCommand(ActionMap map, SqlCommandAction cmdAction)
     {
         try
         {

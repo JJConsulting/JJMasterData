@@ -16,7 +16,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
     private FormElementRelationshipList(IList<FormElementRelationship> formRelationships)
     {
         _baseRelationships = formRelationships.Where(r => r.ElementRelationship != null)
-            .Select(r => r.ElementRelationship).ToList();
+            .Select(r => r.ElementRelationship).ToList()!;
         _formRelationships = formRelationships;
     }
     
@@ -90,7 +90,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     public bool Remove(FormElementRelationship item)
     {
-        if (item?.ElementRelationship != null)
+        if (item.ElementRelationship != null)
             _baseRelationships.Remove(item.ElementRelationship);
 
         return _formRelationships.Remove(item);
@@ -109,7 +109,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     public void Insert(int index, FormElementRelationship item)
     {
-        if (item?.ElementRelationship != null)
+        if (item.ElementRelationship != null)
             _baseRelationships.Add(item.ElementRelationship);
         
         SetId(item);
@@ -121,7 +121,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
         var item = _formRelationships[index];
 
         _formRelationships.Remove(item);
-        if (item?.ElementRelationship != null)
+        if (item.ElementRelationship != null)
             _baseRelationships.Remove(item.ElementRelationship);
     }
 
@@ -136,7 +136,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
             {
                 var element = _baseRelationships.First(r => r.ChildElement == value.ElementRelationship!.ChildElement);
                 var i = _baseRelationships.IndexOf(element);
-                _baseRelationships[i] = value.ElementRelationship;
+                _baseRelationships[i] = value.ElementRelationship!;
             }
         }
     }

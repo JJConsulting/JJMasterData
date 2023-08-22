@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Extensions;
 using JJMasterData.Commons.Localization;
@@ -218,7 +216,7 @@ public class ElementService : BaseService
 
     #endregion
 
-    public async Task<byte[]> ExportSingleRowAsync(IDictionary<string, object> row)
+    public async Task<byte[]> ExportSingleRowAsync(IDictionary<string, object?> row)
     {
         var dictionaryName = row["name"].ToString()!;
         var metadata = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
@@ -231,7 +229,7 @@ public class ElementService : BaseService
         return Encoding.Default.GetBytes(json);
     }
 
-    public async Task<byte[]> ExportMultipleRowsAsync(List<IDictionary<string, object>> selectedRows)
+    public async Task<byte[]> ExportMultipleRowsAsync(List<IDictionary<string, object?>> selectedRows)
     {
         using var memoryStream = new MemoryStream();
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))

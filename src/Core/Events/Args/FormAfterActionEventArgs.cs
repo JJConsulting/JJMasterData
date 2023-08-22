@@ -6,16 +6,16 @@ namespace JJMasterData.Core.FormEvents.Args;
 
 public class FormAfterActionEventArgs : EventArgs
 {
-    public IDictionary<string, object> Values { get; set; }
+    public IDictionary<string, object?> Values { get; set; }
 
-    public string UrlRedirect { get; set; }
+    public string? UrlRedirect { get; set; }
 
     public FormAfterActionEventArgs()
     {
-        Values = new Dictionary<string, object>();
+        Values = new Dictionary<string, object?>();
     }
 
-    public FormAfterActionEventArgs(IDictionary<string, object>values)
+    public FormAfterActionEventArgs(IDictionary<string, object?>values)
     {
         Values = values;
     }

@@ -1,5 +1,3 @@
-#nullable enable
-
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using System.Threading.Tasks;

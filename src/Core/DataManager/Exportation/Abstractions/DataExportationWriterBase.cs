@@ -37,7 +37,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     #region "Properties"
     
     private DataExportationReporter _processReporter;
-    private List<FormElementField> _fields;
+    private List<FormElementField>? _fields;
 
     private IExpressionsService ExpressionsService { get; } 
     protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } 
@@ -60,7 +60,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
         
         else
         {
-            var defaultValues = new Dictionary<string, object>();
+            var defaultValues = new Dictionary<string, object?>();
             var formData = new FormStateData(defaultValues, PageState.Import);
             _fields = new List<FormElementField>();
 
@@ -85,7 +85,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
     /// </summary>
-    public IDictionary<string, object>CurrentFilter { get; set; }
+    public IDictionary<string, object?>CurrentFilter { get; set; }
 
     /// <summary>
     /// Recupera a ordenação da tabela, 
@@ -109,7 +109,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
     /// utilizando a proc informada no FormElement;
     /// </remarks>
-    public IList<Dictionary<string,object>> DataSource { get; set; }
+    public IList<Dictionary<string,object?>> DataSource { get; set; }
 
     public int TotalOfRecords { get; set; }
     
@@ -152,7 +152,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
         Options = options;
         TextFileFactory = textFileFactory;
         Logger = logger;
-        CurrentFilter = new Dictionary<string, object>();
+        CurrentFilter = new Dictionary<string, object?>();
     }
 
     public async Task RunWorkerAsync(CancellationToken token)

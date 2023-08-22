@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web;
@@ -39,7 +40,7 @@ public class JJDataExportation : ProcessComponent
 {
     private readonly JJMasterDataUrlHelper _urlHelper;
     private readonly JJMasterDataEncryptionService _encryptionService;
-    private DataExportationScripts _dataExportationScripts;
+    private DataExportationScripts? _dataExportationScripts;
 
 
     #region "Events"
@@ -47,13 +48,13 @@ public class JJDataExportation : ProcessComponent
     /// <summary>
     /// Event fired when the cell is rendered.
     /// </summary>
-    public event EventHandler<GridCellEventArgs> OnRenderCell = null;
+    public event EventHandler<GridCellEventArgs>? OnRenderCell = null;
 
     #endregion
 
     #region "Properties"
 
-    private ExportOptions _exportOptions;
+    private ExportOptions? _exportOptions;
 
     /// <summary>
     /// Recupera as configurações de exportação 
@@ -80,6 +81,7 @@ public class JJDataExportation : ProcessComponent
     #endregion
 
     #region "Constructors"
+    [SetsRequiredMembers]
     internal JJDataExportation(
         FormElement formElement,
         IEntityRepository entityRepository,

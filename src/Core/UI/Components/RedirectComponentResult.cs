@@ -1,4 +1,3 @@
-#nullable enable
 namespace JJMasterData.Core.UI.Components;
 
 public class RedirectComponentResult : ComponentResult

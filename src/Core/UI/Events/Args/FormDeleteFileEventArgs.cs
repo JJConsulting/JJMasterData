@@ -12,7 +12,7 @@ public class FormDeleteFileEventArgs : EventArgs
     /// <summary>
     /// Mensagem de erro referente a validação do evento (opcional)
     /// </summary>
-    public string ErrorMessage { get; set; }
+    public string? ErrorMessage { get; set; }
 
     public FormDeleteFileEventArgs(string fileName)
     {

@@ -143,7 +143,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         }
     }
 
-    private string CreateCell(Dictionary<string,object> row, FormElementField field)
+    private string CreateCell(Dictionary<string,object?> row, FormElementField field)
     {
         string value = string.Empty;
         if (field.DataBehavior != FieldBehavior.Virtual)
@@ -169,10 +169,12 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         var renderCell = OnRenderCell;
         if (renderCell != null)
         {
-            var args = new GridCellEventArgs();
-            args.Field = field;
-            args.DataRow = row;
-            args.Sender = new JJText(value);
+            var args = new GridCellEventArgs
+            {
+                Field = field,
+                DataRow = row,
+                Sender = new JJText(value)
+            };
             OnRenderCell?.Invoke(this, args);
             value = args.HtmlResult;
         }

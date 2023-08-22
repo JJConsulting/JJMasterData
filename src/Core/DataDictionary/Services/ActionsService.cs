@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -21,7 +22,7 @@ public class ActionsService : BaseService
 
     }
 
-    public async Task<bool> DeleteActionAsync(string elementName, string actionName, ActionSource context, string fieldName = null)
+    public async Task<bool> DeleteActionAsync(string elementName, string actionName, ActionSource context, string? fieldName = null)
     {
         var dicParser = await DataDictionaryRepository.GetMetadataAsync(elementName);
         DeleteAction(dicParser, actionName, context, fieldName);
@@ -30,7 +31,7 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private void DeleteAction(FormElement formElement, string originalName, ActionSource context, string fieldName = null)
+    private void DeleteAction(FormElement formElement, string? originalName, ActionSource context, string? fieldName = null)
     {
         if (originalName == null)
             return;
@@ -39,7 +40,7 @@ public class ActionsService : BaseService
         {
             case ActionSource.Field:
             {
-                var field = formElement.Fields[fieldName];
+                var field = formElement.Fields[fieldName!];
                 var fieldAction = field.Actions.Get(originalName);
                 field.Actions.Remove(fieldAction);
                 break;
@@ -65,7 +66,7 @@ public class ActionsService : BaseService
         }
     }
 
-    public async Task<bool> SaveAction(string elementName, BasicAction action, ActionSource context, string originalName, string fieldName = null)
+    public async Task<bool> SaveAction(string elementName, BasicAction action, ActionSource context, string? originalName, string? fieldName = null)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         ValidateActionName(formElement, action.Name, originalName, context, fieldName);
@@ -83,7 +84,7 @@ public class ActionsService : BaseService
         {
             case ActionSource.Field:
             {
-                var field = formElement.Fields[fieldName];
+                var field = formElement.Fields[fieldName!];
                 field.Actions.Set(action);
 
                 if (action.IsDefaultOption)
@@ -113,7 +114,7 @@ public class ActionsService : BaseService
         return true;
     }
 
-    private void ValidateActionName(FormElement formElement, string actionName, string originalName, ActionSource context, string fieldName = null)
+    private void ValidateActionName(FormElement formElement, string actionName, string? originalName, ActionSource context, string? fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(actionName))
         {
@@ -123,12 +124,12 @@ public class ActionsService : BaseService
         if (originalName != null && originalName.Equals(actionName))
             return;
         
-        IList<BasicAction> listAction = null;
+        IList<BasicAction>? listAction = null;
         switch (context)
         {
             case ActionSource.Field:
             {
-                var field = formElement.Fields[fieldName];
+                var field = formElement.Fields[fieldName!];
                 listAction = field.Actions.GetAllSorted();
                 break;
             }
@@ -189,7 +190,7 @@ public class ActionsService : BaseService
         }
     }
 
-    public async Task<bool> SortActionsAsync(string elementName, string[] listAction, ActionSource actionContext, string fieldName)
+    public async Task<bool> SortActionsAsync(string elementName, string[] listAction, ActionSource actionContext, string? fieldName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         for (int i = 0; i < listAction.Length; i++)
@@ -200,7 +201,7 @@ public class ActionsService : BaseService
             {
                 ActionSource.GridTable => formElement.Options.GridTableActions.Get(actionName),
                 ActionSource.GridToolbar => formElement.Options.GridToolbarActions.Get(actionName),
-                ActionSource.Field => formElement.Fields[fieldName].Actions.Get(actionName),
+                ActionSource.Field => formElement.Fields[fieldName!].Actions.Get(actionName),
                 ActionSource.FormToolbar => formElement.Options.FormToolbarActions.Get(actionName),
                 _ => throw new ArgumentOutOfRangeException(nameof(actionContext), actionContext, null)
             };
@@ -214,12 +215,12 @@ public class ActionsService : BaseService
     public async Task<bool> EnableDisable(string elementName, string actionName, ActionSource actionContext, bool visible)
     {
         var dicParser = await DataDictionaryRepository.GetMetadataAsync(elementName);
-        BasicAction action = actionContext switch
+        var action = actionContext switch
         {
             ActionSource.GridTable => dicParser.Options.GridTableActions.Get(actionName),
             ActionSource.GridToolbar => dicParser.Options.GridToolbarActions.Get(actionName),
             ActionSource.FormToolbar => dicParser.Options.FormToolbarActions.Get(actionName),
-            _ => null
+            _ => throw new JJMasterDataException("Invalid ActionSource.")
         };
 
         action!.SetVisible(visible);
@@ -236,8 +237,6 @@ public class ActionsService : BaseService
             return dicFields;
 
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
-        if (formElement == null)
-            return dicFields;
 
         foreach (var field in formElement.Fields)
         {

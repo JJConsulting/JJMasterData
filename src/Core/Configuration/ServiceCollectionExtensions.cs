@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
 
     public static JJMasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
         Action<JJMasterDataCoreOptions> configureCore,
-        Action<JJMasterDataCommonsOptions> configureCommons, IConfiguration loggingConfiguration = null)
+        Action<JJMasterDataCommonsOptions> configureCommons, IConfiguration? loggingConfiguration = null)
     {
         services.Configure(configureCore);
         
@@ -55,7 +55,8 @@ public static class ServiceCollectionExtensions
         services.AddDataDictionaryServices();
         services.AddDataManagerServices();
         services.AddEventHandlers();
-
+        services.AddExpressionServices();
+        
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();

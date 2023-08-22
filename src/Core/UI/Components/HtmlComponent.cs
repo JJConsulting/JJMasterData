@@ -10,7 +10,7 @@ public abstract class HtmlComponent : ComponentBase
     /// </summary>
     internal abstract HtmlBuilder BuildHtml();
 
-    public HtmlBuilder GetHtmlBuilder()
+    public HtmlBuilder? GetHtmlBuilder()
     {
         return Visible ? BuildHtml() : null;
     }
@@ -23,6 +23,6 @@ public abstract class HtmlComponent : ComponentBase
     /// </returns>
     public string GetHtml()
     {
-        return Visible ? BuildHtml()?.ToString(true) : string.Empty;
+        return Visible ? BuildHtml().ToString(true) : string.Empty;
     }
 }

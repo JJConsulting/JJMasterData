@@ -103,7 +103,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
             formEvent.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(formElement));
             await formEvent.OnFormElementLoadAsync(dataContext, new FormElementLoadEventArgs(formElement));
             
-            dataImp.OnBeforeImport += formEvent.OnBeforeImport;
+            dataImp.OnBeforeImport += formEvent.OnBeforeImport!;
         }
         
         return dataImp;

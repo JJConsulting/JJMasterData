@@ -12,7 +12,7 @@ public class JJValidationSummaryTagHelper : TagHelper
     {
         var validationSummary = new JJValidationSummary
         {
-            Errors = Errors?.ToList()
+            Errors = Errors?.ToList() ?? new List<string>()
         };
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(validationSummary.GetHtml());

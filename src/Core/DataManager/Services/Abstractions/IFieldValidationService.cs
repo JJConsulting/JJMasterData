@@ -17,6 +17,6 @@ public interface IFieldValidationService
     /// Key = Field name
     /// Value = Error message
     /// </returns>
-    Task<IDictionary<string, object>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool enableErrorLink);
-    string ValidateField(FormElementField field, string fieldId, string value, bool enableErrorLink = true);
+    Task<IDictionary<string, string>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState, bool enableErrorLink);
+    string ValidateField(FormElementField field, string fieldId, string? value, bool enableErrorLink = true);
 }

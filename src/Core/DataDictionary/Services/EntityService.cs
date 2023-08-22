@@ -46,7 +46,7 @@ public class EntityService : BaseService
     }
 
 
-    public async Task<FormElement> EditEntityAsync(FormElement formElement, string entityName)
+    public async Task<FormElement?> EditEntityAsync(FormElement formElement, string entityName)
     {
         var isValid = await ValidateEntity(formElement, entityName);
         if (!isValid)

@@ -83,12 +83,13 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     internal async Task SetFormViewParamsAsync(JJFormView formView, FormElement formElement)
     {
         var formEventHandler = FormEventHandlerFactory.GetFormEvent(formElement.Name);
-        formView.FormService.AddFormEventHandler(formEventHandler);
-
+  
         formView.Name = "jj-form-view-" + formElement.Name.ToLower();
 
         if (formEventHandler != null)
         {
+            formView.FormService.AddFormEventHandler(formEventHandler);
+
             // ReSharper disable once MethodHasAsyncOverload
             formEventHandler.OnFormElementLoad(this, new FormElementLoadEventArgs(formElement));
                     

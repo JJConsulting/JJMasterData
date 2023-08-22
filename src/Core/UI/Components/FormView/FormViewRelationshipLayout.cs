@@ -1,11 +1,9 @@
-#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
@@ -171,7 +169,7 @@ internal class FormViewRelationshipLayout
         {
             case RelationshipViewType.View or RelationshipViewType.Update:
                 {
-                    var childValues = await ParentFormView.EntityRepository.GetDictionaryAsync((Element)childElement, (IDictionary<string, object>)filter);
+                    var childValues = await ParentFormView.EntityRepository.GetDictionaryAsync(childElement, filter);
 
                     var childDataPanel = ParentFormView.ComponentFactory.DataPanel.Create(childElement);
                     childDataPanel.FieldNamePrefix = childElement.Name + "_";

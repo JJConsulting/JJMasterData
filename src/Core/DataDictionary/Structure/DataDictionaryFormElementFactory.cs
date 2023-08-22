@@ -76,10 +76,12 @@ public class DataDictionaryFormElementFactory
         formElement.Fields[DataDictionaryStructure.EnableWebApi].DataItem = new FormElementDataItem
         {
             Items =
+#pragma warning disable CS8670 // Object or collection initializer implicitly dereferences possibly null member.
             {
                 new DataItemValue("1", "Yes"),
                 new DataItemValue("0", "No")
             }
+#pragma warning restore CS8670 // Object or collection initializer implicitly dereferences possibly null member.
         };
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
     }

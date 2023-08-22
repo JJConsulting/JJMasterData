@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace JJMasterData.Core.FormEvents.Abstractions;
+﻿namespace JJMasterData.Core.FormEvents.Abstractions;
 
 public interface IFormEventHandlerFactory
 {

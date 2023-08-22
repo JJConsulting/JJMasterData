@@ -8,7 +8,7 @@ public class SqlCommandAction : UserCreatedAction
     /// Comando SQL a ser executado, aceita expression
     /// </summary>
     [JsonProperty("commandSQL")]
-    public string CommandSql { get; set; }
+    public string CommandSql { get; set; } = null!;
 
     /// <summary>
     /// Aplicar somenter as linhas selecionadas (default=false)

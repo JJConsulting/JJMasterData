@@ -1,4 +1,3 @@
-#nullable enable
 using Azure.Core;
 using JJMasterData.Core.Web.Html;
 

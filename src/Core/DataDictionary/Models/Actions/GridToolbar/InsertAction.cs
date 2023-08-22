@@ -17,7 +17,7 @@ public class InsertAction : GridToolbarAction
     /// <para/>Importante! Ao executar o insert o id gerado automaticamente deverá ser retornado na procedure de set.
     /// </remarks>
     [JsonProperty("elementNameToSelect")]
-    public string ElementNameToSelect { get; set; }
+    public string ElementNameToSelect { get; set; } = null!;
 
     /// <summary>
     /// Reabrir o formulário (default=false)

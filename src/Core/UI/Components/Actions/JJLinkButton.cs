@@ -15,7 +15,7 @@ namespace JJMasterData.Core.Web.Components;
 public class JJLinkButton : HtmlComponent
 {
 
-    private JJSpinner _spinner;
+    private JJSpinner? _spinner;
 
     public JJSpinner Spinner
     {
@@ -27,9 +27,9 @@ public class JJLinkButton : HtmlComponent
         set => _spinner = value;
     }
     
-    public string Text { get; set; }
+    public string? Text { get; set; }
     
-    public string ToolTip { get; set; }
+    public string? ToolTip { get; set; }
 
     /// <summary>
     /// Action will be fired clicking at any place at the row.
@@ -51,12 +51,12 @@ public class JJLinkButton : HtmlComponent
     /// </remarks>
     public bool DividerLine { get; set; }
     
-    public bool Enabled { get; set; }
+    public bool Enabled { get; set; } = true;
 
     /// <remarks>
     /// FontAwesome 2022 icon class.
     /// </remarks>
-    public string IconClass { get; set; }
+    public string? IconClass { get; set; }
     
     /// <summary>
     /// Add btn class on render. 
@@ -64,19 +64,13 @@ public class JJLinkButton : HtmlComponent
     /// </summary>
     public bool ShowAsButton { get; set; }
 
-    public LinkButtonType Type { get; set; }
+    public LinkButtonType Type { get; set; } = LinkButtonType.Link;
 
-    public string OnClientClick { get; set; }
+    public string? OnClientClick { get; set; }
     
-    public string UrlAction { get; set; }
+    public string? UrlAction { get; set; }
 
     internal bool ShowInFilter { get; set; }
-    
-    public JJLinkButton()
-    {
-        Enabled = true;
-        Type = LinkButtonType.Link;
-    }
 
     internal JJLinkButton GetInstance(BasicAction action, bool enable, bool visible)
     {
@@ -103,14 +97,14 @@ public class JJLinkButton : HtmlComponent
 
         if (Type == LinkButtonType.Submit)
         {
-            html.Tag.TagName = HtmlTag.Button;
+            html.Tag!.TagName = HtmlTag.Button;
             html.WithAttribute("type", "submit");
             html.WithAttribute("formaction", UrlAction);
             html.WithAttributeIf(ShowAsButton, "role", "button");
         }
         else if (Type == LinkButtonType.Button)
         {
-            html.Tag.TagName = HtmlTag.Button;
+            html.Tag!.TagName = HtmlTag.Button;
             html.WithAttribute("type", "button");
         }
         else
@@ -125,12 +119,11 @@ public class JJLinkButton : HtmlComponent
         html.WithCssClass(GetCssClassWithCompatibility());
         html.WithAttributes(Attributes);
         html.WithToolTip(ToolTip);
-        html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick);
+        html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick ?? string.Empty);
         html.WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton);
         html.WithCssClassIf(!Enabled, "disabled");
 
-        if (icon != null)
-            html.AppendComponent(icon);
+        html.AppendComponent(icon);
 
         if (!string.IsNullOrEmpty(Text))
             html.Append(HtmlTag.Span, s =>
@@ -172,9 +165,9 @@ public class JJLinkButton : HtmlComponent
         return cssClass;
     }
 
-    private JJIcon GetIcon()
+    private JJIcon? GetIcon()
     {
-        JJIcon icon = null;
+        JJIcon? icon = null;
         if (!string.IsNullOrEmpty(IconClass))
         {
             icon = new JJIcon(IconClass);

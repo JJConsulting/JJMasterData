@@ -26,7 +26,7 @@ namespace JJMasterData.Core.Test.Web.Components
             expected.Append("/>");
 
             var html = text.GetHtmlBuilder();
-            Assert.Equal(expected.ToString(), html.ToString(true));
+            Assert.Equal(expected.ToString(), html?.ToString(true));
         }
 
         [Fact]

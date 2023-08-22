@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.UI.Components;
@@ -87,7 +85,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Insert raw text as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendText(string rawText)
+    public HtmlBuilder AppendText(string? rawText)
     {
         if (!string.IsNullOrEmpty(rawText))
         {
@@ -111,7 +109,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Conditional insert raw text as a child of caller builder.
     /// </summary>
-    public HtmlBuilder AppendTextIf(bool condition, string rawText)
+    public HtmlBuilder AppendTextIf(bool condition, string? rawText)
     {
         if (condition)
             AppendText(rawText);
