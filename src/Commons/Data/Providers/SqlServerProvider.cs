@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -237,7 +238,7 @@ public class SqlServerProvider : BaseProvider
     public override string GetWriteProcedureScript(Element element)
     {
         if (element == null)
-            throw new ArgumentNullException(nameof(Element));
+            throw new ArgumentNullException(nameof(element));
 
         if (element.Fields == null || element.Fields.Count == 0)
             throw new ArgumentNullException(nameof(Element.Fields));
@@ -501,7 +502,7 @@ public class SqlServerProvider : BaseProvider
     public override string GetReadProcedureScript(Element element)
     {
         if (element == null)
-            throw new ArgumentNullException(nameof(Element));
+            throw new ArgumentNullException(nameof(element));
 
         if (element.Fields == null || element.Fields.Count == 0)
             throw new ArgumentNullException(nameof(Element.Fields));
@@ -922,7 +923,7 @@ public class SqlServerProvider : BaseProvider
 
     public override DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> filters)
     {
-        return GetWriteCommand(DeleteInitial, element, filters);
+        return GetWriteCommand(DeleteInitial, element, filters!);
     }
 
     protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values)
@@ -934,7 +935,7 @@ public class SqlServerProvider : BaseProvider
     {
         var elementFields = fields.ToList();
     
-        if (element == null || !elementFields.Any())
+        if (!elementFields.Any())
         {
             return string.Empty; 
         }
@@ -953,20 +954,17 @@ public class SqlServerProvider : BaseProvider
         return alterTableScript;
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters, DataAccessParameter? totalOfRecordsParameter)
+    public override DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter)
     {
-        
-        var (filters, orderBy, currentPage, recordsPerPage) = entityParameters;
-        
-        var command = new DataAccessCommand
+       var command = new DataAccessCommand
         {
             CmdType = CommandType.StoredProcedure,
             Sql = Options.GetReadProcedureName(element),
             Parameters = new List<DataAccessParameter>
             {
-                new("@orderby", orderBy.ToQueryParameter()),
-                new("@regporpag", recordsPerPage),
-                new("@pag", currentPage)
+                new("@orderby", parameters.OrderBy.ToQueryParameter()),
+                new("@regporpag", parameters.RecordsPerPage),
+                new("@pag", parameters.CurrentPage)
             }
         };
 
@@ -975,11 +973,11 @@ public class SqlServerProvider : BaseProvider
             if (field.Filter.Type == FilterMode.Range)
             {
                 object? valueFrom = DBNull.Value;
-                if (filters != null &&
-                    filters.ContainsKey(field.Name + "_from") &&
-                    filters[field.Name + "_from"] != null)
+                if (parameters.Filters != null &&
+                    parameters.Filters.ContainsKey(field.Name + "_from") &&
+                    parameters.Filters[field.Name + "_from"] != null)
                 {
-                    valueFrom = filters[field.Name + "_from"];
+                    valueFrom = parameters.Filters[field.Name + "_from"];
                     if (valueFrom != null)
                         valueFrom = StringManager.ClearText(valueFrom.ToString());
                 }
@@ -994,11 +992,11 @@ public class SqlServerProvider : BaseProvider
                 command.Parameters.Add(fromParameter);
 
                 object? valueTo = DBNull.Value;
-                if (filters != null &&
-                    filters.ContainsKey(field.Name + "_to") &&
-                    filters[field.Name + "_to"] != null)
+                if (parameters.Filters != null &&
+                    parameters.Filters.ContainsKey(field.Name + "_to") &&
+                    parameters.Filters[field.Name + "_to"] != null)
                 {
-                    valueTo = filters[field.Name + "_to"];
+                    valueTo = parameters.Filters[field.Name + "_to"];
                     if (valueTo != null)
                         valueTo = StringManager.ClearText(valueTo.ToString());
                 }
@@ -1012,7 +1010,7 @@ public class SqlServerProvider : BaseProvider
             }
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
-                object value = GetElementValue(field, filters);
+                object? value = GetElementValue(field, parameters.Filters);
                 if (value != null && value != DBNull.Value)
                     value = StringManager.ClearText(value.ToString());
 
@@ -1051,15 +1049,14 @@ public class SqlServerProvider : BaseProvider
 
         foreach (var f in fields)
         {
-            object value = GetElementValue(f, values);
+            object? value = GetElementValue(f, values);
             var param = new DataAccessParameter();
-            param.Name = string.Format("@{0}", f.Name);
+            param.Name = $"@{f.Name}";
             param.Size = f.Size;
             param.Value = value;
             param.Type = GetDbType(f.DataType);
             cmd.Parameters.Add(param);
         }
-
 
         var pRet = new DataAccessParameter();
         pRet.Direction = ParameterDirection.Output;
@@ -1072,18 +1069,18 @@ public class SqlServerProvider : BaseProvider
     }
 
 
-    private object GetElementValue(ElementField f, IDictionary<string,object?> values)
+    private object? GetElementValue(ElementField f, IDictionary<string,object?> values)
     {
-        object value = DBNull.Value;
-        if (values != null &&
-            values.ContainsKey(f.Name) &&
+        object? value = DBNull.Value;
+        if (values.ContainsKey(f.Name) &&
             values[f.Name] != null)
         {
             if ((f.DataType == FieldType.Date ||
                  f.DataType == FieldType.DateTime ||
                  f.DataType == FieldType.Float ||
                  f.DataType == FieldType.Int) &&
-                values[f.Name].ToString().Trim().Length == 0)
+                values[f.Name] != null &&
+                values[f.Name]?.ToString().Trim().Length == 0)
             {
                 value = DBNull.Value;
             }
@@ -1192,63 +1189,7 @@ public class SqlServerProvider : BaseProvider
         return FieldType.NVarchar;
     }
 
-    public override Element GetElementFromTable(string tableName)
-    {
-        if (string.IsNullOrEmpty(tableName))
-            throw new ArgumentNullException(nameof(tableName));
-
-        if (!DataAccess.TableExists(tableName))
-            throw new JJMasterDataException($"Table {tableName} not found");
-
-        var element = new Element
-        {
-            Name = tableName,
-            TableName = tableName
-        };
-
-        var cmdFields = new DataAccessCommand
-        {
-            CmdType = CommandType.StoredProcedure,
-            Sql = "sp_columns"
-        };
-        cmdFields.Parameters.Add(new DataAccessParameter("@table_name", tableName));
-
-        var dtFields = DataAccess.GetDataTable(cmdFields);
-        if (dtFields == null || dtFields.Rows.Count == 0)
-            return null;
-
-        foreach (DataRow row in dtFields.Rows)
-        {
-            var field = new ElementField
-            {
-                Name = row["COLUMN_NAME"].ToString(),
-                Label = row["COLUMN_NAME"].ToString(),
-                Size = int.Parse(row["LENGTH"].ToString()),
-                AutoNum = row["TYPE_NAME"].ToString().ToUpper().Contains("IDENTITY"),
-                IsRequired = row["NULLABLE"].ToString().Equals("0"),
-                DataType = GetDataType(row["TYPE_NAME"].ToString())
-            };
-
-            element.Fields.Add(field);
-        }
-
-        //Primary Keys
-        var cmdPks = new DataAccessCommand
-        {
-            CmdType = CommandType.StoredProcedure,
-            Sql = "sp_pkeys"
-        };
-
-        cmdPks.Parameters.Add(new DataAccessParameter("@table_name", tableName));
-        var dtPks = DataAccess.GetDataTable(cmdPks);
-        foreach (DataRow row in dtPks.Rows)
-        {
-            element.Fields[row["COLUMN_NAME"].ToString()].IsPk = true;
-        }
-
-        return element;
-    }
-
+  
     public override async Task<Element> GetElementFromTableAsync(string tableName)
     {
         if (string.IsNullOrEmpty(tableName))
@@ -1270,8 +1211,8 @@ public class SqlServerProvider : BaseProvider
         cmdFields.Parameters.Add(new DataAccessParameter("@table_name", tableName));
 
         var dtFields = await DataAccess.GetDataTableAsync(cmdFields);
-        if (dtFields == null || dtFields.Rows.Count == 0)
-            return null;
+        if (dtFields.Rows.Count == 0)
+            throw new JJMasterDataException($"Table {tableName} has invalid structure");
 
         foreach (DataRow row in dtFields.Rows)
         {

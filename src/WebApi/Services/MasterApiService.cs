@@ -67,7 +67,7 @@ public class MasterApiService
         var showLogInfo = Debugger.IsAttached;
         string text = await _entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters()
         {
-            Parameters = filters,
+            Filters = filters,
             CurrentPage = pag,
             RecordsPerPage = regporpag,
             OrderBy = OrderByData.FromString(orderby)
@@ -92,7 +92,7 @@ public class MasterApiService
         var element = dictionary;
         var result = await _entityRepository.GetDictionaryListAsync(element, new EntityParameters
         {
-            Parameters = filters,
+            Filters = filters,
             CurrentPage = pag,
             RecordsPerPage = regporpag,
             OrderBy = OrderByData.FromString(orderby)

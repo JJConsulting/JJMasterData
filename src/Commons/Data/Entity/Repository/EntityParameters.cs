@@ -1,14 +1,23 @@
 #nullable enable
+
 using System.Collections.Generic;
 
 namespace JJMasterData.Commons.Data.Entity;
 
 public class EntityParameters
 {
-    public IDictionary<string, object?> Parameters { get; init; } = new Dictionary<string, object?>();
-    public OrderByData OrderBy { get; init; } = new();
-    public int CurrentPage { get; init; } = 1;
-    public int RecordsPerPage { get; init; } = int.MaxValue;
+    public IDictionary<string, object?> Filters { get; init; }
+    public OrderByData OrderBy { get; init; }
+    public int CurrentPage { get; init; }
+    public int RecordsPerPage { get; init; }
+    
+    public EntityParameters()
+    {
+        Filters = new Dictionary<string, object?>();
+        OrderBy = new OrderByData();
+        CurrentPage = 1;
+        RecordsPerPage = int.MaxValue;
+    }
     
     public void Deconstruct(
         out IDictionary<string, object?> parameters,
@@ -16,7 +25,7 @@ public class EntityParameters
         out int currentPage,
         out int recordsPerPage)
     {
-        parameters = Parameters;
+        parameters = Filters;
         orderBy = OrderBy;
         currentPage = CurrentPage;
         recordsPerPage = RecordsPerPage;
