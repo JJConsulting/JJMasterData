@@ -3,7 +3,7 @@
 }
 @using JJMasterData.Core.Web
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
-@model JJMasterData.Core.DataDictionary.Actions.GridToolbar.AuditLogAction
+@model JJMasterData.Core.DataDictionary.Actions.GridToolbar.LogAction
 
 @using (Html.BeginForm("LogAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))
