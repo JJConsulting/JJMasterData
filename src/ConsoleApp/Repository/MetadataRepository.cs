@@ -1,12 +1,7 @@
 #nullable  disable
 
-using System.Collections;
-using System.Data;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Data.Extensions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.ConsoleApp.Models;
 using JJMasterData.ConsoleApp.Models.FormElementMigration;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -43,19 +38,18 @@ public class MetadataRepository
         _options = options;
     }
    
-    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
+    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataListAsync"/>
     public IEnumerable<Metadata> GetMetadataList(bool? sync = null)
     {
         var list = new List<Metadata>();
-
-        var filter = new Hashtable();
+        var entityParameters = new EntityParameters();
+        entityParameters.OrderBy.Set("name, type");
         if (sync.HasValue)
-            filter.Add("sync", (bool)sync ? "1" : "0");
-
-        const string orderBy = "name, type";
+            entityParameters.Filters.Add("sync", (bool)sync ? "1" : "0");
+        
+        
         string currentName = "";
-        int tot = 1;
-        var dt = _entityRepository.GetDictionaryListAsync(MasterDataElement).GetAwaiter().GetResult();
+        var dt = _entityRepository.GetDictionaryListAsync(MasterDataElement,entityParameters, false).GetAwaiter().GetResult();
         Metadata currentParser = null;
         foreach (var row in dt.Data)
         {

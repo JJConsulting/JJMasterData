@@ -29,6 +29,6 @@ public class DataTableExtensionsTest
 
         var modelList = dataTable.ToModelList<Element>();
 
-        Assert.True(modelList.Count == 2);
+        Assert.True(modelList?.Count == 2);
     }
 }

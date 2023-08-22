@@ -1,6 +1,7 @@
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.ConsoleApp.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,7 @@ public class FormElementMigrationService
     private MetadataRepository MetadataRepository { get; }
     private DataAccess DataAccess { get; }
     private string TableName { get; }
+    
     public FormElementMigrationService(
         IEntityRepository entityRepository, 
         IDataDictionaryRepository dataDictionaryRepository, 
@@ -21,10 +23,14 @@ public class FormElementMigrationService
         IConfiguration configuration
         )
     {
+        string? strConn = configuration.GetConnectionString("ConnectionString");
+        if (strConn == null)
+            throw new JJMasterDataException("ConnectionString not especified");
+        
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         MetadataRepository = metadataRepository;
-        DataAccess = new DataAccess(configuration.GetConnectionString("ConnectionString"), DataAccessProvider.SqlServer);
+        DataAccess = new DataAccess(strConn, DataAccessProvider.SqlServer);
         TableName = configuration.GetJJMasterData().GetValue<string>("DataDictionaryTableName")!;
     }
     
