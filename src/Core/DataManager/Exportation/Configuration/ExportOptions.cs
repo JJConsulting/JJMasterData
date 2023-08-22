@@ -14,22 +14,31 @@ public class ExportOptions
     internal const string ExportAll = "_export_table_all";
     internal const string ExportDelimiter = "_export_table_delimiter";
 
-    public ExportFileExtension FileExtension { get; set; } = ExportFileExtension.CSV;
-    public bool ExportFirstLine { get; set; } = true;
-    public bool ExportAllFields { get; set; } = true;
+    public ExportFileExtension FileExtension { get; set; }
+    public bool ExportFirstLine { get; set; }
+    public bool ExportAllFields { get; set; }
     public bool IsLandScape { get; set; }
-    public string Delimiter { get; set; } = ";";
+    public string Delimiter { get; set; }
+
+    public ExportOptions()
+    {
+        FileExtension = ExportFileExtension.CSV;
+        ExportFirstLine = true;
+        ExportAllFields = true;
+        IsLandScape = false;
+        Delimiter = ";";
+    }
 
     internal static ExportOptions LoadFromForm(IHttpContext currentContext, string objname)
     {
         var expConfig = new ExportOptions();
         if (currentContext.Request[objname + FileName] != null)
         {
-            expConfig.FileExtension = (ExportFileExtension)int.Parse(currentContext.Request[objname + FileName] ?? "3");
+            expConfig.FileExtension = (ExportFileExtension)int.Parse(currentContext.Request[objname + FileName]);
             expConfig.IsLandScape = "1".Equals(currentContext.Request[objname + TableOrientation]);
             expConfig.ExportFirstLine = "1".Equals(currentContext.Request[objname + ExportTableFirstLine]);
             expConfig.ExportAllFields = "1".Equals(currentContext.Request[objname + ExportAll]);
-            expConfig.Delimiter = currentContext.Request[objname + ExportDelimiter] ?? ";";
+            expConfig.Delimiter = currentContext.Request[objname + ExportDelimiter];
         }
 
         return expConfig;

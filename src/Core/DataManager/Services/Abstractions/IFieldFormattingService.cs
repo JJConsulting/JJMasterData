@@ -6,7 +6,7 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public interface IFieldFormattingService
 {
-    Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object?> values,
-        IDictionary<string, object?> userValues);
+    Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object> values,
+        IDictionary<string, object> userValues);
     string FormatValue(FormElementField field, object value);
 }

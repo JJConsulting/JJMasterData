@@ -25,7 +25,7 @@ public class JJRequest : IHttpRequest
 #if NETFRAMEWORK
             return System.Web.HttpContext.Current.Request.UserHostAddress;
 #else
-            return HttpContext.Connection.RemoteIpAddress.ToString();
+            return HttpContext.Connection.RemoteIpAddress?.ToString();
 #endif
         }
 
@@ -67,7 +67,7 @@ public class JJRequest : IHttpRequest
     public Microsoft.AspNetCore.Http.IFormFile GetFile(string file) => HttpContext.Request.Form.Files[file];
 #endif
 
-    public object? GetUnvalidated(string key)
+    public object GetUnvalidated(string key)
     {
 #if NETFRAMEWORK
         return System.Web.HttpContext.Current.Request.Unvalidated[key];
@@ -97,10 +97,10 @@ public class JJRequest : IHttpRequest
 #endif
 
 
-    public string? this[string key] => GetValue(key);
+    public string this[string key] => GetValue(key);
 
 
-    public string? GetValue(string key)
+    public string GetValue(string key)
     {
 #if NETFRAMEWORK
         return System.Web.HttpContext.Current.Request[key];
@@ -130,7 +130,7 @@ public class JJRequest : IHttpRequest
     }
 
 
-    public string? Form(string key)
+    public string Form(string key)
     {
 #if NETFRAMEWORK
         return System.Web.HttpContext.Current.Request.Form[key];

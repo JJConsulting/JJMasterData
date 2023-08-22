@@ -34,9 +34,9 @@ public interface IFormService
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public Task<FormLetter> UpdateAsync(FormElement formElement, IDictionary<string, object?> values, DataContext dataContext);
+    public Task<FormLetter> UpdateAsync(FormElement formElement, IDictionary<string, object> values, DataContext dataContext);
 
-    public Task<FormLetter> InsertAsync(FormElement formElement,IDictionary<string, object?> values, DataContext dataContext, bool validateFields = true);
+    public Task<FormLetter> InsertAsync(FormElement formElement,IDictionary<string, object> values, DataContext dataContext, bool validateFields = true);
 
     /// <summary>
     /// Insert or update if exists, applying expressions and default values.
@@ -44,7 +44,7 @@ public interface IFormService
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement,IDictionary<string, object?> values,  DataContext dataContext);
+    public Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement,IDictionary<string, object> values,  DataContext dataContext);
 
     /// <summary>
     /// Delete records in the database using the primaryKeys filter.

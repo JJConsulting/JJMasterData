@@ -23,7 +23,7 @@ internal class GridFilter
     private const string ClearActionName = "CLEARACTION";
     internal const string FilterFieldPrefix = "filter_";
 
-    private IDictionary<string, object?> _currentFilter = new Dictionary<string, object?>();
+    private IDictionary<string, object> _currentFilter;
     private JJGridView GridView { get; set; }
 
     private IHttpContext CurrentContext => GridView.CurrentContext;
@@ -55,13 +55,13 @@ internal class GridFilter
     /// Recupera o filtro atual da grid
     /// </summary>
     /// <returns></returns>
-    public async Task<IDictionary<string, object?>> GetCurrentFilter()
+    public async Task<IDictionary<string, object>> GetCurrentFilter()
     {
         if (_currentFilter is { Count: > 0 })
             return _currentFilter;
 
         //Ação é capturada aqui, pois o usuário pode chamar o metodo as antes do GetHtml
-        var currentFilterAction = CurrentContext.Request.Form("current-filter-action-" + GridView.Name);
+        string currentFilterAction = CurrentContext.Request.Form("current-filter-action-" + GridView.Name);
         switch (currentFilterAction)
         {
             case FilterActionName:

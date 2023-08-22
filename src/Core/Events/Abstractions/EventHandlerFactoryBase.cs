@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration;
 using JJMasterData.Core.FormEvents.Abstractions;
@@ -17,7 +17,7 @@ public class EventHandlerFactoryBase<T> where T : IEventHandler
     private IServiceScopeFactory ServiceScopeFactory { get; }
     private IEnumerable<Assembly?>? Assemblies { get; }
 
-    protected EventHandlerFactoryBase(IOptions<EventHandlerFactoryOptions> options, IServiceScopeFactory serviceScopeFactory)
+    public EventHandlerFactoryBase(IOptions<EventHandlerFactoryOptions> options, IServiceScopeFactory serviceScopeFactory)
     {
         ServiceScopeFactory = serviceScopeFactory;
         Assemblies = options.Value.Assemblies;

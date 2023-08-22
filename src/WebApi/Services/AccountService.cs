@@ -38,7 +38,7 @@ public class AccountService
         Options = options.Value;
         Logger = logger;
         ApiVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        DataAccess = new DataAccess(configuration.GetConnectionString("ConnectionString")!, DataAccessProvider.SqlServer);
+        DataAccess = new DataAccess(configuration.GetConnectionString("ConnectionString"), DataAccessProvider.SqlServer);
     }
     public UserAccessInfo Login(string? username, string? password, string? appId)
     {

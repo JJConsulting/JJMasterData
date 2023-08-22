@@ -38,7 +38,7 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
         var textGroup = Create(field);
 
         if (field.Component == FormComponent.Currency)
-            value = value.ToString()!.Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty)?.Trim()!;
+            value = value?.ToString()?.Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
 
         textGroup.Text = value?.ToString() ?? string.Empty;
         

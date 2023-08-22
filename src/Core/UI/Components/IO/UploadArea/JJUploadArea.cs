@@ -16,8 +16,8 @@ public class JJUploadArea : AsyncComponent
     /// <summary>
     /// Event fired when the file is posted.
     /// </summary>  
-    public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
-    public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
+    public event EventHandler<FormUploadFileEventArgs> OnFileUploaded;
+    public event AsyncEventHandler<FormUploadFileEventArgs> OnFileUploadedAsync;
     /// <summary>
     /// Allowed extension type, separated by comma.
     /// Default: *
@@ -119,7 +119,7 @@ public class JJUploadArea : AsyncComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string? requestType = CurrentContext.Request.QueryString("t");
+        string requestType = CurrentContext.Request.QueryString("t");
         if ("jjupload".Equals(requestType))
         {
             if (OnFileUploaded != null) 

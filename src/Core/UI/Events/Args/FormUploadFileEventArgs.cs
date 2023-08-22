@@ -13,12 +13,12 @@ public class FormUploadFileEventArgs : EventArgs
     /// <summary>
     /// Mensagem de erro referente a validação do evento (opcional)
     /// </summary>
-    public string? ErrorMessage { get; set; }
+    public string ErrorMessage { get; set; }
 
     /// <summary>
     /// Mensagem referente a validação do evento (opcional)
     /// </summary>
-    public string? SuccessMessage { get; set; }
+    public string SuccessMessage { get; set; }
 
     public FormUploadFileEventArgs(FormFileContent file)
     {

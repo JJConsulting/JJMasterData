@@ -32,7 +32,7 @@ public class OptionsService : BaseService
     }
 
 
-    public async Task<(bool, string?)> TryConnectionAsync(string connectionString)
+    public async Task<(bool, string)> TryConnectionAsync(string? connectionString)
     {
         var dataAccess = new DataAccess(connectionString,
             Enum.Parse<DataAccessProvider>(ConnectionProvidersWritableOptions!.Value.ConnectionString!));
@@ -61,28 +61,23 @@ public class OptionsService : BaseService
     public async Task<OptionsViewModel> GetViewModel(bool isFullscreen)
     {
         string? connection = ConnectionStringsWritableOptions?.Value.ConnectionString;
-        if(connection is null)
-            AddError(nameof(OptionsViewModel.ConnectionString),"ConnectionString cannot be null.");
-
-        
-        var viewModel = new OptionsViewModel();
-        if (connection != null)
+        var connectionResult = await GetConnectionResultAsync(connection);
+        var viewModel = new OptionsViewModel
         {
-            var connectionResult = await GetConnectionResultAsync(connection);
-     
-            viewModel.ConnectionString = new ConnectionString(connection);
-            viewModel.ConnectionProvider = DataAccessProvider.SqlServer;
-            viewModel.FilePath = JJMasterDataWritableOptions?.FilePath;
-            viewModel.IsFullscreen = isFullscreen;
-            viewModel.IsConnectionSuccessful = connectionResult.IsConnectionSuccessful;
+            ConnectionString = new ConnectionString(connection),
+            ConnectionProvider = DataAccessProvider.SqlServer,
+            FilePath = JJMasterDataWritableOptions?.FilePath,
+            IsFullscreen = isFullscreen,
+            IsConnectionSuccessful = connectionResult.IsConnectionSuccessful
+        };
 
-            if (!viewModel.PathExists)
-                AddError(nameof(OptionsViewModel.FilePath),
-                    StringLocalizer["{0} does not exists.", viewModel.FilePath ?? "File path"]);
+        if (!viewModel.PathExists)
+            AddError(nameof(OptionsViewModel.FilePath),
+                StringLocalizer["{0} does not exists.", viewModel.FilePath ?? "File path"]);
 
-            if (!connectionResult.IsConnectionSuccessful.GetValueOrDefault())
-                AddError(nameof(OptionsViewModel.ConnectionString), connectionResult.ErrorMessage);
-        }
+        if (!connectionResult.IsConnectionSuccessful.GetValueOrDefault())
+            AddError(nameof(OptionsViewModel.ConnectionString), connectionResult.ErrorMessage);
+
         ValidateWritableOptions();
 
         viewModel.ValidationSummary = GetValidationSummary();
@@ -114,7 +109,7 @@ public class OptionsService : BaseService
         return message.ToString();
     }
 
-    public async Task<ConnectionResult> GetConnectionResultAsync(string connectionString)
+    public async Task<ConnectionResult> GetConnectionResultAsync(string? connectionString)
     {
         var result = await TryConnectionAsync(connectionString);
         return new ConnectionResult(result.Item1, result.Item2);

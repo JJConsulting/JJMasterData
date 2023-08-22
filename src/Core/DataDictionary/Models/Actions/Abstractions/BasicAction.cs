@@ -17,19 +17,19 @@ public abstract class BasicAction
     ///</div>
     /// </remarks>
     [JsonProperty("name")]
-    public string Name { get; set; } = null!;
+    public string Name { get; set; }
 
     /// <summary>
     /// Action description
     /// </summary>
     [JsonProperty("text")]
-    public string Text { get; set; } = null!;
+    public string Text { get; set; }
 
     /// <summary>
     /// Control mouse tooltip
     /// </summary>
     [JsonProperty("tooltip")]
-    public string ToolTip { get; set; } = null!;
+    public string ToolTip { get; set; }
 
     /// <summary>
     /// Execute this action as default
@@ -73,7 +73,7 @@ public abstract class BasicAction
     /// Sim = Action will be executed
     /// </summary>
     [JsonProperty("confirmationMessage")]
-    public string ConfirmationMessage { get; set; } = null!;
+    public string ConfirmationMessage { get; set; }
 
     /// <summary>
     /// Expression that returns a boolean. Operators such as equal symbol and in can be used.
@@ -85,7 +85,7 @@ public abstract class BasicAction
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("enableExpression")]
-    public string EnableExpression { get; set; } = null!;
+    public string EnableExpression { get; set; }
 
     /// <summary>
     /// Expression that returns a boolean. Operators such as equal symbol and in can be used.
@@ -97,7 +97,7 @@ public abstract class BasicAction
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("visibleExpression")]
-    public string VisibleExpression { get; set; } = null!;
+    public string VisibleExpression { get; set; }
 
     /// <summary>
     /// Order of the action (0, 1, 2...)
@@ -111,7 +111,7 @@ public abstract class BasicAction
     /// CSS3 Stylesheet Class
     /// </summary>
     [JsonProperty("cssClass")]
-    public string CssClass { get; set; } = null!;
+    public string CssClass { get; set; }
 
 
     [JsonProperty("isCustomAction")] 

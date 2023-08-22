@@ -13,10 +13,10 @@ public class GridSelectedCellEventArgs : EventArgs
     /// <summary>
     /// Linha atual com o valor de todos os campos
     /// </summary>
-    public required IDictionary<string,object> DataRow { get; init; }
+    public IDictionary<string,object> DataRow { get; internal set; }
 
     /// <summary>
     /// Objeto renderizado
     /// </summary>
-    public required JJCheckBox CheckBox { get; init; }
+    public JJCheckBox CheckBox { get; set; }
 }

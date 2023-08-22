@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
@@ -6,7 +7,7 @@ namespace JJMasterData.Core.DataManager;
 
 public interface IFormValuesService
 {
-    Task<IDictionary<string, object?>> GetFormValuesAsync(FormElement formElement,
+    Task<IDictionary<string, object>> GetFormValuesAsync(FormElement formElement,
         PageState pageState,
         string? fieldPrefix = null);
     
@@ -18,7 +19,7 @@ public interface IFormValuesService
     /// <param name="autoReloadFormFields"></param>
     /// <param name="fieldPrefix"></param>
     /// <returns></returns>
-    public Task<IDictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
+    public Task<IDictionary<string, object>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         PageState pageState,
         bool autoReloadFormFields,

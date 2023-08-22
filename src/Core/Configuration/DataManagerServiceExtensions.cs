@@ -12,6 +12,7 @@ public static class DataManagerServiceExtensions
         services.AddTransient<IAuditLogService, AuditLogService>();
         services.AddTransient<IDataItemService, DataItemService>();
         services.AddTransient<ILookupService, LookupService>();
+        services.AddTransient<IExpressionsService, ExpressionsService>();
         services.AddTransient<IFieldFormattingService, FieldFormattingService>();
         services.AddTransient<IFieldValidationService, FieldValidationService>();
         services.AddTransient<IFormService, FormService>();

@@ -65,20 +65,12 @@ public class MasterApiService
 
         var filters = GetDefaultFilter(formElement, true);
         var showLogInfo = Debugger.IsAttached;
-
-
-        var orderByData = new OrderByData();
-        if (orderby != null)
-        {
-            orderByData.Set(orderby);
-        }
-
         string text = await _entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters()
         {
-            Filters = filters!,
+            Filters = filters,
             CurrentPage = pag,
             RecordsPerPage = regporpag,
-            OrderBy = orderByData
+            OrderBy = OrderByData.FromString(orderby)
         }, showLogInfo);
         if (string.IsNullOrEmpty(text))
             throw new KeyNotFoundException("No records found");
@@ -489,16 +481,16 @@ public class MasterApiService
     }
 
     /// <summary>
-    /// Compares the values of the fields received with those sent to the database, returning different records
+    /// Compares the values of the fields received with those sent to the bank, returning different records
     /// </summary>
     /// <remarks>
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private static IDictionary<string, object?>? GetDiff(IDictionary<string, object?> original,
-        IDictionary<string, object?> result, FormElementApiOptions apiOptions)
+    private IDictionary<string, object>? GetDiff(IDictionary<string, object> original,
+        IDictionary<string, object> result, FormElementApiOptions apiOptions)
     {
-        var newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var newValues = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entry in result)
         {
             if (entry.Value == null)
@@ -507,13 +499,10 @@ public class MasterApiService
             string fieldName = apiOptions.GetFieldNameParsed(entry.Key);
             if (original.ContainsKey(entry.Key))
             {
-                if ((original[entry.Key] == null && entry.Value != null) ||
-                    (original[entry.Key] != null && !original[entry.Key]!.Equals(entry.Value)))
-                {
+                if (original[entry.Key] == null && entry.Value != null ||
+                    !original[entry.Key].Equals(entry.Value))
                     newValues.Add(fieldName, entry.Value);
-                }
             }
-
             else
                 newValues.Add(fieldName, entry.Value);
         }

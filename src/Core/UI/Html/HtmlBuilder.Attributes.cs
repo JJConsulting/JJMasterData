@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+
 using System.Collections.Generic;
 
 namespace JJMasterData.Core.Web.Html;
@@ -19,7 +20,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Set attribute to the HTML builder.
     /// </summary>
-    public HtmlBuilder WithAttribute(string name, string? value)
+    public HtmlBuilder WithAttribute(string name, string value)
     {
         _attributes[name] = value;
         return this;
@@ -70,8 +71,8 @@ public partial class HtmlBuilder
             return WithAttribute("class", classes);
 
         var classList = new List<string>();
-        classList.AddRange(_attributes["class"]?.Split(' ') ?? Array.Empty<string>());
-        foreach (string cssClass in classes?.Split(' ')!)
+        classList.AddRange(_attributes["class"].Split(' '));
+        foreach (string cssClass in classes.Split(' '))
         {
             if (!classList.Contains(cssClass))
                 classList.Add(cssClass);

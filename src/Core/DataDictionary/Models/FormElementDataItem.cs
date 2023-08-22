@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 using JJMasterData.Commons.Data;
 using Newtonsoft.Json;
 
@@ -46,7 +47,7 @@ public class FormElementDataItem
     /// Mapeamento do dicionário
     /// </summary>
     [JsonProperty("elementMap")]
-    public DataElementMap? ElementMap { get; set; }
+    public DataElementMap ElementMap { get; set; }
 
     /// <summary>
     /// Exibir texto (Todos) como primeira opção (Default = NONE)

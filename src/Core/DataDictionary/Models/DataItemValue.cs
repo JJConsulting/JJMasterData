@@ -9,10 +9,10 @@ namespace JJMasterData.Core.DataDictionary;
 public class DataItemValue
 {
     [JsonProperty("id")]
-    public string Id { get; set; }= null!;
+    public string Id { get; set; }
 
     [JsonProperty("description")]
-    public string Description { get; set; }= null!;
+    public string Description { get; set; }
     
     [JsonProperty("icon")]
     public IconType Icon { get; set; }
@@ -24,7 +24,7 @@ public class DataItemValue
     /// #FF112F1
     /// </example>
     [JsonProperty("imagecolor")]
-    public string? ImageColor { get; set; }
+    public string ImageColor { get; set; }
 
 
     public DataItemValue() { }

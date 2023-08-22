@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace JJMasterData.Core.UI.Components;
 
 public abstract class ComponentResult

@@ -24,19 +24,17 @@ public class JJTextFile : AsyncControl
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private JJMasterDataEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    
     private const string UploadViewParameterName = "jjuploadview_";
-    
-    private IDictionary<string, object?>? _formValues;
-    private FormFilePathBuilder? _pathBuiler;
+    private IDictionary<string, object> _formValues;
+    private FormFilePathBuilder _pathBuiler;
 
-    public IDictionary<string, object?> FormValues
+    public IDictionary<string, object> FormValues
     {
-        get => _formValues ??= new Dictionary<string, object?>();
+        get => _formValues ??= new Dictionary<string, object>();
         set => _formValues = value;
     }
 
-    public new string? ToolTip
+    public new string ToolTip
     {
         get => FormElementField.HelpDescription;
         set => FormElementField.HelpDescription = value;
@@ -336,7 +334,7 @@ public class JJTextFile : AsyncControl
     }
 
     //AbsoluteUri needs to be via parameter here, because a external thread on exportation don't have access to Context.
-    public string GetDownloadLink(string fileName, bool isExternalLink = false, string? absoluteUri = null)
+    public string GetDownloadLink(string fileName, bool isExternalLink = false, string absoluteUri = null)
     {
         string filePath = GetFolderPath() + fileName;
         string url = CurrentContext.Request.AbsoluteUri;
@@ -378,13 +376,13 @@ public class JJTextFile : AsyncControl
 
     internal static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
-        string? uploadFormRoute = view.CurrentContext.Request.QueryString(UploadViewParameterName + view.Name);
+        string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadViewParameterName + view.Name);
         if (uploadFormRoute == null)
-            return new EmptyComponentResult();
+            return null;
 
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(uploadFormRoute));
         if (field == null)
-            return new EmptyComponentResult();
+            return null;
 
         var textFile = (JJTextFile)await view.ComponentFactory.Controls.CreateAsync(view.FormElement, field, null, view.Values, view.PageState, view.Name);
         return await textFile.GetResultAsync();

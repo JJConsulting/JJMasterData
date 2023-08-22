@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Threading.Tasks;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;

@@ -14,7 +14,7 @@ internal class GridTable
 
     internal GridTableBody Body { get; }
 
-    internal IList<Dictionary<string,object?>>? DataSource { get; }
+    internal IList<Dictionary<string,object?>> DataSource { get; }
 
     internal string EmptyDataText { get; }
 

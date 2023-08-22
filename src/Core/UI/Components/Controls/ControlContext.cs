@@ -1,3 +1,5 @@
+#nullable enable
+
 using JJMasterData.Core.DataManager;
 
 namespace JJMasterData.Core.Web.Factories;

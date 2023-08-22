@@ -9,7 +9,7 @@ public class ConnectionResult
     {
         
     }
-    public ConnectionResult(bool isConnectionSuccessful, string? errorMessage)
+    public ConnectionResult(bool isConnectionSuccessful, string errorMessage)
     {
         IsConnectionSuccessful = isConnectionSuccessful;
         ErrorMessage = errorMessage;

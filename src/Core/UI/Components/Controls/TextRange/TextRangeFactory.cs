@@ -1,6 +1,10 @@
+using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components.Widgets;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -34,27 +38,27 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
     {
         var values = context.FormStateData.FormValues;
         string valueFrom = "";
-        if (values.ContainsKey(field.Name + "_from"))
+        if (values != null && values.ContainsKey(field.Name + "_from"))
         {
-            valueFrom = values[field.Name + "_from"]!.ToString()!;
+            valueFrom = values[field.Name + "_from"].ToString();
         }
 
         var range = Create();
         range.FieldType = field.DataType;
         //todo gustavo: analisar
         range.FromField = TextBoxFactory.Create();
-        range.FromField!.Text = valueFrom;
+        range.FromField.Text = valueFrom;
         range.FromField.Name = field.Name + "_from";
         range.FromField.PlaceHolder = StringLocalizer["From"];
 
         string valueTo = "";
         if (values != null && values.ContainsKey(field.Name + "_to"))
         {
-            valueTo = values[field.Name + "_to"]!.ToString()!;
+            valueTo = values[field.Name + "_to"].ToString();
         }
         //todo gustavo: analisar
         range.ToField = TextBoxFactory.Create();
-        range.ToField!.Text = valueTo;
+        range.ToField.Text = valueTo;
         range.ToField.Name = field.Name + "_to";
         range.ToField.PlaceHolder = StringLocalizer["To"];
 

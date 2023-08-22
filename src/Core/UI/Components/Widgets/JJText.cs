@@ -10,6 +10,11 @@ public class JJText : HtmlComponent
 {
     private string Text { get; set; }
 
+    public JJText()
+    {
+        Visible = true;
+    }
+
     public JJText(string text)
     {
         Visible = true;

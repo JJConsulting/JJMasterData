@@ -15,20 +15,20 @@ public class GridCellEventArgs : EventArgs
     /// <summary>
     /// Campo atual que esta sendo renderizado
     /// </summary>
-    public required FormElementField Field { get; set; }
+    public FormElementField Field { get; set; }
 
     /// <summary>
     /// Linha atual com o valor de todos os campos
     /// </summary>
-    public required IDictionary<string,object?> DataRow { get; set; }
+    public IDictionary<string,object> DataRow { get; set; }
 
     /// <summary>
     /// Objeto renderizado
     /// </summary>
-    public required ComponentBase Sender { get; set; }
+    public ComponentBase Sender { get; set; }
 
     /// <summary>
     /// Retorno esperado com o conteudo HTML renderizado
     /// </summary>
-    public string? HtmlResult { get; set; }
+    public string HtmlResult { get; set; }
 }
