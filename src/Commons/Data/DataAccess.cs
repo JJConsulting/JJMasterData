@@ -641,25 +641,24 @@ public partial class DataAccess
     {
         ex.Data.Add("DataAccess Query", sql);
 
-        if (parameters?.Count > 0)
-        {
-            var error = new StringBuilder();
-            foreach (var param in parameters)
-            {
-                error.Append(param.Name);
-                error.Append(" = ");
-                error.Append(param.Value);
-                error.Append(" [");
-                error.Append(param.Type.ToString());
-                error.AppendLine("]");
-            }
-
-            ex.Data.Add("DataAccess Parameters", error.ToString());
-
+        if (!(parameters?.Count > 0)) 
             return ex;
+        
+        var error = new StringBuilder();
+        foreach (var param in parameters)
+        {
+            error.Append(param.Name);
+            error.Append(" = ");
+            error.Append(param.Value);
+            error.Append(" [");
+            error.Append(param.Type.ToString());
+            error.AppendLine("]");
         }
 
+        ex.Data.Add("DataAccess Parameters", error.ToString());
+
         return ex;
+
     }
 
     private DbCommand CreateDbCommand(DataAccessCommand command)

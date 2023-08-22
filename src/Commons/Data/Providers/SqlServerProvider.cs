@@ -973,8 +973,7 @@ public class SqlServerProvider : BaseProvider
             if (field.Filter.Type == FilterMode.Range)
             {
                 object? valueFrom = DBNull.Value;
-                if (parameters.Filters != null &&
-                    parameters.Filters.ContainsKey(field.Name + "_from") &&
+                if (parameters.Filters.ContainsKey(field.Name + "_from") &&
                     parameters.Filters[field.Name + "_from"] != null)
                 {
                     valueFrom = parameters.Filters[field.Name + "_from"];
@@ -992,8 +991,7 @@ public class SqlServerProvider : BaseProvider
                 command.Parameters.Add(fromParameter);
 
                 object? valueTo = DBNull.Value;
-                if (parameters.Filters != null &&
-                    parameters.Filters.ContainsKey(field.Name + "_to") &&
+                if (parameters.Filters.ContainsKey(field.Name + "_to") &&
                     parameters.Filters[field.Name + "_to"] != null)
                 {
                     valueTo = parameters.Filters[field.Name + "_to"];
@@ -1080,7 +1078,7 @@ public class SqlServerProvider : BaseProvider
                  f.DataType == FieldType.Float ||
                  f.DataType == FieldType.Int) &&
                 values[f.Name] != null &&
-                values[f.Name]?.ToString().Trim().Length == 0)
+                values[f.Name].ToString().Trim().Length == 0)
             {
                 value = DBNull.Value;
             }

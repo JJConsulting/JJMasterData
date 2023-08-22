@@ -876,7 +876,7 @@ public class OracleProvider : BaseProvider
         {
             if (field.Filter.Type == FilterMode.Range)
             {
-                object valueFrom = DBNull.Value;
+                object? valueFrom = DBNull.Value;
                 if (filters != null &&
                     filters.ContainsKey(field.Name + "_from") &&
                     filters[field.Name + "_from"] != null)
@@ -893,7 +893,7 @@ public class OracleProvider : BaseProvider
                 };
                 cmd.Parameters.Add(fromParameter);
 
-                object valueTo = DBNull.Value;
+                object? valueTo = DBNull.Value;
                 if (filters != null &&
                     filters.ContainsKey(field.Name + "_to") &&
                     filters[field.Name + "_to"] != null)

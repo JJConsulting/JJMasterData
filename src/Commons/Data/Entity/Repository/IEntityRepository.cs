@@ -92,12 +92,12 @@ public interface IEntityRepository
     /// <summary>
     /// Build a structure script to procedure of get
     /// </summary>
-    public string GetScriptReadProcedure(Element element);
+    public string? GetScriptReadProcedure(Element element);
 
     /// <summary>
     /// Build a structure script to procedure of set
     /// </summary>
-    public string GetScriptWriteProcedure(Element element);
+    public string? GetScriptWriteProcedure(Element element);
     
     public Task<string> GetAlterTableScriptAsync(Element element);
 

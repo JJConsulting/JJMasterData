@@ -146,6 +146,8 @@ public class ProviderSQLite : BaseProvider
         return sSql.ToString();
     }
 
+    
+    // ReSharper disable once UnusedMember.Local
     private string GetRelationshipsScript(Element element)
     {
         StringBuilder sSql = new StringBuilder();
@@ -234,12 +236,12 @@ public class ProviderSQLite : BaseProvider
 
     public override string GetWriteProcedureScript(Element element)
     {
-        return null;
+        return string.Empty;
     }
 
     public override string GetReadProcedureScript(Element element)
     {
-        return null;
+        return string.Empty;
     }
 
     public override Task<Element> GetElementFromTableAsync(string tableName)
@@ -381,10 +383,8 @@ public class ProviderSQLite : BaseProvider
 
         foreach (var f in fields)
         {
-            object value = GetElementValue(f, values);
+            object? value = GetElementValue(f, values);
             var param = new DataAccessParameter();
-            //param.Name = string.Format(f.Name);
-            //param.Size = f.Size;
             param.Direction = ParameterDirection.Input;
             param.Value = value;
             param.Type = GetDbType(f.DataType);
@@ -452,7 +452,7 @@ public class ProviderSQLite : BaseProvider
 
         foreach (var f in fields)
         {
-            object value = GetElementValue(f, values);
+            object? value = GetElementValue(f, values);
             var param = new DataAccessParameter();
             param.Name = string.Format(VariablePrefix + f.Name);
             //param.Size = f.Size;
@@ -466,7 +466,7 @@ public class ProviderSQLite : BaseProvider
 
     }
 
-    private DataAccessCommand GetScriptDelete(Element element, IDictionary<string,object?> values)
+    private DataAccessCommand GetScriptDelete(Element element, IDictionary<string,object> values)
     {
         var fields = element.Fields
             .ToList()
@@ -506,7 +506,7 @@ public class ProviderSQLite : BaseProvider
 
         foreach (var f in fields)
         {
-            object? value = GetElementValue(f, values);
+            object? value = GetElementValue(f, values!);
             var param = new DataAccessParameter
             {
                 Name = string.Format(VariablePrefix + f.Name),
@@ -527,7 +527,7 @@ public class ProviderSQLite : BaseProvider
             values[f.Name] != null)
         {
             if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
-                values[f.Name]?.ToString()?.Trim().Length == 0)
+                values[f.Name]?.ToString().Trim().Length == 0)
             {
 
                 value = DBNull.Value;
@@ -565,6 +565,7 @@ public class ProviderSQLite : BaseProvider
         return t;
     }
 
+    // ReSharper disable once UnusedMember.Local
     private DataAccessCommand GetScriptCount(Element element, IDictionary<string,object?> filters)
     {
         var fields = element.Fields
@@ -606,7 +607,7 @@ public class ProviderSQLite : BaseProvider
 
         foreach (var f in fields)
         {
-            object value = GetElementValue(f, filters);
+            object? value = GetElementValue(f, filters);
             var param = new DataAccessParameter();
             //param.Name = string.Format(f.Name);
             //param.Size = f.Size;
