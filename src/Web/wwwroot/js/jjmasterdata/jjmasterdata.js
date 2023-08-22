@@ -1593,7 +1593,7 @@ var popup = function () {
 class SearchBox {
     static setup() {
         $("input.jjsearchbox").each(function () {
-            const componentName = $(this).attr("jjid");
+            const hiddenInputId = $(this).attr("hidden-input-id");
             let urltypehead = $(this).attr("urltypehead");
             let triggerlength = $(this).attr("triggerlength");
             let numberofitems = $(this).attr("numberofitems");
@@ -1616,8 +1616,8 @@ class SearchBox {
                     url += "?";
                 urltypehead = url + urltypehead;
             }
-            const jjSearchBoxSelector = "#" + componentName + "_text";
-            const jjSearchBoxHiddenSelector = "#" + componentName;
+            const jjSearchBoxSelector = "#" + hiddenInputId + "_text";
+            const jjSearchBoxHiddenSelector = "#" + hiddenInputId;
             $(this).blur(function () {
                 if ($(this).val() == "") {
                     FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.searchClass);
@@ -1640,7 +1640,9 @@ class SearchBox {
                     },
                 },
                 onSelect: function (item) {
-                    $(jjSearchBoxHiddenSelector).val(item.value);
+                    const hiddenSearchBox = document.querySelector(jjSearchBoxHiddenSelector);
+                    if (hiddenSearchBox)
+                        hiddenSearchBox.value = item.value;
                     if (item.value != "") {
                         FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.successClass);
                     }

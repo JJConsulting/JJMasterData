@@ -53,23 +53,21 @@ public class JJSearchBox : AsyncControl
     private string? _selectedValue;
     private string? _text;
     private string? _fieldName;
+    private string? _htmlId;
 
     internal string FieldName
     {
-        get
-        {
-            if (_fieldName == null)
-                return Name;
-
-            return _fieldName;
-        }
+        get => _fieldName ?? Name;
         set => _fieldName = value;
     }
 
-    internal string DictionaryName { get; set; }
+    internal string? DictionaryName { get; set; }
 
-    internal string Id => Name.Replace(".", "_").Replace("[", "_").Replace("]", "_");
-
+    public string HtmlId
+    {
+        get => _htmlId ??= Name;
+        set => _htmlId = value;
+    }
 
     public new string? Text
     {
@@ -190,6 +188,7 @@ public class JJSearchBox : AsyncControl
         IDataItemService dataItemService,
         JJMasterDataUrlHelper urlHelper) : base(httpContext)
     {
+        HtmlId = Name;
         EncryptionService = encryptionService;
         UrlHelper = urlHelper;
         DataItemService = dataItemService;
@@ -229,9 +228,14 @@ public class JJSearchBox : AsyncControl
         return "jjsearchbox".Equals(requestType) && (requestedDictionaryName == dictionaryName || dictionaryName is null);
     }
 
-    public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view, IHttpContext httpContext)
+    public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
-        return await GetResultFromComponent(view, view.FormElement, view.Values, httpContext, view.ComponentFactory.Controls.GetFactory<IControlFactory<JJSearchBox>>());
+        return await GetResultFromComponent(
+            view,
+            view.FormElement,
+            view.Values, 
+            view.CurrentContext,
+            view.ComponentFactory.Controls.GetFactory<IControlFactory<JJSearchBox>>());
     }
 
     internal static async Task<ComponentResult> GetResultFromComponent(
@@ -239,8 +243,7 @@ public class JJSearchBox : AsyncControl
         FormElement formElement,
         IDictionary<string, object> formValues,
         IHttpContext httpContext,
-        IControlFactory<JJSearchBox> searchBoxFactory
-        )
+        IControlFactory<JJSearchBox> searchBoxFactory)
     {
         string dictionaryName = httpContext.Request.QueryString("dictionaryName");
         string fieldName = httpContext.Request.QueryString("fieldName");
@@ -267,9 +270,9 @@ public class JJSearchBox : AsyncControl
         var div = new HtmlBuilder(HtmlTag.Div);
         await div.AppendAsync(HtmlTag.Input, async input =>
         {
-            input.WithAttribute("id", Id + "_text");
-            input.WithAttribute("name", Name + "_text");
-            input.WithAttribute("jjid", Name);
+            input.WithAttribute("id", HtmlId + "_text");
+            input.WithAttribute("name", HtmlId + "_text");
+            input.WithAttribute("hidden-input-id", HtmlId);
             input.WithAttribute("type", "text");
             input.WithAttribute("urltypehead", GetUrl());
             input.WithAttribute("autocomplete", "off");
@@ -294,7 +297,7 @@ public class JJSearchBox : AsyncControl
         div.Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("hidden", "hidden");
-            input.WithAttribute("id", Id);
+            input.WithAttribute("id", HtmlId);
             input.WithAttribute("name", Name);
             input.WithValue(selectedValue);
         });

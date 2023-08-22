@@ -1,7 +1,7 @@
 ﻿class SearchBox {
     static setup(){
         $("input.jjsearchbox").each(function () {
-            const componentName = $(this).attr("jjid");
+            const hiddenInputId = $(this).attr("hidden-input-id");
             let urltypehead: string = $(this).attr("urltypehead");
             let triggerlength = $(this).attr("triggerlength");
             let numberofitems = $(this).attr("numberofitems");
@@ -33,8 +33,8 @@
         
             }
 
-            const jjSearchBoxSelector = "#" + componentName + "_text";
-            const jjSearchBoxHiddenSelector = "#" + componentName;
+            const jjSearchBoxSelector = "#" + hiddenInputId + "_text";
+            const jjSearchBoxHiddenSelector = "#" + hiddenInputId;
             
             $(this).blur(function () {
                 if ($(this).val() == "") {
@@ -59,7 +59,11 @@
                     },
                 },
                 onSelect: function (item) {
-                    $(jjSearchBoxHiddenSelector).val(item.value);
+                    const hiddenSearchBox = document.querySelector<HTMLInputElement>(jjSearchBoxHiddenSelector);
+                    
+                    if(hiddenSearchBox)
+                        hiddenSearchBox.value = item.value;
+                    
                     if (item.value != "") {
                         FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.successClass)
                     }

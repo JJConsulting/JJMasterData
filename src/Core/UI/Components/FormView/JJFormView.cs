@@ -307,7 +307,7 @@ public class JJFormView : AsyncComponent
             return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService, ComponentFactory.Downloader);
 
         if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
-            return await JJSearchBox.GetResultFromPanel(DataPanel, CurrentContext);
+            return await JJSearchBox.GetResultFromPanel(DataPanel);
 
         if ("reloadPanel".Equals(requestType))
         {

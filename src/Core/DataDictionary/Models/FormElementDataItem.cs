@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 using JJMasterData.Commons.Data;
 using Newtonsoft.Json;
 
@@ -11,8 +12,8 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementDataItem
 {
-    private DataAccessCommand _command;
-    private IList<DataItemValue> _items;
+    private DataAccessCommand? _command;
+    private IList<DataItemValue>? _items;
 
     /// <summary>
     /// Tipo da origem dos dados
@@ -26,7 +27,7 @@ public class FormElementDataItem
     /// 2) Coluna Descrição
     /// </summary>
     [JsonProperty("command")]
-    public DataAccessCommand Command
+    public DataAccessCommand? Command
     {
         get => _command ??= new DataAccessCommand();
         set => _command = value;
@@ -36,7 +37,7 @@ public class FormElementDataItem
     /// ComboBox items [Key, Value]
     /// </summary>
     [JsonProperty("itens")]
-    public IList<DataItemValue> Items
+    public IList<DataItemValue>? Items
     {
         get => _items ??= new List<DataItemValue>();
         set => _items = value;

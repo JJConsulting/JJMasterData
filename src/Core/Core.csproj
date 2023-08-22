@@ -19,7 +19,6 @@
     </ItemGroup>
 
     <!--Runtime dependencies-->
-
     <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
@@ -27,8 +26,6 @@
     
     <ItemGroup>
         <PackageReference Include="System.IO.Compression" Version="4.3.0" />
-        <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     </ItemGroup>
     
     <!--Compile time dependencies-->

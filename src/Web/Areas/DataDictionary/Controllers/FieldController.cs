@@ -2,6 +2,8 @@
 
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Services;
+using JJMasterData.Core.Web;
+using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +12,12 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class FieldController : DataDictionaryController
 {
     private readonly FieldService _fieldService;
+    private readonly IControlFactory<JJSearchBox> _searchBoxFactory;
 
-    public FieldController(FieldService fieldService)
+    public FieldController(FieldService fieldService, IControlFactory<JJSearchBox> searchBoxFactory)
     {
         _fieldService = fieldService;
+        _searchBoxFactory = searchBoxFactory;
     }
 
     public async Task<IActionResult> Index(string dictionaryName, string? fieldName)
@@ -37,8 +41,7 @@ public class FieldController : DataDictionaryController
         PopulateViewBag(formElement, field);
         return View(nameof(Index), field);
     }
-
-    //Partial View
+    
     public async Task<IActionResult> Detail(string dictionaryName, string fieldName)
     {
         var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
@@ -61,6 +64,26 @@ public class FieldController : DataDictionaryController
         var nextField = _fieldService.GetNextFieldNameAsync(dictionaryName, fieldName);
         return RedirectToAction("Index", new { dictionaryName, fieldName = nextField });
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> Index(string dictionaryName, string? fieldName, FormElementField? field)
+    {
+        
+        var iconSearchBox = _searchBoxFactory.Create();
+        iconSearchBox.Name = fieldName ?? "searchBox";
+        iconSearchBox.DataItem.ShowImageLegend = true;
+        iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
+            .Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
+
+        var iconSearchBoxResult = await iconSearchBox.GetResultAsync();
+
+        if (iconSearchBoxResult.IsActionResult())
+            return iconSearchBoxResult.ToActionResult();
+        
+        var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
+        PopulateViewBag(formElement, field);
+        return View("Index", field);
+    }
 
     [HttpPost]
     public async Task<IActionResult> Save(string dictionaryName, FormElementField field, string? originalName)
@@ -74,14 +97,6 @@ public class FieldController : DataDictionaryController
 
         ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
         return RedirectToIndex(dictionaryName, field);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Index(string dictionaryName, FormElementField? field)
-    {
-        var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
-        PopulateViewBag(formElement, field);
-        return View("Index", field);
     }
 
 
@@ -226,15 +241,15 @@ public class FieldController : DataDictionaryController
         field.Attributes = new Dictionary<string, object>();
         switch (field.Component)
         {
-            case FormComponent.Text
-                or FormComponent.Number
-                or FormComponent.Password
-                or FormComponent.Email
-                or FormComponent.Cnpj
-                or FormComponent.Cpf
-                or FormComponent.Slider
-                or FormComponent.CnpjCpf
-                or FormComponent.Cep:
+            case FormComponent.Text:
+            case FormComponent.Number:
+            case FormComponent.Password:
+            case FormComponent.Email:
+            case FormComponent.Cnpj:
+            case FormComponent.Cpf:
+            case FormComponent.Slider:
+            case FormComponent.CnpjCpf:
+            case FormComponent.Cep:
                 field.SetAttr(FormElementField.PlaceholderAttribute, Request.Form["txtPlaceHolder"].ToString());
 
                 if (field.Component is FormComponent.Number or FormComponent.Slider)

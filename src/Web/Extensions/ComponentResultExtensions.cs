@@ -8,7 +8,7 @@ public static class ComponentResultExtensions
 {
     public static bool IsActionResult(this ComponentResult componentResult)
     {
-        return componentResult is HtmlComponentResult or JsonComponentResult;
+        return componentResult is HtmlComponentResult or JsonComponentResult or RedirectComponentResult;
     }   
     
     public static IActionResult ToActionResult(this ComponentResult componentResult)

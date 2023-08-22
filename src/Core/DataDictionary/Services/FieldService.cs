@@ -196,7 +196,7 @@ public class FieldService : BaseService
     {
         if (data == null)
         {
-            AddError("DataItem", StringLocalizer["Undefined font settings"]);
+            AddError("DataItem", StringLocalizer["DataItem cannot be empty."]);
         }
 
         switch (data!.DataItemType)

@@ -1,11 +1,11 @@
 ﻿@using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IControlFactory<JJSearchBox> SearchBoxFactory
+
 @model FormElementField
-
-
-
 @{
     bool showImage = Model.DataItem!.ShowImageLegend;
     bool isManualVal = Model.DataItem!.DataItemType == DataItemType.Manual;
@@ -192,7 +192,7 @@
             </tr>
             </thead>
             <tbody>
-            @for (int i = 0; i < Model.DataItem.Items.Count; i++)
+            @for (int i = 0; i < Model.DataItem.Items?.Count; i++)
             {
                 <tr>
                     <td>
@@ -208,15 +208,22 @@
                     {
                         <td>
                             @{
-                                var iconId = $"DataItem_Items_{i}__Icon";
+
+                                var iconSearchBox = SearchBoxFactory.Create();
+                                iconSearchBox.Name = Html.NameFor(m=>m.DataItem.Items[i].Icon);
+                                iconSearchBox.HtmlId = Html.IdFor(m=>m.DataItem.Items[i].Icon);
+                                iconSearchBox.DataItem.ShowImageLegend = true;
+                                iconSearchBox.SelectedValue = ((int)Model.DataItem.Items[i].Icon).ToString();
+                                iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
+                                    .Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
                             }
 
                             <div class="row">
-                                <partial name="../Icons/_IconSearchBox" model="new IconViewModel { InputId = iconId, SelectedIcon = Model.DataItem.Items[i].Icon, EnablePopUp = false}"/>
+                                @Html.Raw(await iconSearchBox.GetResultAsync())
                             </div>
                         </td>
                         <td>
-                            @Html.TextBox("DataItem.Items[" + i + "].ImageColor",
+                            @Html.TextBox("DataItem.Items["+i +"].ImageColor",
                                 Model.DataItem.Items[i].ImageColor, new { @class = "form-control", type = "color" })
                         </td>
                     }
