@@ -252,9 +252,9 @@ public class ActionsController : DataDictionaryController
     }
 
     [HttpPost]
-    public async Task<IActionResult> LogAction(string dictionaryName, AuditLogAction auditLogAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> LogAction(string dictionaryName, LogAction logAction, ActionSource context, string? originalName, bool isActionSave)
     {
-        return await EditActionResult(dictionaryName,auditLogAction,context,isActionSave,originalName);
+        return await EditActionResult(dictionaryName,logAction,context,isActionSave,originalName);
     }
 
     [HttpPost]

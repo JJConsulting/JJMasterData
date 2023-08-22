@@ -16,7 +16,7 @@ public class GridToolbarActionList : FormElementActionList
     public ExportAction ExportAction => List.FirstOrDefault(a =>a is ExportAction) as ExportAction;
     public ConfigAction ConfigAction => List.FirstOrDefault(a =>a is ConfigAction) as ConfigAction;
     public SortAction SortAction => List.FirstOrDefault(a => a is SortAction) as SortAction;
-    public AuditLogAction AuditLogAction => List.FirstOrDefault(a => a is AuditLogAction) as AuditLogAction;
+    public LogAction LogAction => List.FirstOrDefault(a => a is LogAction) as LogAction;
 
     public GridToolbarActionList()
     {
@@ -28,7 +28,7 @@ public class GridToolbarActionList : FormElementActionList
         List.Add(new ExportAction());
         List.Add(new ConfigAction());
         List.Add(new SortAction());
-        List.Add(new AuditLogAction());
+        List.Add(new LogAction());
     }
 
     [JsonConstructor]
