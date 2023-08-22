@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 

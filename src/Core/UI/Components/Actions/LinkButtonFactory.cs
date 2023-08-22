@@ -17,6 +17,7 @@ using JJMasterData.Core.Web.Components.Scripts;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.UI.Components.Widgets;
 

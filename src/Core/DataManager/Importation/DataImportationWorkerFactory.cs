@@ -2,6 +2,7 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using Microsoft.Extensions.Localization;

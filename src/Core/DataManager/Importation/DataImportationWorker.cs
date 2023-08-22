@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Imports;
 

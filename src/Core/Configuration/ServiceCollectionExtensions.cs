@@ -55,7 +55,8 @@ public static class ServiceCollectionExtensions
         services.AddDataDictionaryServices();
         services.AddDataManagerServices();
         services.AddEventHandlers();
-
+        services.AddExpressionServices();
+        
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
         services.AddTransient<IExcelWriter, ExcelWriter>();
         services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
