@@ -1023,14 +1023,11 @@ public class OracleProvider : BaseProvider
         return ret;
     }
 
-    public override Element GetElementFromTable(string tableName)
-    {
-        return null;
-    }
+ 
     
     public override Task<Element> GetElementFromTableAsync(string tableName)
     {
-        return null;
+        throw new NotImplementedException();
     }
 
 }

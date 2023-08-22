@@ -98,7 +98,7 @@ public class EntityRepository : IEntityRepository
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = Provider.GetReadCommand(metadata,new EntityParameters()
         {
-            Parameters = filters
+            Filters = filters
         },totalOfRecords);
 
         return await DataAccess.GetDictionaryAsync(cmd);
@@ -139,7 +139,6 @@ public class EntityRepository : IEntityRepository
     
     public string GetScriptReadProcedure(Element element) => Provider.GetReadProcedureScript(element);
     
-    public Element GetElementFromTable(string tableName) => Provider.GetElementFromTable(tableName);
 
     public async Task<string> GetListFieldsAsTextAsync(Element element, EntityParameters? parameters = null, bool showLogInfo = false,
         string delimiter = "|")

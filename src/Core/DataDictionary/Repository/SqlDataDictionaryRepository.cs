@@ -38,7 +38,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         orderBy.AddOrReplace("type", OrderByDirection.Asc);
 
         var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
-            new EntityParameters() { Parameters = filters, OrderBy = orderBy }, false);
+            new EntityParameters() { Filters = filters, OrderBy = orderBy }, false);
 
         return ParseDictionaryList(result.Data);
     }
@@ -56,7 +56,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var filter = new Dictionary<string, object?> { { "type", "F" } };
 
         var dt = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
-            new EntityParameters() { Parameters = filter }, false);
+            new EntityParameters() { Filters = filter }, false);
         foreach (var row in dt.Data)
         {
             yield return row["name"]!.ToString();
@@ -152,7 +152,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
             new EntityParameters()
             {
-                Parameters = filters, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage
+                Filters = filters, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage
             });
 
         var formElementInfoList = new List<FormElementInfo>();

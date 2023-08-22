@@ -47,7 +47,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
         {
             var entityParameters = new EntityParameters
             {
-                Parameters = CurrentFilter,
+                Filters = CurrentFilter,
                 RecordsPerPage = RecordsPerPage,
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
@@ -64,7 +64,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
             {
                 entityParameters = new EntityParameters
                 {
-                    Parameters = CurrentFilter,
+                    Filters = CurrentFilter,
                     RecordsPerPage = RecordsPerPage,
                     OrderBy = CurrentOrder,
                     CurrentPage = i,

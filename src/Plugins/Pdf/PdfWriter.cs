@@ -131,7 +131,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         {
             var entityParameters = new EntityParameters
             {
-                Parameters = CurrentFilter,
+                Filters = CurrentFilter,
                 RecordsPerPage = RecordsPerPage,
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
@@ -148,7 +148,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
             {
                 entityParameters = new EntityParameters
                 {
-                    Parameters = CurrentFilter,
+                    Filters = CurrentFilter,
                     RecordsPerPage = RecordsPerPage,
                     OrderBy = CurrentOrder,
                     CurrentPage = i,

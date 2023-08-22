@@ -1,15 +1,14 @@
 ﻿#nullable enable
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Commons.Data.Entity.Repository;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data.Entity.Repository;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Providers;
@@ -30,14 +29,13 @@ public abstract class BaseProvider
     
     public abstract string VariablePrefix { get; }
     public abstract string GetCreateTableScript(Element element);
-    public abstract string GetWriteProcedureScript(Element element);
-    public abstract string GetReadProcedureScript(Element element);
-    public abstract Element GetElementFromTable(string tableName);
+    public abstract string? GetWriteProcedureScript(Element element);
+    public abstract string? GetReadProcedureScript(Element element);
     public abstract Task<Element> GetElementFromTableAsync(string tableName);
     public abstract DataAccessCommand GetInsertCommand(Element element, IDictionary<string,object?> values);
     public abstract DataAccessCommand GetUpdateCommand(Element element, IDictionary<string,object?> values);
     public abstract DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> filters);
-    public abstract DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter? totalOfRecordsParameter);
+    public abstract DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter);
     protected abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values);
     public abstract string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
     
@@ -61,7 +59,7 @@ public abstract class BaseProvider
     
     public async Task<int> GetCountAsync(Element element, IDictionary<string,object?> filters)
     {
-        var result = await GetDictionaryListAsync(element, new EntityParameters { Parameters = filters });
+        var result = await GetDictionaryListAsync(element, new EntityParameters { Filters = filters });
         return result.TotalOfRecords;
     }
     
@@ -179,7 +177,7 @@ public abstract class BaseProvider
 
     private static bool ValidateOrderByClause(Element element, string? orderBy)
     {
-        if (string.IsNullOrEmpty(orderBy))
+        if (orderBy == null || string.IsNullOrWhiteSpace(orderBy))
             return true;
 
         var clauses = orderBy.Split(',');

@@ -619,12 +619,9 @@ public class ProviderSQLite : BaseProvider
         return cmd;
     }
 
-    public override Element GetElementFromTable(string tableName)
-    {
-        return null;
-    }
+  
     public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
-        return "Not implemented";
+        throw new NotImplementedException();
     }
 }

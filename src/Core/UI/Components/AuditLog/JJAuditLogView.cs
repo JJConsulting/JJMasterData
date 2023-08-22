@@ -136,7 +136,7 @@ public class JJAuditLogView : AsyncComponent
         var entryId = string.Empty;
         var result = await EntityRepository.GetDictionaryListAsync(GridView.FormElement, new EntityParameters()
         {
-            Parameters = filter,
+            Filters = filter,
             OrderBy = orderBy,
             CurrentPage = 1,
             RecordsPerPage = 1
@@ -310,7 +310,7 @@ public class JJAuditLogView : AsyncComponent
 
         var result = await EntityRepository.GetDictionaryListAsync(GridView.FormElement,new EntityParameters()
         {
-            Parameters = filter,
+            Filters = filter,
             OrderBy = orderBy,
             CurrentPage = 1,
             RecordsPerPage = 1

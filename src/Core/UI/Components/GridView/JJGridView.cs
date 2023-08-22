@@ -1072,7 +1072,7 @@ public class JJGridView : AsyncComponent
                     {
                         var result = await GetDataSourceAsync(new EntityParameters()
                         {
-                            Parameters = await GetCurrentFilterAsync(),
+                            Filters = await GetCurrentFilterAsync(),
                             OrderBy = CurrentOrder,
                             RecordsPerPage = int.MaxValue,
                             CurrentPage = 1
@@ -1132,7 +1132,7 @@ public class JJGridView : AsyncComponent
         {
             var result = await GetDataSourceAsync(new EntityParameters
             {
-                Parameters = await GetCurrentFilterAsync(),
+                Filters = await GetCurrentFilterAsync(),
                 OrderBy = CurrentOrder,
                 RecordsPerPage = CurrentSettings.RecordsPerPage,
                 CurrentPage = CurrentPage
@@ -1145,7 +1145,7 @@ public class JJGridView : AsyncComponent
                 CurrentPage = 1;
                 result = await GetDataSourceAsync(new EntityParameters
                 {
-                    Parameters = await GetCurrentFilterAsync(),
+                    Filters = await GetCurrentFilterAsync(),
                     OrderBy = CurrentOrder,
                     RecordsPerPage = CurrentSettings.RecordsPerPage,
                     CurrentPage = CurrentPage
@@ -1172,7 +1172,7 @@ public class JJGridView : AsyncComponent
         {
             var args = new GridDataLoadEventArgs
             {
-                Filters = parameters.Parameters,
+                Filters = parameters.Filters,
                 OrderBy = parameters.OrderBy,
                 RecordsPerPage = parameters.RecordsPerPage,
                 CurrentPage = parameters.CurrentPage,
@@ -1205,7 +1205,7 @@ public class JJGridView : AsyncComponent
     {
         var result = await GetDataSourceAsync(new EntityParameters
         {
-            Parameters = await GetCurrentFilterAsync(),
+            Filters = await GetCurrentFilterAsync(),
             OrderBy = CurrentOrder,
             RecordsPerPage = recordsPerPage,
             CurrentPage = currentPage
@@ -1285,7 +1285,7 @@ public class JJGridView : AsyncComponent
             RecordsPerPage = int.MaxValue,
             CurrentPage = 1,
             OrderBy = CurrentOrder,
-            Parameters = await GetCurrentFilterAsync()
+            Filters = await GetCurrentFilterAsync()
         });
         var selectedKeys = new StringBuilder();
         var hasVal = false;

@@ -75,7 +75,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         {
             var entityParameters = new EntityParameters
             {
-                Parameters = CurrentFilter,
+                Filters = CurrentFilter,
                 RecordsPerPage = RecordsPerPage,
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
@@ -92,7 +92,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
             {
                 entityParameters = new EntityParameters
                 {
-                    Parameters = CurrentFilter,
+                    Filters = CurrentFilter,
                     CurrentPage = i,
                     RecordsPerPage = RecordsPerPage,
                     OrderBy = CurrentOrder
