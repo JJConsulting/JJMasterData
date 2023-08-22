@@ -4,9 +4,6 @@ namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
 public class ImportAction : GridToolbarAction
 {
-    /// <summary>
-    /// Nome padrão da ação
-    /// </summary>
     public const string ActionName = "import";
     
     [JsonProperty("processOptions")]

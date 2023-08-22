@@ -1,15 +1,12 @@
 ﻿namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
-public class LogAction : GridToolbarAction
+public class AuditLogAction : GridToolbarAction
 {
-    /// <summary>
-    /// Nome padrão da ação
-    /// </summary>
     public const string ActionName = "log";
-    public LogAction()
+    public AuditLogAction()
     {
         Name = ActionName;
-        ToolTip = "Log";
+        ToolTip = "Audit Log";
         Icon = IconType.Film;
         ShowAsButton = true;
         CssClass = "float-end";

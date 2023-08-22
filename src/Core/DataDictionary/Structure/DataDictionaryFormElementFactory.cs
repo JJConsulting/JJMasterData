@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -14,8 +13,6 @@ namespace JJMasterData.Core.DataDictionary.Factories;
 
 public class DataDictionaryFormElementFactory 
 {
-    public string ElementName => _options.DataDictionaryTableName;
-
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IHttpContext HttpContext { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -60,22 +57,33 @@ public class DataDictionaryFormElementFactory
         
         formElement.Title = image.ToString();
         
-        formElement.Fields[DataDictionaryStructure.EnableWebApi].VisibleExpression = "exp:{PageState} <> 'FILTER'";
+        ConfigureFields(formElement);
+        
+        return formElement;
+    }
 
-        var dataItem = new FormElementDataItem();
-        dataItem.Items!.Add(new DataItemValue("1", "Yes"));
-        dataItem.Items.Add(new DataItemValue("0", "No"));
+    private void ConfigureFields(FormElement formElement)
+    {
+        formElement.Fields[DataDictionaryStructure.Name].VisibleExpression = "exp:{PageState} <> 'FILTER'";
         formElement.Fields[DataDictionaryStructure.Type].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.Json].Label = "Json";
         formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.Text;
         formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: {PageState} = 'FILTER'";
-        formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["Filter for any data inside the structure of the metadata"];
+        formElement.Fields[DataDictionaryStructure.Json].HelpDescription =
+            StringLocalizer["Filter for any data inside the structure of the metadata"];
         formElement.Fields[DataDictionaryStructure.EnableWebApi].Component = FormComponent.ComboBox;
-        formElement.Fields[DataDictionaryStructure.EnableWebApi].DataItem = dataItem;
+        formElement.Fields[DataDictionaryStructure.EnableWebApi].VisibleExpression = "exp:{PageState} <> 'FILTER'";
+        formElement.Fields[DataDictionaryStructure.EnableWebApi].DataItem = new FormElementDataItem
+        {
+            Items =
+            {
+                new DataItemValue("1", "Yes"),
+                new DataItemValue("0", "No")
+            }
+        };
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
-        return formElement;
     }
-    
+
     private void AddActions(FormElement formElement)
     {
         formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
@@ -156,7 +164,7 @@ public class DataDictionaryFormElementFactory
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
             OnClientClick =
-                $"DataDictionaryUtils.exportElement('{ElementName}', '{UrlHelper.GetUrl("Export", "Element", "DataDictionary")}', '{StringLocalizer["Select one or more dictionaries"]}');"
+                $"DataDictionaryUtils.exportElement('{_options.DataDictionaryTableName}', '{UrlHelper.GetUrl("Export", "Element", "DataDictionary")}', '{StringLocalizer["Select one or more dictionaries"]}');"
         };
         formElement.Options.GridToolbarActions.Add(btnExport);
 
@@ -220,7 +228,7 @@ public class DataDictionaryFormElementFactory
 
         formElement.Options.GridToolbarActions.Add(btnResources);
 
-        formElement.Options.GridToolbarActions.Add(new SubmitAction()
+        formElement.Options.GridToolbarActions.Add(new SubmitAction
         {
             Name = "btnDeleteMetadata",
             Order = 0,

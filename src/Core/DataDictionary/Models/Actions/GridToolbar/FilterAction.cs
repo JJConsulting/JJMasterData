@@ -7,21 +7,18 @@ namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 /// </summary>
 public class FilterAction : GridToolbarAction
 {
-    /// <summary>
-    /// Action default name.
-    /// </summary>
     public const string ActionName = "filter";
     
-
     /// <summary>
-    /// Exibir em um collapse painel.
+    /// Display in a collapsible panel.
     /// <para></para>(Default = true)
     /// </summary>
     /// <remarks>
-    /// Quando essa propriedade é habilitada, o icone de filtro será removido da toolbar da grid 
-    /// e um painel com os filtros será exibido acima da grid. 
-    /// O comportamento do filtro permanece o mesmo.
+    /// When this property is enabled, the filter icon will be removed from the grid's toolbar,
+    /// and a panel with filters will be displayed above the grid.
+    /// The filter's behavior remains the same.
     /// </remarks>
+
     [JsonProperty("showAsCollapse")]
     public bool ShowAsCollapse { get; set; }
 

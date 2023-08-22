@@ -8,9 +8,6 @@ namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 /// </summary>
 public class ExportAction : GridToolbarAction
 {
-    /// <summary>
-    /// Default action name
-    /// </summary>
     public const string ActionName = "export";
 
     [JsonProperty("processOptions")] 

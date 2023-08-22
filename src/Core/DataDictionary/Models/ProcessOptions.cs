@@ -30,10 +30,5 @@ public class ProcessOptions
     /// porém visualiza apenas o log e a execução do seu processo.
     /// </remarks>
     [JsonProperty("scope")]
-    public ProcessScope Scope { get; set; }
-
-    public ProcessOptions()
-    {
-        Scope = ProcessScope.Global;
-    }
+    public ProcessScope Scope { get; set; } = ProcessScope.Global;
 }

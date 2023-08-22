@@ -3,9 +3,6 @@
 
 public class SortAction : GridToolbarAction
 {
-    /// <summary>
-    /// Nome padrão da ação
-    /// </summary>
     public const string ActionName = "sort";
     public override bool IsUserCreated => false;
     public SortAction()

@@ -45,7 +45,7 @@ public enum PageState
     Delete = 7,
 
     /// <summary>
-    /// Represents the dictionary log grid
+    /// Represents the dictionary audit log grid
     /// </summary>
-    Log = 8
+    AuditLog = 8
 }

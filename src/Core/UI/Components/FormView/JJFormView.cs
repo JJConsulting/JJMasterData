@@ -153,7 +153,7 @@ public class JJFormView : AsyncComponent
             _gridView.ShowTitle = true;
 
             _gridView.ToolBarActions.Add(new DeleteSelectedRowsAction());
-            _gridView.ToolBarActions.Add(new LogAction());
+            _gridView.ToolBarActions.Add(new AuditLogAction());
 
             return _gridView;
         }
@@ -204,7 +204,7 @@ public class JJFormView : AsyncComponent
 
     public ViewAction ViewAction => GridView.GridActions.ViewAction;
 
-    public LogAction LogAction => GridView.ToolBarActions.LogAction;
+    public AuditLogAction AuditLogAction => GridView.ToolBarActions.AuditLogAction;
 
 
     public bool ShowTitle
@@ -384,7 +384,7 @@ public class JJFormView : AsyncComponent
                 return importationResult;
             }
         }
-        else if (currentAction is LogAction || PageState is PageState.Log)
+        else if (currentAction is AuditLogAction || PageState is PageState.AuditLog)
         {
             var auditLogResult = await GetAuditLogResult();
 
@@ -864,13 +864,13 @@ public class JJFormView : AsyncComponent
             if (actionMap?.PkFieldValues != null)
                 html.AppendComponent(GetFormLogBottomBar(actionMap.PkFieldValues));
             
-            PageState = PageState.Log;
+            PageState = PageState.AuditLog;
             return HtmlComponentResult.FromHtmlBuilder(html);
         }
 
         AuditLogView.GridView.AddToolBarAction(goBackAction);
         AuditLogView.DataPanel = DataPanel;
-        PageState = PageState.Log;
+        PageState = PageState.AuditLog;
         return await AuditLogView.GetResultAsync();
     }
 
@@ -895,7 +895,7 @@ public class JJFormView : AsyncComponent
         DataImportation.UserValues = UserValues;
         DataImportation.BackButton.OnClientClick = importationScript.ToString();
         DataImportation.ProcessOptions = action.ProcessOptions;
-        DataImportation.EnableAuditLog = LogAction.IsVisible;
+        DataImportation.EnableAuditLog = AuditLogAction.IsVisible;
 
         var result = await DataImportation.GetResultAsync();
 
@@ -1050,7 +1050,7 @@ public class JJFormView : AsyncComponent
 
         if (PageState == PageState.View)
         {
-            if (LogAction.IsVisible)
+            if (AuditLogAction.IsVisible)
             {
                 var values = await GetFormValuesAsync();
                 toolbar.Items.Add(GetButtonViewLog(values).GetHtmlBuilder());
@@ -1186,7 +1186,7 @@ public class JJFormView : AsyncComponent
             ParentComponentName = Name,
             IsExternalRoute = IsExternalRoute
         };
-        string scriptAction = GridView.ActionsScripts.GetFormActionScript(LogAction, context, ActionSource.GridToolbar);
+        string scriptAction = GridView.ActionsScripts.GetFormActionScript(AuditLogAction, context, ActionSource.GridToolbar);
         var btn = new JJLinkButton
         {
             Type = LinkButtonType.Button,

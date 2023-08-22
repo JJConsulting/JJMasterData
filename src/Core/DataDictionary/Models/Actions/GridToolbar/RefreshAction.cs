@@ -2,9 +2,6 @@
 
 public class RefreshAction : GridToolbarAction
 {
-    /// <summary>
-    /// Nome padrão da ação
-    /// </summary>
     public const string ActionName = "refresh";
     public RefreshAction()
     {

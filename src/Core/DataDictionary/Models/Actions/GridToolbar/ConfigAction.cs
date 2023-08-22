@@ -6,9 +6,6 @@
 
 public class ConfigAction : GridToolbarAction
 {
-    /// <summary>
-    /// Default action name
-    /// </summary>
     public const string ActionName = "config";
     public ConfigAction()
     {

@@ -194,7 +194,7 @@ public static class Format
     /// <param name="tel">Número de Telefone em qualquer formato</param>
     /// <returns>Número telefone formatado</returns>
     /// <remarks>Lucio Pelinson 21-02-2013</remarks> 
-    public static string FormatTel(string tel)
+    public static string FormatPhone(string tel)
     {
         double nTel;
         string sTel = StringManager.ClearTelChars(tel);

@@ -10,12 +10,10 @@ namespace JJMasterData.Core.DataDictionary.Structure;
 public class LocalizationFormElementFactory
 {
     private JJMasterDataCommonsOptions Options { get; }
-    public string ElementName { get; }
 
     public LocalizationFormElementFactory(IOptions<JJMasterDataCommonsOptions> options)
     {
         Options = options.Value;
-        ElementName = options.Value.LocalizationTableName;
     }
     
     public FormElement GetFormElement()

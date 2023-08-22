@@ -13,11 +13,10 @@ public class GridToolbarActionList : FormElementActionList
     public RefreshAction RefreshAction => List.FirstOrDefault(a =>  a is RefreshAction) as RefreshAction;
     public FilterAction FilterAction => List.FirstOrDefault(a => a is FilterAction) as FilterAction;
     public ImportAction ImportAction => List.FirstOrDefault(a=>a is ImportAction) as ImportAction;
-
     public ExportAction ExportAction => List.FirstOrDefault(a =>a is ExportAction) as ExportAction;
     public ConfigAction ConfigAction => List.FirstOrDefault(a =>a is ConfigAction) as ConfigAction;
     public SortAction SortAction => List.FirstOrDefault(a => a is SortAction) as SortAction;
-    public LogAction LogAction => List.FirstOrDefault(a => a is LogAction) as LogAction;
+    public AuditLogAction AuditLogAction => List.FirstOrDefault(a => a is AuditLogAction) as AuditLogAction;
 
     public GridToolbarActionList()
     {
@@ -29,7 +28,7 @@ public class GridToolbarActionList : FormElementActionList
         List.Add(new ExportAction());
         List.Add(new ConfigAction());
         List.Add(new SortAction());
-        List.Add(new LogAction());
+        List.Add(new AuditLogAction());
     }
 
     [JsonConstructor]

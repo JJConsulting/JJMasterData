@@ -2,9 +2,6 @@
 
 public class LegendAction : GridToolbarAction
 {
-    /// <summary>
-    /// Nome padrão da ação
-    /// </summary>
     public const string ActionName = "legend";
     public LegendAction()
     {
