@@ -64,7 +64,7 @@ public class FieldFormattingService : IFieldFormattingService
         return stringValue ?? string.Empty;
     }
 
-    private string GetSliderValue(FormElementField field, dynamic value)
+    private static string GetSliderValue(FormElementField field, dynamic value)
     {
         string stringValue = null;
         if (field.DataType == FieldType.Float)
@@ -156,7 +156,7 @@ public class FieldFormattingService : IFieldFormattingService
 
                 break;
             case FormComponent.Tel:
-                stringValue = Format.FormatTel(stringValue);
+                stringValue = Format.FormatPhone(stringValue);
                 break;
         }
 

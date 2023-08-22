@@ -5,9 +5,6 @@ namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 
 public class InsertAction : GridToolbarAction
 {
-    /// <summary>
-    /// Nome padrão da ação
-    /// </summary>
     public const string ActionName = "insert";
 
     /// <summary>

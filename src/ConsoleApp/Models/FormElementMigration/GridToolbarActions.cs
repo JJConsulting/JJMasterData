@@ -35,7 +35,7 @@ public class GridToolbarActions
     public SortAction SortAction { get; set; }
 
     [JsonProperty("logAction")]
-    public LogAction LogAction { get; set; }
+    public AuditLogAction AuditLogAction { get; set; }
 
     [JsonProperty("commandActions")]
     private List<SqlCommandAction> CommandActions { get; set; }
@@ -59,7 +59,7 @@ public class GridToolbarActions
         ExportAction = new ExportAction();
         ConfigAction = new ConfigAction();
         SortAction = new SortAction();
-        LogAction = new LogAction();
+        AuditLogAction = new AuditLogAction();
         CommandActions = new List<SqlCommandAction>();
         UrlRedirectActions = new List<UrlRedirectAction>();
         InternalActions = new List<InternalAction>();
@@ -101,9 +101,9 @@ public class GridToolbarActions
         {
             SortAction = sortAction;
         }
-        else if (action is LogAction logAction)
+        else if (action is AuditLogAction logAction)
         {
-            LogAction = logAction;
+            AuditLogAction = logAction;
         }
         else if (action is SqlCommandAction cmdAction)
         {
@@ -349,14 +349,14 @@ public class GridToolbarActions
             actionList.Add(SortAction);
         }
 
-        if (LogAction is not null)
+        if (AuditLogAction is not null)
         {
-            actionList.Add(LogAction);
+            actionList.Add(AuditLogAction);
         }
         else
         {
-            LogAction = new LogAction();
-            actionList.Add(LogAction);
+            AuditLogAction = new AuditLogAction();
+            actionList.Add(AuditLogAction);
         }
 
 

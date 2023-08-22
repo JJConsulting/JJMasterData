@@ -9,41 +9,41 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementRelationshipList : IList<FormElementRelationship>
 {
-    private readonly IList<FormElementRelationship> formRelationships;
-    private readonly List<ElementRelationship> baseRelationships;
+    private readonly IList<FormElementRelationship> _formRelationships;
+    private readonly List<ElementRelationship> _baseRelationships;
     
     [JsonConstructor]
     private FormElementRelationshipList(IList<FormElementRelationship> formRelationships)
     {
-        baseRelationships = formRelationships.Where(r => r.ElementRelationship != null)
+        _baseRelationships = formRelationships.Where(r => r.ElementRelationship != null)
             .Select(r => r.ElementRelationship).ToList();
-        this.formRelationships = formRelationships;
+        _formRelationships = formRelationships;
     }
     
     public FormElementRelationshipList(List<ElementRelationship> baseFields)
     {
-        baseRelationships = baseFields;
-        formRelationships = new List<FormElementRelationship>();
+        _baseRelationships = baseFields;
+        _formRelationships = new List<FormElementRelationship>();
         if (baseFields.Count > 0)
         {
-            formRelationships.Add(new FormElementRelationship(true));
+            _formRelationships.Add(new FormElementRelationship(true));
             foreach (var relation in baseFields)
             {
-                formRelationships.Add(new FormElementRelationship(relation));
+                _formRelationships.Add(new FormElementRelationship(relation));
             }
         }
     }
 
     public List<ElementRelationship> GetElementRelationships()
     {
-        return baseRelationships;
+        return _baseRelationships;
     }
 
     #region Implementation of IEnumerable
 
     public IEnumerator<FormElementRelationship> GetEnumerator()
     {
-        return formRelationships.GetEnumerator();
+        return _formRelationships.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -59,96 +59,96 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
     public void Add(FormElementRelationship item)
     {
         if (item!.ElementRelationship != null)
-            baseRelationships.Add(item.ElementRelationship);
+            _baseRelationships.Add(item.ElementRelationship);
 
         SetId(item);
 
-        formRelationships.Add(item);
+        _formRelationships.Add(item);
     }
 
     private void SetId(FormElementRelationship item)
     {
-        var highestId = formRelationships.Any() ? formRelationships.Max(x => x.Id) : 1;
+        var highestId = _formRelationships.Any() ? _formRelationships.Max(x => x.Id) : 1;
         item.Id = highestId + 1;
     }
 
     public void Clear()
     {
-        baseRelationships.Clear();
-        formRelationships.Clear();
+        _baseRelationships.Clear();
+        _formRelationships.Clear();
     }
 
     public bool Contains(FormElementRelationship item)
     {
-        return formRelationships.Contains(item);
+        return _formRelationships.Contains(item);
     }
 
     public void CopyTo(FormElementRelationship[] array, int index)
     {
-        formRelationships.CopyTo(array, index);
+        _formRelationships.CopyTo(array, index);
     }
 
     public bool Remove(FormElementRelationship item)
     {
         if (item?.ElementRelationship != null)
-            baseRelationships.Remove(item.ElementRelationship);
+            _baseRelationships.Remove(item.ElementRelationship);
 
-        return formRelationships.Remove(item);
+        return _formRelationships.Remove(item);
     }
 
-    public int Count => formRelationships.Count;
+    public int Count => _formRelationships.Count;
 
-    public bool IsReadOnly => formRelationships.IsReadOnly;
+    public bool IsReadOnly => _formRelationships.IsReadOnly;
 
     #endregion
 
     public int IndexOf(FormElementRelationship item)
     {
-        return formRelationships.IndexOf(item);
+        return _formRelationships.IndexOf(item);
     }
 
     public void Insert(int index, FormElementRelationship item)
     {
         if (item?.ElementRelationship != null)
-            baseRelationships.Add(item.ElementRelationship);
+            _baseRelationships.Add(item.ElementRelationship);
         
         SetId(item);
-        formRelationships.Insert(index, item);
+        _formRelationships.Insert(index, item);
     }
 
     public void RemoveAt(int index)
     {
-        var item = formRelationships[index];
+        var item = _formRelationships[index];
 
-        formRelationships.Remove(item);
+        _formRelationships.Remove(item);
         if (item?.ElementRelationship != null)
-            baseRelationships.Remove(item.ElementRelationship);
+            _baseRelationships.Remove(item.ElementRelationship);
     }
 
     public FormElementRelationship this[int index]
     {
-        get => formRelationships[index];
+        get => _formRelationships[index];
         set
         {
-            formRelationships[index] = value;
+            _formRelationships[index] = value;
 
             if (!value.IsParent)
             {
-                var element = baseRelationships.First(r => r.ChildElement == value.ElementRelationship!.ChildElement);
-                var i = baseRelationships.IndexOf(element);
-                baseRelationships[i] = value.ElementRelationship;
+                var element = _baseRelationships.First(r => r.ChildElement == value.ElementRelationship!.ChildElement);
+                var i = _baseRelationships.IndexOf(element);
+                _baseRelationships[i] = value.ElementRelationship;
             }
         }
     }
 
     public FormElementRelationship GetById(int id)
     {
-        return formRelationships.First(r => r.Id == id);
+        return _formRelationships.First(r => r.Id == id);
     }
     
     public int GetIndexById(int id)
     {
         var relationship = GetById(id);
-        return formRelationships.IndexOf(relationship);
+        return _formRelationships.IndexOf(relationship);
     }
 }

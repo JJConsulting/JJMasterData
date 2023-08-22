@@ -81,7 +81,7 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " for="DataType" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Data Type"]">@StringLocalizer["Data Type"]</label>
-                    <select asp-for="DataType" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldType>()"></select>
+                    <select asp-for="DataType" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldType>().OrderBy(f=>f.Text)"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2">
                     <label class="@BootstrapHelper.Label " for="Size" @BootstrapHelper.GetDataToggle("tooltip") title="Tamanho do campo">@StringLocalizer["Size"]</label>

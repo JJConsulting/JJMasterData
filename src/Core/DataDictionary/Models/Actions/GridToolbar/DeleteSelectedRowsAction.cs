@@ -2,9 +2,6 @@
 
 public class DeleteSelectedRowsAction : GridToolbarAction
 {
-    /// <summary>
-    /// Action name
-    /// </summary>
     public const string ActionName = "deleteSelectedRows";
 
     public DeleteSelectedRowsAction()
