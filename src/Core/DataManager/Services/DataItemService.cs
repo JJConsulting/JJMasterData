@@ -74,8 +74,8 @@ public class DataItemService : IDataItemService
         {
             var item = new DataItemValue
             {
-                Id = row.ElementAt(0).Value?.ToString(),
-                Description = row.ElementAt(1).Value?.ToString()?.Trim()
+                Id = row.ElementAt(0).Value!.ToString()!,
+                Description = row.ElementAt(1).Value?.ToString()?.Trim()!
             };
             if (dataItem.ShowImageLegend)
             {

@@ -60,7 +60,7 @@ public class JJDataPanel : AsyncComponent
     /// Fields with error.
     /// Key=Field Name, Value=Error Description
     /// </summary>
-    public IDictionary<string, object?> Errors { get; set; }
+    public IDictionary<string, string> Errors { get; set; }
 
     /// <summary>
     /// Field Values.
@@ -112,7 +112,7 @@ public class JJDataPanel : AsyncComponent
         EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
 
         Values = new Dictionary<string, object?>();
-        Errors =  new Dictionary<string, object?>();
+        Errors =  new Dictionary<string, string>();
         AutoReloadFormFields = true;
         PageState = PageState.View;
     }
@@ -158,7 +158,7 @@ public class JJDataPanel : AsyncComponent
         ExpressionsService = expressionsService;
         ComponentFactory = componentFactory;
         Values = new Dictionary<string, object?>();
-        Errors = new Dictionary<string, object?>();
+        Errors = new Dictionary<string, string>();
         AutoReloadFormFields = true;
         PageState = PageState.View;
     }
@@ -289,7 +289,7 @@ public class JJDataPanel : AsyncComponent
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public async Task<IDictionary<string, object?>> ValidateFieldsAsync(IDictionary<string, object?> values, PageState pageState)
+    public async Task<IDictionary<string, string>> ValidateFieldsAsync(IDictionary<string, object?> values, PageState pageState)
     {
         return await ValidateFieldsAsync(values, pageState, true);
     }
@@ -301,7 +301,7 @@ public class JJDataPanel : AsyncComponent
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public async Task<IDictionary<string, object>> ValidateFieldsAsync(IDictionary<string, object> values, PageState pageState, bool enableErrorLink)
+    public async Task<IDictionary<string, string>> ValidateFieldsAsync(IDictionary<string, object?> values, PageState pageState, bool enableErrorLink)
     {
         return await FieldsService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink);
     }

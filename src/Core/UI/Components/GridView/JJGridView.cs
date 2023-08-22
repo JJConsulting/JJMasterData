@@ -1314,7 +1314,7 @@ public class JJGridView : AsyncComponent
         if (values == null)
             throw new ArgumentNullException(nameof(values));
 
-        var errors = new Dictionary<string, object>();
+        var errors = new Dictionary<string, object?>();
         int line = 0;
         foreach (var row in values)
         {
@@ -1326,7 +1326,7 @@ public class JJGridView : AsyncComponent
                 bool visible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
                 if (enabled && visible && field.DataBehavior is not FieldBehavior.ViewOnly)
                 {
-                    string val = string.Empty;
+                    string? val = string.Empty;
                     if (row[field.Name] != null)
                         val = row[field.Name].ToString();
 

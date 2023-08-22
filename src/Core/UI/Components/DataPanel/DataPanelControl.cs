@@ -31,7 +31,7 @@ internal class DataPanelControl
 
     public ControlFactory ControlFactory { get; }
     
-    public IDictionary<string, object> Errors { get; private set; }
+    public IDictionary<string, string> Errors { get; private set; }
 
     public PageState PageState => FormState.PageState;
 
@@ -77,7 +77,7 @@ internal class DataPanelControl
         };
         EncryptionService = gridView.EncryptionService;
         UrlHelper = gridView.UrlHelper;
-        Errors = new Dictionary<string, object>();
+        Errors = new Dictionary<string, string>();
         Name = gridView.Name;
         ControlFactory = gridView.ComponentFactory.Controls;
         ExpressionsService = gridView.ExpressionsService;

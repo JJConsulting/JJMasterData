@@ -14,10 +14,6 @@ public class JJHttpContext : IHttpContext
 
     public IHttpRequest Request { get; }
     
-    
-    private JJHttpContext()
-    {
-    }
 
 #if NET || NETSTANDARD
     private Microsoft.AspNetCore.Http.HttpContext HttpContext { get; }
@@ -51,8 +47,8 @@ public class JJHttpContext : IHttpContext
 #if NETFRAMEWORK
         return System.Web.HttpContext.Current.User.Identity is System.Security.Claims.ClaimsIdentity;
 #else
-        var claims = HttpContext?.User.Claims;
-        return claims != null && claims.Any();
+        var claims = HttpContext.User.Claims;
+        return claims.Any();
 #endif
     }
     /// <summary>
@@ -69,7 +65,7 @@ public class JJHttpContext : IHttpContext
         var claim = identity.Claims.FirstOrDefault(c => c.Type == key);
         return claim?.Value;
 #else
-        return HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == key)?.Value;
+        return HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == key)?.Value!;
 #endif
     }
 

@@ -30,6 +30,6 @@ public class ProtheusExpressionProvider : IExpressionProvider
         if (exp.Length >= 3)
             parms = _expressionParser.ParseExpression(exp[2], formStateData, false);
 
-        return await _protheusService.CallFunctionAsync(urlProtheus, functionName, parms);
+        return await _protheusService.CallFunctionAsync(urlProtheus!, functionName!, parms!);
     }
 }

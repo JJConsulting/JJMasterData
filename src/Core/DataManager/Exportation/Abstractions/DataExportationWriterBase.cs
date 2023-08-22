@@ -152,7 +152,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
         Options = options;
         TextFileFactory = textFileFactory;
         Logger = logger;
-        CurrentFilter = new Dictionary<string, object>();
+        CurrentFilter = new Dictionary<string, object?>();
     }
 
     public async Task RunWorkerAsync(CancellationToken token)
