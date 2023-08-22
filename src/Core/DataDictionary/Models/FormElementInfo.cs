@@ -7,15 +7,15 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementInfo
 {
-    public required string Name { get; set; }
+    public required string Name { get; init; }
     
-    public required string TableName { get; set; }
+    public required string TableName { get; init; }
     
-    public required string Info { get; set; }
+    public required string Info { get; init; }
     
-    public required string Sync { get; set; }
+    public required string Sync { get; init; }
     
-    public required DateTime Modified { get; set; }
+    public required DateTime Modified { get; init; }
 
     public FormElementInfo()
     {
