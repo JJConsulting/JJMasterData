@@ -23,6 +23,7 @@ using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 using JJMasterData.Core.Web;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
@@ -219,10 +220,13 @@ public class ElementService : BaseService
 
     public async Task<byte[]> ExportSingleRowAsync(IDictionary<string, object> row)
     {
-        string dictionaryName = row["name"].ToString();
+        var dictionaryName = row["name"].ToString()!;
         var metadata = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
 
-        string json = FormElementSerializer.Serialize(metadata);
+        var json = FormElementSerializer.Serialize(metadata, settings =>
+        {
+            settings.Formatting = Formatting.Indented;
+        });
 
         return Encoding.Default.GetBytes(json);
     }
@@ -234,13 +238,21 @@ public class ElementService : BaseService
         {
             foreach (var element in selectedRows)
             {
-                string dictionaryName = element["name"].ToString();
+                var dictionaryName = element["name"].ToString()!;
                 var metadata = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
-                string json = FormElementSerializer.Serialize(metadata);
+                
+                var json = FormElementSerializer.Serialize(metadata,settings =>
+                {
+                    settings.Formatting = Formatting.Indented;
+                });
 
                 var jsonFile = archive.CreateEntry(dictionaryName + ".json");
+#if NET
+                await 
+#endif
                 using var streamWriter = new StreamWriter(jsonFile.Open());
-                streamWriter.Write(json);
+                await streamWriter.WriteAsync(json);
+
             }
         }
 

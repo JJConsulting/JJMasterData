@@ -13,7 +13,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class ElementController : DataDictionaryController
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
     private readonly ElementService _elementService;
     private readonly ClassGenerationService _classGenerationService;
     private readonly ScriptsService _scriptsService;
@@ -24,7 +24,7 @@ public class ElementController : DataDictionaryController
         ScriptsService scriptsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        StringLocalizer = stringLocalizer;
+        _stringLocalizer = stringLocalizer;
         _elementService = elementService;
         _classGenerationService = classGenerationService;
         _scriptsService = scriptsService;
@@ -79,7 +79,7 @@ public class ElementController : DataDictionaryController
 
     private void ConfigureUploadArea(JJUploadArea upload)
     {
-        upload.AddLabel = StringLocalizer["Select Dictionaries"];
+        upload.AddLabel = _stringLocalizer["Select Dictionaries"];
         upload.AllowedTypes = "json";
         upload.AutoSubmitAfterUploadAll = false;
         upload.OnFileUploadedAsync += FileUploaded;
@@ -90,7 +90,7 @@ public class ElementController : DataDictionaryController
         await _elementService.Import(new MemoryStream(e.File.Bytes));
         if (ModelState.IsValid)
         {
-            e.SuccessMessage = StringLocalizer["Dictionary imported successfully!"];
+            e.SuccessMessage = _stringLocalizer["Dictionary imported successfully!"];
         }
         else
         {

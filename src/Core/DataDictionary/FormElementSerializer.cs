@@ -1,3 +1,5 @@
+#nullable enable
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -8,7 +10,7 @@ public static class FormElementSerializer
     private static JsonSerializerSettings Settings { get; } = new()
     {
         TypeNameHandling = TypeNameHandling.Auto, 
-        Formatting = Formatting.Indented,
+        Formatting = Formatting.None,
         ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
         ContractResolver = new DefaultContractResolver
         {
@@ -16,13 +18,15 @@ public static class FormElementSerializer
         }
     };
     
-    public static string Serialize(FormElement formElement)
+    public static string Serialize(FormElement formElement, Action<JsonSerializerSettings>? configureSettings = null)
     {
+        configureSettings?.Invoke(Settings);
         return JsonConvert.SerializeObject(formElement, Settings);
     }
 
-    public static FormElement Deserialize(string json)
+    public static FormElement Deserialize(string json, Action<JsonSerializerSettings>? configureSettings = null)
     {
-        return JsonConvert.DeserializeObject<FormElement>(json, Settings);
+        configureSettings?.Invoke(Settings);
+        return JsonConvert.DeserializeObject<FormElement>(json, Settings)!;
     }
 }

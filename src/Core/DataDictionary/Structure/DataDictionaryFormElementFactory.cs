@@ -63,11 +63,11 @@ public class DataDictionaryFormElementFactory
         formElement.Fields[DataDictionaryStructure.EnableWebApi].VisibleExpression = "exp:{PageState} <> 'FILTER'";
 
         var dataItem = new FormElementDataItem();
-        dataItem.Items.Add(new DataItemValue("1", "Yes"));
+        dataItem.Items!.Add(new DataItemValue("1", "Yes"));
         dataItem.Items.Add(new DataItemValue("0", "No"));
         formElement.Fields[DataDictionaryStructure.Type].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.Json].Label = "Json";
-        formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.TextArea;
+        formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.Text;
         formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: {PageState} = 'FILTER'";
         formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["Filter for any data inside the structure of the metadata"];
         formElement.Fields[DataDictionaryStructure.EnableWebApi].Component = FormComponent.ComboBox;
