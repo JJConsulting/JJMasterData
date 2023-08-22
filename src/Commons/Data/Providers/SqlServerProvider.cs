@@ -156,7 +156,7 @@ public class SqlServerProvider : BaseProvider
             var listContraint = new List<string>();
             foreach (var r in element.Relationships)
             {
-                string contraintName = $"FK_{r.ChildElement}_{element.TableName}";
+                string contraintName = string.Format("FK_{0}_{1}", r.ChildElement, element.TableName);
 
                 //Prevents repeated name.
                 if (!listContraint.Contains(contraintName))
@@ -998,24 +998,21 @@ public class SqlServerProvider : BaseProvider
                     if (valueTo != null)
                         valueTo = StringManager.ClearText(valueTo.ToString());
                 }
-                var parameterTo = new DataAccessParameter
-                {
-                    Direction = ParameterDirection.Input,
-                    Type = GetDbType(field.DataType),
-                    Size = field.Size,
-                    Name = field.Name + "_to",
-                    Value = valueTo
-                };
-                command.Parameters.Add(parameterTo);
+                var pTo = new DataAccessParameter();
+                pTo.Direction = ParameterDirection.Input;
+                pTo.Type = GetDbType(field.DataType);
+                pTo.Size = field.Size;
+                pTo.Name = field.Name + "_to";
+                pTo.Value = valueTo;
+                command.Parameters.Add(pTo);
             }
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
-                object? value = GetElementValue(field, parameters.Filters);
-                if (value != null && value != DBNull.Value)
+                object value = GetElementValue(field, parameters.Filters);
+                if (value != DBNull.Value)
                     value = StringManager.ClearText(value.ToString());
 
                 var dbType = GetDbType(field.DataType);
-
                 var parameter = new DataAccessParameter
                 {
                     Direction = ParameterDirection.Input,
@@ -1049,47 +1046,44 @@ public class SqlServerProvider : BaseProvider
 
         foreach (var f in fields)
         {
-            object? value = GetElementValue(f, values);
-            var dataAccessParameter = new DataAccessParameter
-            {
-                Name = $"@{f.Name}",
-                Size = f.Size,
-                Value = value,
-                Type = GetDbType(f.DataType)
-            };
-            cmd.Parameters.Add(dataAccessParameter);
+            object value = GetElementValue(f, values);
+            var param = new DataAccessParameter();
+            param.Name = $"@{f.Name}";
+            param.Size = f.Size;
+            param.Value = value;
+            param.Type = GetDbType(f.DataType);
+            cmd.Parameters.Add(param);
         }
 
-        var retParameter = new DataAccessParameter
-        {
-            Direction = ParameterDirection.Output,
-            Name = "@RET",
-            Value = 0,
-            Type = DbType.Int32
-        };
-        cmd.Parameters.Add(retParameter);
+        var pRet = new DataAccessParameter();
+        pRet.Direction = ParameterDirection.Output;
+        pRet.Name = "@RET";
+        pRet.Value = 0;
+        pRet.Type = DbType.Int32;
+        cmd.Parameters.Add(pRet);
 
         return cmd;
     }
 
 
-    private object? GetElementValue(ElementField f, IDictionary<string,object?> values)
+    private object GetElementValue(ElementField f, IDictionary<string,object?> values)
     {
-        object? value = DBNull.Value;
-        if (values.ContainsKey(f.Name) &&
-            values[f.Name] != null)
+        if (!values.ContainsKey(f.Name)) 
+            return DBNull.Value;
+        
+        object? value = values[f.Name];
+        if (value == null)
+            return DBNull.Value;
+        
+        if ((f.DataType == FieldType.Date ||
+             f.DataType == FieldType.DateTime ||
+             f.DataType == FieldType.Float ||
+             f.DataType == FieldType.Int) &&
+            string.IsNullOrEmpty(value.ToString()))
         {
-            if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
-                values[f.Name]!.ToString()!.Trim().Length == 0)
-            {
-                value = DBNull.Value;
-            }
-            else
-            {
-                value = values[f.Name];
-            }
+            return DBNull.Value;
         }
-
+        
         return value;
     }
 
@@ -1218,12 +1212,12 @@ public class SqlServerProvider : BaseProvider
         {
             var field = new ElementField
             {
-                Name = row["COLUMN_NAME"].ToString()!,
-                Label = row["COLUMN_NAME"].ToString(),
-                Size = int.Parse(row["LENGTH"].ToString()!),
-                AutoNum = row["TYPE_NAME"].ToString()!.ToUpper().Contains("IDENTITY"),
-                IsRequired = row["NULLABLE"].ToString()!.Equals("0"),
-                DataType = GetDataType(row["TYPE_NAME"].ToString()!)
+                Name = (string)row["COLUMN_NAME"],
+                Label = (string)row["COLUMN_NAME"],
+                Size = (int)row["LENGTH"],
+                AutoNum = ((string)row["TYPE_NAME"]).ToUpper().Contains("IDENTITY"),
+                IsRequired = ((string)row["NULLABLE"]).Equals("0"),
+                DataType = GetDataType((string)row["TYPE_NAME"])
             };
 
             element.Fields.Add(field);
