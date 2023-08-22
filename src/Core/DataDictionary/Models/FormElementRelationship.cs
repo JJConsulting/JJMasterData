@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Data.Entity;
+﻿#nullable enable
+
+using JJMasterData.Commons.Data.Entity;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;

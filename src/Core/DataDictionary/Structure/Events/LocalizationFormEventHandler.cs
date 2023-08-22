@@ -22,17 +22,17 @@ public class LocalizationFormEventHandler : FormEventHandlerBase
     public override void OnAfterUpdate(object sender, FormAfterActionEventArgs args) => ClearCache();
 
     public override void OnBeforeInsert(object sender, FormBeforeActionEventArgs args) =>
-        ValidateEspecialChars(args);
+        ValidateEspecialChars(sender, args);
 
     public override void OnBeforeUpdate(object sender, FormBeforeActionEventArgs args) =>
-        ValidateEspecialChars(args);
+        ValidateEspecialChars(sender, args);
     
     private void ClearCache()
     {
         MemoryCache.Remove($"JJMasterData.Commons.Localization.JJMasterDataResources_localization_strings_{Thread.CurrentThread.CurrentCulture.Name}");
     }
 
-    private static void ValidateEspecialChars(FormBeforeActionEventArgs e)
+    private static void ValidateEspecialChars(object? sender, FormBeforeActionEventArgs e)
     {
         if (e?.Values == null)
             return;

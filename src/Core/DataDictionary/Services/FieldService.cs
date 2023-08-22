@@ -31,7 +31,7 @@ public class FieldService : BaseService
         if (field.DataFile != null)
         {
             field.DataFile.MaxFileSize *= 1000000;
-            field.DataFile.FolderPath = field.DataFile.FolderPath.Trim();
+            field.DataFile.FolderPath = field.DataFile.FolderPath?.Trim();
         }
 
         if (!ValidateFields(formElement, field, originalName))
@@ -67,7 +67,7 @@ public class FieldService : BaseService
                 case DataItemType.Dictionary:
                     field.DataFile = null;
                     field.DataItem.Command = null;
-                    field.DataItem.Items?.Clear();
+                    field.DataItem.Items.Clear();
                     break;
                 case DataItemType.Manual:
                     field.DataFile = null;
@@ -77,7 +77,7 @@ public class FieldService : BaseService
                 case DataItemType.SqlCommand:
                     field.DataFile = null;
                     field.DataItem.ElementMap = null;
-                    field.DataItem.Items!.Clear();
+                    field.DataItem.Items.Clear();
                     break;
             }
         }
@@ -92,7 +92,7 @@ public class FieldService : BaseService
         }
     }
 
-    private bool ValidateFields(FormElement formElement, FormElementField field, string originalName)
+    public bool ValidateFields(FormElement formElement, FormElementField field, string originalName)
     {
         ValidateName(field.Name);
 
@@ -161,7 +161,7 @@ public class FieldService : BaseService
         }
         else if (field.Component == FormComponent.File)
         {
-            ValidateDataFile(field.DataBehavior, field.DataFile!);
+            ValidateDataFile(field.DataBehavior, field.DataFile);
         }
 
         return IsValid;
@@ -192,7 +192,7 @@ public class FieldService : BaseService
         }
     }
 
-    private void ValidateDataItem(FormElementDataItem? data)
+    private void ValidateDataItem(FormElementDataItem data)
     {
         if (data == null)
         {
@@ -203,10 +203,10 @@ public class FieldService : BaseService
         {
             case DataItemType.SqlCommand:
             {
-                if (string.IsNullOrEmpty(data.Command?.Sql))
+                if (string.IsNullOrEmpty(data.Command.Sql))
                     AddError("Command.Sql", StringLocalizer["[Field Command.Sql] required"]);
 
-                if (data.ReplaceTextOnGrid && !data.Command!.Sql.Contains("{search_id}"))
+                if (data.ReplaceTextOnGrid && !data.Command!.Sql!.Contains("{search_id}"))
                 {
                     AddError("Command.Sql", "{search_id} is required at queries using ReplaceTextOnGrid. " +
                                             "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
@@ -223,7 +223,7 @@ public class FieldService : BaseService
         }
     }
 
-    private void ValidateManualItens(IList<DataItemValue>? itens)
+    private void ValidateManualItens(IList<DataItemValue> itens)
     {
         if (itens == null || itens.Count == 0)
         {
@@ -242,7 +242,7 @@ public class FieldService : BaseService
             }
     }
 
-    private void ValidateDataElementMap(DataElementMap? data)
+    private void ValidateDataElementMap(DataElementMap data)
     {
         if (data == null)
         {
@@ -253,7 +253,7 @@ public class FieldService : BaseService
             AddError(nameof(data.ElementName), StringLocalizer["Required field [ElementName]"]);
     }
 
-    private void ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile? dataFile)
+    private void ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile dataFile)
     {
         if (dataFile == null)
         {
@@ -304,16 +304,16 @@ public class FieldService : BaseService
             AddError(nameof(mapFilter.ExpressionValue), StringLocalizer["Invalid filter field"]);
         }
 
-        if (string.IsNullOrEmpty(elementMap?.FieldKey))
+        if (string.IsNullOrEmpty(elementMap.FieldKey))
             AddError(nameof(elementMap.FieldKey),
                 StringLocalizer["Required [{0}] field", StringLocalizer["Field Key"]]);
 
-        if (elementMap == null || string.IsNullOrEmpty(elementMap.ElementName))
+        if (string.IsNullOrEmpty(elementMap.ElementName))
             AddError(nameof(elementMap.ElementName), StringLocalizer["Required [{0}] field", StringLocalizer["Field Key"]]);
 
         if (IsValid)
         {
-            var dataEntry = await DataDictionaryRepository.GetMetadataAsync(elementMap!.ElementName);
+            var dataEntry = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
             var fieldKey = dataEntry.Fields[elementMap.FieldKey];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
@@ -325,7 +325,7 @@ public class FieldService : BaseService
 
         if (IsValid)
         {
-            field.DataItem.ElementMap?.MapFilters.Add(mapFilter);
+            field.DataItem.ElementMap.MapFilters.Add(mapFilter);
             return true;
         }
 
@@ -348,7 +348,7 @@ public class FieldService : BaseService
     public async Task<string> GetNextFieldNameAsync(string dictionaryName, string fieldName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
-        string? nextField = null;
+        string nextField = null;
         if (formElement.Fields.Contains(fieldName))
         {
             var currentField = formElement.Fields[fieldName];
@@ -359,18 +359,21 @@ public class FieldService : BaseService
             }
         }
 
-        return nextField!;
+        return nextField;
     }
 
     public async Task<Dictionary<string, string>> GetElementFieldListAsync(FormElementField currentField)
     {
-        var dicFields = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
+        var dicFields = new Dictionary<string, string>();
+        dicFields.Add(string.Empty, StringLocalizer["--Select--"]);
 
-        var map = currentField.DataItem!.ElementMap!;
+        var map = currentField.DataItem!.ElementMap;
         if (string.IsNullOrEmpty(map.ElementName))
             return dicFields;
 
         var dataEntry = await DataDictionaryRepository.GetMetadataAsync(map.ElementName);
+        if (dataEntry == null)
+            return dicFields;
 
         foreach (var field in dataEntry.Fields)
         {

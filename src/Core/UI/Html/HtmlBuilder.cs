@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +17,7 @@ public partial class HtmlBuilder
 {
     private readonly string? _rawText;
     private readonly bool _hasRawText;
-    private readonly IDictionary<string, string?> _attributes;
+    private readonly IDictionary<string, string> _attributes;
     private readonly ICollection<HtmlBuilder> _children;
 
     /// <summary>
@@ -28,7 +30,7 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder()
     {
-        _attributes = new Dictionary<string, string?>(StringComparer.InvariantCultureIgnoreCase);
+        _attributes = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         _children = new HashSet<HtmlBuilder>();
     }
 
@@ -138,7 +140,7 @@ public partial class HtmlBuilder
         }
         return attributes.ToString();
     }
-    public string? GetAttribute(string key)
+    public string GetAttribute(string key)
     {
         return _attributes[key];
     }

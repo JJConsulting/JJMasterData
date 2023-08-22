@@ -29,20 +29,20 @@ public class FormService : IFormService
 
     #region Events
 
-    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeDelete;
-    public event EventHandler<FormAfterActionEventArgs>? OnAfterDelete;
-    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeInsert;
-    public event EventHandler<FormAfterActionEventArgs>? OnAfterInsert;
-    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeUpdate;
-    public event EventHandler<FormAfterActionEventArgs>? OnAfterUpdate;
-    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeImport;
-    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeDeleteAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterDeleteAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeInsertAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterInsertAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeUpdateAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterUpdateAsync;
-    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeImportAsync;
+    public event EventHandler<FormBeforeActionEventArgs> OnBeforeDelete;
+    public event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
+    public event EventHandler<FormBeforeActionEventArgs> OnBeforeInsert;
+    public event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
+    public event EventHandler<FormBeforeActionEventArgs> OnBeforeUpdate;
+    public event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
+    public event EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeDeleteAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeInsertAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterInsertAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeUpdateAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
 
     #endregion
 
@@ -73,7 +73,7 @@ public class FormService : IFormService
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter> UpdateAsync(FormElement formElement, IDictionary<string, object?> values, DataContext dataContext)
+    public async Task<FormLetter> UpdateAsync(FormElement formElement, IDictionary<string, object> values, DataContext dataContext)
     {
         var errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Update, EnableErrorLinks);
         var result = new FormLetter(errors);
@@ -123,13 +123,13 @@ public class FormService : IFormService
         return result;
     }
 
-    public async Task<FormLetter> InsertAsync(FormElement formElement, IDictionary<string, object?> values, DataContext dataContext, bool validateFields = true)
+    public async Task<FormLetter> InsertAsync(FormElement formElement, IDictionary<string, object> values, DataContext dataContext, bool validateFields = true)
     {
-        IDictionary<string, string> errors;
+        IDictionary<string, object> errors;
         if (validateFields)
             errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Insert, EnableErrorLinks);
         else
-            errors = new Dictionary<string, string>();
+            errors = new Dictionary<string, object>();
 
         var result = new FormLetter(errors);
         if (OnBeforeInsert != null || OnBeforeInsertAsync != null)
@@ -272,7 +272,7 @@ public class FormService : IFormService
     /// >
     public async Task<FormLetter> DeleteAsync(FormElement formElement, IDictionary<string, object> primaryKeys, DataContext dataContext)
     {
-        IDictionary<string, string> errors = new Dictionary<string, string>();
+        IDictionary<string, object> errors = new Dictionary<string, object>();
         var result = new FormLetter(errors);
 
         if (OnBeforeDelete != null)
@@ -318,44 +318,52 @@ public class FormService : IFormService
 
         return result;
     }
-    
-    public void AddFormEventHandler(IFormEventHandler eventHandler)
+
+    public void AddFormEventHandler(IFormEventHandler formEventHandler)
+    {
+        if (formEventHandler != null)
+        {
+            AddEventHandlers(formEventHandler);
+        }
+    }
+
+    private void AddEventHandlers(IFormEventHandler eventHandler)
     {
         var type = eventHandler.GetType();
-            
+    
         if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeInsert)))
         {
-            OnBeforeInsert += eventHandler.OnBeforeInsert!;
+            OnBeforeInsert += eventHandler.OnBeforeInsert;
         }
 
         if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeDelete)))
         {
-            OnBeforeDelete += eventHandler.OnBeforeDelete!;
+            OnBeforeDelete += eventHandler.OnBeforeDelete;
         }
 
         if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeUpdate)))
         {
-            OnBeforeUpdate += eventHandler.OnBeforeUpdate!;
+            OnBeforeUpdate += eventHandler.OnBeforeUpdate;
         }
 
         if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeImport)))
         {
-            OnBeforeImport += eventHandler.OnBeforeImport!;
+            OnBeforeImport += eventHandler.OnBeforeImport;
         }
 
         if (IsMethodImplemented(type, nameof(eventHandler.OnAfterDelete)))
         {
-            OnAfterDelete += eventHandler.OnAfterDelete!;
+            OnAfterDelete += eventHandler.OnAfterDelete;
         }
 
         if (IsMethodImplemented(type, nameof(eventHandler.OnAfterInsert)))
         {
-            OnAfterInsert += eventHandler.OnAfterInsert!;
+            OnAfterInsert += eventHandler.OnAfterInsert;
         }
 
         if (IsMethodImplemented(type, nameof(eventHandler.OnAfterUpdate)))
         {
-            OnAfterUpdate += eventHandler.OnAfterUpdate!;
+            OnAfterUpdate += eventHandler.OnAfterUpdate;
         }
         
         if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeInsertAsync)))

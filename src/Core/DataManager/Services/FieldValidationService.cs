@@ -23,12 +23,12 @@ public class FieldValidationService : IFieldValidationService
         Localizer = localizer;
     }
 
-    public async Task<IDictionary<string, string>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState, bool enableErrorLink)
+    public async Task<IDictionary<string, object>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool enableErrorLink)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 
-        var errors = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        var errors = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         var formState = new FormStateData(formValues, pageState);
         foreach (var field in formElement.Fields)
         {
@@ -40,9 +40,9 @@ public class FieldValidationService : IFieldValidationService
             if (!isEnabled)
                 continue;
 
-            string? value;
+            string value;
             if (formValues.ContainsKey(field.Name) && formValues[field.Name] != null)
-                value = formValues[field.Name]?.ToString();
+                value = formValues[field.Name].ToString();
             else
                 value = "";
 
@@ -53,14 +53,14 @@ public class FieldValidationService : IFieldValidationService
         return errors;
     }
 
-    public string ValidateField(FormElementField field, string fieldId, string? value, bool enableErrorLink = true)
+    public string ValidateField(FormElementField field, string fieldId, string value, bool enableErrorLink = true)
     {
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        var fieldName = enableErrorLink ? GetFieldLinkHtml(field.LabelOrName) : field.LabelOrName;
+        string fieldName = enableErrorLink ? GetFieldLinkHtml(fieldId, field.LabelOrName) : field.Label;
 
-        string? error = null;
+        string error = null;
 
         if (string.IsNullOrEmpty(value))
         {
@@ -76,10 +76,10 @@ public class FieldValidationService : IFieldValidationService
             error ??= ValidateComponent(field, value, fieldName);
         }
 
-        return error!;
+        return error;
     }
 
-    private string? ValidateComponent(FormElementField field, string value, string fieldName)
+    private string ValidateComponent(FormElementField field, string value, string fieldName)
     {
         switch (field.Component)
         {
@@ -161,7 +161,7 @@ public class FieldValidationService : IFieldValidationService
         return null;
     }
 
-    private string? ValidateDataType(ElementField field, string? value, string fieldName)
+    private string ValidateDataType(ElementField field, string value, string fieldName)
     {
         switch (field.DataType)
         {
@@ -192,7 +192,7 @@ public class FieldValidationService : IFieldValidationService
 
                 break;
             default:
-                if (value?.Length > field.Size && field.Size > 0)
+                if (value.Length > field.Size && field.Size > 0)
                 {
                     return Localizer["{0} field cannot contain more than {1} characters",
                         fieldName, field.Size];
@@ -204,13 +204,13 @@ public class FieldValidationService : IFieldValidationService
         return null;
     }
 
-    private static string GetFieldLinkHtml(string label)
+    private static string GetFieldLinkHtml(string fieldName, string label)
     {
         var link = new HtmlBuilder(HtmlTag.A);
         link.WithAttribute("href", "#void");
         link.WithAttribute("onclick", "javascript:$('#{fieldName}').focus();");
         link.WithCssClass("alert-link");
-        link.AppendText(label);
+        link.AppendText(label ?? fieldName);
 
         return link.ToString();
     }

@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Data.Entity;
+﻿#nullable enable
+
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
 using System;
@@ -12,7 +14,7 @@ namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string? GetCurrentUserId(IHttpContext currentContext, IDictionary<string, object?>? userValues)
+    public static string? GetCurrentUserId(IHttpContext currentContext, IDictionary<string, object>? userValues)
     {
         if (userValues != null && userValues.TryGetValue("USERID", out var value))
         {
@@ -29,14 +31,14 @@ public static class DataHelper
     }
 
     
-    public static bool ContainsPkValues(Element element, IDictionary<string, object?> values)
+    public static bool ContainsPkValues(Element element, IDictionary<string, object> values)
     {
         var elementPks = GetElementPrimaryKeys(element);
 
         return elementPks.Count != 0 && elementPks.All(field => values.ContainsKey(field.Name));
     }
 
-    public static IDictionary<string, object> GetPkValues(Element element, IDictionary<string, object?> values)
+    public static IDictionary<string, object> GetPkValues(Element element, IDictionary<string, object> values)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -55,7 +57,7 @@ public static class DataHelper
             if (!values.ContainsKey(field.Name))
                 throw new JJMasterDataException($"Primary key {field.Name} not entered");
 
-            primaryKeys.Add(field.Name, values[field.Name]!);
+            primaryKeys.Add(field.Name, values[field.Name]);
         }
 
         return primaryKeys;
@@ -66,7 +68,7 @@ public static class DataHelper
         return element.Fields.Where(x => x.IsPk).ToList();
     }
 
-    public static Dictionary<string, object> GetPkValues(Element element, string parsedValues, char separator)
+    public static Dictionary<string, object?> GetPkValues(Element element, string parsedValues, char separator)
     {
         var primaryKeys = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -94,7 +96,7 @@ public static class DataHelper
     /// <summary>
     /// Concat primary keys with separator characters
     /// </summary>
-    public static string ParsePkValues(FormElement formElement, IDictionary<string, object?> formValues, char separator)
+    public static string ParsePkValues(FormElement formElement, IDictionary<string, object> formValues, char separator)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -135,7 +137,7 @@ public static class DataHelper
             }
             else
             {
-                value = formValues[field.Name]!.ToString()!;
+                value = formValues[field.Name].ToString();
             }
             
             if (value.Contains(separator))
@@ -146,7 +148,15 @@ public static class DataHelper
 
         return name;
     }
-    
+
+    public static string ParsePkValues(FormElement formElement, DataRow row, char separator)
+    {
+        var formValues = row.Table.Columns
+            .Cast<DataColumn>()
+            .ToDictionary(col => col.ColumnName.ToLower(), col => row[col.ColumnName.ToLower()], StringComparer.InvariantCultureIgnoreCase);
+
+        return ParsePkValues(formElement, formValues, separator);
+    }
 
     /// <summary>
     /// Preserves the original name of the field as registered in the dictionary
@@ -168,7 +178,7 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoDictionary(IDictionary<string, object?> valuesToBeReceived, IDictionary<string, object?>? valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoDictionary(IDictionary<string, object> valuesToBeReceived, IDictionary<string, object>? valuesToBeCopied, bool replaceIfExistKey)
     {
         if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;

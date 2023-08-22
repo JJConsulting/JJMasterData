@@ -24,9 +24,9 @@ public class FieldFormattingService : IFieldFormattingService
         LookupService = lookupService;
     }
 
-    public async Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object?> values, IDictionary<string, object?> userValues)
+    public async Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
     {
-        object? fieldValue = null;
+        object fieldValue = null;
         if (values.TryGetValue(field.Name, out var value))
             fieldValue = value;
 
@@ -36,7 +36,7 @@ public class FieldFormattingService : IFieldFormattingService
         if (field == null)
             throw new ArgumentNullException(nameof(field), "FormElementField cannot be null");
 
-        string? stringValue = null;
+        string stringValue = null;
         switch (field.Component)
         {
             case FormComponent.Slider:
@@ -64,9 +64,9 @@ public class FieldFormattingService : IFieldFormattingService
         return stringValue ?? string.Empty;
     }
 
-    private static string? GetSliderValue(FormElementField field, object value)
+    private static string GetSliderValue(FormElementField field, dynamic value)
     {
-        string? stringValue = null;
+        string stringValue = null;
         if (field.DataType == FieldType.Float)
         {
             if (double.TryParse(value.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture,
@@ -86,7 +86,7 @@ public class FieldFormattingService : IFieldFormattingService
         return stringValue;
     }
 
-    public string FormatValue(FormElementField field, object? value)
+    public string FormatValue(FormElementField field, object value)
     {
         if (value == null)
             return string.Empty;

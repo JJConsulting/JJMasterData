@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 public class JJModalDialog : HtmlComponent
 {
-    public string? Title { get; set; }
+    public string Title { get; set; }
 
-    public string? HtmlContent { get; set; }
+    public string HtmlContent { get; set; }
     
-    public HtmlBuilder? HtmlBuilderContent { get; set; }
+    public HtmlBuilder HtmlBuilderContent { get; set; }
     
     public List<JJLinkButton> Buttons { get; set; }
 

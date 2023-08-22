@@ -48,7 +48,7 @@ public class ComponentFactory
         ServiceProvider = serviceProvider;
     }
 
-    private T GetFactory<T>() where T : notnull
+    private T GetFactory<T>()
     {
         return ServiceProvider.GetRequiredService<T>();
     }

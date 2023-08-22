@@ -33,8 +33,8 @@ public class JJAlertTagHelper : TagHelper
         var alert = new JJAlert
         {
             Color = Color,
-            CssClass = CssClass ?? string.Empty,
-            Title = Title ?? string.Empty,
+            CssClass = CssClass,
+            Title = Title,
             ShowCloseButton = ShowCloseButton
         };
 

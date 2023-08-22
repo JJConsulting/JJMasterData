@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using JJMasterData.Commons.Data.Entity;
 using Newtonsoft.Json;

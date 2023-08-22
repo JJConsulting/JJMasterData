@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#nullable enable
+
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;

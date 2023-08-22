@@ -255,7 +255,7 @@ public static class BootstrapHelper
     {
         if (Version == 3) return null;
 
-        cssClass = cssClass.Replace("pull-right", PullRight);
+        cssClass = cssClass?.Replace("pull-right", PullRight);
 
         return cssClass;
     }

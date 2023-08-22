@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,28 +13,28 @@ public class DataDictionaryFilter
     public DateTime? LastModifiedFrom { get;private set; }
     public DateTime? LastModifiedTo { get;private  set; }
     public string? Json { get; private set; }
-    public static DataDictionaryFilter FromDictionary(IDictionary<string, object?>filter)
+    public static DataDictionaryFilter FromDictionary(IDictionary<string, object>filter)
     {
         var result = new DataDictionaryFilter();
 
         if (filter.TryGetValue(DataDictionaryStructure.Name, out var name))
         {
-            result.Name = name!.ToString();
+            result.Name = name.ToString();
         }
 
         if (filter.TryGetValue(DataDictionaryStructure.TableName, out var tableName))
         {
-            result.ContainsTableName = tableName?.ToString()?.Split(',');
+            result.ContainsTableName = tableName.ToString().Split(',');
         }
         
         if (filter.TryGetValue(DataDictionaryStructure.LastModifiedFrom, out var lastModifiedFrom))
         {
-            result.LastModifiedFrom = DateTime.Parse(lastModifiedFrom?.ToString() ?? string.Empty);
+            result.LastModifiedFrom = DateTime.Parse(lastModifiedFrom.ToString());
         }
         
         if (filter.TryGetValue(DataDictionaryStructure.LastModifiedTo, out var lastModifiedTo))
         {
-            result.LastModifiedTo = DateTime.Parse(lastModifiedTo?.ToString()!);
+            result.LastModifiedTo = DateTime.Parse(lastModifiedTo.ToString());
         }
         
         if (filter.TryGetValue(DataDictionaryStructure.Json, out var json))
@@ -43,9 +44,9 @@ public class DataDictionaryFilter
 
         return result;
     }
-    public IDictionary<string, object?> ToDictionary()
+    public IDictionary<string, object> ToDictionary()
     {
-        var result = new Dictionary<string, object?>();
+        var result = new Dictionary<string, object>();
         if (Name != null)
         {
             result[DataDictionaryStructure.NameFilter] = Name;

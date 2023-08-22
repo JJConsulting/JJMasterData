@@ -6,7 +6,7 @@ namespace JJMasterData.Core.Web.Components;
 
 public abstract class ControlBase : ComponentBase
 {
-    private string? _text;
+    private string _text;
 
     /// <summary>
     /// Obtém ou define um valor que indica se o controle está habilitado.
@@ -22,12 +22,12 @@ public abstract class ControlBase : ComponentBase
     /// <summary>
     /// Texto que especifica uma dica curta que descreve o valor esperado de um campo de entrada
     /// </summary>
-    public string? PlaceHolder { get; set; }
+    public string PlaceHolder { get; set; }
 
     /// <summary>
     /// Texto exibido quando o ponteiro do mouse passa sobre o controle
     /// </summary>
-    public string? ToolTip { get; set; }
+    public string ToolTip { get; set; }
 
     /// <summary>
     /// Tamanho máximo de caracteres permitido
@@ -39,7 +39,7 @@ public abstract class ControlBase : ComponentBase
     /// <summary>
     /// Conteudo da caixa de texto 
     /// </summary>
-    public string? Text
+    public string Text
     {
         get
         {

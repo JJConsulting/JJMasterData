@@ -1,3 +1,5 @@
+#nullable enable
+
 using JJMasterData.Core.DataDictionary.Actions;
 using Newtonsoft.Json;
 

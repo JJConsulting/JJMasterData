@@ -63,7 +63,7 @@ public class FileSystemDataDictionaryRepositoryTests : IDisposable
         var metadata = await _repository.GetMetadataAsync(DictionaryName);
         
         // Assert
-        Assert.Equal(DictionaryName, metadata?.Name);
+        Assert.Equal(DictionaryName, metadata.Name);
     }
     
     [Fact]
@@ -73,14 +73,14 @@ public class FileSystemDataDictionaryRepositoryTests : IDisposable
         CreateMetadataIfNotExists();
         var testData = "Test: " + DateTime.Now;
         var metadata = await _repository.GetMetadataAsync(DictionaryName);
-        metadata!.Info = testData;
+        metadata.Info = testData;
         
         // Act
         await _repository.InsertOrReplaceAsync(metadata);
         metadata = await _repository.GetMetadataAsync(DictionaryName);
         
         // Assert
-        Assert.Equal(testData, metadata!.Info);
+        Assert.Equal(testData, metadata.Info);
     }
 
     public void Dispose()

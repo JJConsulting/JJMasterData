@@ -16,7 +16,7 @@ public class ActionMap
     public required string ActionName { get; set; }
 
     [JsonProperty("fieldName")] 
-    public string? FieldName { get; set; }
+    public string FieldName { get; set; }
 
     [JsonProperty("pkFieldValues")] 
     public IDictionary<string, object> PkFieldValues { get; set; }
@@ -55,7 +55,7 @@ public class ActionMap
             ActionSource.GridToolbar =>  formElement.Options.GridToolbarActions.First(a => a.Name.Equals(ActionName)),
             ActionSource.FormToolbar =>  formElement.Options.FormToolbarActions.First(a => a.Name.Equals(ActionName)),
             ActionSource.Field => formElement.Fields[FieldName].Actions.Get(ActionName),
-            _ => null!,
+            _ => null,
         };
     }
 }

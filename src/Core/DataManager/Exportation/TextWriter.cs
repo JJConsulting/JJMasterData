@@ -21,9 +21,9 @@ namespace JJMasterData.Core.DataManager.Exports;
 
 public class TextWriter : DataExportationWriterBase, ITextWriter
 {
-    public event EventHandler<GridCellEventArgs> OnRenderCell = null!;
+    public event EventHandler<GridCellEventArgs> OnRenderCell;
 
-    public string Delimiter { get; set; } = null!;
+    public string Delimiter { get; set; }
     private IEntityRepository EntityRepository { get; } 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {

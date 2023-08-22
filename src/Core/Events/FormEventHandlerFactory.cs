@@ -12,7 +12,7 @@ public class FormEventHandlerFactory : EventHandlerFactoryBase<IFormEventHandler
     {
     }
 
-    public IFormEventHandler? GetFormEvent(string elementName)
+    public IFormEventHandler GetFormEvent(string elementName)
     {
         return GetEventHandler(elementName);
     }

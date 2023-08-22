@@ -38,7 +38,7 @@ public class LoggerFormElementFactory
         var logLevel = formElement.Fields[Options.LevelColumnName];
         logLevel.Component = FormComponent.ComboBox;
 
-        logLevel.DataItem!.Items!.Add(new DataItemValue("0", LogLevel.Trace.ToString()));
+        logLevel.DataItem!.Items.Add(new DataItemValue("0", LogLevel.Trace.ToString()));
         logLevel.DataItem.Items.Add(new DataItemValue("1", LogLevel.Debug.ToString()));
         logLevel.DataItem.Items.Add(new DataItemValue("2", LogLevel.Information.ToString()));
         logLevel.DataItem.Items.Add(new DataItemValue("3", LogLevel.Warning.ToString()));

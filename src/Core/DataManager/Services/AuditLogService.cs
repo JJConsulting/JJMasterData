@@ -42,7 +42,7 @@ public class AuditLogService : IAuditLogService
         Options = options.Value;
     }
 
-    public async Task LogAsync(Element element,DataContext dataContext, IDictionary<string, object?> formValues, CommandOperation action)
+    public async Task LogAsync(Element element,DataContext dataContext, IDictionary<string, object> formValues, CommandOperation action)
     {
         var values = new Dictionary<string, object>()
         {
@@ -74,7 +74,7 @@ public class AuditLogService : IAuditLogService
         }
     }
 
-    private static string GetJsonFields(IDictionary<string, object?> formValues)
+    private static string GetJsonFields(IDictionary<string, object>formValues)
     {
         var valuesAux = formValues
             .Where(item => item.Value is not DBNull)
@@ -83,7 +83,7 @@ public class AuditLogService : IAuditLogService
         return JsonConvert.SerializeObject(valuesAux);
     }
 
-    public string GetKey(Element element, IDictionary<string, object?> values)
+    public string GetKey(Element element, IDictionary<string, object>values)
     {
         var key = new StringBuilder();
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
@@ -136,15 +136,15 @@ public class AuditLogService : IAuditLogService
         origin.DataItem!.ReplaceTextOnGrid = true;
         foreach (int i in Enum.GetValues(typeof(DataContextSource)))
         {
-            var item = new DataItemValue(i.ToString(), Enum.GetName(typeof(DataContextSource), i)!);
-            origin.DataItem.Items!.Add(item);
+            var item = new DataItemValue(i.ToString(), Enum.GetName(typeof(DataContextSource), i));
+            origin.DataItem.Items.Add(item);
         }
 
         var action = formElement.Fields[DicAction];
         action.Component = FormComponent.ComboBox;
         action.DataItem!.ReplaceTextOnGrid = true;
         action.DataItem.ShowImageLegend = true;
-        action.DataItem.Items!.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", IconType.Pencil, "#ffbf00"));
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Delete).ToString(), "Deleted", IconType.Trash, "#b20000"));
         var btnViewLog = new ScriptAction

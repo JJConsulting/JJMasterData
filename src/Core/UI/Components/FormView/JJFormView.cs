@@ -1,4 +1,6 @@
-﻿// ReSharper disable UnusedMember.Global
+﻿#nullable enable
+
+// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMember.Local
 
 using JJMasterData.Commons.Cryptography;
@@ -132,7 +134,7 @@ public class JJFormView : AsyncComponent
     /// <remarks>
     /// Key = Field name, Value=Field value
     /// </remarks>
-    public IDictionary<string, object?> RelationValues { get; set; } = new Dictionary<string, object?>();
+    public IDictionary<string, object> RelationValues { get; set; } = new Dictionary<string, object>();
     
     public FormElement FormElement { get; }
 
@@ -331,7 +333,7 @@ public class JJFormView : AsyncComponent
     internal async Task<ComponentResult> GetReloadPanelResultAsync()
     {
         var filter = GridView.GetSelectedRowId();
-        IDictionary<string, object?> values;
+        IDictionary<string, object> values;
         if (filter is { Count: > 0 })
             values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
         else
@@ -1075,7 +1077,7 @@ public class JJFormView : AsyncComponent
     /// Insert the records in the database.
     /// </summary>
     /// <returns>The list of errors.</returns>
-    public async Task<IDictionary<string, string>> InsertFormValuesAsync(IDictionary<string, object?> values,
+    public async Task<IDictionary<string, object>> InsertFormValuesAsync(IDictionary<string, object> values,
         bool validateFields = true)
     {
         var result = await FormService.InsertAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId),
@@ -1088,14 +1090,14 @@ public class JJFormView : AsyncComponent
     /// Update the records in the database.
     /// </summary>
     /// <returns>The list of errors.</returns>
-    public async Task<IDictionary<string, string>> UpdateFormValuesAsync(IDictionary<string, object?> values)
+    public async Task<IDictionary<string, object>> UpdateFormValuesAsync(IDictionary<string, object> values)
     {
         var result = await FormService.UpdateAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
 
-    public async Task<IDictionary<string, string>> DeleteFormValuesAsync(IDictionary<string, object>? filter)
+    public async Task<IDictionary<string, object>> DeleteFormValuesAsync(IDictionary<string, object>? filter)
     {
         var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, filter, PageState.Delete, true);
         var result = await FormService.DeleteAsync(FormElement, values, new DataContext(CurrentContext, DataContextSource.Form, UserId));
@@ -1104,7 +1106,7 @@ public class JJFormView : AsyncComponent
     }
 
 
-    public async Task<IDictionary<string, object?>> GetFormValuesAsync()
+    public async Task<IDictionary<string, object>> GetFormValuesAsync()
     {
         var painel = DataPanel;
         var values = await painel.GetFormValuesAsync();
@@ -1116,7 +1118,7 @@ public class JJFormView : AsyncComponent
 
         return values;
     }
-    public async Task<IDictionary<string, string>> ValidateFieldsAsync(IDictionary<string, object?> values, PageState pageState)
+    public async Task<IDictionary<string, object>> ValidateFieldsAsync(IDictionary<string, object> values, PageState pageState)
     {
         DataPanel.Values = values;
         var errors = await DataPanel.ValidateFieldsAsync(values, pageState);

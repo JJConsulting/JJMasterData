@@ -8,9 +8,9 @@ namespace JJMasterData.Commons.Data.Extensions;
 public static class DictionaryExtensions
 {
     
-    public static T ToModel<T>(this IDictionary<string, object?> dictionary, JsonSerializerSettings? jsonSerializerSettings = null)
+    public static T? ToModel<T>(this IDictionary<string, object?> dictionary, JsonSerializerSettings? jsonSerializerSettings = null)
     {
         var serialized = JsonConvert.SerializeObject(dictionary, jsonSerializerSettings);
-        return JsonConvert.DeserializeObject<T>(serialized, jsonSerializerSettings)!;
+        return JsonConvert.DeserializeObject<T>(serialized, jsonSerializerSettings);
     }
 }

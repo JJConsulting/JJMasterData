@@ -36,6 +36,6 @@ public static class JJMasterDataEncryptionServiceExtensions
     
     public static ActionMap DecryptActionMap(this JJMasterDataEncryptionService service, string encryptedActionMap)
     {
-        return JsonConvert.DeserializeObject<ActionMap>(service.DecryptStringWithUrlUnescape(encryptedActionMap))!;
+        return JsonConvert.DeserializeObject<ActionMap>(service.DecryptStringWithUrlUnescape(encryptedActionMap));
     }
 }

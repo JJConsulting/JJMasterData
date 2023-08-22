@@ -12,29 +12,29 @@ namespace JJMasterData.Core.Web.Components;
 
 public class LookupParameters
 {
-    public string ElementName { get; set; } = null!;
-    public string ComponentName { get; set; }= null!;
-    public string FieldKey { get; set; }= null!;
+    public string ElementName { get; set; }
+    public string ComponentName { get; set; }
+    public string FieldKey { get; set; }
     public bool EnableElementActions { get; set; }
-    public IDictionary<string, object?> Filters { get; set; }= null!;
+    public IDictionary<string, object> Filters { get; set; }
 
-    internal LookupParameters()
-    {
-        
-    }
-    
     public LookupParameters(
         string elementName, 
         string componentName, 
         string fieldKey,
         bool enableElementActions,
-        IDictionary<string, object?> filters)
+        IDictionary<string, object> filters)
     {
         ElementName = elementName;
         ComponentName = componentName;
         FieldKey = fieldKey;
         EnableElementActions = enableElementActions;
         Filters = filters;
+    }
+    
+    public LookupParameters()
+    {
+        
     }
     
     public string ToQueryString(IExpressionsService expressionsService, FormStateData formStateData)
@@ -91,7 +91,7 @@ public class LookupParameters
                     parameters.EnableElementActions = value == "1";
                     break;
                 default:
-                    parameters.Filters ??= new Dictionary<string, object?>();
+                    parameters.Filters ??= new Dictionary<string, object>();
                     parameters.Filters.Add(key, value);
                     break;
             }

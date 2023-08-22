@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace JJMasterData.Core.DataDictionary.Actions.FormToolbar;
 
 public class SaveAction : FormToolbarAction

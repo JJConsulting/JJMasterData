@@ -16,17 +16,17 @@ public abstract class ComponentBase
 {
     #region "Properties"
 
-    private IDictionary<string, object?>? _userValues;
-    private IDictionary<string, string>? _attributes;
+    private IDictionary<string, object>_userValues;
+    private IDictionary<string, string> _attributes;
 
     
     /// <summary>
     /// Values specified by the user.
     /// Used to replace values who support expression during runtime .
     /// </summary>
-    public IDictionary<string, object?>UserValues
+    public IDictionary<string, object>UserValues
     {
-        get => _userValues ??= new Dictionary<string, object?>();
+        get => _userValues ??= new Dictionary<string, object>();
         set => _userValues = value;
     }
     
@@ -37,7 +37,7 @@ public abstract class ComponentBase
     /// <summary>
     /// Represents the component unique identifier
     /// </summary>
-    public string Name { get; set; } = null!;
+    public string Name { get; set; }
 
     /// <summary>
     /// HTML attributes represented by key/value pairs
@@ -48,7 +48,7 @@ public abstract class ComponentBase
         set => _attributes = value;
     }
 
-    public string CssClass { get; set; } = string.Empty;
+    public string CssClass { get; set; }
 
     #endregion
     
@@ -57,7 +57,7 @@ public abstract class ComponentBase
         return Attributes.TryGetValue(key, out var attribute) ? attribute : string.Empty;
     }
 
-    public void SetAttr(string key, object? value)
+    public void SetAttr(string key, object value)
     {
         if (value == null || string.IsNullOrEmpty(value.ToString()))
         {
@@ -66,11 +66,11 @@ public abstract class ComponentBase
         }
         else
         {
-            Attributes[key] = value.ToString() ?? string.Empty;
+            Attributes[key] = value.ToString();
         }
     }
 
-    public void SetAttr(IDictionary<string, object?>? values)
+    public void SetAttr(IDictionary<string, object> values)
     {
         if (values == null)
             return;

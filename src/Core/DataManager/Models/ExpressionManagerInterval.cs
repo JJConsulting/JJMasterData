@@ -1,3 +1,4 @@
+#nullable enable
 namespace JJMasterData.Core.DataManager.Services;
 
 public class ExpressionManagerInterval

@@ -13,7 +13,6 @@
 		<PackageReleaseNotes>
 			bugfix: Alterado html do panel do tipo NoDecoration
 		</PackageReleaseNotes>
-<!--		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>-->
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="../../JJMasterData.png">

@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿#nullable enable
+
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
@@ -198,7 +200,7 @@ public class JJSearchBox : AsyncControl
         AutoReloadFormFields = true;
         Name = "jjsearchbox1";
         DataItem = new FormElementDataItem();
-        var defaultValues = new Dictionary<string, object?>();
+        var defaultValues = new Dictionary<string, object>();
         FormStateData = new(defaultValues, UserValues, PageState.List);
     }
 

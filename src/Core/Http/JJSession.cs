@@ -37,7 +37,7 @@ public class JJSession : IHttpSession
 #if NETFRAMEWORK
             HttpContext.Current.Session[key] = value;
 #else
-            HttpContext.Session.SetString(key, value);
+            HttpContext.Session.SetString(key, value ?? string.Empty);
 #endif
         }
     }
@@ -47,7 +47,7 @@ public class JJSession : IHttpSession
 #if NETFRAMEWORK
         HttpContext.Current.Session[key] = value;
 #else
-        HttpContext.Session.SetObject(key, value);
+        HttpContext?.Session.SetObject(key, value);
 #endif
     }
 
@@ -55,7 +55,7 @@ public class JJSession : IHttpSession
     public T GetSessionValue<T>(string key)
     {
 #if NETFRAMEWORK
-        return (T)HttpContext.Current.Session[key];
+        return (T)HttpContext.Current.Session[key] ?? default;
 #else
         return HttpContext.Session.GetObject<T>(key);
 #endif

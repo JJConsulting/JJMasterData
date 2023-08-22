@@ -5,7 +5,7 @@ namespace JJMasterData.Core.DataDictionary.Actions.UserCreated;
 public class UrlRedirectAction : UserCreatedAction
 {
     [JsonProperty("urlRedirect")]
-    public string UrlRedirect { get; set; } = null!;
+    public string UrlRedirect { get; set; }
 
     [JsonProperty("urlAsPopUp")]
     public bool UrlAsPopUp { get; set; }

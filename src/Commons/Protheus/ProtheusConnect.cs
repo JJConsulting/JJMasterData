@@ -9,7 +9,7 @@ namespace JJMasterData.Commons.Protheus;
 /// Permite conectar no server do Protheus e executar funções nativas do clipper ou user function (rpc)
 /// </summary>
 /// <remarks>Lucio Pelinson 16/05/2014</remarks>
-public class ProtheusManager : IDisposable
+public class ProtheusConnect : IDisposable
 {
     #region "Delegates"
     private delegate int DelegateAPCreateConnControl(string cServer, int nPort, string cEnvironment, string cUser, string cPassWord);
@@ -51,7 +51,7 @@ public class ProtheusManager : IDisposable
     /// Permite conectar no protheus. Irá carregar os componentes apapi.dll e apconn.dll na raiz da aplicação.
     /// </summary>
     /// <remarks>Lucio Pelinson 16/05/2014</remarks>
-    public ProtheusManager()
+    public ProtheusConnect()
     {
         DllPath = FileIO.ResolveFilePath("apapi.dll");
         DllProtheus = FunctionLoader.LoadWin32Library(DllPath);
@@ -68,14 +68,14 @@ public class ProtheusManager : IDisposable
     /// <para>"C:\Protheus\Bin\apapi.dll"</para>
     /// </param>
     /// <remarks>Lucio Pelinson 16/05/2014</remarks>
-    public ProtheusManager(string dllpath)
+    public ProtheusConnect(string dllpath)
     {
         DllPath = FileIO.ResolveFilePath(dllpath);
         DllProtheus = FunctionLoader.LoadWin32Library(DllPath);
     }
 
 
-    ~ProtheusManager()
+    ~ProtheusConnect()
     {
         //Liberar Dll caso o metodo dispose não tenha sido acionado 
         Dispose(false);
