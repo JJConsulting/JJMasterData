@@ -218,9 +218,9 @@ internal class GridTableHeader
                 ul.WithCssClass("dropdown-menu");
                 ul.Append(HtmlTag.Li, li =>
                 {
-                    li.WithCssClass("dropdown-item");
                     li.Append(HtmlTag.A, a =>
                     {
+                        a.WithCssClass("dropdown-item");
                         a.WithAttribute("href", "javascript:void(0);");
                         a.WithAttribute("onclick", $"JJView.unSelectAll('{GridView.Name}')");
                         a.AppendText(StringLocalizer["Unmark all selected records"]);
@@ -228,9 +228,9 @@ internal class GridTableHeader
                 });
                 ul.AppendIf(GridView.TotalOfRecords <= 50000, HtmlTag.Li, li =>
                 {
-                    li.WithCssClass("dropdown-item");
                     li.Append(HtmlTag.A, a =>
                     {
+                        a.WithCssClass("dropdown-item");
                         a.WithAttribute("href", "javascript:void(0);");
                         a.WithAttribute("onclick", GridView.Scripts.GetSelectAllScript());
                         a.AppendText(GridView.StringLocalizer["Mark all {0} records", GridView.TotalOfRecords]);

@@ -80,7 +80,8 @@ public class JJLinkButtonGroup : HtmlComponent
 
             ul.Append(HtmlTag.Li, li =>
             {
-                li.WithCssClass("dropdown-item").AppendComponent(action);
+                action.CssClass += " dropdown-item";
+                li.AppendComponent(action);
             });
         }
     }
