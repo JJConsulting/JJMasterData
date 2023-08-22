@@ -10,11 +10,8 @@
 public static class BootstrapHelper
 {
     #region Options
-    public static readonly int Version;
-    static BootstrapHelper()
-    {
-        Version = 5;
-    }
+
+    public static int Version { get; set; } = 5;
     #endregion
 
     #region Button

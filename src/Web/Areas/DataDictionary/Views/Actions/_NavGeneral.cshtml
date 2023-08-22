@@ -22,7 +22,13 @@
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <label for="icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
-        <partial name="../Icons/_IconSearchBox" model="@(new IconViewModel { InputId = "icon", SelectedIcon = Model.Icon })"/>
+        <a href="javascript: void(0);" 
+           @BootstrapHelper.GetDataToggle("tooltip")
+           title="Search Icon" onclick="popup.showHtmlFromUrl('Icons','@Url.Action("Index", "Icons", new {inputId = "icon"})');" 
+           style="text-decoration:none">
+            <span class="fa fa-search "></span>
+        </a>
+        @Html.Raw(ViewBag.IconSearchBoxHtml)
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         <label class="@BootstrapHelper.Label">@StringLocalizer["Text"]</label>
