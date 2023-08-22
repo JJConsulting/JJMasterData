@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
@@ -35,7 +36,7 @@ public class DataDictionaryFormElementFactory
     
     public FormElement GetFormElement()
     {
-        var element = GetElement();
+        var element = DataDictionaryStructure.GetElement(_options.DataDictionaryTableName);
 
         var formElement = GetFormElement(element);
 
@@ -59,33 +60,22 @@ public class DataDictionaryFormElementFactory
         
         formElement.Title = image.ToString();
         
-        formElement.Fields[DataDictionaryStructure.Sync].VisibleExpression = "exp:{pagestate} <> 'FILTER'";
+        formElement.Fields[DataDictionaryStructure.EnableWebApi].VisibleExpression = "exp:{PageState} <> 'FILTER'";
 
         var dataItem = new FormElementDataItem();
         dataItem.Items.Add(new DataItemValue("1", "Yes"));
         dataItem.Items.Add(new DataItemValue("0", "No"));
-        formElement.Fields[DataDictionaryStructure.Sync].Component = FormComponent.ComboBox;
-        formElement.Fields[DataDictionaryStructure.Sync].DataItem = dataItem;
-        
+        formElement.Fields[DataDictionaryStructure.Type].VisibleExpression = "val:0";
+        formElement.Fields[DataDictionaryStructure.Json].Label = "Json";
+        formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.TextArea;
+        formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: {PageState} = 'FILTER'";
+        formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["Filter for any data inside the structure of the metadata"];
+        formElement.Fields[DataDictionaryStructure.EnableWebApi].Component = FormComponent.ComboBox;
+        formElement.Fields[DataDictionaryStructure.EnableWebApi].DataItem = dataItem;
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         return formElement;
     }
-
-    private Element GetElement()
-    {
-        var element = new Element(_options.DataDictionaryTableName, "Data Dictionaries");
-        
-        element.Fields.AddPK(DataDictionaryStructure.Name, "Dictionary Name", FieldType.NVarchar, 64, false,
-            FilterMode.Equal);
-        element.Fields.Add(DataDictionaryStructure.TableName, "Table Name", FieldType.NVarchar, 64, false,
-            FilterMode.MultValuesContain);
-        element.Fields.Add(DataDictionaryStructure.Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);
-        element.Fields.Add(DataDictionaryStructure.Sync, "Sync", FieldType.Varchar, 1, false, FilterMode.None);
-        element.Fields.Add(DataDictionaryStructure.LastModified, "Last Modified", FieldType.DateTime, 15, true,
-            FilterMode.Range);
-        return element;
-    }
-
+    
     private void AddActions(FormElement formElement)
     {
         formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);

@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,12 +8,12 @@ namespace JJMasterData.Core.DataDictionary.Repository;
 
 public class DataDictionaryFilter
 {
-    public string Name { get; set; }
-    public IList<string> ContainsTableName { get; set; }
-    public DateTime? LastModifiedFrom { get; set; }
-    public DateTime? LastModifiedTo { get; set; }
-
-    public static DataDictionaryFilter GetInstance(IDictionary<string, object>filter)
+    public string? Name { get;private set; }
+    public IList<string>? ContainsTableName { get;private set; }
+    public DateTime? LastModifiedFrom { get;private set; }
+    public DateTime? LastModifiedTo { get;private  set; }
+    public string? Json { get; private set; }
+    public static DataDictionaryFilter FromDictionary(IDictionary<string, object>filter)
     {
         var result = new DataDictionaryFilter();
 
@@ -34,6 +35,11 @@ public class DataDictionaryFilter
         if (filter.TryGetValue(DataDictionaryStructure.LastModifiedTo, out var lastModifiedTo))
         {
             result.LastModifiedTo = DateTime.Parse(lastModifiedTo.ToString());
+        }
+        
+        if (filter.TryGetValue(DataDictionaryStructure.Json, out var json))
+        {
+            result.Json = json?.ToString();
         }
 
         return result;
@@ -69,6 +75,11 @@ public class DataDictionaryFilter
             result[DataDictionaryStructure.LastModifiedTo] = LastModifiedTo;
         }
 
+        if (Json != null)
+        {
+            result[DataDictionaryStructure.Json] = Json;
+        }
+        
         return result;
     }
 

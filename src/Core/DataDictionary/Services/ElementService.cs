@@ -163,7 +163,7 @@ public class ElementService : BaseService
         formView.GridView.FilterAction.ExpandedByDefault = true;
         formView.GridView.OnDataLoadAsync += async (_, args) =>
         {
-            var filter = DataDictionaryFilter.GetInstance(args.Filters);
+            var filter = DataDictionaryFilter.FromDictionary(args.Filters);
             var result =
                 await DataDictionaryRepository.GetFormElementInfoListAsync(filter, args.OrderBy, args.RecordsPerPage,
                     args.CurrentPage);
@@ -175,6 +175,7 @@ public class ElementService : BaseService
                 var dictionary = new Dictionary<string, dynamic?>
                 {
                     { "info", info.Info },
+                    { "type", "F"},
                     { "modified", info.Modified },
                     { "name", info.Name },
                     { "sync", info.Sync },

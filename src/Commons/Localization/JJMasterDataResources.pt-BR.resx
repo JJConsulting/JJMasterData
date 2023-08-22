@@ -3409,4 +3409,7 @@
   <data name="Are you sure you want to delete this relationship?" xml:space="preserve">
     <value>Você tem certeza que deseja deletar este relacionanmento?</value>
   </data>
+  <data name="Filter for any data inside the structure of the metadata" xml:space="preserve">
+    <value>Filtre por qualquer dado dentro da estrutura dos metadados.</value>
+  </data>
 </root>
