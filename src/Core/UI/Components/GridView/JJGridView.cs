@@ -1,5 +1,4 @@
-﻿#nullable enable
-using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
@@ -86,7 +85,7 @@ public class JJGridView : AsyncComponent
     private IList<Dictionary<string,object?>>? _dataSource;
     private ActionsScripts? _actionsScripts;
     private List<FormElementField>? _pkFields;
-    private IDictionary<string, object>? _defaultValues;
+    private IDictionary<string, object?>? _defaultValues;
     private FormStateData? _formData;
     private ActionMap? _currentActionMap;
     private JJDataImportation? _dataImportation;
@@ -439,7 +438,7 @@ public class JJGridView : AsyncComponent
     /// <summary>
     /// Key-Value pairs with the errors.
     /// </summary>
-    public IDictionary<string, object> Errors { get; } = new Dictionary<string, object>();
+    public IDictionary<string, object?> Errors { get; } = new Dictionary<string, object?>();
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form.
@@ -455,7 +454,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Key = Field name, Value=Field value
     /// </remarks>
-    public IDictionary<string, object> RelationValues { get; set; }
+    public IDictionary<string, object?> RelationValues { get; set; }
 
     public HeadingSize TitleSize { get; set; }
 
@@ -534,7 +533,7 @@ public class JJGridView : AsyncComponent
         ShowToolbar = true;
         EmptyDataText = "No records found";
         AutoReloadFormFields = true;
-        RelationValues = new Dictionary<string, object>();
+        RelationValues = new Dictionary<string, object?>();
         TitleSize = HeadingSize.H1;
         FormElement = formElement;
         FieldsService = fieldsService;
@@ -728,13 +727,13 @@ public class JJGridView : AsyncComponent
         if (field == null) 
             return new EmptyComponentResult();
 
-        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, object>(), null, PageState.Filter), null, Name));
+        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, object?>(), null, PageState.Filter), null, Name));
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return await lookup.GetResultAsync();
     }
 
-    internal JJTitle GetTitle(IDictionary<string, object>? values = null)
+    internal JJTitle GetTitle(IDictionary<string, object?>? values = null)
     {
         var title = FormElement.Title;
         var subTitle = FormElement.SubTitle;
@@ -929,7 +928,7 @@ public class JJGridView : AsyncComponent
         return script.ToString();
     }
 
-    internal async Task<IDictionary<string, object>> GetDefaultValuesAsync() => _defaultValues ??=
+    internal async Task<IDictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
         await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
 
     internal async Task<FormStateData> GetFormDataAsync()
@@ -1040,9 +1039,9 @@ public class JJGridView : AsyncComponent
     }
 
 
-    public IDictionary<string, object> GetSelectedRowId()
+    public IDictionary<string, object?> GetSelectedRowId()
     {
-        var values = new Dictionary<string, object>();
+        var values = new Dictionary<string, object?>();
         string currentRow = CurrentContext.Request["current-table-row-" + Name];
 
         if (string.IsNullOrEmpty(currentRow))

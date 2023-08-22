@@ -59,8 +59,11 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         text.FormValues = formStateData.FormValues;
         text.Name = field.Name;
 
-        text.Attributes.Add("pnlname", parentName);
-        text.UserValues = formStateData.UserValues;
+        text.SetAttr("pnlname", parentName);
+        
+        if (formStateData.UserValues != null) 
+            text.UserValues = formStateData.UserValues;
+        
         text.FormElement = formElement;
 
         text.SetAttr(field.Attributes);

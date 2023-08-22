@@ -15,9 +15,9 @@ namespace JJMasterData.Core.DataManager;
 public class FormFileManager
 {
     private IHttpContext HttpContext { get; }
-    public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
-    public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
-    public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
+    public event EventHandler<FormUploadFileEventArgs>? OnBeforeCreateFile;
+    public event EventHandler<FormDeleteFileEventArgs>? OnBeforeDeleteFile;
+    public event EventHandler<FormRenameFileEventArgs>? OnBeforeRenameFile;
 
     /// <summary>
     /// Session variable name
@@ -39,7 +39,7 @@ public class FormFileManager
     /// The path is OS agnostic, you can use for example C:\Temp\Files\ or /home/gumbarros/Documents/Files,
     /// but beware where you're deploying your application.
     /// </remarks>
-    public string FolderPath { get; set; }
+    public string? FolderPath { get; set; }
 
     public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     

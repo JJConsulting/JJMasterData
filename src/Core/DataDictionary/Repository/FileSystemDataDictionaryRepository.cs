@@ -101,13 +101,13 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
     {
         string fileFullName = GetFullFileName(dictionaryName);
         string json = File.ReadAllText(fileFullName);
-        return JsonConvert.DeserializeObject<FormElement>(json);
+        return JsonConvert.DeserializeObject<FormElement>(json)!;
     }
     
     public Task<FormElement> GetMetadataAsync(string dictionaryName)
     {
         var result = GetMetadata(dictionaryName);
-        return Task.FromResult(result);
+        return Task.FromResult(result)!;
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>
@@ -199,7 +199,7 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
 
             if (filter != null)
             {
-                if (!string.IsNullOrEmpty(filter.Name) && !formElement.Name.ToLower().Contains(filter.Name.ToLower()))
+                if (!string.IsNullOrEmpty(filter.Name) && !formElement.Name.ToLower().Contains(filter.Name?.ToLower() ?? string.Empty))
                     continue;
 
                 if (filter.ContainsTableName != null)

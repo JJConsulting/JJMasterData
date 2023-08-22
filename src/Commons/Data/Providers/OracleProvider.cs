@@ -912,7 +912,7 @@ public class OracleProvider : BaseProvider
             }
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
-                object value = DBNull.Value;
+                object? value = DBNull.Value;
                 if (filters != null &&
                     filters.ContainsKey(field.Name) &&
                     filters[field.Name] != null)

@@ -126,7 +126,7 @@ public class FieldController : DataDictionaryController
         {
             var item = new DataItemValue
             {
-                Id = field.DataItem!.Items.Count.ToString(),
+                Id = field.DataItem!.Items!.Count.ToString(),
                 Description = "",
                 Icon = IconType.Star,
                 ImageColor = "#ffffff"
@@ -139,7 +139,7 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult RemoveDataItem(string dictionaryName, FormElementField field, int dataItemIndex)
     {
-        field.DataItem!.Items.RemoveAt(dataItemIndex);
+        field.DataItem!.Items!.RemoveAt(dataItemIndex);
         return RedirectToIndex(dictionaryName, field);
     }
 

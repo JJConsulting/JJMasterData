@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,22 +31,22 @@ public class JJDataImportation : ProcessComponent
 {
     #region "Events"
 
-    internal event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
-    internal event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
-    internal event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
+    internal event EventHandler<FormAfterActionEventArgs>? OnAfterDelete;
+    internal event EventHandler<FormAfterActionEventArgs>? OnAfterInsert;
+    internal event EventHandler<FormAfterActionEventArgs>? OnAfterUpdate;
 
-    public event EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
-    public event EventHandler<FormAfterActionEventArgs> OnAfterProcess;
+    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeImport;
+    public event EventHandler<FormAfterActionEventArgs>? OnAfterProcess;
 
     #endregion
 
     #region "Properties"
 
-    private JJUploadArea _upload;
+    private JJUploadArea? _upload;
     
-    private JJLinkButton _backButton;
-    private JJLinkButton _helpButton;
-    private JJLinkButton _logButton;
+    private JJLinkButton? _backButton;
+    private JJLinkButton? _helpButton;
+    private JJLinkButton? _logButton;
 
     public JJLinkButton BackButton => _backButton ??= GetBackButton();
 
@@ -73,6 +74,7 @@ public class JJDataImportation : ProcessComponent
     #endregion
 
     #region "Constructors"
+    [SetsRequiredMembers]
     public JJDataImportation(
         FormElement formElement,
         IEntityRepository entityRepository,

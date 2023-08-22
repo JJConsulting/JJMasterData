@@ -15,7 +15,7 @@ public abstract class HtmlControl : ControlBase
     /// </summary>
     internal abstract HtmlBuilder BuildHtml();
 
-    public HtmlBuilder GetHtmlBuilder()
+    public HtmlBuilder? GetHtmlBuilder()
     {
         return Visible ? BuildHtml() : null;
     }
@@ -28,6 +28,6 @@ public abstract class HtmlControl : ControlBase
     /// </returns>
     public string GetHtml()
     {
-        return Visible ? BuildHtml()?.ToString(true) : string.Empty;
+        return Visible ? BuildHtml().ToString(true) : string.Empty;
     }
 }

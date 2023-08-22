@@ -19,9 +19,9 @@ public interface IHttpRequest
 #else
     IFormFile GetFile(string file);
 #endif
-    object GetUnvalidated(string key);
-    string this[string key] { get; }
-    string GetValue(string key);
-    string QueryString(string key);
-    string Form(string key);
+    object? GetUnvalidated(string key);
+    string? this[string key] { get; }
+    string? GetValue(string key);
+    string? QueryString(string key);
+    string? Form(string key);
 }

@@ -24,7 +24,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
 {
     #region "Events"
 
-    public event EventHandler<FormAfterActionEventArgs> OnAfterProcess;
+    public event EventHandler<FormAfterActionEventArgs>? OnAfterProcess;
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
     #endregion
@@ -150,7 +150,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
             var parsedSql = ExpressionsService.ParseExpression(ProcessOptions.CommandBeforeProcess, formData, false);
-            await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql));
+            await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
         }
 
         token.ThrowIfCancellationRequested();
@@ -212,7 +212,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
-            string parsedSql = ExpressionsService.ParseExpression(ProcessOptions.CommandAfterProcess, formData, false);
+            var parsedSql = ExpressionsService.ParseExpression(ProcessOptions.CommandAfterProcess, formData, false);
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
         }
 
@@ -252,7 +252,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
         if (FormElement == null)
             throw new ArgumentException(nameof(FormElement));
 
-        var defaultValues = new Dictionary<string, object>();
+        var defaultValues = new Dictionary<string, object?>();
         var formData = new FormStateData(defaultValues, PageState.Import);
         var list = new List<FormElementField>();
         foreach (var field in FormElement.Fields)

@@ -527,7 +527,7 @@ public class ProviderSQLite : BaseProvider
             values[f.Name] != null)
         {
             if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
-                values[f.Name]?.ToString().Trim().Length == 0)
+                values[f.Name]?.ToString()?.Trim().Length == 0)
             {
 
                 value = DBNull.Value;

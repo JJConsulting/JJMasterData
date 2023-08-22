@@ -8,7 +8,7 @@ namespace JJMasterData.Core.DataDictionary;
 public class FormActionRedirect
 {
     [JsonProperty("elementNameRedirect")]
-    public string ElementNameRedirect { get; set; }
+    public string ElementNameRedirect { get; set; }= null!;
 
     [JsonProperty("entityReferences")]
     public List<FormActionRelationField> RelationFields { get; set; }

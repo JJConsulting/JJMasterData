@@ -1,5 +1,4 @@
-﻿#nullable enable
-using JJMasterData.Commons.Cryptography;
+﻿using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -36,9 +35,9 @@ internal class DataPanelControl
 
     public PageState PageState => FormState.PageState;
 
-    public IDictionary<string, object>? UserValues => FormState.UserValues;
+    public IDictionary<string, object?>? UserValues => FormState.UserValues;
 
-    public IDictionary<string, object> Values => FormState.FormValues;
+    public IDictionary<string, object?> Values => FormState.FormValues;
 
     public FormStateData FormState { get; set; }
 
@@ -69,7 +68,7 @@ internal class DataPanelControl
         FormState = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
     }
 
-    public DataPanelControl(JJGridView gridView, IDictionary<string, object> values)
+    public DataPanelControl(JJGridView gridView, IDictionary<string, object?> values)
     {
         FormElement = gridView.FormElement;
         FormUI = new FormUI
@@ -181,8 +180,8 @@ internal class DataPanelControl
     private async Task<HtmlBuilder> GetHtmlFormHorizontal(List<FormElementField> fields)
     {
         string labelClass = "";
-        string fieldClass = "";
-        string fullClass = "";
+        string? fieldClass = "";
+        string? fullClass = "";
 
         int cols = FormUI.FormCols;
         if (cols == 1)

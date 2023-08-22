@@ -1,5 +1,4 @@
-﻿#nullable enable
-using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Extensions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -10,6 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
@@ -47,7 +47,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         foreach (var row in result)
         {
-            yield return FormElementSerializer.Deserialize(row["json"]!.ToString());
+            yield return FormElementSerializer.Deserialize(row["json"]!.ToString()!);
         }
     }
 
@@ -59,20 +59,20 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             new EntityParameters() { Filters = filter }, false);
         foreach (var row in dt.Data)
         {
-            yield return row["name"]!.ToString();
+            yield return row["name"]!.ToString()!;
         }
     }
 
 
-    public async Task<FormElement?> GetMetadataAsync(string dictionaryName)
+    public async Task<FormElement> GetMetadataAsync(string dictionaryName)
     {
-        var filter = new Dictionary<string, object> { { "name", dictionaryName }, { "type", "F" } };
+        var filter = new Dictionary<string, object?> { { "name", dictionaryName }, { "type", "F" } };
 
         var values = await _entityRepository.GetDictionaryAsync(MasterDataElement, filter);
 
-        var model = values.ToModel<DataDictionaryModel>();
+        var model = values.ToModel<DataDictionaryModel>()!;
 
-        return model != null ? FormElementSerializer.Deserialize(model.Json) : null;
+        return FormElementSerializer.Deserialize(model.Json);
     }
 
 
@@ -150,7 +150,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         filters.Add("type", "F");
 
         var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
-            new EntityParameters()
+            new EntityParameters
             {
                 Filters = filters, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage
             });

@@ -55,11 +55,11 @@ public class ControlFactory
 
     public async Task<ControlBase> CreateAsync(FormElement formElement,
         FormElementField field,
-        IDictionary<string, object> formValues,
-        IDictionary<string, object> userValues,
+        IDictionary<string, object?> formValues,
+        IDictionary<string, object?> userValues,
         PageState pageState,
         string parentName,
-        object value = null)
+        object? value = null)
     {
         var formStateData = new FormStateData(formValues, userValues, pageState);
 

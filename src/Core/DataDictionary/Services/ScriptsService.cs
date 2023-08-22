@@ -23,7 +23,7 @@ public class ScriptsService
         var formElement = await _dataDictionaryRepository.GetMetadataAsync(id);
         Element element = formElement;
         
-        var listScripts = new List<string>
+        var listScripts = new List<string?>
         {
             _entityRepository.GetScriptCreateTable(element),
             _entityRepository.GetScriptReadProcedure(element),

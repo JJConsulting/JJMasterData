@@ -4,7 +4,7 @@
         <TargetFrameworks>net4.8;netstandard2.0;net6.0</TargetFrameworks>
         <LangVersion>11</LangVersion>
         <RuntimeFrameworkVersion>6.0</RuntimeFrameworkVersion>
-        <Nullable>disable</Nullable>
+        <Nullable>enable</Nullable>
         <ImplicitUsings>false</ImplicitUsings>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Product>JJMasterData.Core - Saturn Version</Product>
@@ -80,6 +80,8 @@
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
     </ItemGroup>
+    
+    
     
     
     

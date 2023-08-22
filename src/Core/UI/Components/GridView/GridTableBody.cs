@@ -324,7 +324,7 @@ internal class GridTableBody
 
         var selectedGridValues = GridView.GetSelectedGridValues();
         
-        checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => kvp.Value == pkValues));
+        checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => (string)kvp.Value == pkValues));
 
         if (OnRenderSelectedCell != null)
         {

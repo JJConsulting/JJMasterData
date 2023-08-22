@@ -12,18 +12,12 @@
 
     bool dictionaryExists = await DataDictionaryRepository.ExistsAsync("Example");
 
-    void Configure(JJFormView formView)
-    {
-        formView.FormElement.SubTitle = "You can edit any property from JJFormView at runtime";
-    }
 }
 
 @if (dictionaryExists)
 {
-    <form>
-        <jj-form-view element-name="Example" configure="Configure"/>
-    </form>
-}
+    //todo: formview
+}   
 else
 {
     <jj-alert 

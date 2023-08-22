@@ -120,7 +120,7 @@ public class FileService
         var field = formElement.Fields.First(f => f.Name == fieldName);
         
         DeletePhysicalFile(formElement, field, pkValues, fileName);
-        DeleteEntityFile(formElement, field, pkValues, fileName);
+        await DeleteEntityFile(formElement, field, pkValues, fileName);
     }
     
     private void DeletePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string fileName)
@@ -172,7 +172,7 @@ public class FileService
         var field = formElement.Fields.First(f => f.Name == fieldName);
         
         RenamePhysicalFile(formElement, field, pkValues, oldName, newName);
-        RenameEntityFile(formElement,field, pkValues, oldName, newName);
+        await RenameEntityFile(formElement,field, pkValues, oldName, newName);
     }
     
     private static void RenamePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)

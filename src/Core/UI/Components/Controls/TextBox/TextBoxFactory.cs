@@ -28,7 +28,7 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
         LinkButtonFactory = linkButtonFactory;
     }
     
-    public JJTextGroup Create()
+    public JJTextGroup? Create()
     {
         return new JJTextGroup(HttpContext);
     }

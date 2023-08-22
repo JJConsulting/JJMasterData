@@ -7,14 +7,13 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class DataElementMap
 {
-    [JsonProperty("elementName")]
-    public string ElementName { get; set; }
+    [JsonProperty("elementName")] public string ElementName { get; set; } = null!;
 
     [JsonProperty("fieldKey")]
-    public string FieldKey { get; set; }
+    public string FieldKey { get; set; }= null!;
 
     [JsonProperty("fieldDescription")]
-    public string FieldDescription { get; set; }
+    public string FieldDescription { get; set; }= null!;
 
     [JsonProperty("popUpSize")]
     public PopupSize PopUpSize { get; set; }

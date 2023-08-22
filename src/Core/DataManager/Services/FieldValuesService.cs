@@ -120,7 +120,7 @@ public class FieldValuesService : IFieldValuesService
         var formState = new FormStateData(formValues, pageState);
         foreach (var e in listFields)
         {
-            string? val = await ExpressionsService.GetTriggerValueAsync(e, formState);
+            string val = await ExpressionsService.GetTriggerValueAsync(e, formState);
             if (val != null)
             {
                 formValues[e.Name] = val;

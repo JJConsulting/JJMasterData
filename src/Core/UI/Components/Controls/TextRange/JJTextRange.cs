@@ -17,8 +17,8 @@ public class JJTextRange : HtmlControl
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    internal HtmlControl FromField { get; set; }
-    internal HtmlControl ToField { get; set; }
+    internal HtmlControl? FromField { get; set; }
+    internal HtmlControl? ToField { get; set; }
 
     public FieldType FieldType { get; set; }
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
@@ -39,7 +39,7 @@ public class JJTextRange : HtmlControl
         {
             div.WithCssClass("col-sm-3");
             
-            FromField.Name = Name + "_from";
+            FromField!.Name = Name + "_from";
             FromField.Enabled = Enabled;
             
             div.AppendComponent(FromField);
@@ -48,7 +48,7 @@ public class JJTextRange : HtmlControl
         {
             div.WithCssClass("col-sm-3");
             
-            ToField.Name = Name + "_to";
+            ToField!.Name = Name + "_to";
             ToField.Enabled = Enabled;
             
             div.AppendComponent(ToField);

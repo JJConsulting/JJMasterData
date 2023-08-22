@@ -156,7 +156,7 @@ public class SqlServerProvider : BaseProvider
             var listContraint = new List<string>();
             foreach (var r in element.Relationships)
             {
-                string contraintName = string.Format("FK_{0}_{1}", r.ChildElement, element.TableName);
+                string contraintName = $"FK_{r.ChildElement}_{element.TableName}";
 
                 //Prevents repeated name.
                 if (!listContraint.Contains(contraintName))
@@ -998,13 +998,15 @@ public class SqlServerProvider : BaseProvider
                     if (valueTo != null)
                         valueTo = StringManager.ClearText(valueTo.ToString());
                 }
-                var pTo = new DataAccessParameter();
-                pTo.Direction = ParameterDirection.Input;
-                pTo.Type = GetDbType(field.DataType);
-                pTo.Size = field.Size;
-                pTo.Name = field.Name + "_to";
-                pTo.Value = valueTo;
-                command.Parameters.Add(pTo);
+                var parameterTo = new DataAccessParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    Type = GetDbType(field.DataType),
+                    Size = field.Size,
+                    Name = field.Name + "_to",
+                    Value = valueTo
+                };
+                command.Parameters.Add(parameterTo);
             }
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
@@ -1048,20 +1050,24 @@ public class SqlServerProvider : BaseProvider
         foreach (var f in fields)
         {
             object? value = GetElementValue(f, values);
-            var param = new DataAccessParameter();
-            param.Name = $"@{f.Name}";
-            param.Size = f.Size;
-            param.Value = value;
-            param.Type = GetDbType(f.DataType);
-            cmd.Parameters.Add(param);
+            var dataAccessParameter = new DataAccessParameter
+            {
+                Name = $"@{f.Name}",
+                Size = f.Size,
+                Value = value,
+                Type = GetDbType(f.DataType)
+            };
+            cmd.Parameters.Add(dataAccessParameter);
         }
 
-        var pRet = new DataAccessParameter();
-        pRet.Direction = ParameterDirection.Output;
-        pRet.Name = "@RET";
-        pRet.Value = 0;
-        pRet.Type = DbType.Int32;
-        cmd.Parameters.Add(pRet);
+        var retParameter = new DataAccessParameter
+        {
+            Direction = ParameterDirection.Output,
+            Name = "@RET",
+            Value = 0,
+            Type = DbType.Int32
+        };
+        cmd.Parameters.Add(retParameter);
 
         return cmd;
     }
@@ -1073,12 +1079,8 @@ public class SqlServerProvider : BaseProvider
         if (values.ContainsKey(f.Name) &&
             values[f.Name] != null)
         {
-            if ((f.DataType == FieldType.Date ||
-                 f.DataType == FieldType.DateTime ||
-                 f.DataType == FieldType.Float ||
-                 f.DataType == FieldType.Int) &&
-                values[f.Name] != null &&
-                values[f.Name].ToString().Trim().Length == 0)
+            if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
+                values[f.Name]!.ToString()!.Trim().Length == 0)
             {
                 value = DBNull.Value;
             }
@@ -1216,12 +1218,12 @@ public class SqlServerProvider : BaseProvider
         {
             var field = new ElementField
             {
-                Name = row["COLUMN_NAME"].ToString(),
+                Name = row["COLUMN_NAME"].ToString()!,
                 Label = row["COLUMN_NAME"].ToString(),
-                Size = int.Parse(row["LENGTH"].ToString()),
-                AutoNum = row["TYPE_NAME"].ToString().ToUpper().Contains("IDENTITY"),
-                IsRequired = row["NULLABLE"].ToString().Equals("0"),
-                DataType = GetDataType(row["TYPE_NAME"].ToString())
+                Size = int.Parse(row["LENGTH"].ToString()!),
+                AutoNum = row["TYPE_NAME"].ToString()!.ToUpper().Contains("IDENTITY"),
+                IsRequired = row["NULLABLE"].ToString()!.Equals("0"),
+                DataType = GetDataType(row["TYPE_NAME"].ToString()!)
             };
 
             element.Fields.Add(field);

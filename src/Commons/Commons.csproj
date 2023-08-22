@@ -42,4 +42,7 @@
 	    <DependentUpon>DataAccess.cs</DependentUpon>
 	  </Compile>
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Protheus\" />
+	</ItemGroup>
 </Project>

@@ -14,9 +14,9 @@ namespace JJMasterData.Core.Web.Components;
 
 public abstract class ProcessComponent : AsyncComponent
 {
-    private string _processKey;
-    private ProcessOptions _processOptions;
-    private string _userId;
+    private string? _processKey;
+    private ProcessOptions? _processOptions;
+    private string? _userId;
 
     internal IExpressionsService ExpressionsService { get; }
 
@@ -26,7 +26,7 @@ public abstract class ProcessComponent : AsyncComponent
     {
         get
         {
-            if (string.IsNullOrEmpty(_processKey))
+            if (_processKey == null || string.IsNullOrEmpty(_processKey))
                 _processKey = BuildProcessKey();
 
             return _processKey;
@@ -40,7 +40,7 @@ public abstract class ProcessComponent : AsyncComponent
     /// Se a variavel não for atribuida diretamente,
     /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
-    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
+    internal string? UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
 
     public IHttpContext CurrentContext { get; init; }
 
@@ -53,7 +53,7 @@ public abstract class ProcessComponent : AsyncComponent
     /// <summary>
     /// Configurações pré-definidas do formulário
     /// </summary>
-    public FormElement FormElement { get; set; }
+    public required FormElement FormElement { get; init; }
     
     internal IFieldsService FieldsService { get; } 
     internal IBackgroundTask BackgroundTask { get; }

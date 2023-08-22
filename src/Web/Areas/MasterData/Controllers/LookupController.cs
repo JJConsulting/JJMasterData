@@ -104,7 +104,7 @@ public class LookupController : MasterDataController
 
         foreach (var filter in lookupParameters.Filters)
         {
-            form.SetCurrentFilter(filter.Key, filter.Value?.ToString());
+            form.GridView.SetCurrentFilter(filter.Key, filter.Value!.ToString()!);
         }
     }
 

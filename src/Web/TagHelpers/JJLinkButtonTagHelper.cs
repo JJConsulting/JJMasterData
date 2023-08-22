@@ -40,7 +40,7 @@ public class JJLinkButtonTagHelper : TagHelper
             Enabled = Enabled ?? true,
             Type = Type ?? LinkButtonType.Button,
             ToolTip = Tooltip,
-            CssClass = CssClass
+            CssClass = CssClass ?? string.Empty
         };
 
         output.TagMode = TagMode.StartTagAndEndTag;
