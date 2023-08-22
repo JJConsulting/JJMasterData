@@ -18,6 +18,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;

@@ -10,6 +10,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Imports;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;

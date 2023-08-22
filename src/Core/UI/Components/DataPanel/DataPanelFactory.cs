@@ -8,6 +8,7 @@ using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 

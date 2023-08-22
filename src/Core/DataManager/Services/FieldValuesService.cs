@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 

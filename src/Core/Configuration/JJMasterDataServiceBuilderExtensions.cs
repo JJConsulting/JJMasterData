@@ -8,6 +8,7 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Configuration;
@@ -102,6 +103,11 @@ public static class JJMasterDataServiceBuilderExtensions
     public static JJMasterDataServiceBuilder WithTextExportation<T>(this JJMasterDataServiceBuilder builder) where T : class, ITextWriter
     {
         builder.Services.Replace(ServiceDescriptor.Transient<ITextWriter, T>());
+        return builder;
+    }
+    public static JJMasterDataServiceBuilder WithExpressionProvider<T>(this JJMasterDataServiceBuilder builder) where T : class, IExpressionProvider
+    {
+        builder.Services.AddScoped<IExpressionProvider, T>();
         return builder;
     }
 }

@@ -1,4 +1,5 @@
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,6 @@ public static class DataManagerServiceExtensions
         services.AddTransient<IAuditLogService, AuditLogService>();
         services.AddTransient<IDataItemService, DataItemService>();
         services.AddTransient<ILookupService, LookupService>();
-        services.AddTransient<IExpressionsService, ExpressionsService>();
         services.AddTransient<IFieldFormattingService, FieldFormattingService>();
         services.AddTransient<IFieldValidationService, FieldValidationService>();
         services.AddTransient<IFormService, FormService>();

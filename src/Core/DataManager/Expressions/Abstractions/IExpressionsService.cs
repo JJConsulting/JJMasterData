@@ -1,10 +1,11 @@
 #nullable enable
 
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
-using System.Threading.Tasks;
+using JJMasterData.Core.DataManager.Services;
 
-namespace JJMasterData.Core.DataManager.Services.Abstractions;
+namespace JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 public interface IExpressionsService
 {

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Components.Importation;
 
 namespace JJMasterData.Core.Web.Factories;
