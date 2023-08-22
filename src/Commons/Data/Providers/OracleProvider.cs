@@ -13,10 +13,10 @@ namespace JJMasterData.Commons.Data.Providers;
 
 public class OracleProvider : BaseProvider
 {
-    private const string INSERT = "I";
-    private const string UPDATE = "A";
-    private const string DELETE = "E";
-    private const string TAB = "\t";
+    private const string Insert = "I";
+    private const string Update = "A";
+    private const string Delete = "E";
+    private const string Tab = "\t";
     public override DataAccessProvider DataAccessProvider => DataAccessProvider.Oracle;
     public override string VariablePrefix => "p_";
 
@@ -51,7 +51,7 @@ public class OracleProvider : BaseProvider
             else
                 sqlScript.AppendLine(",");
 
-            sqlScript.Append(TAB);
+            sqlScript.Append(Tab);
             sqlScript.Append(f.Name);
             sqlScript.Append(" ");
             sqlScript.Append(GetStrType(f.DataType));
@@ -80,7 +80,7 @@ public class OracleProvider : BaseProvider
         if (sKeys.Length > 0)
         {
             sqlScript.AppendLine(", ");
-            sqlScript.Append(TAB);
+            sqlScript.Append(Tab);
             sqlScript.Append("CONSTRAINT PK_");
             sqlScript.Append(element.TableName);
             sqlScript.Append(" PRIMARY KEY (");
@@ -111,18 +111,18 @@ public class OracleProvider : BaseProvider
                 sqlScript.Append(" ON ");
                 sqlScript.AppendLine(element.TableName);
 
-                sqlScript.Append(TAB);
+                sqlScript.Append(Tab);
                 sqlScript.AppendLine("(");
                 for (var i = 0; i < index.Columns.Count; i++)
                 {
                     if (i > 0)
                         sqlScript.AppendLine(", ");
 
-                    sqlScript.Append(TAB);
+                    sqlScript.Append(Tab);
                     sqlScript.Append(index.Columns[i]);
                 }
                 sqlScript.AppendLine("");
-                sqlScript.Append(TAB);
+                sqlScript.Append(Tab);
                 sqlScript.AppendLine(")");
                 sqlScript.AppendLine("/");
                 nIndex++;
@@ -186,7 +186,7 @@ public class OracleProvider : BaseProvider
                 sql.Append("ADD CONSTRAINT ");
                 sql.Append(contraintName);
                 sql.AppendLine(" ");
-                sql.Append(TAB);
+                sql.Append(Tab);
                 sql.Append("FOREIGN KEY (");
 
                 for (var rc = 0; rc < r.Columns.Count; rc++)
@@ -199,7 +199,7 @@ public class OracleProvider : BaseProvider
                     sql.Append("]");
                 }
                 sql.AppendLine(")");
-                sql.Append(TAB);
+                sql.Append(Tab);
                 sql.Append("REFERENCES ");
                 sql.Append(element.TableName);
                 sql.Append(" (");
@@ -215,14 +215,14 @@ public class OracleProvider : BaseProvider
                 if (r.UpdateOnCascade)
                 {
                     sql.AppendLine("");
-                    sql.Append(TAB).Append(TAB);
+                    sql.Append(Tab).Append(Tab);
                     sql.Append("ON UPDATE CASCADE ");
                 }
 
                 if (r.DeleteOnCascade)
                 {
                     sql.AppendLine("");
-                    sql.Append(TAB).Append(TAB);
+                    sql.Append(Tab).Append(Tab);
                     sql.Append("ON DELETE CASCADE ");
                 }
 
@@ -244,7 +244,7 @@ public class OracleProvider : BaseProvider
 
         var sql = new StringBuilder();
         var isFirst = true;
-        var hasPk = HasPK(element);
+        var hasPk = HasPk(element);
         var hasUpd = HasUpdateFields(element);
         var procedureFinalName = Options.GetWriteProcedureName(element);
 
@@ -272,25 +272,25 @@ public class OracleProvider : BaseProvider
         sql.Append(VariablePrefix);
         sql.AppendLine("RET OUT NUMBER)");
         sql.AppendLine("IS ");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine(" v_TYPEACTION VARCHAR2(1); ");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine(" v_NCOUNT INTEGER; ");
         sql.AppendLine("BEGIN ");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.Append("v_TYPEACTION := ");
         sql.Append(VariablePrefix);
         sql.AppendLine("action; ");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("IF v_TYPEACTION = ' ' THEN");
-        sql.Append(TAB).Append(TAB);
-        sql.AppendLine("v_TYPEACTION := '" + INSERT + "'; ");
+        sql.Append(Tab).Append(Tab);
+        sql.AppendLine("v_TYPEACTION := '" + Insert + "'; ");
 
         if (hasPk)
         {
-            sql.Append(TAB).Append(TAB);
+            sql.Append(Tab).Append(Tab);
             sql.AppendLine("SELECT COUNT(*) AS QTD INTO v_NCOUNT ");
-            sql.Append(TAB).Append(TAB);
+            sql.Append(Tab).Append(Tab);
             sql.Append("FROM ");
             sql.Append(element.TableName);
             foreach (var f in fields)
@@ -300,13 +300,13 @@ public class OracleProvider : BaseProvider
                     sql.AppendLine("");
                     if (isFirst)
                     {
-                        sql.Append(TAB).Append(TAB);
+                        sql.Append(Tab).Append(Tab);
                         sql.Append("WHERE ");
                         isFirst = false;
                     }
                     else
                     {
-                        sql.Append(TAB).Append(TAB);
+                        sql.Append(Tab).Append(Tab);
                         sql.Append("AND ");
                     }
 
@@ -318,22 +318,22 @@ public class OracleProvider : BaseProvider
             }
             sql.AppendLine(";");
             sql.AppendLine(" ");
-            sql.Append(TAB).Append(TAB);
+            sql.Append(Tab).Append(Tab);
             sql.AppendLine("IF v_NCOUNT > 0 THEN ");
-            sql.Append(TAB).Append(TAB).Append(TAB);
-            sql.AppendLine("v_TYPEACTION := '" + UPDATE + "';");
-            sql.Append(TAB).Append(TAB);
+            sql.Append(Tab).Append(Tab).Append(Tab);
+            sql.AppendLine("v_TYPEACTION := '" + Update + "';");
+            sql.Append(Tab).Append(Tab);
             sql.AppendLine("END IF;");
         }
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("END IF;");
         sql.AppendLine(" ");
 
 
         //SCRIPT INSERT
-        sql.Append(TAB);
-        sql.AppendLine("IF v_TYPEACTION = '" + INSERT + "' THEN");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab);
+        sql.AppendLine("IF v_TYPEACTION = '" + Insert + "' THEN");
+        sql.Append(Tab).Append(Tab);
         sql.Append("INSERT INTO ");
         sql.Append(element.TableName);
         sql.AppendLine(" (");
@@ -352,7 +352,7 @@ public class OracleProvider : BaseProvider
             }
         }
         sql.AppendLine(")");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.AppendLine("VALUES (");
         isFirst = true;
         foreach (var f in fields)
@@ -364,13 +364,13 @@ public class OracleProvider : BaseProvider
                 else
                     sql.AppendLine(",");
 
-                sql.Append(TAB).Append(TAB).Append(TAB);
+                sql.Append(Tab).Append(Tab).Append(Tab);
                 sql.Append(VariablePrefix);
                 sql.Append(f.Name);
             }
         }
         sql.AppendLine(");");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.Append(VariablePrefix);
         sql.AppendLine("RET := 0; ");
 
@@ -378,9 +378,9 @@ public class OracleProvider : BaseProvider
         isFirst = true;
         if (hasUpd)
         {
-            sql.Append(TAB);
-            sql.AppendLine("ELSIF v_TYPEACTION = '" + UPDATE + "' THEN ");
-            sql.Append(TAB).Append(TAB);
+            sql.Append(Tab);
+            sql.AppendLine("ELSIF v_TYPEACTION = '" + Update + "' THEN ");
+            sql.Append(Tab).Append(Tab);
             sql.Append("UPDATE ");
             sql.Append(element.TableName);
             sql.AppendLine(" SET ");
@@ -393,7 +393,7 @@ public class OracleProvider : BaseProvider
                     else
                         sql.AppendLine(", ");
 
-                    sql.Append(TAB).Append(TAB).Append(TAB);
+                    sql.Append(Tab).Append(Tab).Append(Tab);
                     sql.Append(f.Name);
                     sql.Append(" = ");
                     sql.Append(VariablePrefix);
@@ -409,13 +409,13 @@ public class OracleProvider : BaseProvider
                     sql.AppendLine("");
                     if (isFirst)
                     {
-                        sql.Append(TAB).Append(TAB);
+                        sql.Append(Tab).Append(Tab);
                         sql.Append("WHERE ");
                         isFirst = false;
                     }
                     else
                     {
-                        sql.Append(TAB).Append(TAB);
+                        sql.Append(Tab).Append(Tab);
                         sql.Append("AND ");
                     }
 
@@ -426,25 +426,25 @@ public class OracleProvider : BaseProvider
                 }
             }
             sql.AppendLine(";");
-            sql.Append(TAB).Append(TAB);
+            sql.Append(Tab).Append(Tab);
             sql.Append(VariablePrefix);
             sql.AppendLine("RET := 1; ");
         }
         else
         {
-            sql.Append(TAB);
-            sql.AppendLine("ELSIF v_TYPEACTION = '" + UPDATE + "' THEN ");
-            sql.Append(TAB).Append(TAB);
+            sql.Append(Tab);
+            sql.AppendLine("ELSIF v_TYPEACTION = '" + Update + "' THEN ");
+            sql.Append(Tab).Append(Tab);
             sql.AppendLine("--NO UPDATABLED");
-            sql.Append(TAB).Append(TAB);
+            sql.Append(Tab).Append(Tab);
             sql.Append(VariablePrefix);
             sql.AppendLine("RET := 1; ");
         }
 
         //SCRIPT DELETE
-        sql.Append(TAB);
-        sql.AppendLine("ELSIF v_TYPEACTION = '" + DELETE + "' THEN ");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab);
+        sql.AppendLine("ELSIF v_TYPEACTION = '" + Delete + "' THEN ");
+        sql.Append(Tab).Append(Tab);
         sql.Append("DELETE FROM ");
         sql.Append(element.TableName);
 
@@ -456,13 +456,13 @@ public class OracleProvider : BaseProvider
                 sql.AppendLine("");
                 if (isFirst)
                 {
-                    sql.Append(TAB).Append(TAB);
+                    sql.Append(Tab).Append(Tab);
                     sql.Append("WHERE ");
                     isFirst = false;
                 }
                 else
                 {
-                    sql.Append(TAB).Append(TAB);
+                    sql.Append(Tab).Append(Tab);
                     sql.Append("AND ");
                 }
 
@@ -473,10 +473,10 @@ public class OracleProvider : BaseProvider
             }
         }
         sql.AppendLine(";");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.Append(VariablePrefix);
         sql.AppendLine("RET := 2; ");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("END IF;");
         sql.AppendLine(" ");
         sql.AppendLine("END; ");
@@ -494,7 +494,7 @@ public class OracleProvider : BaseProvider
             throw new ArgumentNullException(nameof(Element.Fields));
 
         //Verificamos se existe chave primaria
-        var unused = HasPK(element);
+        var unused = HasPk(element);
 
         var fields = element.Fields
             .ToList()
@@ -546,29 +546,29 @@ public class OracleProvider : BaseProvider
         sql.Append(VariablePrefix);
         sql.AppendLine("cur_OUT OUT SYS_REFCURSOR) ");
         sql.AppendLine("IS ");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("v_sqlcolumn    CLOB;");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("v_sqltable     CLOB;");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("v_sqlcond      CLOB;");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("v_sqlorder     CLOB;");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("v_query        CLOB;");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("v_Cursor       SYS_REFCURSOR;");
         sql.AppendLine("BEGIN");
         sql.AppendLine("");
 
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("--COLUMNS");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("v_sqlcolumn := '';");
         var nAux = 1;
         foreach (var f in fields)
         {
-            sql.Append(TAB);
+            sql.Append(Tab);
 
 
             sql.Append("v_sqlcolumn := v_sqlcolumn || '");
@@ -594,9 +594,9 @@ public class OracleProvider : BaseProvider
         sql.AppendLine("");
         sql.AppendLine("");
 
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("--TABLES");
-        sql.Append(TAB);
+        sql.Append(Tab);
 
         sql.Append("v_sqltable := 'FROM ");
         sql.Append(element.TableName);
@@ -604,9 +604,9 @@ public class OracleProvider : BaseProvider
         sql.AppendLine("");
         sql.AppendLine("");
 
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("--CONDITIONALS");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("v_sqlcond := ' WHERE 1=1 ';");
 
         foreach (var f in fields)
@@ -616,9 +616,9 @@ public class OracleProvider : BaseProvider
                 if (f.DataBehavior == FieldBehavior.ViewOnly)
                 {
                     sql.AppendLine("");
-                    sql.Append(TAB);
+                    sql.Append(Tab);
                     sql.AppendLine("/*");
-                    sql.Append(TAB);
+                    sql.Append(Tab);
                     sql.Append("TODO: FILTER ");
                     sql.AppendLine(f.Name);
                 }
@@ -627,64 +627,64 @@ public class OracleProvider : BaseProvider
             if (f.Filter.Type == FilterMode.Range)
             {
                 sql.AppendLine("");
-                sql.Append(TAB);
+                sql.Append(Tab);
                 sql.Append("IF ");
                 sql.Append(VariablePrefix);
                 sql.Append(f.Name);
                 sql.AppendLine("_from IS NOT NULL THEN");
-                sql.Append(TAB).Append(TAB);
+                sql.Append(Tab).Append(Tab);
                 sql.Append("v_sqlcond := v_sqlcond || ' AND ");
                 sql.Append(f.Name);
                 sql.AppendLine(" BETWEEN ';");
-                sql.Append(TAB).Append(TAB);
+                sql.Append(Tab).Append(Tab);
                 sql.Append("v_sqlcond := v_sqlcond || 'TO_DATE (''' || TO_CHAR (");
                 sql.Append(VariablePrefix);
                 sql.Append(f.Name);
                 sql.AppendLine("_from, 'YYYY-MM-DD') || ''', ''YYYY-MM-DD'') '; ");
-                sql.Append(TAB).Append(TAB);
+                sql.Append(Tab).Append(Tab);
                 sql.AppendLine("v_sqlcond := v_sqlcond || ' AND ';");
-                sql.Append(TAB).Append(TAB);
+                sql.Append(Tab).Append(Tab);
                 sql.Append("v_sqlcond := v_sqlcond || 'TO_DATE (''' || TO_CHAR (");
                 sql.Append(VariablePrefix);
                 sql.Append(f.Name);
                 sql.AppendLine("_to, 'YYYY-MM-DD') || ''', ''YYYY-MM-DD'') '; ");
-                sql.Append(TAB);
+                sql.Append(Tab);
                 sql.AppendLine("END IF;");
             }
             else if (f.Filter.Type == FilterMode.Contain)
             {
                 sql.AppendLine("");
-                sql.Append(TAB);
+                sql.Append(Tab);
                 sql.Append("IF ");
                 sql.Append(VariablePrefix);
                 sql.Append(f.Name);
                 sql.AppendLine(" IS NOT NULL THEN");
-                sql.Append(TAB).Append(TAB);
+                sql.Append(Tab).Append(Tab);
                 sql.Append("v_sqlcond := v_sqlcond || ' AND ");
                 sql.Append(VariablePrefix);
                 sql.Append(" LIKE ''%' || ");
                 sql.Append(VariablePrefix);
                 sql.Append(f.Name);
                 sql.AppendLine(" ||  '%''';");
-                sql.Append(TAB);
+                sql.Append(Tab);
                 sql.AppendLine("END IF;");
             }
             else if (f.Filter.Type == FilterMode.Equal || f.IsPk)
             {
                 sql.AppendLine("");
-                sql.Append(TAB);
+                sql.Append(Tab);
                 sql.Append("IF ");
                 sql.Append(VariablePrefix);
                 sql.Append(f.Name);
                 sql.AppendLine(" IS NOT NULL THEN");
-                sql.Append(TAB).Append(TAB);
+                sql.Append(Tab).Append(Tab);
                 sql.Append("v_sqlcond := v_sqlcond || ' AND ");
                 sql.Append(VariablePrefix);
                 sql.Append(" = ''' || ");
                 sql.Append(VariablePrefix);
                 sql.Append(f.Name);
                 sql.AppendLine(" ||  '''';");
-                sql.Append(TAB);
+                sql.Append(Tab);
                 sql.AppendLine("END IF;");
             }
 
@@ -692,7 +692,7 @@ public class OracleProvider : BaseProvider
             {
                 if (f.DataBehavior == FieldBehavior.ViewOnly)
                 {
-                    sql.Append(TAB);
+                    sql.Append(Tab);
                     sql.AppendLine("*/");
                 }
             }
@@ -700,92 +700,92 @@ public class OracleProvider : BaseProvider
 
         sql.AppendLine("");
         sql.AppendLine("");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("--ORDER");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("v_sqlorder := ''; ");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.Append("IF ");
         sql.Append(VariablePrefix);
         sql.AppendLine("orderby IS NOT NULL THEN ");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.Append("v_sqlorder  := ' ORDER BY ' || ");
         sql.Append(VariablePrefix);
         sql.AppendLine("orderby;");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.Append("END IF; ");
         sql.AppendLine("");
         sql.AppendLine("");
 
 
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("--TOTAL OF RECORDS");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.Append("IF ");
         sql.Append(VariablePrefix);
         sql.Append("qtdtotal IS NULL OR ");
         sql.Append(VariablePrefix);
         sql.AppendLine("qtdtotal = 0 THEN");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.Append(VariablePrefix);
         sql.AppendLine("qtdtotal := 0;");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.AppendLine("v_query := N'SELECT COUNT(*) ' || v_sqltable || v_sqlcond;");
         sql.AppendLine("");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.AppendLine("EXECUTE IMMEDIATE v_query");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.Append("INTO ");
         sql.Append(VariablePrefix);
         sql.AppendLine("qtdtotal; ");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("END IF;");
         sql.AppendLine("");
         sql.AppendLine("");
 
 
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("--DATASET RESULT");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("v_query := 'SELECT ' || v_sqlcolumn || ' ' ||");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("'FROM (");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.AppendLine("SELECT ROWNUM R_NUM, TMP.* ");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.AppendLine("FROM (");
-        sql.Append(TAB).Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab).Append(Tab);
         sql.AppendLine("SELECT ' || v_sqlcolumn || v_sqltable || v_sqlcond || v_sqlorder || ");
-        sql.Append(TAB).Append(TAB);
+        sql.Append(Tab).Append(Tab);
         sql.AppendLine("') TMP' ||");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("')");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("WHERE R_NUM BETWEEN ' || ");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.Append("to_char((");
         sql.Append(VariablePrefix);
         sql.Append("pag - 1) * ");
         sql.Append(VariablePrefix);
         sql.AppendLine("regporpag + 1) || ");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.Append("' AND ' ||");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.Append("to_char(");
         sql.Append(VariablePrefix);
         sql.Append("pag * ");
         sql.Append(VariablePrefix);
         sql.AppendLine("regporpag); ");
         sql.AppendLine("");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("OPEN v_Cursor FOR v_query;");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.Append(VariablePrefix);
         sql.AppendLine("cur_OUT := v_Cursor;");
 
         sql.AppendLine("");
         sql.AppendLine("");
-        sql.Append(TAB);
+        sql.Append(Tab);
         sql.AppendLine("--DBMS_OUTPUT.PUT_LINE(v_query);");
 
         sql.AppendLine("");
@@ -797,17 +797,17 @@ public class OracleProvider : BaseProvider
 
     public override DataAccessCommand GetInsertCommand(Element element, IDictionary<string,object?> values)
     {
-        return GetCommandWrite(INSERT, element, values);
+        return GetCommandWrite(Insert, element, values);
     }
 
     public override DataAccessCommand GetUpdateCommand(Element element, IDictionary<string,object?> values)
     {
-        return GetCommandWrite(UPDATE, element, values);
+        return GetCommandWrite(Update, element, values);
     }
 
     public override DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> filters)
     {
-        return GetCommandWrite(DELETE, element, filters!);
+        return GetCommandWrite(Delete, element, filters!);
     }
 
     protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values)
@@ -912,7 +912,7 @@ public class OracleProvider : BaseProvider
             }
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
-                object value = DBNull.Value;
+                object? value = DBNull.Value;
                 if (filters != null &&
                     filters.ContainsKey(field.Name) &&
                     filters[field.Name] != null)
@@ -995,7 +995,7 @@ public class OracleProvider : BaseProvider
         return t;
     }
 
-    private bool HasPK(Element element)
+    private bool HasPk(Element element)
     {
         var ret = false;
         foreach (var f in element.Fields)

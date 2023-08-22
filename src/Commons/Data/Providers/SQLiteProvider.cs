@@ -383,7 +383,7 @@ public class ProviderSQLite : BaseProvider
 
         foreach (var f in fields)
         {
-            object? value = GetElementValue(f, values);
+            object value = GetElementValue(f, values);
             var param = new DataAccessParameter();
             param.Direction = ParameterDirection.Input;
             param.Value = value;
@@ -452,7 +452,7 @@ public class ProviderSQLite : BaseProvider
 
         foreach (var f in fields)
         {
-            object? value = GetElementValue(f, values);
+            object value = GetElementValue(f, values);
             var param = new DataAccessParameter();
             param.Name = string.Format(VariablePrefix + f.Name);
             //param.Size = f.Size;
@@ -506,7 +506,7 @@ public class ProviderSQLite : BaseProvider
 
         foreach (var f in fields)
         {
-            object? value = GetElementValue(f, values!);
+            object value = GetElementValue(f, values!);
             var param = new DataAccessParameter
             {
                 Name = string.Format(VariablePrefix + f.Name),
@@ -520,25 +520,24 @@ public class ProviderSQLite : BaseProvider
         return cmd;
     }
 
-    private static object? GetElementValue(ElementField f, IDictionary<string,object?> values)
+    private static object GetElementValue(ElementField f, IDictionary<string,object?> values)
     {
-        object? value = DBNull.Value;
-        if (values.ContainsKey(f.Name) &&
-            values[f.Name] != null)
+        if (!values.ContainsKey(f.Name)) 
+            return DBNull.Value;
+        
+        object? val = values[f.Name];
+        if (val == null)
         {
-            if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
-                values[f.Name]?.ToString().Trim().Length == 0)
-            {
-
-                value = DBNull.Value;
-            }
-            else
-            {
-                value = values[f.Name];
-            }
+            return DBNull.Value;
+        }
+                
+        if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
+            string.IsNullOrEmpty(val.ToString()))
+        {
+            return DBNull.Value;
         }
 
-        return value;
+        return val;
     }
 
     private DbType GetDbType(FieldType dataType)
@@ -607,7 +606,7 @@ public class ProviderSQLite : BaseProvider
 
         foreach (var f in fields)
         {
-            object? value = GetElementValue(f, filters);
+            object value = GetElementValue(f, filters);
             var param = new DataAccessParameter();
             //param.Name = string.Format(f.Name);
             //param.Size = f.Size;
