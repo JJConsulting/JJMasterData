@@ -225,7 +225,7 @@ public class JJDataPanel : AsyncComponent
 
         if (PageState == PageState.Update)
         {
-            html.AppendHiddenInput($"jjform_pkval_{FormElement.Name}", GetPkHiddenInput());
+            html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
         }
 
         var panelGroup = new DataPanelLayout(this);

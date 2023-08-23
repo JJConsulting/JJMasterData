@@ -12,7 +12,7 @@ public class FormStateData
     public required IDictionary<string, object?>? UserValues { get; init; }
 
     public required IDictionary<string, object?> FormValues { get; init; }
-
+    
     public required PageState PageState { get; init; }
     
     [SetsRequiredMembers]

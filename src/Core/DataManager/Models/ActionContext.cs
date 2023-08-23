@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
@@ -46,6 +47,9 @@ public class ActionContext
             ActionSource = actionSource,
             FieldName = FieldName
         };
+
+        if (FormStateData.UserValues is not null)
+            actionMap.UserValues = FormStateData.UserValues;
 
         if (!FormStateData.FormValues.Any()) 
             return actionMap;

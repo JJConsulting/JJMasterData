@@ -35,7 +35,7 @@ internal class GridToolbar
         var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
         var linkButtonFactory = GridView.ComponentFactory.LinkButton;
         var formValues = await GridView.GetDefaultValuesAsync();
-        var formStateData = new FormStateData(GridView.UserValues, formValues, PageState.List);
+        var formStateData = new FormStateData(formValues,GridView.UserValues , PageState.List);
         
         foreach (var action in actions)
         {

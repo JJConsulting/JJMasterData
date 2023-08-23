@@ -50,7 +50,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
         return new JJLinkButton();
     }
 
-    public JJLinkButton Create(BasicAction action, bool enabled, bool visible)
+    private static JJLinkButton Create(BasicAction action, bool enabled, bool visible)
     {
         return new JJLinkButton
         {

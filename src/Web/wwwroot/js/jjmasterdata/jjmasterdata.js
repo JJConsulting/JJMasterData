@@ -75,10 +75,7 @@ class ActionManager {
         }
         popup.showHtmlFromUrl(title, url, {
             method: "POST",
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: JSON.stringify({})
+            body: new FormData(document.querySelector("form"))
         }, 1).then(_ => loadJJMasterData());
     }
 }

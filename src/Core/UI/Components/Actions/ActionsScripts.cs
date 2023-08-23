@@ -111,7 +111,7 @@ internal class ActionsScripts
         {
             var url = GetFormViewUrl(formElement.Name, action, actionMap);
             functionSignature =
-                $"ActionManager.executeFormActionAsPopUp('{url}','{actionContext.ParentComponentName}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+                $"ActionManager.executeFormActionAsPopUp('{url}','{actionContext.FormElement.Title}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
         else
         {

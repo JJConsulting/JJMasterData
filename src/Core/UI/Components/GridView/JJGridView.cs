@@ -665,7 +665,7 @@ public class JJGridView : AsyncComponent
 
         await SetDataSource();
 
-        html.WithAttribute("id", $"jjgridview-{Name}");
+        html.WithAttribute("id", $"grid-view-{Name}");
         html.AppendIf(SortAction.IsVisible, GetSortingConfig);
 
         html.AppendText(GetScriptHtml());
@@ -849,7 +849,7 @@ public class JJGridView : AsyncComponent
                 script.AppendLine("\t\t\turl: surl, ");
                 script.AppendLine("\t\t\tdata: frm.serialize(), ");
                 script.AppendLine("\t\t\tsuccess: function (data) { ");
-                script.AppendLine($"\t\t\t\t$(\"#jjgridview-{Name} #row\" + nRow).html(data); ");
+                script.AppendLine($"\t\t\t\t$(\"#grid-view-{Name} #row\" + nRow).html(data); ");
                 script.AppendLine($"\t\t\t\tdo_change_{Name}(nRow);");
                 script.AppendLine("\t\t\t\tloadJJMasterData(null, \"#row\" + nRow + \" \"); ");
                 script.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");

@@ -166,7 +166,7 @@ internal class FormViewRelationshipLayout
             ParentFormView.UserValues[col.FkColumn] = value;
         }
 
-        var mappedForeignKeys = GetMappedForeignKeys(ParentFormView.FormElement,filter);
+        var mappedForeignKeys = DataHelper.GetFkValues(ParentFormView.FormElement,filter);
         switch (relationship.ViewType)
         {
             case RelationshipViewType.View or RelationshipViewType.Update:
@@ -202,7 +202,7 @@ internal class FormViewRelationshipLayout
                     {
                  
                         var filters = ParentFormView.EncryptionService.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(filter));
-                        renderedComponentResult.HtmlBuilder.AppendHiddenInput($"jjgridview-{childElement.Name}_filters", filters);
+                        renderedComponentResult.HtmlBuilder.AppendHiddenInput($"grid-view-{childElement.Name}-filters", filters);
                     
                         return renderedComponentResult;
                     }
@@ -212,24 +212,5 @@ internal class FormViewRelationshipLayout
             default:
                 return new EmptyComponentResult();
         }
-    }
-
-    private static IDictionary<string, object?> GetMappedForeignKeys(FormElement formElement, Dictionary<string, object?> filters)
-    {
-        var foreignKeys = new Dictionary<string, object?>();
-        var relationships = formElement.Relationships.GetElementRelationships();
-
-        foreach (var entry in filters)
-        {
-            var matchingRelationship = relationships.FirstOrDefault(r => r.Columns.Any(c => c.FkColumn == entry.Key));
-
-            if (matchingRelationship != null)
-            {
-                var matchingColumn = matchingRelationship.Columns.First(c => c.FkColumn == entry.Key);
-                foreignKeys[matchingColumn.FkColumn] = entry.Value;
-            }
-        }
-
-        return foreignKeys;
     }
 }

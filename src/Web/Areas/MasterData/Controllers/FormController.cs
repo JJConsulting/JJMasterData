@@ -6,6 +6,7 @@ using JJMasterData.Core.Web.Html;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Filters;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
@@ -34,17 +35,23 @@ public class FormController : MasterDataController
         return View(model);
     }
 
-    
+    //TODO Gustavo mover pra dentro do formView, aqui vai perder a customização se do nada alguém habilitar modo popup
     [ServiceFilter<FormElementDecryptionFilter>]
     [ServiceFilter<ActionMapDecryptionFilter>]
     [HttpPost]
     public async Task<IActionResult> GetFormView(
         FormElement formElement,
         PageState pageState,
+        IFormCollection formCollection,
         ActionMap actionMap)
     {
         var formView = _formViewFactory.Create(formElement);
         formView.IsModal = true;
+        formView.DataPanel.FieldNamePrefix = "modal_";
+        if (actionMap.UserValues is not null)
+        {
+            formView.RelationValues = DataHelper.GetElementValues(formElement,actionMap.UserValues)!;
+        }
         formView.IsExternalRoute = true;
         formView.PageState = pageState;
 
@@ -57,14 +64,10 @@ public class FormController : MasterDataController
 
         if (result.IsActionResult())
             return result.ToActionResult();
-        else if(result is RenderedComponentResult renderedComponentResult)
+        
+        if(result is RenderedComponentResult renderedComponentResult)
         {
-            var form = new HtmlBuilder(HtmlTag.Form)
-                .WithNameAndId(formView.Name)
-                .WithAttribute("action",Url.Action("GetFormView")!)
-                .WithAttribute("method", "POST");
-            form.Append(renderedComponentResult.HtmlBuilder);
-            return Content(form.ToString());
+            return Content(renderedComponentResult.Content);
         }
 
         return new EmptyResult();

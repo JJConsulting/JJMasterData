@@ -135,8 +135,16 @@ public class JJFormView : AsyncComponent
     /// <remarks>
     /// Key = Field name, Value=Field value
     /// </remarks>
-    public IDictionary<string, object?> RelationValues { get; set; } = new Dictionary<string, object?>();
-    
+    public IDictionary<string, object> RelationValues
+    {
+        get => _relationValues;
+        set
+        {
+            GridView.RelationValues = value;
+            _relationValues = value;
+        }
+    }
+
     public FormElement FormElement { get; }
 
     public JJGridView GridView
@@ -164,6 +172,8 @@ public class JJFormView : AsyncComponent
     /// Estado atual da pagina
     /// </summary>
     private PageState? _pageState;
+
+    private IDictionary<string, object> _relationValues = new Dictionary<string, object>();
 
     public PageState PageState
     {
@@ -458,7 +468,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetInsertResult()
     {
         var action = InsertAction;
-        var formData = new FormStateData(RelationValues, UserValues, PageState.List);
+        var formData = new FormStateData(RelationValues!, UserValues, PageState.List);
         bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Insert action not enabled"]);
@@ -494,7 +504,7 @@ public class JJFormView : AsyncComponent
                     alert.Messages.Add(StringLocalizer["Record added successfully"]);
                     var alertHtml = alert.GetHtmlBuilder();
 
-                    var formResult = await GetFormResultAsync(new(RelationValues,  PageState.Insert), false);
+                    var formResult = await GetFormResultAsync(new(RelationValues!,  PageState.Insert), false);
 
                     if (formResult is RenderedComponentResult renderedComponentResult)
                     {
@@ -548,7 +558,7 @@ public class JJFormView : AsyncComponent
         PageState = PageState.Insert;
 
         if (string.IsNullOrEmpty(action.ElementNameToSelect))
-            return await GetFormResultAsync(new(RelationValues,  PageState.Insert), false);
+            return await GetFormResultAsync(new(RelationValues!,  PageState.Insert), false);
         return await GetInsertSelectionResult(action);
     }
 
@@ -1068,7 +1078,7 @@ public class JJFormView : AsyncComponent
         if (!RelationValues.Any())
             return values;
 
-        DataHelper.CopyIntoDictionary(values, RelationValues, true);
+        DataHelper.CopyIntoDictionary(values, RelationValues!, true);
 
         return values;
     }

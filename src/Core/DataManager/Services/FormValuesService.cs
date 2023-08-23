@@ -139,7 +139,7 @@ public class FormValuesService : IFormValuesService
         if (!CurrentContext.HasContext())
             return null;
 
-        string encryptedPkValues = CurrentContext.Request["jjform_pkval_" + element.Name];
+        string encryptedPkValues = CurrentContext.Request["data-panel-pk-values-" + element.Name];
         if (string.IsNullOrEmpty(encryptedPkValues))
             return null;
 

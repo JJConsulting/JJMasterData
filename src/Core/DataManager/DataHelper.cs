@@ -30,6 +30,20 @@ public static class DataHelper
         return null;
     }
 
+    public static IDictionary<string, object?> GetElementValues(Element element, IDictionary<string, object?> values)
+    {
+        var elementValues = new Dictionary<string, object?>();
+
+        foreach (var entry in values)
+        {
+            if (element.Fields.ContainsKey(entry.Key))
+            {
+                elementValues[entry.Key] = entry.Value;
+            }
+        }
+
+        return elementValues;
+    }
     
     public static bool ContainsPkValues(Element element, IDictionary<string, object?> values)
     {
@@ -68,11 +82,6 @@ public static class DataHelper
         return primaryKeys;
     }
 
-    public static List<ElementField> GetElementPrimaryKeys(Element element)
-    {
-        return element.Fields.Where(x => x.IsPk).ToList();
-    }
-
     public static Dictionary<string, object> GetPkValues(Element element, string parsedValues, char separator)
     {
         var primaryKeys = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
@@ -97,7 +106,35 @@ public static class DataHelper
 
         return primaryKeys;
     }
+    
+    private static List<ElementField> GetElementPrimaryKeys(Element element)
+    {
+        return element.Fields.Where(x => x.IsPk).ToList();
+    }
 
+    public static IDictionary<string, object> GetFkValues(FormElement formElement, IDictionary<string, object?> values)
+    {
+        var foreignKeys = new Dictionary<string, object>();
+        var relationships = formElement.Relationships.GetElementRelationships();
+
+        foreach (var entry in values)
+        {
+            var matchingRelationship = relationships.FirstOrDefault(r => r.Columns.Any(c => c.FkColumn == entry.Key));
+
+            if (matchingRelationship != null)
+            {
+                var matchingColumn = matchingRelationship.Columns.First(c => c.FkColumn == entry.Key);
+
+                if (entry.Value is not null)
+                {
+                    foreignKeys[matchingColumn.FkColumn] = entry.Value;
+                }
+            }
+        }
+
+        return foreignKeys;
+    }
+    
     /// <summary>
     /// Concat primary keys with separator characters
     /// </summary>
@@ -152,15 +189,6 @@ public static class DataHelper
         }
 
         return name;
-    }
-
-    public static string ParsePkValues(FormElement formElement, DataRow row, char separator)
-    {
-        var formValues = row.Table.Columns
-            .Cast<DataColumn>()
-            .ToDictionary(col => col.ColumnName.ToLower(), col => row[col.ColumnName.ToLower()], StringComparer.InvariantCultureIgnoreCase);
-
-        return ParsePkValues(formElement, formValues!, separator);
     }
 
     /// <summary>
