@@ -68,7 +68,7 @@ public static class DataHelper
         return element.Fields.Where(x => x.IsPk).ToList();
     }
 
-    public static Dictionary<string, object?> GetPkValues(Element element, string parsedValues, char separator)
+    public static Dictionary<string, object> GetPkValues(Element element, string parsedValues, char separator)
     {
         var primaryKeys = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -162,12 +162,12 @@ public static class DataHelper
     /// Preserves the original name of the field as registered in the dictionary
     /// and validates if the field exists
     /// </summary>
-    public static IDictionary<string, object>? ParseOriginalName(FormElement formElement, IDictionary<string, object>? paramValues)
+    public static IDictionary<string, object?>? ParseOriginalName(FormElement formElement, IDictionary<string, object?>? paramValues)
     {
         if (paramValues == null)
             return null;
 
-        var filters = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        var filters = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entry in paramValues)
         {
             var field = formElement.Fields[entry.Key];
@@ -178,7 +178,7 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoDictionary(IDictionary<string, object> valuesToBeReceived, IDictionary<string, object>? valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoDictionary(IDictionary<string, object?> valuesToBeReceived, IDictionary<string, object?>? valuesToBeCopied, bool replaceIfExistKey)
     {
         if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
             return;

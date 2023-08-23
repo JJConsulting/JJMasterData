@@ -7,7 +7,6 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.UI.Components;
@@ -112,7 +111,8 @@ internal class GridTableBody
 
             var td = new HtmlBuilder(HtmlTag.Td);
             string style = GetTdStyle(field);
-            td.WithAttributeIf(!string.IsNullOrEmpty(style), "style", style);
+            td.WithAttributeIf(string.IsNullOrEmpty(style), "style", style!);
+            td.WithAttributeIfNotEmpty( "style", style);
             td.WithAttribute("onclick", onClickScript);
 
             if (GridView.EnableEditMode && field.DataBehavior != FieldBehavior.ViewOnly)

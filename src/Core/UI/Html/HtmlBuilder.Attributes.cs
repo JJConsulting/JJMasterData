@@ -44,6 +44,17 @@ public partial class HtmlBuilder
     }
 
     /// <summary>
+    /// Set attribute to the HTML builder on condition.
+    /// </summary>
+    public HtmlBuilder WithAttributeIfNotEmpty(string name, string? value)
+    {
+        if (!string.IsNullOrEmpty(value))
+            WithAttribute(name, value);
+
+        return this;
+    }
+    
+    /// <summary>
     /// Set attribute to the HTML builder.
     /// </summary>
     public HtmlBuilder WithSingleAttribute(string nameAndValue)

@@ -1,11 +1,8 @@
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using JJMasterData.WebApi.Controllers;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Newtonsoft.Json;
@@ -21,18 +18,6 @@ public class MasterApiControllerTest
     private readonly MasterApiController _controller;
     public MasterApiControllerTest()
     {
-        var accessor = new HttpContextAccessor
-        {
-            HttpContext = new DefaultHttpContext
-            {
-                Connection =
-                {
-                    RemoteIpAddress = new IPAddress(0)
-                },
-                Session = new DefaultSessionFeature().Session
-            }
-        };
-
         _controller = new MasterApiController(new Mock<MasterApiService>().Object);
     }
     
@@ -63,7 +48,7 @@ public class MasterApiControllerTest
     [InlineData("[{\"Id\":1, \"Name\":\"new_string\",\"Age\":100}]", "ApiTestDictionary", true)]
     public async Task PostTest(string parametersString, string elementName, bool replace)
     {
-        var parameterList = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(parametersString);
+        var parameterList = JsonConvert.DeserializeObject<Dictionary<string, object?>[]>(parametersString);
 
         if (parameterList == null) 
             return;

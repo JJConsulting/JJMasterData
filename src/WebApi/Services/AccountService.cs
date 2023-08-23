@@ -38,6 +38,7 @@ public class AccountService
         Options = options.Value;
         Logger = logger;
         ApiVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+        //TODO: Lucio Passar IOptions como construtor, tem varios lugares que repete esse código
         DataAccess = new DataAccess(configuration.GetConnectionString("ConnectionString"), DataAccessProvider.SqlServer);
     }
     public UserAccessInfo Login(string? username, string? password, string? appId)
@@ -74,7 +75,7 @@ public class AccountService
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, ex.Message);
+            Logger.LogError(ex, "Login generate a generic error");
             ret.IsValid = false;
             ret.Message = ExceptionManager.GetMessage(ex);
             ret.ErrorId = 100;
@@ -127,8 +128,7 @@ public class AccountService
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex.Message);
-
+            Logger.LogError(ex, "ChangePassword generate a generic error");
             ret.IsValid = false;
             ret.Message = ExceptionManager.GetMessage(ex);
             ret.ErrorId = 100;
@@ -191,8 +191,7 @@ public class AccountService
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex.Message);
-
+            Logger.LogError(ex, "RecoverPassword generate a generic error");
             ret.IsValid = false;
             ret.Message = ExceptionManager.GetMessage(ex);
             ret.ErrorId = 100;
@@ -263,7 +262,7 @@ public class AccountService
         else
             cmd.Parameters.Add(new DataAccessParameter("@userid", userId, DbType.Int32));
 
-        object result = DataAccess.GetResult(cmd);
+        object? result = DataAccess.GetResult(cmd);
         if (result != null)
             value = result.ToString();
 

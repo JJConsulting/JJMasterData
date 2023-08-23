@@ -1,6 +1,5 @@
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
@@ -59,13 +58,16 @@ public class FileService
         var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
         var values = await _entityRepository.GetFieldsAsync(formElement, primaryKeys);
 
+        if (values == null)
+            throw new KeyNotFoundException();
+        
         if (field.DataFile!.MultipleFile)
         {
             var currentFiles = new List<string>();
-
-            if (values[field.Name] != null && values[field.Name] is not DBNull)
+            var dbValue = values[field.Name];
+            if (dbValue != null && dbValue is not DBNull)
             {
-                currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
+                currentFiles = ((string)dbValue).Split(",").ToList();
             }
             
             if (!currentFiles.Contains(fileName))
@@ -120,7 +122,7 @@ public class FileService
         var field = formElement.Fields.First(f => f.Name == fieldName);
         
         DeletePhysicalFile(formElement, field, pkValues, fileName);
-        DeleteEntityFile(formElement, field, pkValues, fileName);
+        await DeleteEntityFileAsync(formElement, field, pkValues, fileName);
     }
     
     private void DeletePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string fileName)
@@ -137,12 +139,13 @@ public class FileService
             throw new KeyNotFoundException("File not found");
     }
     
-    private async Task DeleteEntityFile(Element element, FormElementField field, string pkValues, string fileName)
+    private async Task DeleteEntityFileAsync(Element element, FormElementField field, string pkValues, string fileName)
     {
         var primaryKeys = DataHelper.GetPkValues(element, pkValues, ',');
-
         var values = await _entityRepository.GetFieldsAsync(element, primaryKeys);
-
+        if (values == null)
+            throw new KeyNotFoundException();
+        
         if (field.DataFile!.MultipleFile)
         {
             var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();
@@ -172,7 +175,7 @@ public class FileService
         var field = formElement.Fields.First(f => f.Name == fieldName);
         
         RenamePhysicalFile(formElement, field, pkValues, oldName, newName);
-        RenameEntityFile(formElement,field, pkValues, oldName, newName);
+        await RenameEntityFileAsync(formElement,field, pkValues, oldName, newName);
     }
     
     private static void RenamePhysicalFile(FormElement formElement, FormElementField field, string pkValues, string oldName, string newName)
@@ -190,13 +193,15 @@ public class FileService
             throw new KeyNotFoundException("File not found");
     }
     
-    private async Task RenameEntityFile(FormElement formElement, FormElementField field, string pkValues, string oldName,
+    private async Task RenameEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string oldName,
         string newName)
     {
         var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
-
         var values = await _entityRepository.GetFieldsAsync(formElement, primaryKeys);
 
+        if (values == null)
+            throw new KeyNotFoundException();
+        
         if (field.DataFile!.MultipleFile)
         {
             var currentFiles = values[field.Name]!.ToString()!.Split(",").ToList();

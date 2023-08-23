@@ -39,11 +39,11 @@ public class OrderByData
         return this;
     }
     
-    public static OrderByData FromString(string orderByString)
+    public static OrderByData FromString(string? orderByString)
     {
         var orderByData = new OrderByData();
-        
-        orderByData.Set(orderByString);
+        if (!string.IsNullOrEmpty(orderByString))
+            orderByData.Set(orderByString);
 
         return orderByData;
     }

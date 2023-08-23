@@ -62,7 +62,7 @@ internal class GridTableHeader
             var th = new HtmlBuilder(HtmlTag.Th);
             string style = GetFieldStyle(field);
 
-            th.WithAttributeIf(!string.IsNullOrEmpty(style), "style", style);
+            th.WithAttributeIfNotEmpty("style", style);
             th.Append(HtmlTag.Span, span =>
             {
                 if (GridView.EnableSorting && field.DataBehavior != FieldBehavior.Virtual)

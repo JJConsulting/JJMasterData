@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
@@ -10,10 +11,8 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.WebApi.Models;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
-using System.Collections;
 using System.Diagnostics;
 using System.Net;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.WebApi.Services;
 
@@ -68,7 +67,7 @@ public class MasterApiService
         var showLogInfo = Debugger.IsAttached;
         string text = await _entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters()
         {
-            Filters = filters,
+            Filters = filters!,
             CurrentPage = pag,
             RecordsPerPage = regporpag,
             OrderBy = OrderByData.FromString(orderby)
@@ -93,7 +92,7 @@ public class MasterApiService
         var element = dictionary;
         var result = await _entityRepository.GetDictionaryListAsync(element, new EntityParameters
         {
-            Filters = filters,
+            Filters = filters!,
             CurrentPage = pag,
             RecordsPerPage = regporpag,
             OrderBy = OrderByData.FromString(orderby)
@@ -136,7 +135,7 @@ public class MasterApiService
         return listRet;
     }
 
-    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<IDictionary<string, object>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<IDictionary<string, object?>> paramsList,
         string elementName, bool replace = false)
     {
         if (paramsList == null)
@@ -154,7 +153,7 @@ public class MasterApiService
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<IDictionary<string, object>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<IDictionary<string, object?>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -170,7 +169,7 @@ public class MasterApiService
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<IDictionary<string, object>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<IDictionary<string, object?>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -190,7 +189,7 @@ public class MasterApiService
         }
     }
 
-    private async Task<ResponseLetter> Insert(FormElement formElement, IDictionary<string, object> apiValues,
+    private async Task<ResponseLetter> Insert(FormElement formElement, IDictionary<string, object?> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -220,7 +219,7 @@ public class MasterApiService
         return ret;
     }
 
-    private async Task<ResponseLetter> Update(FormElement formElement, IDictionary<string, object> apiValues)
+    private async Task<ResponseLetter> Update(FormElement formElement, IDictionary<string, object?> apiValues)
     {
         ResponseLetter ret;
         try
@@ -252,7 +251,7 @@ public class MasterApiService
         return ret;
     }
 
-    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, IDictionary<string, object> apiValues,
+    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, IDictionary<string, object?> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -289,7 +288,7 @@ public class MasterApiService
         return ret;
     }
 
-    private async Task<ResponseLetter> Patch(FormElement formElement, IDictionary<string, object> values)
+    private async Task<ResponseLetter> Patch(FormElement formElement, IDictionary<string, object?> values)
     {
         ResponseLetter ret;
         try
@@ -488,24 +487,38 @@ public class MasterApiService
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private IDictionary<string, object>? GetDiff(IDictionary<string, object> original,
-        IDictionary<string, object> result, FormElementApiOptions apiOptions)
+    private IDictionary<string, object?>? GetDiff(
+        IDictionary<string, object?> original,
+        IDictionary<string, object?> result, 
+        FormElementApiOptions apiOptions)
     {
-        var newValues = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        var newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entry in result)
         {
-            if (entry.Value == null)
-                continue;
-
-            string fieldName = apiOptions.GetFieldNameParsed(entry.Key);
-            if (original.ContainsKey(entry.Key))
+            var entryVal = entry.Value;
+            if (entryVal == null)
             {
-                if (original[entry.Key] == null && entry.Value != null ||
-                    !original[entry.Key].Equals(entry.Value))
-                    newValues.Add(fieldName, entry.Value);
+                continue;
             }
-            else
+            string fieldName = apiOptions.GetFieldNameParsed(entry.Key);
+            
+            if (!original.ContainsKey(entry.Key))
+            {
+                newValues.Add(fieldName, entryVal);
+                continue;
+            }
+
+            var originalEntry = original[entry.Key];
+            if (originalEntry == null)
+            {
                 newValues.Add(fieldName, entry.Value);
+                continue;
+            }
+
+            if (!((string)originalEntry).Equals(entryVal.ToString()))
+            {
+                newValues.Add(fieldName, entry.Value);
+            }
         }
 
         return newValues.Count > 0 ? newValues : null;

@@ -60,7 +60,7 @@ public class JJTextBox : HtmlControl
         var html = new HtmlBuilder(HtmlTag.Input)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
-            .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder!)
+            .WithAttributeIfNotEmpty("placeholder", PlaceHolder)
             .WithAttribute("type", inputType)
             .WithCssClass("form-control")
             .WithCssClass(CssClass)
@@ -71,7 +71,7 @@ public class JJTextBox : HtmlControl
             .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jjdecimalplaces",
                 NumberOfDecimalPlaces.ToString())
             .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jjdecimal")
-            .WithAttributeIf(!string.IsNullOrEmpty(Text), "value", Text!)
+            .WithAttributeIfNotEmpty("value", Text)
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
             .WithAttributeIf(!Enabled, "disabled", "disabled");
 

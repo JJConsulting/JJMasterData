@@ -46,19 +46,19 @@ public class MasterApiController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<ResponseLetter>> Post([FromBody] Dictionary<string, object>[] listParam, string elementName, bool replace = false)
+    public async Task<ActionResult<ResponseLetter>> Post([FromBody] Dictionary<string, object?>[] listParam, string elementName, bool replace = false)
     {
         return GetResponseMessage(await _service.SetFieldsAsync(listParam, elementName, replace).ToListAsync());
     }
     
     [HttpPut]
-    public async Task<ActionResult<ResponseLetter>> Put([FromBody] Dictionary<string, object>[] listParam, string elementName)
+    public async Task<ActionResult<ResponseLetter>> Put([FromBody] Dictionary<string, object?>[] listParam, string elementName)
     {
         return GetResponseMessage(await _service.UpdateFieldsAsync(listParam, elementName).ToListAsync());
     }
     
     [HttpPatch]
-    public async Task<ActionResult<ResponseLetter>> Patch([FromBody] Dictionary<string, object>[] listParam, string elementName)
+    public async Task<ActionResult<ResponseLetter>> Patch([FromBody] Dictionary<string, object?>[] listParam, string elementName)
     {
         return GetResponseMessage(await _service.UpdatePartAsync(listParam, elementName).ToListAsync());
     }
@@ -91,7 +91,7 @@ public class MasterApiController : ControllerBase
         var responseLetterList = responseLetters.ToList();
         
         if (!responseLetterList.Any())
-            throw new ArgumentNullException(nameof(responseLetters), "Response not found");
+            throw new ArgumentNullException(nameof(responseLetters), @"Response not found");
 
         if (responseLetterList.Count == 1)
             return new ObjectResult(responseLetters) { StatusCode = responseLetterList.First().Status };
