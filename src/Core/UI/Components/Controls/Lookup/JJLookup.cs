@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
@@ -28,7 +29,6 @@ public class JJLookup : AsyncControl
 
     private string _selectedValue;
     private string _text;
-    private FormElementDataItem _dataItem;
 
     internal FormStateData FormStateData { get; set; }
 
@@ -83,18 +83,17 @@ public class JJLookup : AsyncControl
     }
 
 
-    public FormElementDataItem DataItem
-    {
-        get => _dataItem ??= new FormElementDataItem();
-        set => _dataItem = value;
-    }
-
+    public DataElementMap ElementMap { get; }
+    
+    public string FieldName { get; }
+    public required string FieldNamePrefix { get; init; }
     #endregion
 
     #region "Constructors"
 
     internal JJLookup(
         FormElement formElement,
+        FormElementField field,
         IHttpContext httpContext,
         ILookupService lookupService,
         JJMasterDataEncryptionService encryptionService,
@@ -102,6 +101,8 @@ public class JJLookup : AsyncControl
         ILogger<JJLookup> logger) : base(httpContext)
     {
         FormElement = formElement;
+        ElementMap = field.DataItem?.ElementMap ?? throw new ArgumentException("ElementMap cannot be null.");
+        FieldName = field.Name;
         LookupService = lookupService;
         EncryptionService = encryptionService;
         UrlHelper = urlHelper;
@@ -133,23 +134,24 @@ public class JJLookup : AsyncControl
         string description = Text;
 
         if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(inputValue))
-            description = await LookupService.GetDescriptionAsync(DataItem, FormStateData, inputValue, OnlyNumbers);
+            description = await LookupService.GetDescriptionAsync(ElementMap, FormStateData, inputValue, OnlyNumbers);
 
         var div = new HtmlBuilder(HtmlTag.Div);
 
-        Attributes["lookup-url"] = LookupService.GetLookupUrl(DataItem, FormStateData, Name);
+        Attributes["lookup-url"] = LookupService.GetLookupUrl(ElementMap, FormStateData, Name);
 
         if (IsExternalRoute)
         {
             var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
             var componentName = Attributes["pnlname"];
             Attributes["data-panel-reload-url"] = UrlHelper.GetUrl("ReloadPanel", "Form",
-                "MasterData", new { dictionaryName = encryptedDictionaryName, componentName });
+                "MasterData", new { dictionaryName = encryptedDictionaryName, componentName, fieldNamePrefix= FieldNamePrefix });
             Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup","MasterData", 
                 new
                 {
                     dictionaryName = encryptedDictionaryName,
                     componentName = Name,
+                    fieldName = FieldName,
                     pageState = FormStateData.PageState
                 });
         }
@@ -216,7 +218,7 @@ public class JJLookup : AsyncControl
     /// <returns>Returns the description of the id</returns>
     public async Task<string> GetDescriptionAsync()
     {
-        return await LookupService.GetDescriptionAsync(DataItem, FormStateData, SelectedValue, OnlyNumbers);
+        return await LookupService.GetDescriptionAsync(ElementMap, FormStateData, SelectedValue, OnlyNumbers);
     }
 
     private bool IsAjaxGetDescription()
@@ -258,7 +260,7 @@ public class JJLookup : AsyncControl
         if (field == null)
             return null;
         var lookup = await view.ComponentFactory.Controls
-            .CreateAsync(view.FormElement, field, null, view.Values, view.PageState, view.Name) as JJLookup;
+            .CreateAsync(view.FormElement, field, new FormStateData(view.Values,view.PageState), view.FieldNamePrefix, view.Name) as JJLookup;
         return await lookup!.GetResultAsync();
     }
 }

@@ -310,7 +310,7 @@ internal class DataPanelControl
 
     private async Task<HtmlBuilder> GetControlField(FormElementField field, object? value)
     {
-        var control = await ControlFactory.CreateAsync(FormElement, field, Values, UserValues, PageState, Name, value);
+        var control = await ControlFactory.CreateAsync(FormElement, field, new(Values, UserValues, PageState), Name, value);
         control.IsExternalRoute = IsExternalRoute;
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))

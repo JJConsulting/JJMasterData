@@ -5,12 +5,12 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public interface ILookupService
 {
-    string GetLookupUrl(FormElementDataItem dataItem, FormStateData formStateData, string componentName);
+    string GetLookupUrl(DataElementMap elementMap, FormStateData formStateData, string componentName);
 
     object GetSelectedValue(string componentName);
 
     Task<string> GetDescriptionAsync(
-        FormElementDataItem dataItem,
+        DataElementMap elementMap,
         FormStateData formStateData,
         string searchId,
         bool allowOnlyNumbers);

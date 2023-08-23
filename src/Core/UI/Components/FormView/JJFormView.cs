@@ -925,7 +925,7 @@ public class JJFormView : AsyncComponent
         var formHtml = new HtmlBuilder(HtmlTag.Div);
         formHtml.WithNameAndId(Name);
 
-        if (panel.Errors != null)
+        if (panel.Errors.Any())
             formHtml.AppendComponent(new JJValidationSummary(panel.Errors));
 
         var parentPanelHtml = await panel.GetPanelHtmlAsync();

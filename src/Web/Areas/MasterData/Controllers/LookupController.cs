@@ -56,15 +56,16 @@ public class LookupController : MasterDataController
     [ServiceFilter<FormElementDecryptionFilter>]
     public async Task<IActionResult> GetResult(
         FormElement formElement,
+        string fieldName,
         string componentName,
         PageState pageState,
         string searchId)
     {
-        var dataItem = formElement.Fields[componentName].DataItem;
+        var elementMap = formElement.Fields[fieldName].DataItem!.ElementMap;
         var formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, pageState, true);
         var formStateData = new FormStateData(formValues, pageState);
         var selectedValue = LookupService.GetSelectedValue(componentName).ToString();
-        var description = await LookupService.GetDescriptionAsync(dataItem, formStateData, selectedValue, false);
+        var description = await LookupService.GetDescriptionAsync(elementMap, formStateData, selectedValue, false);
         return Json(new LookupResultDto(searchId, description));
     }
 
@@ -104,7 +105,7 @@ public class LookupController : MasterDataController
 
         foreach (var filter in lookupParameters.Filters)
         {
-            form.SetCurrentFilter(filter.Key, filter.Value?.ToString());
+            form.GridView.SetCurrentFilter(filter.Key, filter.Value!.ToString()!);
         }
     }
 

@@ -39,10 +39,8 @@ public class LookupService : ILookupService
     }
 
     
-    public string GetLookupUrl(FormElementDataItem dataItem, FormStateData formStateData, string componentName)
+    public string GetLookupUrl(DataElementMap elementMap, FormStateData formStateData, string componentName)
     {
-        var elementMap = dataItem.ElementMap;
-
         var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.FieldKey,
             elementMap.EnableElementActions, elementMap.Filters);
 
@@ -53,7 +51,7 @@ public class LookupService : ILookupService
     }
     
     public async Task<string> GetDescriptionAsync(
-        FormElementDataItem dataItem,
+        DataElementMap elementMap,
         FormStateData formStateData,
         string searchId,
         bool allowOnlyNumbers)
@@ -61,7 +59,7 @@ public class LookupService : ILookupService
         if (string.IsNullOrEmpty(searchId))
             return null;
 
-        if (dataItem.ElementMap.Filters == null)
+        if (elementMap.Filters == null)
             return null;
 
         if (allowOnlyNumbers)
@@ -71,26 +69,26 @@ public class LookupService : ILookupService
                 return null;
         }
 
-        var filters = GetFilters(dataItem, searchId, formStateData);
+        var filters = GetFilters(elementMap, searchId, formStateData);
 
-        var fields = await GetFieldsAsync(dataItem, filters);
+        var fields = await GetFieldsAsync(elementMap, filters);
 
         if (fields == null)
             return null;
 
-        if (string.IsNullOrEmpty(dataItem.ElementMap.FieldDescription))
-            return fields[dataItem.ElementMap.FieldKey]?.ToString();
+        if (string.IsNullOrEmpty(elementMap.FieldDescription))
+            return fields[elementMap.FieldKey]?.ToString();
 
-        return fields[dataItem.ElementMap.FieldDescription]?.ToString();
+        return fields[elementMap.FieldDescription]?.ToString();
     }
 
-    private IDictionary<string, object> GetFilters(FormElementDataItem dataItem, string searchId, FormStateData formStateData)
+    private IDictionary<string, object> GetFilters(DataElementMap elementMap, string searchId, FormStateData formStateData)
     {
         var filters = new Dictionary<string, object>();
 
-        if (dataItem.ElementMap.Filters.Count > 0)
+        if (elementMap.Filters.Count > 0)
         {
-            foreach (var filter in dataItem.ElementMap.Filters)
+            foreach (var filter in elementMap.Filters)
             {
                 string filterParsed =
                     ExpressionsService.ParseExpression(filter.Value?.ToString(), formStateData, false);
@@ -98,13 +96,13 @@ public class LookupService : ILookupService
             }
         }
 
-        filters[dataItem.ElementMap.FieldKey] = StringManager.ClearText(searchId);
+        filters[elementMap.FieldKey] = StringManager.ClearText(searchId);
         return filters;
     }
 
-    private async Task<IDictionary<string, object>> GetFieldsAsync(FormElementDataItem dataItem, IDictionary<string, object> filters)
+    private async Task<IDictionary<string, object>> GetFieldsAsync(DataElementMap elementMap, IDictionary<string, object> filters)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(dataItem.ElementMap.ElementName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
         return await EntityRepository.GetFieldsAsync(formElement, filters);
     }
 

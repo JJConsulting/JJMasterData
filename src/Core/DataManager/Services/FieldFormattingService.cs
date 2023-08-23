@@ -45,7 +45,7 @@ public class FieldFormattingService : IFieldFormattingService
                  when field.DataItem is { ReplaceTextOnGrid: true }:
                 var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
                 var formData = new FormStateData(values, PageState.List);
-                stringValue = await LookupService.GetDescriptionAsync(field.DataItem, formData, value.ToString(), allowOnlyNumerics);
+                stringValue = await LookupService.GetDescriptionAsync(field.DataItem.ElementMap, formData, value.ToString(), allowOnlyNumerics);
                 break;
             case FormComponent.CheckBox:
                 stringValue = StringManager.ParseBool(value) ? "Sim" : "Não";

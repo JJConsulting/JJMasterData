@@ -56,21 +56,17 @@ public class ControlFactory
 
     public async Task<ControlBase> CreateAsync(FormElement formElement,
         FormElementField field,
-        IDictionary<string, object> formValues,
-        IDictionary<string, object> userValues,
-        PageState pageState,
+        FormStateData formStateData,
         string parentName,
         object value = null)
     {
-        var formStateData = new FormStateData(formValues, userValues, pageState);
-
-        if (pageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
+        var context = new ControlContext(formStateData, parentName, value);
+        if (formStateData.PageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {
             var factory = GetFactory<IControlFactory<JJTextRange>>();
-            return factory.Create(formElement, field, new ControlContext(formStateData, parentName, value));
+            return factory.Create(formElement, field, context);
         }
-
-        var context = new ControlContext(formStateData, parentName, value);
+        
         var control = Create(formElement, field, context);
         control.Enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formStateData);
 

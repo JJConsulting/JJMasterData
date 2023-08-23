@@ -608,7 +608,7 @@ public class JJGridView : AsyncComponent
                 return new EmptyComponentResult();
 
             var field = FormElement.Fields[filterName];
-            var jjSearchBox = await ComponentFactory.Controls.CreateAsync(FormElement,field, await GetCurrentFilterAsync(), UserValues, PageState.Filter, Name) as JJSearchBox;
+            var jjSearchBox = await ComponentFactory.Controls.CreateAsync(FormElement,field, new(await GetCurrentFilterAsync(), UserValues, PageState.Filter), Name) as JJSearchBox;
             jjSearchBox!.Name = objName;
             return await jjSearchBox.GetResultAsync();
         }
@@ -728,7 +728,7 @@ public class JJGridView : AsyncComponent
 
         var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, object?>(), null, PageState.Filter), null, Name));
         lookup.Name = lookupRoute;
-        lookup.DataItem.ElementMap.EnableElementActions = false;
+        lookup.ElementMap.EnableElementActions = false;
         return await lookup.GetResultAsync();
     }
 

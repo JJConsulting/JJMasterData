@@ -1,3 +1,4 @@
+using System;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
@@ -32,24 +33,27 @@ internal class LookupFactory : IControlFactory<JJLookup>
 
     public JJLookup Create()
     {
-        return new JJLookup(
-            null,
-            HttpContext,
-            LookupService,
-            EncryptionService,
-            UrlHelper,
-            LoggerFactory.CreateLogger<JJLookup>());
+        throw new InvalidOperationException("JJLookup must be instantiated with a FormElement and FormElementField.");
     }
 
     public JJLookup Create(FormElement formElement, FormElementField field, ControlContext controlContext)
     {
-        var lookup = Create();
+        var lookup = new JJLookup(
+            formElement,
+            field,
+            HttpContext,
+            LookupService,
+            EncryptionService,
+            UrlHelper,
+            LoggerFactory.CreateLogger<JJLookup>())
+        {
+            FieldNamePrefix = controlContext.ParentComponentName + "_"
+        };
         lookup.SetAttr(field.Attributes);
         lookup.Name = field.Name;
         lookup.SelectedValue = controlContext.Value?.ToString();
         lookup.Visible = true;
         lookup.FormElement = formElement;
-        lookup.DataItem = field.DataItem;
         lookup.AutoReloadFormFields = false;
         lookup.Attributes.Add("pnlname", controlContext.ParentComponentName);
         lookup.FormStateData = controlContext.FormStateData;

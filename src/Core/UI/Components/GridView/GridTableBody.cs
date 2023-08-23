@@ -146,7 +146,7 @@ internal class GridTableBody
                 {
                     if (field.Component == FormComponent.File)
                     {
-                        var upload = (JJTextFile)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, values, GridView.UserValues, PageState.List, GridView.Name, value);
+                        var upload = (JJTextFile)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List), GridView.Name, value);
                         td.Append(upload.GetButtonGroupHtml());
                     }
                     else
@@ -179,7 +179,7 @@ internal class GridTableBody
             value = value1.ToString();
         }
 
-        var control = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, values, GridView.UserValues, PageState.List, GridView.Name, value);
+        var control = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List), GridView.Name, value);
         control.Name = name;
         control.Attributes.Add("nRowId", index.ToString());
         control.CssClass = field.Name;

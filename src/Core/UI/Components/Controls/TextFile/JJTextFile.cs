@@ -384,7 +384,7 @@ public class JJTextFile : AsyncControl
         if (field == null)
             return null;
 
-        var textFile = (JJTextFile)await view.ComponentFactory.Controls.CreateAsync(view.FormElement, field, null, view.Values, view.PageState, view.Name);
+        var textFile = (JJTextFile)await view.ComponentFactory.Controls.CreateAsync(view.FormElement, field, new(view.Values,view.PageState), view.Name);
         return await textFile.GetResultAsync();
     }
 
