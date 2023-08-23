@@ -32,6 +32,7 @@ public class ElementField
     [JsonProperty("label")]
     public string? Label { get; set; }
 
+    [JsonIgnore]
     public string LabelOrName => string.IsNullOrEmpty(Label) ? Name : Label!;
     
     /// <summary>

@@ -25,7 +25,7 @@ public class ErrorController : Controller
             StackTrace = exceptionHandler?.Error.StackTrace
         };
         
-        logger?.LogError(exceptionHandler?.Error, exceptionHandler?.Error.Message);
+        logger?.LogCritical(exceptionHandler?.Error, "Unhandled exception captured by ErrorController");
 
         return View(model);
     }
