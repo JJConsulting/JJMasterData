@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using Newtonsoft.Json;
@@ -16,10 +18,9 @@ public class ActionMap
     public required string ActionName { get; set; }
 
     [JsonProperty("fieldName")] 
-    public string FieldName { get; set; }
+    public string? FieldName { get; set; }
 
-    [JsonProperty("pkFieldValues")] 
-    public IDictionary<string, object> PkFieldValues { get; set; }
+    [JsonProperty("pkFieldValues")] public IDictionary<string, object> PkFieldValues { get; set; }
 
     [JsonProperty("contextAction")] 
     public required ActionSource ActionSource { get; set; }
@@ -43,7 +44,7 @@ public class ActionMap
         foreach (var f in formElement.Fields.ToList().FindAll(x => x.IsPk)
                      .Where(f => row.ContainsKey(f.Name) && row[f.Name] != null))
         {
-            PkFieldValues.Add(f.Name, row[f.Name].ToString());
+            PkFieldValues.Add(f.Name, row[f.Name].ToString()!);
         }
     }
     
@@ -55,7 +56,7 @@ public class ActionMap
             ActionSource.GridToolbar =>  formElement.Options.GridToolbarActions.First(a => a.Name.Equals(ActionName)),
             ActionSource.FormToolbar =>  formElement.Options.FormToolbarActions.First(a => a.Name.Equals(ActionName)),
             ActionSource.Field => formElement.Fields[FieldName].Actions.Get(ActionName),
-            _ => null,
+            _ => throw new JJMasterDataException("Invalid ActionSource"),
         };
     }
 }

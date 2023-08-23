@@ -164,7 +164,7 @@ public class ElementService : BaseService
         formView.GridView.FilterAction.ExpandedByDefault = true;
         formView.GridView.OnDataLoadAsync += async (_, args) =>
         {
-            var filter = DataDictionaryFilter.FromDictionary(args.Filters);
+            var filter = DataDictionaryFilter.FromDictionary(args.Filters!);
             var result =
                 await DataDictionaryRepository.GetFormElementInfoListAsync(filter, args.OrderBy, args.RecordsPerPage,
                     args.CurrentPage);
@@ -220,7 +220,7 @@ public class ElementService : BaseService
 
     public async Task<byte[]> ExportSingleRowAsync(IDictionary<string, object> row)
     {
-        var dictionaryName = row["name"].ToString()!;
+        var dictionaryName = row["name"].ToString();
         var metadata = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
 
         var json = FormElementSerializer.Serialize(metadata, settings =>
@@ -238,7 +238,7 @@ public class ElementService : BaseService
         {
             foreach (var element in selectedRows)
             {
-                var dictionaryName = element["name"].ToString()!;
+                var dictionaryName = element["name"].ToString();
                 var metadata = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
                 
                 var json = FormElementSerializer.Serialize(metadata,settings =>

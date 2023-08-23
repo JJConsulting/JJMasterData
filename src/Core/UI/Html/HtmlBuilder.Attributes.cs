@@ -11,7 +11,7 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder WithNameAndId(string? id)
     {
-        if (!string.IsNullOrWhiteSpace(id))
+        if (id != null && !string.IsNullOrWhiteSpace(id))
             WithAttribute("id", id).WithAttribute("name", id);
 
         return this;
@@ -48,7 +48,7 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder WithAttributeIfNotEmpty(string name, string? value)
     {
-        if (!string.IsNullOrEmpty(value))
+        if (value != null && !string.IsNullOrEmpty(value))
             WithAttribute(name, value);
 
         return this;
@@ -75,7 +75,7 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder WithCssClass(string? classes)
     {
-        if (string.IsNullOrWhiteSpace(classes))
+        if (classes == null || string.IsNullOrWhiteSpace(classes))
             return this;
 
         if (!_attributes.ContainsKey("class"))
@@ -123,7 +123,7 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder WithToolTip(string? tooltip)
     {
-        if (!string.IsNullOrEmpty(tooltip))
+        if (tooltip != null && !string.IsNullOrEmpty(tooltip))
         {
             _attributes["title"] = tooltip;
             _attributes[BootstrapHelper.DataToggle] = "tooltip";

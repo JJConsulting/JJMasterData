@@ -38,13 +38,13 @@ public class JJValidationSummary : HtmlComponent
         ShowCloseButton = true;
     }
 
-    public JJValidationSummary(IDictionary<string, object>errors) : this()
+    public JJValidationSummary(IDictionary<string, string>errors) : this()
     {
         if (errors != null)
         {
             foreach (var err in errors)
             {
-                Errors.Add(err.Value.ToString());
+                Errors.Add(err.Value);
             }
         }
     }

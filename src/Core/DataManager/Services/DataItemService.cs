@@ -1,8 +1,6 @@
 #nullable enable
 
-using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
@@ -60,7 +58,7 @@ public class DataItemService : IDataItemService
         string? searchText,
         string? searchId)
     {
-        if (dataItem.Command == null || string.IsNullOrEmpty(dataItem.Command.Sql))
+        if ((dataItem.Command == null || string.IsNullOrEmpty(dataItem.Command.Sql)) && dataItem.Items != null)
         {
             foreach (var item in dataItem.Items)
             {
@@ -78,7 +76,7 @@ public class DataItemService : IDataItemService
             var item = new DataItemValue
             {
                 Id = row.ElementAt(0).Value?.ToString(),
-                Description = row.ElementAt(1).Value?.ToString().Trim()
+                Description = row.ElementAt(1).Value?.ToString()!.Trim()
             };
             if (dataItem.ShowImageLegend)
             {
@@ -95,7 +93,7 @@ public class DataItemService : IDataItemService
 
     private string? GetSqlParsed(FormElementDataItem dataItem, FormStateData formStateData, string? searchText, string? searchId)
     {
-        var sql = dataItem.Command.Sql;
+        var sql = dataItem.Command!.Sql;
         if (sql.Contains("{"))
         {
             if (searchId != null)

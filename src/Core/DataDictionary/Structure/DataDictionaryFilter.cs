@@ -13,28 +13,28 @@ public class DataDictionaryFilter
     public DateTime? LastModifiedFrom { get;private set; }
     public DateTime? LastModifiedTo { get;private  set; }
     public string? Json { get; private set; }
-    public static DataDictionaryFilter FromDictionary(IDictionary<string, object>filter)
+    public static DataDictionaryFilter FromDictionary(IDictionary<string, object?>filter)
     {
         var result = new DataDictionaryFilter();
 
-        if (filter.TryGetValue(DataDictionaryStructure.Name, out var name))
+        if (filter.TryGetValue(DataDictionaryStructure.Name, out var name) && name != null)
         {
             result.Name = name.ToString();
         }
 
-        if (filter.TryGetValue(DataDictionaryStructure.TableName, out var tableName))
+        if (filter.TryGetValue(DataDictionaryStructure.TableName, out var tableName) && tableName != null)
         {
-            result.ContainsTableName = tableName.ToString().Split(',');
+            result.ContainsTableName = tableName.ToString()!.Split(',');
         }
         
-        if (filter.TryGetValue(DataDictionaryStructure.LastModifiedFrom, out var lastModifiedFrom))
+        if (filter.TryGetValue(DataDictionaryStructure.LastModifiedFrom, out var lastModifiedFrom) && lastModifiedFrom != null)
         {
-            result.LastModifiedFrom = DateTime.Parse(lastModifiedFrom.ToString());
+            result.LastModifiedFrom = DateTime.Parse(lastModifiedFrom.ToString()!);
         }
         
-        if (filter.TryGetValue(DataDictionaryStructure.LastModifiedTo, out var lastModifiedTo))
+        if (filter.TryGetValue(DataDictionaryStructure.LastModifiedTo, out var lastModifiedTo) && lastModifiedTo != null)
         {
-            result.LastModifiedTo = DateTime.Parse(lastModifiedTo.ToString());
+            result.LastModifiedTo = DateTime.Parse(lastModifiedTo.ToString()!);
         }
         
         if (filter.TryGetValue(DataDictionaryStructure.Json, out var json))

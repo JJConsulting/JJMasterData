@@ -21,7 +21,7 @@ public class FieldsService : IFieldsService
         FieldValuesService = fieldValuesService;
     }
     
-    public async Task<IDictionary<string, object>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool enableErrorLink)
+    public async Task<IDictionary<string, string>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool enableErrorLink)
     {
        return await FieldValidationService.ValidateFieldsAsync(formElement, formValues, pageState, enableErrorLink);
     }

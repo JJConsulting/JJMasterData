@@ -82,7 +82,7 @@ public class ExpressionsService : IExpressionsService
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        var expressionType = expression!.Split(':')[0];
+        var expressionType = expression?.Split(':')[0];
         var provider = ExpressionProviders.FirstOrDefault(p => p.CanHandle(expressionType));
         if (provider == null)
         {

@@ -12,6 +12,7 @@
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <RootNamespace>JJMasterData.Core</RootNamespace>
         <AssemblyName>JJMasterData.Core</AssemblyName>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     
     <ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">

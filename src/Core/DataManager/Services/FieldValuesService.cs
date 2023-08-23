@@ -1,7 +1,7 @@
-﻿using JJMasterData.Commons.Data.Entity.Abstractions;
+﻿#nullable enable
+using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,15 +35,15 @@ public class FieldValuesService : IFieldValuesService
     /// <returns>
     /// Returns a new Dictionary with the updated values
     /// </returns>
-    public async Task<IDictionary<string, object>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool replaceNullValues)
+    public async Task<IDictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState, bool replaceNullValues)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 
-        IDictionary<string, object> newValues = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        IDictionary<string, object?> newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var f in formElement.Fields)
         {
-            if (formValues.TryGetValue(f.Name, out var value))
+            if (formValues.TryGetValue(f.Name, out var value) && value != null)
             {
                 object val = ClearSpecialChars(f, value);
                 newValues.Add(f.Name, val);
@@ -56,9 +56,9 @@ public class FieldValuesService : IFieldValuesService
         return newValues;
     }
 
-    public async Task<IDictionary<string, object>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState state)
+    public async Task<IDictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState state)
     {
-        var filters = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        var filters = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         var list = formElement.Fields
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.DefaultValue));
@@ -66,8 +66,8 @@ public class FieldValuesService : IFieldValuesService
         var formState = new FormStateData(formValues, state);
         foreach (var e in list)
         {
-            string val = await ExpressionsService.GetDefaultValueAsync(e, formState);
-            if (!string.IsNullOrEmpty(val))
+            string? val = await ExpressionsService.GetDefaultValueAsync(e, formState);
+            if (val != null && !string.IsNullOrEmpty(val))
             {
                 filters.Add(e.Name, val);
             }
@@ -76,24 +76,21 @@ public class FieldValuesService : IFieldValuesService
         return filters;
     }
 
-    public async Task<IDictionary<string, object>> MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState)
+    public async Task<IDictionary<string, object?>> MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState)
     {
-        IDictionary<string, object> values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-        if (formValues != null)
-        {
-            foreach (var v in formValues)
-                values.Add(v.Key, v.Value);
-        }
+        IDictionary<string, object?> values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+  
+        foreach (var v in formValues)
+            values.Add(v.Key, v.Value);
+        
 
         await ApplyDefaultValues(formElement,values, pageState, false);
         return values;
     }
 
-    private async Task ApplyDefaultValues(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool replaceNullValues)
+    private async Task ApplyDefaultValues(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState, bool replaceNullValues)
     {
         var defaultValues = await GetDefaultValuesAsync(formElement,formValues, pageState);
-        if (defaultValues == null)
-            return;
 
         foreach (var d in defaultValues)
         {
@@ -103,7 +100,7 @@ public class FieldValuesService : IFieldValuesService
             }
             else
             {
-                if ((formValues[d.Key] == null || string.IsNullOrEmpty(formValues[d.Key].ToString()))
+                if ((formValues[d.Key] == null || string.IsNullOrEmpty(formValues[d.Key]?.ToString()))
                     && replaceNullValues)
                 {
                     formValues[d.Key] = d.Value;
@@ -112,7 +109,7 @@ public class FieldValuesService : IFieldValuesService
         }
     }
 
-    private async Task ApplyTriggerValues(FormElement formElement, IDictionary<string, object> formValues, PageState pageState)
+    private async Task ApplyTriggerValues(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState)
     {
         var listFields = formElement.Fields
             .ToList()
@@ -129,21 +126,18 @@ public class FieldValuesService : IFieldValuesService
         }
     }
 
-    private static object ClearSpecialChars(FormElementField f, object val)
+    private static object ClearSpecialChars(FormElementField f, object value)
     {
-        if (val != null)
+        value = f.Component switch
         {
-            val = f.Component switch
-            {
-                FormComponent.Cnpj or FormComponent.Cnpj or FormComponent.CnpjCpf => StringManager.ClearCpfCnpjChars(
-                    val.ToString()),
-                FormComponent.Tel => StringManager.ClearTelChars(val.ToString()),
-                FormComponent.Cep => val.ToString().Replace("-", ""),
-                _ => val
-            };
-        }
+            FormComponent.Cnpj or FormComponent.Cnpj or FormComponent.CnpjCpf => StringManager.ClearCpfCnpjChars(
+                value.ToString()!),
+            FormComponent.Tel => StringManager.ClearTelChars(value.ToString()!),
+            FormComponent.Cep => value.ToString()!.Replace("-", ""),
+            _ => value
+        };
 
-        return val;
+        return value;
     }
 
 }

@@ -65,7 +65,7 @@ public class JJComboBox : HtmlControl
         Enabled = true;
         MultiSelect = false;
         DataItem = new FormElementDataItem();
-        var defaultValues = new Dictionary<string, object>();
+        var defaultValues = new Dictionary<string, object?>();
         FormStateData = new FormStateData(defaultValues, PageState.List);
     }
 
@@ -298,7 +298,7 @@ public class JJComboBox : HtmlControl
         }
         else
         {
-            values = DataItem.Items;
+            values = DataItem.Items!;
         }
 
 

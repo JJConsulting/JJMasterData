@@ -12,7 +12,7 @@ public class ResponseLetter
     public string Message { get; set; }
 
     [JsonProperty("validationList")]
-    public IDictionary<string, object> ValidationList { get; set; }
+    public IDictionary<string, string> ValidationList { get; set; }
 
     [JsonProperty("data")]
     public IDictionary<string, object>  Data { get; set; }

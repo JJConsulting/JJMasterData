@@ -35,6 +35,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.FormView;
+// ReSharper disable UnusedMember.Local
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -87,7 +88,7 @@ public class JJGridView : AsyncComponent
     private IList<Dictionary<string,object?>>? _dataSource;
     private ActionsScripts? _actionsScripts;
     private List<FormElementField>? _pkFields;
-    private IDictionary<string, object>? _defaultValues;
+    private IDictionary<string, object?>? _defaultValues;
     private FormStateData? _formData;
     private ActionMap? _currentActionMap;
     private JJDataImportation? _dataImportation;
@@ -351,15 +352,10 @@ public class JJGridView : AsyncComponent
             if (_table != null)
                 return _table;
 
-            _table = new GridTable(this)
-            {
-                Body =
-                {
-                    OnRenderAction = OnRenderAction,
-                    OnRenderSelectedCell = OnRenderSelectedCell,
-                    OnRenderCell = OnRenderCell
-                }
-            };
+            _table = new GridTable(this);
+            _table.Body.OnRenderAction += OnRenderAction;
+            _table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
+            _table.Body.OnRenderCell += OnRenderCell;
 
             return _table;
         }
@@ -440,7 +436,8 @@ public class JJGridView : AsyncComponent
     /// <summary>
     /// Key-Value pairs with the errors.
     /// </summary>
-    public IDictionary<string, object> Errors { get; } = new Dictionary<string, object>();
+    // ReSharper disable once CollectionNeverUpdated.Global
+    public IDictionary<string, string> Errors { get; } = new Dictionary<string, string>();
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form.
@@ -701,7 +698,7 @@ public class JJGridView : AsyncComponent
     
     private IEnumerable<HtmlBuilder> GetHiddenInputs(string? currentAction)
     {
-        yield return new HtmlBuilder().AppendHiddenInput($"current-table-order-{Name}", CurrentOrder?.ToQueryParameter() ?? string.Empty);
+        yield return new HtmlBuilder().AppendHiddenInput($"current-table-order-{Name}", CurrentOrder.ToQueryParameter() ?? string.Empty);
         yield return new HtmlBuilder().AppendHiddenInput($"current-table-page-{Name}", CurrentPage.ToString());
         yield return new HtmlBuilder().AppendHiddenInput($"current-table-action-{Name}", currentAction ?? string.Empty);
         yield return new HtmlBuilder().AppendHiddenInput($"current-table-row-{Name}", string.Empty);
@@ -711,8 +708,8 @@ public class JJGridView : AsyncComponent
             yield return new HtmlBuilder().AppendHiddenInput($"selected-rows{Name}", SelectedRowsId ?? string.Empty);
         }
     }
-    
-    public async Task<string> GetTableRowHtmlAsync(int rowIndex)
+
+    internal async Task<string> GetTableRowHtmlAsync(int rowIndex)
     {
         var row = DataSource?[rowIndex];
 
@@ -729,13 +726,13 @@ public class JJGridView : AsyncComponent
         if (field == null) 
             return new EmptyComponentResult();
 
-        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, object>(), null, PageState.Filter), null, Name));
+        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, object?>(), null, PageState.Filter), null, Name));
         lookup.Name = lookupRoute;
         lookup.DataItem.ElementMap.EnableElementActions = false;
         return await lookup.GetResultAsync();
     }
 
-    internal JJTitle GetTitle(IDictionary<string, object>? values = null)
+    internal JJTitle GetTitle(IDictionary<string, object?>? values = null)
     {
         var title = FormElement.Title;
         var subTitle = FormElement.SubTitle;
@@ -759,7 +756,7 @@ public class JJGridView : AsyncComponent
 
     internal async Task<HtmlBuilder> GetToolbarHtmlBuilder() => await new GridToolbar(this).GetHtmlBuilderAsync();
 
-    public string GetFilterHtml() => Filter.GetFilterHtml().ToString();
+    public string? GetFilterHtml() => Filter.GetFilterHtml().ToString();
 
     public async Task<string> GetToolbarHtml() => (await GetToolbarHtmlBuilder()).ToString();
 
@@ -930,7 +927,7 @@ public class JJGridView : AsyncComponent
         return script.ToString();
     }
 
-    internal async Task<IDictionary<string, object>> GetDefaultValuesAsync() => _defaultValues ??=
+    internal async Task<IDictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
         await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
 
     internal async Task<FormStateData> GetFormDataAsync()
@@ -938,7 +935,7 @@ public class JJGridView : AsyncComponent
         if (_formData == null)
         {
             var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
-            var userValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            var userValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
 
             DataHelper.CopyIntoDictionary(userValues, UserValues, false);
             DataHelper.CopyIntoDictionary(userValues, defaultValues, true);
@@ -1029,7 +1026,7 @@ public class JJGridView : AsyncComponent
             if (name.Length > 0)
                 name += "_";
 
-            name += row[fpk.Name]?.ToString()
+            name += row[fpk.Name]!.ToString()!
                 .Replace(" ", "_")
                 .Replace("'", "")
                 .Replace("\"", "");
@@ -1054,7 +1051,7 @@ public class JJGridView : AsyncComponent
 
         foreach (string key in @params)
         {
-            values.Add(key, @params[key]);
+            values.Add(key, @params[key]!);
         }
 
         return values;
@@ -1160,10 +1157,10 @@ public class JJGridView : AsyncComponent
     private async Task<DictionaryListResult> GetDataSourceAsync(EntityParameters parameters)
     {
         DataTable dataTable;
-        if (IsUserSetDataSource)
+        if (IsUserSetDataSource && DataSource != null)
         {
 
-            var dataView = new DataView(EnumerableHelper.ConvertToDataTable(_dataSource));
+            var dataView = new DataView(EnumerableHelper.ConvertToDataTable(DataSource));
             dataView.Sort = parameters.OrderBy.ToQueryParameter();
 
             dataTable = dataView.ToTable();
@@ -1189,7 +1186,7 @@ public class JJGridView : AsyncComponent
 
             TotalOfRecords = args.TotalOfRecords;
             
-            return new DictionaryListResult(args.DataSource, args.TotalOfRecords);
+            return new DictionaryListResult(args.DataSource!, args.TotalOfRecords);
         }
         else
         {
@@ -1202,7 +1199,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the <see cref="EnableEditMode"/> property
     /// </remarks>
-    public async Task<List<IDictionary<string, object>>?> GetGridValuesAsync(int recordsPerPage, int currentPage)
+    public async Task<List<IDictionary<string, object?>>?> GetGridValuesAsync(int recordsPerPage, int currentPage)
     {
         var result = await GetDataSourceAsync(new EntityParameters
         {
@@ -1249,27 +1246,26 @@ public class JJGridView : AsyncComponent
         if (!EnableMultiSelect)
             return listValues;
 
-        string? inputHidden = SelectedRowsId;
+        var inputHidden = SelectedRowsId;
         if (string.IsNullOrEmpty(inputHidden))
             return listValues;
 
-        string[]? pkList = inputHidden?.Split(',');
+        var pkList = inputHidden!.Split(',');
 
         var pkFields = PrimaryKeyFields;
-        if (pkList != null)
-            foreach (string pk in pkList)
+        foreach (var pk in pkList)
+        {
+            var values = new Dictionary<string, object>();
+            var descriptval = EncryptionService.DecryptStringWithUrlUnescape(pk);
+            string[] ids = descriptval.Split(';');
+            for (var i = 0; i < pkFields.Count; i++)
             {
-                var values = new Dictionary<string, object>();
-                string descriptval = EncryptionService.DecryptStringWithUrlUnescape(pk);
-                string[] ids = descriptval.Split(';');
-                for (int i = 0; i < pkFields.Count; i++)
-                {
-                    values.Add(pkFields[i].Name, ids[i]);
-                }
-
-                values.Add("INTERNALPK", descriptval);
-                listValues.Add(values);
+                values.Add(pkFields[i].Name, ids[i]);
             }
+
+            values.Add("INTERNALPK", descriptval);
+            listValues.Add(values);
+        }
 
         return listValues;
     }
@@ -1311,7 +1307,7 @@ public class JJGridView : AsyncComponent
     /// Key = Field name
     /// Value = Message
     /// </returns>
-    public async Task<IDictionary<string, object>> ValidateGridFieldsAsync(List<IDictionary<string, object>> values)
+    public async Task<IDictionary<string, object>> ValidateGridFieldsAsync(List<IDictionary<string, object?>> values)
     {
         if (values == null)
             throw new ArgumentNullException(nameof(values));
@@ -1328,9 +1324,9 @@ public class JJGridView : AsyncComponent
                 bool visible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
                 if (enabled && visible && field.DataBehavior is not FieldBehavior.ViewOnly)
                 {
-                    string val = string.Empty;
+                    string? val = string.Empty;
                     if (row[field.Name] != null)
-                        val = row[field.Name].ToString();
+                        val = row[field.Name]?.ToString();
 
                     string objname = GetFieldName(field.Name, row);
                     string err = FieldsService.ValidateField(field, objname, val);

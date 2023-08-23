@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.UI.Components.Controls;
@@ -19,9 +20,9 @@ internal class GridTableBody
 {
     private string Name => $"table_{GridView.Name}";
     private JJGridView GridView { get; }
-    public EventHandler<ActionEventArgs> OnRenderAction { get; set; }
-    public EventHandler<GridCellEventArgs> OnRenderCell { get; set; }
-    public EventHandler<GridSelectedCellEventArgs> OnRenderSelectedCell { get; set; }
+    public event EventHandler<ActionEventArgs> OnRenderAction;
+    public event EventHandler<GridCellEventArgs> OnRenderCell;
+    public event EventHandler<GridSelectedCellEventArgs> OnRenderSelectedCell;
 
     public GridTableBody(JJGridView gridView)
     {
@@ -130,7 +131,7 @@ internal class GridTableBody
                         DataRow = row,
                         Sender = new JJText(value)
                     };
-                    OnRenderCell.Invoke(GridView, args);
+                    OnRenderCell?.Invoke(GridView, args);
 
                     if (args.HtmlResult != null)
                     {
@@ -163,7 +164,7 @@ internal class GridTableBody
         string value)
     {
         string name = GridView.GetFieldName(field.Name, values);
-        bool hasError = GridView.Errors?.ContainsKey(name) ?? false;
+        bool hasError = GridView.Errors.ContainsKey(name);
 
         var div = new HtmlBuilder(HtmlTag.Div);
 
@@ -188,7 +189,7 @@ internal class GridTableBody
         {
             var args = new GridCellEventArgs { Field = field, DataRow = row, Sender = control };
 
-            OnRenderCell.Invoke(GridView, args);
+            OnRenderCell?.Invoke(GridView, args);
             div.AppendText(args.HtmlResult);
         }
         else
@@ -324,7 +325,7 @@ internal class GridTableBody
 
         var selectedGridValues = GridView.GetSelectedGridValues();
         
-        checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => kvp.Value == pkValues));
+        checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => kvp.Value.Equals(pkValues)));
 
         if (OnRenderSelectedCell != null)
         {

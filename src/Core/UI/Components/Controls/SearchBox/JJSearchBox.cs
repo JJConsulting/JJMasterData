@@ -7,10 +7,8 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.UI.Components.Abstractions;
-using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,7 +126,7 @@ public class JJSearchBox : AsyncControl
     {
         get =>
             Attributes.ContainsKey(ScrollbarAttribute) &&
-            Attributes[ScrollbarAttribute].ToString().Equals("true");
+            Attributes[ScrollbarAttribute].Equals("true");
         set
         {
             string booleanString = value ? "true" : "false";
@@ -200,7 +198,7 @@ public class JJSearchBox : AsyncControl
         AutoReloadFormFields = true;
         Name = "jjsearchbox1";
         DataItem = new FormElementDataItem();
-        var defaultValues = new Dictionary<string, object>();
+        var defaultValues = new Dictionary<string, object?>();
         FormStateData = new(defaultValues, UserValues, PageState.List);
     }
 
@@ -241,7 +239,7 @@ public class JJSearchBox : AsyncControl
     internal static async Task<ComponentResult> GetResultFromComponent(
         ComponentBase view,
         FormElement formElement,
-        IDictionary<string, object> formValues,
+        IDictionary<string, object?> formValues,
         IHttpContext httpContext,
         IControlFactory<JJSearchBox> searchBoxFactory)
     {
@@ -288,10 +286,10 @@ public class JJSearchBox : AsyncControl
             input.WithCssClass(CssClass);
 
             string? description = Text;
-            if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(selectedValue))
-                description = await GetDescriptionAsync(selectedValue!);
+            if (string.IsNullOrEmpty(description) && selectedValue != null && !string.IsNullOrEmpty(selectedValue))
+                description = await GetDescriptionAsync(selectedValue);
 
-            input.WithAttribute("value", description);
+            input.WithAttributeIfNotEmpty("value", description);
 
         });
         div.Append(HtmlTag.Input, input =>
@@ -299,7 +297,7 @@ public class JJSearchBox : AsyncControl
             input.WithAttribute("hidden", "hidden");
             input.WithAttribute("id", HtmlId);
             input.WithAttribute("name", Name);
-            input.WithValue(selectedValue);
+            input.WithAttributeIfNotEmpty("value",selectedValue);
         });
 
         return div;

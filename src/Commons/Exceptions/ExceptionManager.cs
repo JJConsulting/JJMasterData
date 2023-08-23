@@ -26,7 +26,7 @@ public static class ExceptionManager
                 string errMsg = GetMessage(exSql);
                 err.Message = errMsg;
                 err.Status = (int)HttpStatusCode.BadRequest;
-                err.ValidationList = new Dictionary<string, object>();
+                err.ValidationList = new Dictionary<string, string>();
                 err.ValidationList.Add("DB", errMsg);
                 break;
             }

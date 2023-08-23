@@ -140,7 +140,7 @@ public class RelationshipsService : BaseService
         {
             foreach (var r in elementRelationship.Columns)
             {
-                ValidateRelation(dictionaryName, elementRelationship.ChildElement, r.PkColumn, r.FkColumn);
+                await ValidateRelation(dictionaryName, elementRelationship.ChildElement, r.PkColumn, r.FkColumn);
             }
         }
 

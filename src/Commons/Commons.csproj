@@ -9,6 +9,7 @@
 		<RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<RootNamespace>JJMasterData.Commons</RootNamespace>
 		<AssemblyName>JJMasterData.Commons</AssemblyName>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />

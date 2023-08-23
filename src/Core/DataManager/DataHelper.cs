@@ -18,7 +18,7 @@ public static class DataHelper
     {
         if (userValues != null && userValues.TryGetValue("USERID", out var value))
         {
-            return value!.ToString();
+            return value.ToString();
         }
 
         if (currentContext.HasContext() &&
@@ -31,14 +31,14 @@ public static class DataHelper
     }
 
     
-    public static bool ContainsPkValues(Element element, IDictionary<string, object> values)
+    public static bool ContainsPkValues(Element element, IDictionary<string, object?> values)
     {
         var elementPks = GetElementPrimaryKeys(element);
 
         return elementPks.Count != 0 && elementPks.All(field => values.ContainsKey(field.Name));
     }
 
-    public static IDictionary<string, object> GetPkValues(Element element, IDictionary<string, object> values)
+    public static IDictionary<string, object> GetPkValues(Element element, IDictionary<string, object?> values)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -55,9 +55,14 @@ public static class DataHelper
         foreach (var field in elementPks)
         {
             if (!values.ContainsKey(field.Name))
-                throw new JJMasterDataException($"Primary key {field.Name} not entered");
+                throw new JJMasterDataException($"Primary key from {field.Name} not entered");
 
-            primaryKeys.Add(field.Name, values[field.Name]);
+            var value = values[field.Name];
+
+            if (value is null)
+                throw new JJMasterDataException($"Primary key value from {field.Name} cannot be null");
+            
+            primaryKeys.Add(field.Name, value);
         }
 
         return primaryKeys;
@@ -96,7 +101,7 @@ public static class DataHelper
     /// <summary>
     /// Concat primary keys with separator characters
     /// </summary>
-    public static string ParsePkValues(FormElement formElement, IDictionary<string, object> formValues, char separator)
+    public static string ParsePkValues(FormElement formElement, IDictionary<string, object?> formValues, char separator)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -137,7 +142,7 @@ public static class DataHelper
             }
             else
             {
-                value = formValues[field.Name].ToString();
+                value = formValues[field.Name]?.ToString() ?? throw new JJMasterDataException($"Primary key value from {field.Name} cannot be null");
             }
             
             if (value.Contains(separator))
@@ -155,7 +160,7 @@ public static class DataHelper
             .Cast<DataColumn>()
             .ToDictionary(col => col.ColumnName.ToLower(), col => row[col.ColumnName.ToLower()], StringComparer.InvariantCultureIgnoreCase);
 
-        return ParsePkValues(formElement, formValues, separator);
+        return ParsePkValues(formElement, formValues!, separator);
     }
 
     /// <summary>
@@ -171,7 +176,7 @@ public static class DataHelper
         foreach (var entry in paramValues)
         {
             var field = formElement.Fields[entry.Key];
-            if (!filters.ContainsKey(entry.Key!))
+            if (!filters.ContainsKey(entry.Key))
                 filters.Add(field.Name, entry.Value);
         }
 

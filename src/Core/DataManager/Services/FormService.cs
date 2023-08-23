@@ -6,7 +6,6 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Tasks;
@@ -79,10 +78,15 @@ public class FormService : IFormService
         var errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Update, EnableErrorLinks);
         var result = new FormLetter(errors);
 
-        if (OnBeforeUpdate != null)
+        if (OnBeforeUpdate != null || OnBeforeUpdateAsync != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(values, errors);
-            OnBeforeUpdate.Invoke(dataContext, beforeActionArgs);
+            OnBeforeUpdate?.Invoke(dataContext, beforeActionArgs);
+
+            if (OnBeforeUpdateAsync != null)
+            {
+                await OnBeforeUpdateAsync(dataContext, beforeActionArgs);
+            }
         }
 
         if (errors.Count > 0)
@@ -126,11 +130,11 @@ public class FormService : IFormService
 
     public async Task<FormLetter> InsertAsync(FormElement formElement, IDictionary<string, object> values, DataContext dataContext, bool validateFields = true)
     {
-        IDictionary<string, object> errors;
+        IDictionary<string, string> errors;
         if (validateFields)
             errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Insert, EnableErrorLinks);
         else
-            errors = new Dictionary<string, object>();
+            errors = new Dictionary<string, string>();
 
         var result = new FormLetter(errors);
         if (OnBeforeInsert != null || OnBeforeInsertAsync != null)
@@ -273,13 +277,18 @@ public class FormService : IFormService
     /// >
     public async Task<FormLetter> DeleteAsync(FormElement formElement, IDictionary<string, object> primaryKeys, DataContext dataContext)
     {
-        IDictionary<string, object> errors = new Dictionary<string, object>();
+        IDictionary<string, string> errors = new Dictionary<string, string>();
         var result = new FormLetter(errors);
 
-        if (OnBeforeDelete != null)
+        if (OnBeforeDelete != null || OnBeforeDeleteAsync != null)
         {
             var beforeActionArgs = new FormBeforeActionEventArgs(primaryKeys, errors);
             OnBeforeDelete?.Invoke(dataContext, beforeActionArgs);
+
+            if (OnBeforeDeleteAsync != null)
+            {
+                await OnBeforeDeleteAsync(dataContext, beforeActionArgs);
+            }
         }
 
         if (errors.Count > 0)

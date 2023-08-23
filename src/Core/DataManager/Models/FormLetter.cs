@@ -8,11 +8,11 @@ namespace JJMasterData.Core.DataManager;
 
 public class FormLetter
 {
-    private IDictionary<string, object>? _errors;
+    private IDictionary<string, string>? _errors;
 
-    public IDictionary<string, object> Errors 
+    public IDictionary<string, string> Errors 
     {
-        get => _errors ??= new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        get => _errors ??= new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         set => _errors = value;
     }
 
@@ -21,13 +21,8 @@ public class FormLetter
     public int NumberOfRowsAffected { get; set; }
 
     public string? UrlRedirect { get; set; }
-    
-    public FormLetter()
-    {
-            
-    }
 
-    public FormLetter(IDictionary<string, object>errors)
+    public FormLetter(IDictionary<string, string>errors)
     {
         _errors = errors;
     }
@@ -36,8 +31,7 @@ public class FormLetter
 public class FormLetter<T> : FormLetter
 {
     public T? Result { get; set; }
-    
-    public FormLetter() : base() { }
-    public FormLetter(IDictionary<string, object>errors) : base(errors) { }
+
+    public FormLetter(IDictionary<string, string>errors) : base(errors) { }
     
 }

@@ -1,3 +1,4 @@
+#nullable enable
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Web.Http.Abstractions;

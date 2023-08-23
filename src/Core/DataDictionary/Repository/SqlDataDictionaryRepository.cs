@@ -5,9 +5,7 @@ using JJMasterData.Commons.Data.Extensions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository;
 using Microsoft.Extensions.Options;
@@ -47,7 +45,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         foreach (var row in result)
         {
-            yield return FormElementSerializer.Deserialize(row["json"]!.ToString());
+            yield return FormElementSerializer.Deserialize(row["json"]!.ToString()!);
         }
     }
 
@@ -59,7 +57,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             new EntityParameters() { Filters = filter }, false);
         foreach (var row in dt.Data)
         {
-            yield return row["name"]!.ToString();
+            yield return row["name"]!.ToString()!;
         }
     }
 
@@ -70,7 +68,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         var values = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
 
-        var model = values.ToModel<DataDictionaryModel>();
+        var model = values?.ToModel<DataDictionaryModel>();
 
         return model != null ? FormElementSerializer.Deserialize(model.Json) : null;
     }
@@ -148,7 +146,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
             new EntityParameters()
             {
-                Filters = filters, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage
+                Filters = filters!, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage
             });
 
         var formElementInfoList = new List<FormElementInfo>();

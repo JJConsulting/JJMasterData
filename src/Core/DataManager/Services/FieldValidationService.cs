@@ -2,7 +2,6 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.Localization;
 using System;
@@ -24,12 +23,12 @@ public class FieldValidationService : IFieldValidationService
         Localizer = localizer;
     }
 
-    public async Task<IDictionary<string, object>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool enableErrorLink)
+    public async Task<IDictionary<string, string>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool enableErrorLink)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 
-        var errors = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        var errors = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         var formState = new FormStateData(formValues, pageState);
         foreach (var field in formElement.Fields)
         {

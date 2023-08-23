@@ -524,14 +524,14 @@ public class MasterApiService
         return newValues.Count > 0 ? newValues : null;
     }
 
-    private ResponseLetter CreateErrorResponseLetter(IDictionary<string, object>? errors,
+    private ResponseLetter CreateErrorResponseLetter(IDictionary<string, string>? errors,
         FormElementApiOptions apiOptions)
     {
         var letter = new ResponseLetter
         {
             Status = 400,
             Message = StringLocalizer["Invalid data"],
-            ValidationList = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase)
+            ValidationList = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         };
 
         if (errors == null)
