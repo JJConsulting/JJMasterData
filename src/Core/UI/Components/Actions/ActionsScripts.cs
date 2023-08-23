@@ -25,13 +25,13 @@ internal class ActionsScripts
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal IEncryptionService EncryptionService { get; }
 
     public ActionsScripts(
         IExpressionsService expressionsService,
         IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         ExpressionsService = expressionsService;

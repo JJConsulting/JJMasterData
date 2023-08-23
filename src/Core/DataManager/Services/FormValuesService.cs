@@ -21,14 +21,14 @@ public class FormValuesService : IFormValuesService
     private IFieldValuesService FieldValuesService { get; }
     private IDataItemService DataItemService { get; }
     private ILookupService LookupService { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IHttpContext CurrentContext { get; }
     public FormValuesService(
         IEntityRepository entityRepository,
         IFieldValuesService fieldValuesService,
         IDataItemService dataItemService,
         ILookupService lookupService,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IHttpContext currentContext)
     {
         EntityRepository = entityRepository;

@@ -45,7 +45,7 @@ public class ExpressionsService : IExpressionsService
     }
 
     public string? ParseExpression(string? expression, FormStateData formStateData, bool quotationMarks,
-        ExpressionManagerInterval? interval = null)
+        ExpressionParserInterval? interval = null)
     {
         return ExpressionParser.ParseExpression(expression, formStateData, quotationMarks, interval);
     }
@@ -76,19 +76,18 @@ public class ExpressionsService : IExpressionsService
         ElementField field,
         FormStateData formStateData)
     {
-        if (string.IsNullOrEmpty(expression))
+        if (expression is null || string.IsNullOrEmpty(expression))
             return null;
 
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        var expressionType = expression?.Split(':')[0];
+        var expressionType = expression.Split(':')[0];
         var provider = ExpressionProviders.FirstOrDefault(p => p.CanHandle(expressionType));
         if (provider == null)
         {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}");
         }
-
         try
         {
             var result = await provider.EvaluateAsync(expression, formStateData);

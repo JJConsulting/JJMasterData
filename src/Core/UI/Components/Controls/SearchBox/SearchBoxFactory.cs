@@ -19,7 +19,7 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IFormValuesService FormValuesService { get; }
     private IHttpContext HttpContext { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public SearchBoxFactory(
@@ -28,7 +28,7 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
         IDataDictionaryRepository dataDictionaryRepository,
         IFormValuesService formValuesService,
         IHttpContext httpContext,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper)
     {
         EntityRepository = entityRepository;

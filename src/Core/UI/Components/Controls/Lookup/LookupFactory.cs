@@ -13,14 +13,14 @@ internal class LookupFactory : IControlFactory<JJLookup>
 {
     private IHttpContext HttpContext { get; }
     private ILookupService LookupService { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private ILoggerFactory LoggerFactory { get; }
 
     public LookupFactory(       
         IHttpContext httpContext,
         ILookupService lookupService,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         ILoggerFactory loggerFactory)
     {

@@ -9,8 +9,8 @@ namespace JJMasterData.Web.Filters;
 public class FormElementDecryptionFilter : ActionFilterAttribute
 {
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
-    public FormElementDecryptionFilter(JJMasterDataEncryptionService encryptionService, IDataDictionaryRepository dataDictionaryRepository)
+    private IEncryptionService EncryptionService { get; }
+    public FormElementDecryptionFilter(IEncryptionService encryptionService, IDataDictionaryRepository dataDictionaryRepository)
     {
         DataDictionaryRepository = dataDictionaryRepository;
         EncryptionService = encryptionService;

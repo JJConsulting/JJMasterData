@@ -6,9 +6,9 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class FileController : MasterDataController
 {
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
 
-    public FileController(JJMasterDataEncryptionService encryptionService)
+    public FileController(IEncryptionService encryptionService)
     {
         EncryptionService = encryptionService;
     }

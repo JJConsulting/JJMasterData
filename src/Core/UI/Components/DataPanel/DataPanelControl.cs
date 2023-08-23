@@ -50,7 +50,7 @@ internal class DataPanelControl
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
     internal IExpressionsService ExpressionsService { get; }
     private IFieldsService FieldsService { get; }
-    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal IEncryptionService EncryptionService { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     internal DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(this);
 

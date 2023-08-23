@@ -21,7 +21,7 @@ public class JJLookup : AsyncControl
 {
     internal FormElement FormElement { get; set; }
     private ILookupService LookupService { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private ILogger<JJLookup> Logger { get; }
 
@@ -96,7 +96,7 @@ public class JJLookup : AsyncControl
         FormElementField field,
         IHttpContext httpContext,
         ILookupService lookupService,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         ILogger<JJLookup> logger) : base(httpContext)
     {

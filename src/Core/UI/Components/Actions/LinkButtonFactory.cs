@@ -28,14 +28,14 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private ActionsScripts ActionsScripts => _actionsScripts ??= new ActionsScripts(ExpressionsService,DataDictionaryRepository, UrlHelper, EncryptionService, StringLocalizer);
     
     public LinkButtonFactory(
         IExpressionsService expressionsService,
         IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         ExpressionsService = expressionsService;

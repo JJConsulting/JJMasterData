@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Extensions;
 
-public static class JJMasterDataEncryptionServiceExtensions
+public static class EncryptionServiceExtensions
 {
     /// <summary>
     /// Encrypts the string with URL escape to prevent errors in parsing, algorithms like AES generate characters like '/'
@@ -13,7 +13,7 @@ public static class JJMasterDataEncryptionServiceExtensions
     /// <param name="service"></param>
     /// <param name="plainText"></param>
     /// <returns></returns>
-    public static string EncryptStringWithUrlEscape(this JJMasterDataEncryptionService service, string plainText)
+    public static string EncryptStringWithUrlEscape(this IEncryptionService service, string plainText)
     {
         return Uri.EscapeDataString(service.EncryptString(plainText));
     }
@@ -24,17 +24,17 @@ public static class JJMasterDataEncryptionServiceExtensions
     /// <param name="service"></param>
     /// <param name="cipherText"></param>
     /// <returns></returns>
-    public static string DecryptStringWithUrlUnescape(this JJMasterDataEncryptionService service, string cipherText)
+    public static string DecryptStringWithUrlUnescape(this IEncryptionService service, string cipherText)
     {
         return service.DecryptString(Uri.UnescapeDataString(cipherText));
     }
     
-    public static string EncryptActionMap(this JJMasterDataEncryptionService service, ActionMap actionMap)
+    public static string EncryptActionMap(this IEncryptionService service, ActionMap actionMap)
     {
         return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(actionMap));
     }
     
-    public static ActionMap DecryptActionMap(this JJMasterDataEncryptionService service, string encryptedActionMap)
+    public static ActionMap DecryptActionMap(this IEncryptionService service, string encryptedActionMap)
     {
         return JsonConvert.DeserializeObject<ActionMap>(service.DecryptStringWithUrlUnescape(encryptedActionMap));
     }

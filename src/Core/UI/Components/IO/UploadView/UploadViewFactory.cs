@@ -12,7 +12,7 @@ namespace JJMasterData.Core.Web.Factories;
 internal class UploadViewFactory : IComponentFactory<JJUploadView>
 {
     public ILoggerFactory LoggerFactory { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IHttpContext CurrentContext { get; }
     private ComponentFactory ComponentFactory { get; }
@@ -20,7 +20,7 @@ internal class UploadViewFactory : IComponentFactory<JJUploadView>
     public UploadViewFactory(
         IHttpContext currentContext,
         ComponentFactory componentFactory,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {

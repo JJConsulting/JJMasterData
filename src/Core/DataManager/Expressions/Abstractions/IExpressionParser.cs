@@ -8,6 +8,6 @@ public interface IExpressionParser
     string? ParseExpression(
         string? expression,
         FormStateData formStateData,
-        bool quotationMarks,
-        ExpressionManagerInterval? interval = null);
+        bool addQuotationMarks,
+        ExpressionParserInterval? interval = null);
 }

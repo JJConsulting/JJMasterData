@@ -20,10 +20,10 @@ public class InternalRedirectController : MasterDataController
     private RelationshipViewType _relationshipType;
 
     private ComponentFactory ComponentFactory { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IDictionary<string, object> RelationValues { get; }
 
-    public InternalRedirectController(ComponentFactory componentFactory, JJMasterDataEncryptionService encryptionService)
+    public InternalRedirectController(ComponentFactory componentFactory, IEncryptionService encryptionService)
     {
         ComponentFactory = componentFactory;
         EncryptionService = encryptionService;

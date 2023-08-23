@@ -24,7 +24,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IFormService FormService { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IFieldValuesService FieldValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -36,7 +36,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IFormService formService,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,

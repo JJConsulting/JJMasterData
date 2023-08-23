@@ -86,7 +86,7 @@ public class JJDataPanel : AsyncComponent
 
     internal IHttpContext CurrentContext { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
-    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal IEncryptionService EncryptionService { get; }
     internal IFieldsService FieldsService { get; }
     internal IFormValuesService FormValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
@@ -103,12 +103,12 @@ public class JJDataPanel : AsyncComponent
         EntityRepository =  StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
         DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         CurrentContext =  StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
-        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>();
         FieldsService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldsService>();
         FormValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFormValuesService>();
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
         UrlHelper = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
-        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>();
 
         Values = new Dictionary<string, object>();
         Errors =  new Dictionary<string, string>();
@@ -139,7 +139,7 @@ public class JJDataPanel : AsyncComponent
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext currentContext,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
@@ -167,7 +167,7 @@ public class JJDataPanel : AsyncComponent
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext currentContext,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         IFieldsService fieldsService,
         IFormValuesService formValuesService,

@@ -9,7 +9,7 @@ namespace JJMasterData.Commons.Cryptography;
 /// <summary>
 /// AES is more secure than the DES cipher and is the de facto world standard. DES can be broken easily as it has known vulnerabilities.
 /// </summary>
-public class AesEncryptionService : IEncryptionService
+public class AesEncryptionAlgorithm : IEncryptionAlgorithm
 {
     public string EncryptString(string plainText, string secretKey)
     {

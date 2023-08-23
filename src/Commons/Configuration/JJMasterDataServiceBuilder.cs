@@ -51,8 +51,8 @@ public class JJMasterDataServiceBuilder
         });
 
         Services.AddTransient<IEntityRepository, EntityRepository>();
-        Services.AddTransient<IEncryptionService, AesEncryptionService>();
-        Services.AddTransient<JJMasterDataEncryptionService>();
+        Services.AddTransient<IEncryptionAlgorithm, AesEncryptionAlgorithm>();
+        Services.AddTransient<IEncryptionService,EncryptionService>();
 
         Services.AddSingleton<IBackgroundTask, BackgroundTask>();
 

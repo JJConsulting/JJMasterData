@@ -17,7 +17,7 @@ namespace JJMasterData.Core.Web.Components.Scripts;
 public class GridScripts
 {
     private readonly JJGridView _gridView;
-    private JJMasterDataEncryptionService EncryptionService => _gridView.EncryptionService;
+    private IEncryptionService EncryptionService => _gridView.EncryptionService;
     private JJMasterDataUrlHelper UrlHelper => _gridView.UrlHelper;
     private IExpressionsService ExpressionsService => _gridView.ExpressionsService;
     private IStringLocalizer<JJMasterDataResources> StringLocalizer => _gridView.StringLocalizer;

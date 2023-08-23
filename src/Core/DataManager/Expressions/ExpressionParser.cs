@@ -14,11 +14,11 @@ public class ExpressionParser : IExpressionParser
     {
         HttpContext = httpContext;
     }
-        public string? ParseExpression(
+    public string? ParseExpression(
         string? expression,
         FormStateData formStateData,
-        bool quotationMarks,
-        ExpressionManagerInterval? interval = null)
+        bool addQuotationMarks,
+        ExpressionParserInterval? interval = null)
     {
         if (expression is null)
             return null;
@@ -30,7 +30,7 @@ public class ExpressionParser : IExpressionParser
             .Replace("protheus:", "")
             .Trim();
 
-        interval ??= new ExpressionManagerInterval('{', '}');
+        interval ??= new ExpressionParserInterval('{', '}');
 
         var list = StringManager.FindValuesByInterval(expression, interval.Begin, interval.End);
         var userValues = formStateData.UserValues;
@@ -67,10 +67,10 @@ public class ExpressionParser : IExpressionParser
 
             if (val == null) continue;
 
-            if (quotationMarks)
+            if (addQuotationMarks)
                 val = "'" + val + "'";
 
-            if (interval.Begin == '{' && interval.End == '}')
+            if (interval is { Begin: '{', End: '}' })
             {
                 parsedExpression = parsedExpression.Replace($"{{{field}}}", val);
             }

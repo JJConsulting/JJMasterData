@@ -17,7 +17,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public TextFileFactory(
@@ -25,7 +25,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         JJMasterDataUrlHelper urlHelper,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup>  textBoxFactory,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpContext = httpContext;

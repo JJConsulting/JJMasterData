@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 public class ActionMapDecryptionFilter : ActionFilterAttribute
 {
-    private readonly JJMasterDataEncryptionService _encryptionService;
+    private readonly IEncryptionService _encryptionService;
 
-    public ActionMapDecryptionFilter(JJMasterDataEncryptionService encryptionService)
+    public ActionMapDecryptionFilter(IEncryptionService encryptionService)
     {
         _encryptionService = encryptionService;
     }

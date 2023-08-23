@@ -8,9 +8,9 @@ namespace JJMasterData.Web.Filters;
 
 public class LookupParametersDecryptionFilter : ActionFilterAttribute
 {
-    private readonly JJMasterDataEncryptionService _encryptionService;
+    private readonly IEncryptionService _encryptionService;
 
-    public LookupParametersDecryptionFilter(JJMasterDataEncryptionService encryptionService)
+    public LookupParametersDecryptionFilter(IEncryptionService encryptionService)
     {
         _encryptionService = encryptionService;
     }

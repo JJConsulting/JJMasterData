@@ -7,21 +7,21 @@ namespace JJMasterData.Commons.Cryptography;
 /// <summary>
 /// Wrapper to IEncryptionService with the secret key loaded by IOptions.
 /// </summary>
-public class JJMasterDataEncryptionService
+public class EncryptionService : IEncryptionService
 {
     private readonly string _secretKey;
-    private readonly IEncryptionService _encryptionService;
+    private readonly IEncryptionAlgorithm _encryptionAlgorithm;
 
-    public JJMasterDataEncryptionService(
-        IEncryptionService encryptionService,
+    public EncryptionService(
+        IEncryptionAlgorithm encryptionAlgorithm,
         IOptions<JJMasterDataCommonsOptions> options)
     {
-        _encryptionService = encryptionService;
+        _encryptionAlgorithm = encryptionAlgorithm;
         _secretKey = options.Value.SecretKey;
     }
 
-    public string EncryptString(string plainText) => _encryptionService.EncryptString(plainText, _secretKey);
+    public string EncryptString(string plainText) => _encryptionAlgorithm.EncryptString(plainText, _secretKey);
 
     public string DecryptString(string cipherText) =>
-        _encryptionService.DecryptString(cipherText,_secretKey);
+        _encryptionAlgorithm.DecryptString(cipherText,_secretKey);
 }

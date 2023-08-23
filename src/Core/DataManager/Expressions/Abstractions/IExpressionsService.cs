@@ -13,7 +13,7 @@ public interface IExpressionsService
         string? expression,
         FormStateData formStateData,
         bool quotationMarks,
-        ExpressionManagerInterval? interval = null);
+        ExpressionParserInterval? interval = null);
     
     Task<bool> GetBoolValueAsync(string expression, FormStateData formStateData);
     

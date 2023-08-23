@@ -39,7 +39,7 @@ namespace JJMasterData.Core.Web.Components;
 public class JJDataExportation : ProcessComponent
 {
     private readonly JJMasterDataUrlHelper _urlHelper;
-    private readonly JJMasterDataEncryptionService _encryptionService;
+    private readonly IEncryptionService _encryptionService;
     private DataExportationScripts _dataExportationScripts;
 
 
@@ -93,7 +93,7 @@ public class JJDataExportation : ProcessComponent
         ILoggerFactory loggerFactory,
         IHttpContext currentContext,
         JJMasterDataUrlHelper urlHelper, 
-        JJMasterDataEncryptionService encryptionService, 
+        IEncryptionService encryptionService, 
         DataExportationWriterFactory dataExportationWriterFactory) : 
         base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(),stringLocalizer)
     {

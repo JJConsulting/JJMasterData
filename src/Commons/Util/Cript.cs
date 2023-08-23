@@ -15,13 +15,13 @@ namespace JJMasterData.Commons.Util;
 public class Cript
 {
     private const string SecretKeyErrorMessage = "You must config or pass a secret key";
-    private static DesEncryptionService _desEncryptionService;
-    private static ReportPortalEnigmaService _reportPortalEnigmaService;
+    private static DesEncryptionAlgorithm _desEncryptionAlgorithm;
+    private static ReportPortalEnigmaAlgorithm _reportPortalEnigmaAlgorithm;
 
-    private static DesEncryptionService DesEncryptionService => _desEncryptionService ??= new DesEncryptionService();
+    private static DesEncryptionAlgorithm DesEncryptionAlgorithm => _desEncryptionAlgorithm ??= new DesEncryptionAlgorithm();
 
-    private static ReportPortalEnigmaService ReportPortalEnigmaService =>
-        _reportPortalEnigmaService ??= new ReportPortalEnigmaService();
+    private static ReportPortalEnigmaAlgorithm ReportPortalEnigmaAlgorithm =>
+        _reportPortalEnigmaAlgorithm ??= new ReportPortalEnigmaAlgorithm();
 
     /// <summary>
     /// Encrypts a text.
@@ -40,7 +40,7 @@ public class Cript
         if (string.IsNullOrEmpty(secretKey))
             throw new ArgumentNullException(nameof(secretKey), SecretKeyErrorMessage);
 
-        return DesEncryptionService.EncryptString(value, secretKey);
+        return DesEncryptionAlgorithm.EncryptString(value, secretKey);
     }
 
     /// <summary>
@@ -60,17 +60,7 @@ public class Cript
         if (string.IsNullOrEmpty(secretKey))
             throw new ArgumentNullException(nameof(secretKey), SecretKeyErrorMessage);
         
-        return DesEncryptionService.DecryptString(value, secretKey);
-    }
-
-    public static string CriptPwdProtheus(string password)
-    {
-        return ProtheusEncryptionService.EncryptPassword(password);
-    }
-
-    public static string DeCriptPwdProtheus(string password)
-    {
-        return ProtheusEncryptionService.DecryptPassword(password);
+        return DesEncryptionAlgorithm.DecryptString(value, secretKey);
     }
 
     public static string GetMd5Hash(string input)
@@ -88,7 +78,7 @@ public class Cript
         if (string.IsNullOrEmpty(secretKey))
             throw new ArgumentNullException(nameof(secretKey), SecretKeyErrorMessage);
         
-        return ReportPortalEnigmaService.EncryptString(message, secretKey);
+        return ReportPortalEnigmaAlgorithm.EncryptString(message, secretKey);
     }
 
     public static string EnigmaDecryptRP(string message, string secretKey = "Secret")
@@ -96,7 +86,7 @@ public class Cript
         if (string.IsNullOrEmpty(secretKey))
             throw new ArgumentNullException(nameof(secretKey), SecretKeyErrorMessage);
         
-        return ReportPortalEnigmaService.DecryptString(message, secretKey);
+        return ReportPortalEnigmaAlgorithm.DecryptString(message, secretKey);
     }
 }
 #endif

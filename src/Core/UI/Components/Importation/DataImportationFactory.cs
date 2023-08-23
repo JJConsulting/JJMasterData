@@ -37,7 +37,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
 
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private ILoggerFactory LoggerFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
@@ -55,7 +55,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         IControlFactory<JJComboBox> comboBoxFactory,
         DataImportationWorkerFactory dataImportationWorkerFactory,
         JJMasterDataUrlHelper urlHelper,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {

@@ -54,7 +54,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var filter = new Dictionary<string, object?> { { "type", "F" } };
 
         var dt = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
-            new EntityParameters() { Filters = filter }, false);
+            new EntityParameters { Filters = filter }, false);
         foreach (var row in dt.Data)
         {
             yield return row["name"]!.ToString()!;

@@ -214,14 +214,14 @@ public class JJUploadView : AsyncComponent
 
     private IHttpContext CurrentContext { get; }
     private ComponentFactory ComponentFactory { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
     private ILogger<JJUploadView> Logger { get; }
     public JJUploadView(
         IHttpContext currentContext,
         ComponentFactory componentFactory,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {

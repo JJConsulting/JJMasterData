@@ -69,7 +69,7 @@ public class JJDataImportation : ProcessComponent
     internal  IControlFactory<JJComboBox> ComboBoxFactory { get; }
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
 
     #endregion
 
@@ -86,7 +86,7 @@ public class JJDataImportation : ProcessComponent
         IControlFactory<JJComboBox> comboBoxFactory,
         DataImportationWorkerFactory dataImportationWorkerFactory,
         JJMasterDataUrlHelper urlHelper,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
         : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(), stringLocalizer)

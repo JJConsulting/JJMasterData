@@ -19,7 +19,7 @@ public class LookupService : ILookupService
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public LookupService(
@@ -27,7 +27,7 @@ public class LookupService : ILookupService
         IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper)
     {
         HttpContext = httpContext;

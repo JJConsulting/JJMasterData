@@ -1,10 +1,7 @@
-namespace JJMasterData.Commons.Cryptography.Abstractions;
+namespace JJMasterData.Commons.Cryptography;
 
-/// <summary>
-/// Represents a secure encryption service.
-/// </summary>
 public interface IEncryptionService
 {
-    public string EncryptString(string plainText, string secretKey);
-    public string DecryptString(string cipherText, string secretKey);
+    string EncryptString(string plainText);
+    string DecryptString(string cipherText);
 }

@@ -222,7 +222,7 @@ public class JJFormView : AsyncComponent
 
     internal IHttpContext CurrentContext { get; }
     internal IEntityRepository EntityRepository { get; }
-    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal IEncryptionService EncryptionService { get; }
     internal IFieldValuesService FieldValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -243,7 +243,7 @@ public class JJFormView : AsyncComponent
         EntityRepository = StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
         ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<ComponentFactory>();
         FormService = StaticServiceLocator.Provider.GetScopedDependentService<IFormService>();
-        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataEncryptionService>();
+        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>();
         FieldValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldValuesService>();
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
         StringLocalizer = StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
@@ -272,7 +272,7 @@ public class JJFormView : AsyncComponent
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IFormService formService,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,

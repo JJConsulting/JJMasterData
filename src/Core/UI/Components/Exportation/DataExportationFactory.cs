@@ -23,7 +23,7 @@ namespace JJMasterData.Core.Web.Factories;
 internal class DataExportationFactory : IFormElementComponentFactory<JJDataExportation>
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IExpressionsService ExpressionsService { get; }
@@ -48,7 +48,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         ILoggerFactory loggerFactory,
         IComponentFactory<JJFileDownloader> fileDownloaderFactory,
         JJMasterDataUrlHelper urlHelper,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         DataExportationWriterFactory dataExportationWriterFactory
         )
     {

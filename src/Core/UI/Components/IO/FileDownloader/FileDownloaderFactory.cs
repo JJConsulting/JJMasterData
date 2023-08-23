@@ -13,14 +13,14 @@ internal class FileDownloaderFactory : IComponentFactory<JJFileDownloader>
 {
     private IHttpContext HttpContext { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
     public FileDownloaderFactory(
         IHttpContext httpContext, 
         JJMasterDataUrlHelper urlHelper,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory
         )

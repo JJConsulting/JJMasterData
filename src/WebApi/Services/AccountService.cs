@@ -16,8 +16,8 @@ namespace JJMasterData.WebApi.Services;
 
 public class AccountService
 {
-    private JJMasterDataEncryptionService EncryptionService { get; }
-    private ReportPortalEnigmaService ReportPortalEnigmaService { get; }
+    private IEncryptionService EncryptionService { get; }
+    private ReportPortalEnigmaAlgorithm ReportPortalEnigmaAlgorithm { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataCoreOptions Options { get; }
     private ILogger<AccountService> Logger { get; }
@@ -26,14 +26,14 @@ public class AccountService
 
     public AccountService(
         IConfiguration configuration,
-        JJMasterDataEncryptionService encryptionService,
-        ReportPortalEnigmaService reportPortalEnigmaService,
+        IEncryptionService encryptionService,
+        ReportPortalEnigmaAlgorithm reportPortalEnigmaAlgorithm,
         IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILogger<AccountService> logger)
     {
         EncryptionService = encryptionService;
-        ReportPortalEnigmaService = reportPortalEnigmaService;
+        ReportPortalEnigmaAlgorithm = reportPortalEnigmaAlgorithm;
         StringLocalizer = stringLocalizer;
         Options = options.Value;
         Logger = logger;
@@ -53,7 +53,7 @@ public class AccountService
             };
 
             cmd.Parameters.Add(new DataAccessParameter("@username", username));
-            cmd.Parameters.Add(new DataAccessParameter("@password", ReportPortalEnigmaService.DecryptString(password, Options.SecretKey)));
+            cmd.Parameters.Add(new DataAccessParameter("@password", ReportPortalEnigmaAlgorithm.DecryptString(password, Options.SecretKey)));
             cmd.Parameters.Add(new DataAccessParameter("@appID", appId));
 
             var col = DataAccess.GetFields(cmd);
@@ -105,9 +105,9 @@ public class AccountService
                 CmdType = CommandType.StoredProcedure
             };
             cmd.Parameters.Add(new DataAccessParameter("@username", username));
-            cmd.Parameters.Add(new DataAccessParameter("@pwdCurrent", ReportPortalEnigmaService.EncryptString(pwdCurrent, Options.SecretKey)));
-            cmd.Parameters.Add(new DataAccessParameter("@pwdNew", ReportPortalEnigmaService.EncryptString(pwdNew, Options.SecretKey)));
-            cmd.Parameters.Add(new DataAccessParameter("@pwdConfirm", ReportPortalEnigmaService.EncryptString(pwdConfirm, Options.SecretKey)));
+            cmd.Parameters.Add(new DataAccessParameter("@pwdCurrent", ReportPortalEnigmaAlgorithm.EncryptString(pwdCurrent, Options.SecretKey)));
+            cmd.Parameters.Add(new DataAccessParameter("@pwdNew", ReportPortalEnigmaAlgorithm.EncryptString(pwdNew, Options.SecretKey)));
+            cmd.Parameters.Add(new DataAccessParameter("@pwdConfirm", ReportPortalEnigmaAlgorithm.EncryptString(pwdConfirm, Options.SecretKey)));
 
             var col = DataAccess.GetFields(cmd);
             if (col != null)
@@ -177,7 +177,7 @@ public class AccountService
                     if (ret.ErrorId == 101)
                     {
                         string? email = col["Email"]?.ToString();
-                        string pwd = ReportPortalEnigmaService.DecryptString(col["Password"]?.ToString(), Options.SecretKey);
+                        string pwd = ReportPortalEnigmaAlgorithm.DecryptString(col["Password"]?.ToString(), Options.SecretKey);
                         if (ret.UserId != null)
                         {
                             int userId = int.Parse(ret.UserId);
@@ -277,7 +277,7 @@ public class AccountService
             Port = int.Parse(GetParam("EmailPortNumber", userId) ?? string.Empty),
             Email = GetParam("FromEmail", userId),
             User = GetParam("EmailUser", userId),
-            Password = ReportPortalEnigmaService.DecryptString(GetParam("EmailPassword", userId), Options.SecretKey),
+            Password = ReportPortalEnigmaAlgorithm.DecryptString(GetParam("EmailPassword", userId), Options.SecretKey),
             EnableSSL = GetParam("EmailSSL", userId)!.Equals("True")
         };
 

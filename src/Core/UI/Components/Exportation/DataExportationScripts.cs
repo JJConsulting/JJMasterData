@@ -7,9 +7,9 @@ namespace JJMasterData.Core.Web.Components.Scripts;
 public class DataExportationScripts
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
 
-    public DataExportationScripts(JJMasterDataUrlHelper urlHelper, JJMasterDataEncryptionService encryptionService)
+    public DataExportationScripts(JJMasterDataUrlHelper urlHelper, IEncryptionService encryptionService)
     {
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;

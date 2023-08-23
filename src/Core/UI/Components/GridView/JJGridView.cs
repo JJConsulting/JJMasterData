@@ -495,7 +495,7 @@ public class JJGridView : AsyncComponent
     #region Injected Services
     internal IFieldsService FieldsService { get; }
     internal IExpressionsService ExpressionsService { get; }
-    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal IEncryptionService EncryptionService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal ComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
@@ -517,7 +517,7 @@ public class JJGridView : AsyncComponent
         IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
         IExpressionsService expressionsService,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,

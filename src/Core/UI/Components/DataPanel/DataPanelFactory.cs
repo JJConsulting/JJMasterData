@@ -17,7 +17,7 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IHttpContext HttpContext { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IFieldsService FieldsService { get; }
     private IFormValuesService FormValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
@@ -25,7 +25,7 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public DataPanelFactory(IEntityRepository entityRepository, IDataDictionaryRepository dataDictionaryRepository,
-        IHttpContext httpContext, JJMasterDataEncryptionService encryptionService, IFieldsService fieldsService,
+        IHttpContext httpContext, IEncryptionService encryptionService, IFieldsService fieldsService,
         IFormValuesService formValuesService, IExpressionsService expressionsService,
         ComponentFactory componentFactory, JJMasterDataUrlHelper urlHelper)
     {

@@ -13,7 +13,7 @@ namespace JJMasterData.Core.Web.Factories;
 
 internal class TextRangeFactory : IControlFactory<JJTextRange>
 {
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IHttpContext HttpContext { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private TextBoxFactory TextBoxFactory { get; }
@@ -21,7 +21,7 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
     public TextRangeFactory(IHttpContext httpContext,
                             IStringLocalizer<JJMasterDataResources> stringLocalizer,
                             TextBoxFactory textBoxFactory,
-                            JJMasterDataEncryptionService encryptionService)
+                            IEncryptionService encryptionService)
     {
         EncryptionService = encryptionService;
         HttpContext = httpContext;

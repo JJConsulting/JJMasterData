@@ -22,7 +22,7 @@ public class JJTextFile : AsyncControl
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private const string UploadViewParameterName = "jjuploadview_";
     private IDictionary<string, object> _formValues;
@@ -54,7 +54,7 @@ public class JJTextFile : AsyncControl
         JJMasterDataUrlHelper urlHelper,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup> textBoxFactory,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
     {
         UrlHelper = urlHelper;

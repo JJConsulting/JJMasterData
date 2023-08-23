@@ -24,7 +24,7 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public class JJSearchBox : AsyncControl
 {
-    private JJMasterDataEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     #region "Events"
@@ -182,7 +182,7 @@ public class JJSearchBox : AsyncControl
 
     public JJSearchBox(
         IHttpContext httpContext,
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IDataItemService dataItemService,
         JJMasterDataUrlHelper urlHelper) : base(httpContext)
     {

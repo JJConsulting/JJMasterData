@@ -1,15 +1,15 @@
-using System.Collections.Generic;
+using JJMasterData.Commons.Cryptography;
 
-namespace JJMasterData.Commons.Cryptography;
+namespace JJMasterData.Protheus;
 
-internal static class ProtheusEncryptionService
+internal class ProtheusEncryptionService : IEncryptionService
 {
     /// <summary>
     /// Encrypts a Protheus password.
     /// </summary>
     /// <param name="password">Password</param>
     /// <remarks>Kleberton 2012-08-28</remarks>
-    public static string EncryptPassword(string password)
+    public string EncryptString(string password)
     {
         string protheusPassword = "";
 
@@ -47,7 +47,7 @@ internal static class ProtheusEncryptionService
     /// </summary>
     /// <param name="password">Password</param>
     /// <remarks>Lucio Pelinson 2012-09-21</remarks>
-    public static string DecryptPassword(string password)
+    public string DecryptString(string password)
     {
         string protheusPassword = "";
         var evenList = new List<char>();

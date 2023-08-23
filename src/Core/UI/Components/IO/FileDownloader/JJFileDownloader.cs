@@ -28,12 +28,12 @@ public class JJFileDownloader : HtmlComponent
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     internal ILogger<JJFileDownloader> Logger { get; }
-    internal JJMasterDataEncryptionService EncryptionService { get; }
+    internal IEncryptionService EncryptionService { get; }
     
     public JJFileDownloader(
         IHttpContext currentContext,
         JJMasterDataUrlHelper urlHelper, 
-        JJMasterDataEncryptionService encryptionService,
+        IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILogger<JJFileDownloader> logger)
     {
@@ -147,7 +147,7 @@ public class JJFileDownloader : HtmlComponent
 
     public static RedirectComponentResult GetDirectDownloadRedirect(
         IHttpContext currentContext, 
-        JJMasterDataEncryptionService encryptionService, 
+        IEncryptionService encryptionService, 
         IComponentFactory<JJFileDownloader> factory)
     {
         bool isExternalLink = false;
