@@ -45,10 +45,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
             LookupService,
             EncryptionService,
             UrlHelper,
-            LoggerFactory.CreateLogger<JJLookup>())
-        {
-            FieldNamePrefix = controlContext.ParentComponentName + "_"
-        };
+            LoggerFactory.CreateLogger<JJLookup>());
         lookup.SetAttr(field.Attributes);
         lookup.Name = field.Name;
         lookup.SelectedValue = controlContext.Value?.ToString();

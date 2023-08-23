@@ -86,7 +86,6 @@ public class JJLookup : AsyncControl
     public DataElementMap ElementMap { get; }
     
     public string FieldName { get; }
-    public required string FieldNamePrefix { get; init; }
     #endregion
 
     #region "Constructors"
@@ -145,7 +144,7 @@ public class JJLookup : AsyncControl
             var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
             var componentName = Attributes["pnlname"];
             Attributes["data-panel-reload-url"] = UrlHelper.GetUrl("ReloadPanel", "Form",
-                "MasterData", new { dictionaryName = encryptedDictionaryName, componentName, fieldNamePrefix= FieldNamePrefix });
+                "MasterData", new { dictionaryName = encryptedDictionaryName, componentName });
             Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup","MasterData", 
                 new
                 {

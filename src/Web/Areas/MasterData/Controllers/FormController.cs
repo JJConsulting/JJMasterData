@@ -75,12 +75,11 @@ public class FormController : MasterDataController
     public async Task<IActionResult> ReloadPanel(
         FormElement formElement,
         PageState pageState,
-        string fieldNamePrefix,
         string componentName)
     {
         var formView = _formViewFactory.Create(formElement);
         formView.Name = componentName;
-        formView.DataPanel.FieldNamePrefix = fieldNamePrefix;
+        formView.DataPanel.FieldNamePrefix = componentName + "_";
         formView.PageState = pageState;
         formView.IsExternalRoute = true;
 

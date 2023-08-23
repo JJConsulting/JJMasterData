@@ -21,7 +21,6 @@ internal class DataPanelScripts
     public string GetReloadPanelScript(string fieldName)
     {
         var componentName = _dataPanelControl.Name;
-        var fieldNamePrefix = _dataPanelControl.FieldNamePrefix;
         var pageState = _dataPanelControl.PageState;
 
         var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(_dataPanelControl.FormElement.Name);
@@ -29,6 +28,6 @@ internal class DataPanelScripts
         if(!_dataPanelControl.IsExternalRoute)
             return $"DataPanel.ReloadAtSamePage('{componentName}','{fieldName}');";
 
-        return $"DataPanel.Reload('{UrlHelper.GetUrl("ReloadPanel","Form", "MasterData", new {dictionaryName = encryptedDictionaryName, componentName, pageState, fieldNamePrefix})}','{componentName}','{fieldName}')";
+        return $"DataPanel.Reload('{UrlHelper.GetUrl("ReloadPanel","Form", "MasterData", new {dictionaryName = encryptedDictionaryName, componentName, pageState})}','{componentName}','{fieldName}')";
     }
 }

@@ -185,7 +185,7 @@ public class FieldController : DataDictionaryController
         return RedirectToAction("Index", new { dictionaryName });
     }
 
-    private void PopulateViewBag(FormElement formElement, FormElementField? field)
+    private async void PopulateViewBag(FormElement formElement, FormElementField? field)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -231,10 +231,11 @@ public class FieldController : DataDictionaryController
         ViewBag.FieldName = field.Name;
         ViewBag.Fields = formElement.Fields;
 
-        if (field.Component != FormComponent.Lookup) return;
+        if (field.Component != FormComponent.Lookup) 
+            return;
 
-        ViewBag.ElementNameList = _fieldService.GetElementListAsync();
-        ViewBag.ElementFieldList = _fieldService.GetElementFieldListAsync(field);
+        ViewBag.ElementNameList = await _fieldService.GetElementListAsync();
+        ViewBag.ElementFieldList = await _fieldService.GetElementFieldListAsync(field);
     }
     private void RecoverCustomAttibutes(ref FormElementField field)
     {
