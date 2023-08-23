@@ -30,25 +30,22 @@ namespace JJMasterData.Core.DataManager.Exports.Abstractions;
 
 public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExportationWriter
 {
-
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
     protected const int RecordsPerPage = 100000;
 
     #region "Properties"
-    
+
     private DataExportationReporter _processReporter;
     private List<FormElementField> _fields;
 
-    private IExpressionsService ExpressionsService { get; } 
-    protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; } 
-    private IOptions<JJMasterDataCoreOptions> Options { get; } 
+    private IExpressionsService ExpressionsService { get; }
+    protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IControlFactory<JJTextFile> TextFileFactory { get; }
-    
+
     private ILogger<DataExportationWriterBase> Logger { get; }
 
-    
-    
 
     protected async Task<List<FormElementField>> GetVisibleFieldsAsync()
     {
@@ -58,7 +55,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
         {
             _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
         }
-        
+
         else
         {
             var defaultValues = new Dictionary<string, object>();
@@ -76,17 +73,18 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
         return _fields;
     }
+
     public ProcessOptions ProcessOptions { get; set; }
 
     public DataExportationReporter ProcessReporter => _processReporter ??= new DataExportationReporter();
 
     public ExportOptions Configuration { get; set; }
-    
+
 
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
     /// </summary>
-    public IDictionary<string, object>CurrentFilter { get; set; }
+    public IDictionary<string, object> CurrentFilter { get; set; }
 
     /// <summary>
     /// Recupera a ordenação da tabela, 
@@ -110,10 +108,10 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     /// <para/>3) Se a ação OnDataLoad não for implementada, tenta recuperar 
     /// utilizando a proc informada no FormElement;
     /// </remarks>
-    public IList<Dictionary<string,object>> DataSource { get; set; }
+    public IList<Dictionary<string, object>> DataSource { get; set; }
 
     public int TotalOfRecords { get; set; }
-    
+
     /// <summary>
     /// Configurações pré-definidas do formulário
     /// </summary>
@@ -146,7 +144,9 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     #endregion
 
 
-    public DataExportationWriterBase(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger)
+    protected DataExportationWriterBase(IExpressionsService expressionsService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options,
+        IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger)
     {
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
@@ -159,65 +159,66 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     public async Task RunWorkerAsync(CancellationToken token)
     {
         if (FormElement == null) throw new ArgumentNullException(nameof(FormElement));
-        await Task.Run(() =>
+        await Task.Run(async () =>
+        {
+            try
             {
-                try
+                _processReporter = new DataExportationReporter();
+                ProcessReporter.UserId = UserId;
+                ProcessReporter.StartDate = DateTime.Now;
+                ProcessReporter.Message = StringLocalizer["Retrieving records..."];
+
+                Reporter(ProcessReporter);
+
+                var filePath = Path.Combine(FolderPath, GetFilePath());
+
+                using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
                 {
-                    _processReporter = new DataExportationReporter();
-                    ProcessReporter.UserId = UserId;
-                    ProcessReporter.StartDate = DateTime.Now;
-                    ProcessReporter.Message = StringLocalizer["Retrieving records..."];
-
-                    Reporter(ProcessReporter);
-
-                    var filePath = Path.Combine(FolderPath, GetFilePath());
-
-                    using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
-                    {
-                        GenerateDocument(fs, token);
-                    }
-
-                    ProcessReporter.FilePath = filePath;
-
-                    ProcessReporter.EndDate = DateTime.Now;
-                    ProcessReporter.Message = StringLocalizer["File generated successfully!"];
-
+                    await GenerateDocument(fs, token);
                 }
-                catch (Exception ex)
+
+                ProcessReporter.FilePath = filePath;
+
+                ProcessReporter.EndDate = DateTime.Now;
+                ProcessReporter.Message = StringLocalizer["File generated successfully!"];
+            }
+            catch (Exception ex)
+            {
+                ProcessReporter.HasError = true;
+
+                if (File.Exists(FolderPath) && !FileIO.IsFileLocked(FolderPath))
+                    File.Delete(FolderPath);
+
+                switch (ex)
                 {
-                    ProcessReporter.HasError = true;
-
-                    if (File.Exists(FolderPath) && !FileIO.IsFileLocked(FolderPath))
-                        File.Delete(FolderPath);
-
-                    switch (ex)
-                    {
-                        case OperationCanceledException:
-                        case ThreadAbortException:
-                            ProcessReporter.Message = StringLocalizer["Process aborted by the user."];
-                            break;
-                        case IOException:
-                            if (FileIO.IsFileLocked(FolderPath))
-                                ProcessReporter.Message = StringLocalizer["File is already being used by another process. Try downloading it from \"Recently generated files\"."];
-                            else
-                                goto default;
-                            break;
-                        case JJMasterDataException:
-                            ProcessReporter.Message = ex.Message;
-                            break;
-                        default:
-                            ProcessReporter.Message = StringLocalizer["Unexpected error"] + "\n";
-                            ProcessReporter.Message += ExceptionManager.GetMessage(ex);
-                            Logger.LogError(ex, "Error at data exportation");
-                            break;
-                    }
+                    case OperationCanceledException:
+                    case ThreadAbortException:
+                        ProcessReporter.Message = StringLocalizer["Process aborted by the user."];
+                        break;
+                    case IOException:
+                        if (FileIO.IsFileLocked(FolderPath))
+                            ProcessReporter.Message =
+                                StringLocalizer[
+                                    "File is already being used by another process. Try downloading it from \"Recently generated files\"."];
+                        else
+                            goto default;
+                        break;
+                    case JJMasterDataException:
+                        ProcessReporter.Message = ex.Message;
+                        break;
+                    default:
+                        ProcessReporter.Message = StringLocalizer["Unexpected error"] + "\n";
+                        ProcessReporter.Message += ExceptionManager.GetMessage(ex);
+                        Logger.LogError(ex, "Error at data exportation");
+                        break;
                 }
-                finally
-                {
-                    ProcessReporter.EndDate = DateTime.Now;
-                    Reporter(ProcessReporter);
-                }
-            }, token);
+            }
+            finally
+            {
+                ProcessReporter.EndDate = DateTime.Now;
+                Reporter(ProcessReporter);
+            }
+        }, token);
     }
 
     public void Reporter(DataExportationReporter processReporter)
@@ -227,7 +228,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
     public abstract Task GenerateDocument(Stream ms, CancellationToken token);
 
-    public string GetLinkFile(FormElementField field, Dictionary<string,object> row, string value)
+    public string GetLinkFile(FormElementField field, Dictionary<string, object> row, string value)
     {
         if (!field.DataFile.ExportAsLink)
             return null;
@@ -263,9 +264,9 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
             title = "file";
 
         title = StringManager.GetStringWithoutAccents(title);
-        
+
         string[] escapeChars = { "/", "\\", "|", ":", "*", ">", "<", "+", "=", "&", "%", "$", "#", "@", " " };
-        
+
         foreach (var @char in escapeChars)
         {
             title = title.Replace(@char, string.Empty);
@@ -276,8 +277,4 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
         return $"{title}_{DateTime.Now:yyyMMdd_HHmmss}.{ext}";
     }
-
-
-
-
 }

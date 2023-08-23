@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,7 +12,6 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web;
@@ -37,13 +34,23 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
     /// (Default = true)
     /// </summary>
     public bool ShowRowStriped { get; set; }
-    private IEntityRepository EntityRepository { get; } 
-    private IFieldFormattingService FieldFormattingService { get; } 
+
+    private IEntityRepository EntityRepository { get; }
+    private IFieldFormattingService FieldFormattingService { get; }
+
+    public ExcelWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory,
+        ILoggerFactory loggerFactory, IEntityRepository entityRepository,
+        IFieldFormattingService fieldFormattingService) : base(expressionsService, stringLocalizer, options,
+        textFileFactory, loggerFactory.CreateLogger<DataExportationWriterBase>())
+    {
+        EntityRepository = entityRepository;
+        FieldFormattingService = fieldFormattingService;
+    }
 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
-
         await sw.WriteLineAsync("<html  ");
         await sw.WriteLineAsync("	xmlns:o=\"urn:schemas-microsoft-com:office:office\"  ");
         await sw.WriteLineAsync("	xmlns:x=\"urn:schemas-microsoft-com:office:excel\"  ");
@@ -67,6 +74,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         await sw.WriteLineAsync("</body>");
         await sw.WriteLineAsync("</html>");
 
+        await sw.FlushAsync();
         sw.Close();
     }
 
@@ -144,7 +152,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         }
     }
 
-    private string CreateCell(Dictionary<string,object> row, FormElementField field)
+    private string CreateCell(Dictionary<string, object> row, FormElementField field)
     {
         string value = string.Empty;
         if (field.DataBehavior != FieldBehavior.Virtual)
@@ -170,10 +178,12 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         var renderCell = OnRenderCell;
         if (renderCell != null)
         {
-            var args = new GridCellEventArgs();
-            args.Field = field;
-            args.DataRow = row;
-            args.Sender = new JJText(value);
+            var args = new GridCellEventArgs
+            {
+                Field = field,
+                DataRow = row,
+                Sender = new JJText(value)
+            };
             OnRenderCell?.Invoke(this, args);
             value = args.HtmlResult;
         }
@@ -191,16 +201,12 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
             {
                 thStyle = " style=\"text-align:right;\" ";
             }
+
             await sw.WriteAsync("\t\t\t\t<td" + thStyle + ">");
             await sw.WriteAsync(StringLocalizer[field.LabelOrName]);
             await sw.WriteLineAsync("</td>");
         }
-        await sw.WriteLineAsync("\t\t\t</tr>");
-    }
 
-    public ExcelWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger, IEntityRepository entityRepository, IFieldFormattingService fieldFormattingService) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
-    {
-        EntityRepository = entityRepository;
-        FieldFormattingService = fieldFormattingService;
+        await sw.WriteLineAsync("\t\t\t</tr>");
     }
 }
