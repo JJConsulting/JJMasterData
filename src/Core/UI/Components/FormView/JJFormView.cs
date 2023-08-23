@@ -336,7 +336,7 @@ public class JJFormView : AsyncComponent
         var filter = GridView.GetSelectedRowId();
         IDictionary<string, object> values;
         if (filter is { Count: > 0 })
-            values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
+            values = await EntityRepository.GetFieldsAsync(FormElement, filter);
         else
             values = await GetFormValuesAsync();
 
@@ -495,7 +495,7 @@ public class JJFormView : AsyncComponent
             else
             {
                 autoReloadFields = false;
-                values = await EntityRepository.GetDictionaryAsync(FormElement, CurrentActionMap?.PkFieldValues);
+                values = await EntityRepository.GetFieldsAsync(FormElement, CurrentActionMap?.PkFieldValues);
             }
 
             PageState = PageState.Update;
@@ -656,7 +656,7 @@ public class JJFormView : AsyncComponent
         var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement = await DataDictionaryRepository.GetMetadataAsync(InsertAction.ElementNameToSelect);
-        var selValues = await EntityRepository.GetDictionaryAsync(formElement, actionMap.PkFieldValues);
+        var selValues = await EntityRepository.GetFieldsAsync(formElement, actionMap.PkFieldValues);
         var values = await FieldValuesService.MergeWithExpressionValuesAsync(formElement, selValues, PageState.Insert, true);
         var erros = await InsertFormValuesAsync(values, false);
 
@@ -715,7 +715,7 @@ public class JJFormView : AsyncComponent
 
         PageState = PageState.View;
         var filter = CurrentActionMap.PkFieldValues;
-        var values = await EntityRepository.GetDictionaryAsync(FormElement, filter);
+        var values = await EntityRepository.GetFieldsAsync(FormElement, filter);
         return await GetFormResultAsync(new(values, null, PageState), false);
     }
 

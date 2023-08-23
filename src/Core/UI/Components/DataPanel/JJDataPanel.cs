@@ -275,12 +275,12 @@ public class JJDataPanel : AsyncComponent
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]
     public void LoadValuesFromPK(IDictionary<string, object> pks)
     {
-        Values = EntityRepository.GetDictionaryAsync(FormElement, pks).GetAwaiter().GetResult();
+        Values = EntityRepository.GetFieldsAsync(FormElement, pks).GetAwaiter().GetResult();
     }
 
     public async Task LoadValuesFromPkAsync(IDictionary<string, object> pks)
     {
-        Values = await EntityRepository.GetDictionaryAsync(FormElement, pks);
+        Values = await EntityRepository.GetFieldsAsync(FormElement, pks);
     }
 
     /// <summary>

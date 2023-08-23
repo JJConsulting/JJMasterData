@@ -57,7 +57,7 @@ public class FileService
     private async Task SetEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
         var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
-        var values = await _entityRepository.GetDictionaryAsync(formElement, primaryKeys);
+        var values = await _entityRepository.GetFieldsAsync(formElement, primaryKeys);
 
         if (field.DataFile!.MultipleFile)
         {
@@ -141,7 +141,7 @@ public class FileService
     {
         var primaryKeys = DataHelper.GetPkValues(element, pkValues, ',');
 
-        var values = await _entityRepository.GetDictionaryAsync(element, primaryKeys);
+        var values = await _entityRepository.GetFieldsAsync(element, primaryKeys);
 
         if (field.DataFile!.MultipleFile)
         {
@@ -195,7 +195,7 @@ public class FileService
     {
         var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
 
-        var values = await _entityRepository.GetDictionaryAsync(formElement, primaryKeys);
+        var values = await _entityRepository.GetFieldsAsync(formElement, primaryKeys);
 
         if (field.DataFile!.MultipleFile)
         {

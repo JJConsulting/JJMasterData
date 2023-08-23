@@ -76,7 +76,7 @@ internal class GridSqlCommandAction
         if (map.PkFieldValues != null && (map.PkFieldValues != null ||
                                           map.PkFieldValues.Count > 0))
         {
-            formValues = await _gridView.EntityRepository.GetDictionaryAsync(formElement, map.PkFieldValues);
+            formValues = await _gridView.EntityRepository.GetFieldsAsync(formElement, map.PkFieldValues);
         }
         else
         {

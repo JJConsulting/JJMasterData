@@ -68,7 +68,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         var filter = new Dictionary<string, object> { { "name", dictionaryName }, { "type", "F" } };
 
-        var values = await _entityRepository.GetDictionaryAsync(MasterDataElement, filter);
+        var values = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
 
         var model = values.ToModel<DataDictionaryModel>();
 
@@ -128,14 +128,10 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
     public async Task<bool> ExistsAsync(string dictionaryName)
     {
-        if (string.IsNullOrEmpty(dictionaryName))
-            throw new ArgumentNullException(nameof(dictionaryName));
-
-        var filter = new Dictionary<string, object?> { { "name", dictionaryName } };
-        var count = await _entityRepository.GetCountAsync(MasterDataElement, filter);
-        return count > 0;
+        var filter = new Dictionary<string, object> { { "name", dictionaryName } };
+        var fields = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
+        return fields != null;
     }
-
 
     public async Task CreateStructureIfNotExistsAsync()
     {

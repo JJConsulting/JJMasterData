@@ -31,13 +31,7 @@ public interface IEntityRepository
         EntityParameters? parameters = null,
         bool showLogInfo = false, 
         string delimiter = "|");
-    
-
-    /// <summary>
-    /// Returns the number of records in the database
-    /// </summary>
-    /// </returns>
-    public Task<int> GetCountAsync(Element element, IDictionary<string,object?> filters);
+   
 
     /// <summary>
     /// Update a record in the database
@@ -48,7 +42,7 @@ public interface IEntityRepository
     /// <summary>
     /// Delete records based on filter.
     /// </summary>
-    public Task<int> DeleteAsync(Element element, IDictionary<string,object> filters);
+    public Task<int> DeleteAsync(Element element, IDictionary<string,object> primaryKeys);
     
     /// <summary>
     /// Add a record to the database.
@@ -134,12 +128,11 @@ public interface IEntityRepository
     /// </inheritdoc>
     public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList);
     
-    /// <inheritdoc cref="ExecuteBatch"/>
     public Task<bool> ExecuteBatchAsync(string script);
     
-    Task<IDictionary<string, object?>> GetDictionaryAsync(DataAccessCommand command);
+    Task<IDictionary<string, object?>?> GetFieldsAsync(DataAccessCommand command);
     
-    Task<IDictionary<string, object?>> GetDictionaryAsync(Element metadata, IDictionary<string, object?> filters);
+    Task<IDictionary<string, object?>?> GetFieldsAsync(Element metadata, IDictionary<string, object> primaryKeys);
     
     Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command);
     

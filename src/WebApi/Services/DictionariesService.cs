@@ -69,7 +69,7 @@ public class DictionariesService
             var info = new DicSyncInfoElement
             {
                 Name = os.Name,
-                RecordSize = await _entityRepository.GetCountAsync(dictionary, filters)
+                RecordSize = await GetCountAsync(dictionary, filters)
             };
             totRecords += info.RecordSize;
 
@@ -107,6 +107,17 @@ public class DictionariesService
         return syncInfo;
     }
 
+    private async Task<int> GetCountAsync(Element element, IDictionary<string,object?> filters)
+    {
+        var parameters = new EntityParameters
+        {
+            Filters = filters,
+            RecordsPerPage = 1
+        };
+        var result = await _entityRepository.GetDictionaryListAsync(element, parameters);
+        return result.TotalOfRecords;
+    }
+    
     private Dictionary<string,object?> GetSyncInfoFilter(string? userId, FormElement metadata, Hashtable? metadataFilters)
     {
         var filters = new Dictionary<string,object?>();

@@ -106,7 +106,7 @@ public class LookupService : ILookupService
     private async Task<IDictionary<string, object>> GetFieldsAsync(FormElementDataItem dataItem, IDictionary<string, object> filters)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dataItem.ElementMap.ElementName);
-        return await EntityRepository.GetDictionaryAsync(formElement, filters);
+        return await EntityRepository.GetFieldsAsync(formElement, filters);
     }
 
 

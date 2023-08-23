@@ -58,14 +58,10 @@ public class EntityRepository : IEntityRepository
 
     public async Task InsertAsync(Element element, IDictionary<string,object?> values) => await Provider.InsertAsync(element, values);
 
-    public async Task<int> GetCountAsync(Element element, IDictionary<string,object?> filters) => await Provider.GetCountAsync(element, filters);
-    
     public async Task<int> UpdateAsync(Element element, IDictionary<string,object?> values) => await Provider.UpdateAsync(element, values);
-
 
     public async Task<CommandOperation> SetValuesAsync(Element element, IDictionary<string,object?> values, bool ignoreResults = false) =>
         await Provider.SetValuesAsync(element, values, ignoreResults);
-    
     
     public async Task<Element> GetElementFromTableAsync(string tableName) =>await Provider.GetElementFromTableAsync(tableName);
     public async Task<object?> GetResultAsync(DataAccessCommand command)
@@ -86,18 +82,18 @@ public class EntityRepository : IEntityRepository
 
 
     public async Task<bool> ExecuteBatchAsync(string script) => await DataAccess.ExecuteBatchAsync(script);
-    public async Task<IDictionary<string, object?>> GetDictionaryAsync(DataAccessCommand command)
+    public async Task<IDictionary<string, object?>?> GetFieldsAsync(DataAccessCommand command)
     {
         return await DataAccess.GetDictionaryAsync(command);
     }
 
-    public async Task<IDictionary<string, object?>> GetDictionaryAsync(Element metadata, IDictionary<string, object?> filters)
+    public async Task<IDictionary<string, object?>?> GetFieldsAsync(Element metadata, IDictionary<string, object> primaryKeys)
     {
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = Provider.GetReadCommand(metadata,new EntityParameters()
         {
-            Filters = filters
+            Filters = primaryKeys!
         },totalOfRecords);
 
         return await DataAccess.GetDictionaryAsync(cmd);

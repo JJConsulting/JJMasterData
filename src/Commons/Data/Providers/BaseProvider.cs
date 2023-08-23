@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Configuration.Options;
@@ -15,10 +16,11 @@ namespace JJMasterData.Commons.Data.Providers;
 
 public abstract class BaseProvider
 {
-    public abstract DataAccessProvider DataAccessProvider { get; }
     internal DataAccess DataAccess { get; set; }
     protected JJMasterDataCommonsOptions Options { get; }
     private ILoggerFactory LoggerFactory { get; }
+    
+    public abstract DataAccessProvider DataAccessProvider { get; }
     
     protected BaseProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options, ILoggerFactory loggerFactory)
     {
@@ -31,13 +33,14 @@ public abstract class BaseProvider
     public abstract string GetCreateTableScript(Element element);
     public abstract string? GetWriteProcedureScript(Element element);
     public abstract string? GetReadProcedureScript(Element element);
+    public abstract string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
     public abstract Task<Element> GetElementFromTableAsync(string tableName);
     public abstract DataAccessCommand GetInsertCommand(Element element, IDictionary<string,object?> values);
     public abstract DataAccessCommand GetUpdateCommand(Element element, IDictionary<string,object?> values);
-    public abstract DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> filters);
+    public abstract DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> primaryKeys);
     public abstract DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter);
     protected abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values);
-    public abstract string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
+   
     
     public async Task InsertAsync(Element element, IDictionary<string,object?> values)
     {
@@ -57,11 +60,6 @@ public abstract class BaseProvider
         return numberRowsAffected;
     }
     
-    public async Task<int> GetCountAsync(Element element, IDictionary<string,object?> filters)
-    {
-        var result = await GetDictionaryListAsync(element, new EntityParameters { Filters = filters });
-        return result.TotalOfRecords;
-    }
     
     public async Task<CommandOperation> SetValuesAsync(Element element, IDictionary<string,object?> values)
     {
@@ -111,9 +109,9 @@ public abstract class BaseProvider
         return await SetValuesAsync(element, values);
     }
     
-    public async Task<int> DeleteAsync(Element element, IDictionary<string,object> filters)
+    public async Task<int> DeleteAsync(Element element, IDictionary<string,object> primaryKeys)
     {
-        var cmd = GetDeleteCommand(element, filters);
+        var cmd = GetDeleteCommand(element, primaryKeys);
         int numberRowsAffected = await DataAccess.SetCommandAsync(cmd);
         return numberRowsAffected;
     }
@@ -207,8 +205,7 @@ public abstract class BaseProvider
         return GetCommandFromValuesNoResult(element, command, result);
     }
     
-    private static CommandOperation GetCommandFromValuesNoResult(Element element, DataAccessCommand command,
-        CommandOperation ret)
+    private static CommandOperation GetCommandFromValuesNoResult(Element element, DataAccessCommand command, CommandOperation ret)
     {
         var oret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
         if (oret.Value != DBNull.Value)

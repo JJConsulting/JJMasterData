@@ -178,7 +178,7 @@ public class JJAuditLogView : AsyncComponent
 
         var filter = new Dictionary<string, object> { { DataManager.Services.AuditLogService.DicId, logId } };
 
-        var values = await EntityRepository.GetDictionaryAsync(AuditLogService.GetElement(), filter);
+        var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
         string json = values[DataManager.Services.AuditLogService.DicJson]?.ToString();
         string recordsKey = values[DataManager.Services.AuditLogService.DicKey]?.ToString();
         var fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json ?? string.Empty);
@@ -242,7 +242,7 @@ public class JJAuditLogView : AsyncComponent
     {
         var filter = new Dictionary<string, object> { { DataManager.Services.AuditLogService.DicId, logId } };
 
-        var values = await EntityRepository.GetDictionaryAsync(AuditLogService.GetElement(), filter);
+        var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
         string json = values[DataManager.Services.AuditLogService.DicJson].ToString();
 
         IDictionary<string, object> fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);

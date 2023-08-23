@@ -119,7 +119,7 @@ public class MasterApiService
         
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
         var filters = ParseFilter(formElement, primaryKeys);
-        var fields = await _entityRepository.GetDictionaryAsync(formElement, filters);
+        var fields = await _entityRepository.GetFieldsAsync(formElement, filters);
 
         if (fields == null || fields.Count == 0)
             throw new KeyNotFoundException("No records found");
@@ -299,7 +299,7 @@ public class MasterApiService
 
             var parsedValues = DataHelper.ParseOriginalName(formElement, values);
             var pkValues = DataHelper.GetPkValues(formElement, parsedValues!);
-            var currentValues = await _entityRepository.GetDictionaryAsync(formElement, pkValues);
+            var currentValues = await _entityRepository.GetFieldsAsync(formElement, pkValues);
             if (currentValues == null)
                 throw new KeyNotFoundException("No records found");
 
