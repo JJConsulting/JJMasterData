@@ -50,6 +50,7 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IControlFactory<JJTextGroup>,TextBoxFactory>();
         services.AddTransient<IControlFactory<JJTextRange>,TextRangeFactory>();
         services.AddTransient<IControlFactory<JJTextFile>,TextFileFactory>();
+        services.AddTransient<IControlFactory<JJCheckBox>,CheckBoxFactory>();
         services.AddTransient<ControlFactory>();
 
         services.AddTransient<IFormElementComponentFactory<JJAuditLogView>, AuditLogViewFactory>();

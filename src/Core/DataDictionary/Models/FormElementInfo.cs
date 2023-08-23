@@ -39,7 +39,7 @@ public class FormElementInfo
         Name = formElement.Name;
         TableName =formElement.TableName;
         Info = formElement.Info;
-        Sync = formElement.Sync ? "1" : "0";
+        Sync = formElement.EnableWebApi ? "1" : "0";
         Modified = modified;
     }
 }

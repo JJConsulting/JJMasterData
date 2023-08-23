@@ -20,7 +20,7 @@ internal class CheckBoxFactory : IControlFactory<JJCheckBox>
         var check = new JJCheckBox(HttpContext)
         {
             Name = field.Name,
-            IsChecked = StringManager.ParseBool(context.FormStateData),
+            IsChecked = StringManager.ParseBool(context.Value),
             ToolTip = field.HelpDescription
         };
         return check;

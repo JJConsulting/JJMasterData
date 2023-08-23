@@ -57,7 +57,7 @@ public class FormElement : Element
         Relationships = new FormElementRelationshipList(base.Relationships);
         CustomProcNameGet = element.CustomProcNameGet;
         CustomProcNameSet = element.CustomProcNameSet;
-        Sync = element.Sync;
+        EnableWebApi = element.EnableWebApi;
         SyncMode = element.SyncMode;
         Title = element.Name;
         SubTitle = element.Info;

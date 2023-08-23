@@ -63,7 +63,7 @@
         <!-- Start Form -->
         <div class="@BootstrapHelper.PanelBody">
             <table class="table">
-                <caption>@StringLocalizer["Enable or disable API operations"]</caption>
+                <caption>@StringLocalizer["Enable or disable HTTP operations"]</caption>
                 <thead>
                     <tr>
                         <th class="jjselect">
@@ -157,7 +157,7 @@
                         <select asp-for="MetadataApiOptions.FormatType" class = "form-control form-select" asp-items="Html.GetEnumSelectList<ApiJsonFormat>()"></select>
                     </div>
                     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                        <label class="@BootstrapHelper.Label " for="isSync" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Used in sync?"]">@StringLocalizer["Sync"]</label>
+                        <label class="@BootstrapHelper.Label " for="isSync" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Used in sync?"]">@StringLocalizer["Enable API"]</label>
                         @Html.DropDownList("isSync", new[] {
                             new SelectListItem {Text = StringLocalizer["Yes"], Value = "true"},
                             new SelectListItem {Text = StringLocalizer["No"], Value = "false"}

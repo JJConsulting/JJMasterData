@@ -106,7 +106,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             { "type", "F" },
             { "owner", null },
             { "json", jsonForm },
-            { "sync", formElement.Sync ? "1" : "0" },
+            { "sync", formElement.EnableWebApi ? "1" : "0" },
             { "modified", dNow }
         };
 
