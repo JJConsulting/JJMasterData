@@ -555,9 +555,9 @@ public class JJGridView : AsyncComponent
         if (!string.IsNullOrEmpty(lookupRoute))
             return await GetLookupResult(lookupRoute);
 
-        string requestType = CurrentContext.Request.QueryString("t");
+        string context = CurrentContext.Request.QueryString("context");
 
-        if ("ajax".Equals(requestType))
+        if ("htmlContent".Equals(context))
         {
             string objName = CurrentContext.Request.QueryString("objname");
 
@@ -567,14 +567,14 @@ public class JJGridView : AsyncComponent
             }
         }
         
-        if ("dataExportation".Equals(requestType))
+        if ("dataExportation".Equals(context))
         {
             string gridViewName = CurrentContext.Request.QueryString("gridViewName");
             if (Name.Equals(gridViewName))
                 return await GetExportationResult();
         }
 
-        if ("gridViewRow".Equals(requestType))
+        if ("gridViewRow".Equals(context))
         {
             string gridViewName = CurrentContext.Request.QueryString("gridViewName");
             if (Name.Equals(gridViewName))
@@ -587,7 +587,7 @@ public class JJGridView : AsyncComponent
             }
         }
 
-        if ("selectall".Equals(requestType))
+        if ("selectall".Equals(context))
         {
             string selectedRows = await GetEncryptedSelectedRowsAsync();
             
@@ -597,7 +597,7 @@ public class JJGridView : AsyncComponent
         if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
             return await JJSearchBox.GetResultFromComponent(this,FormElement, await GetCurrentFilterAsync(), CurrentContext,ComponentFactory.Controls.GetFactory<SearchBoxFactory>());
 
-        if ("jjsearchbox".Equals(requestType))
+        if ("searchBox".Equals(context))
         {
             var objName = CurrentContext.Request.QueryString("objname");
             if (objName == null || !objName.StartsWith(GridFilter.FilterFieldPrefix))
@@ -837,9 +837,9 @@ public class JJGridView : AsyncComponent
                 script.AppendLine("\t\tvar frm = $('form'); ");
                 script.AppendLine("\t\tvar surl = frm.attr('action'); ");
                 script.AppendLine("\t\tif (surl.includes('?'))");
-                script.AppendLine("\t\t\tsurl += '&t=gridViewRow&nRow=' + nRow;");
+                script.AppendLine("\t\t\tsurl += '&context=gridViewRow&nRow=' + nRow;");
                 script.AppendLine("\t\telse");
-                script.AppendLine("\t\t\tsurl += '?t=gridViewRow&nRow=' + nRow;");
+                script.AppendLine("\t\t\tsurl += '?context=gridViewRow&nRow=' + nRow;");
                 script.AppendLine("");
                 script.AppendLine("\t\tsurl += '&objname=' + objname;");
                 script.AppendLine($"\t\tsurl += '&gridViewName={Name}';");
@@ -1068,7 +1068,7 @@ public class JJGridView : AsyncComponent
                 {
                     if (IsUserSetDataSource || OnDataLoad != null || OnDataLoadAsync != null)
                     {
-                        var result = await GetDataSourceAsync(new EntityParameters()
+                        var result = await GetDataSourceAsync(new EntityParameters
                         {
                             Filters = await GetCurrentFilterAsync(),
                             OrderBy = CurrentOrder,

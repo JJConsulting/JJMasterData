@@ -8,7 +8,7 @@ function loadAuditLog(componentName, logId, url = null) {
 
     if(url == null || url.length == 0){
         let builder = new UrlBuilder();
-        builder.addQueryParameter("t","ajax");
+        builder.addQueryParameter("context","htmlContent");
         url = builder.build();
     }
     

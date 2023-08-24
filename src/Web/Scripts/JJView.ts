@@ -4,9 +4,9 @@
             const frm = $("form");
             let surl = frm.attr("action");
             if (surl.includes("?"))
-                surl += "&t=ajax";
+                surl += "&context=htmlContent";
             else
-                surl += "?t=ajax";
+                surl += "?context=htmlContent";
 
             surl += "&objname=" + objid;
             $.ajax({
@@ -82,9 +82,9 @@
         var frm = $("form");
         var surl = frm.attr("action");
         if (surl.includes("?"))
-            surl += "&t=selectall";
+            surl += "&context=selectall";
         else
-            surl += "?t=selectall";
+            surl += "?context=selectall";
 
         $.ajax({
             async: true,

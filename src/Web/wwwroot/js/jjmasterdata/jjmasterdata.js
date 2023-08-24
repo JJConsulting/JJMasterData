@@ -31,7 +31,7 @@ class ActionManager {
         currentFormActionInput.value = encryptedActionMap;
         if (!url) {
             const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("t", "geturlaction");
+            urlBuilder.addQueryParameter("context", "urlRedirect");
             urlBuilder.addQueryParameter("objname", componentName);
             url = urlBuilder.build();
         }
@@ -59,20 +59,27 @@ class ActionManager {
         }
         const currentTableActionInput = document.querySelector("#current-table-action-" + componentName);
         const currentFormActionInput = document.querySelector("#current-form-action-" + componentName);
+        currentTableActionInput.value = null;
+        currentFormActionInput.value = encryptedActionMap;
         let form = document.querySelector("form");
         if (!form) {
             form = document.forms[0];
         }
-        currentTableActionInput.value = "";
-        currentFormActionInput.value = encryptedActionMap;
         form.submit();
     }
-    static executeFormActionAsPopUp(url, title, confirmationMessage) {
+    static executeFormActionAsPopUp(componentName, title, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
                 return false;
             }
         }
+        const currentTableActionInput = document.querySelector("#current-table-action-" + componentName);
+        const currentFormActionInput = document.querySelector("#current-form-action-" + componentName);
+        currentTableActionInput.value = null;
+        currentFormActionInput.value = encryptedActionMap;
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("context", "htmlContent");
+        const url = urlBuilder.build();
         popup.showHtmlFromUrl(title, url, {
             method: "POST",
             body: new FormData(document.querySelector("form"))
@@ -86,7 +93,7 @@ function loadAuditLog(componentName, logId, url = null) {
     document.querySelector('#audit-log-id-' + componentName).value = logId;
     if (url == null || url.length == 0) {
         let builder = new UrlBuilder();
-        builder.addQueryParameter("t", "ajax");
+        builder.addQueryParameter("context", "htmlContent");
         url = builder.build();
     }
     fetch(url, {
@@ -230,7 +237,7 @@ class DataExportation {
         return __awaiter(this, void 0, void 0, function* () {
             DataExportation.setLoadMessage();
             let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("t", "dataExportation");
+            urlBuilder.addQueryParameter("context", "dataExportation");
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
             var isCompleted = false;
@@ -243,7 +250,7 @@ class DataExportation {
     static stopProcessAtSamePage(componentName, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("t", "dataExportation");
+            urlBuilder.addQueryParameter("context", "dataExportation");
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
             yield DataExportation.stopExportation(urlBuilder.build(), stopMessage);
@@ -251,14 +258,14 @@ class DataExportation {
     }
     static openExportPopupAtSamePage(componentName) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("t", "dataExportation");
+        urlBuilder.addQueryParameter("context", "dataExportation");
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("dataExportationOperation", "showOptions");
         DataExportation.openExportPopup(urlBuilder.build(), componentName);
     }
     static startExportationAtSamePage(componentName) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("t", "dataExportation");
+        urlBuilder.addQueryParameter("context", "dataExportation");
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("dataExportationOperation", "startProcess");
         fetch(urlBuilder.build(), {
@@ -435,7 +442,7 @@ class DataImportation {
         }
         else {
             let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("t", "ajaxdataimp");
+            urlBuilder.addQueryParameter("context", "dataImportation");
             urlBuilder.addQueryParameter("current_uploadaction", "process_check");
             urlBuilder.addQueryParameter("objname", componentName);
             url = urlBuilder.build();
@@ -544,7 +551,7 @@ class DataImportation {
         }
         else {
             let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("t", "ajaxdataimp");
+            urlBuilder.addQueryParameter("context", "dataImportation");
             urlBuilder.addQueryParameter("current_uploadaction", "process_check");
             urlBuilder.addQueryParameter("objname", componentName);
             url = urlBuilder.build();
@@ -586,7 +593,7 @@ class DataPanel {
         let url = new UrlBuilder();
         url.addQueryParameter("pnlname", panelname);
         url.addQueryParameter("objname", objid);
-        url.addQueryParameter("t", "reloadPanel");
+        url.addQueryParameter("context", "panelReload");
         DataPanel.Reload(url.build(), panelname, objid);
     }
     static Reload(url, componentName, fieldName) {
@@ -782,9 +789,9 @@ class JJView {
             const frm = $("form");
             let surl = frm.attr("action");
             if (surl.includes("?"))
-                surl += "&t=ajax";
+                surl += "&context=htmlContent";
             else
-                surl += "?t=ajax";
+                surl += "?context=htmlContent";
             surl += "&objname=" + objid;
             $.ajax({
                 async: true,
@@ -852,9 +859,9 @@ class JJView {
         var frm = $("form");
         var surl = frm.attr("action");
         if (surl.includes("?"))
-            surl += "&t=selectall";
+            surl += "&context=selectall";
         else
-            surl += "?t=selectall";
+            surl += "?context=selectall";
         $.ajax({
             async: true,
             type: frm.attr("method"),
@@ -1158,7 +1165,7 @@ function loadJJMasterData(event, prefixSelector) {
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&
-                settings.url.indexOf("t=jjsearchbox") !== -1) {
+                settings.url.indexOf("context=searchBox") !== -1) {
                 return null;
             }
             if (showWaitOnPost) {
@@ -1217,7 +1224,7 @@ class Lookup {
                 if (!lookupResultUrl) {
                     let urlBuilder = new UrlBuilder();
                     urlBuilder.addQueryParameter("jjlookup_" + panelName, lookupId);
-                    urlBuilder.addQueryParameter("lkaction", "ajax");
+                    urlBuilder.addQueryParameter("lkaction", "htmlContent");
                     urlBuilder.addQueryParameter("lkid", lookupInput.val().toString());
                     lookupResultUrl = urlBuilder.build();
                 }
@@ -1903,7 +1910,7 @@ class UploadArea {
             }
             else {
                 let urlBuilder = new UrlBuilder();
-                urlBuilder.addQueryParameter("t", "jjupload");
+                urlBuilder.addQueryParameter("context", "fileUpload");
                 urlBuilder.addQueryParameter("objname", componentName);
                 url = urlBuilder.build();
             }

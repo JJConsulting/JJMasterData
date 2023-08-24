@@ -109,9 +109,8 @@ internal class ActionsScripts
         string functionSignature;
         if (isPopup)
         {
-            var url = GetFormViewUrl(formElement.Name, action, actionMap);
             functionSignature =
-                $"ActionManager.executeFormActionAsPopUp('{url}','{actionContext.FormElement.Title}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+                $"ActionManager.executeFormActionAsPopUp('{actionContext.ParentComponentName}','{formElement.Title}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
         else
         {
@@ -121,28 +120,7 @@ internal class ActionsScripts
 
         return functionSignature;
     }
-
-
-    private string GetFormViewUrl(string dictionaryName, BasicAction action, ActionMap actionMap)
-    {
-        string encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
-
-
-        var pageState = action switch
-        {
-            InsertAction => PageState.Insert,
-            ViewAction => PageState.View,
-            _ => PageState.Update
-        };
-
-        var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
-        return UrlHelper.GetUrl("GetFormView", "Form","MasterData", new
-        {
-            dictionaryName = encryptedDictionaryName,
-            actionMap = encryptedActionMap,
-            pageState
-        });
-    }
+    
 
     internal async Task<string> GetUserActionScriptAsync(
         UserCreatedAction userCreatedAction,

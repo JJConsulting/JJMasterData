@@ -75,7 +75,7 @@
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&
-                settings.url.indexOf("t=jjsearchbox") !== -1) {
+                settings.url.indexOf("context=searchBox") !== -1) {
                 return null;
             }
 

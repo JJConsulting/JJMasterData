@@ -67,6 +67,9 @@ public class JJFormView : AsyncComponent
     private JJDataImportation? _dataImportation;
     private string? _userId;
     private bool? _showTitle;
+    private PageState? _pageState;
+    private IDictionary<string, object> _relationValues = new Dictionary<string, object>();
+    private ComponentContext? _componentContext;
     #endregion
     
     #region "Properties"
@@ -167,14 +170,7 @@ public class JJFormView : AsyncComponent
             return _gridView;
         }
     }
-
-    /// <summary>
-    /// Estado atual da pagina
-    /// </summary>
-    private PageState? _pageState;
-
-    private IDictionary<string, object> _relationValues = new Dictionary<string, object>();
-
+    
     public PageState PageState
     {
         get
@@ -203,6 +199,15 @@ public class JJFormView : AsyncComponent
         }
     }
 
+    internal ComponentContext ComponentContext
+    {
+        get
+        {
+            var context = CurrentContext.Request.QueryString("context");
+
+            return _componentContext ??= ComponentContextParser.FromString(context);
+        }
+    }
 
     public DeleteSelectedRowsAction DeleteSelectedRowsAction
         => (DeleteSelectedRowsAction)GridView.ToolBarActions.First(x => x is DeleteSelectedRowsAction);
@@ -228,8 +233,6 @@ public class JJFormView : AsyncComponent
         set => _showTitle = value;
     }
 
-    internal bool IsModal { get; set; }
-
     internal IHttpContext CurrentContext { get; }
     internal IEntityRepository EntityRepository { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -239,7 +242,7 @@ public class JJFormView : AsyncComponent
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IFormService FormService { get; }
     internal ComponentFactory ComponentFactory { get; }
-
+    
     #endregion
 
     #region "Constructors"
@@ -305,8 +308,7 @@ public class JJFormView : AsyncComponent
 
      protected override async Task<ComponentResult> BuildResultAsync()
     {
-        var requestType = CurrentContext.Request.QueryString("t");
-        var objName = CurrentContext.Request.QueryString("objname");
+        var componentName = CurrentContext.Request.QueryString("objname");
 
         if (JJLookup.IsLookupRoute(this, CurrentContext))
             return await DataPanel.GetResultAsync();
@@ -320,21 +322,21 @@ public class JJFormView : AsyncComponent
         if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
             return await JJSearchBox.GetResultFromPanel(DataPanel);
 
-        if ("reloadPanel".Equals(requestType))
+        if (ComponentContext is ComponentContext.PanelReload)
         {
             var panelHtml = await GetReloadPanelResultAsync();
 
             return new HtmlComponentResult(panelHtml);
         }
 
-        if ("jjupload".Equals(requestType) || "ajaxdataimp".Equals(requestType))
+        if (ComponentContext is ComponentContext.DataImportation or ComponentContext.FileUpload)
         {
-            if (!DataImportation.Upload.Name.Equals(objName))
+            if (!DataImportation.Upload.Name.Equals(componentName))
                 return new EmptyComponentResult();
 
             return await GetImportationResult();
         }
-        if ("geturlaction".Equals(requestType))
+        if (ComponentContext is ComponentContext.UrlRedirect)
         {
             return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
         }
@@ -895,7 +897,15 @@ public class JJFormView : AsyncComponent
         
         if (!relationships.Any())
         {
-            return new RenderedComponentResult(await GetHtmlFromPanel(parentPanel));
+            var panelHtml = await GetHtmlFromPanel(parentPanel);
+
+
+            if (ComponentContext is ComponentContext.Modal)
+            {
+                return HtmlComponentResult.FromHtmlBuilder(panelHtml);
+            }
+            
+            return new RenderedComponentResult(panelHtml);
         }
 
         var html = new HtmlBuilder(HtmlTag.Div);

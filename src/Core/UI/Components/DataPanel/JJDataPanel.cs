@@ -185,7 +185,7 @@ public class JJDataPanel : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         Values ??= await GetFormValuesAsync();
-        string requestType = CurrentContext.Request.QueryString("t");
+        string context = CurrentContext.Request.QueryString("context");
         string panelName = CurrentContext.Request.QueryString("pnlname");
         
         if (JJLookup.IsLookupRoute(this, CurrentContext))
@@ -200,14 +200,14 @@ public class JJDataPanel : AsyncComponent
         if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
             return await JJSearchBox.GetResultFromPanel(this);
 
-        if ("reloadPanel".Equals(requestType) && Name.Equals(panelName))
+        if ("panelReload".Equals(context) && Name.Equals(panelName))
         {
             var html = await GetPanelHtmlAsync();
             var panelHtml = html.ToString();
             return new HtmlComponentResult(panelHtml);
         }
 
-        if ("geturlaction".Equals(requestType))
+        if ("urlRedirect".Equals(context))
         {
             var encryptedActionMap = CurrentContext.Request["current-form-action-" + Name.ToLower()];
             return await GetUrlRedirectResult(EncryptionService.DecryptActionMap(encryptedActionMap));

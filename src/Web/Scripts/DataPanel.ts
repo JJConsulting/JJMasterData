@@ -3,7 +3,7 @@ class DataPanel {
         let url = new UrlBuilder()
         url.addQueryParameter("pnlname",panelname)
         url.addQueryParameter("objname",objid)
-        url.addQueryParameter("t","reloadPanel")
+        url.addQueryParameter("context","panelReload")
 
         DataPanel.Reload(url.build(), panelname, objid)
     }

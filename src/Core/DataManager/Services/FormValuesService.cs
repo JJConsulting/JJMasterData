@@ -74,9 +74,9 @@ public class FormValuesService : IFormValuesService
                     break;
                 case FormComponent.Currency:
                 case FormComponent.Number:
-                    string requestType = CurrentContext.Request.QueryString("t");
-                    if (value != null && ("reloadPanel".Equals(requestType) || "gridViewRow".Equals(requestType) ||
-                                          "ajax".Equals(requestType)))
+                    string context = CurrentContext.Request.QueryString("context");
+                    if (value != null && ("panelReload".Equals(context) || "gridViewRow".Equals(context) ||
+                                          "htmlContent".Equals(context)))
                     {
                         if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
                                 out var numericValue))

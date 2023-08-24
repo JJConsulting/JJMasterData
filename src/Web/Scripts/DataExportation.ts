@@ -3,7 +3,7 @@ class DataExportation{
         DataExportation.setLoadMessage();
 
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("t","dataExportation")
+        urlBuilder.addQueryParameter("context","dataExportation")
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","checkProgress")
         
@@ -17,7 +17,7 @@ class DataExportation{
 
     static async stopProcessAtSamePage(componentName, stopMessage) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("t","dataExportation")
+        urlBuilder.addQueryParameter("context","dataExportation")
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","stopProcess")
         
@@ -27,7 +27,7 @@ class DataExportation{
 
     static openExportPopupAtSamePage(componentName) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("t","dataExportation")
+        urlBuilder.addQueryParameter("context","dataExportation")
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","showOptions")
 
@@ -37,7 +37,7 @@ class DataExportation{
     static startExportationAtSamePage(componentName) {
 
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("t","dataExportation")
+        urlBuilder.addQueryParameter("context","dataExportation")
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","startProcess")
 

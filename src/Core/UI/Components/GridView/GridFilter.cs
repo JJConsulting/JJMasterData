@@ -116,7 +116,7 @@ internal class GridFilter
 
     private bool IsAjaxPost()
     {
-        return !string.IsNullOrEmpty(CurrentContext.Request.QueryString("t"));
+        return !string.IsNullOrEmpty(CurrentContext.Request.QueryString("context"));
     }
     
     public async Task ApplyCurrentFilter(IDictionary<string, object> values)

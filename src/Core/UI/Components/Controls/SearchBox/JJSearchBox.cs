@@ -221,9 +221,9 @@ public class JJSearchBox : AsyncControl
     
     public static bool IsSearchBoxRoute(string? dictionaryName, IHttpContext httpContext)
     {
-        string requestType = httpContext.Request.QueryString("t");
+        string context = httpContext.Request.QueryString("context");
         string requestedDictionaryName = httpContext.Request.QueryString("dictionaryName");
-        return "jjsearchbox".Equals(requestType) && (requestedDictionaryName == dictionaryName || dictionaryName is null);
+        return "searchBox".Equals(context) && (requestedDictionaryName == dictionaryName || dictionaryName is null);
     }
 
     public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
@@ -320,7 +320,7 @@ public class JJSearchBox : AsyncControl
         }
         else
         {
-            url.Append("t=jjsearchbox");
+            url.Append("context=searchBox");
             url.Append($"&dictionaryName={DictionaryName}");
             url.Append($"&fieldName={FieldName}");
             url.Append($"&fieldSearchName={Name + "_text"}");

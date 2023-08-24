@@ -34,43 +34,6 @@ public class FormController : MasterDataController
         var model = new FormViewModel(formView.FormElement.Title ?? formView.FormElement.Name, result.Content);
         return View(model);
     }
-
-    //TODO Gustavo mover pra dentro do formView, aqui vai perder a customização se do nada alguém habilitar modo popup
-    [ServiceFilter<FormElementDecryptionFilter>]
-    [ServiceFilter<ActionMapDecryptionFilter>]
-    [HttpPost]
-    public async Task<IActionResult> GetFormView(
-        FormElement formElement,
-        PageState pageState,
-        ActionMap actionMap)
-    {
-        var formView = _formViewFactory.Create(formElement);
-        formView.IsModal = true;
-        formView.DataPanel.FieldNamePrefix = "modal_";
-        if (actionMap.UserValues is not null)
-        {
-            formView.RelationValues = DataHelper.GetElementValues(formElement,actionMap.UserValues)!;
-        }
-        formView.IsExternalRoute = true;
-        formView.PageState = pageState;
-
-        if (pageState is not PageState.Insert)
-        {
-            await formView.DataPanel.LoadValuesFromPkAsync(actionMap.PkFieldValues);
-        }
-
-        var result = await formView.GetResultAsync();
-
-        if (result.IsActionResult())
-            return result.ToActionResult();
-        
-        if(result is RenderedComponentResult renderedComponentResult)
-        {
-            return Content(renderedComponentResult.Content);
-        }
-
-        return new EmptyResult();
-    }
     
     [ServiceFilter<FormElementDecryptionFilter>]
     [HttpPost]

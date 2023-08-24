@@ -45,7 +45,7 @@
             url = checkProgressUrl
         }else{
             let urlBuilder = new UrlBuilder()
-            urlBuilder.addQueryParameter("t","ajaxdataimp")
+            urlBuilder.addQueryParameter("context","dataImportation")
             urlBuilder.addQueryParameter("current_uploadaction","process_check")
             urlBuilder.addQueryParameter("objname",componentName)
             url = urlBuilder.build()
@@ -162,7 +162,7 @@
             url = stopProcessUrl
         }else{
             let urlBuilder = new UrlBuilder()
-            urlBuilder.addQueryParameter("t","ajaxdataimp")
+            urlBuilder.addQueryParameter("context","dataImportation")
             urlBuilder.addQueryParameter("current_uploadaction","process_check")
             urlBuilder.addQueryParameter("objname",componentName)
             url = urlBuilder.build()

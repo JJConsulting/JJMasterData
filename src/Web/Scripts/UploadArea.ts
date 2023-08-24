@@ -133,7 +133,7 @@ class UploadArea {
             }
             else{
                 let urlBuilder = new UrlBuilder();
-                urlBuilder.addQueryParameter("t","jjupload")
+                urlBuilder.addQueryParameter("context","fileUpload")
                 urlBuilder.addQueryParameter("objname",componentName)
                 url = urlBuilder.build();
             }

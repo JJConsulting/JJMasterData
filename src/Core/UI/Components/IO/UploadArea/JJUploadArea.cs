@@ -119,8 +119,8 @@ public class JJUploadArea : AsyncComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string requestType = CurrentContext.Request.QueryString("t");
-        if ("jjupload".Equals(requestType))
+        string context = CurrentContext.Request.QueryString("context");
+        if ("fileUpload".Equals(context))
         {
             if (OnFileUploaded != null) 
                 UploadAreaService.OnFileUploaded += OnFileUploaded;

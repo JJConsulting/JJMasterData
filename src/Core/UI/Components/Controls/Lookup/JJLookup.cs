@@ -223,7 +223,7 @@ public class JJLookup : AsyncControl
     private bool IsAjaxGetDescription()
     {
         string lkaction = CurrentContext.Request.QueryString("lkaction");
-        return "ajax".Equals(lkaction);
+        return "htmlContent".Equals(lkaction);
     }
 
 
