@@ -47,7 +47,7 @@ public static class ComponentContextParser
     {
         return context switch
         {
-            "htmlContent"   => ComponentContext.HtmlContent,
+            "htmlContent"=> ComponentContext.HtmlContent,
             "modal" => ComponentContext.Modal,
             "dataExportation"=> ComponentContext.DataExportation,
             "dataImportation" => ComponentContext.DataImportation,

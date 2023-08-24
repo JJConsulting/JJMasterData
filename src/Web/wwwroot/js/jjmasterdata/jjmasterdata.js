@@ -1224,7 +1224,7 @@ class Lookup {
                 if (!lookupResultUrl) {
                     let urlBuilder = new UrlBuilder();
                     urlBuilder.addQueryParameter("jjlookup_" + panelName, lookupId);
-                    urlBuilder.addQueryParameter("lkaction", "htmlContent");
+                    urlBuilder.addQueryParameter("lookupAction", "getDescription");
                     urlBuilder.addQueryParameter("lkid", lookupInput.val().toString());
                     lookupResultUrl = urlBuilder.build();
                 }

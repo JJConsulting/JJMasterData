@@ -146,7 +146,7 @@ public class SqlServerProvider : BaseProvider
         return sql.ToString();
     }
 
-    private string GetRelationshipsScript(Element element)
+    private static string GetRelationshipsScript(Element element)
     {
         var sql = new StringBuilder();
 
@@ -798,7 +798,7 @@ public class SqlServerProvider : BaseProvider
                             sql.Append("SET @sqlcond = @sqlcond + ' AND ");
                             sql.Append(f.Name);
 
-                            if (f.DataType == FieldType.Int || f.DataType == FieldType.Float)
+                            if (f.DataType is FieldType.Int or FieldType.Float or FieldType.Bit)
                             {
                                 sql.Append(" = ' + CONVERT(VARCHAR, @");
                                 sql.Append(f.Name);
