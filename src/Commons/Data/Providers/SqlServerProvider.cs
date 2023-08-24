@@ -133,7 +133,7 @@ public class SqlServerProvider : BaseProvider
         if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
         {
             sql.Append(" (");
-            sql.Append(f.Size);
+            sql.Append(f.Size == -1 ? "MAX" : f.Size);
             sql.Append(")");
         }
 
@@ -269,7 +269,7 @@ public class SqlServerProvider : BaseProvider
             if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
             {
                 sql.Append("(");
-                sql.Append(f.Size);
+                sql.Append(f.Size == -1 ? "MAX" : f.Size);
                 sql.Append(")");
             }
             sql.AppendLine(", ");
@@ -534,7 +534,7 @@ public class SqlServerProvider : BaseProvider
                 if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
                 {
                     sql.Append("(");
-                    sql.Append(f.Size);
+                    sql.Append(f.Size == -1 ? "MAX" : f.Size);
                     sql.Append(")");
                 }
                 sql.AppendLine(",");
@@ -545,7 +545,7 @@ public class SqlServerProvider : BaseProvider
                 if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
                 {
                     sql.Append("(");
-                    sql.Append(f.Size);
+                    sql.Append(f.Size == -1 ? "MAX" : f.Size);
                     sql.Append(") ");
                 }
                 sql.AppendLine(",");
@@ -568,7 +568,7 @@ public class SqlServerProvider : BaseProvider
                 if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
                 {
                     sql.Append("(");
-                    sql.Append(f.Size);
+                    sql.Append(f.Size == -1 ? "MAX" : f.Size);
                     sql.AppendLine("), ");
                 }
                 else
@@ -1176,8 +1176,7 @@ public class SqlServerProvider : BaseProvider
 
         return FieldType.NVarchar;
     }
-
-  
+    
     public override async Task<Element> GetElementFromTableAsync(string tableName)
     {
         if (string.IsNullOrEmpty(tableName))
@@ -1233,5 +1232,5 @@ public class SqlServerProvider : BaseProvider
 
         return element;
     }
-
+    
 }

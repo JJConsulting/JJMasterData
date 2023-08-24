@@ -105,7 +105,7 @@ public class AuditLogService : IAuditLogService
             CustomProcNameGet = Options.GetReadProcedureName(tableName),
             CustomProcNameSet = Options.GetWriteProcedureName(tableName)
         };
-        element.Fields.AddPK(DicId, "Id", FieldType.Int, 1, true, FilterMode.Equal);
+        element.Fields.AddPk(DicId, "Id", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DicName, "Dictionary Name", FieldType.NVarchar, 64, true, FilterMode.Equal);
         element.Fields.Add(DicAction, "Action", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DicModified, "Date", FieldType.DateTime, 15, true, FilterMode.Range);
