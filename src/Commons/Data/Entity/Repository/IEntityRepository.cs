@@ -130,9 +130,9 @@ public interface IEntityRepository
     
     public Task<bool> ExecuteBatchAsync(string script);
     
-    Task<IDictionary<string, object?>?> GetFieldsAsync(DataAccessCommand command);
+    Task<IDictionary<string, object?>> GetFieldsAsync(DataAccessCommand command);
     
-    Task<IDictionary<string, object?>?> GetFieldsAsync(Element metadata, IDictionary<string, object> primaryKeys);
+    Task<IDictionary<string, object?>> GetFieldsAsync(Element metadata, IDictionary<string, object> primaryKeys);
     
     Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command);
     

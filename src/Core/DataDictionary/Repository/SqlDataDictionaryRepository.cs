@@ -6,6 +6,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository;
 using Microsoft.Extensions.Options;
@@ -128,7 +129,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         var filter = new Dictionary<string, object> { { "name", dictionaryName } };
         var fields = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
-        return fields != null;
+        return fields.Any();
     }
 
     public async Task CreateStructureIfNotExistsAsync()

@@ -84,7 +84,7 @@
                     <select asp-for="DataType" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldType>().OrderBy(f=>f.Text)"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2">
-                    <label class="@BootstrapHelper.Label " for="Size" @BootstrapHelper.GetDataToggle("tooltip") title="Tamanho do campo">@StringLocalizer["Size"]</label>
+                    <label class="@BootstrapHelper.Label " for="Size" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field size. At SQL Server use -1 to use the MAX keyword."]">@StringLocalizer["Size"]</label>
                     @Html.TextBoxFor(model => model.Size, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-1 required">

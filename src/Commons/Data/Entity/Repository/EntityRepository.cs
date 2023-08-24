@@ -82,12 +82,12 @@ public class EntityRepository : IEntityRepository
 
 
     public async Task<bool> ExecuteBatchAsync(string script) => await DataAccess.ExecuteBatchAsync(script);
-    public async Task<IDictionary<string, object?>?> GetFieldsAsync(DataAccessCommand command)
+    public async Task<IDictionary<string, object?>> GetFieldsAsync(DataAccessCommand command)
     {
         return await DataAccess.GetDictionaryAsync(command);
     }
 
-    public async Task<IDictionary<string, object?>?> GetFieldsAsync(Element metadata, IDictionary<string, object> primaryKeys)
+    public async Task<IDictionary<string, object?>> GetFieldsAsync(Element metadata, IDictionary<string, object> primaryKeys)
     {
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
