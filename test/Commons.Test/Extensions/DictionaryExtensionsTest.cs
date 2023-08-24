@@ -19,7 +19,7 @@ public class DictionaryExtensionsTest
 
         Assert.NotNull(model);
         Assert.Equal("Test", model.Name);
-        Assert.True(model.Sync);
+        Assert.True(model.EnableWebApi);
      
     }
 }

@@ -110,7 +110,7 @@ public class MetadataRepository
         if (dicParser.ApiOptions == null)
         {
             dicParser.ApiOptions = new MetadataApiOptions();
-            if (dicParser.Table.Sync)
+            if (dicParser.Table.EnableWebApi)
             {
                 dicParser.ApiOptions.EnableGetAll = true;
                 dicParser.ApiOptions.EnableGetDetail = true;

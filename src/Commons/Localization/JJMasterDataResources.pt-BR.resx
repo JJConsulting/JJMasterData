@@ -857,8 +857,8 @@
     <value>Habilitar seleção múltipla</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Enable or disable API operations" xml:space="preserve">
-    <value>Ativar ou desativar operações API</value>
+  <data name="Enable or disable Http operations" xml:space="preserve">
+    <value>Ativar ou desativar operações Http</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Enable quick on-screen search." xml:space="preserve">
@@ -3411,5 +3411,8 @@
   </data>
   <data name="Filter for any data inside the structure of the metadata" xml:space="preserve">
     <value>Filtre por qualquer dado dentro da estrutura dos metadados.</value>
+  </data>
+  <data name="Bit fields can only be a checkbox (true or false.)" xml:space="preserve">
+    <value>Campos do tipo Bit só podem ser uma checkbox (true ou false).</value>
   </data>
 </root>

@@ -34,7 +34,7 @@ public class FieldService : BaseService
             field.DataFile.FolderPath = field.DataFile.FolderPath?.Trim();
         }
 
-        if (!ValidateFields(formElement, field, originalName))
+        if (!ValidateField(formElement, field, originalName))
         {
             if (string.IsNullOrEmpty(field.Name))
                 field.Name = originalName;
@@ -58,7 +58,7 @@ public class FieldService : BaseService
         return IsValid;
     }
 
-    private void RemoveUnusedProperties(ref FormElementField field)
+    private static void RemoveUnusedProperties(ref FormElementField field)
     {
         if (field.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.Lookup)
         {
@@ -92,7 +92,7 @@ public class FieldService : BaseService
         }
     }
 
-    public bool ValidateFields(FormElement formElement, FormElementField field, string originalName)
+    private bool ValidateField(FormElement formElement, FormElementField field, string originalName)
     {
         ValidateName(field.Name);
 
@@ -133,6 +133,12 @@ public class FieldService : BaseService
                 AddError(nameof(field.Filter.Type),
                     StringLocalizer["Only fields of type VarChar or Text can be of type Contains."]);
             }
+        }
+
+        if (field.DataType is FieldType.Bit && field.Component != FormComponent.CheckBox)
+        {
+            AddError(nameof(field.Filter.Type),
+                StringLocalizer["Bit fields can only be a checkbox (true or false.)"]);
         }
 
         if (field.Component is FormComponent.Number or FormComponent.Currency)
@@ -274,18 +280,24 @@ public class FieldService : BaseService
                 StringLocalizer["The [ExportAsLink] field cannot be enabled with [MultipleFile]"]);
     }
 
-    public async Task<bool> SortFieldsAsync(string elementName, string[] orderFields)
+    public async Task<bool> SortFieldsAsync(string elementName, IEnumerable<string> orderFields)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        
+        SortFields(orderFields, formElement);
+
+        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        return true;
+    }
+
+    private static void SortFields(IEnumerable<string> orderFields, FormElement formElement)
+    {
         var newList = orderFields.Select(fieldName => formElement.Fields[fieldName]).ToList();
 
         for (int i = 0; i < formElement.Fields.Count; i++)
         {
             formElement.Fields[i] = newList[i];
         }
-        
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
-        return true;
     }
 
     public async Task<bool> AddElementMapFilterAsync(FormElementField field, DataElementMapFilter mapFilter)

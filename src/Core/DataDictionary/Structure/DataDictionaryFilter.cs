@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
@@ -13,6 +14,14 @@ public class DataDictionaryFilter
     public DateTime? LastModifiedFrom { get;private set; }
     public DateTime? LastModifiedTo { get;private  set; }
     public string? Json { get; private set; }
+    
+    public bool? EnableWebApi { get; private set; }
+    
+    private DataDictionaryFilter()
+    {
+        
+    }
+    
     public static DataDictionaryFilter FromDictionary(IDictionary<string, object?>filter)
     {
         var result = new DataDictionaryFilter();
@@ -37,10 +46,17 @@ public class DataDictionaryFilter
             result.LastModifiedTo = DateTime.Parse(lastModifiedTo.ToString()!);
         }
         
+        if (filter.TryGetValue(DataDictionaryStructure.EnableWebApi, out var enableWebApi))
+        {
+            result.EnableWebApi = StringManager.ParseBool(enableWebApi);
+        }
+        
         if (filter.TryGetValue(DataDictionaryStructure.Json, out var json))
         {
             result.Json = json?.ToString();
         }
+        
+   
 
         return result;
     }
@@ -75,10 +91,16 @@ public class DataDictionaryFilter
             result[DataDictionaryStructure.LastModifiedTo] = LastModifiedTo;
         }
 
+        if (EnableWebApi != null)
+        {
+            result[DataDictionaryStructure.EnableWebApi] = EnableWebApi;
+        }
+        
         if (Json != null)
         {
             result[DataDictionaryStructure.Json] = Json;
         }
+ 
         
         return result;
     }

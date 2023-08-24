@@ -72,6 +72,7 @@ public class FieldFormattingService : IFieldFormattingService
                     out double floatValue))
                 stringValue = floatValue.ToString("N" + field.NumberOfDecimalPlaces);
         }
+        
         else if (field.DataType == FieldType.Int)
         {
             if (int.TryParse(value.ToString(), out int intVal))

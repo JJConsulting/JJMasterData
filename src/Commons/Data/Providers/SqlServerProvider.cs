@@ -1066,7 +1066,7 @@ public class SqlServerProvider : BaseProvider
     }
 
 
-    private object GetElementValue(ElementField f, IDictionary<string,object?> values)
+    private static object GetElementValue(ElementField f, IDictionary<string,object?> values)
     {
         if (!values.ContainsKey(f.Name)) 
             return DBNull.Value;
@@ -1075,24 +1075,24 @@ public class SqlServerProvider : BaseProvider
         if (value == null)
             return DBNull.Value;
         
-        if ((f.DataType == FieldType.Date ||
-             f.DataType == FieldType.DateTime ||
-             f.DataType == FieldType.Float ||
-             f.DataType == FieldType.Int) &&
+        if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
             string.IsNullOrEmpty(value.ToString()))
         {
             return DBNull.Value;
         }
+
+        if (f.DataType is FieldType.Bit)
+            return StringManager.ParseBool(values[f.Name]);
         
         return value;
     }
 
-    private bool HasUpdateFields(Element element)
+    private static bool HasUpdateFields(Element element)
     {
         return element.Fields.Any(f => !f.IsPk && f.DataBehavior == FieldBehavior.Real);
     }
 
-    private string GetSqlDropIfExists(string objname)
+    private static string GetSqlDropIfExists(string objname)
     {
         StringBuilder sSql = new StringBuilder();
         sSql.AppendLine("IF  EXISTS (SELECT * ");
@@ -1115,53 +1115,47 @@ public class SqlServerProvider : BaseProvider
         return sSql.ToString();
     }
 
-    private DbType GetDbType(FieldType dataType)
+    private static DbType GetDbType(FieldType dataType)
     {
-        DbType t = DbType.String;
-        switch (dataType)
+        return dataType switch
         {
-            case FieldType.Date:
-                t = DbType.Date;
-                break;
-            case FieldType.DateTime:
-            case FieldType.DateTime2:
-                t = DbType.DateTime;
-                break;
-            case FieldType.Float:
-                t = DbType.Double;
-                break;
-            case FieldType.Int:
-                t = DbType.Int32;
-                break;
-        }
-        return t;
+            FieldType.Date => DbType.Date,
+            FieldType.DateTime => DbType.DateTime,
+            FieldType.DateTime2 => DbType.DateTime,
+            FieldType.Float => DbType.Double,
+            FieldType.Int => DbType.Int32,
+            FieldType.Bit => DbType.Boolean,
+            _ => DbType.String
+        };
     }
 
-    private FieldType GetDataType(string databaseType)
+    private static FieldType GetDataType(string databaseType)
     {
         if (string.IsNullOrEmpty(databaseType))
             return FieldType.NVarchar;
 
         databaseType = databaseType.ToLower().Trim();
 
-        if (databaseType.Equals("varchar") |
-            databaseType.Equals("char") |
-            databaseType.Equals("bit"))
+        if (databaseType.Equals("varchar") ||
+            databaseType.Equals("char"))
             return FieldType.Varchar;
 
-        if (databaseType.Equals("nvarchar") |
+        if (databaseType.Equals("bit"))
+            return FieldType.Bit;
+        
+        if (databaseType.Equals("nvarchar") ||
             databaseType.Equals("nchar"))
             return FieldType.NVarchar;
 
-        if (databaseType.Equals("int") |
-            databaseType.Equals("bigint") |
+        if (databaseType.Equals("int") ||
+            databaseType.Equals("bigint") ||
             databaseType.Equals("tinyint"))
             return FieldType.Int;
 
-        if (databaseType.Equals("float") |
-            databaseType.Equals("numeric") |
-            databaseType.Equals("money") |
-            databaseType.Equals("smallmoney") |
+        if (databaseType.Equals("float") ||
+            databaseType.Equals("numeric") ||
+            databaseType.Equals("money") ||
+            databaseType.Equals("smallmoney") ||
             databaseType.Equals("real"))
             return FieldType.Float;
 
