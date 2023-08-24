@@ -739,7 +739,7 @@ class GridView {
         })
             .then(response => response.text())
             .then(data => {
-            document.querySelector("#jjgridview-" + componentName).innerHTML = data;
+            document.querySelector("#grid-view-" + componentName).innerHTML = data;
             loadJJMasterData();
             if (filterAction)
                 filterAction.value = "";
@@ -796,7 +796,7 @@ class JJView {
                         $("form:first").trigger("submit");
                         return;
                     }
-                    $("#jjgridview-" + objid).html(data);
+                    $("#grid-view-" + objid).html(data);
                     if (loadform) {
                         loadJJMasterData();
                     }

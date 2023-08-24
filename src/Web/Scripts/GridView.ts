@@ -119,7 +119,7 @@
         })
             .then(response => response.text())
             .then(data => {
-                document.querySelector<HTMLInputElement>("#jjgridview-" + componentName).innerHTML = data;
+                document.querySelector<HTMLInputElement>("#grid-view-" + componentName).innerHTML = data;
                 loadJJMasterData();
                 
                 if(filterAction)

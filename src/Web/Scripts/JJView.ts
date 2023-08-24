@@ -20,7 +20,7 @@
                         return;
                     }
 
-                    $("#jjgridview-" + objid).html(data);
+                    $("#grid-view-" + objid).html(data);
                     if (loadform) {
                         loadJJMasterData();
                     }

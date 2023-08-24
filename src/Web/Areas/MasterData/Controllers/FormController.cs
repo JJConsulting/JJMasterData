@@ -42,7 +42,6 @@ public class FormController : MasterDataController
     public async Task<IActionResult> GetFormView(
         FormElement formElement,
         PageState pageState,
-        IFormCollection formCollection,
         ActionMap actionMap)
     {
         var formView = _formViewFactory.Create(formElement);

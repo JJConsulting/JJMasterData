@@ -1,6 +1,8 @@
-﻿
+﻿@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
+
 @{
-    ViewData["Title"] = $"Data Dictionaries";
+    ViewData["Title"] = StringLocalizer["Data Dictionary"];
 }
 
 @using (Html.BeginForm())
