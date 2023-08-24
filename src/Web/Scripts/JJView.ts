@@ -283,11 +283,11 @@
         }
     }
 
-    static directDownload(objid, pnlname, filename) {
+    static directDownload(objid, panelName, filename) {
         SpinnerOverlay.show();
         var url = $("form").attr("action");
         url += url.includes("?") ? "&" : "?";
-        url += "jjuploadview_" + pnlname + "=" + objid;
+        url += "jjuploadview_" + panelName + "=" + objid;
         url += "&downloadfile=" + filename;
 
         window.location.assign(url);

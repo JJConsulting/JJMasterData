@@ -7,8 +7,8 @@ namespace JJMasterData.Core.DataManager;
 
 internal class FormContext
 {
-    public FormContext(IDictionary<string, object?> values, PageState pageState) : this(values,
-        new Dictionary<string, string>(), pageState)
+    public FormContext(IDictionary<string, object?> values, PageState pageState)
+        : this(values, new Dictionary<string, string>(), pageState)
     {
     }
 

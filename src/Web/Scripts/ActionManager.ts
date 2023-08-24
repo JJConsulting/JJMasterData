@@ -90,7 +90,7 @@ class ActionManager {
         currentFormActionInput.value = encryptedActionMap;
         
         let urlBuilder = new UrlBuilder()
-        urlBuilder.addQueryParameter("context","htmlContent")
+        urlBuilder.addQueryParameter("context","modal")
         
         const url = urlBuilder.build()
         

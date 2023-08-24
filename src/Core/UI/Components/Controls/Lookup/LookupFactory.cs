@@ -52,7 +52,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
         lookup.Visible = true;
         lookup.FormElement = formElement;
         lookup.AutoReloadFormFields = false;
-        lookup.Attributes.Add("pnlname", controlContext.ParentComponentName);
+        lookup.Attributes.Add("panelName", controlContext.ParentComponentName);
         lookup.FormStateData = controlContext.FormStateData;
         lookup.UserValues = controlContext.FormStateData.UserValues;
 

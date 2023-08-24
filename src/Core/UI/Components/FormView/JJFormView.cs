@@ -309,7 +309,7 @@ public class JJFormView : AsyncComponent
      protected override async Task<ComponentResult> BuildResultAsync()
     {
         var componentName = CurrentContext.Request.QueryString("objname");
-
+        var panelName = CurrentContext.Request.QueryString("panelName");
         if (JJLookup.IsLookupRoute(this, CurrentContext))
             return await DataPanel.GetResultAsync();
 
@@ -322,7 +322,7 @@ public class JJFormView : AsyncComponent
         if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
             return await JJSearchBox.GetResultFromPanel(DataPanel);
 
-        if (ComponentContext is ComponentContext.PanelReload)
+        if (ComponentContext is ComponentContext.PanelReload && panelName == DataPanel.Name)
         {
             var panelHtml = await GetReloadPanelResultAsync();
 
@@ -438,6 +438,11 @@ public class JJFormView : AsyncComponent
 
         if ("CANCEL".Equals(formAction))
         {
+            if (ComponentContext is ComponentContext.Modal)
+            {
+                return new JsonComponentResult("<script>popup.hide()</script>");
+            }
+
             PageState = PageState.List;
             return await GridView.GetResultAsync();
         }
@@ -881,13 +886,15 @@ public class JJFormView : AsyncComponent
     
     private async Task<ComponentResult> GetFormResultAsync(FormContext formContext, bool autoReloadFormFields)
     {
-        var relationships = FormElement
-            .Relationships
-            .Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
-            .ToList();
-
         var (values, errors, pageState) = formContext;
 
+        var visibleRelationships = await FormElement
+            .Relationships
+            .ToAsyncEnumerable()
+            .Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
+            .WhereAwait(async r=> await ExpressionsService.GetBoolValueAsync(r.Panel.VisibleExpression, new FormStateData(values, pageState)))
+            .ToListAsync();
+        
         var parentPanel = DataPanel;
         parentPanel.PageState = pageState;
         parentPanel.Errors = errors; 
@@ -895,15 +902,15 @@ public class JJFormView : AsyncComponent
         parentPanel.IsExternalRoute = IsExternalRoute;
         parentPanel.AutoReloadFormFields = autoReloadFormFields;
         
-        if (!relationships.Any())
+        if (!visibleRelationships.Any() || visibleRelationships.Count == 1)
         {
-            var panelHtml = await GetHtmlFromPanel(parentPanel);
-
+            var panelHtml = await GetHtmlFromPanel(parentPanel, true);
 
             if (ComponentContext is ComponentContext.Modal)
-            {
                 return HtmlComponentResult.FromHtmlBuilder(panelHtml);
-            }
+            
+            if (ShowTitle)
+                panelHtml.Prepend(GridView.GetTitle(values).GetHtmlBuilder());
             
             return new RenderedComponentResult(panelHtml);
         }
@@ -920,7 +927,7 @@ public class JJFormView : AsyncComponent
 
         html.AppendComponent(await GetFormToolbarAsync(topActions));
 
-        var relationshipsResult = await layout.GetRelationshipsResult(parentPanel, relationships);
+        var relationshipsResult = await layout.GetRelationshipsResult(parentPanel, visibleRelationships);
 
         if (relationshipsResult is RenderedComponentResult renderedComponentResult)
         {
@@ -940,7 +947,7 @@ public class JJFormView : AsyncComponent
         return new RenderedComponentResult(html);
     }
 
-    internal async Task<HtmlBuilder> GetHtmlFromPanel(JJDataPanel panel)
+    internal async Task<HtmlBuilder> GetHtmlFromPanel(JJDataPanel panel, bool isParent = false)
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
         formHtml.WithNameAndId(Name);
@@ -951,7 +958,7 @@ public class JJFormView : AsyncComponent
         var parentPanelHtml = await panel.GetPanelHtmlAsync();
 
         var panelActions = panel.FormElement.Options.FormToolbarActions
-            .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel).ToList();
+            .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel || isParent).ToList();
 
         var toolbar = await GetFormToolbarAsync(panelActions);
 

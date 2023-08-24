@@ -1,6 +1,7 @@
 using JJMasterData.Commons.Data;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Extensions;
+using JJMasterData.MongoDB.Extensions;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Pdf;
 using JJMasterData.WebExample.Authorization;
@@ -21,7 +22,8 @@ public class Program
         builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
         builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddJJMasterDataWeb(settingsPath)
-            .WithPdfExportation();
+            .WithPdfExportation()
+            .WithMongoDbDataDictionary();
             // .WithEntityRepository(
             //     "data source=localhost,1433;initial catalog=JJMasterData;user=sa;password=Test@123456",
             //     DataAccessProviderType.SqlServer);

@@ -3,7 +3,8 @@ class Lookup {
         $("input.jjlookup").each(function () {
             let lookupInput = $(this);
             let lookupId = lookupInput.attr("id");
-            let panelName = lookupInput.attr("pnlname");
+            let fieldName = lookupInput.attr("lookup-field-name");
+            let panelName = lookupInput.attr("panelName");
             let popupTitle = lookupInput.attr("popuptitle");
             let lookupUrl = lookupInput.attr("lookup-url");
             let lookupResultUrl = lookupInput.attr("lookup-result-url");
@@ -44,7 +45,7 @@ class Lookup {
 
                 if(!lookupResultUrl){
                     let urlBuilder = new UrlBuilder()
-                    urlBuilder.addQueryParameter("jjlookup_" + panelName, lookupId)
+                    urlBuilder.addQueryParameter("lookup-" + panelName, fieldName)
                     urlBuilder.addQueryParameter("lookupAction","getDescription")
                     urlBuilder.addQueryParameter("lkid",lookupInput.val().toString())
                     lookupResultUrl = urlBuilder.build()

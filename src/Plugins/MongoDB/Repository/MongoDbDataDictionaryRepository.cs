@@ -5,9 +5,14 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections;
+using System.Linq.Expressions;
+using System.Reflection;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace JJMasterData.MongoDB.Repository;
 
@@ -27,44 +32,22 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
             options.Value.CollectionName);
     }
 
-    ///<inheritdoc cref="IDataDictionaryRepository.CreateStructureIfNotExists"/>
-    public void CreateStructureIfNotExists(){}
-
     public Task CreateStructureIfNotExistsAsync() => Task.CompletedTask;
 
-    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>
-    public FormElement GetMetadata(string dictionaryName)
-    {
-        var metadata = _formElementCollection.Find(metadata => metadata.Name == dictionaryName).FirstOrDefault();
-
-        return metadata;
-    }
 
     public async Task<FormElement> GetMetadataAsync(string dictionaryName)
     {
-        var metadata = await _formElementCollection.FindAsync(metadata => metadata.Name == dictionaryName);
+        var formElementQuery = await _formElementCollection.FindAsync(formElement => formElement.FormElement.Name == dictionaryName);
 
-        return metadata.FirstOrDefault();
+        return (await formElementQuery.FirstAsync()).FormElement;
     }
-
-    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
-    public IEnumerable<FormElement> GetMetadataList(bool? sync)
-    {
-        return _formElementCollection.Find(_ => true).ToList();
-    }
-
     public async Task<IEnumerable<FormElement>> GetMetadataListAsync(bool? sync = null)
     {
         var formElements = await _formElementCollection.FindAsync(_ => true);
 
-        return await formElements.ToListAsync();
+        return (await formElements.ToListAsync()).Select(f=>f.FormElement);
     }
-
-    ///<inheritdoc cref="IDataDictionaryRepository.GetNameList"/>
-    public IEnumerable<string> GetNameList()
-    {
-        return _formElementCollection.Find(_ => true).ToList().Select(metadata => metadata.Name);
-    }
+    
 
     public async IAsyncEnumerable<string> GetNameListAsync()
     {
@@ -72,17 +55,8 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
         
         foreach (var formElement in await formElements.ToListAsync())
         {
-            yield return formElement.Name;
+            yield return formElement.FormElement.Name;
         }
-    }
-    
-
-    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataInfoList"/>
-    public  IEnumerable<FormElementInfo> GetMetadataInfoList(DataDictionaryFilter filters, OrderByData orderBy, int recordsPerPage, int currentPage, ref int totalRecords)
-    {
-        var query = CreateInfoQuery(filters, orderBy, recordsPerPage, currentPage, ref totalRecords);
-
-        return query.ToList().Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList();
     }
     
     public async Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderBy, int recordsPerPage, int currentPage)
@@ -93,8 +67,9 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
 
         var list = await query.ToListAsync();
         
-        return new ListResult<FormElementInfo>(list.Select(metadata => new FormElementInfo(metadata, metadata.LastModified)).ToList(),totalRecords);
+        return new ListResult<FormElementInfo>(list.Select(formElement => new FormElementInfo(formElement.FormElement, formElement.LastModified)).ToList(),totalRecords);
     }
+    
     
     private IFindFluent<MongoDBFormElement, MongoDBFormElement> CreateInfoQuery(DataDictionaryFilter filters, OrderByData orderBy, int recordsPerPage, int currentPage,
         ref int totalRecords)
@@ -128,58 +103,34 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
         return query;
     }
 
-    ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
-    public bool Exists(string dictionaryName)
-    {
-        return _formElementCollection.Find(formElement => formElement.Name == dictionaryName).ToList().Count > 0;
-    }
-
     public async Task<bool> ExistsAsync(string dictionaryName)
     {
-        var finder = await _formElementCollection.FindAsync(formElement => formElement.Name == dictionaryName);
+        var finder = await _formElementCollection.FindAsync(formElement => formElement.FormElement.Name == dictionaryName);
         return (await finder.ToListAsync()).Count > 0;
     }
-
-    ///<inheritdoc cref="IDataDictionaryRepository.InsertOrReplace"/>
-    public void InsertOrReplace(FormElement formElement)
-    {
-        var mongoFormElement = MongoDBFormElementMapper.FromFormElement(formElement);
-
-        _formElementCollection.ReplaceOne(
-            filter: m=>formElement.Name == m.Name,
-            options: new ReplaceOptions { IsUpsert = true },
-            replacement: mongoFormElement);
-    }
-
+    
     public async Task InsertOrReplaceAsync(FormElement formElement)
     {
-        var mongoFormElement = MongoDBFormElementMapper.FromFormElement(formElement);
-
         await _formElementCollection.ReplaceOneAsync(
-            filter: m=>formElement.Name == m.Name,
+            filter: m=>formElement.Name == m.FormElement.Name,
             options: new ReplaceOptions { IsUpsert = true },
-            replacement: mongoFormElement);
+            replacement: new MongoDBFormElement(formElement));
     }
 
-    ///<inheritdoc cref="IDataDictionaryRepository.Delete"/>
-    public void Delete(string dictionaryName)
-    {
-        _formElementCollection.DeleteOne(metadata => metadata.Name == dictionaryName);
-    }
 
     public async Task DeleteAsync(string dictionaryName)
     {
-        await _formElementCollection.DeleteOneAsync(metadata => metadata.Name == dictionaryName);
+        await _formElementCollection.DeleteOneAsync(formElement => formElement.FormElement.Name == dictionaryName);
     }
 
-    private static IDictionary MapStructureFields(DataDictionaryFilter filter)
+    private static Dictionary<string,object> MapStructureFields(DataDictionaryFilter filter)
     {
 
-        var filters = new Hashtable();
+        var filters = new Dictionary<string,object>();
 
         if (filter.Name != null)
         {
-            filters["Table.Name"] = new Hashtable
+            filters["FormElement.Name"] = new Dictionary<string,object>
             {
                 {"$regex", filter.Name}
             };
@@ -187,7 +138,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
         
         if (filter.ContainsTableName != null)
         {
-            filters["Table.TableName"] = new Hashtable
+            filters["FormElement.TableName"] = new Dictionary<string,object>
             {
                 {"$in", filter.ContainsTableName}
             };
@@ -195,7 +146,7 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
         
         if (filter is { LastModifiedFrom: not null, LastModifiedTo: not null })
         {
-            filters["Modified"] = new Hashtable
+            filters["Modified"] = new Dictionary<string,object>
             {
                 {"$gt", filter.LastModifiedFrom.Value},
                 {"$lt", filter.LastModifiedTo.Value}
@@ -212,11 +163,11 @@ public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
         
         return name switch
         {
-            "name" => new MongoDBOrderByMapper("Table.Name", type),
-            "tablename" => new MongoDBOrderByMapper("Table.TableName", type),
-            "modified" => new MongoDBOrderByMapper("Modified", type),
-            "info" => new MongoDBOrderByMapper("Table.Info", type),
-            "sync" => new MongoDBOrderByMapper("Table.Sync", type),
+            DataDictionaryStructure.Name => new MongoDBOrderByMapper("FormElement.Table.Name", type),
+            DataDictionaryStructure.TableName => new MongoDBOrderByMapper("FormElement.Table.TableName", type),
+            DataDictionaryStructure.LastModified => new MongoDBOrderByMapper("Modified", type),
+            DataDictionaryStructure.Info  => new MongoDBOrderByMapper("FormElement.Table.Info", type),
+            DataDictionaryStructure.EnableApi   => new MongoDBOrderByMapper("FormElement.Table.Sync", type),
             _ => throw new ArgumentException(orderBy)
         };
     }

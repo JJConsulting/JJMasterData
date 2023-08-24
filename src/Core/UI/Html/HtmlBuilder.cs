@@ -18,7 +18,7 @@ public partial class HtmlBuilder
     private readonly string? _rawText;
     private readonly bool _hasRawText;
     private readonly IDictionary<string, string> _attributes;
-    private readonly ICollection<HtmlBuilder> _children;
+    private readonly IList<HtmlBuilder> _children;
 
     /// <summary>
     /// Tag of the current builder.
@@ -31,7 +31,7 @@ public partial class HtmlBuilder
     public HtmlBuilder()
     {
         _attributes = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-        _children = new HashSet<HtmlBuilder>();
+        _children = new List<HtmlBuilder>();
     }
 
     /// <summary>

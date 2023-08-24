@@ -261,7 +261,7 @@ public class JJTextFile : AsyncControl
     private string GetPanelName()
     {
         string panelName = string.Empty;
-        if (Attributes.TryGetValue("pnlname", out var attribute))
+        if (Attributes.TryGetValue("panelName", out var attribute))
             panelName = attribute?.ToString();
 
         return panelName;
@@ -356,8 +356,8 @@ public class JJTextFile : AsyncControl
 
     private bool IsUploadViewRoute()
     {
-        string pnlName = GetPanelName();
-        string lookupRoute = CurrentContext.Request.QueryString(UploadViewParameterName + pnlName);
+        string panelName = GetPanelName();
+        string lookupRoute = CurrentContext.Request.QueryString(UploadViewParameterName + panelName);
         return Name.Equals(lookupRoute);
     }
 

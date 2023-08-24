@@ -11,6 +11,12 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 {
     private readonly IList<FormElementRelationship> _formRelationships;
     private readonly List<ElementRelationship> _baseRelationships;
+
+    public FormElementRelationshipList()
+    {
+        _formRelationships = new List<FormElementRelationship>();
+        _baseRelationships = new List<ElementRelationship>();
+    }
     
     [JsonConstructor]
     private FormElementRelationshipList(IList<FormElementRelationship> formRelationships)

@@ -186,7 +186,7 @@ public class JJDataPanel : AsyncComponent
     {
         Values ??= await GetFormValuesAsync();
         string context = CurrentContext.Request.QueryString("context");
-        string panelName = CurrentContext.Request.QueryString("pnlname");
+        string panelName = CurrentContext.Request.QueryString("panelName");
         
         if (JJLookup.IsLookupRoute(this, CurrentContext))
             return await JJLookup.GetResultFromPanel(this);

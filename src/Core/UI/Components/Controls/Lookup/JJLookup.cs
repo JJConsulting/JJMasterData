@@ -138,11 +138,11 @@ public class JJLookup : AsyncControl
         var div = new HtmlBuilder(HtmlTag.Div);
 
         Attributes["lookup-url"] = LookupService.GetLookupUrl(ElementMap, FormStateData, Name);
-
+        Attributes["lookup-field-name"] = FieldName;
         if (IsExternalRoute)
         {
             var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
-            var componentName = Attributes["pnlname"];
+            var componentName = Attributes["panelName"];
             Attributes["data-panel-reload-url"] = UrlHelper.GetUrl("ReloadPanel", "Form",
                 "MasterData", new { dictionaryName = encryptedDictionaryName, componentName });
             Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup","MasterData", 
@@ -229,11 +229,11 @@ public class JJLookup : AsyncControl
 
     private bool IsLookupRoute()
     {
-        string pnlName = string.Empty;
-        if (Attributes.TryGetValue("pnlname", out var attribute))
-            pnlName = attribute?.ToString();
+        string panelName = string.Empty;
+        if (Attributes.TryGetValue("panelName", out var attribute))
+            panelName = attribute;
 
-        string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + pnlName);
+        string lookupRoute = CurrentContext.Request.QueryString("lookup-" + panelName);
         return Name.Equals(lookupRoute);
     }
 
@@ -245,13 +245,13 @@ public class JJLookup : AsyncControl
         else if (view is JJDataPanel dataPanel)
             dataPanelName = dataPanel.Name;
 
-        string lookupRoute = context.Request.QueryString("jjlookup_" + dataPanelName);
+        string lookupRoute = context.Request.QueryString("lookup-" + dataPanelName);
         return !string.IsNullOrEmpty(lookupRoute);
     }
 
     public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
-        string lookupRoute = view.CurrentContext.Request.QueryString("jjlookup_" + view.Name);
+        string lookupRoute = view.CurrentContext.Request.QueryString("lookup-" + view.Name);
         if (string.IsNullOrEmpty(lookupRoute))
             return null;
 

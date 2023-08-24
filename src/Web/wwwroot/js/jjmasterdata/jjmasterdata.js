@@ -78,7 +78,7 @@ class ActionManager {
         currentTableActionInput.value = null;
         currentFormActionInput.value = encryptedActionMap;
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "htmlContent");
+        urlBuilder.addQueryParameter("context", "modal");
         const url = urlBuilder.build();
         popup.showHtmlFromUrl(title, url, {
             method: "POST",
@@ -591,7 +591,7 @@ DataImportation.errorCount = 0;
 class DataPanel {
     static ReloadAtSamePage(panelname, objid) {
         let url = new UrlBuilder();
-        url.addQueryParameter("pnlname", panelname);
+        url.addQueryParameter("panelName", panelname);
         url.addQueryParameter("objname", objid);
         url.addQueryParameter("context", "panelReload");
         DataPanel.Reload(url.build(), panelname, objid);
@@ -1022,11 +1022,11 @@ class JJView {
             $("form:first").trigger("submit");
         }
     }
-    static directDownload(objid, pnlname, filename) {
+    static directDownload(objid, panelName, filename) {
         SpinnerOverlay.show();
         var url = $("form").attr("action");
         url += url.includes("?") ? "&" : "?";
-        url += "jjuploadview_" + pnlname + "=" + objid;
+        url += "jjuploadview_" + panelName + "=" + objid;
         url += "&downloadfile=" + filename;
         window.location.assign(url);
         setTimeout(function () {
@@ -1192,7 +1192,8 @@ class Lookup {
         $("input.jjlookup").each(function () {
             let lookupInput = $(this);
             let lookupId = lookupInput.attr("id");
-            let panelName = lookupInput.attr("pnlname");
+            let fieldName = lookupInput.attr("lookup-field-name");
+            let panelName = lookupInput.attr("panelName");
             let popupTitle = lookupInput.attr("popuptitle");
             let lookupUrl = lookupInput.attr("lookup-url");
             let lookupResultUrl = lookupInput.attr("lookup-result-url");
@@ -1223,7 +1224,7 @@ class Lookup {
                 }
                 if (!lookupResultUrl) {
                     let urlBuilder = new UrlBuilder();
-                    urlBuilder.addQueryParameter("jjlookup_" + panelName, lookupId);
+                    urlBuilder.addQueryParameter("lookup-" + panelName, fieldName);
                     urlBuilder.addQueryParameter("lookupAction", "getDescription");
                     urlBuilder.addQueryParameter("lkid", lookupInput.val().toString());
                     lookupResultUrl = urlBuilder.build();
@@ -1928,7 +1929,7 @@ class UploadArea {
 }
 class UploadView {
     static open(componentName, title, values, url = null) {
-        const panelName = $("#v_" + componentName).attr("pnlname");
+        const panelName = $("#v_" + componentName).attr("panelName");
         if (url == null) {
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("jjuploadview_" + panelName, componentName);

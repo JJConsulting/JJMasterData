@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
@@ -10,6 +11,15 @@ namespace JJMasterData.Core.Web.Html;
 
 public partial class HtmlBuilder
 {
+    
+    public HtmlBuilder Prepend(HtmlBuilder? builder)
+    {
+        if (builder != null)
+            _children.Insert(0,builder);
+
+        return this;
+    }
+    
     /// <summary>
     /// Insert a HTML builder as a child of caller builder.
     /// </summary>

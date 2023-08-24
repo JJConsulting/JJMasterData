@@ -551,7 +551,7 @@ public class JJGridView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string lookupRoute = CurrentContext.Request.QueryString("jjlookup_" + Name);
+        string lookupRoute = CurrentContext.Request.QueryString("lookup-" + Name);
         if (!string.IsNullOrEmpty(lookupRoute))
             return await GetLookupResult(lookupRoute);
 

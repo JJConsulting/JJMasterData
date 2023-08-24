@@ -15,7 +15,6 @@ public class DataDictionaryFilter
     public DateTime? LastModifiedTo { get;private  set; }
     public string? Json { get; private set; }
     
-    public bool? EnableApi { get; private set; }
     
     private DataDictionaryFilter()
     {
@@ -46,27 +45,17 @@ public class DataDictionaryFilter
             result.LastModifiedTo = DateTime.Parse(lastModifiedTo.ToString()!);
         }
         
-        if (filter.TryGetValue(DataDictionaryStructure.EnableApi, out var enableWebApi))
-        {
-            result.EnableApi = StringManager.ParseBool(enableWebApi);
-        }
         
         if (filter.TryGetValue(DataDictionaryStructure.Json, out var json))
         {
             result.Json = json?.ToString();
         }
-        
-   
 
         return result;
     }
     public IDictionary<string, object> ToDictionary()
     {
         var result = new Dictionary<string, object>();
-        if (Name != null)
-        {
-            result[DataDictionaryStructure.NameFilter] = Name;
-        }
         
         if (ContainsTableName != null && ContainsTableName.Any())
         {
@@ -89,11 +78,6 @@ public class DataDictionaryFilter
         if (LastModifiedTo != null)
         {
             result[DataDictionaryStructure.LastModifiedTo] = LastModifiedTo;
-        }
-
-        if (EnableApi != null)
-        {
-            result[DataDictionaryStructure.EnableApi] = EnableApi;
         }
         
         if (Json != null)

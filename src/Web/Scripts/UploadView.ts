@@ -1,7 +1,7 @@
 class UploadView{
     static open(componentName: string, title:string, values: string, url: string = null){
 
-        const panelName = $("#v_" + componentName).attr("pnlname");
+        const panelName = $("#v_" + componentName).attr("panelName");
         
         if(url == null){
             const urlBuilder = new UrlBuilder();

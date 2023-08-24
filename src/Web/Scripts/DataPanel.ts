@@ -1,7 +1,7 @@
 class DataPanel {
     static ReloadAtSamePage(panelname, objid){
         let url = new UrlBuilder()
-        url.addQueryParameter("pnlname",panelname)
+        url.addQueryParameter("panelName",panelname)
         url.addQueryParameter("objname",objid)
         url.addQueryParameter("context","panelReload")
 

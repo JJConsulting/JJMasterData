@@ -16,6 +16,7 @@
     </ItemGroup>
   
     <ItemGroup>
+      <ProjectReference Include="..\..\src\Plugins\MongoDB\MongoDB.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Pdf\Pdf.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Python\Python.csproj" />
       <ProjectReference Include="..\..\src\Web\Web.csproj" />

@@ -157,8 +157,8 @@ public class ElementService : BaseService
     public JJFormView GetFormView()
     {
         var formView = FormViewFactory.Create(DataDictionaryFormElementFactory.GetFormElement());
-        formView.GridView.SetCurrentFilter("type","F");
-
+        formView.GridView.SetCurrentFilter(DataDictionaryStructure.Type,"F");
+        
         formView.GridView.EnableMultiSelect = true;
         
         formView.GridView.FilterAction.ExpandedByDefault = true;

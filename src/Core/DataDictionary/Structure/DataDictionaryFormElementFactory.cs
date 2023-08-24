@@ -65,14 +65,13 @@ public class DataDictionaryFormElementFactory
     private void ConfigureFields(FormElement formElement)
     {
         formElement.Fields[DataDictionaryStructure.Name].VisibleExpression = "exp:{PageState} <> 'FILTER'";
-        formElement.Fields[DataDictionaryStructure.NameFilter].VisibleExpression = "exp:{PageState} = 'FILTER'";
         formElement.Fields[DataDictionaryStructure.Type].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.Owner].VisibleExpression= "val:0";
-        formElement.Fields[DataDictionaryStructure.Json].Label = "Json";
         formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.Text;
         formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: {PageState} = 'FILTER'";
         formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["Filter for any data inside the structure of the metadata"];
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
+        formElement.Fields[DataDictionaryStructure.EnableApi].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.EnableApi].Component = FormComponent.CheckBox;
     }
 

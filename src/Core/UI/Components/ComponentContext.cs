@@ -1,6 +1,6 @@
 namespace JJMasterData.Core.UI.Components;
 
-public enum ComponentContext
+internal enum ComponentContext
 {
     /// <summary>
     /// Renders the component
@@ -41,7 +41,7 @@ public enum ComponentContext
     SearchBox
 }
 
-public static class ComponentContextParser
+internal static class ComponentContextParser
 {
     public static ComponentContext FromString(string context)
     {
@@ -52,6 +52,7 @@ public static class ComponentContextParser
             "dataExportation"=> ComponentContext.DataExportation,
             "dataImportation" => ComponentContext.DataImportation,
             "fileUpload" => ComponentContext.FileUpload,
+            "panelReload" => ComponentContext.PanelReload,
             "urlRedirect" => ComponentContext.UrlRedirect,
             "searchBox" => ComponentContext.SearchBox,
             _ => ComponentContext.RenderComponent
