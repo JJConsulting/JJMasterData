@@ -1,6 +1,9 @@
+#nullable enable
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Core.DataDictionary.Repository;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
@@ -41,5 +44,30 @@ public class FormElementInfo
         Info = formElement.Info;
         EnableApi = formElement.EnableApi;
         Modified = modified;
+    }
+
+    public static FormElementInfo FromDictionary(Dictionary<string, object?> dictionary)
+    {
+        return new FormElementInfo
+        {
+            Info = (string)dictionary[DataDictionaryStructure.Info]!,
+            Modified = (DateTime)dictionary[DataDictionaryStructure.LastModified]!,
+            Name = (string)dictionary[DataDictionaryStructure.Name]!,
+            EnableApi = dictionary[DataDictionaryStructure.EnableApi] as bool? ?? false,
+            TableName = (string)dictionary[DataDictionaryStructure.TableName]!
+        };
+    }
+    
+    public Dictionary<string, object?> ToDictionary()
+    {
+        return new Dictionary<string, object?>
+        {
+            { DataDictionaryStructure.Info, Info },
+            { DataDictionaryStructure.Type, "F"},
+            { DataDictionaryStructure.LastModified, Modified },
+            { DataDictionaryStructure.Name, Name },
+            { DataDictionaryStructure.EnableApi, EnableApi },
+            { DataDictionaryStructure.TableName,TableName }
+        };
     }
 }

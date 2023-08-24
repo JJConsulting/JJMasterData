@@ -28,16 +28,16 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         var filters = new Dictionary<string, object?>();
         if (apiEnabled.HasValue)
-            filters.Add("sync", (bool)apiEnabled ? "1" : "0");
+            filters.Add(DataDictionaryStructure.EnableApi, apiEnabled);
 
-        filters["type"] = "F";
+        filters[DataDictionaryStructure.Name] = "F";
 
         var orderBy = new OrderByData();
-        orderBy.AddOrReplace("name", OrderByDirection.Asc);
-        orderBy.AddOrReplace("type", OrderByDirection.Asc);
+        orderBy.AddOrReplace(DataDictionaryStructure.Name, OrderByDirection.Asc);
+        orderBy.AddOrReplace(DataDictionaryStructure.Type, OrderByDirection.Asc);
 
         var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
-            new EntityParameters() { Filters = filters, OrderBy = orderBy }, false);
+            new EntityParameters { Filters = filters, OrderBy = orderBy }, false);
 
         return ParseDictionaryList(result.Data);
     }
@@ -46,26 +46,26 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         foreach (var row in result)
         {
-            yield return FormElementSerializer.Deserialize(row["json"]!.ToString()!);
+            yield return FormElementSerializer.Deserialize(row[DataDictionaryStructure.Json]!.ToString()!);
         }
     }
 
     public async IAsyncEnumerable<string> GetNameListAsync()
     {
-        var filter = new Dictionary<string, object?> { { "type", "F" } };
+        var filter = new Dictionary<string, object?> { { DataDictionaryStructure.Type, "F" } };
 
         var dt = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
             new EntityParameters { Filters = filter }, false);
         foreach (var row in dt.Data)
         {
-            yield return row["name"]!.ToString()!;
+            yield return row[DataDictionaryStructure.Name]!.ToString()!;
         }
     }
 
 
     public async Task<FormElement?> GetMetadataAsync(string dictionaryName)
     {
-        var filter = new Dictionary<string, object> { { "name", dictionaryName }, { "type", "F" } };
+        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, dictionaryName }, {DataDictionaryStructure.Type, "F" } };
 
         var values = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
 
@@ -101,14 +101,14 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         var values = new Dictionary<string, object?>
         {
-            { "name", name },
-            { "tablename", formElement.TableName },
-            { "info", formElement.Info },
-            { "type", "F" },
-            { "owner", null },
-            { "json", jsonForm },
-            { "sync", formElement.EnableApi ? "1" : "0" },
-            { "modified", dNow }
+            { DataDictionaryStructure.Name, name },
+            { DataDictionaryStructure.TableName, formElement.TableName },
+            { DataDictionaryStructure.Info, formElement.Info },
+            { DataDictionaryStructure.Type, "F" },
+            { DataDictionaryStructure.Owner, null },
+            { DataDictionaryStructure.Json, jsonForm },
+            { DataDictionaryStructure.EnableApi, formElement.EnableApi },
+            { DataDictionaryStructure.LastModified, dNow }
         };
 
         return values;
@@ -119,15 +119,15 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         if (string.IsNullOrEmpty(dictionaryName))
             throw new ArgumentException();
 
-        var filters = new Dictionary<string, object> { { "name", dictionaryName } };
-        
+        var filters = new Dictionary<string, object> { { DataDictionaryStructure.Name, dictionaryName } };
+
         await _entityRepository.DeleteAsync(MasterDataElement, filters);
     }
 
 
     public async Task<bool> ExistsAsync(string dictionaryName)
     {
-        var filter = new Dictionary<string, object> { { "name", dictionaryName } };
+        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, dictionaryName } };
         var fields = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
         return fields.Any();
     }
@@ -142,29 +142,15 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         OrderByData orderBy, int recordsPerPage, int currentPage)
     {
         var filters = filter.ToDictionary();
-        filters.Add("type", "F");
+        filters.Add(DataDictionaryStructure.Type, "F");
 
         var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
-            new EntityParameters()
+            new EntityParameters
             {
                 Filters = filters!, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage
             });
 
-        var formElementInfoList = new List<FormElementInfo>();
-
-        foreach (var element in result.Data)
-        {
-            var info = new FormElementInfo
-            {
-                Info = (string)element["info"]!,
-                Modified = (DateTime)element["modified"]!,
-                Name = (string)element["name"]!,
-                EnableApi = element["sync"] as bool? ?? false,
-                TableName = (string)element["tablename"]!
-            };
-
-            formElementInfoList.Add(info);
-        }
+        var formElementInfoList = result.Data.Select(FormElementInfo.FromDictionary).ToList();
 
         return new ListResult<FormElementInfo>(formElementInfoList, result.TotalOfRecords);
     }
