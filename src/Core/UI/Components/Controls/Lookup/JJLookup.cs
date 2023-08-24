@@ -222,8 +222,8 @@ public class JJLookup : AsyncControl
 
     private bool IsAjaxGetDescription()
     {
-        string lkaction = CurrentContext.Request.QueryString("lkaction");
-        return "htmlContent".Equals(lkaction);
+        string lookupAction = CurrentContext.Request.QueryString("lookupAction");
+        return "getDescription".Equals(lookupAction);
     }
 
 

@@ -24,9 +24,8 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public class JJSearchBox : AsyncControl
 {
-    private IEncryptionService EncryptionService { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
-
+    
+    
     #region "Events"
 
     /// <summary>
@@ -41,17 +40,20 @@ public class JJSearchBox : AsyncControl
 
     #endregion
 
-    #region "Properties"
-
-    private const string NumberOfItemsAttribute = "numberofitems";
-    private const string ScrollbarAttribute = "scrollbar";
-    private const string TriggerLengthAttribute = "triggerlength";
-
+    #region "Fields"
     private IEnumerable<DataItemValue>? _values;
     private string? _selectedValue;
     private string? _text;
     private string? _fieldName;
     private string? _htmlId;
+    private ComponentContext? _componentContext;
+    #endregion
+    
+    #region "Properties"
+
+    private const string NumberOfItemsAttribute = "numberofitems";
+    private const string ScrollbarAttribute = "scrollbar";
+    private const string TriggerLengthAttribute = "triggerlength";
 
     internal string FieldName
     {
@@ -168,12 +170,23 @@ public class JJSearchBox : AsyncControl
     public bool AutoReloadFormFields { get; set; }
 
     public IDataItemService DataItemService { get; }
-
+    private IEncryptionService EncryptionService { get; }
+    private JJMasterDataUrlHelper UrlHelper { get; }
     public FormStateData FormStateData { get; internal set; }
 
     public string SelectedValue
     {
         set => _selectedValue = value;
+    }
+    
+    internal ComponentContext ComponentContext
+    {
+        get
+        {
+            var context = CurrentContext.Request.QueryString("context");
+
+            return _componentContext ??= ComponentContextParser.FromString(context);
+        }
     }
 
     #endregion
