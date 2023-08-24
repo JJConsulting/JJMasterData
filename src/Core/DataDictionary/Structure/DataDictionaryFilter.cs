@@ -15,7 +15,7 @@ public class DataDictionaryFilter
     public DateTime? LastModifiedTo { get;private  set; }
     public string? Json { get; private set; }
     
-    public bool? EnableWebApi { get; private set; }
+    public bool? EnableApi { get; private set; }
     
     private DataDictionaryFilter()
     {
@@ -46,9 +46,9 @@ public class DataDictionaryFilter
             result.LastModifiedTo = DateTime.Parse(lastModifiedTo.ToString()!);
         }
         
-        if (filter.TryGetValue(DataDictionaryStructure.EnableWebApi, out var enableWebApi))
+        if (filter.TryGetValue(DataDictionaryStructure.EnableApi, out var enableWebApi))
         {
-            result.EnableWebApi = StringManager.ParseBool(enableWebApi);
+            result.EnableApi = StringManager.ParseBool(enableWebApi);
         }
         
         if (filter.TryGetValue(DataDictionaryStructure.Json, out var json))
@@ -91,9 +91,9 @@ public class DataDictionaryFilter
             result[DataDictionaryStructure.LastModifiedTo] = LastModifiedTo;
         }
 
-        if (EnableWebApi != null)
+        if (EnableApi != null)
         {
-            result[DataDictionaryStructure.EnableWebApi] = EnableWebApi;
+            result[DataDictionaryStructure.EnableApi] = EnableApi;
         }
         
         if (Json != null)

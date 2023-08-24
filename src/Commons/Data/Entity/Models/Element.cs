@@ -65,7 +65,7 @@ public class Element
     /// <para></para>Default = true
     /// </remarks>
     [JsonProperty("sync")]
-    public bool EnableWebApi { get; set; }
+    public bool EnableApi { get; set; }
 
     /// <summary>
     /// Works online or offline on synchronized devices
@@ -83,7 +83,7 @@ public class Element
         Indexes = new List<ElementIndex>();
         Relationships = new List<ElementRelationship>();
         SyncMode = SyncMode.Online;
-        EnableWebApi = false;
+        EnableApi = false;
     }
 
     public Element(string name) : this()

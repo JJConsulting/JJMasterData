@@ -47,7 +47,7 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
                 continue;
             }
             
-            if (metadata.EnableWebApi == sync.Value)
+            if (metadata.EnableApi == sync.Value)
             {
                 list.Add(metadata);
             }

@@ -11,7 +11,7 @@ public class DataDictionaryStructure
     public const string TableName = "tablename";
     public const string Info = "info";
     public const string Owner = "owner";
-    public const string EnableWebApi = "sync";
+    public const string EnableApi = "sync";
     public const string LastModified = "modified";
     public const string LastModifiedFrom = "modified_from";
     public const string LastModifiedTo = "modified_to";
@@ -32,7 +32,7 @@ public class DataDictionaryStructure
         element.Fields.Add(Owner, "Owner", FieldType.NVarchar, 64, false, FilterMode.None);
         element.Fields.Add(LastModified, "Last Modified", FieldType.DateTime, 15, true, FilterMode.Range);
         element.Fields.Add(Json, "Object", FieldType.NVarchar, -1, false, FilterMode.Contain);
-        element.Fields.Add(EnableWebApi, "Enable API", FieldType.Bit, 1, false, FilterMode.Equal);
+        element.Fields.Add(EnableApi, "Enable API", FieldType.Bit, 1, false, FilterMode.Equal);
         return element;
     }
 }

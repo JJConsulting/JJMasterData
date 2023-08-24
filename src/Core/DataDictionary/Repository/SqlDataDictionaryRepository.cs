@@ -107,7 +107,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             { "type", "F" },
             { "owner", null },
             { "json", jsonForm },
-            { "sync", formElement.EnableWebApi ? "1" : "0" },
+            { "sync", formElement.EnableApi ? "1" : "0" },
             { "modified", dNow }
         };
 
@@ -159,7 +159,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
                 Info = (string)element["info"]!,
                 Modified = (DateTime)element["modified"]!,
                 Name = (string)element["name"]!,
-                Sync = (string)element["sync"]!,
+                EnableApi = element["sync"] as bool? ?? false,
                 TableName = (string)element["tablename"]!
             };
 

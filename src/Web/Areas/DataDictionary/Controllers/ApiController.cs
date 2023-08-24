@@ -36,7 +36,7 @@ public class ApiController : DataDictionaryController
     {
         var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync( apiViewModel.DictionaryName);
         dic.ApiOptions = apiViewModel.MetadataApiOptions;
-        dic.EnableWebApi = apiViewModel.IsSync;
+        dic.EnableApi = apiViewModel.IsSync;
         dic.SyncMode = apiViewModel.Mode;
 
         if (await _apiService.SetFormElementWithApiValidation(dic))
@@ -52,7 +52,7 @@ public class ApiController : DataDictionaryController
         {
             MetadataApiOptions = metadata.ApiOptions,
             Mode = metadata.SyncMode,
-            IsSync = metadata.EnableWebApi,
+            IsSync = metadata.EnableApi,
             Fields = new List<ElementField>(metadata.Fields.ToList().FindAll(
                 x => (x.IsPk | x.Filter.Type != FilterMode.None) &
                      x.DataType != FieldType.DateTime &

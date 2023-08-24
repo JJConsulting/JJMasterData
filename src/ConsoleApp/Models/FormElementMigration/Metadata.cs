@@ -33,7 +33,7 @@ public class Metadata
             Panels = Form.Panels,
             Info = Table.Info,
             Indexes = Table.Indexes,
-            EnableWebApi = Table.EnableWebApi,
+            EnableApi = Table.EnableApi,
             SyncMode = Table.SyncMode,
         };
 

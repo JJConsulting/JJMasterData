@@ -179,7 +179,7 @@ public class ElementService : BaseService
                     { "type", "F"},
                     { "modified", info.Modified },
                     { "name", info.Name },
-                    { "sync", info.Sync },
+                    { "sync", info.EnableApi },
                     { "tablename", info.TableName }
                 };
     

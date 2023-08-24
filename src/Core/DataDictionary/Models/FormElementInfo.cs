@@ -13,7 +13,7 @@ public class FormElementInfo
     
     public required string Info { get; init; }
     
-    public required string Sync { get; init; }
+    public required bool EnableApi { get; init; }
     
     public required DateTime Modified { get; init; }
 
@@ -24,12 +24,12 @@ public class FormElementInfo
     
     [SetsRequiredMembers]
     [JsonConstructor]
-    public FormElementInfo(string name, string tableName, string info, string sync, DateTime modified )
+    public FormElementInfo(string name, string tableName, string info, bool enableApi, DateTime modified )
     {
         Name = name;
         TableName = tableName;
         Info = info;
-        Sync = sync;
+        EnableApi = enableApi;
         Modified = modified;
     }
     
@@ -39,7 +39,7 @@ public class FormElementInfo
         Name = formElement.Name;
         TableName =formElement.TableName;
         Info = formElement.Info;
-        Sync = formElement.EnableWebApi ? "1" : "0";
+        EnableApi = formElement.EnableApi;
         Modified = modified;
     }
 }
