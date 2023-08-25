@@ -22,8 +22,8 @@ public class Program
         builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
         builder.Services.AddRazorPages().AddViewLocalization();
         builder.Services.AddJJMasterDataWeb(settingsPath)
-            .WithPdfExportation()
-            .WithMongoDbDataDictionary();
+            .WithPdfExportation();
+           // .WithMongoDbDataDictionary();
             // .WithEntityRepository(
             //     "data source=localhost,1433;initial catalog=JJMasterData;user=sa;password=Test@123456",
             //     DataAccessProviderType.SqlServer);

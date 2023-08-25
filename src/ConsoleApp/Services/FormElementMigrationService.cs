@@ -51,5 +51,6 @@ public class FormElementMigrationService
         Console.WriteLine($@"Process started: {start}");
         Console.WriteLine($@"Process finished: {DateTime.Now}");
         Console.ReadLine();
+        //TODO: Recriar a proc e table
     }
 }
