@@ -37,7 +37,7 @@ public class FormElementDataItem
     /// ComboBox items [Key, Value]
     /// </summary>
     [JsonProperty("itens")]
-    public IList<DataItemValue>? Items
+    public IList<DataItemValue> Items
     {
         get => _items ??= new List<DataItemValue>();
         set => _items = value;

@@ -38,8 +38,7 @@ public class AccountService
         Options = options.Value;
         Logger = logger;
         ApiVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        //TODO: Lucio Passar IOptions como construtor, tem varios lugares que repete esse código
-        DataAccess = new DataAccess(configuration.GetConnectionString("ConnectionString"), DataAccessProvider.SqlServer);
+        DataAccess = new DataAccess(configuration);
     }
     public UserAccessInfo Login(string? username, string? password, string? appId)
     {

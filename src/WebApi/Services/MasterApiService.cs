@@ -359,7 +359,7 @@ public class MasterApiService
             throw new UnauthorizedAccessException();
 
         var values = ParseFilter(dictionary, paramValues);
-        var userValues = new Dictionary<string,object>
+        var userValues = new Dictionary<string, object?>
         {
             { "objname", objname }
         };

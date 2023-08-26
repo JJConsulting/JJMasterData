@@ -193,11 +193,7 @@ public class FieldController : DataDictionaryController
             throw new ArgumentNullException(nameof(field));
 
         field.DataItem ??= new FormElementDataItem();
-
-        field.DataItem.ElementMap ??= new DataElementMap();
-
         field.DataItem.ElementMap.MapFilters ??= new List<DataElementMapFilter>();
-
         field.DataFile ??= new FormElementDataFile
         {
             MaxFileSize = 2097152 //2mb

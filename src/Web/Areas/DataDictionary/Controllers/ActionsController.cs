@@ -103,7 +103,7 @@ public class ActionsController : DataDictionaryController
     {
         var searchBox = _searchBoxFactory.Create();
         searchBox.Name = "ElementNameToSelect";
-        searchBox.DataItem.Command.Sql =
+        searchBox.DataItem!.Command!.Sql =
             $"select name as cod, name from {_options.DataDictionaryTableName} where type = 'F' order by name";
         searchBox.SelectedValue = insertAction.ElementNameToSelect;
 

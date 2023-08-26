@@ -1,6 +1,5 @@
 ﻿@using JJMasterData.Core.Web
 @using JJMasterData.Core.Web.Components
-@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IControlFactory<JJSearchBox> SearchBoxFactory
@@ -14,19 +13,20 @@
 <script lang="javascript" type="text/javascript">
 
     $(document).ready(function () {
-        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
+        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function () {
             refreshCodeMirror();
         });
         buidCodeMirror();
     });
 
     function refreshCodeMirror() {
-        var cm1 = $(".CodeMirror")[0];
+        var codeMirror = $(".CodeMirror");
+        var cm1 = codeMirror[0];
         if (cm1 && cm1.CodeMirror) {
             cm1.CodeMirror.refresh();
         }
 
-        var cm2 = $(".CodeMirror")[1];
+        var cm2 = codeMirror[1];
         if (cm2 && cm2.CodeMirror) {
             cm2.CodeMirror.refresh();
         }
@@ -56,7 +56,6 @@
         CodeMirror.registerHelper('hint', 'dictionaryHint', function (editor) {
             var dictionary = @Html.Raw(ViewBag.HintDictionary);
             var cur = editor.getCursor();
-            var curLine = editor.getLine(cur.line);
             var start = cur.ch;
             var end = start;
             return {
@@ -116,7 +115,7 @@
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-        <label class="@BootstrapHelper.Label" for="dataItemType" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["List Type"]">@StringLocalizer["ListType"]</label>
+        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["List Type"]">@StringLocalizer["ListType"]</label>
         <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
             @if (Model.DataItem.DataItemType == DataItemType.Manual)
             {
