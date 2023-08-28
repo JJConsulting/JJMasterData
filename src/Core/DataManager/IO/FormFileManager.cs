@@ -22,7 +22,7 @@ public class FormFileManager
     /// <summary>
     /// Session variable name
     /// </summary>
-    public string MemoryFilesSessionName { get; private set; }
+    private string MemoryFilesSessionName { get; set; }
 
     /// <summary>
     /// Always apply changes from files on disk,
@@ -41,9 +41,9 @@ public class FormFileManager
     /// </remarks>
     public string FolderPath { get; set; }
 
-    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     
-    public ILogger<FormFileManager> Logger { get; }
+    private ILogger<FormFileManager> Logger { get; }
     
     public List<FormFileInfo> MemoryFiles
     {

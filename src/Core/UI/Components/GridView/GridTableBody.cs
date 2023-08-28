@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.UI.Components.Controls;
@@ -24,6 +25,11 @@ internal class GridTableBody
     public event EventHandler<GridCellEventArgs> OnRenderCell;
     public event EventHandler<GridSelectedCellEventArgs> OnRenderSelectedCell;
 
+    
+    public event AsyncEventHandler<ActionEventArgs> OnRenderActionAsync;
+    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
+    public event AsyncEventHandler<GridSelectedCellEventArgs> OnRenderSelectedCellAsync;
+    
     public GridTableBody(JJGridView gridView)
     {
         GridView = gridView;
@@ -75,7 +81,7 @@ internal class GridTableBody
 
         if (GridView.EnableMultiSelect)
         {
-            var checkBox = GetMultiSelect(row, index, values);
+            var checkBox = await GetMultiSelect(row, index, values);
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("jjselect");
             td.AppendComponent(checkBox);
@@ -122,8 +128,7 @@ internal class GridTableBody
             }
             else
             {
-                var renderCell = OnRenderCell;
-                if (renderCell != null)
+                if (OnRenderCell != null || OnRenderCellAsync != null)
                 {
                     var args = new GridCellEventArgs
                     {
@@ -131,8 +136,13 @@ internal class GridTableBody
                         DataRow = row,
                         Sender = new JJText(value)
                     };
-                    OnRenderCell?.Invoke(GridView, args);
+                    OnRenderCell?.Invoke(this,args);
 
+                    if (OnRenderCellAsync is not null)
+                    {
+                        await OnRenderCellAsync(this, args);
+                    }
+                    
                     if (args.HtmlResult != null)
                     {
                         td.AppendText(args.HtmlResult);
@@ -245,11 +255,16 @@ internal class GridTableBody
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
             var linkButton = await factory.CreateGridTableButtonAsync(groupedAction, GridView, formStateData);
 
-            if (OnRenderAction != null)
+            if (OnRenderAction != null || OnRenderActionAsync != null)
             {
                 var args = new ActionEventArgs(groupedAction, linkButton, formStateData.FormValues);
                 
-                OnRenderAction(this,args);
+                OnRenderAction?.Invoke(this,args);
+
+                if (OnRenderActionAsync is not null)
+                {
+                    await OnRenderActionAsync(this, args);
+                }
             }
             
             btnGroup.Actions.Add(linkButton);
@@ -312,7 +327,7 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private JJCheckBox GetMultiSelect(IDictionary<string,object> row, int index, IDictionary<string, object> values)
+    private async Task<JJCheckBox> GetMultiSelect(IDictionary<string,object> row, int index, IDictionary<string, object> values)
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -327,14 +342,20 @@ internal class GridTableBody
         
         checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => kvp.Value.Equals(pkValues)));
 
-        if (OnRenderSelectedCell != null)
+        if (OnRenderSelectedCell is not null || OnRenderSelectedCellAsync is not  null)
         {
             var args = new GridSelectedCellEventArgs
             {
                 DataRow = row,
                 CheckBox = checkBox
             };
-            OnRenderSelectedCell.Invoke(GridView, args);
+            OnRenderSelectedCell?.Invoke(GridView, args);
+
+            if (OnRenderSelectedCellAsync is not null)
+            {
+                await OnRenderSelectedCellAsync(this, args);
+            }
+            
             if (args.CheckBox != null)
                 return checkBox;
         }

@@ -1,7 +1,8 @@
 ﻿#nullable enable
 
 // ReSharper disable UnusedMember.Global
-// ReSharper disable UnusedMember.Local
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable EventNeverSubscribedTo.Global
 
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
@@ -26,11 +27,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components;
-// ReSharper disable MemberCanBePrivate.Global
+
 
 #if NET48
 using JJMasterData.Commons.Configuration;
@@ -56,6 +58,14 @@ public class JJFormView : AsyncComponent
     public event EventHandler<FormAfterActionEventArgs>? OnAfterUpdate;
     public event EventHandler<FormAfterActionEventArgs>? OnAfterDelete;
 
+    
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeInsertAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeUpdateAsync;
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeDeleteAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterInsertAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterUpdateAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs>? OnAfterDeleteAsync;
+    
     #endregion
 
     
@@ -389,7 +399,7 @@ public class JJFormView : AsyncComponent
                 alert.Messages.Add(StringLocalizer["Record added successfully"]);
                 var alertHtml = alert.GetHtmlBuilder();
 
-                var formResult = await GetFormResult(new(RelationValues!,  PageState.Insert), false);
+                var formResult = await GetFormResult(new FormContext(RelationValues!,  PageState.Insert), false);
                 
                 if (formResult is RenderedComponentResult renderedComponentResult)
                 {
@@ -419,7 +429,7 @@ public class JJFormView : AsyncComponent
         }
 
         PageState = PageState.Insert;
-        return await GetFormResult(new(values, errors, PageState), true);
+        return await GetFormResult(new FormContext(values, errors, PageState), true);
         
     }
 
@@ -438,12 +448,12 @@ public class JJFormView : AsyncComponent
 
         var result = currentAction switch
         {
-            ViewAction => await GetAuditLogResult(),
+            ViewAction => await GetViewResult(),
             EditAction => await GetUpdateResult(),
             InsertAction => await GetInsertResult(),
             ImportAction => await GetImportationResult(),
             LogAction => await GetAuditLogResult(),
-            DeleteAction => await GetAuditLogResult(),
+            DeleteAction => await GetDeleteResult(),
             DeleteSelectedRowsAction => await GetDeleteSelectedRowsResult(),
             SaveAction => await GetSaveActionResult(),
             CancelAction => await GetCancelActionResult(),
@@ -473,6 +483,14 @@ public class JJFormView : AsyncComponent
         FormService.OnAfterInsert += OnAfterInsert;
         FormService.OnAfterUpdate += OnAfterUpdate;
         FormService.OnAfterDelete += OnAfterDelete;
+        
+        FormService.OnBeforeInsertAsync += OnBeforeInsertAsync;
+        FormService.OnBeforeDeleteAsync += OnBeforeDeleteAsync;
+        FormService.OnBeforeUpdateAsync += OnBeforeUpdateAsync;
+
+        FormService.OnAfterInsertAsync += OnAfterInsertAsync;
+        FormService.OnAfterUpdateAsync += OnAfterUpdateAsync;
+        FormService.OnAfterDeleteAsync += OnAfterDeleteAsync;
     }
 
     private async Task<ComponentResult> GetGridViewResult()
@@ -496,7 +514,7 @@ public class JJFormView : AsyncComponent
         }
 
         PageState = PageState.Update;
-        return await GetFormResult(new(values!,  PageState), autoReloadFields);
+        return await GetFormResult(new FormContext(values,  PageState), autoReloadFields);
     }
     
     private async Task<ComponentResult> GetDefaultResult()
@@ -504,10 +522,10 @@ public class JJFormView : AsyncComponent
         switch (PageState)
         {
             case PageState.Insert:
-                return await GetFormResult(new((IDictionary<string, object?>)RelationValues, PageState), false);
+                return await GetFormResult(new FormContext((IDictionary<string, object?>)RelationValues, PageState), false);
             case PageState.Update: 
                 var values = await GetFormValuesAsync();
-                return await GetFormResult(new(values,  PageState), true);
+                return await GetFormResult(new FormContext(values,  PageState), true);
             default:
                 return await GetGridViewResult();
         }
@@ -536,13 +554,13 @@ public class JJFormView : AsyncComponent
         if (PageState == PageState.Insert)
         {
             var formValues = await GetFormValuesAsync();
-            return await GetFormResult(new(formValues, PageState), true);
+            return await GetFormResult(new FormContext(formValues, PageState), true);
         }
 
         PageState = PageState.Insert;
 
         if (string.IsNullOrEmpty(action.ElementNameToSelect))
-            return await GetFormResult(new(RelationValues!,  PageState.Insert), false);
+            return await GetFormResult(new FormContext(RelationValues!,  PageState.Insert), false);
         return await GetInsertSelectionResult(action);
     }
 
@@ -636,7 +654,7 @@ public class JJFormView : AsyncComponent
         {
             PageState = PageState.Update;
 
-            var result = await GetFormResult(new(values, PageState), false);
+            var result = await GetFormResult(new FormContext(values, PageState), false);
 
             if (result is RenderedComponentResult renderedComponentResult)
             {
@@ -662,7 +680,7 @@ public class JJFormView : AsyncComponent
         PageState = PageState.View;
         var filter = CurrentActionMap.PkFieldValues;
         var values = await EntityRepository.GetFieldsAsync(FormElement, filter);
-        return await GetFormResult(new(values!, PageState), false);
+        return await GetFormResult(new FormContext(values, PageState), false);
     }
 
     private async Task<ComponentResult> GetDeleteResult()

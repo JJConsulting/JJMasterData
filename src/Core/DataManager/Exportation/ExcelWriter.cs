@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -25,7 +26,7 @@ namespace JJMasterData.Core.DataManager.Exports;
 public class ExcelWriter : DataExportationWriterBase, IExcelWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
-
+    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
 
     public bool ShowBorder { get; set; }
 
@@ -126,7 +127,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
             await sw.WriteAsync("\t\t\t<tr>");
             foreach (var field in await GetVisibleFieldsAsync())
             {
-                string value = CreateCell(row, field);
+                string value = await CreateCell(row, field);
 
                 string tdStyle;
                 if (field.DataType is FieldType.Float or FieldType.Int)
@@ -152,7 +153,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         }
     }
 
-    private string CreateCell(Dictionary<string, object> row, FormElementField field)
+    private async Task<string> CreateCell(Dictionary<string, object> row, FormElementField field)
     {
         string value = string.Empty;
         if (field.DataBehavior != FieldBehavior.Virtual)
@@ -174,9 +175,8 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                     value = value.Replace(",", "<br style=\"mso-data-placement:same-cell;\"/>");
             }
         }
-
-        var renderCell = OnRenderCell;
-        if (renderCell != null)
+        
+        if (OnRenderCell != null || OnRenderCellAsync != null)
         {
             var args = new GridCellEventArgs
             {
@@ -185,6 +185,12 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                 Sender = new JJText(value)
             };
             OnRenderCell?.Invoke(this, args);
+
+            if (OnRenderCellAsync != null)
+            {
+                await OnRenderCellAsync(this, args);
+            }
+            
             value = args.HtmlResult;
         }
 

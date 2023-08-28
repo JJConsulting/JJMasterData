@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services.Abstractions;
@@ -23,7 +24,7 @@ namespace JJMasterData.Core.DataManager.Exports;
 public class TextWriter : DataExportationWriterBase, ITextWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
-
+    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
     public string Delimiter { get; set; }
     private IEntityRepository EntityRepository { get; } 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
@@ -101,9 +102,8 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                     if (row.Keys.Contains(field.Name))
                         value = row[field.Name].ToString();
                 }
-
-                var renderCell = OnRenderCell;
-                if (renderCell != null)
+                
+                if (OnRenderCell != null || OnRenderCellAsync != null)
                 {
                     var args = new GridCellEventArgs
                     {
@@ -111,7 +111,13 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                         DataRow = row,
                         Sender = new JJText(value)
                     };
-                    renderCell.Invoke(this, args);
+                    OnRenderCell?.Invoke(this, args);
+
+                    if (OnRenderCellAsync != null)
+                    {
+                        await OnRenderCellAsync(this, args);
+                    }
+                    
                     value = args.HtmlResult;
                 }
 

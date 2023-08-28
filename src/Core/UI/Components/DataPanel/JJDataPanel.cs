@@ -28,10 +28,6 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public class JJDataPanel : AsyncComponent
 {
-    #region "Events"
-
-    #endregion
-
     #region "Properties"
 
     private FormUI _formUI;

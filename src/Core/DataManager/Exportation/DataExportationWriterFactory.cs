@@ -1,4 +1,5 @@
 ﻿using System;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.FormEvents.Args;
@@ -12,7 +13,7 @@ public class DataExportationWriterFactory
     private IServiceProvider ServiceProvider { get; }
 
     public event EventHandler<GridCellEventArgs> OnRenderCell;
-    
+    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
     public DataExportationWriterFactory(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
@@ -48,7 +49,8 @@ public class DataExportationWriterFactory
                 var textWriter = GetTextWriter();
                 textWriter.Delimiter = exporter.ExportOptions.Delimiter;
                 textWriter.OnRenderCell += OnRenderCell;
-
+                textWriter.OnRenderCellAsync += OnRenderCellAsync;
+                
                 writer = (DataExportationWriterBase)textWriter;
                 break;
 
@@ -57,7 +59,8 @@ public class DataExportationWriterFactory
                 excelWriter.ShowRowStriped = exporter.ShowRowStriped;
                 excelWriter.ShowBorder = exporter.ShowBorder;
                 excelWriter.OnRenderCell += OnRenderCell;
-
+                excelWriter.OnRenderCellAsync += OnRenderCellAsync;
+                
                 writer = (DataExportationWriterBase)excelWriter;
 
                 break;
@@ -70,7 +73,8 @@ public class DataExportationWriterFactory
                 pdfWriter.ShowRowStriped = exporter.ShowRowStriped;
                 pdfWriter.ShowBorder = exporter.ShowBorder;
                 pdfWriter.OnRenderCell += OnRenderCell;
-
+                pdfWriter.OnRenderCellAsync += OnRenderCellAsync;
+                
                 // ReSharper disable once SuspiciousTypeConversion.Global;
                 // PdfWriter is dynamic loaded by plugin.
                 //TODO: I think this is bad, things from DataExportationWriterBase should be a parameter at IExportationWriter
@@ -93,4 +97,6 @@ public class DataExportationWriterFactory
         writer.UserId = exporter.UserId;
         writer.ProcessOptions = exporter.ProcessOptions;
     }
+
+
 }

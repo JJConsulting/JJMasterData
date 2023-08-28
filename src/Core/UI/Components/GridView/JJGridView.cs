@@ -54,12 +54,14 @@ public class JJGridView : AsyncComponent
 
     public event EventHandler<GridCellEventArgs>? OnRenderCell;
 
+    public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
+    
     /// <summary>
     /// Event fired when rendering the checkbox used to select the Grid row.
     /// <para/>Fired only when EnableMultSelect property is enabled.
     /// </summary>
     public event EventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCell;
-
+    public event AsyncEventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCellAsync;
     /// <summary>
     /// Event fired to retrieve table data
     /// </summary>
@@ -74,6 +76,7 @@ public class JJGridView : AsyncComponent
     public event EventHandler<GridDataLoadEventArgs>? OnDataLoad;
     public event AsyncEventHandler<GridDataLoadEventArgs>? OnDataLoadAsync;
     public event EventHandler<ActionEventArgs>? OnRenderAction;
+    public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
     #endregion
 
     #region "Properties"
@@ -128,6 +131,9 @@ public class JJGridView : AsyncComponent
             _dataExportation.UserValues = UserValues;
             _dataExportation.ProcessOptions = ExportAction.ProcessOptions;
 
+            _dataExportation.OnRenderCell += OnRenderCell;
+            _dataExportation.OnRenderCellAsync += OnRenderCellAsync;
+            
             return _dataExportation;
         }
     }
@@ -354,9 +360,16 @@ public class JJGridView : AsyncComponent
                 return _table;
 
             _table = new GridTable(this);
+            
             _table.Body.OnRenderAction += OnRenderAction;
-            _table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
+            _table.Body.OnRenderActionAsync += OnRenderActionAsync;
+            
             _table.Body.OnRenderCell += OnRenderCell;
+            _table.Body.OnRenderCellAsync += OnRenderCellAsync;
+            
+            _table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
+            _table.Body.OnRenderSelectedCellAsync += OnRenderSelectedCellAsync;
+
 
             return _table;
         }
