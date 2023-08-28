@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Validations;
 using Newtonsoft.Json;
@@ -14,6 +15,9 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElementDataItem 
 {
+    private DataAccessCommand? _command;
+    private IList<DataItemValue>? _items;
+    
     /// <summary>
     /// Tipo da origem dos dados
     /// </summary>
@@ -21,20 +25,26 @@ public class FormElementDataItem
     public DataItemType DataItemType { get; set; }
 
     /// <summary>
-    /// Commando para recuperar o resultado no banco
-    /// 1) Coluna Código;
-    /// 2) Coluna Descrição
+    /// Command executed to recover DataItemValues. Returns two columns:
+    /// 1) Id;
+    /// 2) Description.
     /// </summary>
-    [JsonProperty("command")]
+    [DataMember(Name = "command")]
     [RequiredIf(nameof(Items), null)]
-    public DataAccessCommand? Command { get; set; }
-
-    /// <summary>
-    /// ComboBox items [Key, Value]
-    /// </summary>
-    [JsonProperty("itens")]
+    public DataAccessCommand? Command
+    {
+        get => _command ??= new DataAccessCommand();
+        set => _command = value;
+    }
+    
+    [DataMember(Name = "itens")]
     [RequiredIf(nameof(Command), null)]
-    public IList<DataItemValue>? Items { get; set; }
+    public IList<DataItemValue>? Items
+    {
+        get => _items ??= new List<DataItemValue>();
+        set => _items = value;
+    }
+
 
     /// <summary>
     /// Mapeamento do dicionário

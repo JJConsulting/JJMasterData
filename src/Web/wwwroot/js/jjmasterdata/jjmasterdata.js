@@ -8,15 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 class ActionManager {
-    static executePanelAction(name, action) {
-        $("#form-view-current-action-" + name).val(action);
-        let form = document.querySelector(`form#${name}`);
-        if (!form) {
-            form = document.forms[0];
-        }
-        form.requestSubmit();
-        return false;
-    }
     static executeRedirectActionAtSamePage(componentName, encryptedActionMap, confirmMessage) {
         this.executeRedirectAction(null, componentName, encryptedActionMap, confirmMessage);
     }
@@ -51,65 +42,65 @@ class ActionManager {
             }
         });
     }
-    static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
+    static executeAction(componentName, encryptedActionMap, confirmationMessage, isModal) {
         if (confirmationMessage) {
-            if (confirm(confirmationMessage)) {
+            if (!confirm(confirmationMessage)) {
                 return false;
             }
         }
         const gridViewActionInput = document.querySelector("#grid-view-action-" + componentName);
         const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
-        gridViewActionInput.value = null;
-        formViewActionInput.value = encryptedActionMap;
+        if (gridViewActionInput) {
+            gridViewActionInput.value = null;
+        }
+        if (formViewActionInput) {
+            formViewActionInput.value = encryptedActionMap;
+        }
         let form = document.querySelector("form");
-        if (!form) {
-            form = document.forms[0];
-        }
-        form.submit();
-    }
-    static executeModalAction(componentName, encryptedActionMap, confirmationMessage) {
-        if (confirmationMessage) {
-            if (confirm(confirmationMessage)) {
-                return false;
-            }
-        }
-        const gridViewActionInput = document.querySelector("#grid-view-action-" + componentName);
-        const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
-        gridViewActionInput.value = null;
-        formViewActionInput.value = encryptedActionMap;
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "modal");
-        const form = document.querySelector("form");
         if (!form) {
             return;
         }
-        fetch(urlBuilder.build(), {
-            body: new FormData(form),
-        })
-            .then(response => {
-            var _a;
-            if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
-                return response.json();
-            }
-            else {
-                return response.text();
-            }
-        })
-            .then(data => {
-            const outputElement = document.getElementById(componentName);
-            if (outputElement) {
-                if (typeof data === "object") {
+        if (isModal) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "modal");
+            fetch(urlBuilder.build(), {
+                body: new FormData(form),
+                method: "POST"
+            })
+                .then(response => {
+                var _a;
+                if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
+                    return response.json();
                 }
                 else {
-                    outputElement.innerHTML = data;
+                    return response.text();
                 }
-            }
-        })
-            .catch(error => {
-            console.error("Error fetching data:", error);
-        });
+            })
+                .then(data => {
+                const outputElement = document.getElementById(componentName);
+                if (outputElement) {
+                    if (typeof data === "object") {
+                    }
+                    else {
+                        outputElement.innerHTML = data;
+                    }
+                }
+            })
+                .catch(error => {
+                console.error("Error fetching data:", error);
+            });
+        }
+        else {
+            form.submit();
+        }
     }
-    static executeFormActionAsPopUp(componentName, title, encryptedActionMap, confirmationMessage) {
+    static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
+        this.executeAction(componentName, encryptedActionMap, confirmationMessage, false);
+    }
+    static executeModalAction(componentName, encryptedActionMap, confirmationMessage) {
+        this.executeAction(componentName, encryptedActionMap, confirmationMessage, true);
+    }
+    static executeFormActionAsModal(componentName, title, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
                 return false;
@@ -122,7 +113,10 @@ class ActionManager {
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("context", "modal");
         const url = urlBuilder.build();
-        popup.showHtmlFromUrl(title, url, {
+        const modal = new Modal();
+        modal.modalId = componentName + "-modal";
+        modal.modalTitleId = componentName + "-modal-tile";
+        modal.showHtmlFromUrl(title, url, {
             method: "POST",
             body: new FormData(document.querySelector("form"))
         }, 1).then(_ => loadJJMasterData());

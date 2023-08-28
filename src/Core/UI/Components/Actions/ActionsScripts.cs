@@ -110,7 +110,7 @@ internal class ActionsScripts
         if (isPopup)
         {
             functionSignature =
-                $"ActionManager.executeFormActionAsPopUp('{actionContext.ParentComponentName}','{formElement.Title}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+                $"ActionManager.executeFormActionAsModal('{actionContext.ParentComponentName}','{formElement.Title}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
         else
         {

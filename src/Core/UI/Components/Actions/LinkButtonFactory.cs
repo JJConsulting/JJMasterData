@@ -174,17 +174,14 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
             switch (action)
             {
                 case BackAction or CancelAction:
-                    button.OnClientClick =
-                        $"return ActionManager.executePanelAction('{actionContext.ParentComponentName}','CANCEL');";
+                    button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
                     break;
                 case SaveAction saveAction:
                     if (saveAction.EnterKeyBehavior == FormEnterKey.Submit)
                         button.Type = LinkButtonType.Submit;
                     else
                         button.Type = saveAction.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
-
-                    button.OnClientClick =
-                        $"return ActionManager.executePanelAction('{actionContext.ParentComponentName}','OK');";
+                    button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
                     break;
             }
         }

@@ -494,12 +494,9 @@ public class JJFormView : AsyncComponent
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Insert action not enabled"]);
 
-        string formAction = "";
+        var currentAction = CurrentActionMap?.GetCurrentAction(FormElement);
 
-        if (CurrentContext.Request["form-view-current-action-" + Name] != null)
-            formAction = CurrentContext.Request["form-view-current-action-" + Name];
-
-        if (formAction.Equals("OK"))
+        if (currentAction is SaveAction)
         {
             var values = await GetFormValuesAsync();
             var errors = await InsertFormValuesAsync(values);
@@ -538,10 +535,8 @@ public class JJFormView : AsyncComponent
                         alertHtml.AppendScript($"JJView.showInsertSucess('{Name}');");
                         return new RenderedComponentResult(alertHtml);
                     }
-                    else
-                    {
-                        return formResult;
-                    }
+
+                    return formResult;
                 }
 
                 PageState = PageState.List;
@@ -552,23 +547,23 @@ public class JJFormView : AsyncComponent
             return await GetFormResultAsync(new(values, errors, PageState), true);
         }
 
-        if (formAction.Equals("CANCEL"))
+        if (currentAction is CancelAction)
         {
             PageState = PageState.List;
             ClearTempFiles();
             return await GridView.GetResultAsync();
         }
 
-        if (formAction.Equals("ELEMENTSEL"))
-        {
-            return await GetInsertSelectionResult();
-        }
-
-        if (formAction.Equals("ELEMENTLIST"))
-        {
-            PageState = PageState.Insert;
-            return await GetInsertSelectionResult(action);
-        }
+        // if (formAction.Equals("ELEMENTSEL"))
+        // {
+        //     return await GetInsertSelectionResult();
+        // }
+        //
+        // if (formAction.Equals("ELEMENTLIST"))
+        // {
+        //     PageState = PageState.Insert;
+        //     return await GetInsertSelectionResult(action);
+        // }
 
         if (PageState == PageState.Insert)
         {
