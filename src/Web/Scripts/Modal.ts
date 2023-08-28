@@ -1,7 +1,7 @@
 ﻿class Modal {
     modalId: string = "popup-modal";
     modalTitleId: string = "popup-modal-title";
-
+    
     private setTitle(title: string) {
         document.getElementById(this.modalTitleId).innerHTML = title;
     }

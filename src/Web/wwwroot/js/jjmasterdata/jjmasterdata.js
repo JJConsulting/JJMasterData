@@ -80,6 +80,13 @@ class ActionManager {
                 const outputElement = document.getElementById(componentName);
                 if (outputElement) {
                     if (typeof data === "object") {
+                        if (data.closeModal) {
+                            const modal = new Modal();
+                            modal.modalId = componentName + "-modal";
+                            modal.modalTitleId = componentName + "-modal-tile";
+                            modal.hide();
+                            JJView.refresh(componentName, true);
+                        }
                     }
                     else {
                         outputElement.innerHTML = data;
@@ -820,37 +827,27 @@ class JJSortable {
     }
 }
 class JJView {
-    static postFormValues(objid, enableAjax, loadform) {
+    static postFormValues(componentName, enableAjax, loadform) {
         if (enableAjax) {
-            const frm = $("form");
-            let surl = frm.attr("action");
-            if (surl.includes("?"))
-                surl += "&context=htmlContent";
-            else
-                surl += "?context=htmlContent";
-            surl += "&componentName=" + objid;
-            $.ajax({
-                async: true,
-                type: frm.attr("method"),
-                url: surl,
-                data: frm.serialize(),
-                success: function (data) {
-                    if (data.substring(2, 18) == "<!--ErrorPage-->") {
-                        $("form:first").trigger("submit");
-                        return;
-                    }
-                    $("#grid-view-" + objid).html(data);
-                    if (loadform) {
-                        loadJJMasterData();
-                    }
-                    $("#grid-view-filter-action-" + objid).val("");
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                    console.log(textStatus);
-                    console.log(jqXHR);
-                    $("#grid-view-filter-action-" + objid).val("");
+            const form = document.querySelector("form");
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "htmlContent");
+            urlBuilder.addQueryParameter("componentName", componentName);
+            fetch(urlBuilder.build(), {
+                method: "POST",
+                body: new FormData(form)
+            })
+                .then(response => response.text())
+                .then(data => {
+                $("#grid-view-" + componentName).html(data);
+                if (loadform) {
+                    loadJJMasterData();
                 }
+                $("#grid-view-filter-action-" + componentName).val("");
+            })
+                .catch(error => {
+                console.error(error);
+                $("#grid-view-filter-action-" + componentName).val("");
             });
         }
         else {
@@ -948,11 +945,11 @@ class JJView {
         $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
-    static refresh(objid, enableAjax) {
-        $("#grid-view-action-" + objid).val("");
-        $("#grid-view-row-" + objid).val("");
-        $("#form-view-action-map-" + objid).val("");
-        this.postFormValues(objid, enableAjax, true);
+    static refresh(componentName, enableAjax) {
+        $("#grid-view-action-" + componentName).val("");
+        $("#grid-view-row-" + componentName).val("");
+        $("#form-view-action-map-" + componentName).val("");
+        this.postFormValues(componentName, enableAjax, true);
     }
     static openSettingsModal(componentName, encryptedActionMap) {
         $("#grid-view-action-" + componentName).val(encryptedActionMap);

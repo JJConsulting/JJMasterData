@@ -83,7 +83,15 @@ class ActionManager {
                     const outputElement = document.getElementById(componentName);
                     if (outputElement) {
                         if (typeof data === "object") {
-          
+                            if(data.closeModal){
+                                const modal = new Modal();
+                                modal.modalId = componentName +"-modal";
+                                modal.modalTitleId =  componentName +"-modal-tile";
+                                
+                                modal.hide();
+                                
+                                JJView.refresh(componentName,true)
+                            }
                         } else {
                             outputElement.innerHTML = data;
                         }
