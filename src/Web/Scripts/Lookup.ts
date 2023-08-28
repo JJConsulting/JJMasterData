@@ -74,10 +74,10 @@ class Lookup {
                             lookupHiddenInputElement.value = data.id;
                             
                             if(dataPanelReloadUrl){
-                                DataPanel.Reload(dataPanelReloadUrl,panelName,lookupId)
+                                DataPanel.reload(dataPanelReloadUrl,panelName,lookupId)
                             }
                             else{
-                                DataPanel.ReloadAtSamePage(panelName, lookupId);
+                                DataPanel.reloadAtSamePage(panelName, lookupId);
                             }
          
                         }

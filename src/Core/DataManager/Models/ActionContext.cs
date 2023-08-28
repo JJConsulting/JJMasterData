@@ -48,9 +48,6 @@ public class ActionContext
             FieldName = FieldName
         };
 
-        if (FormStateData.UserValues is not null)
-            actionMap.UserValues = FormStateData.UserValues;
-
         if (!FormStateData.FormValues.Any()) 
             return actionMap;
         

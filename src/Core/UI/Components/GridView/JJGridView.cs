@@ -218,7 +218,7 @@ public class JJGridView : AsyncComponent
             {
                 if (MaintainValuesOnLoad)
                 {
-                    var tableOrder = CurrentContext.Session[$"jj-current-table-order-{Name}"];
+                    var tableOrder = CurrentContext.Session[$"jj-grid-view-order-{Name}"];
                     if (tableOrder != null)
                     {
                         _currentOrder = OrderByData.FromString(tableOrder);
@@ -227,10 +227,10 @@ public class JJGridView : AsyncComponent
             }
             else
             {
-                _currentOrder = OrderByData.FromString(CurrentContext.Request["current-table-order-" + Name]);
+                _currentOrder = OrderByData.FromString(CurrentContext.Request["grid-view-order-" + Name]);
                 if (_currentOrder == null)
                 {
-                    var tableOrder = CurrentContext.Session[$"jj-current-table-order-{Name}"];
+                    var tableOrder = CurrentContext.Session[$"jj-grid-view-order-{Name}"];
                     if (tableOrder != null)
                     {
                         _currentOrder = OrderByData.FromString(tableOrder);
@@ -247,7 +247,7 @@ public class JJGridView : AsyncComponent
         }
         set
         {
-            CurrentContext.Session[$"jj-current-table-order-{Name}"] = value?.ToQueryParameter();
+            CurrentContext.Session[$"jj-grid-view-order-{Name}"] = value?.ToQueryParameter();
             _currentOrder = value;
         }
     }
@@ -264,7 +264,7 @@ public class JJGridView : AsyncComponent
             if (CurrentContext.IsPost)
             {
                 int currentPage = 1;
-                string tablePageId = "current-table-page-" + Name;
+                string tablePageId = "grid-view-page-" + Name;
                 if (!string.IsNullOrEmpty(CurrentContext.Request[tablePageId]))
                 {
                     if (int.TryParse(CurrentContext.Request[tablePageId], out var page))
@@ -476,7 +476,7 @@ public class JJGridView : AsyncComponent
         {
             if (_currentActionMap != null) 
                 return _currentActionMap;
-            var encryptedActionMap = CurrentContext.Request["current-table-action-" + Name];
+            var encryptedActionMap = CurrentContext.Request["grid-view-action-" + Name];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -659,7 +659,7 @@ public class JJGridView : AsyncComponent
     {
         AssertProperties();
 
-        string? currentAction = CurrentContext.Request["current-table-action-" + Name];
+        string? currentAction = CurrentContext.Request["grid-view-action-" + Name];
 
         var html = new HtmlBuilder(HtmlTag.Div);
 
@@ -707,10 +707,10 @@ public class JJGridView : AsyncComponent
     
     private IEnumerable<HtmlBuilder> GetHiddenInputs(string? currentAction)
     {
-        yield return new HtmlBuilder().AppendHiddenInput($"current-table-order-{Name}", CurrentOrder.ToQueryParameter() ?? string.Empty);
-        yield return new HtmlBuilder().AppendHiddenInput($"current-table-page-{Name}", CurrentPage.ToString());
-        yield return new HtmlBuilder().AppendHiddenInput($"current-table-action-{Name}", currentAction ?? string.Empty);
-        yield return new HtmlBuilder().AppendHiddenInput($"current-table-row-{Name}", string.Empty);
+        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-order-{Name}", CurrentOrder.ToQueryParameter() ?? string.Empty);
+        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-page-{Name}", CurrentPage.ToString());
+        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-action-{Name}", currentAction ?? string.Empty);
+        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-row-{Name}", string.Empty);
 
         if (EnableMultiSelect)
         {
@@ -1050,7 +1050,7 @@ public class JJGridView : AsyncComponent
     public IDictionary<string, object> GetSelectedRowId()
     {
         var values = new Dictionary<string, object>();
-        string currentRow = CurrentContext.Request["current-table-row-" + Name];
+        string currentRow = CurrentContext.Request["grid-view-row-" + Name];
 
         if (string.IsNullOrEmpty(currentRow))
             return values;

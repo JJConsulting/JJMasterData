@@ -1,36 +1,36 @@
 ﻿class GridView {
     static sorting(componentName, url, tableOrder) {
-        const tableOrderElement = document.querySelector<HTMLInputElement>("#current-table-order-" + componentName);
+        const tableOrderElement = document.querySelector<HTMLInputElement>("#grid-view-order-" + componentName);
         if (tableOrder + " ASC" === tableOrderElement.value)
             tableOrderElement.value = tableOrder + " DESC";
         else
             tableOrderElement.value = tableOrder + " ASC";
 
-        document.querySelector<HTMLInputElement>("#current-table-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
 
         GridView.refreshGrid(componentName, url);
     }
     
     static clearCurrentFormAction(componentName){
-        const currentFormAction = document.querySelector<HTMLInputElement>("#current-form-action-" + componentName);
+        const currentFormAction = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
         
         if(currentFormAction)
             currentFormAction.value = "";
     }
 
     static pagination(componentName, url, currentPage) {
-        document.querySelector<HTMLInputElement>("#current-table-page-" + componentName).value = currentPage;
-        document.querySelector<HTMLInputElement>("#current-table-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-page-" + componentName).value = currentPage;
+        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
 
         GridView.refreshGrid(componentName, url);
     }
 
     static filter(componentName, url) {
-        document.querySelector<HTMLInputElement>("#current-filter-action-" + componentName).value = "FILTERACTION";
-        document.querySelector<HTMLInputElement>("#current-table-action-" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#current-table-page-" + componentName).value = "1";
+        document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
+        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-page-" + componentName).value = "1";
         this.clearCurrentFormAction(componentName)
         GridView.refreshGrid(componentName, url);
     }
@@ -65,8 +65,8 @@
             }
         });
 
-        document.querySelector<HTMLInputElement>("#current-filter-action-" + componentName).value = "CLEARACTION";
-        document.querySelector<HTMLInputElement>("#current-table-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "CLEARACTION";
+        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
     }
     static clearFilter(componentName, url) {
@@ -77,8 +77,8 @@
 
 
     static refresh(componentName, url) {
-        document.querySelector<HTMLInputElement>("#current-table-action-" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#current-table-row-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-row-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
         GridView.refreshGrid(componentName, url);
     }
@@ -111,7 +111,7 @@
 
         SpinnerOverlay.show()
 
-        const filterAction = document.querySelector<HTMLInputElement>("#current-filter-action-" + componentName);
+        const filterAction = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
         
         fetch(urlBuilder.build(), {
             method: form.method,

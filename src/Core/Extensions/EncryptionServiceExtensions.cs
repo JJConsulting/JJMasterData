@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataManager;
 using Newtonsoft.Json;
@@ -29,13 +31,23 @@ public static class EncryptionServiceExtensions
         return service.DecryptString(Uri.UnescapeDataString(cipherText));
     }
     
-    public static string EncryptActionMap(this IEncryptionService service, ActionMap actionMap)
+    internal static string EncryptActionMap(this IEncryptionService service, ActionMap actionMap)
     {
         return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(actionMap));
     }
     
-    public static ActionMap DecryptActionMap(this IEncryptionService service, string encryptedActionMap)
+    internal static ActionMap DecryptActionMap(this IEncryptionService service, string encryptedActionMap)
     {
         return JsonConvert.DeserializeObject<ActionMap>(service.DecryptStringWithUrlUnescape(encryptedActionMap));
+    }
+    
+    internal static string EncryptDictionary(this IEncryptionService service, IDictionary<string,object> dictionary)
+    {
+        return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(dictionary));
+    }
+    
+    internal static Dictionary<string,object> DecryptDictionary(this IEncryptionService service, string encryptedDictionary)
+    {
+        return JsonConvert.DeserializeObject<Dictionary<string,object>>(service.DecryptStringWithUrlUnescape(encryptedDictionary));
     }
 }

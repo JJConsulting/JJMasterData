@@ -61,7 +61,7 @@ internal class GridFilter
             return _currentFilter;
 
         //Ação é capturada aqui, pois o usuário pode chamar o metodo as antes do GetHtml
-        string currentFilterAction = CurrentContext.Request.Form("current-filter-action-" + GridView.Name);
+        string currentFilterAction = CurrentContext.Request.Form("grid-view-filter-action-" + GridView.Name);
         switch (currentFilterAction)
         {
             case FilterActionName:
@@ -174,7 +174,7 @@ internal class GridFilter
 
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "pnlgridfilter")
-            .AppendHiddenInput($"current-filter-action-{GridView.Name}")
+            .AppendHiddenInput($"grid-view-filter-action-{GridView.Name}")
             .Append(htmlPanel);
 
         var btnDoFilter = new JJLinkButton

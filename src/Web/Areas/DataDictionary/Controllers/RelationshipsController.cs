@@ -39,9 +39,9 @@ public class RelationshipsController : DataDictionaryController
     }
 
     [HttpPost]
-    public ActionResult Sort(string dictionaryName, [FromBody] string[] relationships)
+    public async Task<ActionResult> Sort(string dictionaryName, [FromBody] string[] relationships)
     {
-        _relationshipsService.SortAsync(dictionaryName, relationships);
+        await _relationshipsService.SortAsync(dictionaryName, relationships);
         return Ok();
     }
 

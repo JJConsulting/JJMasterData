@@ -19,7 +19,7 @@ public sealed class RequiredIfAttribute : ValidationAttribute
     /// <value>
     /// The other property name.
     /// </value>
-    public string OtherProperty { get; private set; }
+    private string OtherProperty { get; set; }
 
     /// <summary>
     /// Gets or sets the display name of the other property.
@@ -35,7 +35,7 @@ public sealed class RequiredIfAttribute : ValidationAttribute
     /// <value>
     /// The other property value.
     /// </value>
-    public object OtherPropertyValue { get; private set; }
+    private object OtherPropertyValue { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether other property's value should match or differ from provided other property's value (default is <c>false</c>).
@@ -54,10 +54,7 @@ public sealed class RequiredIfAttribute : ValidationAttribute
     /// Gets a value that indicates whether the attribute requires validation context.
     /// </summary>
     /// <returns><c>true</c> if the attribute requires validation context; otherwise, <c>false</c>.</returns>
-    public override bool RequiresValidationContext
-    {
-        get { return true; }
-    }
+    public override bool RequiresValidationContext => true;
 
     #endregion
 

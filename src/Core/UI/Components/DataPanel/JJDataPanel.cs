@@ -217,11 +217,7 @@ public class JJDataPanel : AsyncComponent
             var panelHtml = html.ToString();
             return new HtmlComponentResult(panelHtml);
         }
-        if (ComponentContext is ComponentContext.UrlRedirect)
-        {
-            var encryptedActionMap = CurrentContext.Request["current-form-action-" + Name.ToLower()];
-            return await GetUrlRedirectResult(EncryptionService.DecryptActionMap(encryptedActionMap));
-        }
+
 
         return new RenderedComponentResult(await GetPanelHtmlAsync());
     }

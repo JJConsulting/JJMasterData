@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 class ActionManager {
     static executePanelAction(name, action) {
-        $("#current-panel-action-" + name).val(action);
+        $("#form-view-current-action-" + name).val(action);
         let form = document.querySelector(`form#${name}`);
         if (!form) {
             form = document.forms[0];
@@ -27,7 +27,7 @@ class ActionManager {
                 return false;
             }
         }
-        const currentFormActionInput = document.querySelector("#current-form-action-" + componentName);
+        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
         currentFormActionInput.value = encryptedActionMap;
         if (!url) {
             const urlBuilder = new UrlBuilder();
@@ -57,8 +57,8 @@ class ActionManager {
                 return false;
             }
         }
-        const currentTableActionInput = document.querySelector("#current-table-action-" + componentName);
-        const currentFormActionInput = document.querySelector("#current-form-action-" + componentName);
+        const currentTableActionInput = document.querySelector("#grid-view-action-" + componentName);
+        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
         currentTableActionInput.value = null;
         currentFormActionInput.value = encryptedActionMap;
         let form = document.querySelector("form");
@@ -73,8 +73,8 @@ class ActionManager {
                 return false;
             }
         }
-        const currentTableActionInput = document.querySelector("#current-table-action-" + componentName);
-        const currentFormActionInput = document.querySelector("#current-form-action-" + componentName);
+        const currentTableActionInput = document.querySelector("#grid-view-action-" + componentName);
+        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
         currentTableActionInput.value = null;
         currentFormActionInput.value = encryptedActionMap;
         let urlBuilder = new UrlBuilder();
@@ -651,30 +651,30 @@ const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? 
 const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
 class GridView {
     static sorting(componentName, url, tableOrder) {
-        const tableOrderElement = document.querySelector("#current-table-order-" + componentName);
+        const tableOrderElement = document.querySelector("#grid-view-order-" + componentName);
         if (tableOrder + " ASC" === tableOrderElement.value)
             tableOrderElement.value = tableOrder + " DESC";
         else
             tableOrderElement.value = tableOrder + " ASC";
-        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
         GridView.refreshGrid(componentName, url);
     }
     static clearCurrentFormAction(componentName) {
-        const currentFormAction = document.querySelector("#current-form-action-" + componentName);
+        const currentFormAction = document.querySelector("#form-view-action-map-" + componentName);
         if (currentFormAction)
             currentFormAction.value = "";
     }
     static pagination(componentName, url, currentPage) {
-        document.querySelector("#current-table-page-" + componentName).value = currentPage;
-        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#grid-view-page-" + componentName).value = currentPage;
+        document.querySelector("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
         GridView.refreshGrid(componentName, url);
     }
     static filter(componentName, url) {
-        document.querySelector("#current-filter-action-" + componentName).value = "FILTERACTION";
-        document.querySelector("#current-table-action-" + componentName).value = "";
-        document.querySelector("#current-table-page-" + componentName).value = "1";
+        document.querySelector("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        document.querySelector("#grid-view-page-" + componentName).value = "1";
         this.clearCurrentFormAction(componentName);
         GridView.refreshGrid(componentName, url);
     }
@@ -706,8 +706,8 @@ class GridView {
                 }
             }
         });
-        document.querySelector("#current-filter-action-" + componentName).value = "CLEARACTION";
-        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#grid-view-filter-action-" + componentName).value = "CLEARACTION";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
     }
     static clearFilter(componentName, url) {
@@ -715,8 +715,8 @@ class GridView {
         GridView.refreshGrid(componentName, url);
     }
     static refresh(componentName, url) {
-        document.querySelector("#current-table-action-" + componentName).value = "";
-        document.querySelector("#current-table-row-" + componentName).value = "";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        document.querySelector("#grid-view-row-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
         GridView.refreshGrid(componentName, url);
     }
@@ -739,7 +739,7 @@ class GridView {
         let urlBuilder = new UrlBuilder(url);
         urlBuilder.addQueryParameter("componentName", componentName);
         SpinnerOverlay.show();
-        const filterAction = document.querySelector("#current-filter-action-" + componentName);
+        const filterAction = document.querySelector("#grid-view-filter-action-" + componentName);
         fetch(urlBuilder.build(), {
             method: form.method,
             body: new FormData(form)
@@ -807,13 +807,13 @@ class JJView {
                     if (loadform) {
                         loadJJMasterData();
                     }
-                    $("#current-filter-action-" + objid).val("");
+                    $("#grid-view-filter-action-" + objid).val("");
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);
                     console.log(textStatus);
                     console.log(jqXHR);
-                    $("#current-filter-action-" + objid).val("");
+                    $("#grid-view-filter-action-" + objid).val("");
                 }
             });
         }
@@ -877,13 +877,13 @@ class JJView {
         });
     }
     static sortFormValues(objid, enableAjax, v) {
-        var tableOrder = "#current-table-order-" + objid;
+        var tableOrder = "#grid-view-order-" + objid;
         if (v + " ASC" == $(tableOrder).val())
             $(tableOrder).val(v + " DESC");
         else
             $(tableOrder).val(v + " ASC");
-        $("#current-table-action-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
     static sortItems(objid) {
@@ -901,28 +901,28 @@ class JJView {
             }
         }
         descCommand = descCommand.substring(0, descCommand.length - 1);
-        $("#current-table-order-" + objid).val(descCommand);
+        $("#grid-view-order-" + objid).val(descCommand);
         $("#sort-modal-" + objid).modal('hide');
-        $("#current-form-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.refresh(objid, true);
     }
     static paginateGrid(objid, enableAjax, v) {
-        $("#current-table-page-" + objid).val(v);
-        $("#current-table-action-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-page-" + objid).val(v);
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
     static refresh(objid, enableAjax) {
-        $("#current-table-action-" + objid).val("");
-        $("#current-table-row-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-action-" + objid).val("");
+        $("#grid-view-row-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
     static openSettingsModal(componentName, encryptedActionMap) {
-        $("#current-table-action-" + componentName).val(encryptedActionMap);
-        $("#current-table-page-" + componentName).val("1");
-        $("#current-table-row-" + componentName).val("");
-        $("#current-form-action-" + componentName).val("");
+        $("#grid-view-action-" + componentName).val(encryptedActionMap);
+        $("#grid-view-page-" + componentName).val("1");
+        $("#grid-view-row-" + componentName).val("");
+        $("#form-view-action-map-" + componentName).val("");
         $("form:first").trigger("submit");
     }
     static closeSettingsModal(objid) {
@@ -931,16 +931,16 @@ class JJView {
         $("#config-modal-" + objid).modal("hide");
     }
     static filter(objid, enableAjax) {
-        $("#current-filter-action-" + objid).val("FILTERACTION");
-        $("#current-table-action-" + objid).val("");
-        $("#current-table-page-" + objid).val("1");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-filter-action-" + objid).val("FILTERACTION");
+        $("#grid-view-action-" + objid).val("");
+        $("#grid-view-page-" + objid).val("1");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, false);
         return false;
     }
     static openSelectElementInsert(componentName, encryptedActionMap) {
-        $("#current-panel-action-" + componentName).val("ELEMENTSEL");
-        $("#current-select-action-values" + componentName).val(encryptedActionMap);
+        $("#form-view-current-action-" + componentName).val("ELEMENTSEL");
+        $("#form-view-select-action-values" + componentName).val(encryptedActionMap);
         $("form:first").trigger("submit");
     }
     static clearFilter(componentName, enableAjax) {
@@ -954,8 +954,8 @@ class JJView {
                 return false;
             }
         }
-        $("#current-table-action-" + componentName).val(encryptedActionMap);
-        $("#current-form-action-" + componentName).val("");
+        $("#grid-view-action-" + componentName).val(encryptedActionMap);
+        $("#form-view-action-map-" + componentName).val("");
         $("form:first").trigger("submit");
     }
     static executeSqlCommand(objid, criptid, confirmMessage) {
@@ -965,9 +965,9 @@ class JJView {
                 return false;
             }
         }
-        $("#current-table-action-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
-        $("#current-table-row-" + objid).val(criptid);
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
+        $("#grid-view-row-" + objid).val(criptid);
         $("form:first").trigger("submit");
     }
     static setLookup(objid, value) {

@@ -24,13 +24,13 @@
                     if (loadform) {
                         loadJJMasterData();
                     }
-                    $("#current-filter-action-" + objid).val("");
+                    $("#grid-view-filter-action-" + objid).val("");
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log(errorThrown);
                     console.log(textStatus);
                     console.log(jqXHR);
-                    $("#current-filter-action-" + objid).val("");
+                    $("#grid-view-filter-action-" + objid).val("");
                 }
             });
         } else {
@@ -102,14 +102,14 @@
     }
 
     static sortFormValues(objid, enableAjax, v) {
-        var tableOrder = "#current-table-order-" + objid;
+        var tableOrder = "#grid-view-order-" + objid;
         if (v + " ASC" == $(tableOrder).val())
             $(tableOrder).val(v + " DESC");
         else
             $(tableOrder).val(v + " ASC");
 
-        $("#current-table-action-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
 
@@ -132,32 +132,32 @@
         }
         descCommand = descCommand.substring(0, descCommand.length - 1);
 
-        $("#current-table-order-" + objid).val(descCommand);
+        $("#grid-view-order-" + objid).val(descCommand);
         $("#sort-modal-" + objid).modal('hide');
-        $("#current-form-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.refresh(objid, true);
 
     }
 
     static paginateGrid(objid, enableAjax, v) {
-        $("#current-table-page-" + objid).val(v);
-        $("#current-table-action-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-page-" + objid).val(v);
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
 
     static refresh(objid, enableAjax) {
-        $("#current-table-action-" + objid).val("");
-        $("#current-table-row-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-action-" + objid).val("");
+        $("#grid-view-row-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
 
     static openSettingsModal(componentName, encryptedActionMap) {
-        $("#current-table-action-" + componentName).val(encryptedActionMap);
-        $("#current-table-page-" + componentName).val("1");
-        $("#current-table-row-" + componentName).val("");
-        $("#current-form-action-" + componentName).val("");
+        $("#grid-view-action-" + componentName).val(encryptedActionMap);
+        $("#grid-view-page-" + componentName).val("1");
+        $("#grid-view-row-" + componentName).val("");
+        $("#form-view-action-map-" + componentName).val("");
         $("form:first").trigger("submit");
     }
     static closeSettingsModal(objid) {
@@ -168,17 +168,17 @@
 
 
     static filter(objid, enableAjax) {
-        $("#current-filter-action-" + objid).val("FILTERACTION");
-        $("#current-table-action-" + objid).val("");
-        $("#current-table-page-" + objid).val("1");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-filter-action-" + objid).val("FILTERACTION");
+        $("#grid-view-action-" + objid).val("");
+        $("#grid-view-page-" + objid).val("1");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, false);
         return false;
     }
 
     static openSelectElementInsert(componentName, encryptedActionMap) {
-        $("#current-panel-action-" + componentName).val("ELEMENTSEL");
-        $("#current-select-action-values" + componentName).val(encryptedActionMap);
+        $("#form-view-current-action-" + componentName).val("ELEMENTSEL");
+        $("#form-view-select-action-values" + componentName).val(encryptedActionMap);
         $("form:first").trigger("submit");
     }
 
@@ -195,8 +195,8 @@
             }
         }
 
-        $("#current-table-action-" + componentName).val(encryptedActionMap);
-        $("#current-form-action-" + componentName).val("");
+        $("#grid-view-action-" + componentName).val(encryptedActionMap);
+        $("#form-view-action-map-" + componentName).val("");
         $("form:first").trigger("submit");
     }
     
@@ -209,9 +209,9 @@
             }
         }
 
-        $("#current-table-action-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
-        $("#current-table-row-" + objid).val(criptid);
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
+        $("#grid-view-row-" + objid).val(criptid);
         $("form:first").trigger("submit");
     }
 

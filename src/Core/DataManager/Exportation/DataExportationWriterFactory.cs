@@ -18,17 +18,22 @@ public class DataExportationWriterFactory
         ServiceProvider = serviceProvider;
     }
     
-    public IPdfWriter GetPdfWriter()
+    private IPdfWriter GetPdfWriter()
     {
         return ServiceProvider.GetRequiredService<IPdfWriter>();
     }
+    
+    public bool PdfWriterExists()
+    {
+        return GetPdfWriter() != null;
+    }
 
-    public IExcelWriter GetExcelWriter()
+    private IExcelWriter GetExcelWriter()
     {
         return ServiceProvider.GetRequiredService<IExcelWriter>();
     }
 
-    public ITextWriter GetTextWriter()
+    private ITextWriter GetTextWriter()
     {
         return ServiceProvider.GetRequiredService<ITextWriter>();
     }
@@ -68,6 +73,7 @@ public class DataExportationWriterFactory
 
                 // ReSharper disable once SuspiciousTypeConversion.Global;
                 // PdfWriter is dynamic loaded by plugin.
+                //TODO: I think this is bad, things from DataExportationWriterBase should be a parameter at IExportationWriter
                 writer = pdfWriter as DataExportationWriterBase;
 
                 break;

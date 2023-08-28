@@ -1,7 +1,7 @@
 
 class ActionManager {
     static executePanelAction(name: string, action: string){
-        $("#current-panel-action-" + name).val(action);
+        $("#form-view-current-action-" + name).val(action);
         let form = document.querySelector<HTMLFormElement>(`form#${name}`);
 
         if(!form){
@@ -24,7 +24,7 @@ class ActionManager {
             }
         }
 
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-form-action-" + componentName);
+        const currentFormActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
         currentFormActionInput.value = encryptedActionMap;
 
         if(!url){
@@ -60,8 +60,8 @@ class ActionManager {
             }
         }
 
-        const currentTableActionInput = document.querySelector<HTMLInputElement>("#current-table-action-" + componentName);
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-form-action-" + componentName);
+        const currentTableActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
+        const currentFormActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
         
         currentTableActionInput.value = null;
         currentFormActionInput.value = encryptedActionMap;
@@ -83,8 +83,8 @@ class ActionManager {
             }
         }
         
-        const currentTableActionInput = document.querySelector<HTMLInputElement>("#current-table-action-" + componentName);
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-form-action-" + componentName);
+        const currentTableActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
+        const currentFormActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
 
         currentTableActionInput.value = null;
         currentFormActionInput.value = encryptedActionMap;

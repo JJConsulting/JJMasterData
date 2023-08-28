@@ -140,7 +140,21 @@ public class JJFormView : AsyncComponent
     /// </remarks>
     public IDictionary<string, object> RelationValues
     {
-        get => _relationValues;
+        get
+        {
+            if (!_relationValues.Any())
+            {
+                var encryptedRelationValues = CurrentContext.Request.Form($"form-view-relation-values-{Name}");
+
+                if (encryptedRelationValues is null)
+                    return _relationValues;
+                
+                _relationValues = EncryptionService.DecryptDictionary(encryptedRelationValues);
+                GridView.RelationValues = _relationValues;
+            }
+
+            return _relationValues;
+        }
         set
         {
             GridView.RelationValues = value;
@@ -175,8 +189,8 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (CurrentContext.Request["current-page-state-" + Name] != null && _pageState is null)
-                _pageState = (PageState)int.Parse(CurrentContext.Request["current-page-state-" + Name]);
+            if (CurrentContext.Request["form-view-page-state-" + Name] != null && _pageState is null)
+                _pageState = (PageState)int.Parse(CurrentContext.Request["form-view-page-state-" + Name]);
 
             return _pageState ?? PageState.List;
         }
@@ -190,7 +204,7 @@ public class JJFormView : AsyncComponent
             if (_currentActionMap != null)
                 return _currentActionMap;
 
-            string encryptedActionMap = CurrentContext.Request["current-form-action-" + Name.ToLower()];
+            string encryptedActionMap = CurrentContext.Request["form-view-action-map-" + Name.ToLower()];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -343,6 +357,7 @@ public class JJFormView : AsyncComponent
         {
             return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
         }
+        
 
         return await GetFormResult();
     }
@@ -390,8 +405,9 @@ public class JJFormView : AsyncComponent
 
         var html = renderedComponentResult.HtmlBuilder;
 
-        html.AppendHiddenInput($"current-page-state-{Name.ToLower()}", ((int)PageState).ToString());
-        html.AppendHiddenInput($"current-form-action-{Name.ToLower()}", "");
+        html.AppendHiddenInput($"form-view-page-state-{Name.ToLower()}", ((int)PageState).ToString());
+
+        html.AppendHiddenInput($"form-view-action-map-{Name.ToLower()}", string.Empty);
 
         return new RenderedComponentResult(html);
     }
@@ -416,8 +432,8 @@ public class JJFormView : AsyncComponent
     {
         string formAction = "";
 
-        if (CurrentContext.Request["current-panel-action-" + Name] != null)
-            formAction = CurrentContext.Request["current-panel-action-" + Name];
+        if (CurrentContext.Request["form-view-current-action-" + Name] != null)
+            formAction = CurrentContext.Request["form-view-current-action-" + Name];
 
         if ("OK".Equals(formAction))
         {
@@ -485,8 +501,8 @@ public class JJFormView : AsyncComponent
 
         string formAction = "";
 
-        if (CurrentContext.Request["current-panel-action-" + Name] != null)
-            formAction = CurrentContext.Request["current-panel-action-" + Name];
+        if (CurrentContext.Request["form-view-current-action-" + Name] != null)
+            formAction = CurrentContext.Request["form-view-current-action-" + Name];
 
         if (formAction.Equals("OK"))
         {
@@ -575,8 +591,8 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetInsertSelectionResult(InsertAction action)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-        html.AppendHiddenInput($"current-panel-action-{Name}", "ELEMENTLIST");
-        html.AppendHiddenInput($"current-select-action-values{Name}", "");
+        html.AppendHiddenInput($"form-view-current-action-{Name}", "ELEMENTLIST");
+        html.AppendHiddenInput($"form-view-select-action-values{Name}", "");
 
         var formElement = await DataDictionaryRepository.GetMetadataAsync(action.ElementNameToSelect);
         var selectedForm = ComponentFactory.FormView.Create(formElement);
@@ -585,7 +601,7 @@ public class JJFormView : AsyncComponent
         selectedForm.SetOptions(formElement.Options);
 
         var goBackScript = new StringBuilder();
-        goBackScript.Append($"$('#current-page-state-{Name}').val('{((int)PageState.List).ToString()}'); ");
+        goBackScript.Append($"$('#form-view-page-state-{Name}').val('{((int)PageState.List).ToString()}'); ");
         goBackScript.AppendLine("$('form:first').submit(); ");
 
         var goBackAction = new ScriptAction
@@ -624,7 +640,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
-        string encryptedActionMap = CurrentContext.Request.Form("current-select-action-values" + Name);
+        string encryptedActionMap = CurrentContext.Request.Form("form-view-select-action-values" + Name);
         var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement = await DataDictionaryRepository.GetMetadataAsync(InsertAction.ElementNameToSelect);
@@ -819,7 +835,7 @@ public class JJFormView : AsyncComponent
     {
         var actionMap = _currentActionMap;
         var script = new StringBuilder();
-        script.Append($"$('#current-page-state-{Name}').val('{(int)PageState.List}'); ");
+        script.Append($"$('#form-view-page-state-{Name}').val('{(int)PageState.List}'); ");
         script.AppendLine("$('form:first').submit(); ");
 
         var goBackAction = new ScriptAction
@@ -863,7 +879,7 @@ public class JJFormView : AsyncComponent
 
         PageState = PageState.Import;
         var importationScript = new StringBuilder();
-        importationScript.Append($"$('#current-page-state-{Name}').val('{(int)PageState.List}'); ");
+        importationScript.Append($"$('#form-view-page-state-{Name}').val('{(int)PageState.List}'); ");
         importationScript.AppendLine("$('form:first').submit(); ");
         
         DataImportation.UserValues = UserValues;
@@ -909,13 +925,14 @@ public class JJFormView : AsyncComponent
         {
             var panelHtml = await GetHtmlFromPanel(parentPanel, true);
 
+            panelHtml.AppendHiddenInput($"form-view-relation-values-{Name}", EncryptionService.EncryptDictionary(RelationValues));
+            
             if (ComponentContext is ComponentContext.Modal)
                 return HtmlComponentResult.FromHtmlBuilder(panelHtml);
             
             if (ShowTitle)
                 panelHtml.Prepend(GridView.GetTitle(values).GetHtmlBuilder());
-
-            panelHtml.AppendHiddenInput($"{Name}-relation-values");
+            
             
             return new RenderedComponentResult(panelHtml);
         }
@@ -969,14 +986,14 @@ public class JJFormView : AsyncComponent
 
         formHtml.Append(parentPanelHtml);
         formHtml.AppendComponent(toolbar);
-        formHtml.AppendHiddenInput($"current-panel-action-{Name}");
+        formHtml.AppendHiddenInput($"form-view-current-action-{Name}");
         return formHtml;
     }
 
     private JJToolbar GetFormLogBottomBar(IDictionary<string, object?> values)
     {
         var backScript = new StringBuilder();
-        backScript.Append($"$('#current-page-state-{Name}').val('{(int)PageState.List}'); ");
+        backScript.Append($"$('#form-view-page-state-{Name}').val('{(int)PageState.List}'); ");
         backScript.AppendLine("$('form:first').submit(); ");
 
         var btnBack = GetBackButton();
@@ -1158,7 +1175,7 @@ public class JJFormView : AsyncComponent
             Text = "Hide Log",
             IconClass = IconType.Film.GetCssClass(),
             CssClass = "btn btn-primary btn-small",
-            OnClientClick = $"$('#current-page-state-{Name}').val('{(int)PageState.List}');{scriptAction}"
+            OnClientClick = $"$('#form-view-page-state-{Name}').val('{(int)PageState.List}');{scriptAction}"
         };
         return btn;
     }
