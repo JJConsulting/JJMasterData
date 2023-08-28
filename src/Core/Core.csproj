@@ -80,6 +80,9 @@
       <Compile Update="UI\Components\RedirectComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
+      <Compile Update="UI\Components\ComponentContextResolver.cs">
+        <DependentUpon>ComponentContext.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
     
 </Project>

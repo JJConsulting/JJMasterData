@@ -30,7 +30,7 @@ class ActionManager {
         if(!url){
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "urlRedirect");
-            urlBuilder.addQueryParameter("objname", componentName);
+            urlBuilder.addQueryParameter("componentName", componentName);
 
             url = urlBuilder.build();
         }

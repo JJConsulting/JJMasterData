@@ -24,7 +24,7 @@ public class JJTextFile : AsyncControl
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private const string UploadViewParameterName = "jjuploadview_";
+    public const string UploadViewParameterName = "jjuploadview_";
     private IDictionary<string, object> _formValues;
     private FormFilePathBuilder _pathBuiler;
 
@@ -360,20 +360,7 @@ public class JJTextFile : AsyncControl
         string lookupRoute = CurrentContext.Request.QueryString(UploadViewParameterName + panelName);
         return Name.Equals(lookupRoute);
     }
-
-    public static bool IsUploadViewRoute(ComponentBase view, IHttpContext httpContext)
-    {
-        string dataPanelName;
-        if (view is JJFormView formView)
-            dataPanelName = formView.DataPanel.Name;
-        else if (view is JJDataPanel dataPanel)
-            dataPanelName = dataPanel.Name;
-        else
-            dataPanelName = string.Empty;
-
-        return httpContext.Request.QueryString(UploadViewParameterName + dataPanelName) != null;
-    }
-
+    
     internal static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
         string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadViewParameterName + view.Name);

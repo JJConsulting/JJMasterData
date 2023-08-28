@@ -94,6 +94,7 @@ public class JJGridView : AsyncComponent
     private JJDataImportation? _dataImportation;
     private JJDataExportation? _dataExportation;
     private GridScripts? _gridScripts;
+    private ComponentContext? _componentContext;
 
     internal JJDataImportation DataImportation
     {
@@ -489,6 +490,20 @@ public class JJGridView : AsyncComponent
         get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("selected-rows" + Name)?.ToString();
         set => _selectedRowsId = value ?? "";
     }
+
+    private ComponentContext ComponentContext
+    {
+        get
+        {
+            if (_componentContext != null)
+                return _componentContext.Value;
+            
+            var resolver = new ComponentContextResolver(this);
+            _componentContext = resolver.GetContext();
+
+            return _componentContext.Value;
+        }
+    }
     
     #endregion
 
@@ -557,49 +572,43 @@ public class JJGridView : AsyncComponent
 
         string context = CurrentContext.Request.QueryString("context");
 
-        if ("htmlContent".Equals(context))
+        if (ComponentContext is ComponentContext.HtmlContent)
         {
-            string objName = CurrentContext.Request.QueryString("objname");
+            var componentName = CurrentContext.Request.QueryString("componentName");
 
-            if (Name.Equals(objName))
+            if (Name.Equals(componentName))
             {
                 return HtmlComponentResult.FromHtmlBuilder(await GetTableHtmlBuilder());
             }
         }
         
-        if ("dataExportation".Equals(context))
+        if (ComponentContext is ComponentContext.DataExportation)
         {
-            string gridViewName = CurrentContext.Request.QueryString("gridViewName");
-            if (Name.Equals(gridViewName))
-                return await GetExportationResult();
+            return await GetExportationResult();
         }
 
-        if ("gridViewRow".Equals(context))
+        if (ComponentContext is ComponentContext.GridViewRow)
         {
-            string gridViewName = CurrentContext.Request.QueryString("gridViewName");
-            if (Name.Equals(gridViewName))
-            {
-                int rowIndex = int.Parse(CurrentContext.Request.QueryString("nRow"));
+            int rowIndex = int.Parse(CurrentContext.Request.QueryString("gridViewRowIndex"));
 
-                var htmlResponse = await GetTableRowHtmlAsync(rowIndex);
+            var htmlResponse = await GetTableRowHtmlAsync(rowIndex);
 
-                return new HtmlComponentResult(htmlResponse);
-            }
+            return new HtmlComponentResult(htmlResponse);
         }
 
-        if ("selectall".Equals(context))
+        if (ComponentContext is ComponentContext.SelectAllGridRows)
         {
             string selectedRows = await GetEncryptedSelectedRowsAsync();
             
             return new JsonComponentResult(new {selectedRows});
         }
         
-        if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
+        if (ComponentContext is ComponentContext.UrlRedirect)
             return await JJSearchBox.GetResultFromComponent(this,FormElement, await GetCurrentFilterAsync(), CurrentContext,ComponentFactory.Controls.GetFactory<SearchBoxFactory>());
 
         if ("searchBox".Equals(context))
         {
-            var objName = CurrentContext.Request.QueryString("objname");
+            var objName = CurrentContext.Request.QueryString("componentName");
             if (objName == null || !objName.StartsWith(GridFilter.FilterFieldPrefix))
                 return new EmptyComponentResult();
 
@@ -837,11 +846,11 @@ public class JJGridView : AsyncComponent
                 script.AppendLine("\t\tvar frm = $('form'); ");
                 script.AppendLine("\t\tvar surl = frm.attr('action'); ");
                 script.AppendLine("\t\tif (surl.includes('?'))");
-                script.AppendLine("\t\t\tsurl += '&context=gridViewRow&nRow=' + nRow;");
+                script.AppendLine("\t\t\tsurl += '&context=gridViewRow&gridViewRowIndex=' + nRow;");
                 script.AppendLine("\t\telse");
-                script.AppendLine("\t\t\tsurl += '?context=gridViewRow&nRow=' + nRow;");
+                script.AppendLine("\t\t\tsurl += '?context=gridViewRow&gridViewRowIndex=' + nRow;");
                 script.AppendLine("");
-                script.AppendLine("\t\tsurl += '&objname=' + objname;");
+                script.AppendLine("\t\tsurl += '&componentName=' + objname;");
                 script.AppendLine($"\t\tsurl += '&gridViewName={Name}';");
                 script.AppendLine("\t\t$.ajax({ ");
                 script.AppendLine("\t\tasync: false,");
@@ -883,7 +892,7 @@ public class JJGridView : AsyncComponent
                         script.AppendLine("\").change(function () {");
                         script.AppendLine("\t\tvar obj = $(this);");
                         script.AppendLine("\t\tsetTimeout(function() {");
-                        script.AppendLine("\t\t\tvar nRowId = obj.attr(\"nRowId\");");
+                        script.AppendLine("\t\t\tvar nRowId = obj.attr(\"gridViewRowIndex\");");
                         script.AppendLine("\t\t\tvar objid = obj.attr(\"id\");");
                         script.Append("\t\t\t");
                         script.Append(functionname);
@@ -901,7 +910,7 @@ public class JJGridView : AsyncComponent
                         script.Append(f.Name);
                         script.AppendLine("\").change(function () {");
                         script.AppendLine("\t\t\tvar obj = $(this);");
-                        script.AppendLine("\t\t\tvar nRowId = obj.attr(\"nRowId\");");
+                        script.AppendLine("\t\t\tvar nRowId = obj.attr(\"gridViewRowIndex\");");
                         script.AppendLine("\t\t\tvar objid = obj.attr(\"id\");");
                         script.Append("\t\t\t");
                         script.Append(functionname);

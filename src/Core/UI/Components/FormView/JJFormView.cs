@@ -198,14 +198,18 @@ public class JJFormView : AsyncComponent
             return _currentActionMap;
         }
     }
-
+    
     internal ComponentContext ComponentContext
     {
         get
         {
-            var context = CurrentContext.Request.QueryString("context");
+            if (_componentContext != null)
+                return _componentContext.Value;
+            
+            var resolver = new ComponentContextResolver(this);
+            _componentContext = resolver.GetContext();
 
-            return _componentContext ??= ComponentContextParser.FromString(context);
+            return _componentContext.Value;
         }
     }
 
@@ -308,21 +312,20 @@ public class JJFormView : AsyncComponent
 
      protected override async Task<ComponentResult> BuildResultAsync()
     {
-        var componentName = CurrentContext.Request.QueryString("objname");
-        var panelName = CurrentContext.Request.QueryString("panelName");
-        if (JJLookup.IsLookupRoute(this, CurrentContext))
+        var componentName = CurrentContext.Request.QueryString("componentName");
+        if (ComponentContext is ComponentContext.Lookup)
             return await DataPanel.GetResultAsync();
 
-        if (JJTextFile.IsUploadViewRoute(this, CurrentContext))
+        if (ComponentContext is ComponentContext.FileUpload)
             return await DataPanel.GetResultAsync();
 
-        if (JJFileDownloader.IsDownloadRoute(CurrentContext))
+        if (ComponentContext is  ComponentContext.DownloadFile)
             return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService, ComponentFactory.Downloader);
 
-        if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
+        if (ComponentContext is ComponentContext.SearchBox)
             return await JJSearchBox.GetResultFromPanel(DataPanel);
 
-        if (ComponentContext is ComponentContext.PanelReload && panelName == DataPanel.Name)
+        if (ComponentContext is ComponentContext.PanelReload)
         {
             var panelHtml = await GetReloadPanelResultAsync();
 
@@ -911,6 +914,8 @@ public class JJFormView : AsyncComponent
             
             if (ShowTitle)
                 panelHtml.Prepend(GridView.GetTitle(values).GetHtmlBuilder());
+
+            panelHtml.AppendHiddenInput($"{Name}-relation-values");
             
             return new RenderedComponentResult(panelHtml);
         }

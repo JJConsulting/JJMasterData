@@ -17,6 +17,6 @@ public class ModelStateWrapper : IValidationDictionary
         _modelState.Values.SelectMany(entry => entry.Errors.Select(e => e.ErrorMessage));
 
     public void AddError(string key, string errorMessage) => _modelState.AddModelError(key, errorMessage);
-
+    public void RemoveError(string key) => _modelState.Remove(key);
     public bool IsValid => _modelState.IsValid;
 }

@@ -38,24 +38,13 @@ internal enum ComponentContext
     /// <summary>
     /// The component is requesting a JJSearchBox result
     /// </summary>
-    SearchBox
-}
-
-internal static class ComponentContextParser
-{
-    public static ComponentContext FromString(string context)
-    {
-        return context switch
-        {
-            "htmlContent"=> ComponentContext.HtmlContent,
-            "modal" => ComponentContext.Modal,
-            "dataExportation"=> ComponentContext.DataExportation,
-            "dataImportation" => ComponentContext.DataImportation,
-            "fileUpload" => ComponentContext.FileUpload,
-            "panelReload" => ComponentContext.PanelReload,
-            "urlRedirect" => ComponentContext.UrlRedirect,
-            "searchBox" => ComponentContext.SearchBox,
-            _ => ComponentContext.RenderComponent
-        };
-    }
+    SearchBox,
+    
+    DownloadFile,
+    
+    Lookup,
+    
+    SelectAllGridRows,
+    
+    GridViewRow
 }

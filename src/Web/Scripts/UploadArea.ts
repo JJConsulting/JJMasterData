@@ -134,7 +134,7 @@ class UploadArea {
             else{
                 let urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("context","fileUpload")
-                urlBuilder.addQueryParameter("objname",componentName)
+                urlBuilder.addQueryParameter("componentName",componentName)
                 url = urlBuilder.build();
             }
 

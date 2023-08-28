@@ -136,14 +136,6 @@ public class JJFileDownloader : HtmlComponent
     }
 
 
-    public static bool IsDownloadRoute(IHttpContext currentContext)
-    {
-        if (currentContext.Request.QueryString(DirectDownloadParameter) != null)
-            return true;
-        if (currentContext.Request.QueryString(DownloadParameter) != null)
-            return true;
-        return false;
-    }
 
     public static RedirectComponentResult GetDirectDownloadRedirect(
         IHttpContext currentContext, 

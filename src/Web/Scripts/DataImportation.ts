@@ -47,7 +47,7 @@
             let urlBuilder = new UrlBuilder()
             urlBuilder.addQueryParameter("context","dataImportation")
             urlBuilder.addQueryParameter("current_uploadaction","process_check")
-            urlBuilder.addQueryParameter("objname",componentName)
+            urlBuilder.addQueryParameter("componentName",componentName)
             url = urlBuilder.build()
         }
         
@@ -164,7 +164,7 @@
             let urlBuilder = new UrlBuilder()
             urlBuilder.addQueryParameter("context","dataImportation")
             urlBuilder.addQueryParameter("current_uploadaction","process_check")
-            urlBuilder.addQueryParameter("objname",componentName)
+            urlBuilder.addQueryParameter("componentName",componentName)
             url = urlBuilder.build()
         }
 

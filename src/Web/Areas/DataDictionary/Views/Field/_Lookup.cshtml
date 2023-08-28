@@ -11,13 +11,13 @@
         <div class="row">
             <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                 <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field"]">@StringLocalizer["Field Key"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap.FieldKey,
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldKey,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                     new { @class = "form-control form-select" })
             </div>
             <div class="@BootstrapHelper.FormGroup col-sm-4">
                 <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Key"]">@StringLocalizer["Field Description"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap.FieldDescription,
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldDescription,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                     new { @class = "form-control form-select" })
             </div>
@@ -50,14 +50,14 @@
 
                 <table class="table table-bordered table-hover">
                     <tbody>
-                    @for (int i = 0; i < Model.DataItem!.ElementMap.MapFilters.Count; i++)
+                    @for (int i = 0; i < Model.DataItem!.ElementMap!.MapFilters.Count; i++)
                     {
                         DataElementMapFilter mapFilter = Model.DataItem.ElementMap.MapFilters[i];
                         <tr>
                             <td>
                                 @mapFilter.FieldName <span>=</span>@mapFilter.ExpressionValue
-                                @Html.HiddenFor(x => x.DataItem!.ElementMap.MapFilters[i].FieldName, mapFilter.FieldName)
-                                @Html.HiddenFor(x => x.DataItem!.ElementMap.MapFilters[i].ExpressionValue, mapFilter.ExpressionValue)
+                                @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[i].FieldName, mapFilter.FieldName)
+                                @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[i].ExpressionValue, mapFilter.ExpressionValue)
                             </td>
                             <td style="width:80px;" align="center">
                                 <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="Delete" onclick="removeElementMapFilter('@mapFilter.FieldName');">
@@ -122,14 +122,14 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
         <label class="@BootstrapHelper.Label " @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Dictionary Name"]">@StringLocalizer["ElementName"]</label>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap.ElementName,
+        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.ElementName,
             new SelectList(ViewBag.ElementNameList, "Key", "Value"),
             new { @class = "form-control form-select", onchange = "this.form.submit();" })
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
         <label class="@BootstrapHelper.Label " @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Enable / Disable dictionary actions"]">@StringLocalizer["EnableElementActions"]</label>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap.EnableElementActions, new[]
+        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.EnableElementActions, new[]
         {
             new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
             new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }

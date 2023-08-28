@@ -237,18 +237,6 @@ public class JJLookup : AsyncControl
         return Name.Equals(lookupRoute);
     }
 
-    public static bool IsLookupRoute(ComponentBase view, IHttpContext context)
-    {
-        string dataPanelName = string.Empty;
-        if (view is JJFormView formView)
-            dataPanelName = formView.DataPanel.Name;
-        else if (view is JJDataPanel dataPanel)
-            dataPanelName = dataPanel.Name;
-
-        string lookupRoute = context.Request.QueryString("lookup-" + dataPanelName);
-        return !string.IsNullOrEmpty(lookupRoute);
-    }
-
     public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("lookup-" + view.Name);

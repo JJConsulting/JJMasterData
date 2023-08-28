@@ -32,6 +32,12 @@ public abstract class BaseService
     {
         _validationDictionary?.AddError(field, message);
     }
+    
+    protected void RemoveError(string field)
+    {
+        _validationDictionary?.RemoveError(field);
+    }
+    
 
     public JJValidationSummary GetValidationSummary()
     {

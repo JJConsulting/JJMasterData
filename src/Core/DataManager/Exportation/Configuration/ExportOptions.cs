@@ -29,16 +29,16 @@ public class ExportOptions
         Delimiter = ";";
     }
 
-    internal static ExportOptions LoadFromForm(IHttpContext currentContext, string objname)
+    internal static ExportOptions LoadFromForm(IHttpContext currentContext, string componentName)
     {
         var expConfig = new ExportOptions();
-        if (currentContext.Request[objname + FileName] != null)
+        if (currentContext.Request[componentName + FileName] != null)
         {
-            expConfig.FileExtension = (ExportFileExtension)int.Parse(currentContext.Request[objname + FileName]);
-            expConfig.IsLandScape = "1".Equals(currentContext.Request[objname + TableOrientation]);
-            expConfig.ExportFirstLine = "1".Equals(currentContext.Request[objname + ExportTableFirstLine]);
-            expConfig.ExportAllFields = "1".Equals(currentContext.Request[objname + ExportAll]);
-            expConfig.Delimiter = currentContext.Request[objname + ExportDelimiter];
+            expConfig.FileExtension = (ExportFileExtension)int.Parse(currentContext.Request[componentName + FileName]);
+            expConfig.IsLandScape = "1".Equals(currentContext.Request[componentName + TableOrientation]);
+            expConfig.ExportFirstLine = "1".Equals(currentContext.Request[componentName + ExportTableFirstLine]);
+            expConfig.ExportAllFields = "1".Equals(currentContext.Request[componentName + ExportAll]);
+            expConfig.Delimiter = currentContext.Request[componentName + ExportDelimiter];
         }
 
         return expConfig;

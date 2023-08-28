@@ -55,7 +55,7 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
             DataItem = field.DataItem,
             Name = field.Name,
             FieldName = field.Name,
-            DictionaryName = formElement.Name,
+            ElementName = formElement.Name,
             Visible = true,
             AutoReloadFormFields = false,
             FormStateData = controlContext.FormStateData,

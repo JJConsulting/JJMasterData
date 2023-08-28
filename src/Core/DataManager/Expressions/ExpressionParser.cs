@@ -54,7 +54,11 @@ public class ExpressionParser : IExpressionParser
             }
             else if ("objname".Equals(field.ToLower()))
             {
-                val = $"{HttpContext.Request["objname"]}";
+                val = $"{HttpContext.Request["componentName"]}";
+            }
+            else if ("componentName".Equals(field.ToLower()))
+            {
+                val = $"{HttpContext.Request["componentName"]}";
             }
             else if (HttpContext.Session?[field] != null)
             {

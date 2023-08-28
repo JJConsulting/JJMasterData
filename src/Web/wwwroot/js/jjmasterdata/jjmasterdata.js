@@ -32,7 +32,7 @@ class ActionManager {
         if (!url) {
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "urlRedirect");
-            urlBuilder.addQueryParameter("objname", componentName);
+            urlBuilder.addQueryParameter("componentName", componentName);
             url = urlBuilder.build();
         }
         this.executeUrlRedirect(url);
@@ -444,7 +444,7 @@ class DataImportation {
             let urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "dataImportation");
             urlBuilder.addQueryParameter("current_uploadaction", "process_check");
-            urlBuilder.addQueryParameter("objname", componentName);
+            urlBuilder.addQueryParameter("componentName", componentName);
             url = urlBuilder.build();
         }
         fetch(url, {
@@ -553,7 +553,7 @@ class DataImportation {
             let urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "dataImportation");
             urlBuilder.addQueryParameter("current_uploadaction", "process_check");
-            urlBuilder.addQueryParameter("objname", componentName);
+            urlBuilder.addQueryParameter("componentName", componentName);
             url = urlBuilder.build();
         }
         fetch(url).then(response => response.json()).then(data => {
@@ -592,7 +592,7 @@ class DataPanel {
     static ReloadAtSamePage(panelname, objid) {
         let url = new UrlBuilder();
         url.addQueryParameter("panelName", panelname);
-        url.addQueryParameter("objname", objid);
+        url.addQueryParameter("componentName", objid);
         url.addQueryParameter("context", "panelReload");
         DataPanel.Reload(url.build(), panelname, objid);
     }
@@ -792,7 +792,7 @@ class JJView {
                 surl += "&context=htmlContent";
             else
                 surl += "?context=htmlContent";
-            surl += "&objname=" + objid;
+            surl += "&componentName=" + objid;
             $.ajax({
                 async: true,
                 type: frm.attr("method"),
@@ -859,9 +859,9 @@ class JJView {
         var frm = $("form");
         var surl = frm.attr("action");
         if (surl.includes("?"))
-            surl += "&context=selectall";
+            surl += "&context=selectAll";
         else
-            surl += "?context=selectall";
+            surl += "?context=selectAll";
         $.ajax({
             async: true,
             type: frm.attr("method"),
@@ -1912,7 +1912,7 @@ class UploadArea {
             else {
                 let urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("context", "fileUpload");
-                urlBuilder.addQueryParameter("objname", componentName);
+                urlBuilder.addQueryParameter("componentName", componentName);
                 url = urlBuilder.build();
             }
             const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);

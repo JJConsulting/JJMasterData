@@ -8,7 +8,7 @@
             else
                 surl += "?context=htmlContent";
 
-            surl += "&objname=" + objid;
+            surl += "&componentName=" + objid;
             $.ajax({
                 async: true,
                 type: frm.attr("method"),
@@ -82,9 +82,9 @@
         var frm = $("form");
         var surl = frm.attr("action");
         if (surl.includes("?"))
-            surl += "&context=selectall";
+            surl += "&context=selectAll";
         else
-            surl += "?context=selectall";
+            surl += "?context=selectAll";
 
         $.ajax({
             async: true,
