@@ -86,8 +86,15 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
             case UserCreatedAction userCreatedAction:
                 button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.GridTable);
                 break;
-            case GridTableAction:
-                button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable);
+            case GridTableAction gridTableAction:
+                var isModal = false;
+
+                if (gridTableAction is EditAction editAction)
+                {
+                    isModal = editAction.ShowAsPopup;
+                }
+                
+                button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable,isModal);
                 break;
             default:
                 throw new JJMasterDataException("Action is not user created or a GridTableAction.");

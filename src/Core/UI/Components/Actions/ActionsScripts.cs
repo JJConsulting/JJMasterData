@@ -114,8 +114,16 @@ internal class ActionsScripts
         }
         else
         {
-            functionSignature =
-                $"ActionManager.executeFormAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            if (actionContext.IsInsideModal)
+            {
+                functionSignature =
+                    $"ActionManager.executeModalAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            }
+            else
+            {
+                functionSignature =
+                    $"ActionManager.executeFormAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            }
         }
 
         return functionSignature;

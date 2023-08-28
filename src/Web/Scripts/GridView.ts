@@ -95,7 +95,7 @@
         const checkboxes = document.querySelectorAll<HTMLInputElement>(".jjselect input:not(:disabled)");
         checkboxes.forEach(checkbox => checkbox.checked = true);
 
-        const selectedRowsInput = document.getElementById("selected-rows" + componentName) as HTMLInputElement;
+        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName) as HTMLInputElement;
         selectedRowsInput.value = values.join(",");
 
         const selectedText = document.getElementById("selected-text-" + componentName);

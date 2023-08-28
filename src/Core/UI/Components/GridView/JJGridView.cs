@@ -487,11 +487,11 @@ public class JJGridView : AsyncComponent
 
     private string? SelectedRowsId
     {
-        get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("selected-rows" + Name)?.ToString();
+        get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("grid-view-selected-rows" + Name)?.ToString();
         set => _selectedRowsId = value ?? "";
     }
 
-    private ComponentContext ComponentContext
+    internal ComponentContext ComponentContext
     {
         get
         {
@@ -538,7 +538,7 @@ public class JJGridView : AsyncComponent
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ComponentFactory componentFactory)
     {
-        Name = "JJView" + formElement.Name.ToLower();
+        Name = "jj-" + formElement.Name.ToLower();
         ShowTitle = true;
         EnableFilter = true;
         EnableSorting = true;
@@ -714,7 +714,7 @@ public class JJGridView : AsyncComponent
 
         if (EnableMultiSelect)
         {
-            yield return new HtmlBuilder().AppendHiddenInput($"selected-rows{Name}", SelectedRowsId ?? string.Empty);
+            yield return new HtmlBuilder().AppendHiddenInput($"grid-view-selected-rows{Name}", SelectedRowsId ?? string.Empty);
         }
     }
 

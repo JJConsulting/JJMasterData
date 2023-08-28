@@ -309,7 +309,7 @@ public class JJFormView : AsyncComponent
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ComponentFactory componentFactory)
     {
-        Name = "jjview_" + formElement.Name.ToLower();
+        Name = "jj-"+formElement.Name.ToLower();
         FormElement = formElement;
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
@@ -457,11 +457,6 @@ public class JJFormView : AsyncComponent
 
         if ("CANCEL".Equals(formAction))
         {
-            if (ComponentContext is ComponentContext.Modal)
-            {
-                return new JsonComponentResult("<script>popup.hide()</script>");
-            }
-
             PageState = PageState.List;
             return await GridView.GetResultAsync();
         }
@@ -965,7 +960,7 @@ public class JJFormView : AsyncComponent
             .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Bottom).ToList();
 
         html.AppendComponent(await GetFormToolbarAsync(bottomActions));
-
+        
         return new RenderedComponentResult(html);
     }
 

@@ -38,7 +38,7 @@
         }
     }
     static selectItem(objid, obj) {
-        var values = $("#selected-rows" + objid).val().toString();
+        var values = $("#grid-view-selected-rows" + objid).val().toString();
         var valuesList = [];
 
         if (obj.attr("id") == "jjcheckbox-select-all-rows")
@@ -57,7 +57,7 @@
             });
         }
 
-        $("#selected-rows" + objid).val(valuesList);
+        $("#grid-view-selected-rows" + objid).val(valuesList);
 
         var textInfo = "";
         var selectedText = $("#selected-text-" + objid);
@@ -73,7 +73,7 @@
 
     static unSelectAll(objid) {
         $(".jjselect input").not(":disabled").prop("checked", false);
-        $("#selected-rows" + objid).val("");
+        $("#grid-view-selected-rows" + objid).val("");
         var oSelectedtext = $("#selected-text-" + objid);
         oSelectedtext.text(oSelectedtext.attr("no-record-selected-label"));
     }

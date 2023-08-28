@@ -135,7 +135,7 @@
         html += "    </div>\r\n";
         html += "  </div>\r\n";
         html += "</div>\r\n";
-        $(html).appendTo($("body"));
+        $(html).appendTo($("form"));
     }
 
     show(title, url, size = 1) {

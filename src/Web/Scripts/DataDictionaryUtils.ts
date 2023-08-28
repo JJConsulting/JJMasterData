@@ -98,7 +98,7 @@
     }
 
     static exportElement(id: string, url: string, validStr: string): boolean {
-        var values = $("#selected-rows" + id).val();
+        var values = $("#grid-view-selected-rows" + id).val();
         if (values == "") {
             messageBox.show("JJMasterData", validStr, 3);
             return false;

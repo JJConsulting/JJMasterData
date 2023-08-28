@@ -57,15 +57,57 @@ class ActionManager {
                 return false;
             }
         }
-        const currentTableActionInput = document.querySelector("#grid-view-action-" + componentName);
-        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
-        currentTableActionInput.value = null;
-        currentFormActionInput.value = encryptedActionMap;
+        const gridViewActionInput = document.querySelector("#grid-view-action-" + componentName);
+        const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
+        gridViewActionInput.value = null;
+        formViewActionInput.value = encryptedActionMap;
         let form = document.querySelector("form");
         if (!form) {
             form = document.forms[0];
         }
         form.submit();
+    }
+    static executeModalAction(componentName, encryptedActionMap, confirmationMessage) {
+        if (confirmationMessage) {
+            if (confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+        const gridViewActionInput = document.querySelector("#grid-view-action-" + componentName);
+        const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
+        gridViewActionInput.value = null;
+        formViewActionInput.value = encryptedActionMap;
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("context", "modal");
+        const form = document.querySelector("form");
+        if (!form) {
+            return;
+        }
+        fetch(urlBuilder.build(), {
+            body: new FormData(form),
+        })
+            .then(response => {
+            var _a;
+            if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
+                return response.json();
+            }
+            else {
+                return response.text();
+            }
+        })
+            .then(data => {
+            const outputElement = document.getElementById(componentName);
+            if (outputElement) {
+                if (typeof data === "object") {
+                }
+                else {
+                    outputElement.innerHTML = data;
+                }
+            }
+        })
+            .catch(error => {
+            console.error("Error fetching data:", error);
+        });
     }
     static executeFormActionAsPopUp(componentName, title, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
@@ -216,7 +258,7 @@ class DataDictionaryUtils {
         $("form:first").attr("action", url).submit();
     }
     static exportElement(id, url, validStr) {
-        var values = $("#selected-rows" + id).val();
+        var values = $("#grid-view-selected-rows" + id).val();
         if (values == "") {
             messageBox.show("JJMasterData", validStr, 3);
             return false;
@@ -589,14 +631,14 @@ DataImportation.deleteCount = 0;
 DataImportation.ignoreCount = 0;
 DataImportation.errorCount = 0;
 class DataPanel {
-    static ReloadAtSamePage(panelname, objid) {
+    static reloadAtSamePage(panelname, objid) {
         let url = new UrlBuilder();
         url.addQueryParameter("panelName", panelname);
         url.addQueryParameter("componentName", objid);
         url.addQueryParameter("context", "panelReload");
-        DataPanel.Reload(url.build(), panelname, objid);
+        DataPanel.reload(url.build(), panelname, objid);
     }
-    static Reload(url, componentName, fieldName) {
+    static reload(url, componentName, fieldName) {
         const form = document.querySelector("form");
         fetch(url, {
             method: form.method,
@@ -729,7 +771,7 @@ class GridView {
         const values = rows.split(",");
         const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
         checkboxes.forEach(checkbox => checkbox.checked = true);
-        const selectedRowsInput = document.getElementById("selected-rows" + componentName);
+        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName);
         selectedRowsInput.value = values.join(",");
         const selectedText = document.getElementById("selected-text-" + componentName);
         selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
@@ -822,7 +864,7 @@ class JJView {
         }
     }
     static selectItem(objid, obj) {
-        var values = $("#selected-rows" + objid).val().toString();
+        var values = $("#grid-view-selected-rows" + objid).val().toString();
         var valuesList = [];
         if (obj.attr("id") == "jjcheckbox-select-all-rows")
             return;
@@ -838,7 +880,7 @@ class JJView {
                 return item !== obj.val();
             });
         }
-        $("#selected-rows" + objid).val(valuesList);
+        $("#grid-view-selected-rows" + objid).val(valuesList);
         var textInfo = "";
         var selectedText = $("#selected-text-" + objid);
         if (valuesList.length == 0)
@@ -851,7 +893,7 @@ class JJView {
     }
     static unSelectAll(objid) {
         $(".jjselect input").not(":disabled").prop("checked", false);
-        $("#selected-rows" + objid).val("");
+        $("#grid-view-selected-rows" + objid).val("");
         var oSelectedtext = $("#selected-text-" + objid);
         oSelectedtext.text(oSelectedtext.attr("no-record-selected-label"));
     }
@@ -1252,10 +1294,10 @@ class Lookup {
                         lookupInputElement.value = data.description;
                         lookupHiddenInputElement.value = data.id;
                         if (dataPanelReloadUrl) {
-                            DataPanel.Reload(dataPanelReloadUrl, panelName, lookupId);
+                            DataPanel.reload(dataPanelReloadUrl, panelName, lookupId);
                         }
                         else {
-                            DataPanel.ReloadAtSamePage(panelName, lookupId);
+                            DataPanel.reloadAtSamePage(panelName, lookupId);
                         }
                     }
                 })
@@ -1557,7 +1599,7 @@ class Modal {
         html += "    </div>\r\n";
         html += "  </div>\r\n";
         html += "</div>\r\n";
-        $(html).appendTo($("body"));
+        $(html).appendTo($("form"));
     }
     show(title, url, size = 1) {
         this.loadHtml(url, size);

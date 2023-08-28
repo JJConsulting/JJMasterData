@@ -52,7 +52,7 @@ class ActionManager {
             }
         })
     }
-
+    
     static executeFormAction(componentName: string, encryptedActionMap: string, confirmationMessage?: string) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
@@ -60,13 +60,12 @@ class ActionManager {
             }
         }
 
-        const currentTableActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
+        const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
+        const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
         
-        currentTableActionInput.value = null;
-        currentFormActionInput.value = encryptedActionMap;
-
-
+        gridViewActionInput.value = null;
+        formViewActionInput.value = encryptedActionMap;
+        
         let form = document.querySelector<HTMLFormElement>("form");
 
         if(!form){
@@ -74,6 +73,53 @@ class ActionManager {
         }
         
         form.submit();
+    }
+
+    static executeModalAction(componentName: string, encryptedActionMap: string, confirmationMessage?: string) {
+        if (confirmationMessage) {
+            if (confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+
+        const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
+        const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
+
+        gridViewActionInput.value = null;
+        formViewActionInput.value = encryptedActionMap;
+
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("context", "modal");
+
+        const form = document.querySelector<HTMLFormElement>("form");
+
+        if (!form) {
+            return;
+        }
+
+        fetch(urlBuilder.build(), {
+            body: new FormData(form),
+        })
+            .then(response => {
+                if (response.headers.get("content-type")?.includes("application/json")) {
+                    return response.json();
+                } else {
+                    return response.text();
+                }
+            })
+            .then(data => {
+                const outputElement = document.getElementById(componentName);
+                if (outputElement) {
+                    if (typeof data === "object") {
+                      
+                    } else {
+                        outputElement.innerHTML = data;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error);
+            });
     }
 
     static executeFormActionAsPopUp(componentName: string,title: string, encryptedActionMap: string, confirmationMessage?: string) {
