@@ -209,8 +209,8 @@
                             @{
 
                                 var iconSearchBox = SearchBoxFactory.Create();
-                                iconSearchBox.Name = Html.NameFor(m=>m.DataItem.Items[i].Icon);
-                                iconSearchBox.HtmlId = Html.IdFor(m=>m.DataItem.Items[i].Icon);
+                                iconSearchBox.Name = Html.NameFor(m=>m.DataItem!.Items[i].Icon);
+                                iconSearchBox.HtmlId = Html.IdFor(m=>m.DataItem!.Items[i].Icon);
                                 iconSearchBox.DataItem.ShowImageLegend = true;
                                 iconSearchBox.SelectedValue = ((int)Model.DataItem.Items[i].Icon).ToString();
                                 iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
@@ -272,7 +272,7 @@
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["PL-SQL Command"]">@StringLocalizer["Command.Sql"]</label>
         <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
         <div class="well" style="margin-bottom: 0px">
-            @Html.TextAreaFor(model => model.DataItem!.Command.Sql, new { @class = "form-control", rows = "10" })
+            @Html.TextAreaFor(model => model.DataItem!.Command!.Sql, new { @class = "form-control", rows = "10" })
         </div>
     </div>
     <label class="small col-sm-12">

@@ -15,6 +15,7 @@
         <RootNamespace>JJMasterData.Web</RootNamespace>
         <PackageId>JJMasterData.Web</PackageId>
         <LangVersion>11</LangVersion>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     
     <ItemGroup>

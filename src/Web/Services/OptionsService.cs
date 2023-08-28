@@ -32,10 +32,10 @@ public class OptionsService : BaseService
     }
 
 
-    public async Task<(bool, string)> TryConnectionAsync(string? connectionString)
+    public async Task<(bool, string?)> TryConnectionAsync(string? connectionString)
     {
         //TODO: Lucio Passar IOtions como construtor, tem varios lugares que repete esse código
-        var dataAccess = new DataAccess(connectionString,
+        var dataAccess = new DataAccess(connectionString ?? throw new ArgumentNullException(nameof(connectionString)),
             Enum.Parse<DataAccessProvider>(ConnectionProvidersWritableOptions!.Value.ConnectionString!));
 
         return await dataAccess.TryConnectionAsync(default);

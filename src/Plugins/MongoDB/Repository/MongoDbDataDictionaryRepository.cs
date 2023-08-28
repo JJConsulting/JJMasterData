@@ -16,11 +16,11 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace JJMasterData.MongoDB.Repository;
 
-public class MongoDbDataDictionaryRepository : IDataDictionaryRepository
+public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
 {
     private readonly IMongoCollection<MongoDBFormElement> _formElementCollection;
 
-    public MongoDbDataDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
+    public MongoDBDataDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
     {
         var mongoClient = new MongoClient(
             options.Value.ConnectionString);
