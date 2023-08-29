@@ -60,7 +60,7 @@
                                 @title
                             </div>
                             <div class=@BootstrapHelper.PullRight>
-                                <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="popup.show('Layout - @title', '@Url.Action("LayoutDetails", "Relationships", new { dictionaryName = Model.DictionaryName, relationship.Id })')">
+                                <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="defaultModal.showIframe('Layout - @title', '@Url.Action("LayoutDetails", "Relationships", new { dictionaryName = Model.DictionaryName, relationship.Id })')">
                                     <span class="fa fa-pencil"></span>
                                 </button>
                             </div>

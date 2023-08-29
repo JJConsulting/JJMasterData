@@ -87,7 +87,7 @@
     public string GetCmdEdit(BasicAction action)
     {
         var script = new StringBuilder();
-        script.Append("popup.show('");
+        script.Append("defaultModal.showIframe('");
         script.Append(Model.Context.ToString().FirstCharToUpper());
         script.Append(" Action', '");
         script.Append(Url.Action("Edit", "Actions",
@@ -100,7 +100,7 @@
     public string GetCmdAdd(Type actionType)
     {
         var script = new StringBuilder();
-        script.Append("popup.show('");
+        script.Append("defaultModal.showIframe('");
         script.Append(Model.Context.ToString().FirstCharToUpper());
         script.Append(" Action', '");
         script.Append(Url.Action("Add", "Actions",

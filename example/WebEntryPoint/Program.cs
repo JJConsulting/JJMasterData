@@ -1,3 +1,4 @@
+using JJMasterData.Core.Web;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Pdf;
 using JJMasterData.WebExample.Authorization;
@@ -10,7 +11,7 @@ builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange:
 builder.Services.AddControllersWithViews().AddViewLocalization();
 builder.Services.AddJJMasterDataWeb(settingsPath)
     .WithPdfExportation();
-        
+BootstrapHelper.Version = 3;
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("MasterDataPolicy", policy =>

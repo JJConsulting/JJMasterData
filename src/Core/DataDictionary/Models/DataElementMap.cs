@@ -17,7 +17,7 @@ public class DataElementMap
     public string FieldDescription { get; set; }
 
     [JsonProperty("popUpSize")]
-    public PopupSize PopUpSize { get; set; }
+    public ModalSize ModalSize { get; set; }
 
     public IDictionary<string, object> Filters 
     {

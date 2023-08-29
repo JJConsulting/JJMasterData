@@ -17,7 +17,7 @@ public class FormActionRedirect
     public RelationshipViewType ViewType { get; set; }
 
     [JsonProperty("popupSize")]
-    public PopupSize PopupSize { get; set; }
+    public ModalSize ModalSize { get; set; }
     
     public FormActionRedirect()
     {

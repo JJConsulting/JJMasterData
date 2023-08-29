@@ -64,7 +64,7 @@
 {
     <div class="row">
         <div class="col-sm-8">
-            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="popup.show('ElementIndex', '@Url.Action("Detail", "Indexes", new { dictionaryName = ViewBag.DictionaryName })');">
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="defaultModal.showIframe('ElementIndex', '@Url.Action("Detail", "Indexes", new { dictionaryName = ViewBag.DictionaryName })');">
                 <span class="fa fa-plus-circle"></span>
                 <span>&nbsp;@StringLocalizer["New Index"]</span>
             </button>
@@ -122,7 +122,7 @@
                         <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" formaction="@Url.Action("MoveDown", "Indexes", new { dictionaryName = ViewBag.DictionaryName, index })" data-original-title="@StringLocalizer["Move Down"]">
                             <span class="fa fa-arrow-down"></span>
                         </button>
-                        <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="popup.show('ElementIndex', '@Url.Action("Detail", "Indexes", new { dictionaryName = ViewBag.DictionaryName, index })');" data-original-title="@StringLocalizer["Edit"]">
+                        <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="defaultModal.showIframe('ElementIndex', '@Url.Action("Detail", "Indexes", new { dictionaryName = ViewBag.DictionaryName, index })');" data-original-title="@StringLocalizer["Edit"]">
                             <span class="fa fa-pencil"></span>
                         </button>
                         <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="deleteIndex('@Url.Action("Delete", "Indexes", new { dictionaryName = ViewBag.DictionaryName, index })')" data-original-title="@StringLocalizer["Delete"]">

@@ -49,7 +49,7 @@ internal class ActionsScripts
         string popUpTitle = formElement.Title;
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
         string popup = "true";
-        int popupSize = (int)elementRedirect.PopupSize;
+        int popupSize = (int)elementRedirect.ModalSize;
 
         var @params = new StringBuilder();
 

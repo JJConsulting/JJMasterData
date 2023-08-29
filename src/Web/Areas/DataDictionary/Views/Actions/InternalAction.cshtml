@@ -92,7 +92,7 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4">
                     <label class="@BootstrapHelper.Label " for="cboPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Popup Size"]">@StringLocalizer["Popup Size"]</label>
-                     <select asp-for="ElementRedirect.PopupSize" class="form-control" asp-items="Html.GetEnumSelectList<PopupSize>()"></select>
+                     <select asp-for="ElementRedirect.ModalSize" class="form-control" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
                 </div>
 
             </div>

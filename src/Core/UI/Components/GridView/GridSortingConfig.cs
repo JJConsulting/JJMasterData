@@ -37,7 +37,7 @@ public class GridSortingConfig
         {
             Name = "sort-modal-" + Name,
             Title = "Sort Fields",
-            Size = MessageSize.Default
+            Size = ModalSize.Small
         };
 
         var btnSort = new JJLinkButton
