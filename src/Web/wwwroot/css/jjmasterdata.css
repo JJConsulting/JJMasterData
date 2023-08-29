@@ -408,12 +408,6 @@ ul.dropdown-menu.inner {
     background-color: #e7e7e7 !important
 }
 
-/*Bootstrap 4*/
-
-.dropdown-item.active{
-    background-color: #e7e7e7 !important
-}
-
 /* Legacy bootstrap-theme.css implementation */
 
 a.list-group-item,
