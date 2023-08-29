@@ -739,11 +739,6 @@ button.dropdown-toggle.form-control {
     border-color: #adadad;
 }
 
-.modal-body{
-    height: 80vh;
-    overflow-y: auto;
-}
-
 .spinner-overlay {
     position: fixed;
     top: 0;

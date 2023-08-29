@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
@@ -14,12 +16,12 @@ public class JJModalDialog : HtmlComponent
     
     public List<JJLinkButton> Buttons { get; set; }
 
-    public MessageSize Size { get; set; }
+    public ModalSize Size { get; init; }
 
     public JJModalDialog()
     {
         Name = "jjmodal";
-        Size = MessageSize.Large;
+        Size = ModalSize.Small;
         Buttons = new List<JJLinkButton>();
     }
 
@@ -35,7 +37,7 @@ public class JJModalDialog : HtmlComponent
             .WithAttribute("aria-labelledby", $"{Name}-label")
             .Append(HtmlTag.Div, div =>
             {
-                div.WithCssClass(GetSizeClass());
+                div.WithCssClass($"modal-dialog {Size.GetDescription()}");
                 div.Append(HtmlTag.Div, content =>
                 {
                     content.WithCssClass("modal-content");
@@ -44,7 +46,7 @@ public class JJModalDialog : HtmlComponent
                     content.Append(HtmlTag.Div, body =>
                     {
                         body.WithCssClass("modal-body")
-                            .AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent)
+                            .AppendTextIf(!string.IsNullOrEmpty(HtmlContent), HtmlContent!)
                             .Append(HtmlBuilderContent);
                     });
                     content.AppendIf(Buttons.Count > 0, HtmlTag.Div, footer =>
@@ -77,12 +79,4 @@ public class JJModalDialog : HtmlComponent
 
         return header;
     }
-
-    private string GetSizeClass() =>
-        Size switch
-        {
-            MessageSize.Small => "modal-dialog modal-sm",
-            MessageSize.Default => "modal-dialog modal-md",
-            _ => "modal-dialog modal-lg",
-        };
 }
