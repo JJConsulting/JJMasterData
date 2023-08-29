@@ -23,15 +23,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Areas\Example\Views\Widgets\Alert.cshtml" />
-      <AdditionalFiles Include="Areas\Example\Views\Widgets\Index.cshtml" />
-      <AdditionalFiles Include="Areas\Example\Views\Widgets\Title.cshtml" />
-      <AdditionalFiles Include="Areas\Example\Views\_ViewImports.cshtml" />
-      <AdditionalFiles Include="Areas\Example\Views\_ViewStart.cshtml" />
-      <AdditionalFiles Include="Views\Shared\_Layout.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
       <_ContentIncludedByDefault Remove="Areas\Example\Views\Shared\_Layout.cshtml" />
     </ItemGroup>
 </Project>
