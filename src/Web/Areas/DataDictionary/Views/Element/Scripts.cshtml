@@ -3,10 +3,11 @@
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.IdentityModel.Tokens
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IOptions<JJMasterDataWebOptions> Options
 @model ElementScriptsViewModel
 
 @{
-    Layout = "_MasterDataLayout.Popup";
+    Layout = Options.Value.PopUpLayoutPath;
 }
 
 @{

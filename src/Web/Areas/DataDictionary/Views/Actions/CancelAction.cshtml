@@ -1,10 +1,12 @@
-@{
-    Layout = "_MasterDataLayout.Popup";
-}
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IOptions<JJMasterDataWebOptions> Options
 @model JJMasterData.Core.DataDictionary.Actions.FormToolbar.FormToolbarAction
+
+@{
+    Layout = Options.Value.PopUpLayoutPath;
+}
 
 @using (Html.BeginForm("CancelAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction }, FormMethod.Post))

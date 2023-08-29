@@ -4,10 +4,10 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
-using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
-using System.Text;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Configuration.Options.Abstractions;
+using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
+using System.Text;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Services;
@@ -24,22 +24,13 @@ public class OptionsService : BaseService
         IWritableOptions<ConnectionStrings>? connectionStringsWritableOptions = null,
         IWritableOptions<JJMasterDataCommonsOptions>? masterDataWritableOptions = null,
         IWritableOptions<ConnectionProviders>? connectionProvidersWritableOptions = null)
-        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
+        : base(validationDictionary, dataDictionaryRepository, stringLocalizer)
     {
         JJMasterDataWritableOptions = masterDataWritableOptions;
         ConnectionStringsWritableOptions = connectionStringsWritableOptions;
         ConnectionProvidersWritableOptions = connectionProvidersWritableOptions;
     }
 
-
-    public async Task<(bool, string?)> TryConnectionAsync(string? connectionString)
-    {
-        //TODO: Lucio Passar IOtions como construtor, tem varios lugares que repete esse código
-        var dataAccess = new DataAccess(connectionString ?? throw new ArgumentNullException(nameof(connectionString)),
-            Enum.Parse<DataAccessProvider>(ConnectionProvidersWritableOptions!.Value.ConnectionString!));
-
-        return await dataAccess.TryConnectionAsync(default);
-    }
 
     public async Task SaveOptions(OptionsViewModel model)
     {
@@ -61,12 +52,18 @@ public class OptionsService : BaseService
 
     public async Task<OptionsViewModel> GetViewModel(bool isFullscreen)
     {
-        string? connection = ConnectionStringsWritableOptions?.Value.ConnectionString;
-        var connectionResult = await GetConnectionResultAsync(connection);
+        var stringConnection = ConnectionStringsWritableOptions?.Value.ConnectionString;
+        var stringProvider = ConnectionProvidersWritableOptions?.Value.ConnectionString;
+        var provider = DataAccessProvider.SqlServer;
+        
+        if (stringProvider != null)
+            provider = Enum.Parse<DataAccessProvider>(stringProvider);
+
+        var connectionResult = await GetConnectionResultAsync(stringConnection, provider);
         var viewModel = new OptionsViewModel
         {
-            ConnectionString = new ConnectionString(connection),
-            ConnectionProvider = DataAccessProvider.SqlServer,
+            ConnectionString = new ConnectionString(stringConnection),
+            ConnectionProvider = provider,
             FilePath = JJMasterDataWritableOptions?.FilePath,
             IsFullscreen = isFullscreen,
             IsConnectionSuccessful = connectionResult.IsConnectionSuccessful
@@ -110,9 +107,16 @@ public class OptionsService : BaseService
         return message.ToString();
     }
 
-    public async Task<ConnectionResult> GetConnectionResultAsync(string? connectionString)
+    public async Task<ConnectionResult> GetConnectionResultAsync(
+        string? connectionString, 
+        DataAccessProvider provider, 
+        CancellationToken cancellationToken = default)
     {
-        var result = await TryConnectionAsync(connectionString);
+        if (connectionString == null)
+            return new ConnectionResult(false, "Connection String not found");
+
+        var dataAccess = new DataAccess(connectionString, provider);
+        var result = await dataAccess.TryConnectionAsync(cancellationToken);
         return new ConnectionResult(result.Item1, result.Item2);
     }
 }

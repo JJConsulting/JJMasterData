@@ -1,12 +1,13 @@
-﻿@{
-    Layout = "_MasterDataLayout.Popup";
-}
-@using JJMasterData.Commons.Data.Entity
+﻿@using JJMasterData.Commons.Data.Entity
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IOptions<JJMasterDataWebOptions> Options
 @model JJMasterData.Core.DataDictionary.Actions.UserCreated.InternalAction
 
+@{
+    Layout = Options.Value.PopUpLayoutPath;
+}
 
 <script type="text/javascript">
     $(document).ready(function() {

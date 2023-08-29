@@ -4,13 +4,14 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.OptionsViewModel
+@inject IOptions<JJMasterDataWebOptions> Options
 
 @{
     ViewData["Title"] = "Options";
 }
 
 @{
-    Layout = "_MasterDataLayout.Popup";
+    Layout = Options.Value.PopUpLayoutPath;
 }
 
 <form>
@@ -39,9 +40,9 @@
             color="@PanelColor.Success"/>
     }
 
-    @if (!ViewData.ModelState.IsValid)
+    @if (!ViewData.ModelState.IsValid && Model.ValidationSummary != null)
     {
-        @Html.Raw(Model.ValidationSummary)
+        @Html.Raw(Model.ValidationSummary.GetHtml())
     }
 
     <jj-collapse-panel
