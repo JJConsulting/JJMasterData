@@ -33,7 +33,7 @@ class ActionManager {
             url: url,
             success: (data)=>{
                 if (data.urlAsPopUp) {
-                    popup.show(data.popUpTitle, data.urlRedirect);
+                    defaultModal.showIframe(data.urlRedirect,data.popUpTitle);
                 } else {
                     window.location.href = data.urlRedirect;
                 }
@@ -69,7 +69,7 @@ class ActionManager {
             urlBuilder.addQueryParameter("context", "modal");
             
             postFormValues({
-                url:urlBuilder.build(),
+                url: urlBuilder.build(),
                 success:function(data){
                     const outputElement = document.getElementById(componentName);
                     if (outputElement) {
@@ -77,7 +77,6 @@ class ActionManager {
                             if(data.closeModal){
                                 const modal = new Modal();
                                 modal.modalId = componentName +"-modal";
-                                modal.modalTitleId =  componentName +"-modal-tile";
 
                                 modal.hide();
 
@@ -122,11 +121,10 @@ class ActionManager {
         
         const modal = new Modal();
         modal.modalId = componentName +"-modal";
-        modal.modalTitleId =  componentName +"-modal-tile";
 
-        modal.showHtmlFromUrl(title, url, {
-            method: "POST",
-            body: new FormData(document.querySelector("form"))
-        },1).then(_=>loadJJMasterData())
+        modal.showUrl({url:url,requestOptions:{
+                method: "POST",
+                body: new FormData(document.querySelector("form"))
+            }},title).then(_=>loadJJMasterData())
     }
 }

@@ -570,7 +570,7 @@ public class JJUploadView : AsyncComponent
         url += EncryptionService.EncryptStringWithUrlEscape(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
-        .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}', 1);")
+        .WithAttribute("href", $"javascript:defaultModal.showIframe('{url}', '{fileName}',1);")
         .Append(HtmlTag.Img, img =>
         {
             img.WithAttribute("loading", "lazy")
@@ -596,7 +596,7 @@ public class JJUploadView : AsyncComponent
         videoUrl += EncryptionService.EncryptStringWithUrlEscape(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
-         .WithAttribute("href", $"javascript:popup.show('{fileName}','{videoUrl}', 1);")
+         .WithAttribute("href", $"javascript:defaultModal.showIframe('{videoUrl}', '{fileName}',1);")
          .Append(GetHtmlItemBox(fileName, "fa fa-play-circle", "red"));
 
         return html;

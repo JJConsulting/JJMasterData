@@ -14,13 +14,13 @@ public class UrlRedirectAction : UserCreatedAction
     public string PopUpTitle { get; set; }
 
     [JsonProperty("popupSize")]
-    public PopupSize PopupSize { get; set; }
+    public ModalSize ModalSize { get; set; }
     
     public UrlRedirectAction()
     {
         UrlAsPopUp = false;
         PopUpTitle = "Title";
-        PopupSize = PopupSize.Default;
+        ModalSize = ModalSize.Default;
         Icon = IconType.ExternalLink;
     }
 }

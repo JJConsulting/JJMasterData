@@ -34,7 +34,7 @@ class ActionManager {
             url: url,
             success: (data) => {
                 if (data.urlAsPopUp) {
-                    popup.show(data.popUpTitle, data.urlRedirect);
+                    defaultModal.showIframe(data.urlRedirect, data.popUpTitle);
                 }
                 else {
                     window.location.href = data.urlRedirect;
@@ -72,7 +72,6 @@ class ActionManager {
                             if (data.closeModal) {
                                 const modal = new Modal();
                                 modal.modalId = componentName + "-modal";
-                                modal.modalTitleId = componentName + "-modal-tile";
                                 modal.hide();
                                 JJView.refresh(componentName, true);
                             }
@@ -109,11 +108,10 @@ class ActionManager {
         const url = urlBuilder.build();
         const modal = new Modal();
         modal.modalId = componentName + "-modal";
-        modal.modalTitleId = componentName + "-modal-tile";
-        modal.showHtmlFromUrl(title, url, {
-            method: "POST",
-            body: new FormData(document.querySelector("form"))
-        }, 1).then(_ => loadJJMasterData());
+        modal.showUrl({ url: url, requestOptions: {
+                method: "POST",
+                body: new FormData(document.querySelector("form"))
+            } }, title).then(_ => loadJJMasterData());
     }
 }
 function loadAuditLog(componentName, logId, url = null) {
@@ -233,11 +231,11 @@ class DataDictionaryUtils {
     static refreshAction(isPopup = false) {
         SpinnerOverlay.show();
         if (isPopup) {
-            window.parent.popup.hide();
+            window.parent.defaultModal.hide();
             window.parent.document.forms[0].submit();
         }
         else {
-            popup.hide();
+            defaultModal.hide();
             document.forms[0].submit();
         }
     }
@@ -990,7 +988,7 @@ class JJView {
         $("form:first").trigger("submit");
     }
     static setLookup(objid, value) {
-        window.parent.popup.hide();
+        window.parent.defaultModal.hide();
         setTimeout(function () {
             window.parent.$("#id_" + objid).val(value);
             window.parent.$("#" + objid).val(value).change().blur();
@@ -1004,7 +1002,7 @@ class JJView {
             }
         }
         if (ispopup) {
-            popup.show(title, url, popupSize);
+            defaultModal.showIframe(url, title, popupSize);
         }
         else {
             window.location.href = url;
@@ -1222,7 +1220,7 @@ class Lookup {
             const jjLookupSelector = "#" + lookupId + "";
             const jjHiddenLookupSelector = "#id_" + lookupId + "";
             $("#btn_" + lookupId).on("click", function () {
-                popup.show(popupTitle, lookupUrl, popupSize);
+                defaultModal.showIframe(lookupUrl, popupTitle, popupSize);
             });
             function setHiddenLookup() {
                 $("#id_" + lookupId).val(lookupInput.val());
@@ -1460,156 +1458,98 @@ MessageBox.modalId = MessageBox.jQueryModalId.substring(1);
 MessageBox.button1Id = MessageBox.jQueryModalButton1Id.substring(1);
 MessageBox.bootstrapVersion = 5;
 const messageBox = MessageBox;
+var ModalSize;
+(function (ModalSize) {
+    ModalSize[ModalSize["Default"] = 0] = "Default";
+    ModalSize[ModalSize["ExtraLarge"] = 1] = "ExtraLarge";
+    ModalSize[ModalSize["Large"] = 2] = "Large";
+    ModalSize[ModalSize["Small"] = 3] = "Small";
+    ModalSize[ModalSize["Fullscreen"] = 4] = "Fullscreen";
+})(ModalSize || (ModalSize = {}));
+class ModalUrlOptions {
+}
 class Modal {
     constructor() {
-        this.modalId = "popup-modal";
-        this.modalTitleId = "popup-modal-title";
+        this.modalSizeCssClass = {
+            Default: "jj-modal-default",
+            ExtraLarge: "jj-modal-xl",
+            Large: "jj-modal-lg",
+            Small: "jj-modal-sm",
+            Fullscreen: "modal-fullscreen",
+        };
+        this.modalId = "jjmasterdata-modal";
+        this.modalSize = ModalSize.Default;
     }
-    setTitle(title) {
-        document.getElementById(this.modalTitleId).innerHTML = title;
+    getModalCssClass() {
+        return this.modalSizeCssClass[ModalSize[this.modalSize]];
     }
-    showModal(isIframe = true) {
-        if (bootstrapVersion < 5) {
-            $("#" + this.modalId).modal();
-        }
-        else {
-            const modal = new bootstrap.Modal(document.getElementById(this.modalId), {});
-            modal.show();
-        }
-        if (isIframe) {
-            SpinnerOverlay.show();
-            $("iframe").on("load", function () {
-                SpinnerOverlay.hide();
-            });
-        }
-    }
-    loadHtml(content, size, isIframe = true) {
-        const modalIdSelector = `#${this.modalId}`;
-        if ($(modalIdSelector).length) {
-            $(modalIdSelector).remove();
-        }
-        let width;
-        let height;
-        if (size === undefined) {
-            size = "1";
-        }
-        size = parseInt(size);
-        let modalDialogDiv;
-        switch (size) {
-            case 1:
-                width = "98%";
-                height = "92%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"margin:0.7em;left:0px;right:0px;top:0px;bottom:0px; position:fixed;width:auto;\">\r\n";
-                break;
-            case 2:
-                width = "auto";
-                height = "95%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 95vh;width:auto;\">\r\n";
-                break;
-            case 3:
-                width = "50%";
-                height = "65%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 65vh;width:50%\">\r\n";
-                break;
-            default:
-                width = "65%";
-                height = "80%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 80vh;width:65%\">\r\n";
-                break;
-        }
-        let modalDialogCss = `
-@media (min-width: 576px) {
-  .modal-dialog { max-width: none; }
-}
-
-.modal-dialog {
-  width: ${width};
-  height: ${height};
-  padding: 0;
-}
-
-.modal-content {
-  height: 100%;
-}
-`;
-        let html = "";
-        html += `<div id=\"${this.modalId}\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n`;
-        if (bootstrapVersion == 3) {
-            html += modalDialogDiv;
-        }
-        else {
-            $('head').append(`<style type="text/css">${modalDialogCss}</style>`);
-            html += "<div class=\"modal-dialog\">";
-        }
-        if (bootstrapVersion != 3) {
-            html += `    <div class="modal-content">\r\n`;
-        }
-        else {
-            html += `    <div class="modal-content" style="height:100%;width:auto;">\r\n`;
-        }
-        html += "      <div class=\"modal-header\">\r\n";
-        if (bootstrapVersion == 3) {
-            html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\r\n";
-            html += `       <h4 id=\"${this.modalTitleId}\" class=\"modal-title\"></h4>\r\n`;
-        }
-        else {
-            html += `        <h4 id=\"${this.modalTitleId}\" class=\"modal-title\"></h4>\r\n`;
-            if (bootstrapVersion >= 5) {
-                html += "        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\"></button>\r\n";
+    createModalElement() {
+        if (!document.getElementById(this.modalId)) {
+            this.modalElement = document.createElement("div");
+            this.modalElement.id = this.modalId;
+            this.modalElement.classList.add("modal", "fade");
+            this.modalElement.tabIndex = -1;
+            this.modalElement.setAttribute("role", "dialog");
+            this.modalElement.setAttribute("aria-labelledby", `${this.modalId}-label`);
+            this.modalElement.innerHTML = `
+      <div id="${this.modalId}-dialog" class="modal-dialog ${this.centered ? "modal-dialog-centered" : ""} modal-dialog-scrollable ${this.getModalCssClass()}" role="document">
+        <div class="modal-content" >
+          <div class="modal-header">
+            <h5 class="modal-title" id="${this.modalId}-label">${this.modalTitle}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body"> </div>
+        </div>
+      </div>`;
+            let form = document.forms[0];
+            if (form) {
+                form.appendChild(this.modalElement);
             }
             else {
-                html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\r\n";
+                document.body.appendChild(this.modalElement);
             }
         }
-        html += "      </div>\r\n";
-        html += "      <div class=\"modal-body\"  style=\"height:90%;width:auto;\">\r\n";
-        if (isIframe) {
-            html += "         <iframe style=\"border: 0px;\" ";
-            html += " src='";
-            html += content;
-            html += "' width='100%' height='97%'>Waiting...</iframe>";
-        }
         else {
-            html += content;
+            this.modalElement = document.getElementById(this.modalId);
+            const dialog = document.getElementById(this.modalId + "-dialog");
+            Object.values(ModalSize).forEach(cssClass => {
+                dialog.classList.remove(cssClass);
+            });
+            dialog.classList.add(this.getModalCssClass());
         }
-        html += "      </div>\r\n";
-        html += "    </div>\r\n";
-        html += "  </div>\r\n";
-        html += "</div>\r\n";
-        $(html).appendTo($("form"));
     }
-    show(title, url, size = 1) {
-        this.loadHtml(url, size);
-        this.setTitle(title);
-        this.showModal();
+    showIframe(url, title, size = null) {
+        this.modalTitle = title;
+        this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
+        this.createModalElement();
+        const modalBody = this.modalElement.querySelector(".modal-body");
+        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="width: 100vw; height: 100vh;"></iframe>`;
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.show();
     }
-    showHtml(title, html, size = 1) {
-        this.loadHtml(html, size, false);
-        this.setTitle(title);
-        this.showModal(false);
-    }
-    showHtmlFromUrl(title, url, options = null, size = 1) {
+    showUrl(options, title, size = null) {
         return __awaiter(this, void 0, void 0, function* () {
-            SpinnerOverlay.show();
-            yield fetch(url, options)
-                .then(response => response.text())
-                .then(html => {
-                this.showHtml(title, html, size);
-                SpinnerOverlay.hide();
-            })
-                .catch(error => {
-                console.error('Error fetching HTML from URL:', error);
+            this.modalTitle = title;
+            this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
+            this.createModalElement();
+            const modalBody = this.modalElement.querySelector(".modal-body");
+            yield fetch(options.url, options.requestOptions)
+                .then((response) => response.text())
+                .then((content) => {
+                modalBody.innerHTML = content;
+                const bootstrapModal = new bootstrap.Modal(this.modalElement);
+                bootstrapModal.show();
             });
         });
     }
     hide() {
-        window.parent.$("#" + this.modalId).modal("hide");
-    }
-    modal() {
-        return $("#" + this.modalId);
+        const bootstrapModal = bootstrap.Modal.getInstance(document.getElementById(this.modalId));
+        if (bootstrapModal) {
+            bootstrapModal.hide();
+        }
     }
 }
-var popup = function () {
+var defaultModal = function () {
     if (!(this instanceof Modal)) {
         return new Modal();
     }
@@ -2008,8 +1948,7 @@ class UploadView {
         }
         const modal = new Modal();
         modal.modalId = componentName + "-upload-popup";
-        modal.modalTitleId = componentName + "-upload-popup-title";
-        modal.showHtmlFromUrl(title, url, null, 1).then(_ => {
+        modal.showUrl({ url: url }, null, 1).then(_ => {
             loadJJMasterData();
         });
     }

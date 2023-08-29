@@ -36,14 +36,14 @@ public class JJLookup : AsyncControl
 
     public bool OnlyNumbers { get; set; }
 
-    public PopupSize PopSize
+    public ModalSize ModalSize
     {
         get
         {
             string val = GetAttr("popupsize");
             if (string.IsNullOrEmpty(val))
-                return PopupSize.Full;
-            return (PopupSize)int.Parse(val);
+                return ModalSize.Large;
+            return (ModalSize)int.Parse(val);
         }
         set => SetAttr("popupsize", value);
     }
@@ -109,7 +109,7 @@ public class JJLookup : AsyncControl
         Enabled = true;
         AutoReloadFormFields = true;
         Name = "jjlookup1";
-        PopSize = PopupSize.Full;
+        ModalSize = ModalSize.Large;
         PopTitle = "Search";
     }
 

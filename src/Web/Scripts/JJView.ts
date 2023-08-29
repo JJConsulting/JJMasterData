@@ -205,7 +205,7 @@
     }
 
     static setLookup(objid, value) {
-        window.parent.popup.hide();
+        window.parent.defaultModal.hide();
         setTimeout(function () {
             window.parent.$("#id_" + objid).val(value);
             window.parent.$("#" + objid).val(value).change().blur();
@@ -231,7 +231,7 @@
         }
 
         if (ispopup) {
-            popup.show(title, url, popupSize);
+            defaultModal.showIframe(url,title,  popupSize);
         } else {
             window.location.href = url;
         }

@@ -12,9 +12,8 @@ class UploadView{
         
         const modal = new Modal();
         modal.modalId =componentName + "-upload-popup"
-        modal.modalTitleId = componentName + "-upload-popup-title"
         
-        modal.showHtmlFromUrl(title, url,null, 1).then(_=>{
+        modal.showUrl({url:url},null, 1).then(_=>{
             loadJJMasterData()
         })
 

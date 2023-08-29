@@ -16,7 +16,7 @@ class Lookup {
             const jjHiddenLookupSelector = "#id_" + lookupId + "";
             
             $("#btn_" + lookupId).on("click",function () {
-                popup.show(popupTitle, lookupUrl, popupSize);
+                defaultModal.showIframe( lookupUrl, popupTitle,popupSize);
             });
 
             function setHiddenLookup(){

@@ -84,10 +84,10 @@
         SpinnerOverlay.show();
 
         if (isPopup) {
-            window.parent.popup.hide();
+            window.parent.defaultModal.hide();
             window.parent.document.forms[0].submit();
         } else {
-            popup.hide();
+            defaultModal.hide();
             document.forms[0].submit();
         }
     }

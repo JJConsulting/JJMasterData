@@ -20,7 +20,7 @@
         <jj-link-button icon="PlusCircle"
                         text="@StringLocalizer["New"]"
                         type="LinkButtonType.Button"
-                        on-client-click="popup.show('@newRelationLabel', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName })');"/>
+                        on-client-click="defaultModal.showIframe('@newRelationLabel', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName })');"/>
     </div>
 </div>
 <br/>
@@ -63,7 +63,7 @@
                 </td>
                 <td style="text-align: center;">
                     <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
-                            onclick="popup.show('@StringLocalizer["Edit Relation"]', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName, id = relationship.Id })');"
+                            onclick="defaultModal.showIframe('@StringLocalizer["Edit Relation"]', '@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName, id = relationship.Id })');"
                             data-original-title="@StringLocalizer["Edit"]">
                         <span class="fa fa-pencil"></span>
                     </button>

@@ -762,3 +762,17 @@ button.dropdown-toggle.form-control {
     height: 5rem;
     border-width: 0.45em;
 }
+
+.jj-modal-sm{
+    --bs-modal-width: 50% !important;
+}
+.jj-modal-default{
+    --bs-modal-width: 75% !important;
+}
+.jj-modal-lg{
+    --bs-modal-width: 85% !important;
+    --bs-modal-height: 5% !important;
+}
+.jj-modal-xl{
+    --bs-modal-width: 95% !important;
+}

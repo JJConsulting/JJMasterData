@@ -182,7 +182,7 @@
              })
              .then(function(response) {
                  if (response.ok) {
-                     window.parent.popup.hide();
+                     window.parent.defaultModal.hide();
                  }
                  else{
                     return response.json();

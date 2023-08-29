@@ -13,7 +13,7 @@
             dataType: "json",
             success: function (response) {
                 if (response.success == true) {
-                    window.parent.popup.hide();
+                    window.parent.defaultModal.hide();
                     window.parent.location.reload();
                 } else {
                     $('#divError').html(response.errorMessage)
@@ -87,7 +87,7 @@
                 <span>&nbsp;@StringLocalizer["Save"]</span>
             </button>
 
-            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.popup.hide();">
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.defaultModal.hide();">
                 <span class="fa fa-times"></span>
                 <span>&nbsp;@StringLocalizer["Cancel"]</span>
             </button>

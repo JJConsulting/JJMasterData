@@ -3,10 +3,11 @@
 /// <summary>
 /// Tamanho da janela do popup
 /// </summary>
-public enum PopupSize
+public enum ModalSize
 {
-    Default = 0,
-    Full = 1,
-    Large = 2,
-    Small = 3
+    Fullscreen,
+    ExtraLarge,
+    Large,
+    Default,
+    Small 
 }
