@@ -69,7 +69,7 @@ public class ConnectionString
             IntegratedSecurity = bool.Parse(integratedSecurity.ToString()!);
         }
 
-        if (builder.TryGetValue("trustservercertificate", out var trustServerCertificate))
+        if (builder.TryGetValue("trust server certificate", out var trustServerCertificate))
         {
             TrustServerCertificate = bool.Parse(trustServerCertificate.ToString()!);
         }
@@ -128,7 +128,7 @@ public class ConnectionString
             builder["timeout"] = Timeout;
 
         if (TrustServerCertificate != null)
-            builder["trustservercertificate"] = TrustServerCertificate;
+            builder["trust server certificate"] = TrustServerCertificate;
 
         if (Encrypt != null)
             builder["encrypt"] = Encrypt;

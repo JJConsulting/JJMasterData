@@ -1,8 +1,9 @@
-﻿@{
-    Layout = "_MasterDataLayout.Popup";
-}
-
+﻿@inject IOptions<JJMasterDataWebOptions> Options
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ImportViewModel
+
+@{
+    Layout = Options.Value.PopUpLayoutPath;
+}
 
 <form asp-action="Import" method="post">
     @Html.Raw(Model.UploadAreaHtml)

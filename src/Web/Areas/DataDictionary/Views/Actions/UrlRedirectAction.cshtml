@@ -1,9 +1,11 @@
-﻿@{
-    Layout = "_MasterDataLayout.Popup";
-}
-@using JJMasterData.Core.Web
+﻿@using JJMasterData.Core.Web
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IOptions<JJMasterDataWebOptions> Options
 @model  JJMasterData.Core.DataDictionary.Actions.UserCreated.UrlRedirectAction
+
+@{
+    Layout = Options.Value.PopUpLayoutPath;
+}
 
 @using (Html.BeginForm("UrlRedirectAction", "Actions",
     new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))

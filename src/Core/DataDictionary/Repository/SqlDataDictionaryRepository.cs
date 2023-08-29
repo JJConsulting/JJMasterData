@@ -69,7 +69,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         var values = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
 
-        var model = values?.ToModel<DataDictionaryModel>();
+        var model = values.ToModel<DataDictionaryModel>();
 
         return model != null ? FormElementSerializer.Deserialize(model.Json) : null;
     }
