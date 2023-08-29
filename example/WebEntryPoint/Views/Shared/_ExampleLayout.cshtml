@@ -1,0 +1,37 @@
+@inject IOptions<JJMasterDataWebOptions> Options
+
+<!doctype html>
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture" data-bs-theme="auto">
+<head>
+
+<script src="~/js/bootstrap/menu.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="JJMasterData Examples">
+    <meta name="author" content="Gustavo Barros, Lucio Pelinson and JJMasterData contributors">
+    <title>@ViewData["Title"]</title>
+
+    <link href="~/css/bootstrap/menu.css" rel="stylesheet">
+    @if (Options.Value.UseCustomBootstrap)
+    {
+        <link rel="Stylesheet" href="~/css/bootstrap/bootstrap.min.css"/>
+    }
+    <partial name="_MasterDataStylesheets"/>
+    <partial name="_MasterDataScripts"/>
+    <link href="~/css/bootstrap/example.css" rel="stylesheet">
+</head>
+<body>
+<partial name="_ExampleThemeToggle"/>
+<main class="d-flex flex-nowrap">
+    <partial name="_ExampleMenu"/>
+
+    <div class="b-example-divider b-example-vr"></div>
+    <div class="flex-grow-1 p-3" style=" overflow: auto;">
+        @RenderBody()
+    </div>
+</main>
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
+
+</html>

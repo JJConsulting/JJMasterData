@@ -833,6 +833,7 @@ class JJView {
             let urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "htmlContent");
             urlBuilder.addQueryParameter("componentName", componentName);
+            SpinnerOverlay.show();
             fetch(urlBuilder.build(), {
                 method: "POST",
                 body: new FormData(form)
@@ -844,6 +845,7 @@ class JJView {
                     loadJJMasterData();
                 }
                 $("#grid-view-filter-action-" + componentName).val("");
+                SpinnerOverlay.hide();
             })
                 .catch(error => {
                 console.error(error);
