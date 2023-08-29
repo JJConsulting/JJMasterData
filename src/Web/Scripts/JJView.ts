@@ -19,12 +19,12 @@
                         loadJJMasterData();
                     }
                     $("#grid-view-filter-action-" + componentName).val("");
-                    SpinnerOverlay.hide();
                 })
                 .catch(error => {
                     console.error(error);
                     $("#grid-view-filter-action-" + componentName).val("");
-                });
+                })
+                .then(_=>SpinnerOverlay.hide())
         } else {
             $("form:first").trigger("submit");
         }
