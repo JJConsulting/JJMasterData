@@ -1,30 +1,38 @@
 ﻿class JJView {
     private static postFormValues(componentName, enableAjax, loadform) {
         if (enableAjax) {
-            const form = document.querySelector("form");
-            let urlBuilder = new UrlBuilder();
+            const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "htmlContent");
             urlBuilder.addQueryParameter("componentName", componentName);
-            
-            SpinnerOverlay.show();
-            
-            fetch(urlBuilder.build(), {
-                method: "POST",
-                body: new FormData(form)
-            })
-                .then(response=> response.text())
-                .then(data => {
-                    $("#grid-view-" + componentName).html(data);
-                    if (loadform) {
-                        loadJJMasterData();
+
+            postFormValues({
+                url: urlBuilder.build(),
+                success: function (data) {
+                    const gridViewElement = document.querySelector<HTMLInputElement>("#grid-view-" + componentName);
+                    const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
+
+                    if (gridViewElement && filterActionElement) {
+                        gridViewElement.innerHTML = data;
+                        if (loadform) {
+                            loadJJMasterData();
+                        }
+                        filterActionElement.value = "";
+                    } else {
+                        console.error("One or both of the elements were not found.");
                     }
-                    $("#grid-view-filter-action-" + componentName).val("");
-                })
-                .catch(error => {
+                },
+                error: function (error) {
                     console.error(error);
-                    $("#grid-view-filter-action-" + componentName).val("");
-                })
-                .then(_=>SpinnerOverlay.hide())
+                    const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
+
+                    if (filterActionElement) {
+                        filterActionElement.value = "";
+                    } else {
+                        console.error("Filter action element was not found.");
+                    }
+                }
+            });
+
         } else {
             $("form:first").trigger("submit");
         }
@@ -70,27 +78,16 @@
         oSelectedtext.text(oSelectedtext.attr("no-record-selected-label"));
     }
 
-    static selectAll(objid) {
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&context=selectAll";
-        else
-            surl += "?context=selectAll";
-
-        $.ajax({
-            async: true,
-            type: frm.attr("method"),
-            url: surl,
-            success: function (data) {
-                GridView.selectAllRowsElements(objid, JSON.parse(data).selectedRows)
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
+    static selectAll(componentName) {
+        const urlBuilder = new UrlBuilder()
+        urlBuilder.addQueryParameter("context","selectAll")
+        
+        postFormValues({
+            url: urlBuilder.build(),
+            success: (data)=>{
+                GridView.selectAllRowsElements(componentName, data.selectedRows)
             }
-        });
+        })
     }
 
     static sortFormValues(objid, enableAjax, v) {

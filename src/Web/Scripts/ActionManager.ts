@@ -29,14 +29,14 @@ class ActionManager {
     }
 
     private static executeUrlRedirect(url: string) {
-        fetch(url, {
-            method: "POST",
-            body: new FormData(document.querySelector<HTMLFormElement>("form"))
-        }).then(response => response.json()).then(data => {
-            if (data.urlAsPopUp) {
-                popup.show(data.popUpTitle, data.urlRedirect);
-            } else {
-                window.location.href = data.urlRedirect;
+        postFormValues({
+            url: url,
+            success: (data)=>{
+                if (data.urlAsPopUp) {
+                    popup.show(data.popUpTitle, data.urlRedirect);
+                } else {
+                    window.location.href = data.urlRedirect;
+                }
             }
         })
     }
@@ -67,19 +67,10 @@ class ActionManager {
         if (isModal) {
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "modal");
-
-            fetch(urlBuilder.build(), {
-                body: new FormData(form),
-                method: "POST"
-            })
-                .then(response => {
-                    if (response.headers.get("content-type")?.includes("application/json")) {
-                        return response.json();
-                    } else {
-                        return response.text();
-                    }
-                })
-                .then(data => {
+            
+            postFormValues({
+                url:urlBuilder.build(),
+                success:function(data){
                     const outputElement = document.getElementById(componentName);
                     if (outputElement) {
                         if (typeof data === "object") {
@@ -87,19 +78,17 @@ class ActionManager {
                                 const modal = new Modal();
                                 modal.modalId = componentName +"-modal";
                                 modal.modalTitleId =  componentName +"-modal-tile";
-                                
+
                                 modal.hide();
-                                
+
                                 JJView.refresh(componentName,true)
                             }
                         } else {
                             outputElement.innerHTML = data;
                         }
                     }
-                })
-                .catch(error => {
-                    console.error("Error fetching data:", error);
-                });
+                }
+            })
         } else {
             form.submit();
         }

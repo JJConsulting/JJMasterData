@@ -78,6 +78,11 @@ internal class ComponentContextResolver
                 return ComponentContext.GridViewRow;
             }
         }
+
+        if (context == "selectAll")
+        {
+            return ComponentContext.SelectAllGridRows;
+        }
         
         if (IsUploadViewRoute())
             return ComponentContext.FileUpload;

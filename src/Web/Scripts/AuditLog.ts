@@ -12,10 +12,10 @@ function loadAuditLog(componentName, logId, url = null) {
         url = builder.build();
     }
     
-    fetch(url, {
-        method: "POST",
-        body: new FormData(document.querySelector<HTMLFormElement>("form"))
-    }).then(response => response.text()).then(data => {
+    postFormValues({
+        url:url,
+        success: function (data){
             document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
+        }
     })
 }

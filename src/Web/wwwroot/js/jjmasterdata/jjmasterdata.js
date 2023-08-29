@@ -30,15 +30,15 @@ class ActionManager {
         return true;
     }
     static executeUrlRedirect(url) {
-        fetch(url, {
-            method: "POST",
-            body: new FormData(document.querySelector("form"))
-        }).then(response => response.json()).then(data => {
-            if (data.urlAsPopUp) {
-                popup.show(data.popUpTitle, data.urlRedirect);
-            }
-            else {
-                window.location.href = data.urlRedirect;
+        postFormValues({
+            url: url,
+            success: (data) => {
+                if (data.urlAsPopUp) {
+                    popup.show(data.popUpTitle, data.urlRedirect);
+                }
+                else {
+                    window.location.href = data.urlRedirect;
+                }
             }
         });
     }
@@ -63,38 +63,25 @@ class ActionManager {
         if (isModal) {
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "modal");
-            fetch(urlBuilder.build(), {
-                body: new FormData(form),
-                method: "POST"
-            })
-                .then(response => {
-                var _a;
-                if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
-                    return response.json();
-                }
-                else {
-                    return response.text();
-                }
-            })
-                .then(data => {
-                const outputElement = document.getElementById(componentName);
-                if (outputElement) {
-                    if (typeof data === "object") {
-                        if (data.closeModal) {
-                            const modal = new Modal();
-                            modal.modalId = componentName + "-modal";
-                            modal.modalTitleId = componentName + "-modal-tile";
-                            modal.hide();
-                            JJView.refresh(componentName, true);
+            postFormValues({
+                url: urlBuilder.build(),
+                success: function (data) {
+                    const outputElement = document.getElementById(componentName);
+                    if (outputElement) {
+                        if (typeof data === "object") {
+                            if (data.closeModal) {
+                                const modal = new Modal();
+                                modal.modalId = componentName + "-modal";
+                                modal.modalTitleId = componentName + "-modal-tile";
+                                modal.hide();
+                                JJView.refresh(componentName, true);
+                            }
+                        }
+                        else {
+                            outputElement.innerHTML = data;
                         }
                     }
-                    else {
-                        outputElement.innerHTML = data;
-                    }
                 }
-            })
-                .catch(error => {
-                console.error("Error fetching data:", error);
             });
         }
         else {
@@ -139,11 +126,11 @@ function loadAuditLog(componentName, logId, url = null) {
         builder.addQueryParameter("context", "htmlContent");
         url = builder.build();
     }
-    fetch(url, {
-        method: "POST",
-        body: new FormData(document.querySelector("form"))
-    }).then(response => response.text()).then(data => {
-        document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
+    postFormValues({
+        url: url,
+        success: function (data) {
+            document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
+        }
     });
 }
 function setupCollapsePanel(name) {
@@ -829,28 +816,36 @@ class JJSortable {
 class JJView {
     static postFormValues(componentName, enableAjax, loadform) {
         if (enableAjax) {
-            const form = document.querySelector("form");
-            let urlBuilder = new UrlBuilder();
+            const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "htmlContent");
             urlBuilder.addQueryParameter("componentName", componentName);
-            SpinnerOverlay.show();
-            fetch(urlBuilder.build(), {
-                method: "POST",
-                body: new FormData(form)
-            })
-                .then(response => response.text())
-                .then(data => {
-                $("#grid-view-" + componentName).html(data);
-                if (loadform) {
-                    loadJJMasterData();
+            postFormValues({
+                url: urlBuilder.build(),
+                success: function (data) {
+                    const gridViewElement = document.querySelector("#grid-view-" + componentName);
+                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                    if (gridViewElement && filterActionElement) {
+                        gridViewElement.innerHTML = data;
+                        if (loadform) {
+                            loadJJMasterData();
+                        }
+                        filterActionElement.value = "";
+                    }
+                    else {
+                        console.error("One or both of the elements were not found.");
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                    if (filterActionElement) {
+                        filterActionElement.value = "";
+                    }
+                    else {
+                        console.error("Filter action element was not found.");
+                    }
                 }
-                $("#grid-view-filter-action-" + componentName).val("");
-            })
-                .catch(error => {
-                console.error(error);
-                $("#grid-view-filter-action-" + componentName).val("");
-            })
-                .then(_ => SpinnerOverlay.hide());
+            });
         }
         else {
             $("form:first").trigger("submit");
@@ -890,24 +885,13 @@ class JJView {
         var oSelectedtext = $("#selected-text-" + objid);
         oSelectedtext.text(oSelectedtext.attr("no-record-selected-label"));
     }
-    static selectAll(objid) {
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&context=selectAll";
-        else
-            surl += "?context=selectAll";
-        $.ajax({
-            async: true,
-            type: frm.attr("method"),
-            url: surl,
-            success: function (data) {
-                GridView.selectAllRowsElements(objid, JSON.parse(data).selectedRows);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
+    static selectAll(componentName) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("context", "selectAll");
+        postFormValues({
+            url: urlBuilder.build(),
+            success: (data) => {
+                GridView.selectAllRowsElements(componentName, data.selectedRows);
             }
         });
     }
@@ -1630,6 +1614,40 @@ var popup = function () {
         return new Modal();
     }
 }();
+class PostFormValuesOptions {
+}
+function postFormValues(options) {
+    SpinnerOverlay.show();
+    const formData = new FormData(document.querySelector("form"));
+    const requestOptions = {
+        method: "POST",
+        body: formData
+    };
+    fetch(options.url, requestOptions)
+        .then(response => {
+        var _a;
+        if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
+            return response.json();
+        }
+        else {
+            return response.text();
+        }
+    })
+        .then(data => {
+        options.success(data);
+    })
+        .catch(error => {
+        if (options.error) {
+            options.error(error);
+        }
+        else {
+            console.error(error);
+        }
+    })
+        .then(() => {
+        SpinnerOverlay.hide();
+    });
+}
 class SearchBox {
     static setup() {
         $("input.jjsearchbox").each(function () {
