@@ -16,8 +16,10 @@ public class JJModalDialog : HtmlComponent
     
     public List<JJLinkButton> Buttons { get; set; }
 
-    public ModalSize Size { get; init; }
+    public ModalSize Size { get; set; }
 
+    public bool IsCentered { get; set; }
+    
     public JJModalDialog()
     {
         Name = "jjmodal";
@@ -38,6 +40,7 @@ public class JJModalDialog : HtmlComponent
             .Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass($"modal-dialog {Size.GetDescription()}");
+                div.WithCssClassIf(IsCentered, "modal-dialog-centered");
                 div.Append(HtmlTag.Div, content =>
                 {
                     content.WithCssClass("modal-content");

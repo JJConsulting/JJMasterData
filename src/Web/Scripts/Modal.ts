@@ -31,6 +31,28 @@ class Modal {
         this.modalSize = ModalSize.Default; 
     }
     
+    private showModal(){
+        if(bootstrapVersion >= 5){
+            const bootstrapModal = new bootstrap.Modal(this.modalElement);
+            bootstrapModal.show();
+        }
+        else{
+            //@ts-ignore
+            $("#" + this.modalId).modal("show");
+        }
+    }
+
+    private hideModal(){
+        if(bootstrapVersion >= 5){
+            const bootstrapModal = new bootstrap.Modal(this.modalElement);
+            bootstrapModal.hide();
+        }
+        else{
+            //@ts-ignore
+            $("#" + this.modalId).modal("hide");
+        }
+    }
+    
     private getModalCssClass(){
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
     }
@@ -79,10 +101,12 @@ class Modal {
         this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
-        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="width: 100vw; height: 100vh;"></iframe>`;
+        
+        let style = bootstrapVersion == 5 ?"width: 100vw; height: 100vh;" : "width: 100%; height: 100%;";
+        
+        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
 
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.show();
+        this.showModal();
     }
     
     async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null) {
@@ -95,16 +119,12 @@ class Modal {
             .then((content) => {
                 modalBody.innerHTML = content;
 
-                const bootstrapModal = new bootstrap.Modal(this.modalElement);
-                bootstrapModal.show();
+                this.showModal();
             });
     }
 
     hide() {
-        const bootstrapModal = bootstrap.Modal.getInstance(document.getElementById(this.modalId));
-        if (bootstrapModal) {
-            bootstrapModal.hide();
-        }
+        this.hideModal();
     }
 }
 

@@ -1480,6 +1480,24 @@ class Modal {
         this.modalId = "jjmasterdata-modal";
         this.modalSize = ModalSize.Default;
     }
+    showModal() {
+        if (bootstrapVersion >= 5) {
+            const bootstrapModal = new bootstrap.Modal(this.modalElement);
+            bootstrapModal.show();
+        }
+        else {
+            $("#" + this.modalId).modal("show");
+        }
+    }
+    hideModal() {
+        if (bootstrapVersion >= 5) {
+            const bootstrapModal = new bootstrap.Modal(this.modalElement);
+            bootstrapModal.hide();
+        }
+        else {
+            $("#" + this.modalId).modal("hide");
+        }
+    }
     getModalCssClass() {
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
     }
@@ -1523,9 +1541,9 @@ class Modal {
         this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
-        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="width: 100vw; height: 100vh;"></iframe>`;
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.show();
+        let style = bootstrapVersion == 5 ? "width: 100vw; height: 100vh;" : "width: 100%; height: 100%;";
+        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
+        this.showModal();
     }
     showUrl(options, title, size = null) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -1537,16 +1555,12 @@ class Modal {
                 .then((response) => response.text())
                 .then((content) => {
                 modalBody.innerHTML = content;
-                const bootstrapModal = new bootstrap.Modal(this.modalElement);
-                bootstrapModal.show();
+                this.showModal();
             });
         });
     }
     hide() {
-        const bootstrapModal = bootstrap.Modal.getInstance(document.getElementById(this.modalId));
-        if (bootstrapModal) {
-            bootstrapModal.hide();
-        }
+        this.hideModal();
     }
 }
 var defaultModal = function () {
