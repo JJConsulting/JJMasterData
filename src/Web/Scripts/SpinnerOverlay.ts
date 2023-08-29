@@ -47,7 +47,7 @@
                 spinnerOverlayDiv.id = this.spinnerOverlayId;
                 spinnerOverlayDiv.classList.add('spinner-overlay', 'text-center');
                 const spinnerDiv = document.createElement('div');
-                spinnerDiv.classList.add('spinner-border');
+                spinnerDiv.classList.add('spinner-border','spinner-border-lg');
                 spinnerDiv.setAttribute('role', 'status');
                 const spanElement = document.createElement('span');
                 spanElement.classList.add('visually-hidden');

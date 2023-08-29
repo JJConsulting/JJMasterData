@@ -756,3 +756,9 @@ button.dropdown-toggle.form-control {
     align-items: center;
     z-index: 9999;
 }
+
+.spinner-border-lg {
+    width: 5rem;
+    height: 5rem;
+    border-width: 0.45em;
+}
