@@ -19,12 +19,15 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJTextFile : AsyncControl
 {
+    
+    public const string UploadViewParameterName = "uploadView-";
+    
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    public const string UploadViewParameterName = "jjuploadview_";
+
     private IDictionary<string, object> _formValues;
     private FormFilePathBuilder _pathBuiler;
 
@@ -69,7 +72,7 @@ public class JJTextFile : AsyncControl
         if (IsUploadViewRoute())
             return await GetUploadViewResultAsync();
 
-        return await Task.FromResult(new RenderedComponentResult(GetHtmlTextGroup()));
+        return new RenderedComponentResult(GetHtmlTextGroup());
     }
 
     internal async Task<ComponentResult> GetUploadViewResultAsync()
@@ -94,7 +97,7 @@ public class JJTextFile : AsyncControl
             return result;
         }
         
-        return new RenderedComponentResult(html);
+        return HtmlComponentResult.FromHtmlBuilder(html);
     }
 
     private HtmlBuilder GetHtmlTextGroup()
@@ -365,11 +368,11 @@ public class JJTextFile : AsyncControl
     {
         string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadViewParameterName + view.Name);
         if (uploadFormRoute == null)
-            return null;
+            return new EmptyComponentResult();
 
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(uploadFormRoute));
         if (field == null)
-            return null;
+            return new EmptyComponentResult();
 
         var textFile = (JJTextFile)await view.ComponentFactory.Controls.CreateAsync(view.FormElement, field, new(view.Values,view.PageState), view.Name);
         return await textFile.GetResultAsync();

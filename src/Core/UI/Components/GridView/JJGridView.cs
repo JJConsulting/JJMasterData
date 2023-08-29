@@ -539,7 +539,8 @@ public class JJGridView : AsyncComponent
 
     #region "Constructors"
 
-    internal JJGridView(FormElement formElement,
+    internal JJGridView(
+        FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,

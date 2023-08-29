@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>11</LangVersion>
+        <AssemblyName>JJMasterData.WebEntryPoint</AssemblyName>
         <RootNamespace>JJMasterData.WebEntryPoint</RootNamespace>
     </PropertyGroup>
     
@@ -22,7 +23,4 @@
       <Folder Include="Styles\" />
     </ItemGroup>
 
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Areas\Example\Views\Shared\_Layout.cshtml" />
-    </ItemGroup>
 </Project>

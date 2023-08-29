@@ -18,12 +18,12 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
         }
 
         string? area = null;
-        if (routeData.Values.ContainsKey("area"))
-            area = routeData.Values["area"]!.ToString();
+        if (routeData.Values.TryGetValue("area", out var areaValue))
+            area = areaValue!.ToString();
 
         string? dictionaryName = null;
-        if (routeData.Values.ContainsKey("id"))
-            dictionaryName = routeData.Values["id"]!.ToString();
+        if (routeData.Values.TryGetValue("id", value: out var dictionaryNameValue))
+            dictionaryName = dictionaryNameValue!.ToString();
 
         if ("MasterData".Equals(area, StringComparison.InvariantCultureIgnoreCase))
         {

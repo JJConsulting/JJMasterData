@@ -1045,7 +1045,7 @@ class JJView {
         SpinnerOverlay.show();
         var url = $("form").attr("action");
         url += url.includes("?") ? "&" : "?";
-        url += "jjuploadview_" + panelName + "=" + objid;
+        url += "uploadView-" + panelName + "=" + objid;
         url += "&downloadfile=" + filename;
         window.location.assign(url);
         setTimeout(function () {
@@ -2000,23 +2000,18 @@ class UploadArea {
 class UploadView {
     static open(componentName, title, values, url = null) {
         const panelName = $("#v_" + componentName).attr("panelName");
-        if (url == null) {
+        if (url == null || url.length == 0) {
             const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("jjuploadview_" + panelName, componentName);
+            urlBuilder.addQueryParameter("uploadView-" + panelName, componentName);
             urlBuilder.addQueryParameter("uploadViewParams", values);
             url = urlBuilder.build();
         }
         const modal = new Modal();
         modal.modalId = componentName + "-upload-popup";
         modal.modalTitleId = componentName + "-upload-popup-title";
-        if (url == null || url.length == 0) {
-            modal.show(title, url, 1);
-        }
-        else {
-            modal.showHtmlFromUrl(title, url, null, 1).then(_ => {
-                loadJJMasterData();
-            });
-        }
+        modal.showHtmlFromUrl(title, url, null, 1).then(_ => {
+            loadJJMasterData();
+        });
     }
 }
 class UrlBuilder {

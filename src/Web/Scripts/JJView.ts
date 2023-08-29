@@ -276,7 +276,7 @@
         SpinnerOverlay.show();
         var url = $("form").attr("action");
         url += url.includes("?") ? "&" : "?";
-        url += "jjuploadview_" + panelName + "=" + objid;
+        url += "uploadView-" + panelName + "=" + objid;
         url += "&downloadfile=" + filename;
 
         window.location.assign(url);
