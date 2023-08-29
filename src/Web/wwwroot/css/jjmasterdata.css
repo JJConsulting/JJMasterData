@@ -702,26 +702,49 @@ button.dropdown-toggle.form-control {
     background-size: calc(.75em + .375rem) calc(.75em + .375rem);
 }
 
-.btn-secondary {
+[data-bs-theme=light] .btn-secondary {
     color: #333;
     background-color: #fff;
     border-color: #ccc;
 }
-.btn-secondary:focus {
+[data-bs-theme=light] .btn-secondary:focus {
     color: #333;
     background-color: #e6e6e6;
     border-color: #8c8c8c;
 }
-.btn-secondary:hover {
+[data-bs-theme=light] .btn-secondary:hover {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad;
 }
-.btn-secondary:active {
+[data-bs-theme=light] .btn-secondary:active {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad;
 }
+
+
+[data-bs-theme=dark] .btn-secondary {
+    color: #ccc;
+    background-color: #212529;
+    border-color: #555;
+}
+[data-bs-theme=dark] .btn-secondary:focus {
+    color: #ccc;
+    background-color: #212529;
+    border-color: #8c8c8c;
+}
+[data-bs-theme=dark] .btn-secondary:hover {
+    color: #ccc;
+    background-color: #212529;
+    border-color: #adadad;
+}
+[data-bs-theme=dark] .btn-secondary:active {
+    color: #ccc;
+    background-color: #212529;
+    border-color: #adadad;
+}
+
 
 .modal-body{
     height: 80vh;
