@@ -11,15 +11,15 @@ class UploadView{
             url = urlBuilder.build();
         }
         
-        const popup = new Modal();
-        popup.modalId =componentName + "-popup"
-        popup.modalTitleId = componentName + "-popup-title"
+        const modal = new Modal();
+        modal.modalId =componentName + "-upload-popup"
+        modal.modalTitleId = componentName + "-upload-popup-title"
 
         if(url == null || url.length == 0){
-            popup.show(title, url , 1);
+            modal.show(title, url , 1);
         }
         else{
-            popup.showHtmlFromUrl(title, url,null, 1).then(_=>{
+            modal.showHtmlFromUrl(title, url,null, 1).then(_=>{
                 loadJJMasterData()
             })
         }

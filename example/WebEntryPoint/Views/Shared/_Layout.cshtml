@@ -1,3 +1,5 @@
+@inject IOptions<JJMasterDataWebOptions> Options
+
 <!doctype html>
 <html lang="@System.Globalization.CultureInfo.CurrentUICulture" data-bs-theme="auto">
 <head>
@@ -10,6 +12,10 @@
     <title>@ViewData["Title"]</title>
 
     <link href="~/css/bootstrap/menu.css" rel="stylesheet">
+    @if (Options.Value.UseCustomBootstrap)
+    {
+        <link rel="Stylesheet" href="~/css/bootstrap/bootstrap.min.css" />
+    }
     <partial name="_MasterDataStylesheets"/>
     <partial name="_MasterDataScripts"/>
 
@@ -209,7 +215,7 @@
         </ul>
     </div>
   <div class="b-example-divider b-example-vr"></div>
-    <div class="flex-grow-1 p-3">
+    <div class="flex-grow-1 p-3" style=" overflow: auto;">
         @RenderBody()
     </div>
 
