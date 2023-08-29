@@ -5,9 +5,10 @@
 
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.OptionsViewModel
 @inject IOptions<JJMasterDataWebOptions> Options
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @{
-    ViewData["Title"] = "Options";
+    ViewData["Title"] = StringLocalizer["Options"];
 }
 
 @{

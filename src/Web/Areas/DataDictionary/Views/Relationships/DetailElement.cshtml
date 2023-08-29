@@ -5,7 +5,7 @@
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.RelationshipsElementDetailsViewModel
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @{
-    ViewData["Title"] = $"{Model.DictionaryName} - Relationships";
+    ViewData["Title"] = $"{Model.DictionaryName} - {StringLocalizer["Relationships"]}";
 }
 
 @section Scripts{

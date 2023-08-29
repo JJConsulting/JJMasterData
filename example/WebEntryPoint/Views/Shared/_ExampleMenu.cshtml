@@ -1,22 +1,11 @@
 <div class="flex-shrink-0 p-3" style="width: 200px;">
     <a href="/" class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
-        <img class="img-responsive" src="~/_content/JJMasterData.Web/images/JJMasterDataLogoVertical.png" style="width: 50%;height: 50%"/>
+        <img alt="" class="img-responsive" src="~/_content/JJMasterData.Web/images/JJMasterDataLogoVertical.png" style="width: 50%;height: 50%"/>
     </a>
     <ul class="list-unstyled ps-0">
-        <li class="mb-1">
-            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
-                Data Dictionary
-            </button>
-            <div class="collapse show" id="home-collapse">
-                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li>
-                        <a href="@Url.Action("Index", "Element", new { Area = "DataDictionary" })" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Form Element</a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("Index", "Log", new { Area = "DataDictionary" })" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Log</a>
-                    </li>
-                </ul>
-            </div>
+        <li class="nav-link active">
+            <a href="@Url.Action("Index", "Element", new { Area = "DataDictionary" })" 
+               class="link-body-emphasis d-inline-flex text-decoration-none rounded">Data Dictionary</a>
         </li>
         <li class="mb-1">
             <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">

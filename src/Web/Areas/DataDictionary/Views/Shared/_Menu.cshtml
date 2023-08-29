@@ -1,7 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Html
 @using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
+@using JJMasterData.Core.Web.Http.Abstractions
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.DataDictionaryViewModel;
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IHttpContext HttpContext
+
 @{
     IHtmlContent NavItem(string menuId)
     {
@@ -40,13 +44,14 @@
     }
 }
 
+<div class="@BootstrapHelper.PageHeader">
+    <h1>
+        @Html.Raw(JJImage.GetMasterDataLogo(HttpContext).GetHtml())
+        <small>@Model.DictionaryName</small>
+    </h1>
+</div>
+
 <div id="jjmenu">
-    <div class="page-header">
-        <h1>
-            <img alt="JJMasterData" src="~/_content/JJMasterData.Web/images/JJMasterData.png" style="width:7%;height:7%"/>
-            <small>@Model.DictionaryName</small>
-        </h1>
-    </div>
     <div class="@(BootstrapHelper.Version > 3 ? "container-fluid p-0" : "")">
         <nav class="@BootstrapHelper.NavBar">
             <div class="navbar-header">

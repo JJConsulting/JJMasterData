@@ -1,10 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
 @using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
+@using JJMasterData.Core.Web.Http.Abstractions
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IHttpContext HttpContext
 
-<div class="page-header">
+<div class="@BootstrapHelper.PageHeader">
     <h1>
-        <img alt="JJMasterData" style="width:12%;height:12%;" src="~/_content/JJMasterData.Web/images/JJMasterData.png"><small>@StringLocalizer["Duplicate Dictionary"]</small>
+        @Html.Raw(JJImage.GetMasterDataLogo(HttpContext).GetHtml())
+        <small>@StringLocalizer["Duplicate Dictionary"]</small>
     </h1>
 </div>
 
@@ -18,7 +22,7 @@
         </div>
 
         <div class="@BootstrapHelper.FormGroup col-sm-8 required">
-            <label class="@BootstrapHelper.Label" for="txtTableName" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Required field"]">@StringLocalizer["New Dictionary Name"]</label>
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Required field"]">@StringLocalizer["New Dictionary Name"]</label>
             @Html.TextBox("newName", "", new { @class = "form-control", maxlength = "64", placeholder = StringLocalizer["Enter a table or view name"] })
         </div>
     </div>
