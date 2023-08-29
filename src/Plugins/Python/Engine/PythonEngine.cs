@@ -15,7 +15,7 @@ namespace JJMasterData.Python.Engine;
 /// </remarks>
 public class PythonEngine 
 {
-    public ScriptScope Scope;
+    private ScriptScope _scope;
 
     private ScriptEngine _engine;
 
@@ -29,12 +29,12 @@ public class PythonEngine
 #endif
             _engine = IronPython.Hosting.Python.CreateEngine(options);
 
-            Scope = _engine.CreateScope();
+            _scope = _engine.CreateScope();
 
             var searchPaths = _engine.GetSearchPaths();
 
-            string binPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase)?.Substring(6);
-            searchPaths.Add(Path.Combine(binPath,"Lib"));
+            var binPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase)?.Substring(6);
+            searchPaths.Add(Path.Combine(binPath!,"Lib"));
 
             _engine.SetSearchPaths(searchPaths);
 
@@ -45,7 +45,7 @@ public class PythonEngine
         
         foreach (var arg in args)
         {
-            Scope.SetVariable(arg.Key, arg.Value);
+            _scope.SetVariable(arg.Key, arg.Value);
         }
 
         return _engine;

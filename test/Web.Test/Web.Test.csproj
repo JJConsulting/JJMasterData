@@ -25,8 +25,9 @@
     </PackageReference>
   </ItemGroup>
 
+
   <ItemGroup>
-    <ProjectReference Include="..\..\example\WebExample\WebExample.csproj" />
+    <ProjectReference Include="..\..\example\WebEntryPoint\WebEntryPoint.csproj" />
   </ItemGroup>
 
 </Project>
