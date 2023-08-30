@@ -20,7 +20,7 @@ abstract class ModalBase{
 
     public constructor() {
         this.modalId = "jjmasterdata-modal";
-        this.modalSize = ModalSize.Default;
+        this.modalSize = ModalSize.ExtraLarge;
     }
 
     abstract showIframe(url: string, title: string, size: ModalSize);
@@ -95,7 +95,7 @@ class _Modal extends ModalBase {
 
     override showIframe(url: string, title: string, size: ModalSize = null) {
         this.modalTitle = title;
-        this.modalSize = size ?? ModalSize.Default;
+        this.modalSize = size || this.modalSize;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
         
@@ -219,7 +219,7 @@ class Modal {
         }
 
         this.instance.modalId = "jjmasterdata-modal";
-        this.instance.modalSize = ModalSize.Default;
+        this.instance.modalSize = ModalSize.ExtraLarge;
     }
 
     showIframe(url: string, title: string, size: ModalSize = null) {
@@ -277,3 +277,14 @@ var defaultModal = function () {
         return new Modal();
     }
 }();
+
+// Compatibility with legacy systems.
+class popup{
+    //Yes, the parameters are inverted.
+    static show(title,url,size = null){
+        defaultModal.showIframe(url,title,size)
+    }
+    static hide(){
+        defaultModal.hide()
+    }
+}

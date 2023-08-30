@@ -1444,7 +1444,7 @@ class ModalUrlOptions {
 class ModalBase {
     constructor() {
         this.modalId = "jjmasterdata-modal";
-        this.modalSize = ModalSize.Default;
+        this.modalSize = ModalSize.ExtraLarge;
     }
 }
 class _Modal extends ModalBase {
@@ -1506,7 +1506,7 @@ class _Modal extends ModalBase {
     }
     showIframe(url, title, size = null) {
         this.modalTitle = title;
-        this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
+        this.modalSize = size || this.modalSize;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
         let style = "width: 100vw; height: 100vh;";
@@ -1613,7 +1613,7 @@ class Modal {
             this.instance = new _LegacyModal();
         }
         this.instance.modalId = "jjmasterdata-modal";
-        this.instance.modalSize = ModalSize.Default;
+        this.instance.modalSize = ModalSize.ExtraLarge;
     }
     showIframe(url, title, size = null) {
         this.instance.showIframe(url, title, size);
@@ -1662,6 +1662,14 @@ var defaultModal = function () {
         return new Modal();
     }
 }();
+class popup {
+    static show(title, url, size = null) {
+        defaultModal.showIframe(url, title, size);
+    }
+    static hide() {
+        defaultModal.hide();
+    }
+}
 class PostFormValuesOptions {
 }
 function postFormValues(options) {

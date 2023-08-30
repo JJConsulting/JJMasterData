@@ -1,8 +1,9 @@
 @inject IOptions<JJMasterDataWebOptions> Options
 
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using JJMasterData.Core.Web
 <!DOCTYPE html>
-<html lang="@System.Globalization.CultureInfo.CurrentCulture.Name">
+<html lang="@System.Globalization.CultureInfo.CurrentCulture.Name" data-bs-version="@BootstrapHelper.Version">
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
