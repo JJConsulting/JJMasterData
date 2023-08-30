@@ -30,7 +30,14 @@ public abstract class ComponentBase
         set => _userValues = value;
     }
     
-    internal bool IsExternalRoute { get; set; }
+    internal bool IsExternalRoute
+    {
+        get => false;
+        set
+        {
+            value = false;
+        } 
+    }
 
     public bool Visible { get; set; } = true;
 

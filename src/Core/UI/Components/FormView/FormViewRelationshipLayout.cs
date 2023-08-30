@@ -191,14 +191,12 @@ internal class FormViewRelationshipLayout
                     childFormView.RelationValues = mappedForeignKeys;
                     await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
                     childFormView.SetOptions(childElement.Options);
-
+                    childFormView.ParentElementName = ParentFormView.ParentElementName;
                     childFormView.GridView.ShowTitle = false;
 
                     var result = await childFormView.GetResultAsync();
-
                     if (result is RenderedComponentResult renderedComponentResult)
                     {
-                 
                         var filters = ParentFormView.EncryptionService.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(filter));
                         renderedComponentResult.HtmlBuilder.AppendHiddenInput($"grid-view-{childElement.Name}-filters", filters);
                     

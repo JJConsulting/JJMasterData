@@ -69,7 +69,6 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
             ExpressionsService,
             StringLocalizer,
             Factory);
-
         return formView;
     }
 

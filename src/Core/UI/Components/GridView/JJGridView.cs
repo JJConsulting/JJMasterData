@@ -617,7 +617,7 @@ public class JJGridView : AsyncComponent
             return new JsonComponentResult(new {selectedRows});
         }
         
-        if (ComponentContext is ComponentContext.UrlRedirect)
+        if (ComponentContext is ComponentContext.SearchBox)
             return await JJSearchBox.GetResultFromComponent(this,FormElement, await GetCurrentFilterAsync(), CurrentContext,ComponentFactory.Controls.GetFactory<SearchBoxFactory>());
 
         if ("searchBox".Equals(context))
