@@ -286,7 +286,6 @@ public class JJFormView : AsyncComponent
         FormElement = dataDictionaryRepository.GetMetadataAsync(elementName).GetAwaiter().GetResult();
         IsExternalRoute = false;
         factory.SetFormViewParamsAsync(this, FormElement).GetAwaiter().GetResult();
-        ParentElementName = FormElement.Name;
     }
 
     public JJFormView(FormElement formElement) : this()
@@ -319,7 +318,6 @@ public class JJFormView : AsyncComponent
         StringLocalizer = stringLocalizer;
         DataDictionaryRepository = dataDictionaryRepository;
         ComponentFactory = componentFactory;
-        ParentElementName = formElement.Name;
     }
 
     #endregion
@@ -1277,7 +1275,6 @@ public class JJFormView : AsyncComponent
         set => GridView.EnableMultiSelect = value;
     }
 
-    internal string ParentElementName { get; set; }
 
     #endregion
 

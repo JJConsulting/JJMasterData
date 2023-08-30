@@ -155,6 +155,7 @@ internal class FormViewRelationshipLayout
         }
 
         var childElement = await ParentFormView.DataDictionaryRepository.GetMetadataAsync(relationship.ElementRelationship!.ChildElement);
+        childElement.ParentName = ParentFormView.FormElement.ParentName ?? ParentFormView.FormElement.Name;
 
         var filter = new Dictionary<string, object?>();
         foreach (var col in relationship.ElementRelationship.Columns.Where(col => formContext.Values.ContainsKey(col.PkColumn)))
@@ -170,7 +171,6 @@ internal class FormViewRelationshipLayout
             case RelationshipViewType.View or RelationshipViewType.Update:
                 {
                     var childValues = await ParentFormView.EntityRepository.GetFieldsAsync(childElement, (IDictionary<string, object>)filter);
-
                     var childDataPanel = ParentFormView.ComponentFactory.DataPanel.Create(childElement);
                     childDataPanel.FieldNamePrefix = childDataPanel.Name + "_";
                     childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
@@ -191,7 +191,6 @@ internal class FormViewRelationshipLayout
                     childFormView.RelationValues = mappedForeignKeys;
                     await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
                     childFormView.SetOptions(childElement.Options);
-                    childFormView.ParentElementName = ParentFormView.ParentElementName;
                     childFormView.GridView.ShowTitle = false;
 
                     var result = await childFormView.GetResultAsync();

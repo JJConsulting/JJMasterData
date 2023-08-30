@@ -167,4 +167,5 @@ public abstract class BasicAction
         ShowAsButton = action.ShowAsButton;
         CssClass = action.CssClass;
     }
+
 }

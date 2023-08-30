@@ -137,6 +137,9 @@ public class JJLookup : AsyncControl
 
         var div = new HtmlBuilder(HtmlTag.Div);
 
+        
+//        Attributes["context"] = "RouteContext";
+        
         Attributes["lookup-url"] = LookupService.GetLookupUrl(ElementMap, FormStateData, Name);
         Attributes["lookup-field-name"] = FieldName;
         if (IsExternalRoute)
@@ -246,8 +249,10 @@ public class JJLookup : AsyncControl
         var field = view.FormElement.Fields.ToList().Find(x => x.Name.Equals(lookupRoute));
         if (field == null)
             return null;
+        
+        var formStateData = new FormStateData(view.Values, view.UserValues, view.PageState);
         var lookup = await view.ComponentFactory.Controls
-            .CreateAsync(view.FormElement, field, new FormStateData(view.Values,view.PageState), view.FieldNamePrefix, view.Name) as JJLookup;
+            .CreateAsync(view.FormElement, field, formStateData, view.FieldNamePrefix, view.Name) as JJLookup;
         return await lookup!.GetResultAsync();
     }
 }
