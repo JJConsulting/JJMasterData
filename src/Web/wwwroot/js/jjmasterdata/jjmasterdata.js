@@ -7,565 +7,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-$(function () {
-    loadJJMasterData("load", null);
-});
-function loadJJMasterData(event, prefixSelector) {
-    if (prefixSelector === undefined || prefixSelector === null) {
-        prefixSelector = "";
-    }
-    $(prefixSelector + ".selectpicker").selectpicker({
-        iconBase: 'fa'
-    });
-    $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
-    CalendarListener.listen(prefixSelector);
-    TextAreaListener.listenKeydown();
-    SearchBoxListener.listenTypeahed();
-    LookupListener.listenChanges();
-    SortableListener.listenSorting();
-    UploadAreaListener.listenFileUpload();
-    TabNavListener.listenTabNavs();
-    SliderListener.listenSliders();
-    SliderListener.listenInputs();
-    $(document).on({
-        ajaxSend: function (event, jqXHR, settings) {
-            if (settings.url != null &&
-                settings.url.indexOf("context=searchBox") !== -1) {
-                return null;
-            }
-            if (showWaitOnPost) {
-                SpinnerOverlay.show();
-            }
-        },
-        ajaxStop: function () { SpinnerOverlay.hide(); }
-    });
-    $("form").on("submit", function () {
-        let isValid;
-        try {
-            isValid = $("form").valid();
-        }
-        catch (_a) {
-            isValid = true;
-        }
-        if (isValid && showWaitOnPost) {
-            setTimeout(function () { SpinnerOverlay.show(); }, 1);
-        }
-    });
-}
-class FeedbackIcon {
-    static removeAllIcons(selector) {
-        $(selector)
-            .removeClass(FeedbackIcon.successClass)
-            .removeClass(FeedbackIcon.warningClass)
-            .removeClass(FeedbackIcon.searchClass)
-            .removeClass(FeedbackIcon.errorClass);
-    }
-    static setIcon(selector, iconClass) {
-        this.removeAllIcons(selector);
-        $(selector).addClass(iconClass);
-    }
-}
-FeedbackIcon.searchClass = "jj-icon-search";
-FeedbackIcon.successClass = "jj-icon-success";
-FeedbackIcon.warningClass = "jj-icon-warning";
-FeedbackIcon.errorClass = "jj-icon-error";
-var TMessageIcon;
-(function (TMessageIcon) {
-    TMessageIcon[TMessageIcon["NONE"] = 1] = "NONE";
-    TMessageIcon[TMessageIcon["INFO"] = 2] = "INFO";
-    TMessageIcon[TMessageIcon["WARNING"] = 3] = "WARNING";
-    TMessageIcon[TMessageIcon["ERROR"] = 4] = "ERROR";
-    TMessageIcon[TMessageIcon["QUESTION"] = 5] = "QUESTION";
-})(TMessageIcon || (TMessageIcon = {}));
-var TMessageSize;
-(function (TMessageSize) {
-    TMessageSize[TMessageSize["SMALL"] = 1] = "SMALL";
-    TMessageSize[TMessageSize["DEFAULT"] = 2] = "DEFAULT";
-    TMessageSize[TMessageSize["LARGE"] = 3] = "LARGE";
-})(TMessageSize || (TMessageSize = {}));
-class MessageBox {
-    static setTitle(title) {
-        $(MessageBox.jQueryModalTitleId).html(title);
-    }
-    static setContent(content) {
-        $(MessageBox.jQueryModalContentId).html(content);
-    }
-    static showModal() {
-        if (MessageBox.bootstrapVersion < 5) {
-            $(MessageBox.jQueryModalId)
-                .modal()
-                .on("shown.bs.modal", function () {
-                $(MessageBox.jQueryModalButton1Id).focus();
-            });
-        }
-        else {
-            const modal = new bootstrap.Modal(document.getElementById(MessageBox.modalId), {});
-            modal.show();
-            modal.addEventListener("shown.bs.modal", function () {
-                document.getElementById(MessageBox.button1Id).focus();
-            });
-        }
-    }
-    static setBtn1(label, func) {
-        $(MessageBox.jQueryModalButton1Id).text(label);
-        if ($.isFunction(func)) {
-            $(MessageBox.jQueryModalButton1Id).on("click.siteModalClick1", func);
-        }
-        $(MessageBox.jQueryModalButton1Id).show();
-    }
-    static setBtn2(label, func) {
-        $(MessageBox.jQueryModalButton2Id).text(label);
-        if ($.isFunction(func)) {
-            $(MessageBox.jQueryModalButton2Id).on("click.siteModalClick2", func);
-        }
-        $(MessageBox.jQueryModalButton2Id).show();
-    }
-    static reset() {
-        MessageBox.setTitle("");
-        MessageBox.setContent("");
-        $(MessageBox.jQueryModalButton1Id).text("");
-        $(MessageBox.jQueryModalButton1Id).off("click.siteModalClick1");
-        $(MessageBox.jQueryModalButton2Id).text("");
-        $(MessageBox.jQueryModalButton2Id).off("click.siteModalClick2");
-    }
-    static loadHtml(icontype, sizetype) {
-        if ($(MessageBox.jQueryModalId).length) {
-            $(MessageBox.jQueryModalId).remove();
-        }
-        let html = "";
-        html += "<div id=\"site-modal\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n";
-        html += "  <div class=\"modal-dialog";
-        if (sizetype == TMessageSize.LARGE)
-            html += " modal-lg";
-        else if (sizetype == TMessageSize.SMALL)
-            html += " modal-sm";
-        html += "\" role=\"document\">\r\n";
-        html += "    <div class=\"modal-content\">\r\n";
-        html += "      <div class=\"modal-header\">\r\n";
-        if (MessageBox.bootstrapVersion >= 4) {
-            html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
-        }
-        else if (MessageBox.bootstrapVersion >= 5) {
-            html +=
-                '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
-        }
-        else if (MessageBox.bootstrapVersion == 3) {
-            html +=
-                '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
-        }
-        html += "      </div>\r\n";
-        html += "      <div class=\"modal-body\">\r\n";
-        html += "        <table border=\"0\">\r\n";
-        html += "          <tr>\r\n";
-        html += '            <td style="width:40px">\r\n';
-        if (icontype == TMessageIcon.ERROR) {
-            html += '              <span class="text-danger">\r\n';
-            html +=
-                '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
-            html += "              </span>\r\n";
-        }
-        else if (icontype == TMessageIcon.WARNING) {
-            html += '              <span class="text-warning">\r\n';
-            html +=
-                '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 30px;"></span>\r\n';
-            html += "              </span>\r\n";
-        }
-        else if (icontype == TMessageIcon.INFO) {
-            html += '              <span class="text-info">\r\n';
-            html +=
-                '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
-            html += "              </span>\r\n";
-        }
-        else if (icontype == TMessageIcon.QUESTION) {
-            html += '              <span class="text-info">\r\n';
-            html +=
-                '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
-            html += "              </span>\r\n";
-        }
-        html += "            </td>\r\n";
-        html += "            <td>\r\n";
-        html += '              <span id="site-modal-content"></span>\r\n';
-        html += "            </td>\r\n";
-        html += "          </tr>\r\n";
-        html += "        </table>\r\n";
-        html += "      </div>\r\n";
-        html += "      <div class=\"modal-footer\">\r\n";
-        if (MessageBox.bootstrapVersion == 3) {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-dismiss="modal"></button>\r\n';
-        }
-        else if (MessageBox.bootstrapVersion == 4) {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-outline-dark" data-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-outline-dark" data-dismiss="modal"></button>\r\n';
-        }
-        else {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-outline-dark" data-bs-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-outline-dark" data-bs-dismiss="modal"></button>\r\n';
-        }
-        html += "      </div>\r\n";
-        html += "    </div>\r\n";
-        html += "  </div>\r\n";
-        html += "</div>\r\n";
-        $("body").append(html);
-    }
-    static show(title, content, icontype, sizetype, btn1Label, btn1Func, btn2Label, btn2Func) {
-        MessageBox.reset();
-        MessageBox.loadHtml(icontype, sizetype || TMessageSize.DEFAULT);
-        MessageBox.setTitle(title);
-        MessageBox.setContent(content);
-        if (btn1Label === undefined) {
-            MessageBox.setBtn1("Fechar", null);
-        }
-        else {
-            MessageBox.setBtn1(btn1Label, btn1Func);
-        }
-        if (btn2Label === undefined) {
-            $(MessageBox.jQueryModalButton2Id).hide();
-        }
-        else {
-            MessageBox.setBtn2(btn2Label, btn2Func);
-        }
-        MessageBox.showModal();
-    }
-    static hide() {
-        $(MessageBox.jQueryModalId).modal("hide");
-        $(".modal-backdrop").hide();
-    }
-}
-MessageBox.jQueryModalId = "#site-modal";
-MessageBox.jQueryModalTitleId = "#site-modal-title";
-MessageBox.jQueryModalContentId = "#site-modal-content";
-MessageBox.jQueryModalButton1Id = "#site-modal-btn1";
-MessageBox.jQueryModalButton2Id = "#site-modal-btn2";
-MessageBox.modalId = MessageBox.jQueryModalId.substring(1);
-MessageBox.button1Id = MessageBox.jQueryModalButton1Id.substring(1);
-MessageBox.bootstrapVersion = 5;
-const messageBox = MessageBox;
-var ModalSize;
-(function (ModalSize) {
-    ModalSize[ModalSize["Default"] = 0] = "Default";
-    ModalSize[ModalSize["ExtraLarge"] = 1] = "ExtraLarge";
-    ModalSize[ModalSize["Large"] = 2] = "Large";
-    ModalSize[ModalSize["Small"] = 3] = "Small";
-    ModalSize[ModalSize["Fullscreen"] = 4] = "Fullscreen";
-})(ModalSize || (ModalSize = {}));
-class ModalUrlOptions {
-}
-class ModalBase {
-    constructor() {
-        this.modalId = "jjmasterdata-modal";
-        this.modalSize = ModalSize.Default;
-    }
-}
-class _Modal extends ModalBase {
-    constructor() {
-        super(...arguments);
-        this.modalSizeCssClass = {
-            Default: "jj-modal-default",
-            ExtraLarge: "jj-modal-xl",
-            Large: "jj-modal-lg",
-            Small: "jj-modal-sm",
-            Fullscreen: "modal-fullscreen",
-        };
-    }
-    showModal() {
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.show();
-    }
-    hideModal() {
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.hide();
-    }
-    getModalCssClass() {
-        return this.modalSizeCssClass[ModalSize[this.modalSize]];
-    }
-    createModalElement() {
-        if (!document.getElementById(this.modalId)) {
-            this.modalElement = document.createElement("div");
-            this.modalElement.id = this.modalId;
-            this.modalElement.classList.add("modal", "fade");
-            this.modalElement.tabIndex = -1;
-            this.modalElement.setAttribute("role", "dialog");
-            this.modalElement.setAttribute("aria-labelledby", `${this.modalId}-label`);
-            this.modalElement.innerHTML = `
-      <div id="${this.modalId}-dialog" class="modal-dialog ${this.centered ? "modal-dialog-centered" : ""} modal-dialog-scrollable ${this.getModalCssClass()}" role="document">
-        <div class="modal-content" >
-          <div class="modal-header">
-            <h5 class="modal-title" id="${this.modalId}-label">${this.modalTitle}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body"> </div>
-        </div>
-      </div>`;
-            let form = document.forms[0];
-            if (form) {
-                form.appendChild(this.modalElement);
-            }
-            else {
-                document.body.appendChild(this.modalElement);
-            }
-        }
-        else {
-            this.modalElement = document.getElementById(this.modalId);
-            const dialog = document.getElementById(this.modalId + "-dialog");
-            Object.values(ModalSize).forEach(cssClass => {
-                dialog.classList.remove(cssClass);
-            });
-            dialog.classList.add(this.getModalCssClass());
-        }
-    }
-    showIframe(url, title, size = null) {
-        this.modalTitle = title;
-        this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
-        this.createModalElement();
-        const modalBody = this.modalElement.querySelector(".modal-body");
-        let style = "width: 100vw; height: 100vh;";
-        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
-        this.showModal();
-    }
-    showUrl(options, title, size = null) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.modalTitle = title;
-            this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
-            this.createModalElement();
-            const modalBody = this.modalElement.querySelector(".modal-body");
-            yield fetch(options.url, options.requestOptions)
-                .then((response) => response.text())
-                .then((content) => {
-                modalBody.innerHTML = content;
-                this.showModal();
-            });
-        });
-    }
-    hide() {
-        this.hideModal();
-    }
-}
-class _LegacyModal extends ModalBase {
-    createModalHtml(content, isIframe) {
-        const size = isIframe
-            ? this.modalSize === ModalSize.Small
-                ? "auto"
-                : this.modalSize === ModalSize.ExtraLarge
-                    ? "65%"
-                    : "auto"
-            : "auto";
-        const html = `
-            <div id="${this.modalId}" tabindex="-1" class="modal fade" role="dialog">
-                <div class="modal-dialog" style="position: auto; height: ${this.modalSize === ModalSize.ExtraLarge
-            ? "95"
-            : this.modalSize === ModalSize.Large
-                ? "75"
-                : this.modalSize === ModalSize.Fullscreen
-                    ? "100"
-                    : "90"}vh; width: ${size};">
-                    <div class="modal-content" style="height:100%;width:auto;">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title" id="${this.modalId}-title"></h4>
-                        </div>
-                        <div class="modal-body" style="height:90%;width:auto;">
-                            ${isIframe ? `<iframe style="border: 0px;" src="${content}" width="100%" height="97%">Waiting...</iframe>` : content}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        return html;
-    }
-    showModal() {
-        $(`#${this.modalId}`).modal();
-        $("iframe").on("load", () => {
-            SpinnerOverlay.hide();
-        });
-    }
-    setTitle(title) {
-        $(`#${this.modalId}-title`).html(title);
-    }
-    showIframe(url, title, size = null) {
-        this.modalSize = size || this.modalSize;
-        const modalHtml = this.createModalHtml(url, true);
-        $(modalHtml).appendTo($("body"));
-        this.setTitle(title);
-        this.showModal();
-    }
-    showUrl(options, title, size = null) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.modalSize = size || this.modalSize;
-            try {
-                const response = yield fetch(options.url, options.requestOptions);
-                if (response.ok) {
-                    const content = yield response.text();
-                    const modalHtml = this.createModalHtml(content, false);
-                    $(modalHtml).appendTo($("body"));
-                    this.setTitle(title);
-                    this.showModal();
-                }
-                else {
-                    console.error(`Failed to fetch content from URL: ${options.url}`);
-                }
-            }
-            catch (error) {
-                console.error("An error occurred while fetching content:", error);
-            }
-        });
-    }
-    hide() {
-        $(`#${this.modalId}`).modal("hide");
-    }
-}
-var defaultModal = function () {
-    if (bootstrapVersion == 5) {
-        if (!(this instanceof _Modal)) {
-            return new _Modal();
-        }
-    }
-    else {
-        if (!(this instanceof _LegacyModal)) {
-            return new _LegacyModal();
-        }
-    }
-}();
-class Modal {
-    constructor() {
-        if (bootstrapVersion === 5) {
-            this.instance = new _Modal();
-        }
-        else {
-            this.instance = new _LegacyModal();
-        }
-        this.instance.modalId = "jjmasterdata-modal";
-        this.instance.modalSize = ModalSize.Default;
-    }
-    showIframe(url, title, size) {
-        this.instance.showIframe(url, title, size);
-    }
-    showUrl(options, title, size = null) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.instance.showUrl(options, title, size);
-        });
-    }
-    hide() {
-        this.instance.hide();
-    }
-    get modalId() {
-        return this.instance.modalId;
-    }
-    set modalId(value) {
-        this.instance.modalId = value;
-    }
-    get modalTitle() {
-        return this.instance.modalTitle;
-    }
-    set modalTitle(value) {
-        this.instance.modalTitle = value;
-    }
-    get modalSize() {
-        return this.instance.modalSize;
-    }
-    set modalSize(value) {
-        this.instance.modalSize = value;
-    }
-    get modalElement() {
-        return this.instance.modalElement;
-    }
-    set modalElement(value) {
-        this.instance.modalElement = value;
-    }
-    get centered() {
-        return this.instance.centered;
-    }
-    set centered(value) {
-        this.instance.centered = value;
-    }
-}
-class SortableListener {
-    static listenSorting() {
-        $(".jjsortable").sortable({
-            helper: function (e, tr) {
-                var originals = tr.children();
-                var helper = tr.clone();
-                helper.children().each(function (index) {
-                    $(this).width(originals.eq(index).width());
-                });
-                return helper;
-            },
-            change: function (event, ui) {
-                ui.placeholder.css({
-                    visibility: "visible",
-                    background: "#fbfbfb"
-                });
-            }
-        });
-    }
-}
-class SpinnerOverlay {
-    static loadHtml() {
-        if (!document.querySelector("#" + this.spinnerOverlayId)) {
-            if (bootstrapVersion < 5) {
-                const spinnerOverlay = document.createElement("div");
-                spinnerOverlay.id = this.spinnerOverlayId;
-                spinnerOverlay.innerHTML = `
-            <div class="ajaxImage"></div>
-            <div class="ajaxMessage">Loading...</div>
-            `;
-                document.body.appendChild(spinnerOverlay);
-                const options = {
-                    lines: 17,
-                    length: 28,
-                    width: 14,
-                    radius: 38,
-                    scale: 0.40,
-                    corners: 1,
-                    color: "#000",
-                    opacity: 0.3,
-                    rotate: 0,
-                    direction: 1,
-                    speed: 1.2,
-                    trail: 62,
-                    fps: 20,
-                    zIndex: 2e9,
-                    className: "spinner",
-                    top: "50%",
-                    left: "50%",
-                    shadow: false,
-                    hwaccel: false,
-                    position: "absolute",
-                };
-                const spinner = new Spinner(options).spin();
-                if (spinner.el) {
-                    const spinnerOverlayElement = document.querySelector("#spinner-overlay .ajaxImage");
-                    spinnerOverlayElement.parentNode.insertBefore(spinner.el, spinnerOverlayElement.nextSibling);
-                }
-            }
-            else {
-                const spinnerOverlayDiv = document.createElement('div');
-                spinnerOverlayDiv.id = this.spinnerOverlayId;
-                spinnerOverlayDiv.classList.add('spinner-overlay', 'text-center');
-                const spinnerDiv = document.createElement('div');
-                spinnerDiv.classList.add('spinner-border', 'spinner-border-lg');
-                spinnerDiv.setAttribute('role', 'status');
-                const spanElement = document.createElement('span');
-                spanElement.classList.add('visually-hidden');
-                spanElement.textContent = 'Loading...';
-                spinnerDiv.appendChild(spanElement);
-                spinnerOverlayDiv.appendChild(spinnerDiv);
-                document.body.appendChild(spinnerOverlayDiv);
-            }
-        }
-    }
-    static show() {
-        this.loadHtml();
-        document.querySelector("#" + this.spinnerOverlayId).style.display = "";
-    }
-    static hide() {
-        const overlay = document.querySelector("#" + this.spinnerOverlayId);
-        if (overlay) {
-            overlay.style.display = "none";
-        }
-    }
-}
-SpinnerOverlay.spinnerOverlayId = "spinner-overlay";
 class ActionManager {
     static executeRedirectActionAtSamePage(componentName, encryptedActionMap, confirmMessage) {
         this.executeRedirectAction(null, componentName, encryptedActionMap, confirmMessage);
@@ -690,6 +131,188 @@ class AuditLogHelper {
                 document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
             }
         });
+    }
+}
+class CalendarListener {
+    static listen(prefixSelector) {
+        $(prefixSelector + ".jjform-datetime").flatpickr({
+            enableTime: true,
+            wrap: true,
+            allowInput: true,
+            altInput: false,
+            time_24hr: true,
+            dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
+            onOpen: function (selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") == 1) {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode
+        });
+        $(prefixSelector + ".jjform-date").flatpickr({
+            enableTime: false,
+            wrap: true,
+            allowInput: true,
+            altInput: false,
+            dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
+            onOpen: function (selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") == 1) {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode
+        });
+        $(prefixSelector + ".jjform-hour").flatpickr({
+            enableTime: true,
+            wrap: true,
+            noCalendar: true,
+            allowInput: true,
+            altInput: false,
+            dateFormat: "H:i",
+            time_24hr: true,
+            onOpen: function (selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") == 1) {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode
+        });
+        $(prefixSelector + ".jjdecimal").each(applyDecimalPlaces);
+        $(prefixSelector + "[data-toggle='tooltip'], " + prefixSelector + "[data-bs-toggle='tooltip']").tooltip({
+            container: "body",
+            trigger: "hover"
+        });
+    }
+}
+class CollapsePanelListener {
+    static listen(name) {
+        let nameSelector = "#" + name;
+        let collapseSelector = '#collapse_mode_' + name;
+        document.addEventListener("DOMContentLoaded", function () {
+            let collapseElement = document.querySelector(nameSelector);
+            collapseElement.addEventListener("hidden.bs.collapse", function () {
+                document.querySelector(collapseSelector).value = "0";
+            });
+            collapseElement.addEventListener("show.bs.collapse", function () {
+                document.querySelector(collapseSelector).value = "1";
+            });
+        });
+    }
+}
+class DataDictionaryUtils {
+    static deleteAction(actionName, url, questionStr) {
+        let confirmed = confirm(questionStr);
+        if (confirmed == true) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                success: function (response) {
+                    if (response.success) {
+                        $("#" + actionName).remove();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    SpinnerOverlay.hide();
+                    if (xhr.responseText != "") {
+                        var err = JSON.parse(xhr.responseText);
+                        messageBox.show("JJMasterData", err.message, 4);
+                    }
+                    else {
+                        console.log(xhr);
+                    }
+                }
+            });
+        }
+    }
+    static sortAction(context, url, errorStr) {
+        $("#sortable-" + context).sortable({
+            update: function () {
+                var order = $(this).sortable('toArray');
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: { orderFields: order, context: context },
+                    success: function (response) {
+                        if (!response.success) {
+                            messageBox.show("JJMasterData", errorStr, 4);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        SpinnerOverlay.hide();
+                        if (xhr.responseText != "") {
+                            var err = JSON.parse(xhr.responseText);
+                            if (err.status == 401) {
+                                document.forms[0].submit();
+                            }
+                            else {
+                                messageBox.show("JJMasterData", err.message, 4);
+                            }
+                        }
+                        else {
+                            messageBox.show("JJMasterData", errorStr, 4);
+                        }
+                    }
+                });
+            }
+        }).disableSelection();
+    }
+    static setDisableAction(isDisable, url, errorStr) {
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: { value: isDisable },
+            success: function (response) {
+                if (!response.success) {
+                    messageBox.show("JJMasterData", errorStr, 4);
+                }
+            },
+            error: function (xhr, status, error) {
+                SpinnerOverlay.hide();
+                if (xhr.responseText != "") {
+                    var err = JSON.parse(xhr.responseText);
+                    if (err.status == 401) {
+                        document.forms[0].submit();
+                    }
+                    else {
+                        messageBox.show("JJMasterData", err.message, 4);
+                    }
+                }
+                else {
+                    messageBox.show("JJMasterData", errorStr, 4);
+                }
+            }
+        });
+    }
+    static refreshAction(isPopup = false) {
+        SpinnerOverlay.show();
+        if (isPopup) {
+            window.parent.defaultModal.hide();
+            window.parent.document.forms[0].submit();
+        }
+        else {
+            defaultModal.hide();
+            document.forms[0].submit();
+        }
+    }
+    static postAction(url) {
+        SpinnerOverlay.show();
+        $("form:first").attr("action", url).submit();
+    }
+    static exportElement(id, url, validStr) {
+        var values = $("#grid-view-selected-rows" + id).val();
+        if (values == "") {
+            messageBox.show("JJMasterData", validStr, 3);
+            return false;
+        }
+        var form = $("form:first");
+        var originAction = $("form:first").attr('action');
+        form.attr('action', url);
+        form.submit();
+        setTimeout(function () {
+            form.attr('action', originAction);
+            SpinnerOverlay.hide();
+        }, 2000);
+        return true;
     }
 }
 class DataExportationHelper {
@@ -1078,6 +701,44 @@ class DataPanelHelper {
         });
     }
 }
+function applyDecimalPlaces() {
+    let decimalPlaces = $(this).attr("jjdecimalplaces");
+    if (decimalPlaces == null)
+        decimalPlaces = "2";
+    if (localeCode === 'pt')
+        $(this).number(true, decimalPlaces, ",", ".");
+    else
+        $(this).number(true, decimalPlaces);
+}
+class FeedbackIcon {
+    static removeAllIcons(selector) {
+        $(selector)
+            .removeClass(FeedbackIcon.successClass)
+            .removeClass(FeedbackIcon.warningClass)
+            .removeClass(FeedbackIcon.searchClass)
+            .removeClass(FeedbackIcon.errorClass);
+    }
+    static setIcon(selector, iconClass) {
+        this.removeAllIcons(selector);
+        $(selector).addClass(iconClass);
+    }
+}
+FeedbackIcon.searchClass = "jj-icon-search";
+FeedbackIcon.successClass = "jj-icon-success";
+FeedbackIcon.warningClass = "jj-icon-warning";
+FeedbackIcon.errorClass = "jj-icon-error";
+var _a, _b;
+var showWaitOnPost = true;
+var bootstrapVersion = (() => {
+    const htmlElement = document.querySelector('html');
+    const versionAttribute = htmlElement === null || htmlElement === void 0 ? void 0 : htmlElement.getAttribute('data-bs-version');
+    if (versionAttribute) {
+        return parseInt(versionAttribute, 10);
+    }
+    return 5;
+})();
+const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
+const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
 class GridViewHelper {
     static sorting(componentName, url, tableOrder) {
         const tableOrderElement = document.querySelector("#grid-view-order-" + componentName);
@@ -1176,6 +837,9 @@ class GridViewHelper {
             } });
     }
 }
+$(function () {
+    loadJJMasterData("load", null);
+});
 class JJViewHelper {
     static postFormValues(componentName, enableAjax, loadform) {
         if (enableAjax) {
@@ -1481,87 +1145,47 @@ class JJViewHelper {
         }
     }
 }
-class UploadViewHelper {
-    static open(componentName, title, values, url = null) {
-        const panelName = $("#v_" + componentName).attr("panelName");
-        if (url == null || url.length == 0) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("uploadView-" + panelName, componentName);
-            urlBuilder.addQueryParameter("uploadViewParams", values);
-            url = urlBuilder.build();
+function loadJJMasterData(event, prefixSelector) {
+    if (prefixSelector === undefined || prefixSelector === null) {
+        prefixSelector = "";
+    }
+    $(prefixSelector + ".selectpicker").selectpicker({
+        iconBase: 'fa'
+    });
+    $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
+    CalendarListener.listen(prefixSelector);
+    TextAreaListener.listenKeydown();
+    SearchBoxListener.listenTypeahed();
+    LookupListener.listenChanges();
+    SortableListener.listenSorting();
+    UploadAreaListener.listenFileUpload();
+    TabNavListener.listenTabNavs();
+    SliderListener.listenSliders();
+    SliderListener.listenInputs();
+    $(document).on({
+        ajaxSend: function (event, jqXHR, settings) {
+            if (settings.url != null &&
+                settings.url.indexOf("context=searchBox") !== -1) {
+                return null;
+            }
+            if (showWaitOnPost) {
+                SpinnerOverlay.show();
+            }
+        },
+        ajaxStop: function () { SpinnerOverlay.hide(); }
+    });
+    $("form").on("submit", function () {
+        let isValid;
+        try {
+            isValid = $("form").valid();
         }
-        const modal = new Modal();
-        modal.modalId = componentName + "-upload-popup";
-        modal.showUrl({ url: url }, null, 1).then(_ => {
-            loadJJMasterData();
-        });
-    }
-}
-class CalendarListener {
-    static listen(prefixSelector) {
-        $(prefixSelector + ".jjform-datetime").flatpickr({
-            enableTime: true,
-            wrap: true,
-            allowInput: true,
-            altInput: false,
-            time_24hr: true,
-            dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
-            onOpen: function (selectedDates, dateStr, instance) {
-                if (instance.input.getAttribute("autocompletePicker") == 1) {
-                    instance.setDate(Date.now());
-                }
-            },
-            locale: localeCode
-        });
-        $(prefixSelector + ".jjform-date").flatpickr({
-            enableTime: false,
-            wrap: true,
-            allowInput: true,
-            altInput: false,
-            dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
-            onOpen: function (selectedDates, dateStr, instance) {
-                if (instance.input.getAttribute("autocompletePicker") == 1) {
-                    instance.setDate(Date.now());
-                }
-            },
-            locale: localeCode
-        });
-        $(prefixSelector + ".jjform-hour").flatpickr({
-            enableTime: true,
-            wrap: true,
-            noCalendar: true,
-            allowInput: true,
-            altInput: false,
-            dateFormat: "H:i",
-            time_24hr: true,
-            onOpen: function (selectedDates, dateStr, instance) {
-                if (instance.input.getAttribute("autocompletePicker") == 1) {
-                    instance.setDate(Date.now());
-                }
-            },
-            locale: localeCode
-        });
-        $(prefixSelector + ".jjdecimal").each(applyDecimalPlaces);
-        $(prefixSelector + "[data-toggle='tooltip'], " + prefixSelector + "[data-bs-toggle='tooltip']").tooltip({
-            container: "body",
-            trigger: "hover"
-        });
-    }
-}
-class CollapsePanelListener {
-    static listen(name) {
-        let nameSelector = "#" + name;
-        let collapseSelector = '#collapse_mode_' + name;
-        document.addEventListener("DOMContentLoaded", function () {
-            let collapseElement = document.querySelector(nameSelector);
-            collapseElement.addEventListener("hidden.bs.collapse", function () {
-                document.querySelector(collapseSelector).value = "0";
-            });
-            collapseElement.addEventListener("show.bs.collapse", function () {
-                document.querySelector(collapseSelector).value = "1";
-            });
-        });
-    }
+        catch (_a) {
+            isValid = true;
+        }
+        if (isValid && showWaitOnPost) {
+            setTimeout(function () { SpinnerOverlay.show(); }, 1);
+        }
+    });
 }
 class LookupListener {
     static listenChanges() {
@@ -1634,6 +1258,443 @@ class LookupListener {
             });
         });
     }
+}
+var TMessageIcon;
+(function (TMessageIcon) {
+    TMessageIcon[TMessageIcon["NONE"] = 1] = "NONE";
+    TMessageIcon[TMessageIcon["INFO"] = 2] = "INFO";
+    TMessageIcon[TMessageIcon["WARNING"] = 3] = "WARNING";
+    TMessageIcon[TMessageIcon["ERROR"] = 4] = "ERROR";
+    TMessageIcon[TMessageIcon["QUESTION"] = 5] = "QUESTION";
+})(TMessageIcon || (TMessageIcon = {}));
+var TMessageSize;
+(function (TMessageSize) {
+    TMessageSize[TMessageSize["SMALL"] = 1] = "SMALL";
+    TMessageSize[TMessageSize["DEFAULT"] = 2] = "DEFAULT";
+    TMessageSize[TMessageSize["LARGE"] = 3] = "LARGE";
+})(TMessageSize || (TMessageSize = {}));
+class MessageBox {
+    static setTitle(title) {
+        $(MessageBox.jQueryModalTitleId).html(title);
+    }
+    static setContent(content) {
+        $(MessageBox.jQueryModalContentId).html(content);
+    }
+    static showModal() {
+        if (MessageBox.bootstrapVersion < 5) {
+            $(MessageBox.jQueryModalId)
+                .modal()
+                .on("shown.bs.modal", function () {
+                $(MessageBox.jQueryModalButton1Id).focus();
+            });
+        }
+        else {
+            const modal = new bootstrap.Modal(document.getElementById(MessageBox.modalId), {});
+            modal.show();
+            modal.addEventListener("shown.bs.modal", function () {
+                document.getElementById(MessageBox.button1Id).focus();
+            });
+        }
+    }
+    static setBtn1(label, func) {
+        $(MessageBox.jQueryModalButton1Id).text(label);
+        if ($.isFunction(func)) {
+            $(MessageBox.jQueryModalButton1Id).on("click.siteModalClick1", func);
+        }
+        $(MessageBox.jQueryModalButton1Id).show();
+    }
+    static setBtn2(label, func) {
+        $(MessageBox.jQueryModalButton2Id).text(label);
+        if ($.isFunction(func)) {
+            $(MessageBox.jQueryModalButton2Id).on("click.siteModalClick2", func);
+        }
+        $(MessageBox.jQueryModalButton2Id).show();
+    }
+    static reset() {
+        MessageBox.setTitle("");
+        MessageBox.setContent("");
+        $(MessageBox.jQueryModalButton1Id).text("");
+        $(MessageBox.jQueryModalButton1Id).off("click.siteModalClick1");
+        $(MessageBox.jQueryModalButton2Id).text("");
+        $(MessageBox.jQueryModalButton2Id).off("click.siteModalClick2");
+    }
+    static loadHtml(icontype, sizetype) {
+        if ($(MessageBox.jQueryModalId).length) {
+            $(MessageBox.jQueryModalId).remove();
+        }
+        let html = "";
+        html += "<div id=\"site-modal\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n";
+        html += "  <div class=\"modal-dialog";
+        if (sizetype == TMessageSize.LARGE)
+            html += " modal-lg";
+        else if (sizetype == TMessageSize.SMALL)
+            html += " modal-sm";
+        html += "\" role=\"document\">\r\n";
+        html += "    <div class=\"modal-content\">\r\n";
+        html += "      <div class=\"modal-header\">\r\n";
+        if (MessageBox.bootstrapVersion >= 4) {
+            html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
+        }
+        else if (MessageBox.bootstrapVersion >= 5) {
+            html +=
+                '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
+        }
+        else if (MessageBox.bootstrapVersion == 3) {
+            html +=
+                '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
+        }
+        html += "      </div>\r\n";
+        html += "      <div class=\"modal-body\">\r\n";
+        html += "        <table border=\"0\">\r\n";
+        html += "          <tr>\r\n";
+        html += '            <td style="width:40px">\r\n';
+        if (icontype == TMessageIcon.ERROR) {
+            html += '              <span class="text-danger">\r\n';
+            html +=
+                '                <span class="fa fa-times-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+            html += "              </span>\r\n";
+        }
+        else if (icontype == TMessageIcon.WARNING) {
+            html += '              <span class="text-warning">\r\n';
+            html +=
+                '                <span class="fa fa-exclamation-triangle " aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+            html += "              </span>\r\n";
+        }
+        else if (icontype == TMessageIcon.INFO) {
+            html += '              <span class="text-info">\r\n';
+            html +=
+                '                <span class="fa fa-info-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+            html += "              </span>\r\n";
+        }
+        else if (icontype == TMessageIcon.QUESTION) {
+            html += '              <span class="text-info">\r\n';
+            html +=
+                '                <span class="fa fa-question-circle" aria-hidden="true" style="font-size: 30px;"></span>\r\n';
+            html += "              </span>\r\n";
+        }
+        html += "            </td>\r\n";
+        html += "            <td>\r\n";
+        html += '              <span id="site-modal-content"></span>\r\n';
+        html += "            </td>\r\n";
+        html += "          </tr>\r\n";
+        html += "        </table>\r\n";
+        html += "      </div>\r\n";
+        html += "      <div class=\"modal-footer\">\r\n";
+        if (MessageBox.bootstrapVersion == 3) {
+            html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-dismiss="modal"></button>\r\n';
+        }
+        else if (MessageBox.bootstrapVersion == 4) {
+            html += '        <button type="button" id="site-modal-btn1" class="btn btn-outline-dark" data-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn2" class="btn btn-outline-dark" data-dismiss="modal"></button>\r\n';
+        }
+        else {
+            html += '        <button type="button" id="site-modal-btn1" class="btn btn-outline-dark" data-bs-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn2" class="btn btn-outline-dark" data-bs-dismiss="modal"></button>\r\n';
+        }
+        html += "      </div>\r\n";
+        html += "    </div>\r\n";
+        html += "  </div>\r\n";
+        html += "</div>\r\n";
+        $("body").append(html);
+    }
+    static show(title, content, icontype, sizetype, btn1Label, btn1Func, btn2Label, btn2Func) {
+        MessageBox.reset();
+        MessageBox.loadHtml(icontype, sizetype || TMessageSize.DEFAULT);
+        MessageBox.setTitle(title);
+        MessageBox.setContent(content);
+        if (btn1Label === undefined) {
+            MessageBox.setBtn1("Fechar", null);
+        }
+        else {
+            MessageBox.setBtn1(btn1Label, btn1Func);
+        }
+        if (btn2Label === undefined) {
+            $(MessageBox.jQueryModalButton2Id).hide();
+        }
+        else {
+            MessageBox.setBtn2(btn2Label, btn2Func);
+        }
+        MessageBox.showModal();
+    }
+    static hide() {
+        $(MessageBox.jQueryModalId).modal("hide");
+        $(".modal-backdrop").hide();
+    }
+}
+MessageBox.jQueryModalId = "#site-modal";
+MessageBox.jQueryModalTitleId = "#site-modal-title";
+MessageBox.jQueryModalContentId = "#site-modal-content";
+MessageBox.jQueryModalButton1Id = "#site-modal-btn1";
+MessageBox.jQueryModalButton2Id = "#site-modal-btn2";
+MessageBox.modalId = MessageBox.jQueryModalId.substring(1);
+MessageBox.button1Id = MessageBox.jQueryModalButton1Id.substring(1);
+MessageBox.bootstrapVersion = 5;
+const messageBox = MessageBox;
+var ModalSize;
+(function (ModalSize) {
+    ModalSize[ModalSize["Default"] = 0] = "Default";
+    ModalSize[ModalSize["ExtraLarge"] = 1] = "ExtraLarge";
+    ModalSize[ModalSize["Large"] = 2] = "Large";
+    ModalSize[ModalSize["Small"] = 3] = "Small";
+    ModalSize[ModalSize["Fullscreen"] = 4] = "Fullscreen";
+})(ModalSize || (ModalSize = {}));
+class ModalUrlOptions {
+}
+class ModalBase {
+    constructor() {
+        this.modalId = "jjmasterdata-modal";
+        this.modalSize = ModalSize.Default;
+    }
+}
+class _Modal extends ModalBase {
+    constructor() {
+        super(...arguments);
+        this.modalSizeCssClass = {
+            Default: "jj-modal-default",
+            ExtraLarge: "jj-modal-xl",
+            Large: "jj-modal-lg",
+            Small: "jj-modal-sm",
+            Fullscreen: "modal-fullscreen",
+        };
+    }
+    showModal() {
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.show();
+    }
+    hideModal() {
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.hide();
+    }
+    getModalCssClass() {
+        return this.modalSizeCssClass[ModalSize[this.modalSize]];
+    }
+    createModalElement() {
+        if (!document.getElementById(this.modalId)) {
+            this.modalElement = document.createElement("div");
+            this.modalElement.id = this.modalId;
+            this.modalElement.classList.add("modal", "fade");
+            this.modalElement.tabIndex = -1;
+            this.modalElement.setAttribute("role", "dialog");
+            this.modalElement.setAttribute("aria-labelledby", `${this.modalId}-label`);
+            this.modalElement.innerHTML = `
+      <div id="${this.modalId}-dialog" class="modal-dialog ${this.centered ? "modal-dialog-centered" : ""} modal-dialog-scrollable ${this.getModalCssClass()}" role="document">
+        <div class="modal-content" >
+          <div class="modal-header">
+            <h5 class="modal-title" id="${this.modalId}-label">${this.modalTitle}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body"> </div>
+        </div>
+      </div>`;
+            let form = document.forms[0];
+            if (form) {
+                form.appendChild(this.modalElement);
+            }
+            else {
+                document.body.appendChild(this.modalElement);
+            }
+        }
+        else {
+            this.modalElement = document.getElementById(this.modalId);
+            const dialog = document.getElementById(this.modalId + "-dialog");
+            Object.values(ModalSize).forEach(cssClass => {
+                dialog.classList.remove(cssClass);
+            });
+            dialog.classList.add(this.getModalCssClass());
+        }
+    }
+    showIframe(url, title, size = null) {
+        this.modalTitle = title;
+        this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
+        this.createModalElement();
+        const modalBody = this.modalElement.querySelector(".modal-body");
+        let style = "width: 100vw; height: 100vh;";
+        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
+        this.showModal();
+    }
+    showUrl(options, title, size = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.modalTitle = title;
+            this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
+            this.createModalElement();
+            const modalBody = this.modalElement.querySelector(".modal-body");
+            yield fetch(options.url, options.requestOptions)
+                .then((response) => response.text())
+                .then((content) => {
+                modalBody.innerHTML = content;
+                this.showModal();
+            });
+        });
+    }
+    hide() {
+        this.hideModal();
+    }
+}
+class _LegacyModal extends ModalBase {
+    createModalHtml(content, isIframe) {
+        const size = isIframe
+            ? this.modalSize === ModalSize.Small
+                ? "auto"
+                : this.modalSize === ModalSize.ExtraLarge
+                    ? "65%"
+                    : "auto"
+            : "auto";
+        const html = `
+            <div id="${this.modalId}" tabindex="-1" class="modal fade" role="dialog">
+                <div class="modal-dialog" style="position: auto; height: ${this.modalSize === ModalSize.ExtraLarge
+            ? "95"
+            : this.modalSize === ModalSize.Large
+                ? "75"
+                : this.modalSize === ModalSize.Fullscreen
+                    ? "100"
+                    : "90"}vh; width: ${size};">
+                    <div class="modal-content" style="height:100%;width:auto;">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title" id="${this.modalId}-title"></h4>
+                        </div>
+                        <div class="modal-body" style="height:90%;width:auto;">
+                            ${isIframe ? `<iframe style="border: 0px;" src="${content}" width="100%" height="97%">Waiting...</iframe>` : content}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        return html;
+    }
+    showModal() {
+        $(`#${this.modalId}`).modal();
+        $("iframe").on("load", () => {
+            SpinnerOverlay.hide();
+        });
+    }
+    setTitle(title) {
+        $(`#${this.modalId}-title`).html(title);
+    }
+    showIframe(url, title, size = null) {
+        this.modalSize = size || this.modalSize;
+        const modalHtml = this.createModalHtml(url, true);
+        $(modalHtml).appendTo($("body"));
+        this.setTitle(title);
+        this.showModal();
+    }
+    showUrl(options, title, size = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.modalSize = size || this.modalSize;
+            try {
+                const response = yield fetch(options.url, options.requestOptions);
+                if (response.ok) {
+                    const content = yield response.text();
+                    const modalHtml = this.createModalHtml(content, false);
+                    $(modalHtml).appendTo($("body"));
+                    this.setTitle(title);
+                    this.showModal();
+                }
+                else {
+                    console.error(`Failed to fetch content from URL: ${options.url}`);
+                }
+            }
+            catch (error) {
+                console.error("An error occurred while fetching content:", error);
+            }
+        });
+    }
+    hide() {
+        $(`#${this.modalId}`).modal("hide");
+    }
+}
+class Modal {
+    constructor() {
+        if (bootstrapVersion === 5) {
+            this.instance = new _Modal();
+        }
+        else {
+            this.instance = new _LegacyModal();
+        }
+        this.instance.modalId = "jjmasterdata-modal";
+        this.instance.modalSize = ModalSize.Default;
+    }
+    showIframe(url, title, size = null) {
+        this.instance.showIframe(url, title, size);
+    }
+    showUrl(options, title, size = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.instance.showUrl(options, title, size);
+        });
+    }
+    hide() {
+        this.instance.hide();
+    }
+    get modalId() {
+        return this.instance.modalId;
+    }
+    set modalId(value) {
+        this.instance.modalId = value;
+    }
+    get modalTitle() {
+        return this.instance.modalTitle;
+    }
+    set modalTitle(value) {
+        this.instance.modalTitle = value;
+    }
+    get modalSize() {
+        return this.instance.modalSize;
+    }
+    set modalSize(value) {
+        this.instance.modalSize = value;
+    }
+    get modalElement() {
+        return this.instance.modalElement;
+    }
+    set modalElement(value) {
+        this.instance.modalElement = value;
+    }
+    get centered() {
+        return this.instance.centered;
+    }
+    set centered(value) {
+        this.instance.centered = value;
+    }
+}
+var defaultModal = function () {
+    if (!(this instanceof Modal)) {
+        return new Modal();
+    }
+}();
+class PostFormValuesOptions {
+}
+function postFormValues(options) {
+    SpinnerOverlay.show();
+    const formData = new FormData(document.querySelector("form"));
+    const requestOptions = {
+        method: "POST",
+        body: formData
+    };
+    fetch(options.url, requestOptions)
+        .then(response => {
+        var _a;
+        if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
+            return response.json();
+        }
+        else {
+            return response.text();
+        }
+    })
+        .then(data => {
+        options.success(data);
+    })
+        .catch(error => {
+        if (options.error) {
+            options.error(error);
+        }
+        else {
+            console.error(error);
+        }
+    })
+        .then(() => {
+        SpinnerOverlay.hide();
+    });
 }
 class SearchBoxListener {
     static listenTypeahed() {
@@ -1749,6 +1810,93 @@ class SliderListener {
         });
     }
 }
+class SortableListener {
+    static listenSorting() {
+        $(".jjsortable").sortable({
+            helper: function (e, tr) {
+                var originals = tr.children();
+                var helper = tr.clone();
+                helper.children().each(function (index) {
+                    $(this).width(originals.eq(index).width());
+                });
+                return helper;
+            },
+            change: function (event, ui) {
+                ui.placeholder.css({
+                    visibility: "visible",
+                    background: "#fbfbfb"
+                });
+            }
+        });
+    }
+}
+class SpinnerOverlay {
+    static loadHtml() {
+        if (!document.querySelector("#" + this.spinnerOverlayId)) {
+            if (bootstrapVersion < 5) {
+                const spinnerOverlay = document.createElement("div");
+                spinnerOverlay.id = this.spinnerOverlayId;
+                spinnerOverlay.innerHTML = `
+            <div class="ajaxImage"></div>
+            <div class="ajaxMessage">Loading...</div>
+            `;
+                document.body.appendChild(spinnerOverlay);
+                const options = {
+                    lines: 17,
+                    length: 28,
+                    width: 14,
+                    radius: 38,
+                    scale: 0.40,
+                    corners: 1,
+                    color: "#000",
+                    opacity: 0.3,
+                    rotate: 0,
+                    direction: 1,
+                    speed: 1.2,
+                    trail: 62,
+                    fps: 20,
+                    zIndex: 2e9,
+                    className: "spinner",
+                    top: "50%",
+                    left: "50%",
+                    shadow: false,
+                    hwaccel: false,
+                    position: "absolute",
+                };
+                const spinner = new Spinner(options).spin();
+                if (spinner.el) {
+                    const spinnerOverlayElement = document.querySelector("#spinner-overlay .ajaxImage");
+                    spinnerOverlayElement.parentNode.insertBefore(spinner.el, spinnerOverlayElement.nextSibling);
+                }
+            }
+            else {
+                const spinnerOverlayDiv = document.createElement('div');
+                spinnerOverlayDiv.id = this.spinnerOverlayId;
+                spinnerOverlayDiv.classList.add('spinner-overlay', 'text-center');
+                const spinnerDiv = document.createElement('div');
+                spinnerDiv.classList.add('spinner-border', 'spinner-border-lg');
+                spinnerDiv.setAttribute('role', 'status');
+                const spanElement = document.createElement('span');
+                spanElement.classList.add('visually-hidden');
+                spanElement.textContent = 'Loading...';
+                spinnerDiv.appendChild(spanElement);
+                spinnerOverlayDiv.appendChild(spinnerDiv);
+                document.body.appendChild(spinnerOverlayDiv);
+            }
+        }
+    }
+    static show() {
+        this.loadHtml();
+        document.querySelector("#" + this.spinnerOverlayId).style.display = "";
+    }
+    static hide() {
+        const overlay = document.querySelector("#" + this.spinnerOverlayId);
+        if (overlay) {
+            overlay.style.display = "none";
+        }
+    }
+}
+SpinnerOverlay.spinnerOverlayId = "spinner-overlay";
 class TabNavListener {
     static listenTabNavs() {
         $("a.jj-tab-link").on("shown.bs.tab", function (e) {
@@ -1917,176 +2065,21 @@ class UploadAreaListener {
         });
     }
 }
-class DataDictionaryUtils {
-    static deleteAction(actionName, url, questionStr) {
-        let confirmed = confirm(questionStr);
-        if (confirmed == true) {
-            $.ajax({
-                type: "POST",
-                url: url,
-                success: function (response) {
-                    if (response.success) {
-                        $("#" + actionName).remove();
-                    }
-                },
-                error: function (xhr, status, error) {
-                    SpinnerOverlay.hide();
-                    if (xhr.responseText != "") {
-                        var err = JSON.parse(xhr.responseText);
-                        messageBox.show("JJMasterData", err.message, 4);
-                    }
-                    else {
-                        console.log(xhr);
-                    }
-                }
-            });
+class UploadViewHelper {
+    static open(componentName, title, values, url = null) {
+        const panelName = $("#v_" + componentName).attr("panelName");
+        if (url == null || url.length == 0) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("uploadView-" + panelName, componentName);
+            urlBuilder.addQueryParameter("uploadViewParams", values);
+            url = urlBuilder.build();
         }
-    }
-    static sortAction(context, url, errorStr) {
-        $("#sortable-" + context).sortable({
-            update: function () {
-                var order = $(this).sortable('toArray');
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: { orderFields: order, context: context },
-                    success: function (response) {
-                        if (!response.success) {
-                            messageBox.show("JJMasterData", errorStr, 4);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        SpinnerOverlay.hide();
-                        if (xhr.responseText != "") {
-                            var err = JSON.parse(xhr.responseText);
-                            if (err.status == 401) {
-                                document.forms[0].submit();
-                            }
-                            else {
-                                messageBox.show("JJMasterData", err.message, 4);
-                            }
-                        }
-                        else {
-                            messageBox.show("JJMasterData", errorStr, 4);
-                        }
-                    }
-                });
-            }
-        }).disableSelection();
-    }
-    static setDisableAction(isDisable, url, errorStr) {
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: { value: isDisable },
-            success: function (response) {
-                if (!response.success) {
-                    messageBox.show("JJMasterData", errorStr, 4);
-                }
-            },
-            error: function (xhr, status, error) {
-                SpinnerOverlay.hide();
-                if (xhr.responseText != "") {
-                    var err = JSON.parse(xhr.responseText);
-                    if (err.status == 401) {
-                        document.forms[0].submit();
-                    }
-                    else {
-                        messageBox.show("JJMasterData", err.message, 4);
-                    }
-                }
-                else {
-                    messageBox.show("JJMasterData", errorStr, 4);
-                }
-            }
+        const modal = new Modal();
+        modal.modalId = componentName + "-upload-popup";
+        modal.showUrl({ url: url }, null, 1).then(_ => {
+            loadJJMasterData();
         });
     }
-    static refreshAction(isPopup = false) {
-        SpinnerOverlay.show();
-        if (isPopup) {
-            window.parent.defaultModal.hide();
-            window.parent.document.forms[0].submit();
-        }
-        else {
-            defaultModal.hide();
-            document.forms[0].submit();
-        }
-    }
-    static postAction(url) {
-        SpinnerOverlay.show();
-        $("form:first").attr("action", url).submit();
-    }
-    static exportElement(id, url, validStr) {
-        var values = $("#grid-view-selected-rows" + id).val();
-        if (values == "") {
-            messageBox.show("JJMasterData", validStr, 3);
-            return false;
-        }
-        var form = $("form:first");
-        var originAction = $("form:first").attr('action');
-        form.attr('action', url);
-        form.submit();
-        setTimeout(function () {
-            form.attr('action', originAction);
-            SpinnerOverlay.hide();
-        }, 2000);
-        return true;
-    }
-}
-function applyDecimalPlaces() {
-    let decimalPlaces = $(this).attr("jjdecimalplaces");
-    if (decimalPlaces == null)
-        decimalPlaces = "2";
-    if (localeCode === 'pt')
-        $(this).number(true, decimalPlaces, ",", ".");
-    else
-        $(this).number(true, decimalPlaces);
-}
-var _a, _b;
-var showWaitOnPost = true;
-var bootstrapVersion = (() => {
-    const htmlElement = document.querySelector('html');
-    const versionAttribute = htmlElement === null || htmlElement === void 0 ? void 0 : htmlElement.getAttribute('data-bs-version');
-    if (versionAttribute) {
-        return parseInt(versionAttribute, 10);
-    }
-    return 5;
-})();
-const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
-const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
-class PostFormValuesOptions {
-}
-function postFormValues(options) {
-    SpinnerOverlay.show();
-    const formData = new FormData(document.querySelector("form"));
-    const requestOptions = {
-        method: "POST",
-        body: formData
-    };
-    fetch(options.url, requestOptions)
-        .then(response => {
-        var _a;
-        if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
-            return response.json();
-        }
-        else {
-            return response.text();
-        }
-    })
-        .then(data => {
-        options.success(data);
-    })
-        .catch(error => {
-        if (options.error) {
-            options.error(error);
-        }
-        else {
-            console.error(error);
-        }
-    })
-        .then(() => {
-        SpinnerOverlay.hide();
-    });
 }
 class UrlBuilder {
     constructor(url = null) {

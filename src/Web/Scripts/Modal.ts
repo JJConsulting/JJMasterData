@@ -85,6 +85,7 @@ class _Modal extends ModalBase {
 
             //@ts-ignore
             Object.values(ModalSize).forEach(cssClass => {
+                //@ts-ignore
                 dialog.classList.remove(cssClass)
             });
             
@@ -205,18 +206,7 @@ class _LegacyModal extends ModalBase {
     }
 }
 
-var defaultModal = function () {
-    if(bootstrapVersion == 5){
-        if (!(this instanceof _Modal)) {
-            return new _Modal();
-        }
-    }
-    else{
-        if (!(this instanceof _LegacyModal)) {
-            return new _LegacyModal();
-        }
-    }
-}();
+
 
 
 class Modal {
@@ -232,7 +222,7 @@ class Modal {
         this.instance.modalSize = ModalSize.Default;
     }
 
-    showIframe(url: string, title: string, size: ModalSize) {
+    showIframe(url: string, title: string, size: ModalSize = null) {
         this.instance.showIframe(url,title,size);
     }
     async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null): Promise<void> {
@@ -282,4 +272,8 @@ class Modal {
         this.instance.centered = value;
     }
 }
-
+var defaultModal = function () {
+    if (!(this instanceof Modal)) {
+        return new Modal();
+    }
+}();
