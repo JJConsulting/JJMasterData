@@ -8,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 $(function () {
-    bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
     loadJJMasterData("load", null);
 });
 function loadJJMasterData(event, prefixSelector) {
@@ -270,22 +269,12 @@ class _Modal extends ModalBase {
         };
     }
     showModal() {
-        if (bootstrapVersion >= 5) {
-            const bootstrapModal = new bootstrap.Modal(this.modalElement);
-            bootstrapModal.show();
-        }
-        else {
-            $("#" + this.modalId).modal("show");
-        }
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.show();
     }
     hideModal() {
-        if (bootstrapVersion >= 5) {
-            const bootstrapModal = new bootstrap.Modal(this.modalElement);
-            bootstrapModal.hide();
-        }
-        else {
-            $("#" + this.modalId).modal("hide");
-        }
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.hide();
     }
     getModalCssClass() {
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
@@ -330,7 +319,7 @@ class _Modal extends ModalBase {
         this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
-        let style = bootstrapVersion == 5 ? "width: 100vw; height: 100vh;" : "width: 100%; height: 100%;";
+        let style = "width: 100vw; height: 100vh;";
         modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
         this.showModal();
     }
@@ -353,39 +342,30 @@ class _Modal extends ModalBase {
     }
 }
 class _LegacyModal extends ModalBase {
-    constructor() {
-        super(...arguments);
-        this.modalSizeCssClass = {
-            [ModalSize.Default]: "jj-modal-default",
-            [ModalSize.ExtraLarge]: "jj-modal-xl",
-            [ModalSize.Large]: "jj-modal-lg",
-            [ModalSize.Small]: "jj-modal-sm",
-            [ModalSize.Fullscreen]: "modal-fullscreen",
-        };
-    }
-    getModalCssClass() {
-        return this.modalSizeCssClass[this.modalSize];
-    }
-    createModalHtml(url) {
-        const iframeSize = this.modalSize === ModalSize.Small
-            ? "<div class=\"modal-dialog\" style=\"margin:0.7em;left:0px;right:0px;top:0px;bottom:0px; position:fixed;width:auto;\">\r\n"
-            : `<div class="modal-dialog" style="position: auto; height: ${this.modalSize === ModalSize.ExtraLarge
-                ? "95"
-                : this.modalSize === ModalSize.Large
-                    ? "75"
-                    : this.modalSize === ModalSize.Fullscreen
-                        ? "100"
-                        : "90"}vh; width: ${this.modalSize === ModalSize.ExtraLarge ? "65%" : "auto"};">\r\n`;
+    createModalHtml(content, isIframe) {
+        const size = isIframe
+            ? this.modalSize === ModalSize.Small
+                ? "auto"
+                : this.modalSize === ModalSize.ExtraLarge
+                    ? "65%"
+                    : "auto"
+            : "auto";
         const html = `
             <div id="${this.modalId}" tabindex="-1" class="modal fade" role="dialog">
-                ${iframeSize}
+                <div class="modal-dialog" style="position: auto; height: ${this.modalSize === ModalSize.ExtraLarge
+            ? "95"
+            : this.modalSize === ModalSize.Large
+                ? "75"
+                : this.modalSize === ModalSize.Fullscreen
+                    ? "100"
+                    : "90"}vh; width: ${size};">
                     <div class="modal-content" style="height:100%;width:auto;">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                             <h4 class="modal-title" id="${this.modalId}-title"></h4>
                         </div>
                         <div class="modal-body" style="height:90%;width:auto;">
-                            <iframe style="border: 0px;" src="${url}" width="100%" height="97%">Waiting...</iframe>
+                            ${isIframe ? `<iframe style="border: 0px;" src="${content}" width="100%" height="97%">Waiting...</iframe>` : content}
                         </div>
                     </div>
                 </div>
@@ -404,7 +384,7 @@ class _LegacyModal extends ModalBase {
     }
     showIframe(url, title, size = null) {
         this.modalSize = size || this.modalSize;
-        const modalHtml = this.createModalHtml(url);
+        const modalHtml = this.createModalHtml(url, true);
         $(modalHtml).appendTo($("body"));
         this.setTitle(title);
         this.showModal();
@@ -416,7 +396,7 @@ class _LegacyModal extends ModalBase {
                 const response = yield fetch(options.url, options.requestOptions);
                 if (response.ok) {
                     const content = yield response.text();
-                    const modalHtml = this.createModalHtml(`data:text/html,${encodeURIComponent(content)}`);
+                    const modalHtml = this.createModalHtml(content, false);
                     $(modalHtml).appendTo($("body"));
                     this.setTitle(title);
                     this.showModal();
@@ -2064,7 +2044,14 @@ function applyDecimalPlaces() {
 }
 var _a, _b;
 var showWaitOnPost = true;
-var bootstrapVersion = 3;
+var bootstrapVersion = (() => {
+    const htmlElement = document.querySelector('html');
+    const versionAttribute = htmlElement === null || htmlElement === void 0 ? void 0 : htmlElement.getAttribute('data-bs-version');
+    if (versionAttribute) {
+        return parseInt(versionAttribute, 10);
+    }
+    return 5;
+})();
 const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
 const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
 class PostFormValuesOptions {

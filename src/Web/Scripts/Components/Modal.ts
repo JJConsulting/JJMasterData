@@ -40,25 +40,13 @@ class _Modal extends ModalBase {
     };
     
     private showModal(){
-        if(bootstrapVersion >= 5){
-            const bootstrapModal = new bootstrap.Modal(this.modalElement);
-            bootstrapModal.show();
-        }
-        else{
-            //@ts-ignore
-            $("#" + this.modalId).modal("show");
-        }
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.show();
     }
 
     private hideModal(){
-        if(bootstrapVersion >= 5){
-            const bootstrapModal = new bootstrap.Modal(this.modalElement);
-            bootstrapModal.hide();
-        }
-        else{
-            //@ts-ignore
-            $("#" + this.modalId).modal("hide");
-        }
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.hide();
     }
     
     private getModalCssClass(){
@@ -110,7 +98,7 @@ class _Modal extends ModalBase {
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
         
-        let style = bootstrapVersion == 5 ?"width: 100vw; height: 100vh;" : "width: 100%; height: 100%;";
+        let style = "width: 100vw; height: 100vh;";
         
         modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
 
@@ -137,32 +125,33 @@ class _Modal extends ModalBase {
 }
 
 class _LegacyModal extends ModalBase {
-    private createModalHtml(url: string) {
-        const iframeSize =
-            this.modalSize === ModalSize.Small
-                ? "<div class=\"modal-dialog\" style=\"margin:0.7em;left:0px;right:0px;top:0px;bottom:0px; position:fixed;width:auto;\">\r\n"
-                : `<div class="modal-dialog" style="position: auto; height: ${
-                    this.modalSize === ModalSize.ExtraLarge
-                        ? "95"
-                        : this.modalSize === ModalSize.Large
-                            ? "75"
-                            : this.modalSize === ModalSize.Fullscreen
-                                ? "100"
-                                : "90"
-                }vh; width: ${
-                    this.modalSize === ModalSize.ExtraLarge ? "65%" : "auto"
-                };">\r\n`;
+    private createModalHtml(content: string, isIframe: boolean) {
+        const size = isIframe
+            ? this.modalSize === ModalSize.Small
+                ? "auto"
+                : this.modalSize === ModalSize.ExtraLarge
+                    ? "65%"
+                    : "auto"
+            : "auto";
 
         const html = `
             <div id="${this.modalId}" tabindex="-1" class="modal fade" role="dialog">
-                ${iframeSize}
+                <div class="modal-dialog" style="position: auto; height: ${
+            this.modalSize === ModalSize.ExtraLarge
+                ? "95"
+                : this.modalSize === ModalSize.Large
+                    ? "75"
+                    : this.modalSize === ModalSize.Fullscreen
+                        ? "100"
+                        : "90"
+        }vh; width: ${size};">
                     <div class="modal-content" style="height:100%;width:auto;">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                             <h4 class="modal-title" id="${this.modalId}-title"></h4>
                         </div>
                         <div class="modal-body" style="height:90%;width:auto;">
-                            <iframe style="border: 0px;" src="${url}" width="100%" height="97%">Waiting...</iframe>
+                            ${isIframe ? `<iframe style="border: 0px;" src="${content}" width="100%" height="97%">Waiting...</iframe>` : content}
                         </div>
                     </div>
                 </div>
@@ -186,7 +175,7 @@ class _LegacyModal extends ModalBase {
 
     override showIframe(url: string, title: string, size: ModalSize = null) {
         this.modalSize = size || this.modalSize;
-        const modalHtml = this.createModalHtml(url);
+        const modalHtml = this.createModalHtml(url, true); // Using iframe
         $(modalHtml).appendTo($("body"));
         this.setTitle(title);
         this.showModal();
@@ -199,7 +188,7 @@ class _LegacyModal extends ModalBase {
             const response = await fetch(options.url, options.requestOptions);
             if (response.ok) {
                 const content = await response.text();
-                const modalHtml = this.createModalHtml(`data:text/html,${encodeURIComponent(content)}`);
+                const modalHtml = this.createModalHtml(content, false); // Not using iframe
                 $(modalHtml).appendTo($("body"));
                 this.setTitle(title);
                 this.showModal();

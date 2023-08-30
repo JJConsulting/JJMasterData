@@ -88,10 +88,10 @@
     {
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
-        script.Append(Model.Context.ToString().FirstCharToUpper());
-        script.Append(" Action', '");
         script.Append(Url.Action("Edit", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
+        script.Append("','"+Model.Context.ToString().FirstCharToUpper());
+        script.Append(" Action");
         script.Append("');");
 
         return script.ToString();
@@ -101,10 +101,10 @@
     {
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
-        script.Append(Model.Context.ToString().FirstCharToUpper());
-        script.Append(" Action', '");
         script.Append(Url.Action("Add", "Actions",
-            new { dictionaryName = Model.DictionaryName, actionType = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
+            new { dictionaryName = Model.DictionaryName, actionName = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
+        script.Append("','"+Model.Context.ToString().FirstCharToUpper());
+        script.Append(" Action");
         script.Append("');");
 
         return script.ToString();

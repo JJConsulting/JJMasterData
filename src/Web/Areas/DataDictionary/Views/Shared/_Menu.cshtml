@@ -155,12 +155,12 @@
             @StringLocalizer["More"] <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-            <li class="dropdown-item" onclick="defaultModal.showIframe('@StringLocalizer["Database Scripts"]', '@Url.Action("Scripts", "Element", new { dictionaryName = Model.DictionaryName })',1);">
+            <li class="dropdown-item" onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { dictionaryName = Model.DictionaryName })','@StringLocalizer["Database Scripts"]',1);">
                 <a href="#">
                     <span class="fa fa-play-circle fa-fw fa-lg"></span> @StringLocalizer["Get Script"]
                 </a>
             </li>
-            <li class="dropdown-item" onclick="defaultModal.showIframe('@StringLocalizer["Class Source Code"]', '@Url.Action("ClassSourceCode", "Element", new { dictionaryName = Model.DictionaryName })',1);">
+            <li class="dropdown-item" onclick="defaultModal.showIframe('@Url.Action("ClassSourceCode", "Element", new { dictionaryName = Model.DictionaryName })','@StringLocalizer["Class Source Code"]',1);">
                 <a href="#">
                     <span class="fa-regular fa-file-code fa-fw fa-lg"></span> @StringLocalizer["Get Class"]
                 </a>
@@ -171,7 +171,7 @@
                 </a>
             </li>
             <li role="separator" class="@(BootstrapHelper.Version > 3 ? " divider" : "dropdown-divider")"></li>
-            <li class="dropdown-item" onclick="defaultModal.showIframe('Help', 'https://portal.jjconsulting.com.br/jjdoc/', 1);">
+            <li class="dropdown-item" onclick="defaultModal.showIframe('https://portal.jjconsulting.com.br/jjdoc/','Help');">
                 <a href="#">
                     <span class="fa fa-question-circle fa-fw fa-lg"></span> @StringLocalizer["Help"]
                 </a>
