@@ -23,8 +23,8 @@
     }
 }
 
-class UploadArea {
-    static uploadFile(options) {
+class UploadAreaListener {
+    static configureFileUpload(options) {
         
         const selector = "#" + options.componentName;
         // @ts-ignore
@@ -112,7 +112,7 @@ class UploadArea {
         });
     }
 
-    static setup() {
+    static listenFileUpload() {
         document.querySelectorAll("div.fileUpload").forEach((element) => {
             let componentName = element.getAttribute("id");
             let multiple = element.getAttribute("jjmultiple") === "true";
@@ -151,7 +151,7 @@ class UploadArea {
                 autoSubmit
             );
 
-            this.uploadFile(fileUploadOptions);
+            this.configureFileUpload(fileUploadOptions);
 
             window.addEventListener("resize", () => {
                 document.querySelector<HTMLElement>("#" + componentName + " .ajax-upload-dragdrop").style.width =

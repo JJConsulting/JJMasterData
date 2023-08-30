@@ -152,7 +152,7 @@ public class JJUploadView : AsyncComponent
             Icon = IconType.CloudDownload,
             ToolTip = "Download File",
             Name = "DOWNLOADFILE",
-            OnClientClick = "JJView.downloadFile('" + Name + "','{NameJS}');"
+            OnClientClick = "JJViewHelper.downloadFile('" + Name + "','{NameJS}');"
         };
 
     public ScriptAction DeleteAction
@@ -167,7 +167,7 @@ public class JJUploadView : AsyncComponent
             {
                 Icon = IconType.Trash,
                 ToolTip = "Delete File",
-                OnClientClick = "JJView.deleteFile('" + Name + "','{NameJS}', '" + promptStr + "');",
+                OnClientClick = "JJViewHelper.deleteFile('" + Name + "','{NameJS}', '" + promptStr + "');",
                 Name = "DELFILE"
             };
             return _deleteAction;
@@ -186,7 +186,7 @@ public class JJUploadView : AsyncComponent
             {
                 Icon = IconType.PencilSquareO,
                 ToolTip = "Rename File",
-                OnClientClick = "JJView.renameFile('" + Name + "','{NameJS}','" + promptStr + "');",
+                OnClientClick = "JJViewHelper.renameFile('" + Name + "','{NameJS}','" + promptStr + "');",
                 Name = "RENAMEFILE"
             };
             _renameAction.SetVisible(false);

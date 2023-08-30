@@ -1,6 +1,6 @@
-class DataExportation{
+class DataExportationHelper {
     static async startProgressVerificationAtSamePage(componentName) {
-        DataExportation.setLoadMessage();
+        DataExportationHelper.setLoadMessage();
 
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("context","dataExportation")
@@ -10,7 +10,7 @@ class DataExportation{
         var isCompleted : boolean = false;
 
         while(!isCompleted){
-            isCompleted = await DataExportation.checkProgress(urlBuilder.build(), componentName);
+            isCompleted = await DataExportationHelper.checkProgress(urlBuilder.build(), componentName);
             await sleep(3000);
         }
     }
@@ -21,7 +21,7 @@ class DataExportation{
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","stopProcess")
         
-        await DataExportation.stopExportation(urlBuilder.build(), stopMessage);
+        await DataExportationHelper.stopExportation(urlBuilder.build(), stopMessage);
     }
 
 
@@ -31,7 +31,7 @@ class DataExportation{
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","showOptions")
 
-        DataExportation.openExportPopup(urlBuilder.build(), componentName)
+        DataExportationHelper.openExportPopup(urlBuilder.build(), componentName)
     }
 
     static startExportationAtSamePage(componentName) {
@@ -49,7 +49,7 @@ class DataExportation{
             document.querySelector<HTMLElement>(modalBody).innerHTML = html;
             
             loadJJMasterData(null, modalBody);
-            await DataExportation.startProgressVerificationAtSamePage(componentName)
+            await DataExportationHelper.startProgressVerificationAtSamePage(componentName)
         });
         
     }
@@ -166,7 +166,7 @@ class DataExportation{
                 const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body");
                 modalBody.innerHTML = data;
                 loadJJMasterData();
-                DataExportation.startProgressVerification(checkProgressUrl,componentName)
+                DataExportationHelper.startProgressVerification(checkProgressUrl,componentName)
  
             })
             .catch(error => {
@@ -183,12 +183,12 @@ class DataExportation{
 
 
     static async startProgressVerification(url, componentName) {
-        DataExportation.setLoadMessage();
+        DataExportationHelper.setLoadMessage();
 
         var isCompleted : boolean = false;
 
         while(!isCompleted){
-            isCompleted = await DataExportation.checkProgress(url,componentName);
+            isCompleted = await DataExportationHelper.checkProgress(url,componentName);
             await sleep(3000);
         }
     }

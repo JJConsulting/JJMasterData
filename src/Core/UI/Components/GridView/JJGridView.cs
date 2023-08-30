@@ -842,7 +842,7 @@ public class JJGridView : AsyncComponent
         {
             script.AppendLine("\t$(document).ready(function () {");
             script.AppendLine("\t\t$(\".jjselect input\").change(function() {");
-            script.AppendLine("\t\t\tJJView.selectItem('" + Name + "', $(this)); ");
+            script.AppendLine("\t\t\tJJViewHelper.selectItem('" + Name + "', $(this)); ");
             script.AppendLine("\t\t});");
             script.AppendLine("\t});");
         }

@@ -1,4 +1,4 @@
-class UploadView{
+class UploadViewHelper {
     static open(componentName: string, title:string, values: string, url: string = null){
 
         const panelName = $("#v_" + componentName).attr("panelName");
@@ -16,6 +16,5 @@ class UploadView{
         modal.showUrl({url:url},null, 1).then(_=>{
             loadJJMasterData()
         })
-
     }
 }

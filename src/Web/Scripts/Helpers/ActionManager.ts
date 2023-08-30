@@ -80,7 +80,7 @@ class ActionManager {
 
                                 modal.hide();
 
-                                JJView.refresh(componentName,true)
+                                JJViewHelper.refresh(componentName,true)
                             }
                         } else {
                             outputElement.innerHTML = data;

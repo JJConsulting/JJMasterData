@@ -1,4 +1,4 @@
-﻿class GridView {
+﻿class GridViewHelper {
     static sorting(componentName, url, tableOrder) {
         const tableOrderElement = document.querySelector<HTMLInputElement>("#grid-view-order-" + componentName);
         if (tableOrder + " ASC" === tableOrderElement.value)
@@ -9,7 +9,7 @@
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
 
-        GridView.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, url);
     }
     
     static clearCurrentFormAction(componentName){
@@ -24,7 +24,7 @@
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
 
-        GridView.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, url);
     }
 
     static filter(componentName, url) {
@@ -32,7 +32,7 @@
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         document.querySelector<HTMLInputElement>("#grid-view-page-" + componentName).value = "1";
         this.clearCurrentFormAction(componentName)
-        GridView.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, url);
     }
 
     
@@ -72,7 +72,7 @@
     static clearFilter(componentName, url) {
         this.clearFilterInputs(componentName);
         
-        GridView.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, url);
     }
 
 
@@ -80,13 +80,13 @@
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         document.querySelector<HTMLInputElement>("#grid-view-row-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
-        GridView.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, url);
     }
 
     static selectAllRows(componentName, url) {
         fetch(url, {method:"POST"})
             .then(response => response.json())
-            .then(data => GridView.selectAllRowsElements(componentName, data.selectedRows))
+            .then(data => GridViewHelper.selectAllRowsElements(componentName, data.selectedRows))
     }
 
     static selectAllRowsElements(componentName, rows) {
@@ -108,29 +108,15 @@
         let urlBuilder = new UrlBuilder(url)
 
         urlBuilder.addQueryParameter("componentName", componentName)
-
-        SpinnerOverlay.show()
+        
 
         const filterAction = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
-        
-        fetch(urlBuilder.build(), {
-            method: form.method,
-            body: new FormData(form)
-        })
-            .then(response => response.text())
-            .then(data => {
+        postFormValues({url: urlBuilder.build(), success:(data)=>{
                 document.querySelector<HTMLInputElement>("#grid-view-" + componentName).innerHTML = data;
                 loadJJMasterData();
-                
+
                 if(filterAction)
                     filterAction.value = "";
-                
-                SpinnerOverlay.hide();
-            })
-            .catch(error => {
-                console.log(error);
-                if(filterAction)
-                    filterAction.value = "";
-            });
+            }});
     }
 }

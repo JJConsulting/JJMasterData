@@ -1,11 +1,11 @@
-class DataPanel {
+class DataPanelHelper {
     static reloadAtSamePage(panelname, objid){
         let url = new UrlBuilder()
         url.addQueryParameter("panelName",panelname)
         url.addQueryParameter("componentName",objid)
         url.addQueryParameter("context","panelReload")
 
-        DataPanel.reload(url.build(), panelname, objid)
+        DataPanelHelper.reload(url.build(), panelname, objid)
     }
     
     static reload(url, componentName, fieldName) {

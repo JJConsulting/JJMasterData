@@ -1,5 +1,5 @@
-﻿class Slider {
-    static observeSliders() {
+﻿class SliderListener {
+    static listenSliders() {
         let sliders = document.getElementsByClassName("jjslider");
 
         Array.from(sliders).forEach((slider : HTMLInputElement) => {
@@ -26,7 +26,7 @@
         });
     }
 
-    static observeInputs() {
+    static listenInputs() {
         let inputs = document.getElementsByClassName("jjslider-value");
 
         Array.from(inputs).forEach((input: HTMLInputElement) => {

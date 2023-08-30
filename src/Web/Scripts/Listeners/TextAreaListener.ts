@@ -1,5 +1,5 @@
-﻿class TextArea {
-    static setup(){
+﻿class TextAreaListener {
+    static listenKeydown(){
         $("textarea").keydown(function () {
             const jjTextArea = $(this);
             let maxLength : any = jjTextArea.attr("maxlength");

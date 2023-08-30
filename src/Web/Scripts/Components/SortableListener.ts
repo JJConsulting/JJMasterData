@@ -1,14 +1,14 @@
-﻿class JJSortable{
-    static setup(){
+﻿class SortableListener {
+    static listenSorting(){
         ($(".jjsortable") as any).sortable({
             helper: function (e, tr) {
-                var $originals = tr.children();
-                var $helper = tr.clone();
-                $helper.children().each(function (index) {
+                var originals = tr.children();
+                var helper = tr.clone();
+                helper.children().each(function (index) {
                     // Set helper cell sizes to match the original sizes
-                    $(this).width($originals.eq(index).width());
+                    $(this).width(originals.eq(index).width());
                 });
-                return $helper;
+                return helper;
             },
             change: function (event, ui) {
                 ui.placeholder.css({

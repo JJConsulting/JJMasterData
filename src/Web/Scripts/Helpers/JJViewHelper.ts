@@ -1,4 +1,6 @@
-﻿class JJView {
+﻿
+//TODO: Separar em GridView e FormView
+class JJViewHelper {
     private static postFormValues(componentName, enableAjax, loadform) {
         if (enableAjax) {
             const urlBuilder = new UrlBuilder();
@@ -85,7 +87,7 @@
         postFormValues({
             url: urlBuilder.build(),
             success: (data)=>{
-                GridView.selectAllRowsElements(componentName, data.selectedRows)
+                GridViewHelper.selectAllRowsElements(componentName, data.selectedRows)
             }
         })
     }
@@ -172,7 +174,7 @@
     }
 
     static clearFilter(componentName, enableAjax) {
-        GridView.clearFilterInputs(componentName)
+        GridViewHelper.clearFilterInputs(componentName)
         this.postFormValues(componentName, enableAjax, false);
     }
 

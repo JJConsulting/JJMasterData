@@ -7,1115 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-class ActionManager {
-    static executeRedirectActionAtSamePage(componentName, encryptedActionMap, confirmMessage) {
-        this.executeRedirectAction(null, componentName, encryptedActionMap, confirmMessage);
-    }
-    static executeRedirectAction(url, componentName, encryptedActionMap, confirmMessage) {
-        if (confirmMessage) {
-            const result = confirm(confirmMessage);
-            if (!result) {
-                return false;
-            }
-        }
-        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
-        currentFormActionInput.value = encryptedActionMap;
-        if (!url) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "urlRedirect");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            url = urlBuilder.build();
-        }
-        this.executeUrlRedirect(url);
-        return true;
-    }
-    static executeUrlRedirect(url) {
-        postFormValues({
-            url: url,
-            success: (data) => {
-                if (data.urlAsPopUp) {
-                    defaultModal.showIframe(data.urlRedirect, data.popUpTitle);
-                }
-                else {
-                    window.location.href = data.urlRedirect;
-                }
-            }
-        });
-    }
-    static executeAction(componentName, encryptedActionMap, confirmationMessage, isModal) {
-        if (confirmationMessage) {
-            if (!confirm(confirmationMessage)) {
-                return false;
-            }
-        }
-        const gridViewActionInput = document.querySelector("#grid-view-action-" + componentName);
-        const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
-        if (gridViewActionInput) {
-            gridViewActionInput.value = null;
-        }
-        if (formViewActionInput) {
-            formViewActionInput.value = encryptedActionMap;
-        }
-        let form = document.querySelector("form");
-        if (!form) {
-            return;
-        }
-        if (isModal) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "modal");
-            postFormValues({
-                url: urlBuilder.build(),
-                success: function (data) {
-                    const outputElement = document.getElementById(componentName);
-                    if (outputElement) {
-                        if (typeof data === "object") {
-                            if (data.closeModal) {
-                                const modal = new Modal();
-                                modal.modalId = componentName + "-modal";
-                                modal.hide();
-                                JJView.refresh(componentName, true);
-                            }
-                        }
-                        else {
-                            outputElement.innerHTML = data;
-                        }
-                    }
-                }
-            });
-        }
-        else {
-            form.submit();
-        }
-    }
-    static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
-        this.executeAction(componentName, encryptedActionMap, confirmationMessage, false);
-    }
-    static executeModalAction(componentName, encryptedActionMap, confirmationMessage) {
-        this.executeAction(componentName, encryptedActionMap, confirmationMessage, true);
-    }
-    static executeFormActionAsModal(componentName, title, encryptedActionMap, confirmationMessage) {
-        if (confirmationMessage) {
-            if (confirm(confirmationMessage)) {
-                return false;
-            }
-        }
-        const currentTableActionInput = document.querySelector("#grid-view-action-" + componentName);
-        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
-        currentTableActionInput.value = null;
-        currentFormActionInput.value = encryptedActionMap;
-        let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "modal");
-        const url = urlBuilder.build();
-        const modal = new Modal();
-        modal.modalId = componentName + "-modal";
-        modal.showUrl({ url: url, requestOptions: {
-                method: "POST",
-                body: new FormData(document.querySelector("form"))
-            } }, title).then(_ => loadJJMasterData());
-    }
-}
-function loadAuditLog(componentName, logId, url = null) {
-    $("#sortable-grid a").removeClass("active");
-    if (logId != "")
-        $("#" + logId).addClass("active");
-    document.querySelector('#audit-log-id-' + componentName).value = logId;
-    if (url == null || url.length == 0) {
-        let builder = new UrlBuilder();
-        builder.addQueryParameter("context", "htmlContent");
-        url = builder.build();
-    }
-    postFormValues({
-        url: url,
-        success: function (data) {
-            document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
-        }
-    });
-}
-function setupCollapsePanel(name) {
-    let nameSelector = "#" + name;
-    let collapseSelector = '#collapse_mode_' + name;
-    document.addEventListener("DOMContentLoaded", function () {
-        let collapseElement = document.querySelector(nameSelector);
-        collapseElement.addEventListener("hidden.bs.collapse", function () {
-            document.querySelector(collapseSelector).value = "0";
-        });
-        collapseElement.addEventListener("show.bs.collapse", function () {
-            document.querySelector(collapseSelector).value = "1";
-        });
-    });
-}
-class DataDictionaryUtils {
-    static deleteAction(actionName, url, questionStr) {
-        let confirmed = confirm(questionStr);
-        if (confirmed == true) {
-            $.ajax({
-                type: "POST",
-                url: url,
-                success: function (response) {
-                    if (response.success) {
-                        $("#" + actionName).remove();
-                    }
-                },
-                error: function (xhr, status, error) {
-                    SpinnerOverlay.hide();
-                    if (xhr.responseText != "") {
-                        var err = JSON.parse(xhr.responseText);
-                        messageBox.show("JJMasterData", err.message, 4);
-                    }
-                    else {
-                        console.log(xhr);
-                    }
-                }
-            });
-        }
-    }
-    static sortAction(context, url, errorStr) {
-        $("#sortable-" + context).sortable({
-            update: function () {
-                var order = $(this).sortable('toArray');
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: { orderFields: order, context: context },
-                    success: function (response) {
-                        if (!response.success) {
-                            messageBox.show("JJMasterData", errorStr, 4);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        SpinnerOverlay.hide();
-                        if (xhr.responseText != "") {
-                            var err = JSON.parse(xhr.responseText);
-                            if (err.status == 401) {
-                                document.forms[0].submit();
-                            }
-                            else {
-                                messageBox.show("JJMasterData", err.message, 4);
-                            }
-                        }
-                        else {
-                            messageBox.show("JJMasterData", errorStr, 4);
-                        }
-                    }
-                });
-            }
-        }).disableSelection();
-    }
-    static setDisableAction(isDisable, url, errorStr) {
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: { value: isDisable },
-            success: function (response) {
-                if (!response.success) {
-                    messageBox.show("JJMasterData", errorStr, 4);
-                }
-            },
-            error: function (xhr, status, error) {
-                SpinnerOverlay.hide();
-                if (xhr.responseText != "") {
-                    var err = JSON.parse(xhr.responseText);
-                    if (err.status == 401) {
-                        document.forms[0].submit();
-                    }
-                    else {
-                        messageBox.show("JJMasterData", err.message, 4);
-                    }
-                }
-                else {
-                    messageBox.show("JJMasterData", errorStr, 4);
-                }
-            }
-        });
-    }
-    static refreshAction(isPopup = false) {
-        SpinnerOverlay.show();
-        if (isPopup) {
-            window.parent.defaultModal.hide();
-            window.parent.document.forms[0].submit();
-        }
-        else {
-            defaultModal.hide();
-            document.forms[0].submit();
-        }
-    }
-    static postAction(url) {
-        SpinnerOverlay.show();
-        $("form:first").attr("action", url).submit();
-    }
-    static exportElement(id, url, validStr) {
-        var values = $("#grid-view-selected-rows" + id).val();
-        if (values == "") {
-            messageBox.show("JJMasterData", validStr, 3);
-            return false;
-        }
-        var form = $("form:first");
-        var originAction = $("form:first").attr('action');
-        form.attr('action', url);
-        form.submit();
-        setTimeout(function () {
-            form.attr('action', originAction);
-            SpinnerOverlay.hide();
-        }, 2000);
-        return true;
-    }
-}
-class DataExportation {
-    static startProgressVerificationAtSamePage(componentName) {
-        return __awaiter(this, void 0, void 0, function* () {
-            DataExportation.setLoadMessage();
-            let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataExportation");
-            urlBuilder.addQueryParameter("gridViewName", componentName);
-            urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
-            var isCompleted = false;
-            while (!isCompleted) {
-                isCompleted = yield DataExportation.checkProgress(urlBuilder.build(), componentName);
-                yield sleep(3000);
-            }
-        });
-    }
-    static stopProcessAtSamePage(componentName, stopMessage) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataExportation");
-            urlBuilder.addQueryParameter("gridViewName", componentName);
-            urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
-            yield DataExportation.stopExportation(urlBuilder.build(), stopMessage);
-        });
-    }
-    static openExportPopupAtSamePage(componentName) {
-        let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "dataExportation");
-        urlBuilder.addQueryParameter("gridViewName", componentName);
-        urlBuilder.addQueryParameter("dataExportationOperation", "showOptions");
-        DataExportation.openExportPopup(urlBuilder.build(), componentName);
-    }
-    static startExportationAtSamePage(componentName) {
-        let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "dataExportation");
-        urlBuilder.addQueryParameter("gridViewName", componentName);
-        urlBuilder.addQueryParameter("dataExportationOperation", "startProcess");
-        fetch(urlBuilder.build(), {
-            method: "POST",
-            body: new FormData(document.querySelector("form"))
-        }).then(response => response.text()).then((html) => __awaiter(this, void 0, void 0, function* () {
-            const modalBody = "#export-modal-" + componentName + " .modal-body ";
-            document.querySelector(modalBody).innerHTML = html;
-            loadJJMasterData(null, modalBody);
-            yield DataExportation.startProgressVerificationAtSamePage(componentName);
-        }));
-    }
-    static checkProgress(url, componentName) {
-        return __awaiter(this, void 0, void 0, function* () {
-            showWaitOnPost = false;
-            try {
-                const response = yield fetch(url);
-                const data = yield response.json();
-                if (data.FinishedMessage) {
-                    showWaitOnPost = true;
-                    document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
-                    const linkFile = document.querySelector("#export_link_" + componentName);
-                    if (linkFile)
-                        linkFile.click();
-                    return true;
-                }
-                else {
-                    document.querySelector("#divMsgProcess").style.display = "";
-                    document.querySelector(".progress-bar").style.width = data.PercentProcess + "%";
-                    document.querySelector(".progress-bar").textContent = data.PercentProcess + "%";
-                    document.querySelector("#start-date-label").textContent = data.StartDate;
-                    document.querySelector("#lblResumeLog").textContent = data.Message;
-                    return false;
-                }
-            }
-            catch (e) {
-                showWaitOnPost = true;
-                document.querySelector("#dataexp_spinner_" + componentName).style.display = "none";
-                document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = e.message;
-                return false;
-            }
-        });
-    }
-    static setLoadMessage() {
-        const options = {
-            lines: 13,
-            length: 38,
-            width: 17,
-            radius: 45,
-            scale: 0.2,
-            corners: 1,
-            color: "#000",
-            opacity: 0.3,
-            rotate: 0,
-            direction: 1,
-            speed: 1.2,
-            trail: 62,
-            fps: 20,
-            zIndex: 2e9,
-            className: "spinner",
-            top: "50%",
-            left: "50%",
-            shadow: false,
-            hwaccel: false,
-            position: "absolute"
-        };
-        const target = document.getElementById('exportationSpinner');
-        var spinner = new Spinner(options).spin(target);
-    }
-    static setSettingsHTML(componentName, html) {
-        const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body ");
-        modalBody.innerHTML = html;
-        loadJJMasterData(null);
-        const qtdElement = document.querySelector("#" + componentName + "_totrows");
-        if (qtdElement) {
-            const totRows = +qtdElement.textContent.replace(/\./g, "");
-            if (totRows > 50000) {
-                document.querySelector("#data-exportation-warning" + componentName).style.display = "block";
-            }
-        }
-        if (bootstrapVersion < 5) {
-            $("#export-modal-" + componentName).modal();
-        }
-        else {
-            const modal = new bootstrap.Modal(document.querySelector("#export-modal-" + componentName), {});
-            modal.show();
-        }
-    }
-    static openExportPopup(url, componentName) {
-        fetch(url)
-            .then(response => response.text())
-            .then(data => {
-            this.setSettingsHTML(componentName, data);
-        })
-            .catch(error => {
-            console.log(error);
-        });
-    }
-    static startExportation(startExportationUrl, checkProgressUrl, componentName) {
-        const form = document.querySelector("form");
-        fetch(startExportationUrl, {
-            method: "POST",
-            body: new FormData(form)
-        })
-            .then(response => {
-            if (response.ok) {
-                return response.text();
-            }
-            else {
-                throw new Error("Request failed with status: " + response.status);
-            }
-        })
-            .then(data => {
-            const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body");
-            modalBody.innerHTML = data;
-            loadJJMasterData();
-            DataExportation.startProgressVerification(checkProgressUrl, componentName);
-        })
-            .catch(error => {
-            console.log(error);
-        });
-    }
-    static stopExportation(url, stopMessage) {
-        return __awaiter(this, void 0, void 0, function* () {
-            document.querySelector("#divMsgProcess").innerHTML = stopMessage;
-            showWaitOnPost = false;
-            yield fetch(url);
-        });
-    }
-    static startProgressVerification(url, componentName) {
-        return __awaiter(this, void 0, void 0, function* () {
-            DataExportation.setLoadMessage();
-            var isCompleted = false;
-            while (!isCompleted) {
-                isCompleted = yield DataExportation.checkProgress(url, componentName);
-                yield sleep(3000);
-            }
-        });
-    }
-}
-class DataImportation {
-    static setLoadMessage() {
-        const options = {
-            lines: 13,
-            length: 38,
-            width: 17,
-            radius: 45,
-            scale: 0.2,
-            corners: 1,
-            color: "#000",
-            opacity: 0.3,
-            rotate: 0,
-            direction: 1,
-            speed: 1.2,
-            trail: 62,
-            fps: 20,
-            zIndex: 2e9,
-            className: "spinner",
-            top: "50%",
-            left: "50%",
-            shadow: false,
-            hwaccel: false,
-            position: "absolute"
-        };
-        const target = document.getElementById('impSpin');
-        new Spinner(options).spin(target);
-    }
-    static checkProgress(componentName) {
-        showWaitOnPost = false;
-        let checkProgressUrl = document.getElementById("divProcess").getAttribute("check-progress-url");
-        let url;
-        if (checkProgressUrl) {
-            url = checkProgressUrl;
-        }
-        else {
-            let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataImportation");
-            urlBuilder.addQueryParameter("current_uploadaction", "process_check");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            url = urlBuilder.build();
-        }
-        fetch(url, {
-            method: 'GET',
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(result => {
-            const divMsgProcess = document.querySelector("#divMsgProcess");
-            if (divMsgProcess) {
-                divMsgProcess.style.display = "";
-            }
-            const progressBar = document.querySelector(".progress-bar");
-            if (progressBar) {
-                progressBar.style.width = result.PercentProcess + "%";
-                progressBar.textContent = result.PercentProcess + "%";
-            }
-            const lblResumeLog = document.querySelector("#lblResumeLog");
-            if (lblResumeLog) {
-                lblResumeLog.textContent = result.Message;
-            }
-            const lblStartDate = document.querySelector("#start-date-label");
-            if (lblStartDate) {
-                lblStartDate.textContent = result.StartDate;
-            }
-            if (result.Insert > 0) {
-                document.querySelector("#lblInsert").style.display = "";
-                if (result.PercentProcess === 100) {
-                    document.querySelector("#lblInsertCount").textContent = result.Insert;
-                }
-                else {
-                    jjutil.animateValue("lblInsertCount", DataImportation.insertCount, result.Insert, 1000);
-                }
-                DataImportation.insertCount = result.Insert;
-            }
-            if (result.Update > 0) {
-                document.querySelector("#lblUpdate").style.display = "";
-                if (result.PercentProcess === 100) {
-                    document.querySelector("#lblUpdateCount").textContent = result.Update;
-                }
-                else {
-                    jjutil.animateValue("lblUpdateCount", DataImportation.updateCount, result.Update, 1000);
-                }
-                DataImportation.updateCount = result.Update;
-            }
-            if (result.Delete > 0) {
-                document.querySelector("#lblDelete").style.display = "";
-                if (result.PercentProcess === 100) {
-                    document.querySelector("#lblDeleteCount").textContent = result.Delete;
-                }
-                else {
-                    jjutil.animateValue("lblDeleteCount", DataImportation.deleteCount, result.Delete, 1000);
-                }
-                DataImportation.deleteCount = result.Delete;
-            }
-            if (result.Ignore > 0) {
-                document.querySelector("#lblIgnore").style.display = "";
-                if (result.PercentProcess === 100) {
-                    document.querySelector("#lblIgnoreCount").textContent = result.Ignore;
-                }
-                else {
-                    jjutil.animateValue("lblIgnoreCount", DataImportation.ignoreCount, result.Ignore, 1000);
-                }
-                DataImportation.ignoreCount = result.Ignore;
-            }
-            if (result.Error > 0) {
-                document.querySelector("#lblError").style.display = "";
-                if (result.PercentProcess === 100) {
-                    document.querySelector("#lblErrorCount").textContent = result.Error;
-                }
-                else {
-                    jjutil.animateValue("lblErrorCount", DataImportation.errorCount, result.Error, 1000);
-                }
-                DataImportation.errorCount = result.Error;
-            }
-            if (!result.IsProcessing) {
-                document.querySelector("#current_uploadaction").value = "process_finished";
-                setTimeout(function () {
-                    document.querySelector("form").dispatchEvent(new Event("submit"));
-                }, 1000);
-            }
-        })
-            .catch(error => {
-            console.error('Error fetching data:', error);
-        });
-    }
-    static startProcess(objname) {
-        $(document).ready(function () {
-            DataImportation.setLoadMessage();
-            setInterval(function () {
-                DataImportation.checkProgress(objname);
-            }, 3000);
-        });
-    }
-    static stopProcess(componentName, stopLabel) {
-        showWaitOnPost = false;
-        let stopProcessUrl = document.getElementById("divProcess").getAttribute("stop-process-url");
-        let url;
-        if (stopProcessUrl) {
-            url = stopProcessUrl;
-        }
-        else {
-            let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataImportation");
-            urlBuilder.addQueryParameter("current_uploadaction", "process_check");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            url = urlBuilder.build();
-        }
-        fetch(url).then(response => response.json()).then(data => {
-            if (data.isProcessing === false) {
-                document.getElementById("divMsgProcess").innerHTML = stopLabel;
-            }
-        });
-    }
-    static addPasteListener() {
-        $(document).ready(function () {
-            document.addEventListener("paste", (e) => {
-                var pastedText = undefined;
-                if (window.clipboardData && window.clipboardData.getData) {
-                    pastedText = window.clipboardData.getData("Text");
-                }
-                else if (e.clipboardData && e.clipboardData.getData) {
-                    pastedText = e.clipboardData.getData("text/plain");
-                }
-                e.preventDefault();
-                if (pastedText != undefined) {
-                    $("#current_uploadaction").val("posted_past_text");
-                    $("#pasteValue").val(pastedText);
-                    $("form:first").trigger("submit");
-                }
-                return false;
-            });
-        });
-    }
-}
-DataImportation.insertCount = 0;
-DataImportation.updateCount = 0;
-DataImportation.deleteCount = 0;
-DataImportation.ignoreCount = 0;
-DataImportation.errorCount = 0;
-class DataPanel {
-    static reloadAtSamePage(panelname, objid) {
-        let url = new UrlBuilder();
-        url.addQueryParameter("panelName", panelname);
-        url.addQueryParameter("componentName", objid);
-        url.addQueryParameter("context", "panelReload");
-        DataPanel.reload(url.build(), panelname, objid);
-    }
-    static reload(url, componentName, fieldName) {
-        const form = document.querySelector("form");
-        fetch(url, {
-            method: form.method,
-            body: new FormData(form),
-        })
-            .then(response => {
-            if (!response.ok) {
-                throw new Error(response.statusText);
-            }
-            return response.text();
-        })
-            .then(data => {
-            document.getElementById(componentName).outerHTML = data;
-            loadJJMasterData();
-            jjutil.gotoNextFocus(fieldName);
-        })
-            .catch(error => {
-            console.error(error);
-        });
-    }
-}
-function applyDecimalPlaces() {
-    let decimalPlaces = $(this).attr("jjdecimalplaces");
-    if (decimalPlaces == null)
-        decimalPlaces = "2";
-    if (localeCode === 'pt')
-        $(this).number(true, decimalPlaces, ",", ".");
-    else
-        $(this).number(true, decimalPlaces);
-}
-class FeedbackIcon {
-    static removeAllIcons(selector) {
-        $(selector)
-            .removeClass(FeedbackIcon.successClass)
-            .removeClass(FeedbackIcon.warningClass)
-            .removeClass(FeedbackIcon.searchClass)
-            .removeClass(FeedbackIcon.errorClass);
-    }
-    static setIcon(selector, iconClass) {
-        this.removeAllIcons(selector);
-        $(selector).addClass(iconClass);
-    }
-}
-FeedbackIcon.searchClass = "jj-icon-search";
-FeedbackIcon.successClass = "jj-icon-success";
-FeedbackIcon.warningClass = "jj-icon-warning";
-FeedbackIcon.errorClass = "jj-icon-error";
-var _a, _b;
-var showWaitOnPost = true;
-var bootstrapVersion = 3;
-const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
-const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
-class GridView {
-    static sorting(componentName, url, tableOrder) {
-        const tableOrderElement = document.querySelector("#grid-view-order-" + componentName);
-        if (tableOrder + " ASC" === tableOrderElement.value)
-            tableOrderElement.value = tableOrder + " DESC";
-        else
-            tableOrderElement.value = tableOrder + " ASC";
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        this.clearCurrentFormAction(componentName);
-        GridView.refreshGrid(componentName, url);
-    }
-    static clearCurrentFormAction(componentName) {
-        const currentFormAction = document.querySelector("#form-view-action-map-" + componentName);
-        if (currentFormAction)
-            currentFormAction.value = "";
-    }
-    static pagination(componentName, url, currentPage) {
-        document.querySelector("#grid-view-page-" + componentName).value = currentPage;
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        this.clearCurrentFormAction(componentName);
-        GridView.refreshGrid(componentName, url);
-    }
-    static filter(componentName, url) {
-        document.querySelector("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        document.querySelector("#grid-view-page-" + componentName).value = "1";
-        this.clearCurrentFormAction(componentName);
-        GridView.refreshGrid(componentName, url);
-    }
-    static clearFilterInputs(componentName) {
-        const divId = "#current-grid-filter-" + componentName;
-        const selector = divId + " input:enabled, " + divId + " select:enabled";
-        $(selector).each(function () {
-            let currentObj = $(this);
-            if (currentObj.hasClass("flatpickr-input")) {
-                currentObj.val("");
-            }
-            let inputType = this.type;
-            if (inputType == "checkbox") {
-                currentObj.prop("checked", false);
-            }
-            else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
-                currentObj.tagsinput('removeAll');
-            }
-            else if (inputType != "hidden") {
-                currentObj.val("");
-                if (currentObj.hasClass("selectpicker")) {
-                    currentObj.selectpicker("render");
-                }
-                else if (currentObj.hasClass("jjsearchbox")) {
-                    currentObj.blur();
-                }
-                else if (currentObj.hasClass("jjlookup")) {
-                    currentObj.blur();
-                }
-            }
-        });
-        document.querySelector("#grid-view-filter-action-" + componentName).value = "CLEARACTION";
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        this.clearCurrentFormAction(componentName);
-    }
-    static clearFilter(componentName, url) {
-        this.clearFilterInputs(componentName);
-        GridView.refreshGrid(componentName, url);
-    }
-    static refresh(componentName, url) {
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        document.querySelector("#grid-view-row-" + componentName).value = "";
-        this.clearCurrentFormAction(componentName);
-        GridView.refreshGrid(componentName, url);
-    }
-    static selectAllRows(componentName, url) {
-        fetch(url, { method: "POST" })
-            .then(response => response.json())
-            .then(data => GridView.selectAllRowsElements(componentName, data.selectedRows));
-    }
-    static selectAllRowsElements(componentName, rows) {
-        const values = rows.split(",");
-        const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
-        checkboxes.forEach(checkbox => checkbox.checked = true);
-        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName);
-        selectedRowsInput.value = values.join(",");
-        const selectedText = document.getElementById("selected-text-" + componentName);
-        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
-    }
-    static refreshGrid(componentName, url) {
-        const form = document.querySelector("form");
-        let urlBuilder = new UrlBuilder(url);
-        urlBuilder.addQueryParameter("componentName", componentName);
-        SpinnerOverlay.show();
-        const filterAction = document.querySelector("#grid-view-filter-action-" + componentName);
-        fetch(urlBuilder.build(), {
-            method: form.method,
-            body: new FormData(form)
-        })
-            .then(response => response.text())
-            .then(data => {
-            document.querySelector("#grid-view-" + componentName).innerHTML = data;
-            loadJJMasterData();
-            if (filterAction)
-                filterAction.value = "";
-            SpinnerOverlay.hide();
-        })
-            .catch(error => {
-            console.log(error);
-            if (filterAction)
-                filterAction.value = "";
-        });
-    }
-}
 $(function () {
     bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
     loadJJMasterData("load", null);
 });
-class JJSortable {
-    static setup() {
-        $(".jjsortable").sortable({
-            helper: function (e, tr) {
-                var $originals = tr.children();
-                var $helper = tr.clone();
-                $helper.children().each(function (index) {
-                    $(this).width($originals.eq(index).width());
-                });
-                return $helper;
-            },
-            change: function (event, ui) {
-                ui.placeholder.css({
-                    visibility: "visible",
-                    background: "#fbfbfb"
-                });
-            }
-        });
-    }
-}
-class JJView {
-    static postFormValues(componentName, enableAjax, loadform) {
-        if (enableAjax) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "htmlContent");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            postFormValues({
-                url: urlBuilder.build(),
-                success: function (data) {
-                    const gridViewElement = document.querySelector("#grid-view-" + componentName);
-                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
-                    if (gridViewElement && filterActionElement) {
-                        gridViewElement.innerHTML = data;
-                        if (loadform) {
-                            loadJJMasterData();
-                        }
-                        filterActionElement.value = "";
-                    }
-                    else {
-                        console.error("One or both of the elements were not found.");
-                    }
-                },
-                error: function (error) {
-                    console.error(error);
-                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
-                    if (filterActionElement) {
-                        filterActionElement.value = "";
-                    }
-                    else {
-                        console.error("Filter action element was not found.");
-                    }
-                }
-            });
-        }
-        else {
-            $("form:first").trigger("submit");
-        }
-    }
-    static selectItem(objid, obj) {
-        var values = $("#grid-view-selected-rows" + objid).val().toString();
-        var valuesList = [];
-        if (obj.attr("id") == "jjcheckbox-select-all-rows")
-            return;
-        if (values.length > 0) {
-            valuesList = values.split(",");
-        }
-        if (obj.prop("checked")) {
-            if ($.inArray(obj.val(), valuesList) < 0)
-                valuesList.push(obj.val());
-        }
-        else {
-            valuesList = valuesList.filter(function (item) {
-                return item !== obj.val();
-            });
-        }
-        $("#grid-view-selected-rows" + objid).val(valuesList);
-        var textInfo = "";
-        var selectedText = $("#selected-text-" + objid);
-        if (valuesList.length == 0)
-            textInfo = selectedText.attr("no-record-selected-label");
-        else if (valuesList.length == 1)
-            textInfo = selectedText.attr("one-record-selected-label");
-        else
-            textInfo = selectedText.attr("multiple-records-selected-label").replace("{0}", valuesList.length.toString());
-        selectedText.text(textInfo);
-    }
-    static unSelectAll(objid) {
-        $(".jjselect input").not(":disabled").prop("checked", false);
-        $("#grid-view-selected-rows" + objid).val("");
-        var oSelectedtext = $("#selected-text-" + objid);
-        oSelectedtext.text(oSelectedtext.attr("no-record-selected-label"));
-    }
-    static selectAll(componentName) {
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "selectAll");
-        postFormValues({
-            url: urlBuilder.build(),
-            success: (data) => {
-                GridView.selectAllRowsElements(componentName, data.selectedRows);
-            }
-        });
-    }
-    static sortFormValues(objid, enableAjax, v) {
-        var tableOrder = "#grid-view-order-" + objid;
-        if (v + " ASC" == $(tableOrder).val())
-            $(tableOrder).val(v + " DESC");
-        else
-            $(tableOrder).val(v + " ASC");
-        $("#grid-view-action-" + objid).val("");
-        $("#form-view-action-map-" + objid).val("");
-        this.postFormValues(objid, enableAjax, true);
-    }
-    static sortItems(objid) {
-        var descCommand = "";
-        var order = $("#sortable-" + objid).sortable("toArray");
-        for (var i = 0; i < order.length; i++) {
-            var tipoOrdenacao = $("#" + order[i] + "_order").children("option:selected").val();
-            switch (tipoOrdenacao) {
-                case "A":
-                    descCommand += order[i] + " ASC,";
-                    break;
-                case "D":
-                    descCommand += order[i] + " DESC,";
-                    break;
-            }
-        }
-        descCommand = descCommand.substring(0, descCommand.length - 1);
-        $("#grid-view-order-" + objid).val(descCommand);
-        $("#sort-modal-" + objid).modal('hide');
-        $("#form-view-action-map-" + objid).val("");
-        this.refresh(objid, true);
-    }
-    static paginateGrid(objid, enableAjax, v) {
-        $("#grid-view-page-" + objid).val(v);
-        $("#grid-view-action-" + objid).val("");
-        $("#form-view-action-map-" + objid).val("");
-        this.postFormValues(objid, enableAjax, true);
-    }
-    static refresh(componentName, enableAjax) {
-        $("#grid-view-action-" + componentName).val("");
-        $("#grid-view-row-" + componentName).val("");
-        $("#form-view-action-map-" + componentName).val("");
-        this.postFormValues(componentName, enableAjax, true);
-    }
-    static openSettingsModal(componentName, encryptedActionMap) {
-        $("#grid-view-action-" + componentName).val(encryptedActionMap);
-        $("#grid-view-page-" + componentName).val("1");
-        $("#grid-view-row-" + componentName).val("");
-        $("#form-view-action-map-" + componentName).val("");
-        $("form:first").trigger("submit");
-    }
-    static closeSettingsModal(objid) {
-        $("form").trigger("reset");
-        $("form :checkbox").change();
-        $("#config-modal-" + objid).modal("hide");
-    }
-    static filter(objid, enableAjax) {
-        $("#grid-view-filter-action-" + objid).val("FILTERACTION");
-        $("#grid-view-action-" + objid).val("");
-        $("#grid-view-page-" + objid).val("1");
-        $("#form-view-action-map-" + objid).val("");
-        this.postFormValues(objid, enableAjax, false);
-        return false;
-    }
-    static openSelectElementInsert(componentName, encryptedActionMap) {
-        $("#form-view-current-action-" + componentName).val("ELEMENTSEL");
-        $("#form-view-select-action-values" + componentName).val(encryptedActionMap);
-        $("form:first").trigger("submit");
-    }
-    static clearFilter(componentName, enableAjax) {
-        GridView.clearFilterInputs(componentName);
-        this.postFormValues(componentName, enableAjax, false);
-    }
-    static executeGridAction(componentName, encryptedActionMap, confirmMessage) {
-        if (confirmMessage) {
-            var result = confirm(confirmMessage);
-            if (!result) {
-                return false;
-            }
-        }
-        $("#grid-view-action-" + componentName).val(encryptedActionMap);
-        $("#form-view-action-map-" + componentName).val("");
-        $("form:first").trigger("submit");
-    }
-    static executeSqlCommand(objid, criptid, confirmMessage) {
-        if (confirmMessage) {
-            var result = confirm(confirmMessage);
-            if (!result) {
-                return false;
-            }
-        }
-        $("#grid-view-action-" + objid).val("");
-        $("#form-view-action-map-" + objid).val("");
-        $("#grid-view-row-" + objid).val(criptid);
-        $("form:first").trigger("submit");
-    }
-    static setLookup(objid, value) {
-        window.parent.defaultModal.hide();
-        setTimeout(function () {
-            window.parent.$("#id_" + objid).val(value);
-            window.parent.$("#" + objid).val(value).change().blur();
-        }, 100);
-    }
-    static executeUrlRedirect(url, ispopup, title, confirmMessage, popupSize = 1) {
-        if (confirmMessage) {
-            const result = confirm(confirmMessage);
-            if (!result) {
-                return false;
-            }
-        }
-        if (ispopup) {
-            defaultModal.showIframe(url, title, popupSize);
-        }
-        else {
-            window.location.href = url;
-        }
-    }
-    static showInsertSucess(objid) {
-        $("#insert-message-panel" + objid).fadeOut(2000, function () {
-            $("#insert-panel" + objid).slideDown();
-        });
-    }
-    static deleteFile(objid, filename, promptStr) {
-        const result = confirm(promptStr);
-        if (!result) {
-            return false;
-        }
-        $("#upload-action-" + objid).val("DELFILE");
-        $("#filename-" + objid).val(filename);
-        $("form:first").trigger("submit");
-    }
-    static downloadFile(objid, filename) {
-        $("#upload-action-" + objid).val("DOWNLOADFILE");
-        $("#filename-" + objid).val(filename);
-        $("form:first").trigger("submit");
-        setTimeout(function () {
-            SpinnerOverlay.hide();
-            $("#upload-action-" + objid).val("");
-        }, 1500);
-    }
-    static renameFile(objid, filename, promptStr) {
-        var newFileName = prompt(promptStr, filename);
-        if (newFileName != null && newFileName != filename) {
-            $("#upload-action-" + objid).val("RENAMEFILE");
-            $("#filename-" + objid).val(filename + ";" + newFileName);
-            $("form:first").trigger("submit");
-        }
-    }
-    static directDownload(objid, panelName, filename) {
-        SpinnerOverlay.show();
-        var url = $("form").attr("action");
-        url += url.includes("?") ? "&" : "?";
-        url += "uploadView-" + panelName + "=" + objid;
-        url += "&downloadfile=" + filename;
-        window.location.assign(url);
-        setTimeout(function () {
-            SpinnerOverlay.hide();
-        }, 1500);
-    }
-    static showExportOptions(objid, exportType) {
-        if (exportType == "1") {
-            $("#" + objid + "-div-export-orientation").hide();
-            $("#" + objid + "-div-export-all").show();
-            $("#" + objid + "-div-export-delimiter").hide();
-            $("#" + objid + "-div-export-firstline").show();
-        }
-        else if (exportType == "2") {
-            $("#" + objid + "-div-export-orientation").show();
-            $("#" + objid + "-div-export-all").hide();
-            $("#" + objid + "-div-export-delimiter").hide();
-            $("#" + objid + "-div-export-firstline").hide();
-        }
-        else {
-            $("#" + objid + "-div-export-orientation").hide();
-            $("#" + objid + "-div-export-all").show();
-            $("#" + objid + "-div-export-delimiter").show();
-            $("#" + objid + "-div-export-firstline").show();
-        }
-    }
-    static viewLog(objid, id) {
-        $("#audit-log-id-" + objid).val(id);
-        $("form:first").trigger("submit");
-    }
-    static searchOnDOM(objid, oDom) {
-        var value = $(oDom).val().toString().toLowerCase();
-        $("#table_" + objid + " tr").filter(function () {
-            var textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
-            var isSearch = textValues.toLowerCase().indexOf(value) > -1;
-            if (!isSearch) {
-                var valueNew = value.replace(",", "").replace(".", "").replace("-", "");
-                $(this).find("input").each(function () {
-                    var inputValue = $(this).val();
-                    if (inputValue != null) {
-                        let isSearch = inputValue.toString().replace(",", "")
-                            .replace(".", "")
-                            .replace("-", "")
-                            .toLowerCase()
-                            .indexOf(valueNew) > -1;
-                        if (isSearch)
-                            return false;
-                    }
-                });
-            }
-            if (!isSearch) {
-                $(this).find("select").each(function () {
-                    var selectedText = $(this).children("option:selected").text();
-                    if (selectedText != null) {
-                        isSearch = selectedText.toLowerCase().indexOf(valueNew) > -1;
-                        if (isSearch)
-                            return false;
-                    }
-                });
-            }
-            $(this).toggle(isSearch);
-        });
-        if (value.length > 0) {
-            $("#infotext_" + objid).css("display", "none");
-            $("ul.pagination").css("display", "none");
-        }
-        else {
-            $("#infotext_" + objid).css("display", "");
-            $("ul.pagination").css("display", "");
-        }
-    }
-}
 function loadJJMasterData(event, prefixSelector) {
     if (prefixSelector === undefined || prefixSelector === null) {
         prefixSelector = "";
@@ -1124,61 +19,15 @@ function loadJJMasterData(event, prefixSelector) {
         iconBase: 'fa'
     });
     $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
-    $(prefixSelector + ".jjform-datetime").flatpickr({
-        enableTime: true,
-        wrap: true,
-        allowInput: true,
-        altInput: false,
-        time_24hr: true,
-        dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
-        onOpen: function (selectedDates, dateStr, instance) {
-            if (instance.input.getAttribute("autocompletePicker") == 1) {
-                instance.setDate(Date.now());
-            }
-        },
-        locale: localeCode
-    });
-    $(prefixSelector + ".jjform-date").flatpickr({
-        enableTime: false,
-        wrap: true,
-        allowInput: true,
-        altInput: false,
-        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
-        onOpen: function (selectedDates, dateStr, instance) {
-            if (instance.input.getAttribute("autocompletePicker") == 1) {
-                instance.setDate(Date.now());
-            }
-        },
-        locale: localeCode
-    });
-    $(prefixSelector + ".jjform-hour").flatpickr({
-        enableTime: true,
-        wrap: true,
-        noCalendar: true,
-        allowInput: true,
-        altInput: false,
-        dateFormat: "H:i",
-        time_24hr: true,
-        onOpen: function (selectedDates, dateStr, instance) {
-            if (instance.input.getAttribute("autocompletePicker") == 1) {
-                instance.setDate(Date.now());
-            }
-        },
-        locale: localeCode
-    });
-    $(prefixSelector + ".jjdecimal").each(applyDecimalPlaces);
-    $(prefixSelector + "[data-toggle='tooltip'], " + prefixSelector + "[data-bs-toggle='tooltip']").tooltip({
-        container: "body",
-        trigger: "hover"
-    });
-    TextArea.setup();
-    SearchBox.setup();
-    Lookup.setup();
-    JJSortable.setup();
-    UploadArea.setup();
-    TabNav.setup();
-    Slider.observeSliders();
-    Slider.observeInputs();
+    CalendarListener.listen(prefixSelector);
+    TextAreaListener.listenKeydown();
+    SearchBoxListener.listenTypeahed();
+    LookupListener.listenChanges();
+    SortableListener.listenSorting();
+    UploadAreaListener.listenFileUpload();
+    TabNavListener.listenTabNavs();
+    SliderListener.listenSliders();
+    SliderListener.listenInputs();
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&
@@ -1204,88 +53,23 @@ function loadJJMasterData(event, prefixSelector) {
         }
     });
 }
-class Lookup {
-    static setup() {
-        $("input.jjlookup").each(function () {
-            let lookupInput = $(this);
-            let lookupId = lookupInput.attr("id");
-            let fieldName = lookupInput.attr("lookup-field-name");
-            let panelName = lookupInput.attr("panelName");
-            let popupTitle = lookupInput.attr("popuptitle");
-            let lookupUrl = lookupInput.attr("lookup-url");
-            let lookupResultUrl = lookupInput.attr("lookup-result-url");
-            let dataPanelReloadUrl = lookupInput.attr("data-panel-reload-url");
-            let popupSize = +lookupInput.attr("popupsize");
-            let form = document.querySelector("form");
-            const jjLookupSelector = "#" + lookupId + "";
-            const jjHiddenLookupSelector = "#id_" + lookupId + "";
-            $("#btn_" + lookupId).on("click", function () {
-                defaultModal.showIframe(lookupUrl, popupTitle, popupSize);
-            });
-            function setHiddenLookup() {
-                $("#id_" + lookupId).val(lookupInput.val());
-            }
-            lookupInput.one("focus", function () {
-                lookupInput.val($("#id_" + lookupId).val()).select();
-            });
-            lookupInput.one("change", function () {
-                $("#id_" + lookupId).val(lookupInput.val());
-            });
-            lookupInput.one("blur", function () {
-                showWaitOnPost = false;
-                setHiddenLookup();
-                FeedbackIcon.removeAllIcons(jjLookupSelector);
-                lookupInput.removeAttr("readonly");
-                if (lookupInput.val() == "") {
-                    return;
-                }
-                if (!lookupResultUrl) {
-                    let urlBuilder = new UrlBuilder();
-                    urlBuilder.addQueryParameter("lookup-" + panelName, fieldName);
-                    urlBuilder.addQueryParameter("lookupAction", "getDescription");
-                    urlBuilder.addQueryParameter("lkid", lookupInput.val().toString());
-                    lookupResultUrl = urlBuilder.build();
-                }
-                lookupInput.addClass("loading-circle");
-                const formData = new FormData(form);
-                fetch(lookupResultUrl, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json',
-                    },
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                    showWaitOnPost = true;
-                    lookupInput.removeClass("loading-circle");
-                    if (data.description === "") {
-                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass);
-                    }
-                    else {
-                        const lookupHiddenInputElement = document.querySelector("#id_" + lookupId);
-                        const lookupInputElement = document.querySelector("#" + lookupId);
-                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
-                        lookupInputElement.value = data.description;
-                        lookupHiddenInputElement.value = data.id;
-                        if (dataPanelReloadUrl) {
-                            DataPanel.reload(dataPanelReloadUrl, panelName, lookupId);
-                        }
-                        else {
-                            DataPanel.reloadAtSamePage(panelName, lookupId);
-                        }
-                    }
-                })
-                    .catch(error => {
-                    showWaitOnPost = true;
-                    lookupInput.removeClass("loading-circle");
-                    FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass);
-                    console.log(error);
-                });
-            });
-        });
+class FeedbackIcon {
+    static removeAllIcons(selector) {
+        $(selector)
+            .removeClass(FeedbackIcon.successClass)
+            .removeClass(FeedbackIcon.warningClass)
+            .removeClass(FeedbackIcon.searchClass)
+            .removeClass(FeedbackIcon.errorClass);
+    }
+    static setIcon(selector, iconClass) {
+        this.removeAllIcons(selector);
+        $(selector).addClass(iconClass);
     }
 }
+FeedbackIcon.searchClass = "jj-icon-search";
+FeedbackIcon.successClass = "jj-icon-success";
+FeedbackIcon.warningClass = "jj-icon-warning";
+FeedbackIcon.errorClass = "jj-icon-error";
 var TMessageIcon;
 (function (TMessageIcon) {
     TMessageIcon[TMessageIcon["NONE"] = 1] = "NONE";
@@ -1468,8 +252,15 @@ var ModalSize;
 })(ModalSize || (ModalSize = {}));
 class ModalUrlOptions {
 }
-class Modal {
+class ModalBase {
     constructor() {
+        this.modalId = "jjmasterdata-modal";
+        this.modalSize = ModalSize.Default;
+    }
+}
+class _Modal extends ModalBase {
+    constructor() {
+        super(...arguments);
         this.modalSizeCssClass = {
             Default: "jj-modal-default",
             ExtraLarge: "jj-modal-xl",
@@ -1477,8 +268,6 @@ class Modal {
             Small: "jj-modal-sm",
             Fullscreen: "modal-fullscreen",
         };
-        this.modalId = "jjmasterdata-modal";
-        this.modalSize = ModalSize.Default;
     }
     showModal() {
         if (bootstrapVersion >= 5) {
@@ -1563,47 +352,1311 @@ class Modal {
         this.hideModal();
     }
 }
+class _LegacyModal extends ModalBase {
+    constructor() {
+        super(...arguments);
+        this.modalSizeCssClass = {
+            [ModalSize.Default]: "jj-modal-default",
+            [ModalSize.ExtraLarge]: "jj-modal-xl",
+            [ModalSize.Large]: "jj-modal-lg",
+            [ModalSize.Small]: "jj-modal-sm",
+            [ModalSize.Fullscreen]: "modal-fullscreen",
+        };
+    }
+    getModalCssClass() {
+        return this.modalSizeCssClass[this.modalSize];
+    }
+    createModalHtml(url) {
+        const iframeSize = this.modalSize === ModalSize.Small
+            ? "<div class=\"modal-dialog\" style=\"margin:0.7em;left:0px;right:0px;top:0px;bottom:0px; position:fixed;width:auto;\">\r\n"
+            : `<div class="modal-dialog" style="position: auto; height: ${this.modalSize === ModalSize.ExtraLarge
+                ? "95"
+                : this.modalSize === ModalSize.Large
+                    ? "75"
+                    : this.modalSize === ModalSize.Fullscreen
+                        ? "100"
+                        : "90"}vh; width: ${this.modalSize === ModalSize.ExtraLarge ? "65%" : "auto"};">\r\n`;
+        const html = `
+            <div id="${this.modalId}" tabindex="-1" class="modal fade" role="dialog">
+                ${iframeSize}
+                    <div class="modal-content" style="height:100%;width:auto;">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title" id="${this.modalId}-title"></h4>
+                        </div>
+                        <div class="modal-body" style="height:90%;width:auto;">
+                            <iframe style="border: 0px;" src="${url}" width="100%" height="97%">Waiting...</iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        return html;
+    }
+    showModal() {
+        $(`#${this.modalId}`).modal();
+        $("iframe").on("load", () => {
+            SpinnerOverlay.hide();
+        });
+    }
+    setTitle(title) {
+        $(`#${this.modalId}-title`).html(title);
+    }
+    showIframe(url, title, size = null) {
+        this.modalSize = size || this.modalSize;
+        const modalHtml = this.createModalHtml(url);
+        $(modalHtml).appendTo($("body"));
+        this.setTitle(title);
+        this.showModal();
+    }
+    showUrl(options, title, size = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.modalSize = size || this.modalSize;
+            try {
+                const response = yield fetch(options.url, options.requestOptions);
+                if (response.ok) {
+                    const content = yield response.text();
+                    const modalHtml = this.createModalHtml(`data:text/html,${encodeURIComponent(content)}`);
+                    $(modalHtml).appendTo($("body"));
+                    this.setTitle(title);
+                    this.showModal();
+                }
+                else {
+                    console.error(`Failed to fetch content from URL: ${options.url}`);
+                }
+            }
+            catch (error) {
+                console.error("An error occurred while fetching content:", error);
+            }
+        });
+    }
+    hide() {
+        $(`#${this.modalId}`).modal("hide");
+    }
+}
 var defaultModal = function () {
-    if (!(this instanceof Modal)) {
-        return new Modal();
+    if (bootstrapVersion == 5) {
+        if (!(this instanceof _Modal)) {
+            return new _Modal();
+        }
+    }
+    else {
+        if (!(this instanceof _LegacyModal)) {
+            return new _LegacyModal();
+        }
     }
 }();
-class PostFormValuesOptions {
-}
-function postFormValues(options) {
-    SpinnerOverlay.show();
-    const formData = new FormData(document.querySelector("form"));
-    const requestOptions = {
-        method: "POST",
-        body: formData
-    };
-    fetch(options.url, requestOptions)
-        .then(response => {
-        var _a;
-        if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
-            return response.json();
+class Modal {
+    constructor() {
+        if (bootstrapVersion === 5) {
+            this.instance = new _Modal();
         }
         else {
+            this.instance = new _LegacyModal();
+        }
+        this.instance.modalId = "jjmasterdata-modal";
+        this.instance.modalSize = ModalSize.Default;
+    }
+    showIframe(url, title, size) {
+        this.instance.showIframe(url, title, size);
+    }
+    showUrl(options, title, size = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.instance.showUrl(options, title, size);
+        });
+    }
+    hide() {
+        this.instance.hide();
+    }
+    get modalId() {
+        return this.instance.modalId;
+    }
+    set modalId(value) {
+        this.instance.modalId = value;
+    }
+    get modalTitle() {
+        return this.instance.modalTitle;
+    }
+    set modalTitle(value) {
+        this.instance.modalTitle = value;
+    }
+    get modalSize() {
+        return this.instance.modalSize;
+    }
+    set modalSize(value) {
+        this.instance.modalSize = value;
+    }
+    get modalElement() {
+        return this.instance.modalElement;
+    }
+    set modalElement(value) {
+        this.instance.modalElement = value;
+    }
+    get centered() {
+        return this.instance.centered;
+    }
+    set centered(value) {
+        this.instance.centered = value;
+    }
+}
+class SortableListener {
+    static listenSorting() {
+        $(".jjsortable").sortable({
+            helper: function (e, tr) {
+                var originals = tr.children();
+                var helper = tr.clone();
+                helper.children().each(function (index) {
+                    $(this).width(originals.eq(index).width());
+                });
+                return helper;
+            },
+            change: function (event, ui) {
+                ui.placeholder.css({
+                    visibility: "visible",
+                    background: "#fbfbfb"
+                });
+            }
+        });
+    }
+}
+class SpinnerOverlay {
+    static loadHtml() {
+        if (!document.querySelector("#" + this.spinnerOverlayId)) {
+            if (bootstrapVersion < 5) {
+                const spinnerOverlay = document.createElement("div");
+                spinnerOverlay.id = this.spinnerOverlayId;
+                spinnerOverlay.innerHTML = `
+            <div class="ajaxImage"></div>
+            <div class="ajaxMessage">Loading...</div>
+            `;
+                document.body.appendChild(spinnerOverlay);
+                const options = {
+                    lines: 17,
+                    length: 28,
+                    width: 14,
+                    radius: 38,
+                    scale: 0.40,
+                    corners: 1,
+                    color: "#000",
+                    opacity: 0.3,
+                    rotate: 0,
+                    direction: 1,
+                    speed: 1.2,
+                    trail: 62,
+                    fps: 20,
+                    zIndex: 2e9,
+                    className: "spinner",
+                    top: "50%",
+                    left: "50%",
+                    shadow: false,
+                    hwaccel: false,
+                    position: "absolute",
+                };
+                const spinner = new Spinner(options).spin();
+                if (spinner.el) {
+                    const spinnerOverlayElement = document.querySelector("#spinner-overlay .ajaxImage");
+                    spinnerOverlayElement.parentNode.insertBefore(spinner.el, spinnerOverlayElement.nextSibling);
+                }
+            }
+            else {
+                const spinnerOverlayDiv = document.createElement('div');
+                spinnerOverlayDiv.id = this.spinnerOverlayId;
+                spinnerOverlayDiv.classList.add('spinner-overlay', 'text-center');
+                const spinnerDiv = document.createElement('div');
+                spinnerDiv.classList.add('spinner-border', 'spinner-border-lg');
+                spinnerDiv.setAttribute('role', 'status');
+                const spanElement = document.createElement('span');
+                spanElement.classList.add('visually-hidden');
+                spanElement.textContent = 'Loading...';
+                spinnerDiv.appendChild(spanElement);
+                spinnerOverlayDiv.appendChild(spinnerDiv);
+                document.body.appendChild(spinnerOverlayDiv);
+            }
+        }
+    }
+    static show() {
+        this.loadHtml();
+        document.querySelector("#" + this.spinnerOverlayId).style.display = "";
+    }
+    static hide() {
+        const overlay = document.querySelector("#" + this.spinnerOverlayId);
+        if (overlay) {
+            overlay.style.display = "none";
+        }
+    }
+}
+SpinnerOverlay.spinnerOverlayId = "spinner-overlay";
+class ActionManager {
+    static executeRedirectActionAtSamePage(componentName, encryptedActionMap, confirmMessage) {
+        this.executeRedirectAction(null, componentName, encryptedActionMap, confirmMessage);
+    }
+    static executeRedirectAction(url, componentName, encryptedActionMap, confirmMessage) {
+        if (confirmMessage) {
+            const result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
+        currentFormActionInput.value = encryptedActionMap;
+        if (!url) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "urlRedirect");
+            urlBuilder.addQueryParameter("componentName", componentName);
+            url = urlBuilder.build();
+        }
+        this.executeUrlRedirect(url);
+        return true;
+    }
+    static executeUrlRedirect(url) {
+        postFormValues({
+            url: url,
+            success: (data) => {
+                if (data.urlAsPopUp) {
+                    defaultModal.showIframe(data.urlRedirect, data.popUpTitle);
+                }
+                else {
+                    window.location.href = data.urlRedirect;
+                }
+            }
+        });
+    }
+    static executeAction(componentName, encryptedActionMap, confirmationMessage, isModal) {
+        if (confirmationMessage) {
+            if (!confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+        const gridViewActionInput = document.querySelector("#grid-view-action-" + componentName);
+        const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
+        if (gridViewActionInput) {
+            gridViewActionInput.value = null;
+        }
+        if (formViewActionInput) {
+            formViewActionInput.value = encryptedActionMap;
+        }
+        let form = document.querySelector("form");
+        if (!form) {
+            return;
+        }
+        if (isModal) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "modal");
+            postFormValues({
+                url: urlBuilder.build(),
+                success: function (data) {
+                    const outputElement = document.getElementById(componentName);
+                    if (outputElement) {
+                        if (typeof data === "object") {
+                            if (data.closeModal) {
+                                const modal = new Modal();
+                                modal.modalId = componentName + "-modal";
+                                modal.hide();
+                                JJViewHelper.refresh(componentName, true);
+                            }
+                        }
+                        else {
+                            outputElement.innerHTML = data;
+                        }
+                    }
+                }
+            });
+        }
+        else {
+            form.submit();
+        }
+    }
+    static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
+        this.executeAction(componentName, encryptedActionMap, confirmationMessage, false);
+    }
+    static executeModalAction(componentName, encryptedActionMap, confirmationMessage) {
+        this.executeAction(componentName, encryptedActionMap, confirmationMessage, true);
+    }
+    static executeFormActionAsModal(componentName, title, encryptedActionMap, confirmationMessage) {
+        if (confirmationMessage) {
+            if (confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+        const currentTableActionInput = document.querySelector("#grid-view-action-" + componentName);
+        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
+        currentTableActionInput.value = null;
+        currentFormActionInput.value = encryptedActionMap;
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("context", "modal");
+        const url = urlBuilder.build();
+        const modal = new Modal();
+        modal.modalId = componentName + "-modal";
+        modal.showUrl({ url: url, requestOptions: {
+                method: "POST",
+                body: new FormData(document.querySelector("form"))
+            } }, title).then(_ => loadJJMasterData());
+    }
+}
+class AuditLogHelper {
+    static loadAuditLog(componentName, logId, url = null) {
+        $("#sortable-grid a").removeClass("active");
+        if (logId != "")
+            $("#" + logId).addClass("active");
+        document.querySelector('#audit-log-id-' + componentName).value = logId;
+        if (url == null || url.length == 0) {
+            let builder = new UrlBuilder();
+            builder.addQueryParameter("context", "htmlContent");
+            url = builder.build();
+        }
+        postFormValues({
+            url: url,
+            success: function (data) {
+                document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
+            }
+        });
+    }
+}
+class DataExportationHelper {
+    static startProgressVerificationAtSamePage(componentName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            DataExportationHelper.setLoadMessage();
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "dataExportation");
+            urlBuilder.addQueryParameter("gridViewName", componentName);
+            urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
+            var isCompleted = false;
+            while (!isCompleted) {
+                isCompleted = yield DataExportationHelper.checkProgress(urlBuilder.build(), componentName);
+                yield sleep(3000);
+            }
+        });
+    }
+    static stopProcessAtSamePage(componentName, stopMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "dataExportation");
+            urlBuilder.addQueryParameter("gridViewName", componentName);
+            urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
+            yield DataExportationHelper.stopExportation(urlBuilder.build(), stopMessage);
+        });
+    }
+    static openExportPopupAtSamePage(componentName) {
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("context", "dataExportation");
+        urlBuilder.addQueryParameter("gridViewName", componentName);
+        urlBuilder.addQueryParameter("dataExportationOperation", "showOptions");
+        DataExportationHelper.openExportPopup(urlBuilder.build(), componentName);
+    }
+    static startExportationAtSamePage(componentName) {
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("context", "dataExportation");
+        urlBuilder.addQueryParameter("gridViewName", componentName);
+        urlBuilder.addQueryParameter("dataExportationOperation", "startProcess");
+        fetch(urlBuilder.build(), {
+            method: "POST",
+            body: new FormData(document.querySelector("form"))
+        }).then(response => response.text()).then((html) => __awaiter(this, void 0, void 0, function* () {
+            const modalBody = "#export-modal-" + componentName + " .modal-body ";
+            document.querySelector(modalBody).innerHTML = html;
+            loadJJMasterData(null, modalBody);
+            yield DataExportationHelper.startProgressVerificationAtSamePage(componentName);
+        }));
+    }
+    static checkProgress(url, componentName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            showWaitOnPost = false;
+            try {
+                const response = yield fetch(url);
+                const data = yield response.json();
+                if (data.FinishedMessage) {
+                    showWaitOnPost = true;
+                    document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
+                    const linkFile = document.querySelector("#export_link_" + componentName);
+                    if (linkFile)
+                        linkFile.click();
+                    return true;
+                }
+                else {
+                    document.querySelector("#divMsgProcess").style.display = "";
+                    document.querySelector(".progress-bar").style.width = data.PercentProcess + "%";
+                    document.querySelector(".progress-bar").textContent = data.PercentProcess + "%";
+                    document.querySelector("#start-date-label").textContent = data.StartDate;
+                    document.querySelector("#lblResumeLog").textContent = data.Message;
+                    return false;
+                }
+            }
+            catch (e) {
+                showWaitOnPost = true;
+                document.querySelector("#dataexp_spinner_" + componentName).style.display = "none";
+                document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = e.message;
+                return false;
+            }
+        });
+    }
+    static setLoadMessage() {
+        const options = {
+            lines: 13,
+            length: 38,
+            width: 17,
+            radius: 45,
+            scale: 0.2,
+            corners: 1,
+            color: "#000",
+            opacity: 0.3,
+            rotate: 0,
+            direction: 1,
+            speed: 1.2,
+            trail: 62,
+            fps: 20,
+            zIndex: 2e9,
+            className: "spinner",
+            top: "50%",
+            left: "50%",
+            shadow: false,
+            hwaccel: false,
+            position: "absolute"
+        };
+        const target = document.getElementById('exportationSpinner');
+        var spinner = new Spinner(options).spin(target);
+    }
+    static setSettingsHTML(componentName, html) {
+        const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body ");
+        modalBody.innerHTML = html;
+        loadJJMasterData(null);
+        const qtdElement = document.querySelector("#" + componentName + "_totrows");
+        if (qtdElement) {
+            const totRows = +qtdElement.textContent.replace(/\./g, "");
+            if (totRows > 50000) {
+                document.querySelector("#data-exportation-warning" + componentName).style.display = "block";
+            }
+        }
+        if (bootstrapVersion < 5) {
+            $("#export-modal-" + componentName).modal();
+        }
+        else {
+            const modal = new bootstrap.Modal(document.querySelector("#export-modal-" + componentName), {});
+            modal.show();
+        }
+    }
+    static openExportPopup(url, componentName) {
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+            this.setSettingsHTML(componentName, data);
+        })
+            .catch(error => {
+            console.log(error);
+        });
+    }
+    static startExportation(startExportationUrl, checkProgressUrl, componentName) {
+        const form = document.querySelector("form");
+        fetch(startExportationUrl, {
+            method: "POST",
+            body: new FormData(form)
+        })
+            .then(response => {
+            if (response.ok) {
+                return response.text();
+            }
+            else {
+                throw new Error("Request failed with status: " + response.status);
+            }
+        })
+            .then(data => {
+            const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body");
+            modalBody.innerHTML = data;
+            loadJJMasterData();
+            DataExportationHelper.startProgressVerification(checkProgressUrl, componentName);
+        })
+            .catch(error => {
+            console.log(error);
+        });
+    }
+    static stopExportation(url, stopMessage) {
+        return __awaiter(this, void 0, void 0, function* () {
+            document.querySelector("#divMsgProcess").innerHTML = stopMessage;
+            showWaitOnPost = false;
+            yield fetch(url);
+        });
+    }
+    static startProgressVerification(url, componentName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            DataExportationHelper.setLoadMessage();
+            var isCompleted = false;
+            while (!isCompleted) {
+                isCompleted = yield DataExportationHelper.checkProgress(url, componentName);
+                yield sleep(3000);
+            }
+        });
+    }
+}
+class DataImportationHelper {
+    static setLoadMessage() {
+        const options = {
+            lines: 13,
+            length: 38,
+            width: 17,
+            radius: 45,
+            scale: 0.2,
+            corners: 1,
+            color: "#000",
+            opacity: 0.3,
+            rotate: 0,
+            direction: 1,
+            speed: 1.2,
+            trail: 62,
+            fps: 20,
+            zIndex: 2e9,
+            className: "spinner",
+            top: "50%",
+            left: "50%",
+            shadow: false,
+            hwaccel: false,
+            position: "absolute"
+        };
+        const target = document.getElementById('impSpin');
+        new Spinner(options).spin(target);
+    }
+    static checkProgress(componentName) {
+        showWaitOnPost = false;
+        let checkProgressUrl = document.getElementById("divProcess").getAttribute("check-progress-url");
+        let url;
+        if (checkProgressUrl) {
+            url = checkProgressUrl;
+        }
+        else {
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "dataImportation");
+            urlBuilder.addQueryParameter("current_uploadaction", "process_check");
+            urlBuilder.addQueryParameter("componentName", componentName);
+            url = urlBuilder.build();
+        }
+        fetch(url, {
+            method: 'GET',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(result => {
+            const divMsgProcess = document.querySelector("#divMsgProcess");
+            if (divMsgProcess) {
+                divMsgProcess.style.display = "";
+            }
+            const progressBar = document.querySelector(".progress-bar");
+            if (progressBar) {
+                progressBar.style.width = result.PercentProcess + "%";
+                progressBar.textContent = result.PercentProcess + "%";
+            }
+            const lblResumeLog = document.querySelector("#lblResumeLog");
+            if (lblResumeLog) {
+                lblResumeLog.textContent = result.Message;
+            }
+            const lblStartDate = document.querySelector("#start-date-label");
+            if (lblStartDate) {
+                lblStartDate.textContent = result.StartDate;
+            }
+            if (result.Insert > 0) {
+                document.querySelector("#lblInsert").style.display = "";
+                if (result.PercentProcess === 100) {
+                    document.querySelector("#lblInsertCount").textContent = result.Insert;
+                }
+                else {
+                    jjutil.animateValue("lblInsertCount", DataImportationHelper.insertCount, result.Insert, 1000);
+                }
+                DataImportationHelper.insertCount = result.Insert;
+            }
+            if (result.Update > 0) {
+                document.querySelector("#lblUpdate").style.display = "";
+                if (result.PercentProcess === 100) {
+                    document.querySelector("#lblUpdateCount").textContent = result.Update;
+                }
+                else {
+                    jjutil.animateValue("lblUpdateCount", DataImportationHelper.updateCount, result.Update, 1000);
+                }
+                DataImportationHelper.updateCount = result.Update;
+            }
+            if (result.Delete > 0) {
+                document.querySelector("#lblDelete").style.display = "";
+                if (result.PercentProcess === 100) {
+                    document.querySelector("#lblDeleteCount").textContent = result.Delete;
+                }
+                else {
+                    jjutil.animateValue("lblDeleteCount", DataImportationHelper.deleteCount, result.Delete, 1000);
+                }
+                DataImportationHelper.deleteCount = result.Delete;
+            }
+            if (result.Ignore > 0) {
+                document.querySelector("#lblIgnore").style.display = "";
+                if (result.PercentProcess === 100) {
+                    document.querySelector("#lblIgnoreCount").textContent = result.Ignore;
+                }
+                else {
+                    jjutil.animateValue("lblIgnoreCount", DataImportationHelper.ignoreCount, result.Ignore, 1000);
+                }
+                DataImportationHelper.ignoreCount = result.Ignore;
+            }
+            if (result.Error > 0) {
+                document.querySelector("#lblError").style.display = "";
+                if (result.PercentProcess === 100) {
+                    document.querySelector("#lblErrorCount").textContent = result.Error;
+                }
+                else {
+                    jjutil.animateValue("lblErrorCount", DataImportationHelper.errorCount, result.Error, 1000);
+                }
+                DataImportationHelper.errorCount = result.Error;
+            }
+            if (!result.IsProcessing) {
+                document.querySelector("#current_uploadaction").value = "process_finished";
+                setTimeout(function () {
+                    document.querySelector("form").dispatchEvent(new Event("submit"));
+                }, 1000);
+            }
+        })
+            .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+    static startProcess(objname) {
+        $(document).ready(function () {
+            DataImportationHelper.setLoadMessage();
+            setInterval(function () {
+                DataImportationHelper.checkProgress(objname);
+            }, 3000);
+        });
+    }
+    static stopProcess(componentName, stopLabel) {
+        showWaitOnPost = false;
+        let stopProcessUrl = document.getElementById("divProcess").getAttribute("stop-process-url");
+        let url;
+        if (stopProcessUrl) {
+            url = stopProcessUrl;
+        }
+        else {
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "dataImportation");
+            urlBuilder.addQueryParameter("current_uploadaction", "process_check");
+            urlBuilder.addQueryParameter("componentName", componentName);
+            url = urlBuilder.build();
+        }
+        fetch(url).then(response => response.json()).then(data => {
+            if (data.isProcessing === false) {
+                document.getElementById("divMsgProcess").innerHTML = stopLabel;
+            }
+        });
+    }
+    static addPasteListener() {
+        $(document).ready(function () {
+            document.addEventListener("paste", (e) => {
+                var pastedText = undefined;
+                if (window.clipboardData && window.clipboardData.getData) {
+                    pastedText = window.clipboardData.getData("Text");
+                }
+                else if (e.clipboardData && e.clipboardData.getData) {
+                    pastedText = e.clipboardData.getData("text/plain");
+                }
+                e.preventDefault();
+                if (pastedText != undefined) {
+                    $("#current_uploadaction").val("posted_past_text");
+                    $("#pasteValue").val(pastedText);
+                    $("form:first").trigger("submit");
+                }
+                return false;
+            });
+        });
+    }
+}
+DataImportationHelper.insertCount = 0;
+DataImportationHelper.updateCount = 0;
+DataImportationHelper.deleteCount = 0;
+DataImportationHelper.ignoreCount = 0;
+DataImportationHelper.errorCount = 0;
+class DataPanelHelper {
+    static reloadAtSamePage(panelname, objid) {
+        let url = new UrlBuilder();
+        url.addQueryParameter("panelName", panelname);
+        url.addQueryParameter("componentName", objid);
+        url.addQueryParameter("context", "panelReload");
+        DataPanelHelper.reload(url.build(), panelname, objid);
+    }
+    static reload(url, componentName, fieldName) {
+        const form = document.querySelector("form");
+        fetch(url, {
+            method: form.method,
+            body: new FormData(form),
+        })
+            .then(response => {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
             return response.text();
-        }
-    })
-        .then(data => {
-        options.success(data);
-    })
-        .catch(error => {
-        if (options.error) {
-            options.error(error);
+        })
+            .then(data => {
+            document.getElementById(componentName).outerHTML = data;
+            loadJJMasterData();
+            jjutil.gotoNextFocus(fieldName);
+        })
+            .catch(error => {
+            console.error(error);
+        });
+    }
+}
+class GridViewHelper {
+    static sorting(componentName, url, tableOrder) {
+        const tableOrderElement = document.querySelector("#grid-view-order-" + componentName);
+        if (tableOrder + " ASC" === tableOrderElement.value)
+            tableOrderElement.value = tableOrder + " DESC";
+        else
+            tableOrderElement.value = tableOrder + " ASC";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
+        GridViewHelper.refreshGrid(componentName, url);
+    }
+    static clearCurrentFormAction(componentName) {
+        const currentFormAction = document.querySelector("#form-view-action-map-" + componentName);
+        if (currentFormAction)
+            currentFormAction.value = "";
+    }
+    static pagination(componentName, url, currentPage) {
+        document.querySelector("#grid-view-page-" + componentName).value = currentPage;
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
+        GridViewHelper.refreshGrid(componentName, url);
+    }
+    static filter(componentName, url) {
+        document.querySelector("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        document.querySelector("#grid-view-page-" + componentName).value = "1";
+        this.clearCurrentFormAction(componentName);
+        GridViewHelper.refreshGrid(componentName, url);
+    }
+    static clearFilterInputs(componentName) {
+        const divId = "#current-grid-filter-" + componentName;
+        const selector = divId + " input:enabled, " + divId + " select:enabled";
+        $(selector).each(function () {
+            let currentObj = $(this);
+            if (currentObj.hasClass("flatpickr-input")) {
+                currentObj.val("");
+            }
+            let inputType = this.type;
+            if (inputType == "checkbox") {
+                currentObj.prop("checked", false);
+            }
+            else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
+                currentObj.tagsinput('removeAll');
+            }
+            else if (inputType != "hidden") {
+                currentObj.val("");
+                if (currentObj.hasClass("selectpicker")) {
+                    currentObj.selectpicker("render");
+                }
+                else if (currentObj.hasClass("jjsearchbox")) {
+                    currentObj.blur();
+                }
+                else if (currentObj.hasClass("jjlookup")) {
+                    currentObj.blur();
+                }
+            }
+        });
+        document.querySelector("#grid-view-filter-action-" + componentName).value = "CLEARACTION";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
+    }
+    static clearFilter(componentName, url) {
+        this.clearFilterInputs(componentName);
+        GridViewHelper.refreshGrid(componentName, url);
+    }
+    static refresh(componentName, url) {
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        document.querySelector("#grid-view-row-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
+        GridViewHelper.refreshGrid(componentName, url);
+    }
+    static selectAllRows(componentName, url) {
+        fetch(url, { method: "POST" })
+            .then(response => response.json())
+            .then(data => GridViewHelper.selectAllRowsElements(componentName, data.selectedRows));
+    }
+    static selectAllRowsElements(componentName, rows) {
+        const values = rows.split(",");
+        const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName);
+        selectedRowsInput.value = values.join(",");
+        const selectedText = document.getElementById("selected-text-" + componentName);
+        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
+    }
+    static refreshGrid(componentName, url) {
+        const form = document.querySelector("form");
+        let urlBuilder = new UrlBuilder(url);
+        urlBuilder.addQueryParameter("componentName", componentName);
+        const filterAction = document.querySelector("#grid-view-filter-action-" + componentName);
+        postFormValues({ url: urlBuilder.build(), success: (data) => {
+                document.querySelector("#grid-view-" + componentName).innerHTML = data;
+                loadJJMasterData();
+                if (filterAction)
+                    filterAction.value = "";
+            } });
+    }
+}
+class JJViewHelper {
+    static postFormValues(componentName, enableAjax, loadform) {
+        if (enableAjax) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "htmlContent");
+            urlBuilder.addQueryParameter("componentName", componentName);
+            postFormValues({
+                url: urlBuilder.build(),
+                success: function (data) {
+                    const gridViewElement = document.querySelector("#grid-view-" + componentName);
+                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                    if (gridViewElement && filterActionElement) {
+                        gridViewElement.innerHTML = data;
+                        if (loadform) {
+                            loadJJMasterData();
+                        }
+                        filterActionElement.value = "";
+                    }
+                    else {
+                        console.error("One or both of the elements were not found.");
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                    if (filterActionElement) {
+                        filterActionElement.value = "";
+                    }
+                    else {
+                        console.error("Filter action element was not found.");
+                    }
+                }
+            });
         }
         else {
-            console.error(error);
+            $("form:first").trigger("submit");
         }
-    })
-        .then(() => {
-        SpinnerOverlay.hide();
-    });
+    }
+    static selectItem(objid, obj) {
+        var values = $("#grid-view-selected-rows" + objid).val().toString();
+        var valuesList = [];
+        if (obj.attr("id") == "jjcheckbox-select-all-rows")
+            return;
+        if (values.length > 0) {
+            valuesList = values.split(",");
+        }
+        if (obj.prop("checked")) {
+            if ($.inArray(obj.val(), valuesList) < 0)
+                valuesList.push(obj.val());
+        }
+        else {
+            valuesList = valuesList.filter(function (item) {
+                return item !== obj.val();
+            });
+        }
+        $("#grid-view-selected-rows" + objid).val(valuesList);
+        var textInfo = "";
+        var selectedText = $("#selected-text-" + objid);
+        if (valuesList.length == 0)
+            textInfo = selectedText.attr("no-record-selected-label");
+        else if (valuesList.length == 1)
+            textInfo = selectedText.attr("one-record-selected-label");
+        else
+            textInfo = selectedText.attr("multiple-records-selected-label").replace("{0}", valuesList.length.toString());
+        selectedText.text(textInfo);
+    }
+    static unSelectAll(objid) {
+        $(".jjselect input").not(":disabled").prop("checked", false);
+        $("#grid-view-selected-rows" + objid).val("");
+        var oSelectedtext = $("#selected-text-" + objid);
+        oSelectedtext.text(oSelectedtext.attr("no-record-selected-label"));
+    }
+    static selectAll(componentName) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("context", "selectAll");
+        postFormValues({
+            url: urlBuilder.build(),
+            success: (data) => {
+                GridViewHelper.selectAllRowsElements(componentName, data.selectedRows);
+            }
+        });
+    }
+    static sortFormValues(objid, enableAjax, v) {
+        var tableOrder = "#grid-view-order-" + objid;
+        if (v + " ASC" == $(tableOrder).val())
+            $(tableOrder).val(v + " DESC");
+        else
+            $(tableOrder).val(v + " ASC");
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
+        this.postFormValues(objid, enableAjax, true);
+    }
+    static sortItems(objid) {
+        var descCommand = "";
+        var order = $("#sortable-" + objid).sortable("toArray");
+        for (var i = 0; i < order.length; i++) {
+            var tipoOrdenacao = $("#" + order[i] + "_order").children("option:selected").val();
+            switch (tipoOrdenacao) {
+                case "A":
+                    descCommand += order[i] + " ASC,";
+                    break;
+                case "D":
+                    descCommand += order[i] + " DESC,";
+                    break;
+            }
+        }
+        descCommand = descCommand.substring(0, descCommand.length - 1);
+        $("#grid-view-order-" + objid).val(descCommand);
+        $("#sort-modal-" + objid).modal('hide');
+        $("#form-view-action-map-" + objid).val("");
+        this.refresh(objid, true);
+    }
+    static paginateGrid(objid, enableAjax, v) {
+        $("#grid-view-page-" + objid).val(v);
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
+        this.postFormValues(objid, enableAjax, true);
+    }
+    static refresh(componentName, enableAjax) {
+        $("#grid-view-action-" + componentName).val("");
+        $("#grid-view-row-" + componentName).val("");
+        $("#form-view-action-map-" + componentName).val("");
+        this.postFormValues(componentName, enableAjax, true);
+    }
+    static openSettingsModal(componentName, encryptedActionMap) {
+        $("#grid-view-action-" + componentName).val(encryptedActionMap);
+        $("#grid-view-page-" + componentName).val("1");
+        $("#grid-view-row-" + componentName).val("");
+        $("#form-view-action-map-" + componentName).val("");
+        $("form:first").trigger("submit");
+    }
+    static closeSettingsModal(objid) {
+        $("form").trigger("reset");
+        $("form :checkbox").change();
+        $("#config-modal-" + objid).modal("hide");
+    }
+    static filter(objid, enableAjax) {
+        $("#grid-view-filter-action-" + objid).val("FILTERACTION");
+        $("#grid-view-action-" + objid).val("");
+        $("#grid-view-page-" + objid).val("1");
+        $("#form-view-action-map-" + objid).val("");
+        this.postFormValues(objid, enableAjax, false);
+        return false;
+    }
+    static openSelectElementInsert(componentName, encryptedActionMap) {
+        $("#form-view-current-action-" + componentName).val("ELEMENTSEL");
+        $("#form-view-select-action-values" + componentName).val(encryptedActionMap);
+        $("form:first").trigger("submit");
+    }
+    static clearFilter(componentName, enableAjax) {
+        GridViewHelper.clearFilterInputs(componentName);
+        this.postFormValues(componentName, enableAjax, false);
+    }
+    static executeGridAction(componentName, encryptedActionMap, confirmMessage) {
+        if (confirmMessage) {
+            var result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        $("#grid-view-action-" + componentName).val(encryptedActionMap);
+        $("#form-view-action-map-" + componentName).val("");
+        $("form:first").trigger("submit");
+    }
+    static executeSqlCommand(objid, criptid, confirmMessage) {
+        if (confirmMessage) {
+            var result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
+        $("#grid-view-row-" + objid).val(criptid);
+        $("form:first").trigger("submit");
+    }
+    static setLookup(objid, value) {
+        window.parent.defaultModal.hide();
+        setTimeout(function () {
+            window.parent.$("#id_" + objid).val(value);
+            window.parent.$("#" + objid).val(value).change().blur();
+        }, 100);
+    }
+    static executeUrlRedirect(url, ispopup, title, confirmMessage, popupSize = 1) {
+        if (confirmMessage) {
+            const result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        if (ispopup) {
+            defaultModal.showIframe(url, title, popupSize);
+        }
+        else {
+            window.location.href = url;
+        }
+    }
+    static showInsertSucess(objid) {
+        $("#insert-message-panel" + objid).fadeOut(2000, function () {
+            $("#insert-panel" + objid).slideDown();
+        });
+    }
+    static deleteFile(objid, filename, promptStr) {
+        const result = confirm(promptStr);
+        if (!result) {
+            return false;
+        }
+        $("#upload-action-" + objid).val("DELFILE");
+        $("#filename-" + objid).val(filename);
+        $("form:first").trigger("submit");
+    }
+    static downloadFile(objid, filename) {
+        $("#upload-action-" + objid).val("DOWNLOADFILE");
+        $("#filename-" + objid).val(filename);
+        $("form:first").trigger("submit");
+        setTimeout(function () {
+            SpinnerOverlay.hide();
+            $("#upload-action-" + objid).val("");
+        }, 1500);
+    }
+    static renameFile(objid, filename, promptStr) {
+        var newFileName = prompt(promptStr, filename);
+        if (newFileName != null && newFileName != filename) {
+            $("#upload-action-" + objid).val("RENAMEFILE");
+            $("#filename-" + objid).val(filename + ";" + newFileName);
+            $("form:first").trigger("submit");
+        }
+    }
+    static directDownload(objid, panelName, filename) {
+        SpinnerOverlay.show();
+        var url = $("form").attr("action");
+        url += url.includes("?") ? "&" : "?";
+        url += "uploadView-" + panelName + "=" + objid;
+        url += "&downloadfile=" + filename;
+        window.location.assign(url);
+        setTimeout(function () {
+            SpinnerOverlay.hide();
+        }, 1500);
+    }
+    static showExportOptions(objid, exportType) {
+        if (exportType == "1") {
+            $("#" + objid + "-div-export-orientation").hide();
+            $("#" + objid + "-div-export-all").show();
+            $("#" + objid + "-div-export-delimiter").hide();
+            $("#" + objid + "-div-export-firstline").show();
+        }
+        else if (exportType == "2") {
+            $("#" + objid + "-div-export-orientation").show();
+            $("#" + objid + "-div-export-all").hide();
+            $("#" + objid + "-div-export-delimiter").hide();
+            $("#" + objid + "-div-export-firstline").hide();
+        }
+        else {
+            $("#" + objid + "-div-export-orientation").hide();
+            $("#" + objid + "-div-export-all").show();
+            $("#" + objid + "-div-export-delimiter").show();
+            $("#" + objid + "-div-export-firstline").show();
+        }
+    }
+    static viewLog(objid, id) {
+        $("#audit-log-id-" + objid).val(id);
+        $("form:first").trigger("submit");
+    }
+    static searchOnDOM(objid, oDom) {
+        var value = $(oDom).val().toString().toLowerCase();
+        $("#table_" + objid + " tr").filter(function () {
+            var textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            var isSearch = textValues.toLowerCase().indexOf(value) > -1;
+            if (!isSearch) {
+                var valueNew = value.replace(",", "").replace(".", "").replace("-", "");
+                $(this).find("input").each(function () {
+                    var inputValue = $(this).val();
+                    if (inputValue != null) {
+                        let isSearch = inputValue.toString().replace(",", "")
+                            .replace(".", "")
+                            .replace("-", "")
+                            .toLowerCase()
+                            .indexOf(valueNew) > -1;
+                        if (isSearch)
+                            return false;
+                    }
+                });
+            }
+            if (!isSearch) {
+                $(this).find("select").each(function () {
+                    var selectedText = $(this).children("option:selected").text();
+                    if (selectedText != null) {
+                        isSearch = selectedText.toLowerCase().indexOf(valueNew) > -1;
+                        if (isSearch)
+                            return false;
+                    }
+                });
+            }
+            $(this).toggle(isSearch);
+        });
+        if (value.length > 0) {
+            $("#infotext_" + objid).css("display", "none");
+            $("ul.pagination").css("display", "none");
+        }
+        else {
+            $("#infotext_" + objid).css("display", "");
+            $("ul.pagination").css("display", "");
+        }
+    }
 }
-class SearchBox {
-    static setup() {
+class UploadViewHelper {
+    static open(componentName, title, values, url = null) {
+        const panelName = $("#v_" + componentName).attr("panelName");
+        if (url == null || url.length == 0) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("uploadView-" + panelName, componentName);
+            urlBuilder.addQueryParameter("uploadViewParams", values);
+            url = urlBuilder.build();
+        }
+        const modal = new Modal();
+        modal.modalId = componentName + "-upload-popup";
+        modal.showUrl({ url: url }, null, 1).then(_ => {
+            loadJJMasterData();
+        });
+    }
+}
+class CalendarListener {
+    static listen(prefixSelector) {
+        $(prefixSelector + ".jjform-datetime").flatpickr({
+            enableTime: true,
+            wrap: true,
+            allowInput: true,
+            altInput: false,
+            time_24hr: true,
+            dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
+            onOpen: function (selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") == 1) {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode
+        });
+        $(prefixSelector + ".jjform-date").flatpickr({
+            enableTime: false,
+            wrap: true,
+            allowInput: true,
+            altInput: false,
+            dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
+            onOpen: function (selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") == 1) {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode
+        });
+        $(prefixSelector + ".jjform-hour").flatpickr({
+            enableTime: true,
+            wrap: true,
+            noCalendar: true,
+            allowInput: true,
+            altInput: false,
+            dateFormat: "H:i",
+            time_24hr: true,
+            onOpen: function (selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") == 1) {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode
+        });
+        $(prefixSelector + ".jjdecimal").each(applyDecimalPlaces);
+        $(prefixSelector + "[data-toggle='tooltip'], " + prefixSelector + "[data-bs-toggle='tooltip']").tooltip({
+            container: "body",
+            trigger: "hover"
+        });
+    }
+}
+class CollapsePanelListener {
+    static listen(name) {
+        let nameSelector = "#" + name;
+        let collapseSelector = '#collapse_mode_' + name;
+        document.addEventListener("DOMContentLoaded", function () {
+            let collapseElement = document.querySelector(nameSelector);
+            collapseElement.addEventListener("hidden.bs.collapse", function () {
+                document.querySelector(collapseSelector).value = "0";
+            });
+            collapseElement.addEventListener("show.bs.collapse", function () {
+                document.querySelector(collapseSelector).value = "1";
+            });
+        });
+    }
+}
+class LookupListener {
+    static listenChanges() {
+        $("input.jjlookup").each(function () {
+            let lookupInput = $(this);
+            let lookupId = lookupInput.attr("id");
+            let fieldName = lookupInput.attr("lookup-field-name");
+            let panelName = lookupInput.attr("panelName");
+            let popupTitle = lookupInput.attr("popuptitle");
+            let lookupUrl = lookupInput.attr("lookup-url");
+            let lookupResultUrl = lookupInput.attr("lookup-result-url");
+            let dataPanelReloadUrl = lookupInput.attr("data-panel-reload-url");
+            let popupSize = +lookupInput.attr("popupsize");
+            const jjLookupSelector = "#" + lookupId + "";
+            const jjHiddenLookupSelector = "#id_" + lookupId + "";
+            $("#btn_" + lookupId).on("click", function () {
+                defaultModal.showIframe(lookupUrl, popupTitle, popupSize);
+            });
+            function setHiddenLookup() {
+                $("#id_" + lookupId).val(lookupInput.val());
+            }
+            lookupInput.one("focus", function () {
+                lookupInput.val($("#id_" + lookupId).val()).select();
+            });
+            lookupInput.one("change", function () {
+                $("#id_" + lookupId).val(lookupInput.val());
+            });
+            lookupInput.one("blur", function () {
+                showWaitOnPost = false;
+                setHiddenLookup();
+                FeedbackIcon.removeAllIcons(jjLookupSelector);
+                lookupInput.removeAttr("readonly");
+                if (lookupInput.val() == "") {
+                    return;
+                }
+                if (!lookupResultUrl) {
+                    let urlBuilder = new UrlBuilder();
+                    urlBuilder.addQueryParameter("lookup-" + panelName, fieldName);
+                    urlBuilder.addQueryParameter("lookupAction", "getDescription");
+                    urlBuilder.addQueryParameter("lkid", lookupInput.val().toString());
+                    lookupResultUrl = urlBuilder.build();
+                }
+                lookupInput.addClass("loading-circle");
+                postFormValues({
+                    url: lookupResultUrl, success: (data) => {
+                        showWaitOnPost = true;
+                        lookupInput.removeClass("loading-circle");
+                        if (data.description === "") {
+                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass);
+                        }
+                        else {
+                            const lookupHiddenInputElement = document.querySelector("#id_" + lookupId);
+                            const lookupInputElement = document.querySelector("#" + lookupId);
+                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
+                            lookupInputElement.value = data.description;
+                            lookupHiddenInputElement.value = data.id;
+                            if (dataPanelReloadUrl) {
+                                DataPanelHelper.reload(dataPanelReloadUrl, panelName, lookupId);
+                            }
+                            else {
+                                DataPanelHelper.reloadAtSamePage(panelName, lookupId);
+                            }
+                        }
+                    }, error: (_) => {
+                        showWaitOnPost = true;
+                        lookupInput.removeClass("loading-circle");
+                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass);
+                    }
+                });
+            });
+        });
+    }
+}
+class SearchBoxListener {
+    static listenTypeahed() {
         $("input.jjsearchbox").each(function () {
             const hiddenInputId = $(this).attr("hidden-input-id");
             let urltypehead = $(this).attr("urltypehead");
@@ -1686,8 +1739,8 @@ class SearchBox {
         });
     }
 }
-class Slider {
-    static observeSliders() {
+class SliderListener {
+    static listenSliders() {
         let sliders = document.getElementsByClassName("jjslider");
         Array.from(sliders).forEach((slider) => {
             let sliderInput = document.getElementById(slider.id + "-value");
@@ -1706,7 +1759,7 @@ class Slider {
             };
         });
     }
-    static observeInputs() {
+    static listenInputs() {
         let inputs = document.getElementsByClassName("jjslider-value");
         Array.from(inputs).forEach((input) => {
             let slider = document.getElementById(input.id.replace("-value", ""));
@@ -1716,83 +1769,16 @@ class Slider {
         });
     }
 }
-class SpinnerOverlay {
-    static loadHtml() {
-        if (!document.querySelector("#" + this.spinnerOverlayId)) {
-            if (bootstrapVersion < 5) {
-                const spinnerOverlay = document.createElement("div");
-                spinnerOverlay.id = this.spinnerOverlayId;
-                spinnerOverlay.innerHTML = `
-            <div class="ajaxImage"></div>
-            <div class="ajaxMessage">Loading...</div>
-            `;
-                document.body.appendChild(spinnerOverlay);
-                const options = {
-                    lines: 17,
-                    length: 28,
-                    width: 14,
-                    radius: 38,
-                    scale: 0.40,
-                    corners: 1,
-                    color: "#000",
-                    opacity: 0.3,
-                    rotate: 0,
-                    direction: 1,
-                    speed: 1.2,
-                    trail: 62,
-                    fps: 20,
-                    zIndex: 2e9,
-                    className: "spinner",
-                    top: "50%",
-                    left: "50%",
-                    shadow: false,
-                    hwaccel: false,
-                    position: "absolute",
-                };
-                const spinner = new Spinner(options).spin();
-                if (spinner.el) {
-                    const spinnerOverlayElement = document.querySelector("#spinner-overlay .ajaxImage");
-                    spinnerOverlayElement.parentNode.insertBefore(spinner.el, spinnerOverlayElement.nextSibling);
-                }
-            }
-            else {
-                const spinnerOverlayDiv = document.createElement('div');
-                spinnerOverlayDiv.id = this.spinnerOverlayId;
-                spinnerOverlayDiv.classList.add('spinner-overlay', 'text-center');
-                const spinnerDiv = document.createElement('div');
-                spinnerDiv.classList.add('spinner-border', 'spinner-border-lg');
-                spinnerDiv.setAttribute('role', 'status');
-                const spanElement = document.createElement('span');
-                spanElement.classList.add('visually-hidden');
-                spanElement.textContent = 'Loading...';
-                spinnerDiv.appendChild(spanElement);
-                spinnerOverlayDiv.appendChild(spinnerDiv);
-                document.body.appendChild(spinnerOverlayDiv);
-            }
-        }
-    }
-    static show() {
-        this.loadHtml();
-        document.querySelector("#" + this.spinnerOverlayId).style.display = "";
-    }
-    static hide() {
-        const overlay = document.querySelector("#" + this.spinnerOverlayId);
-        if (overlay) {
-            overlay.style.display = "none";
-        }
-    }
-}
-SpinnerOverlay.spinnerOverlayId = "spinner-overlay";
-class TabNav {
-    static setup() {
+class TabNavListener {
+    static listenTabNavs() {
         $("a.jj-tab-link").on("shown.bs.tab", function (e) {
-            var link = $(e.target);
+            const link = $(e.target);
             $("#" + link.attr("jj-objectid")).val(link.attr("jj-tabindex"));
         });
     }
 }
-class TextArea {
-    static setup() {
+class TextAreaListener {
+    static listenKeydown() {
         $("textarea").keydown(function () {
             const jjTextArea = $(this);
             let maxLength = jjTextArea.attr("maxlength");
@@ -1838,8 +1824,8 @@ class FileUploadOptions {
         this.autoSubmit = autoSubmit;
     }
 }
-class UploadArea {
-    static uploadFile(options) {
+class UploadAreaListener {
+    static configureFileUpload(options) {
         const selector = "#" + options.componentName;
         $(selector).uploadFile({
             url: options.url,
@@ -1917,7 +1903,7 @@ class UploadArea {
             document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
         });
     }
-    static setup() {
+    static listenFileUpload() {
         document.querySelectorAll("div.fileUpload").forEach((element) => {
             let componentName = element.getAttribute("id");
             let multiple = element.getAttribute("jjmultiple") === "true";
@@ -1940,7 +1926,7 @@ class UploadArea {
                 url = urlBuilder.build();
             }
             const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);
-            this.uploadFile(fileUploadOptions);
+            this.configureFileUpload(fileUploadOptions);
             window.addEventListener("resize", () => {
                 document.querySelector("#" + componentName + " .ajax-upload-dragdrop").style.width =
                     document.querySelector("#" + componentName).clientWidth - 30 + "px";
@@ -1951,21 +1937,169 @@ class UploadArea {
         });
     }
 }
-class UploadView {
-    static open(componentName, title, values, url = null) {
-        const panelName = $("#v_" + componentName).attr("panelName");
-        if (url == null || url.length == 0) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("uploadView-" + panelName, componentName);
-            urlBuilder.addQueryParameter("uploadViewParams", values);
-            url = urlBuilder.build();
+class DataDictionaryUtils {
+    static deleteAction(actionName, url, questionStr) {
+        let confirmed = confirm(questionStr);
+        if (confirmed == true) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                success: function (response) {
+                    if (response.success) {
+                        $("#" + actionName).remove();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    SpinnerOverlay.hide();
+                    if (xhr.responseText != "") {
+                        var err = JSON.parse(xhr.responseText);
+                        messageBox.show("JJMasterData", err.message, 4);
+                    }
+                    else {
+                        console.log(xhr);
+                    }
+                }
+            });
         }
-        const modal = new Modal();
-        modal.modalId = componentName + "-upload-popup";
-        modal.showUrl({ url: url }, null, 1).then(_ => {
-            loadJJMasterData();
+    }
+    static sortAction(context, url, errorStr) {
+        $("#sortable-" + context).sortable({
+            update: function () {
+                var order = $(this).sortable('toArray');
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: { orderFields: order, context: context },
+                    success: function (response) {
+                        if (!response.success) {
+                            messageBox.show("JJMasterData", errorStr, 4);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        SpinnerOverlay.hide();
+                        if (xhr.responseText != "") {
+                            var err = JSON.parse(xhr.responseText);
+                            if (err.status == 401) {
+                                document.forms[0].submit();
+                            }
+                            else {
+                                messageBox.show("JJMasterData", err.message, 4);
+                            }
+                        }
+                        else {
+                            messageBox.show("JJMasterData", errorStr, 4);
+                        }
+                    }
+                });
+            }
+        }).disableSelection();
+    }
+    static setDisableAction(isDisable, url, errorStr) {
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: { value: isDisable },
+            success: function (response) {
+                if (!response.success) {
+                    messageBox.show("JJMasterData", errorStr, 4);
+                }
+            },
+            error: function (xhr, status, error) {
+                SpinnerOverlay.hide();
+                if (xhr.responseText != "") {
+                    var err = JSON.parse(xhr.responseText);
+                    if (err.status == 401) {
+                        document.forms[0].submit();
+                    }
+                    else {
+                        messageBox.show("JJMasterData", err.message, 4);
+                    }
+                }
+                else {
+                    messageBox.show("JJMasterData", errorStr, 4);
+                }
+            }
         });
     }
+    static refreshAction(isPopup = false) {
+        SpinnerOverlay.show();
+        if (isPopup) {
+            window.parent.defaultModal.hide();
+            window.parent.document.forms[0].submit();
+        }
+        else {
+            defaultModal.hide();
+            document.forms[0].submit();
+        }
+    }
+    static postAction(url) {
+        SpinnerOverlay.show();
+        $("form:first").attr("action", url).submit();
+    }
+    static exportElement(id, url, validStr) {
+        var values = $("#grid-view-selected-rows" + id).val();
+        if (values == "") {
+            messageBox.show("JJMasterData", validStr, 3);
+            return false;
+        }
+        var form = $("form:first");
+        var originAction = $("form:first").attr('action');
+        form.attr('action', url);
+        form.submit();
+        setTimeout(function () {
+            form.attr('action', originAction);
+            SpinnerOverlay.hide();
+        }, 2000);
+        return true;
+    }
+}
+function applyDecimalPlaces() {
+    let decimalPlaces = $(this).attr("jjdecimalplaces");
+    if (decimalPlaces == null)
+        decimalPlaces = "2";
+    if (localeCode === 'pt')
+        $(this).number(true, decimalPlaces, ",", ".");
+    else
+        $(this).number(true, decimalPlaces);
+}
+var _a, _b;
+var showWaitOnPost = true;
+var bootstrapVersion = 3;
+const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
+const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
+class PostFormValuesOptions {
+}
+function postFormValues(options) {
+    SpinnerOverlay.show();
+    const formData = new FormData(document.querySelector("form"));
+    const requestOptions = {
+        method: "POST",
+        body: formData
+    };
+    fetch(options.url, requestOptions)
+        .then(response => {
+        var _a;
+        if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
+            return response.json();
+        }
+        else {
+            return response.text();
+        }
+    })
+        .then(data => {
+        options.success(data);
+    })
+        .catch(error => {
+        if (options.error) {
+            options.error(error);
+        }
+        else {
+            console.error(error);
+        }
+    })
+        .then(() => {
+        SpinnerOverlay.hide();
+    });
 }
 class UrlBuilder {
     constructor(url = null) {

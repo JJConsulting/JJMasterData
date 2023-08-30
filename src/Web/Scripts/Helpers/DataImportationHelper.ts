@@ -1,4 +1,4 @@
-﻿class DataImportation {
+﻿class DataImportationHelper {
     private static insertCount = 0;
     private static updateCount = 0;
     private static deleteCount = 0;
@@ -85,9 +85,9 @@
                     if (result.PercentProcess === 100) {
                         document.querySelector("#lblInsertCount").textContent = result.Insert;
                     } else {
-                        jjutil.animateValue("lblInsertCount", DataImportation.insertCount, result.Insert, 1000);
+                        jjutil.animateValue("lblInsertCount", DataImportationHelper.insertCount, result.Insert, 1000);
                     }
-                    DataImportation.insertCount = result.Insert;
+                    DataImportationHelper.insertCount = result.Insert;
                 }
 
                 if (result.Update > 0) {
@@ -95,9 +95,9 @@
                     if (result.PercentProcess === 100) {
                         document.querySelector("#lblUpdateCount").textContent = result.Update;
                     } else {
-                        jjutil.animateValue("lblUpdateCount", DataImportation.updateCount, result.Update, 1000);
+                        jjutil.animateValue("lblUpdateCount", DataImportationHelper.updateCount, result.Update, 1000);
                     }
-                    DataImportation.updateCount = result.Update;
+                    DataImportationHelper.updateCount = result.Update;
                 }
 
                 if (result.Delete > 0) {
@@ -105,9 +105,9 @@
                     if (result.PercentProcess === 100) {
                         document.querySelector("#lblDeleteCount").textContent = result.Delete;
                     } else {
-                        jjutil.animateValue("lblDeleteCount", DataImportation.deleteCount, result.Delete, 1000);
+                        jjutil.animateValue("lblDeleteCount", DataImportationHelper.deleteCount, result.Delete, 1000);
                     }
-                    DataImportation.deleteCount = result.Delete;
+                    DataImportationHelper.deleteCount = result.Delete;
                 }
 
                 if (result.Ignore > 0) {
@@ -115,9 +115,9 @@
                     if (result.PercentProcess === 100) {
                         document.querySelector("#lblIgnoreCount").textContent = result.Ignore;
                     } else {
-                        jjutil.animateValue("lblIgnoreCount", DataImportation.ignoreCount, result.Ignore, 1000);
+                        jjutil.animateValue("lblIgnoreCount", DataImportationHelper.ignoreCount, result.Ignore, 1000);
                     }
-                    DataImportation.ignoreCount = result.Ignore;
+                    DataImportationHelper.ignoreCount = result.Ignore;
                 }
 
                 if (result.Error > 0) {
@@ -125,9 +125,9 @@
                     if (result.PercentProcess === 100) {
                         document.querySelector("#lblErrorCount").textContent = result.Error;
                     } else {
-                        jjutil.animateValue("lblErrorCount", DataImportation.errorCount, result.Error, 1000);
+                        jjutil.animateValue("lblErrorCount", DataImportationHelper.errorCount, result.Error, 1000);
                     }
-                    DataImportation.errorCount = result.Error;
+                    DataImportationHelper.errorCount = result.Error;
                 }
 
                 if (!result.IsProcessing) {
@@ -143,10 +143,10 @@
     }
     static startProcess(objname) {
         $(document).ready(function () {
-            DataImportation.setLoadMessage();
+            DataImportationHelper.setLoadMessage();
 
             setInterval(function () {
-                DataImportation.checkProgress(objname);
+                DataImportationHelper.checkProgress(objname);
             }, 3000);
         });
     }

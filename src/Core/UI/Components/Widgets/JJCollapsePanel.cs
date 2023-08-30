@@ -66,7 +66,7 @@ public class JJCollapsePanel : HtmlComponent
 
         root.Append(BootstrapHelper.Version < 5 ? GetPanel() : GetAccordion());
 
-        root.AppendScript($"setupCollapsePanel('{Name}')");
+        root.AppendScript($"CollapsePanelListener.listen('{Name}')");
 
         return root;
     }

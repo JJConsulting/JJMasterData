@@ -160,7 +160,7 @@ internal class ActionsScripts
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
         return
-            $"JJView.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            $"JJViewHelper.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
     public string GetRefreshScript(ActionContext actionContext)
@@ -171,6 +171,6 @@ internal class ActionsScripts
             string dictionaryNameEncrypted = EncryptionService.EncryptString(actionContext.FormElement.Name);
             return UrlHelper.GetUrl("GetGridViewTable", "Grid","MasterData",  new { dictionaryName = dictionaryNameEncrypted });
         }
-        return $"JJView.refresh('{name}', true)";
+        return $"JJViewHelper.refresh('{name}', true)";
     }
 }

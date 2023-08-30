@@ -91,7 +91,7 @@ public class LookupController : MasterDataController
             action.IsDefaultOption = false;
         }
 
-        var script = $"JJView.setLookup('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKey}}}');";
+        var script = $"JJViewHelper.setLookup('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKey}}}');";
         var selAction = new ScriptAction
         {
             Name = "jjselLookup",

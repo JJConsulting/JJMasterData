@@ -410,7 +410,7 @@ public class JJFormView : AsyncComponent
                             .WithAttribute("style", "display:none")
                             .Append(alertHtml);
                     });
-                    htmlResult.AppendScript($"JJView.showInsertSucess('{Name}');");
+                    htmlResult.AppendScript($"JJViewHelper.showInsertSucess('{Name}');");
                     
                     return new RenderedComponentResult(htmlResult);
                 }
@@ -1050,7 +1050,7 @@ public class JJFormView : AsyncComponent
 
         var map = new ActionMap(ActionSource.GridTable, grid.FormElement, e.FieldValues, e.Action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(map);
-        e.LinkButton.OnClientClick = $"JJView.openSelectElementInsert('{Name}','{encryptedActionMap}');";
+        e.LinkButton.OnClientClick = $"JJViewHelper.openSelectElementInsert('{Name}','{encryptedActionMap}');";
     }
 
     /// <summary>
@@ -1127,7 +1127,7 @@ public class JJFormView : AsyncComponent
         {
             Type = LinkButtonType.Button,
             CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = $"JJView.doPainelAction('{Name}','CANCEL');",
+            OnClientClick = $"JJViewHelper.doPainelAction('{Name}','CANCEL');",
             IconClass = IconType.Times.GetCssClass(),
             Text = "Cancel"
         };
