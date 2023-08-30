@@ -240,6 +240,7 @@ public class JJLookup : AsyncControl
         return Name.Equals(lookupRoute);
     }
 
+    //todo: mover para LookupFactory
     public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("lookup-" + view.Name);

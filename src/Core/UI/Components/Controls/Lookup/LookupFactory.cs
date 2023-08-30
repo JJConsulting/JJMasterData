@@ -1,20 +1,25 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Web.Factories;
 
-internal class LookupFactory : IControlFactory<JJLookup>
+internal class LookupFactory : IDynamicControlFactory<JJLookup>
 {
     private IHttpContext HttpContext { get; }
     private ILookupService LookupService { get; }
     private IEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
+
     private ILoggerFactory LoggerFactory { get; }
 
     public LookupFactory(       
@@ -68,5 +73,20 @@ internal class LookupFactory : IControlFactory<JJLookup>
 
         return lookup;
     }
-    
+
+    //todo: usar nome do dicionario pra isso funcionar
+    public JJLookup CreateIfExists(FormElement formElement, IDictionary<string, object> values, IDictionary<string, object> userValues)
+    {
+        var fieldName = HttpContext.Request.QueryString("lookup-" + formElement.Name);
+        var pageState = (PageState)int.Parse(HttpContext.Request.QueryString("pageState"));
+        if (string.IsNullOrEmpty(fieldName))
+            return null;
+        
+        var field = formElement.Fields.FirstOrDefault(x => x.Name.Equals(fieldName));
+        if (field == null)
+            return null;
+        
+        var formStateData = new FormStateData(values, userValues, pageState);
+        return Create(formElement,field, new(formStateData, formElement.Name, formElement.Name));
+    }
 }

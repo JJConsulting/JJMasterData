@@ -174,24 +174,27 @@
         }
         
          function executeScripts(value) {
-             var formData = new FormData();
+             const formData = new FormData();
              formData.append('scriptOption', value);
          
              fetch('@Url.Action("Scripts", "Element", new { dictionaryName = Model.DictionaryName })', {
                  method: 'POST',
                  body: formData
              })
-             .then(function(response) {
-                 if (response.ok) {
-                     window.parent.defaultModal.hide();
-                 }
-                 else{
-                    return response.json();
-                 }
-             })
-             .then(function(error) {
+             .then((response) =>response.json())
+             .then((data)=>{
+                 console.log(data.success);
+                  if (data.success) {
+                      window.parent.defaultModal.hide();
+                  }
+                  else{
+        
+                     throw new Error(data.message);
+                  }
+                 })
+             .catch(function(error) {
                  SpinnerOverlay.hide();
-                 messageBox.show("@StringLocalizer["Error"]", error.message, 3);
+                 messageBox.show("@StringLocalizer["Error"]", error?.message, 3);
              });
          }
     

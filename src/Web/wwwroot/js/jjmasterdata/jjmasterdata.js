@@ -1459,12 +1459,10 @@ class _Modal extends ModalBase {
         };
     }
     showModal() {
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.show();
+        this.bootstrapModal.show();
     }
     hideModal() {
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.hide();
+        this.bootstrapModal.hide();
     }
     getModalCssClass() {
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
@@ -1494,6 +1492,7 @@ class _Modal extends ModalBase {
             else {
                 document.body.appendChild(this.modalElement);
             }
+            this.bootstrapModal = new bootstrap.Modal(this.modalElement);
         }
         else {
             this.modalElement = document.getElementById(this.modalId);

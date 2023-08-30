@@ -38,7 +38,7 @@ public class FieldController : DataDictionaryController
             field = formElement.Fields[fieldName];
         }
 
-        PopulateViewBag(formElement, field);
+        await PopulateViewBag(formElement, field);
         return View(nameof(Index), field);
     }
     
@@ -46,7 +46,7 @@ public class FieldController : DataDictionaryController
     {
         var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
         var field = formElement.Fields[fieldName];
-        PopulateViewBag(formElement, field);
+        await PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
     }
 
@@ -54,7 +54,7 @@ public class FieldController : DataDictionaryController
     {
         var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
         var field = new FormElementField();
-        PopulateViewBag(formElement, field);
+        await PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
     }
     
@@ -81,7 +81,7 @@ public class FieldController : DataDictionaryController
             return iconSearchBoxResult.ToActionResult();
         
         var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
-        PopulateViewBag(formElement, field);
+        await PopulateViewBag(formElement, field);
         return View("Index", field);
     }
 
@@ -116,7 +116,7 @@ public class FieldController : DataDictionaryController
         if (!ModelState.IsValid)
             ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
 
-        PopulateViewBag(dictionary, field);
+        await PopulateViewBag(dictionary, field);
         return View("Index", field);
     }
 
@@ -188,7 +188,7 @@ public class FieldController : DataDictionaryController
         return RedirectToAction("Index", new { dictionaryName });
     }
 
-    private async void PopulateViewBag(FormElement formElement, FormElementField? field)
+    private async Task PopulateViewBag(FormElement formElement, FormElementField? field)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -291,7 +291,7 @@ public class FieldController : DataDictionaryController
         // ASP.NET Core enforces 30MB (~28.6 MiB) max request body size limit, be it Kestrel and HttpSys.
         // Under normal circumstances, there is no need to increase the size of the HTTP request.
 
-        int maxRequestLength = 30720000;
+        const int maxRequestLength = 30720000;
 
         return maxRequestLength;
     }

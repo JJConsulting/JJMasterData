@@ -182,7 +182,7 @@ public class ElementController : DataDictionaryController
         catch (Exception ex)
         {
             var error = new { success = false, message = ex.Message };
-            return new JsonResult("error") { StatusCode = (int)HttpStatusCode.InternalServerError, Value = error };
+            return new JsonResult(error) { StatusCode = (int)HttpStatusCode.InternalServerError };
         }
     }
     

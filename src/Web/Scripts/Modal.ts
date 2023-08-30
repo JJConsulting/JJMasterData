@@ -30,7 +30,9 @@ abstract class ModalBase{
 }
 
 class _Modal extends ModalBase {
-
+    
+    private bootstrapModal: bootstrap.Modal
+    
     private modalSizeCssClass = {
         Default: "jj-modal-default",
         ExtraLarge: "jj-modal-xl",
@@ -40,13 +42,11 @@ class _Modal extends ModalBase {
     };
     
     private showModal(){
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.show();
+        this.bootstrapModal.show();
     }
 
     private hideModal(){
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.hide();
+        this.bootstrapModal.hide();
     }
     
     private getModalCssClass(){
@@ -78,6 +78,8 @@ class _Modal extends ModalBase {
             else{
                 document.body.appendChild(this.modalElement);
             }
+
+            this.bootstrapModal = new bootstrap.Modal(this.modalElement);
         } else {
             this.modalElement = document.getElementById(this.modalId);
 

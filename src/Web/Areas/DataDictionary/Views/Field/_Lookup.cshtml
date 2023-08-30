@@ -1,78 +1,10 @@
 ﻿@using JJMasterData.Core.Web
+@using JJMasterData.Core.Web.Components
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @model FormElementField
 
-@functions
-{
-    void ElementMap()
-    {
-        <div class="row">
-            <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field"]">@StringLocalizer["Field Key"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldKey,
-                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                    new { @class = "form-control form-select" })
-            </div>
-            <div class="@BootstrapHelper.FormGroup col-sm-4">
-                <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Key"]">@StringLocalizer["Field Description"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldDescription,
-                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                    new { @class = "form-control form-select" })
-            </div>
-        </div>
-    }
-
-    void Filters()
-    {
-        <div class="row">
-            <div class="@BootstrapHelper.FormGroup col-sm-4">
-                <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field"]">@StringLocalizer["Field Lookup"]</label>
-                @Html.DropDownList("mapField",
-                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                    new { @class = "form-control" })
-            </div>
-            <div class="@BootstrapHelper.FormGroup col-sm-5">
-                <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field"]">@StringLocalizer["Filter Expression"]</label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="mapExpressionValue" name="mapExpressionValue"/>
-                    <span class="input-group-btn" style="padding-left: 10px;">
-                        <button class="@BootstrapHelper.DefaultButton btn-small" onclick="addElementMapFilter();">
-                            <span class="fa fa-plus-square-o"></span>&nbsp;@StringLocalizer["Add"]
-                        </button>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-
-                <table class="table table-bordered table-hover">
-                    <tbody>
-                    @for (int i = 0; i < Model.DataItem!.ElementMap!.MapFilters.Count; i++)
-                    {
-                        DataElementMapFilter mapFilter = Model.DataItem.ElementMap.MapFilters[i];
-                        <tr>
-                            <td>
-                                @mapFilter.FieldName <span>=</span>@mapFilter.ExpressionValue
-                                @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[i].FieldName, mapFilter.FieldName)
-                                @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[i].ExpressionValue, mapFilter.ExpressionValue)
-                            </td>
-                            <td style="width:80px;" align="center">
-                                <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="Delete" onclick="removeElementMapFilter('@mapFilter.FieldName');">
-                                    <span class="fa fa-trash"></span>
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-
-            </div>
-        </div>
-    }
-}
 
 <script lang="javascript" type="text/javascript">
 
@@ -99,8 +31,7 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <h4>DataItem</h4>
-        <hr/>
+        <jj-title title="@StringLocalizer["DataItem"]" size="HeadingSize.H4"/>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
@@ -136,84 +67,71 @@
         },
             new { @class = "form-control form-select" })
     </div>
+    
+    <jj-collapse-panel title="@StringLocalizer["Element Map"]" expanded-by-default="true" icon="Map">
+        <div class="row">
+            <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field"]">@StringLocalizer["Field Key"]</label>
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldKey,
+                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
+                    new { @class = "form-control form-select" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-4">
+                <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Key"]">@StringLocalizer["Field Description"]</label>
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldDescription,
+                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
+                    new { @class = "form-control form-select" })
+            </div>
+        </div>
+    </jj-collapse-panel>
 
-    @if (BootstrapHelper.Version == 5)
-    {
-        <div class="accordion pb-1" id="gridAccordion">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        @StringLocalizer["Element Map"]
-                    </button>
-                </h2>
-                <div id="collapseOne" class="accordion-collapse show" aria-labelledby="headingOne" data-bs-parent="#gridAccordion">
-                    <div class="accordion-body">
-                        <div class="container-fluid">
-                            <div class="row">
-                                @{ ElementMap();}
-                            </div>
+    
+    <jj-collapse-panel title="@StringLocalizer["Filters"]" expanded-by-default="false" icon="Filter">
+                <div class="row">
+                    <div class="@BootstrapHelper.FormGroup col-sm-4">
+                        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field"]">@StringLocalizer["Field Lookup"]</label>
+                        @Html.DropDownList("mapField",
+                            new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
+                            new { @class = "form-control" })
+                    </div>
+                    <div class="@BootstrapHelper.FormGroup col-sm-5">
+                        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field"]">@StringLocalizer["Filter Expression"]</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="mapExpressionValue" name="mapExpressionValue"/>
+                            <span class="input-group-btn" style="padding-left: 10px;">
+                                <button class="@BootstrapHelper.DefaultButton btn-small" onclick="addElementMapFilter();">
+                                    <span class="fa fa-plus-square-o"></span>&nbsp;@StringLocalizer["Add"]
+                                </button>
+                            </span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="accordion pb-1" id="formAccordion">
-            <div class="accordion-item">
-                <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                        @StringLocalizer["Filters"]
-                    </button>
-                </h2>
-                <div id="collapseTwo" class="accordion-collapse" aria-labelledby="headingOne" data-bs-parent="#formAccordion">
-                    <div class="accordion-body">
-                        <div class="container-fluid">
-                            <div class="row">
-                                @{ Filters(); }
-                            </div>
-                        </div>
+                <div class="row">
+                    <div class="col-sm-12">
+        
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                            @for (int i = 0; i < Model.DataItem!.ElementMap!.MapFilters.Count; i++)
+                            {
+                                var mapFilter = Model.DataItem.ElementMap.MapFilters[i];
+                                <tr>
+                                    <td>
+                                        @mapFilter.FieldName <span>=</span>@mapFilter.ExpressionValue
+                                        @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[i].FieldName, mapFilter.FieldName)
+                                        @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[i].ExpressionValue, mapFilter.ExpressionValue)
+                                    </td>
+                                    <td style="width:80px;" align="center">
+                                        <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="Delete" onclick="removeElementMapFilter('@mapFilter.FieldName');">
+                                            <span class="fa fa-trash"></span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+        
                     </div>
                 </div>
-            </div>
-        </div>
-    }
-    else
-    {
-         <div class="@BootstrapHelper.PanelGroup"> 
-             <div id="pnl_formelemnt" class="@BootstrapHelper.GetPanel("default")"> 
-                 <div class="@BootstrapHelper.GetPanelHeading("default")" href="#collapseElementMap"  
-                      @BootstrapHelper.GetDataToggle("collapse") data-target="#collapseElementMap" aria-expanded="true"> 
-                     <h5 class="@BootstrapHelper.PanelTitle">@StringLocalizer["Filters"]</h5> 
-                 </div> 
-                 <div id="collapseElementMap" class="@BootstrapHelper.PanelCollapse"> 
-                     <div class="@BootstrapHelper.PanelBody"> 
-                         <div class="container-fluid"> 
-                             <div class="row"> 
-                                 @{ ElementMap(); } 
-                             </div> 
-                         </div> 
-                     </div> 
-                 </div> 
-             </div> 
-         </div> 
-
-        <div class="@BootstrapHelper.PanelGroup">
-            <div id="pnl_formview" class="@BootstrapHelper.GetPanel("default")">
-                <div class="@BootstrapHelper.GetPanelHeading("default")" href="#collapseFormView" 
-                     @BootstrapHelper.GetDataToggle("collapse") data-target="#collapseFormView" aria-expanded="true">
-                    <h5 class="@BootstrapHelper.PanelTitle">@StringLocalizer["Filters"]</h5>
-                </div>
-                <div id="collapseFormView" class="@BootstrapHelper.PanelCollapse">
-                    <div class="@BootstrapHelper.PanelBody">
-                        <div class="container-fluid">
-                            <div class="row">
-                                @{ Filters(); }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-
+    </jj-collapse-panel>
+    
 </div>
