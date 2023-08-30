@@ -233,38 +233,7 @@ public class JJSearchBox : AsyncControl
 
         return new RenderedComponentResult(html);
     }
-    public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
-    {
-        return await GetResultFromComponent(
-            view,
-            view.FormElement,
-            view.Values, 
-            view.CurrentContext,
-            view.ComponentFactory.Controls.GetFactory<IControlFactory<JJSearchBox>>());
-    }
-
-    internal static async Task<ComponentResult> GetResultFromComponent(
-        ComponentBase view,
-        FormElement formElement,
-        IDictionary<string, object?> formValues,
-        IHttpContext httpContext,
-        IControlFactory<JJSearchBox> searchBoxFactory)
-    {
-        string dictionaryName = httpContext.Request.QueryString("dictionaryName");
-        string fieldName = httpContext.Request.QueryString("fieldName");
-        var pageState = (PageState)int.Parse(httpContext.Request.QueryString("pageState"));
-
-        if (!formElement.Name.Equals(dictionaryName))
-            return new EmptyComponentResult();
-
-        var field = formElement.Fields[fieldName];
-        var expOptions = new FormStateData(formValues, view.UserValues, pageState);
-
-        var searchBox = searchBoxFactory.Create(formElement, field, new(expOptions, view.Name, dictionaryName));
-        return await searchBox.GetResultAsync();
-    }
-
-
+    
     private async Task<HtmlBuilder> GetSearchBoxHtml()
     {
         if (DataItem == null)
@@ -344,21 +313,21 @@ public class JJSearchBox : AsyncControl
     /// </summary>
     /// <param name="idSearch">Id a ser pesquisado</param>
     /// <returns>Retorna descrição referente ao id</returns>
-    public async Task<string?> GetDescriptionAsync(string idSearch)
+    public async Task<string?> GetDescriptionAsync(string searchId)
     {
         string? description = null;
         if (OnSearchQuery != null)
         {
-            var args = new SearchBoxItemEventArgs(idSearch);
+            var args = new SearchBoxItemEventArgs(searchId);
             OnSearchId?.Invoke(this, args);
             description = args.ResultText;
         }
         else
         {
-            _values ??= await DataItemService.GetValuesAsync(DataItem, FormStateData, null, idSearch).ToListAsync();
+            _values ??= await DataItemService.GetValuesAsync(DataItem, FormStateData, null, searchId).ToListAsync();
         }
 
-        var item = _values?.ToList().Find(x => x.Id.Equals(idSearch));
+        var item = _values?.ToList().Find(x => x.Id.Equals(searchId));
 
         if (item != null)
             description = item.Description;

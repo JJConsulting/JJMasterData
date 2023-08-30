@@ -22,13 +22,13 @@ internal class FormViewRelationshipLayout
         ParentFormView = parentFormView;
     }
 
-    public async Task<ComponentResult> GetRelationshipsResult(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
+    public async Task<ComponentResult> GetRelationshipsResult( List<FormElementRelationship> relationships)
     {
         var relationshipsDiv = new HtmlBuilder(HtmlTag.Div);
         
         if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
         {
-            var tabNavResult = await GetTabRelationshipsResult(parentPanel, relationships);
+            var tabNavResult = await GetTabRelationshipsResult(relationships);
 
             if (tabNavResult is RenderedComponentResult renderedComponentResult)
             {
@@ -42,7 +42,7 @@ internal class FormViewRelationshipLayout
 
         foreach (var relationship in relationships.Where(r => r.Panel.Layout is not PanelLayout.Tab))
         {
-            var relationshipResult = await GetRelationshipResult(parentPanel, relationship);
+            var relationshipResult = await GetRelationshipResult(relationship);
 
             if (relationshipResult is RenderedComponentResult renderedComponentResult)
             {
@@ -72,16 +72,16 @@ internal class FormViewRelationshipLayout
         }
     }
 
-    private async Task<ComponentResult> GetTabRelationshipsResult(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
+    private async Task<ComponentResult> GetTabRelationshipsResult(List<FormElementRelationship> relationships)
     {
         var tabNav = new JJTabNav(ParentFormView.CurrentContext)
         {
-            Name = $"nav_relationships_{parentPanel.Name}"
+            Name = $"nav_relationships_{ParentFormView.DataPanel.Name}"
         };
 
         foreach (var relationship in relationships.Where(r => r.Panel.Layout is PanelLayout.Tab))
         {
-            var relationshipResult = await GetRelationshipResult(parentPanel, relationship);
+            var relationshipResult = await GetRelationshipResult(relationship);
 
             if (relationshipResult is RenderedComponentResult renderedComponentResult)
             {
@@ -146,8 +146,10 @@ internal class FormViewRelationshipLayout
         }
     }
 
-    private async Task<ComponentResult> GetRelationshipResult(JJDataPanel parentPanel, FormElementRelationship relationship)
+    private async Task<ComponentResult> GetRelationshipResult(FormElementRelationship relationship)
     {
+        var parentPanel = ParentFormView.DataPanel;
+        
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
         {
@@ -176,7 +178,7 @@ internal class FormViewRelationshipLayout
                     childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
                     childDataPanel.UserValues = ParentFormView.UserValues;
                     childDataPanel.Values = childValues;
-                    childDataPanel.IsExternalRoute = true;
+                    childDataPanel.IsExternalRoute = false;
                     childDataPanel.RenderPanelGroup = false;
                     childDataPanel.FormUI = childElement.Options.Form;
 
@@ -187,7 +189,7 @@ internal class FormViewRelationshipLayout
                     var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
                     childFormView.DataPanel.FieldNamePrefix = childFormView.DataPanel.Name + "_";
                     childFormView.UserValues = ParentFormView.UserValues;
-                    childFormView.IsExternalRoute = true;
+                    childFormView.IsExternalRoute = false;
                     childFormView.RelationValues = mappedForeignKeys;
                     await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
                     childFormView.SetOptions(childElement.Options);

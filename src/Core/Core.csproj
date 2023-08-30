@@ -83,6 +83,15 @@
       <Compile Update="UI\Components\ComponentContextResolver.cs">
         <DependentUpon>ComponentContext.cs</DependentUpon>
       </Compile>
+      <Compile Update="UI\Components\Controls\IDynamicControlFactory.cs">
+        <DependentUpon>IControlFactory.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\Controls\AsyncControl.cs">
+        <DependentUpon>ControlBase.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\Controls\HtmlControl.cs">
+        <DependentUpon>ControlBase.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
     
 </Project>

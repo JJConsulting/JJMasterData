@@ -309,7 +309,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
         var cbo = (JJComboBox)(await ControlFactory.CreateAsync(FormElement,field,new(values,PageState.List),null, selectedValue));
-        var item = cbo.GetValue(selectedValue);
+        var item = await cbo.GetValueAsync(selectedValue);
 
         if (item != null)
         {

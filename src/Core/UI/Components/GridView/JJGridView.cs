@@ -616,11 +616,8 @@ public class JJGridView : AsyncComponent
             
             return new JsonComponentResult(new {selectedRows});
         }
-        
-        if (ComponentContext is ComponentContext.SearchBox)
-            return await JJSearchBox.GetResultFromComponent(this,FormElement, await GetCurrentFilterAsync(), CurrentContext,ComponentFactory.Controls.GetFactory<SearchBoxFactory>());
 
-        if ("searchBox".Equals(context))
+        if (ComponentContext is ComponentContext.SearchBox)
         {
             var objName = CurrentContext.Request.QueryString("componentName");
             if (objName == null || !objName.StartsWith(GridFilter.FilterFieldPrefix))
@@ -631,7 +628,8 @@ public class JJGridView : AsyncComponent
                 return new EmptyComponentResult();
 
             var field = FormElement.Fields[filterName];
-            var jjSearchBox = await ComponentFactory.Controls.CreateAsync(FormElement,field, new(await GetCurrentFilterAsync(), UserValues, PageState.Filter), Name) as JJSearchBox;
+            var formStateData = new FormStateData(await GetCurrentFilterAsync(), UserValues, PageState.Filter);
+            var jjSearchBox = await ComponentFactory.Controls.CreateAsync(FormElement,field, formStateData, Name) as JJSearchBox;
             jjSearchBox!.Name = objName;
             return await jjSearchBox.GetResultAsync();
         }
@@ -689,7 +687,13 @@ public class JJGridView : AsyncComponent
         await SetDataSource();
 
         html.WithAttribute("id", $"grid-view-{Name}");
-        html.AppendIf(SortAction.IsVisible, GetSortingConfig);
+
+        if (SortAction.IsVisible)
+        {
+            html.Append(await GetSortingConfig());
+        }
+        
+        await html.AppendIfAsync(SortAction.IsVisible, GetSortingConfig);
 
         html.AppendText(GetScriptHtml());
         html.AppendRange(GetHiddenInputs(currentAction));
@@ -783,7 +787,7 @@ public class JJGridView : AsyncComponent
 
     public async Task<string> GetToolbarHtml() => (await GetToolbarHtmlBuilder()).ToString();
 
-    private HtmlBuilder GetSortingConfig() => new GridSortingConfig(this).GetHtmlElement();
+    private async Task<HtmlBuilder> GetSortingConfig() => await new GridSortingConfig(this).GetHtmlBuilderAsync();
 
     public string GetTitleHtml() => GetTitle(_defaultValues).GetHtml();
 
@@ -1032,13 +1036,13 @@ public class JJGridView : AsyncComponent
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var legend = new JJLegendView(ComponentFactory.Controls.GetFactory<ComboBoxFactory>(), StringLocalizer)
+        var legend = new GridLegendView(ComponentFactory.Controls.GetControlFactory<JJComboBox>(), StringLocalizer)
         {
             ShowAsModal = true,
-            FormElement = FormElement,
-            Name = "iconlegend_modal_" + Name
+            FormElement = FormElement
         };
-        return legend.GetHtmlBuilder();
+        
+        return await legend.GetHtmlBuilderAsync();
     }
 
     internal string GetFieldName(string fieldName, IDictionary<string, object?> row)

@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class GridSortingConfig
+internal class GridSortingConfig
 {
     public string CurrentOrder { get; set; }
 
     public FormElement FormElement { get; set; }
-    public IControlFactory<JJComboBox> ComboBoxFactory { get; set; }
+    public JJComboBox ComboBox { get; set; }
     public string Name { get; set; }
     
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -25,13 +27,13 @@ public class GridSortingConfig
             throw new ArgumentNullException(nameof(grid));
 
         CurrentOrder = grid.CurrentOrder.ToQueryParameter();
-        ComboBoxFactory = grid.ComponentFactory.Controls.GetFactory<ComboBoxFactory>();
+        ComboBox = grid.ComponentFactory.Controls.Create<JJComboBox>();
         StringLocalizer = grid.StringLocalizer;
         FormElement = grid.FormElement;
         Name = grid.Name;
     }
 
-    public HtmlBuilder GetHtmlElement()
+    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var dialog = new JJModalDialog
         {
@@ -66,12 +68,12 @@ public class GridSortingConfig
                 div.AppendComponent(new JJIcon("text-info fa fa-triangle-exclamation"));
                 div.AppendText("&nbsp;");
                 div.AppendText(StringLocalizer["Drag and drop to change order."]);
-            })
-            .Append(HtmlTag.Table, table =>
+            });
+        await htmlContent.AppendAsync(HtmlTag.Table, async table =>
             {
                 table.WithCssClass("table table-hover");
                 table.Append(GetHtmlHeader());
-                table.Append(GetHtmlBody());
+                table.Append(await GetHtmlBody());
             });
 
         dialog.HtmlBuilderContent = htmlContent;
@@ -103,15 +105,14 @@ public class GridSortingConfig
         return thead;
     }
 
-    private HtmlBuilder GetHtmlBody()
+    private async Task<HtmlBuilder> GetHtmlBody()
     {
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
         tbody.WithAttribute("id", $"sortable-{Name}");
         tbody.WithCssClass("ui-sortable jjsortable");
-
-        var comboBox = ComboBoxFactory.Create();
-        comboBox.DataItem.ShowImageLegend = true;
-        comboBox.DataItem.Items = new List<DataItemValue>
+        
+        ComboBox.DataItem.ShowImageLegend = true;
+        ComboBox.DataItem.Items = new List<DataItemValue>
         {
             new("A", StringLocalizer["Ascendant"], IconType.SortAmountAsc, null),
             new("D", StringLocalizer["Descendant"], IconType.SortAmountDesc, null),
@@ -130,16 +131,16 @@ public class GridSortingConfig
 
         foreach (var item in fieldsList.Where(item => !item.VisibleExpression.Equals("val:0")))
         {
-            comboBox.Name = item.Name + "_order";
-            comboBox.SelectedValue = "N";
+            ComboBox.Name = item.Name + "_order";
+            ComboBox.SelectedValue = "N";
 
             var sort = sortList.Find(x => x.FieldName.Equals(item.Name));
             if (sort != null)
             {
-                comboBox.SelectedValue = sort.IsAsc ? "A" : "D";
+                ComboBox.SelectedValue = sort.IsAsc ? "A" : "D";
             }
 
-            tbody.Append(HtmlTag.Tr, tr =>
+            await tbody.AppendAsync(HtmlTag.Tr, async tr =>
             {
                 tr.WithAttribute("id", item.Name);
                 tr.WithCssClass("ui-sortable-handle");
@@ -151,9 +152,11 @@ public class GridSortingConfig
                 {
                     td.AppendText(StringLocalizer[item.LabelOrName]);
                 });
-                tr.Append(HtmlTag.Td, td =>
+                await tr.AppendAsync(HtmlTag.Td, async td =>
                 {
-                    td.AppendComponent(comboBox);
+                    var comboBoxResult = (RenderedComponentResult)await ComboBox.GetResultAsync();
+                    
+                    td.Append(comboBoxResult.HtmlBuilder);
                 });
             });
         }

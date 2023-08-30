@@ -59,7 +59,7 @@ public class FormValuesService : IFormValuesService
                 case FormComponent.Search:
                     {
                         var formData = new FormStateData(values, pageState);
-                        value = await DataItemService.GetSelectedValueAsync(field, formData, null);
+                        value = await DataItemService.GetSelectedValueAsync(field, formData);
                         break;
                     }
                 case FormComponent.Lookup:

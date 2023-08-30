@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.UI.Components.Abstractions;
+using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -32,9 +34,14 @@ public class ControlFactory
         }
     }
     
-    public TFactory GetFactory<TFactory>() where TFactory : IControlFactory
+    public IControlFactory<TControl> GetControlFactory<TControl>() where TControl : ControlBase
     {
-        return ServiceProvider.GetRequiredService<TFactory>();
+        return ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
+    }
+    
+    public IDynamicControlFactory<TDynamicControl> GetDynamicControlFactory<TDynamicControl>() where TDynamicControl : AsyncControl
+    {
+        return ServiceProvider.GetRequiredService<IDynamicControlFactory<TDynamicControl>>();
     }
 
     public TControl Create<TControl>() where TControl : ControlBase
@@ -63,7 +70,7 @@ public class ControlFactory
         var context = new ControlContext(formStateData, parentName, value);
         if (formStateData.PageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {
-            var factory = GetFactory<IControlFactory<JJTextRange>>();
+            var factory = GetControlFactory<JJTextRange>();
             return factory.Create(formElement, field, context);
         }
         

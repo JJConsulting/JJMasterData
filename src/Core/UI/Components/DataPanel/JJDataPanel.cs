@@ -205,7 +205,17 @@ public class JJDataPanel : AsyncComponent
             return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService, ComponentFactory.Downloader);
 
         if (ComponentContext is ComponentContext.SearchBox)
-            return await JJSearchBox.GetResultFromPanel(this);
+        {
+            var factory = ComponentFactory.Controls.GetDynamicControlFactory<JJSearchBox>();
+            var searchBox = factory.CreateIfExists(FormElement, Values, UserValues);
+
+            if (searchBox is null)
+            {
+                return new EmptyComponentResult();
+            }
+            
+            return await searchBox.GetResultAsync();
+        }
 
         if (ComponentContext is ComponentContext.PanelReload)
         {

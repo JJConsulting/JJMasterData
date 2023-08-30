@@ -81,6 +81,14 @@ public partial class HtmlBuilder
 
         return this;
     }
+    
+    public async Task AppendIfAsync(bool condition, Func<Task<HtmlBuilder>> func)
+    {
+        if (condition)
+        {
+            Append(await func.Invoke());
+        }
+    }
 
     
     /// <summary>

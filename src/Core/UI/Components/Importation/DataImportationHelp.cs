@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
@@ -106,7 +107,7 @@ internal class DataImportationHelp
     {
         var body = new HtmlBuilder(HtmlTag.Tbody);
         int orderField = 1;
-        foreach (FormElementField field in list)
+        foreach (var field in list)
         {
             var tr = new HtmlBuilder(HtmlTag.Tr);
             var currentOrderField = orderField;
@@ -252,7 +253,7 @@ internal class DataImportationHelp
         var expOptions = new FormStateData(defaultValues, DataImportation.UserValues, PageState.Import);
         //TODO: DataItemService is better
         var comboBox = DataImportation.ComboBoxFactory.Create(null,field, new(expOptions,null,null));
-        var items = comboBox.GetValues();
+        var items = await comboBox.GetValuesAsync().ToListAsync();
 
         if (items.Count == 0)
             return string.Empty;
@@ -261,11 +262,10 @@ internal class DataImportationHelp
 
         var span = new HtmlBuilder(HtmlTag.Span);
         span.WithCssClass("small");
-        span.Append(HtmlTag.Span, span =>
+        span.Append(HtmlTag.Span,  span =>
         {
             span.AppendText("(");
-
-   
+            
             foreach (var item in items)
             {
                 if (isFirst)

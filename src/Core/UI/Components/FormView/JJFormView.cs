@@ -336,7 +336,15 @@ public class JJFormView : AsyncComponent
                 ComponentFactory.Downloader);
 
         if (ComponentContext is ComponentContext.SearchBox)
-            return await JJSearchBox.GetResultFromPanel(DataPanel);
+        {
+            var factory = ComponentFactory.Controls.GetDynamicControlFactory<JJSearchBox>();
+            var searchBox = factory.CreateIfExists(FormElement, DataPanel.Values, UserValues);
+
+            if (searchBox is not null)
+            {
+                return await searchBox.GetResultAsync();
+            }
+        }
 
         if (ComponentContext is ComponentContext.PanelReload)
         {
@@ -936,7 +944,7 @@ public class JJFormView : AsyncComponent
 
         html.AppendComponent(await GetFormToolbarAsync(topActions));
 
-        var relationshipsResult = await layout.GetRelationshipsResult(parentPanel, visibleRelationships);
+        var relationshipsResult = await layout.GetRelationshipsResult(visibleRelationships);
 
         if (relationshipsResult is RenderedComponentResult renderedComponentResult)
         {

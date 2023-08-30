@@ -1,15 +1,13 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJLegendView : HtmlComponent
+internal class GridLegendView 
 {
     private IControlFactory<JJComboBox> ComboBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -19,28 +17,28 @@ public class JJLegendView : HtmlComponent
 
     #region "Constructors"
 
-    public JJLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         ComboBoxFactory = comboBoxFactory;
         StringLocalizer = stringLocalizer;
-        Name = "iconLegend";
         ShowAsModal = false;
     }
 
     #endregion
     
-    internal override HtmlBuilder BuildHtml()
+    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         if (ShowAsModal)
         {
-            return GetHtmlModal(FormElement);
+            return await GetModalHtmlBuilder(FormElement);
         }
 
-        var field = GetFieldLegend(FormElement);
-        return GetHtmlLegend(field);
+        var field = GetLegendField(FormElement);
+
+        return  await GetLegendHtmlBuilder(field);
     }
 
-    private HtmlBuilder GetHtmlLegend(FormElementField field)
+    private async Task<HtmlBuilder> GetLegendHtmlBuilder(FormElementField field)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
 
@@ -52,7 +50,7 @@ public class JJLegendView : HtmlComponent
             if (field.DataItem != null)
                 cbo.DataItem = field.DataItem;
 
-            var values = cbo.GetValues();
+            var values = await cbo.GetValuesAsync().ToListAsync();
             
             if (values is { Count: > 0 })
             {
@@ -82,18 +80,18 @@ public class JJLegendView : HtmlComponent
         return div;
     }
 
-    private HtmlBuilder GetHtmlModal(FormElement formElement)
+    private async Task<HtmlBuilder> GetModalHtmlBuilder(FormElement formElement)
     {
-        var field = GetFieldLegend(formElement);
+        var field = GetLegendField(formElement);
 
         var form = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("form-horizontal")
             .WithAttribute("role", "form")
-            .Append(GetHtmlLegend(field));
+            .Append(await GetLegendHtmlBuilder(field));
         
         var dialog = new JJModalDialog
         {
-            Name = Name,
+            Name = FormElement.Name +"legend_dialog",
             Title = StringLocalizer["Information"],
             HtmlBuilderContent = form
         };
@@ -101,7 +99,7 @@ public class JJLegendView : HtmlComponent
         return dialog.BuildHtml();
     }
     
-    private FormElementField GetFieldLegend(FormElement formElement)
+    private FormElementField GetLegendField(FormElement formElement)
     {
         return formElement.Fields.FirstOrDefault(f 
             => f.Component == FormComponent.ComboBox && (f.DataItem?.ShowImageLegend ?? false));

@@ -1,5 +1,5 @@
+#nullable enable
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
@@ -9,12 +9,13 @@ using JJMasterData.Core.Web.Http.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Factories;
 
-internal class SearchBoxFactory : IControlFactory<JJSearchBox>
+internal class SearchBoxFactory : IDynamicControlFactory<JJSearchBox>
 {
-    private IEntityRepository EntityRepository { get; }
     private IDataItemService DataItemService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IFormValuesService FormValuesService { get; }
@@ -23,7 +24,6 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public SearchBoxFactory(
-        IEntityRepository entityRepository,
         IDataItemService dataItemService,
         IDataDictionaryRepository dataDictionaryRepository,
         IFormValuesService formValuesService,
@@ -31,7 +31,6 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper)
     {
-        EntityRepository = entityRepository;
         DataItemService = dataItemService;
         DataDictionaryRepository = dataDictionaryRepository;
         FormValuesService = formValuesService;
@@ -63,17 +62,17 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
         };
 
         if (controlContext.Value != null)
-            search.SelectedValue = controlContext.Value.ToString();
+            search.SelectedValue = controlContext.Value.ToString()!;
 
         return search;
     }
 
-    public async Task<JJSearchBox> CreateAsync(string dictionaryName, string fieldName, PageState pageState, IDictionary<string, object> userValues)
+    public async Task<JJSearchBox?> CreateAsync(string? dictionaryName, string fieldName, PageState pageState, IDictionary<string, object?> userValues)
     {
         if (string.IsNullOrEmpty(dictionaryName))
             return null;
 
-        IDictionary<string, object> formValues = null;
+        IDictionary<string, object?>? formValues = null;
         var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
         var dataItem = formElement.Fields[fieldName].DataItem;
         if (dataItem == null)
@@ -87,5 +86,21 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
         var field = formElement.Fields[fieldName];
         var expOptions = new FormStateData(userValues, formValues, pageState);
         return Create(formElement, field, new(expOptions, null, null));
+    }
+
+    public JJSearchBox? CreateIfExists(FormElement formElement, IDictionary<string,object?> values, IDictionary<string,object?> userValues)
+    {
+        var elementName = HttpContext.Request.QueryString("dictionaryName");
+        var fieldName = HttpContext.Request.QueryString("fieldName");
+        var pageState = (PageState)int.Parse(HttpContext.Request.QueryString("pageState"));
+
+        if (!formElement.Name.Equals(elementName))
+            return null;
+
+        var field = formElement.Fields[fieldName];
+        var expOptions = new FormStateData(values, userValues, pageState);
+
+        var searchBox = Create(formElement, field, new(expOptions, formElement.Name, elementName));
+        return searchBox;
     }
 }

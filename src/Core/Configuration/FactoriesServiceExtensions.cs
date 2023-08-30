@@ -2,6 +2,7 @@ using JJMasterData.Core.DataDictionary.Factories;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.UI.Components.Importation;
 using JJMasterData.Core.UI.Components.Widgets;
@@ -45,6 +46,7 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IControlFactory<JJComboBox>,ComboBoxFactory>();
         services.AddTransient<IControlFactory<JJLookup>,LookupFactory>();
         services.AddTransient<IControlFactory<JJSearchBox>,SearchBoxFactory>();
+        services.AddTransient<IDynamicControlFactory<JJSearchBox>,SearchBoxFactory>();
         services.AddTransient<IControlFactory<JJTextArea>,TextAreaFactory>();
         services.AddTransient<IControlFactory<JJSlider>,SliderFactory>();
         services.AddTransient<IControlFactory<JJTextGroup>,TextBoxFactory>();

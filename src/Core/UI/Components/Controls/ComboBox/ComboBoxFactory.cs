@@ -14,17 +14,20 @@ namespace JJMasterData.Core.Web.Factories;
 internal class ComboBoxFactory : IControlFactory<JJComboBox>
 {
     private IHttpContext HttpContext { get; }
-    private IEntityRepository EntityRepository { get; }
+    private IDataItemService DataItemService { get; }
     private IExpressionsService ExpressionsService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
-    public ComboBoxFactory(IHttpContext httpContext, IEntityRepository entityRepository,
-        IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer,
+    public ComboBoxFactory(
+        IHttpContext httpContext, 
+        IDataItemService dataItemService,
+        IExpressionsService expressionsService, 
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {
         HttpContext = httpContext;
-        EntityRepository = entityRepository;
+        DataItemService = dataItemService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
@@ -32,7 +35,7 @@ internal class ComboBoxFactory : IControlFactory<JJComboBox>
 
     public JJComboBox Create()
     {
-        return new JJComboBox(HttpContext, EntityRepository, ExpressionsService,
+        return new JJComboBox(HttpContext, DataItemService, ExpressionsService,
             StringLocalizer,
             LoggerFactory.CreateLogger<JJComboBox>());
     }
