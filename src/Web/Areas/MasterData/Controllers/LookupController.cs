@@ -36,7 +36,7 @@ public class LookupController : MasterDataController
     }
 
     [ServiceFilter<LookupParametersDecryptionFilter>]
-    public async Task<IActionResult> Index(LookupParameters lookupParameters)
+    public async Task<IActionResult> GetFormView(LookupParameters lookupParameters)
     {
         var formView = await FormViewFactory.CreateAsync(lookupParameters.ElementName);
 
@@ -51,7 +51,7 @@ public class LookupController : MasterDataController
     }
 
     [ServiceFilter<FormElementDecryptionFilter>]
-    public async Task<IActionResult> GetResult(
+    public async Task<IActionResult> GetDescription(
         FormElement formElement,
         string fieldName,
         string componentName,
@@ -87,10 +87,8 @@ public class LookupController : MasterDataController
         {
             action.IsDefaultOption = false;
         }
-        //TODO: PAN! O FormElement é o filho, n o pai 
-        //var fieldDescription = form.FormElement.Fields[lookupParameters.FieldKey].DataItem!.ElementMap!.FieldDescription;
-        
-        var script = $"LookupHelper.setLookupValues('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKey}}}');";
+
+        var script = $"LookupHelper.setLookupValues('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKeyName}}}','{{{lookupParameters.FieldValueName}}}');";
         var selAction = new ScriptAction
         {
             Name = "jjselLookup",

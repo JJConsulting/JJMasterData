@@ -44,8 +44,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
             controlContext,
             HttpContext,
             LookupService,
-            EncryptionService,
-            UrlHelper);
+            EncryptionService);
        
         return lookup;
     }

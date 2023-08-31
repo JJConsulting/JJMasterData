@@ -1,9 +1,11 @@
-class LookupHelper{
-    static setLookupValues(fieldName, value){
-        window.parent.defaultModal.hide();
-        setTimeout(function () {
-            window.parent.$("#id_" + fieldName).val(value);
-            window.parent.$("#" + fieldName).val(value).change().blur();
-        }, 100);
+class LookupHelper {
+    static setLookupValues(fieldName: string, id: string, description: string) {
+        defaultModal.hide();
+
+        const idInput = document.querySelector<HTMLInputElement>("#" + fieldName );
+        idInput.value = id;
+        
+        const descriptionInput   = document.querySelector<HTMLInputElement>("#" + fieldName + "-description");
+        descriptionInput.value = description;
     }
 }

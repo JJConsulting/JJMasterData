@@ -712,15 +712,17 @@ function applyDecimalPlaces() {
 }
 class FeedbackIcon {
     static removeAllIcons(selector) {
-        $(selector)
-            .removeClass(FeedbackIcon.successClass)
-            .removeClass(FeedbackIcon.warningClass)
-            .removeClass(FeedbackIcon.searchClass)
-            .removeClass(FeedbackIcon.errorClass);
+        const elements = document.querySelectorAll(selector);
+        elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
+            element.classList.remove(FeedbackIcon.successClass, FeedbackIcon.warningClass, FeedbackIcon.searchClass, FeedbackIcon.errorClass);
+        });
     }
     static setIcon(selector, iconClass) {
         this.removeAllIcons(selector);
-        $(selector).addClass(iconClass);
+        const elements = document.querySelectorAll(selector);
+        elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
+            element.classList.add(iconClass);
+        });
     }
 }
 FeedbackIcon.searchClass = "jj-icon-search";
@@ -1181,66 +1183,52 @@ function loadJJMasterData(event, prefixSelector) {
     });
 }
 class LookupHelper {
-    static setLookupValues(fieldName, value) {
-        window.parent.defaultModal.hide();
-        setTimeout(function () {
-            window.parent.$("#id_" + fieldName).val(value);
-            window.parent.$("#" + fieldName).val(value).change().blur();
-        }, 100);
+    static setLookupValues(fieldName, id, description) {
+        defaultModal.hide();
+        const idInput = document.querySelector("#" + fieldName);
+        idInput.value = id;
+        const descriptionInput = document.querySelector("#" + fieldName + "-description");
+        descriptionInput.value = description;
     }
 }
 class LookupListener {
     static listenChanges() {
-        const lookupInputs = document.querySelectorAll("input.jjlookup");
+        const lookupInputs = document.querySelectorAll("input.jj-lookup");
         lookupInputs.forEach(lookupInput => {
-            var _a;
             let lookupId = lookupInput.id;
             let fieldName = lookupInput.getAttribute("lookup-field-name");
             let panelName = lookupInput.getAttribute("panelName");
-            let popupTitle = lookupInput.getAttribute("popuptitle");
-            let lookupUrl = lookupInput.getAttribute("lookup-url");
-            let lookupResultUrl = lookupInput.getAttribute("lookup-result-url");
-            let popupSize = +lookupInput.getAttribute("popupsize");
-            const lookupSelector = "#" + lookupId;
-            const hiddenLookupSelector = "#id_" + lookupId;
-            (_a = document.querySelector("#btn_" + lookupId)) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
-                yield defaultModal.showUrl({ url: lookupUrl }, popupTitle, popupSize);
-            }));
-            function setHiddenLookup() {
-                document.querySelector(lookupSelector).value = lookupInput.value;
-            }
-            lookupInput.addEventListener("change", function () {
-                document.querySelector(hiddenLookupSelector).value = lookupInput.value;
-            });
+            let lookupDescriptionUrl = lookupInput.getAttribute("lookup-description-url");
+            const lookupIdSelector = "#" + lookupId;
+            const lookupDescriptionSelector = lookupIdSelector + "-description";
             lookupInput.addEventListener("blur", function () {
                 showWaitOnPost = false;
-                setHiddenLookup();
-                FeedbackIcon.removeAllIcons(lookupSelector);
+                FeedbackIcon.removeAllIcons(lookupDescriptionSelector);
                 lookupInput.removeAttribute("readonly");
                 if (lookupInput.value === "") {
                     return;
                 }
                 lookupInput.classList.add("loading-circle");
                 postFormValues({
-                    url: lookupResultUrl,
+                    url: lookupDescriptionUrl,
                     success: (data) => {
                         showWaitOnPost = true;
                         lookupInput.classList.remove("loading-circle");
                         if (data.description === "") {
-                            FeedbackIcon.setIcon(lookupSelector, FeedbackIcon.warningClass);
+                            FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.warningClass);
                         }
                         else {
-                            const lookupHiddenInputElement = document.querySelector(hiddenLookupSelector);
-                            const lookupInputElement = document.querySelector(lookupSelector);
-                            FeedbackIcon.setIcon(lookupSelector, FeedbackIcon.successClass);
-                            lookupInputElement.value = data.description;
-                            lookupHiddenInputElement.value = data.id;
+                            const lookupIdInput = document.querySelector(lookupIdSelector);
+                            const lookupDescriptionInput = document.querySelector(lookupDescriptionSelector);
+                            FeedbackIcon.setIcon(lookupDescriptionSelector, FeedbackIcon.successClass);
+                            lookupIdInput.value = data.description;
+                            lookupDescriptionInput.value = data.id;
                         }
                     },
                     error: (_) => {
                         showWaitOnPost = true;
                         lookupInput.classList.remove("loading-circle");
-                        FeedbackIcon.setIcon(lookupSelector, FeedbackIcon.errorClass);
+                        FeedbackIcon.setIcon(lookupDescriptionSelector, FeedbackIcon.errorClass);
                     }
                 });
             });

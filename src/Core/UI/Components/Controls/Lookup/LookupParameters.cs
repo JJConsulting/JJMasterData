@@ -15,20 +15,23 @@ public class LookupParameters
 {
     public string ElementName { get; set; }
     public string ComponentName { get; set; }
-    public string FieldKey { get; set; }
+    public string FieldKeyName { get; set; }
+    public string FieldValueName { get; set; }
     public bool EnableElementActions { get; set; }
     public IDictionary<string, object> Filters { get; set; }
 
     public LookupParameters(
         string elementName, 
         string componentName, 
-        string fieldKey,
+        string fieldKeyName,
+        string fieldValueName,
         bool enableElementActions,
         IDictionary<string, object> filters)
     {
         ElementName = elementName;
         ComponentName = componentName;
-        FieldKey = fieldKey;
+        FieldKeyName = fieldKeyName;
+        FieldValueName = fieldValueName;
         EnableElementActions = enableElementActions;
         Filters = filters;
     }
@@ -44,8 +47,10 @@ public class LookupParameters
 
         queryString.Append("elementName=");
         queryString.Append(ElementName);
-        queryString.Append("&fieldKey=");
-        queryString.Append(FieldKey);
+        queryString.Append("&fieldKeyName=");
+        queryString.Append(FieldKeyName);
+        queryString.Append("&fieldValueName=");
+        queryString.Append(FieldValueName);
         queryString.Append("&componentName=");
         queryString.Append(ComponentName);
         queryString.Append("&enableAction=");
@@ -82,8 +87,11 @@ public class LookupParameters
                 case "elementName":
                     parameters.ElementName = value;
                     break;
-                case "fieldKey":
-                    parameters.FieldKey = value;
+                case "fieldKeyName":
+                    parameters.FieldKeyName = value;
+                    break;
+                case "fieldValueName":
+                    parameters.FieldValueName = value;
                     break;
                 case "componentName":
                     parameters.ComponentName = value;

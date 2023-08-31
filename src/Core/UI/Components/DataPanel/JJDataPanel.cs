@@ -195,9 +195,6 @@ public class JJDataPanel : AsyncComponent
     {
         Values ??= await GetFormValuesAsync();
         
-        if (ComponentContext is ComponentContext.Lookup)
-            return await JJLookup.GetResultFromPanel(this);
-        
         if (ComponentContext is ComponentContext.FileUpload)
             return await JJTextFile.GetResultFromPanel(this);
         
