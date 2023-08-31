@@ -55,15 +55,14 @@ public class LookupController : MasterDataController
         FormElement formElement,
         string fieldName,
         string componentName,
-        PageState pageState,
-        string searchId)
+        PageState pageState)
     {
         var elementMap = formElement.Fields[fieldName].DataItem!.ElementMap;
         var formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, pageState, true);
         var formStateData = new FormStateData(formValues, pageState);
         var selectedValue = LookupService.GetSelectedValue(componentName).ToString();
         var description = await LookupService.GetDescriptionAsync(elementMap, formStateData, selectedValue, false);
-        return Json(new LookupResultDto(searchId, description));
+        return Json(new LookupResultDto(selectedValue, description));
     }
 
     private void ConfigureLookupForm(JJFormView form, LookupParameters lookupParameters)
