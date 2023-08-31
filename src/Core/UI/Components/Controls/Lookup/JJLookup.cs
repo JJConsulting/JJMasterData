@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿#nullable enable
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 
@@ -28,8 +30,8 @@ public class JJLookup : AsyncControl
 
     #region "Properties"
 
-    private string _selectedValue;
-    private string _text;
+    private object? _selectedValue;
+    private string? _text;
 
     internal FormStateData FormStateData { get; set; }
 
@@ -55,7 +57,7 @@ public class JJLookup : AsyncControl
         set => SetAttr("popuptitle", value);
     }
 
-    public new string Text
+    public new string? Text
     {
         get
         {
@@ -69,13 +71,13 @@ public class JJLookup : AsyncControl
         set => _text = value;
     }
 
-    public string SelectedValue
+    public object? SelectedValue
     {
         get
         {
-            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue))
+            if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue?.ToString()))
             {
-                _selectedValue = LookupService.GetSelectedValue(Name).ToString();
+                _selectedValue = LookupService.GetSelectedValue(Name);
             }
 
             return _selectedValue;
@@ -145,75 +147,70 @@ public class JJLookup : AsyncControl
 
     private async Task<HtmlBuilder> GetLookupHtml()
     {
-        string inputValue = SelectedValue;
-        string description = Text;
+        object? inputValue = SelectedValue;
+        string? description = Text;
 
-        if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(inputValue))
-            description = await LookupService.GetDescriptionAsync(ElementMap, FormStateData, inputValue, OnlyNumbers);
+        if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(inputValue?.ToString()))
+            description = await LookupService.GetDescriptionAsync(ElementMap, FormStateData, inputValue?.ToString(), OnlyNumbers);
 
         Attributes["lookup-url"] = LookupService.GetLookupUrl(ElementMap, FormStateData, Name);
         Attributes["lookup-field-name"] = FieldName;
         
         var div = new HtmlBuilder(HtmlTag.Div);
-        div.WithCssClass("input-group mb-3");
-      
-        if (true)
-        {
-            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
-            var componentName = Attributes["panelName"];
-            Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup","MasterData", 
-                new
-                {
-                    dictionaryName = encryptedDictionaryName,
-                    componentName = Name,
-                    fieldName = FieldName,
-                    pageState = FormStateData.PageState
-                });
-        }
+        div.WithCssClass("input-group mb-3 d-flex" );
+        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
 
-        var textId = new JJTextBox(CurrentContext)
+        Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup","MasterData", 
+            new
+            {
+                dictionaryName = encryptedDictionaryName,
+                componentName = Name,
+                fieldName = FieldName,
+                pageState = FormStateData.PageState
+            });
+        
+        var idTextBox = new JJTextBox(CurrentContext)
         {
             Name = Name,
-            CssClass = $"form-control jjlookup col-sm-2 {CssClass}",
+            CssClass = $"form-control jjlookup {CssClass}",
             InputType = OnlyNumbers ? InputType.Number : InputType.Text,
             MaxLength = MaxLength,
-            Text = SelectedValue,
-            Attributes = Attributes,
+            Text = SelectedValue?.ToString(),
+            Attributes = Attributes.DeepCopy(),
             ToolTip = ToolTip,
             ReadOnly = ReadOnly, 
             Enabled = Enabled,
-            
         };
 
-        var textGroupDescription = new JJTextGroup(CurrentContext)
+        idTextBox.Attributes["style"] = "flex:2";
+
+        var descriptionTextBox = new JJTextBox(CurrentContext)
         {
             Name = $"{Name}_description",
-            CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue, description)} {CssClass}",
+            CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue?.ToString(), description)} {CssClass}",
             InputType = InputType.Text, 
             MaxLength = MaxLength,
             Text = description,
-            Attributes = Attributes,
+            Attributes = Attributes.DeepCopy(),
             ToolTip = ToolTip,
-            Enabled = false,
-            Actions = new List<JJLinkButton>
-            {
-                new()
-                {
-                    Name = $"btn_{Name}",
-                    Enabled = Enabled,
-                    ShowAsButton = true,
-                    IconClass = "fa fa-search"
-                }
-            }
+            Enabled = false
         };
         
-        div.AppendComponent(textId);
-        div.AppendComponent(textGroupDescription);
-       
+        descriptionTextBox.Attributes["style"] = "flex:10";
+        
+        div.AppendComponent(idTextBox);
+        div.AppendComponent(descriptionTextBox);
+        div.AppendComponent(new JJLinkButton
+        {
+            Name = $"btn_{Name}",
+            Enabled = Enabled,
+            ShowAsButton = true,
+            IconClass = "fa fa-search"
+        });
         return div;
     }
 
-    private string GetFeedbackIcon(string value, string description)
+    private string? GetFeedbackIcon(string? value, string? description)
     {
         if (!string.IsNullOrEmpty(value) & !string.IsNullOrEmpty(description))
             return " jj-icon-success ";
@@ -252,7 +249,7 @@ public class JJLookup : AsyncControl
     }
 
     //todo: mover para LookupFactory
-    public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
+    public static async Task<ComponentResult?> GetResultFromPanel(JJDataPanel view)
     {
         string lookupRoute = view.CurrentContext.Request.QueryString("lookup-" + view.Name);
         if (string.IsNullOrEmpty(lookupRoute))

@@ -206,15 +206,6 @@ class JJViewHelper {
         $("form:first").trigger("submit");
     }
 
-    static setLookup(objid, value) {
-        window.parent.defaultModal.hide();
-        setTimeout(function () {
-            window.parent.$("#id_" + objid).val(value);
-            window.parent.$("#" + objid).val(value).change().blur();
-        }, 100);
-
-    }
-
     /**
      * Realiza um redirecionamento na pagina
      *

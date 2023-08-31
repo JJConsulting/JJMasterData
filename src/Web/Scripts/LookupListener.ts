@@ -1,69 +1,65 @@
 class LookupListener {
     static listenChanges() {
-        $("input.jjlookup").each(function () {
-            let lookupInput = $(this);
-            let lookupId = lookupInput.attr("id");
-            let fieldName = lookupInput.attr("lookup-field-name");
-            let panelName = lookupInput.attr("panelName");
-            let popupTitle = lookupInput.attr("popuptitle");
-            let lookupUrl = lookupInput.attr("lookup-url");
-            let lookupResultUrl = lookupInput.attr("lookup-result-url");
-            let popupSize: number = +lookupInput.attr("popupsize");
+        const lookupInputs = document.querySelectorAll<HTMLInputElement>("input.jjlookup");
 
+        lookupInputs.forEach(lookupInput => {
+            let lookupId = lookupInput.id;
+            let fieldName = lookupInput.getAttribute("lookup-field-name");
+            let panelName = lookupInput.getAttribute("panelName");
+            let popupTitle = lookupInput.getAttribute("popuptitle");
+            let lookupUrl = lookupInput.getAttribute("lookup-url");
+            let lookupResultUrl = lookupInput.getAttribute("lookup-result-url");
+            let popupSize = +lookupInput.getAttribute("popupsize");
 
-            const jjLookupSelector = "#" + lookupId + "";
-            const jjHiddenLookupSelector = "#id_" + lookupId + "";
+            const lookupSelector = "#" + lookupId;
+            const hiddenLookupSelector = "#id_" + lookupId;
 
-            $("#btn_" + lookupId).on("click", function () {
-                defaultModal.showIframe(lookupUrl, popupTitle, popupSize);
+            document.querySelector("#btn_" + lookupId)?.addEventListener("click", async () => {
+                await defaultModal.showUrl({ url: lookupUrl }, popupTitle, popupSize);
             });
 
             function setHiddenLookup() {
-                $("#" + lookupId).val(lookupInput.val())
+                document.querySelector<HTMLInputElement>(lookupSelector).value = lookupInput.value;
             }
 
-          
-
-            lookupInput.one("change", function () {
-                $("#id_" + lookupId).val(lookupInput.val());
+            lookupInput.addEventListener("change", function () {
+                document.querySelector<HTMLInputElement>(hiddenLookupSelector).value = lookupInput.value;
             });
 
-            lookupInput.one("blur", function () {
+            lookupInput.addEventListener("blur", function () {
                 showWaitOnPost = false;
                 setHiddenLookup();
 
-                FeedbackIcon.removeAllIcons(jjLookupSelector)
+                FeedbackIcon.removeAllIcons(lookupSelector);
 
-                lookupInput.removeAttr("readonly");
-                if (lookupInput.val() == "") {
+                lookupInput.removeAttribute("readonly");
+                if (lookupInput.value === "") {
                     return;
                 }
 
-
-                lookupInput.addClass("loading-circle");
+                lookupInput.classList.add("loading-circle");
 
                 postFormValues({
-                    url: lookupResultUrl, success: (data) => {
+                    url: lookupResultUrl,
+                    success: (data) => {
                         showWaitOnPost = true;
-                        lookupInput.removeClass("loading-circle");
+                        lookupInput.classList.remove("loading-circle");
                         if (data.description === "") {
-                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass);
+                            FeedbackIcon.setIcon(lookupSelector, FeedbackIcon.warningClass);
                         } else {
-                            const lookupHiddenInputElement = document.querySelector<HTMLInputElement>("#id_" + lookupId);
-                            const lookupInputElement = document.querySelector<HTMLInputElement>("#" + lookupId);
-                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
+                            const lookupHiddenInputElement = document.querySelector<HTMLInputElement>(hiddenLookupSelector);
+                            const lookupInputElement = document.querySelector<HTMLInputElement>(lookupSelector);
+                            FeedbackIcon.setIcon(lookupSelector, FeedbackIcon.successClass);
                             lookupInputElement.value = data.description;
                             lookupHiddenInputElement.value = data.id;
-
-                        
                         }
-                    }, error: (_) => {
+                    },
+                    error: (_) => {
                         showWaitOnPost = true;
-                        lookupInput.removeClass("loading-circle");
-                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass);
+                        lookupInput.classList.remove("loading-circle");
+                        FeedbackIcon.setIcon(lookupSelector, FeedbackIcon.errorClass);
                     }
-                })
-
+                });
             });
         });
     }

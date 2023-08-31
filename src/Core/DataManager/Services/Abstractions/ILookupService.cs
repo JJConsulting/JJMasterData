@@ -12,6 +12,6 @@ public interface ILookupService
     Task<string> GetDescriptionAsync(
         DataElementMap elementMap,
         FormStateData formStateData,
-        string searchId,
+        object value,
         bool allowOnlyNumbers);
 }

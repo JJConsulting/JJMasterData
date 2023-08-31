@@ -46,11 +46,8 @@ public class LookupController : MasterDataController
 
         if (result.IsActionResult())
             return result.ToActionResult();
-        
-        return View(new LookupViewModel
-        {
-            LookupFormHtml = result.Content!
-        });
+
+        return Content(result.Content);
     }
 
     [ServiceFilter<FormElementDecryptionFilter>]
@@ -90,10 +87,10 @@ public class LookupController : MasterDataController
         {
             action.IsDefaultOption = false;
         }
-
-        var fieldDescription = form.FormElement.Fields[lookupParameters.FieldKey].DataItem!.ElementMap!.FieldDescription;
+        //TODO: PAN! O FormElement é o filho, n o pai 
+        //var fieldDescription = form.FormElement.Fields[lookupParameters.FieldKey].DataItem!.ElementMap!.FieldDescription;
         
-        var script = $"JJViewHelper.setLookup('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKey}}}');";
+        var script = $"LookupHelper.setLookupValues('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKey}}}');";
         var selAction = new ScriptAction
         {
             Name = "jjselLookup",

@@ -1016,13 +1016,6 @@ class JJViewHelper {
         $("#grid-view-row-" + objid).val(criptid);
         $("form:first").trigger("submit");
     }
-    static setLookup(objid, value) {
-        window.parent.defaultModal.hide();
-        setTimeout(function () {
-            window.parent.$("#id_" + objid).val(value);
-            window.parent.$("#" + objid).val(value).change().blur();
-        }, 100);
-    }
     static executeUrlRedirect(url, ispopup, title, confirmMessage, popupSize = 1) {
         if (confirmMessage) {
             const result = confirm(confirmMessage);
@@ -1187,55 +1180,67 @@ function loadJJMasterData(event, prefixSelector) {
         }
     });
 }
+class LookupHelper {
+    static setLookupValues(fieldName, value) {
+        window.parent.defaultModal.hide();
+        setTimeout(function () {
+            window.parent.$("#id_" + fieldName).val(value);
+            window.parent.$("#" + fieldName).val(value).change().blur();
+        }, 100);
+    }
+}
 class LookupListener {
     static listenChanges() {
-        $("input.jjlookup").each(function () {
-            let lookupInput = $(this);
-            let lookupId = lookupInput.attr("id");
-            let fieldName = lookupInput.attr("lookup-field-name");
-            let panelName = lookupInput.attr("panelName");
-            let popupTitle = lookupInput.attr("popuptitle");
-            let lookupUrl = lookupInput.attr("lookup-url");
-            let lookupResultUrl = lookupInput.attr("lookup-result-url");
-            let popupSize = +lookupInput.attr("popupsize");
-            const jjLookupSelector = "#" + lookupId + "";
-            const jjHiddenLookupSelector = "#id_" + lookupId + "";
-            $("#btn_" + lookupId).on("click", function () {
-                defaultModal.showIframe(lookupUrl, popupTitle, popupSize);
-            });
+        const lookupInputs = document.querySelectorAll("input.jjlookup");
+        lookupInputs.forEach(lookupInput => {
+            var _a;
+            let lookupId = lookupInput.id;
+            let fieldName = lookupInput.getAttribute("lookup-field-name");
+            let panelName = lookupInput.getAttribute("panelName");
+            let popupTitle = lookupInput.getAttribute("popuptitle");
+            let lookupUrl = lookupInput.getAttribute("lookup-url");
+            let lookupResultUrl = lookupInput.getAttribute("lookup-result-url");
+            let popupSize = +lookupInput.getAttribute("popupsize");
+            const lookupSelector = "#" + lookupId;
+            const hiddenLookupSelector = "#id_" + lookupId;
+            (_a = document.querySelector("#btn_" + lookupId)) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
+                yield defaultModal.showUrl({ url: lookupUrl }, popupTitle, popupSize);
+            }));
             function setHiddenLookup() {
-                $("#" + lookupId).val(lookupInput.val());
+                document.querySelector(lookupSelector).value = lookupInput.value;
             }
-            lookupInput.one("change", function () {
-                $("#id_" + lookupId).val(lookupInput.val());
+            lookupInput.addEventListener("change", function () {
+                document.querySelector(hiddenLookupSelector).value = lookupInput.value;
             });
-            lookupInput.one("blur", function () {
+            lookupInput.addEventListener("blur", function () {
                 showWaitOnPost = false;
                 setHiddenLookup();
-                FeedbackIcon.removeAllIcons(jjLookupSelector);
-                lookupInput.removeAttr("readonly");
-                if (lookupInput.val() == "") {
+                FeedbackIcon.removeAllIcons(lookupSelector);
+                lookupInput.removeAttribute("readonly");
+                if (lookupInput.value === "") {
                     return;
                 }
-                lookupInput.addClass("loading-circle");
+                lookupInput.classList.add("loading-circle");
                 postFormValues({
-                    url: lookupResultUrl, success: (data) => {
+                    url: lookupResultUrl,
+                    success: (data) => {
                         showWaitOnPost = true;
-                        lookupInput.removeClass("loading-circle");
+                        lookupInput.classList.remove("loading-circle");
                         if (data.description === "") {
-                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass);
+                            FeedbackIcon.setIcon(lookupSelector, FeedbackIcon.warningClass);
                         }
                         else {
-                            const lookupHiddenInputElement = document.querySelector("#id_" + lookupId);
-                            const lookupInputElement = document.querySelector("#" + lookupId);
-                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
+                            const lookupHiddenInputElement = document.querySelector(hiddenLookupSelector);
+                            const lookupInputElement = document.querySelector(lookupSelector);
+                            FeedbackIcon.setIcon(lookupSelector, FeedbackIcon.successClass);
                             lookupInputElement.value = data.description;
                             lookupHiddenInputElement.value = data.id;
                         }
-                    }, error: (_) => {
+                    },
+                    error: (_) => {
                         showWaitOnPost = true;
-                        lookupInput.removeClass("loading-circle");
-                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass);
+                        lookupInput.classList.remove("loading-circle");
+                        FeedbackIcon.setIcon(lookupSelector, FeedbackIcon.errorClass);
                     }
                 });
             });

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Util;
@@ -53,10 +54,10 @@ public class LookupService : ILookupService
     public async Task<string> GetDescriptionAsync(
         DataElementMap elementMap,
         FormStateData formStateData,
-        string searchId,
+        [CanBeNull] object value,
         bool allowOnlyNumbers)
     {
-        if (string.IsNullOrEmpty(searchId))
+        if (string.IsNullOrEmpty(value?.ToString()))
             return null;
 
         if (elementMap.Filters == null)
@@ -64,12 +65,12 @@ public class LookupService : ILookupService
 
         if (allowOnlyNumbers)
         {
-            bool isNumeric = int.TryParse(searchId, out _);
+            bool isNumeric = int.TryParse(value.ToString(), out _);
             if (!isNumeric)
                 return null;
         }
 
-        var filters = GetFilters(elementMap, searchId, formStateData);
+        var filters = GetFilters(elementMap, value, formStateData);
 
         var fields = await GetFieldsAsync(elementMap, filters);
 
@@ -82,7 +83,7 @@ public class LookupService : ILookupService
         return fields[elementMap.FieldDescription]?.ToString();
     }
 
-    private IDictionary<string, object> GetFilters(DataElementMap elementMap, string searchId, FormStateData formStateData)
+    private IDictionary<string, object> GetFilters(DataElementMap elementMap, object value, FormStateData formStateData)
     {
         var filters = new Dictionary<string, object>();
 
@@ -96,7 +97,7 @@ public class LookupService : ILookupService
             }
         }
 
-        filters[elementMap.FieldKey] = StringManager.ClearText(searchId);
+        filters[elementMap.FieldKey] = StringManager.ClearText(value?.ToString());
         return filters;
     }
 

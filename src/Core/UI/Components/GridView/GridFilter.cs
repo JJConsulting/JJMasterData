@@ -338,7 +338,7 @@ internal class GridFilter
             }
             else
             {
-                string value = CurrentContext.Request.Form(name);
+                object value = CurrentContext.Request.Form(name);
 
                 if (values == null && CurrentContext.Request.Form(name) != null)
                     values = new Dictionary<string, object>();
@@ -348,11 +348,11 @@ internal class GridFilter
                     case FormComponent.Cnpj:
                     case FormComponent.Cpf:
                     case FormComponent.CnpjCpf:
-                        if (!string.IsNullOrEmpty(value))
-                            value = StringManager.ClearCpfCnpjChars(value);
+                        if (!string.IsNullOrEmpty(value?.ToString()))
+                            value = StringManager.ClearCpfCnpjChars(value.ToString());
                         break;
                     case FormComponent.CheckBox:
-                        if (string.IsNullOrEmpty(value))
+                        if (string.IsNullOrEmpty(value?.ToString()))
                             value = "0";
                         break;
                     case FormComponent.Search:
@@ -369,7 +369,7 @@ internal class GridFilter
                         break;
                 }
 
-                if (!string.IsNullOrEmpty(value))
+                if (!string.IsNullOrEmpty(value?.ToString()))
                 {
                     values ??= new Dictionary<string, object>();
                     values[f.Name] = value;
