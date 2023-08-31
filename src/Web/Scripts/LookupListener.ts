@@ -8,7 +8,6 @@ class LookupListener {
             let popupTitle = lookupInput.attr("popuptitle");
             let lookupUrl = lookupInput.attr("lookup-url");
             let lookupResultUrl = lookupInput.attr("lookup-result-url");
-            let dataPanelReloadUrl = lookupInput.attr("data-panel-reload-url");
             let popupSize: number = +lookupInput.attr("popupsize");
 
 
@@ -20,12 +19,10 @@ class LookupListener {
             });
 
             function setHiddenLookup() {
-                $("#id_" + lookupId).val(lookupInput.val())
+                $("#" + lookupId).val(lookupInput.val())
             }
 
-            lookupInput.one("focus", function () {
-                lookupInput.val($("#id_" + lookupId).val()).select();
-            });
+          
 
             lookupInput.one("change", function () {
                 $("#id_" + lookupId).val(lookupInput.val());
@@ -43,14 +40,6 @@ class LookupListener {
                 }
 
 
-                if (!lookupResultUrl) {
-                    let urlBuilder = new UrlBuilder()
-                    urlBuilder.addQueryParameter("lookup-" + panelName, fieldName)
-                    urlBuilder.addQueryParameter("lookupAction", "getDescription")
-                    urlBuilder.addQueryParameter("lkid", lookupInput.val().toString())
-                    lookupResultUrl = urlBuilder.build()
-                }
-
                 lookupInput.addClass("loading-circle");
 
                 postFormValues({
@@ -66,12 +55,7 @@ class LookupListener {
                             lookupInputElement.value = data.description;
                             lookupHiddenInputElement.value = data.id;
 
-                            if (dataPanelReloadUrl) {
-                                DataPanelHelper.reload(dataPanelReloadUrl, panelName, lookupId)
-                            } else {
-                                DataPanelHelper.reloadAtSamePage(panelName, lookupId);
-                            }
-
+                        
                         }
                     }, error: (_) => {
                         showWaitOnPost = true;

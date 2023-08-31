@@ -91,6 +91,8 @@ public class LookupController : MasterDataController
             action.IsDefaultOption = false;
         }
 
+        var fieldDescription = form.FormElement.Fields[lookupParameters.FieldKey].DataItem!.ElementMap!.FieldDescription;
+        
         var script = $"JJViewHelper.setLookup('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKey}}}');";
         var selAction = new ScriptAction
         {

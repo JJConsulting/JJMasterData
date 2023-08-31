@@ -1197,7 +1197,6 @@ class LookupListener {
             let popupTitle = lookupInput.attr("popuptitle");
             let lookupUrl = lookupInput.attr("lookup-url");
             let lookupResultUrl = lookupInput.attr("lookup-result-url");
-            let dataPanelReloadUrl = lookupInput.attr("data-panel-reload-url");
             let popupSize = +lookupInput.attr("popupsize");
             const jjLookupSelector = "#" + lookupId + "";
             const jjHiddenLookupSelector = "#id_" + lookupId + "";
@@ -1205,11 +1204,8 @@ class LookupListener {
                 defaultModal.showIframe(lookupUrl, popupTitle, popupSize);
             });
             function setHiddenLookup() {
-                $("#id_" + lookupId).val(lookupInput.val());
+                $("#" + lookupId).val(lookupInput.val());
             }
-            lookupInput.one("focus", function () {
-                lookupInput.val($("#id_" + lookupId).val()).select();
-            });
             lookupInput.one("change", function () {
                 $("#id_" + lookupId).val(lookupInput.val());
             });
@@ -1220,13 +1216,6 @@ class LookupListener {
                 lookupInput.removeAttr("readonly");
                 if (lookupInput.val() == "") {
                     return;
-                }
-                if (!lookupResultUrl) {
-                    let urlBuilder = new UrlBuilder();
-                    urlBuilder.addQueryParameter("lookup-" + panelName, fieldName);
-                    urlBuilder.addQueryParameter("lookupAction", "getDescription");
-                    urlBuilder.addQueryParameter("lkid", lookupInput.val().toString());
-                    lookupResultUrl = urlBuilder.build();
                 }
                 lookupInput.addClass("loading-circle");
                 postFormValues({
@@ -1242,12 +1231,6 @@ class LookupListener {
                             FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
                             lookupInputElement.value = data.description;
                             lookupHiddenInputElement.value = data.id;
-                            if (dataPanelReloadUrl) {
-                                DataPanelHelper.reload(dataPanelReloadUrl, panelName, lookupId);
-                            }
-                            else {
-                                DataPanelHelper.reloadAtSamePage(panelName, lookupId);
-                            }
                         }
                     }, error: (_) => {
                         showWaitOnPost = true;
@@ -2215,4 +2198,4 @@ var jjutil = (function () {
     };
 })();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-//# sourceMappingURL=/Scripts/jjmasterdata.js.map
+//# sourceMappingURL=jjmasterdata.js.map

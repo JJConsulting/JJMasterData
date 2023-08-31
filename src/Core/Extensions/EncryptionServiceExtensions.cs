@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.UI.Components;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Extensions;
@@ -34,6 +35,11 @@ public static class EncryptionServiceExtensions
     internal static string EncryptActionMap(this IEncryptionService service, ActionMap actionMap)
     {
         return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(actionMap));
+    }
+    
+    internal static string EncryptRoute(this IEncryptionService service, RouteContext routeContext)
+    {
+        return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(routeContext));
     }
     
     internal static ActionMap DecryptActionMap(this IEncryptionService service, string encryptedActionMap)

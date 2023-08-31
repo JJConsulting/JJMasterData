@@ -1,5 +1,7 @@
 #nullable enable
 
+using JJMasterData.Core.DataDictionary;
+
 namespace JJMasterData.Core.UI.Components;
 
 internal class RouteContext
@@ -13,5 +15,12 @@ internal class RouteContext
         ComponentContext = componentContext;
         CurrentElementName = currentElementName;
         ParentElementName = parentElementName;
+    }
+    
+    public RouteContext(ComponentContext componentContext, FormElement formElement)
+    {
+        ComponentContext = componentContext;
+        CurrentElementName = formElement.Name;
+        ParentElementName = formElement.ParentName;
     }
 }

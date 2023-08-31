@@ -11,8 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -23,7 +25,6 @@ public class JJLookup : AsyncControl
     private ILookupService LookupService { get; }
     private IEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private ILogger<JJLookup> Logger { get; }
 
     #region "Properties"
 
@@ -93,11 +94,11 @@ public class JJLookup : AsyncControl
     internal JJLookup(
         FormElement formElement,
         FormElementField field,
+        ControlContext controlContext,
         IHttpContext httpContext,
         ILookupService lookupService,
         IEncryptionService encryptionService,
-        JJMasterDataUrlHelper urlHelper,
-        ILogger<JJLookup> logger) : base(httpContext)
+        JJMasterDataUrlHelper urlHelper) : base(httpContext)
     {
         FormElement = formElement;
         ElementMap = field.DataItem?.ElementMap ?? throw new ArgumentException("ElementMap cannot be null.");
@@ -105,12 +106,27 @@ public class JJLookup : AsyncControl
         LookupService = lookupService;
         EncryptionService = encryptionService;
         UrlHelper = urlHelper;
-        Logger = logger;
         Enabled = true;
         AutoReloadFormFields = true;
-        Name = "jjlookup1";
+        Name = field.Name;
         ModalSize = ModalSize.Large;
         PopTitle = "Search";
+        FormStateData = controlContext.FormStateData;
+        UserValues = controlContext.FormStateData.UserValues;
+        SelectedValue = controlContext.Value?.ToString();
+        SetAttr(field.Attributes);
+        SetAttr("panelName", controlContext.ParentComponentName);
+
+        if (field.DataType is FieldType.Int)
+        {
+            OnlyNumbers = true;
+            MaxLength = 11;
+        }
+        else
+        {
+            MaxLength = field.Size;
+        }
+        
     }
 
     #endregion
@@ -135,19 +151,16 @@ public class JJLookup : AsyncControl
         if (string.IsNullOrEmpty(description) && !string.IsNullOrEmpty(inputValue))
             description = await LookupService.GetDescriptionAsync(ElementMap, FormStateData, inputValue, OnlyNumbers);
 
-        var div = new HtmlBuilder(HtmlTag.Div);
-
-        
-//        Attributes["context"] = "RouteContext";
-        
         Attributes["lookup-url"] = LookupService.GetLookupUrl(ElementMap, FormStateData, Name);
         Attributes["lookup-field-name"] = FieldName;
-        if (IsExternalRoute)
+        
+        var div = new HtmlBuilder(HtmlTag.Div);
+        div.WithCssClass("input-group mb-3");
+      
+        if (true)
         {
             var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
             var componentName = Attributes["panelName"];
-            Attributes["data-panel-reload-url"] = UrlHelper.GetUrl("ReloadPanel", "Form",
-                "MasterData", new { dictionaryName = encryptedDictionaryName, componentName });
             Attributes["lookup-result-url"] = UrlHelper.GetUrl("GetResult", "Lookup","MasterData", 
                 new
                 {
@@ -158,17 +171,30 @@ public class JJLookup : AsyncControl
                 });
         }
 
-        var textGroup = new JJTextGroup(CurrentContext)
+        var textId = new JJTextBox(CurrentContext)
         {
             Name = Name,
-            CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue, description)} {CssClass}",
+            CssClass = $"form-control jjlookup col-sm-2 {CssClass}",
             InputType = OnlyNumbers ? InputType.Number : InputType.Text,
+            MaxLength = MaxLength,
+            Text = SelectedValue,
+            Attributes = Attributes,
+            ToolTip = ToolTip,
+            ReadOnly = ReadOnly, 
+            Enabled = Enabled,
+            
+        };
+
+        var textGroupDescription = new JJTextGroup(CurrentContext)
+        {
+            Name = $"{Name}_description",
+            CssClass = $"form-control jjlookup {GetFeedbackIcon(inputValue, description)} {CssClass}",
+            InputType = InputType.Text, 
             MaxLength = MaxLength,
             Text = description,
             Attributes = Attributes,
             ToolTip = ToolTip,
-            ReadOnly = ReadOnly, //|| Enabled && !string.IsNullOrEmpty(description),
-            Enabled = Enabled,
+            Enabled = false,
             Actions = new List<JJLinkButton>
             {
                 new()
@@ -180,10 +206,10 @@ public class JJLookup : AsyncControl
                 }
             }
         };
-
-
-        div.AppendComponent(textGroup);
-        div.AppendHiddenInput($"id_{Name}", SelectedValue);
+        
+        div.AppendComponent(textId);
+        div.AppendComponent(textGroupDescription);
+       
         return div;
     }
 
@@ -197,22 +223,7 @@ public class JJLookup : AsyncControl
     }
 
 
-    private async Task<LookupResultDto> GetResultDto()
-    {
-        LookupResultDto dto = null;
-        try
-        {
-            string searchId = CurrentContext.Request["lkid"];
-            string description = await GetDescriptionAsync();
-            dto = new LookupResultDto(searchId, description);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex,"Error while recovering Lookup description");
-        }
-
-        return dto;
-    }
+   
 
     /// <summary>
     /// Recovers the description based on the selected value

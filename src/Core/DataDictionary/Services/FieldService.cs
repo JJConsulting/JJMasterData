@@ -203,30 +203,35 @@ public class FieldService : BaseService
         if (data == null)
         {
             AddError("DataItem", StringLocalizer["DataItem cannot be empty."]);
+            return;
         }
 
-        switch (data!.DataItemType)
+        if (data.DataItemType == DataItemType.SqlCommand)
         {
-            case DataItemType.SqlCommand:
+            if (data.Command == null)
             {
-                if (data.Command != null && string.IsNullOrEmpty(data.Command?.Sql))
-                    AddError("Command.Sql", StringLocalizer["[Field Command.Sql] required"]);
-
-                if (data.ReplaceTextOnGrid && !data.Command.Sql!.Contains("{search_id}"))
-                {
-                    AddError("Command.Sql", "{search_id} is required at queries using ReplaceTextOnGrid. " +
-                                            "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
-                }
-
-                break;
+                AddError("Command", StringLocalizer["[Command] required"]);
+                return;
             }
-            case DataItemType.Manual:
-                RemoveError("DataItem.Command.Sql");
-                ValidateManualItens(data.Items);
-                break;
-            case DataItemType.Dictionary:
-                ValidateDataElementMap(data.ElementMap);
-                break;
+               
+            if (string.IsNullOrEmpty(data.Command.Sql))
+                AddError("Command.Sql", StringLocalizer["[Field Command.Sql] required"]);
+
+            if (data.ReplaceTextOnGrid && !data.Command.Sql.Contains("{search_id}"))
+            {
+                AddError("Command.Sql", "{search_id} is required at queries using ReplaceTextOnGrid. " +
+                                        "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
+            }
+        }
+        else if (data.DataItemType == DataItemType.Manual)
+        {
+            RemoveError("DataItem.Command.Sql");
+            ValidateManualItens(data.Items);
+        }
+        else if (data.DataItemType == DataItemType.Dictionary)
+        {
+            
+            ValidateDataElementMap(data);
         }
     }
 
@@ -249,15 +254,23 @@ public class FieldService : BaseService
             }
     }
 
-    private void ValidateDataElementMap(DataElementMap data)
+    private void ValidateDataElementMap(FormElementDataItem dataItem)
     {
+        var data = dataItem.ElementMap;
         if (data == null)
         {
             AddError("ElementMap", StringLocalizer["Undefined mapping settings"]);
+            return;
         }
 
-        if (string.IsNullOrEmpty(data!.ElementName))
+        if (string.IsNullOrEmpty(data.ElementName))
             AddError(nameof(data.ElementName), StringLocalizer["Required field [ElementName]"]);
+        
+        if (data.FieldKey.Equals(data.FieldDescription))
+            AddError(nameof(data.FieldDescription), StringLocalizer["[FieldDescription] can not be equal a [FieldKey]"]);
+        
+        if (dataItem.ReplaceTextOnGrid && string.IsNullOrEmpty(data.FieldDescription))
+            AddError(nameof(dataItem.ReplaceTextOnGrid), StringLocalizer["[ReplaceTextOnGrid] invalid fill a [FieldDescription]"]);
     }
 
     private void ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile dataFile)
