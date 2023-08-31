@@ -1,12 +1,13 @@
-﻿@{
-    Layout = "_MasterDataLayout.Popup";
-}
-@using JJMasterData.Commons.Data.Entity
+﻿@using JJMasterData.Commons.Data.Entity
 @using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IOptions<JJMasterDataWebOptions> Options
 @model JJMasterData.Core.DataDictionary.Actions.UserCreated.InternalAction
 
+@{
+    Layout = Options.Value.PopUpLayoutPath;
+}
 
 <script type="text/javascript">
     $(document).ready(function() {
@@ -91,7 +92,7 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4">
                     <label class="@BootstrapHelper.Label " for="cboPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Popup Size"]">@StringLocalizer["Popup Size"]</label>
-                     <select asp-for="ElementRedirect.PopupSize" class="form-control" asp-items="Html.GetEnumSelectList<PopupSize>()"></select>
+                     <select asp-for="ElementRedirect.ModalSize" class="form-control" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
                 </div>
 
             </div>

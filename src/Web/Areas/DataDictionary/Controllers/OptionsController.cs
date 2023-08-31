@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Data;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +38,7 @@ public class OptionsController : DataDictionaryController
     {
         if (ModelState.IsValid)
         {
-            var result = await Service.GetConnectionResultAsync(model.ConnectionString.ToString());
+            var result = await Service.GetConnectionResultAsync(model.ConnectionString.ToString(), model.ConnectionProvider);
             model.IsConnectionSuccessful = result.IsConnectionSuccessful;
 
             if (!result.IsConnectionSuccessful.GetValueOrDefault())

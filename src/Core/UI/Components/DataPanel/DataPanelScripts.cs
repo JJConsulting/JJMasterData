@@ -26,8 +26,8 @@ internal class DataPanelScripts
         var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(_dataPanelControl.FormElement.Name);
         
         if(!_dataPanelControl.IsExternalRoute)
-            return $"DataPanel.ReloadAtSamePage('{componentName}','{fieldName}');";
+            return $"DataPanel.reloadAtSamePage('{componentName}','{fieldName}');";
 
-        return $"DataPanel.Reload('{UrlHelper.GetUrl("ReloadPanel","Form", "MasterData", new {dictionaryName = encryptedDictionaryName, componentName, pageState})}','{componentName}','{fieldName}')";
+        return $"DataPanel.reload('{UrlHelper.GetUrl("ReloadPanel","Form", "MasterData", new {dictionaryName = encryptedDictionaryName, componentName, pageState})}','{componentName}','{fieldName}')";
     }
 }

@@ -28,7 +28,7 @@ public class ActionMapDecryptionFilter : ActionFilterAttribute
         }
         else if (request.Query.TryGetValue("componentName", out var componentName))
         {
-            if (request.HasFormContentType && request.Form.TryGetValue("current-form-action-" + componentName, out var encryptedFormActionMap))
+            if (request.HasFormContentType && request.Form.TryGetValue("form-view-action-map-" + componentName, out var encryptedFormActionMap))
             {
                 SetActionMap(context, encryptedFormActionMap);
             }

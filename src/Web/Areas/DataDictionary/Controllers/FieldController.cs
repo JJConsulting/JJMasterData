@@ -89,6 +89,7 @@ public class FieldController : DataDictionaryController
     public async Task<IActionResult> Save(string dictionaryName, FormElementField field, string? originalName)
     {
         RecoverCustomAttibutes(ref field);
+        
         await _fieldService.SaveFieldAsync(dictionaryName, field, originalName);
         if (ModelState.IsValid)
         {
@@ -122,11 +123,13 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult AddDataItem(string dictionaryName, FormElementField field, int qtdRowsToAdd)
     {
+        field.DataItem ??= new FormElementDataItem();
+        field.DataItem.Items ??= new List<DataItemValue>();
         for (int i = 0; i < qtdRowsToAdd; i++)
         {
             var item = new DataItemValue
             {
-                Id = field.DataItem!.Items.Count.ToString(),
+                Id = field.DataItem.Items.Count.ToString(),
                 Description = "",
                 Icon = IconType.Star,
                 ImageColor = "#ffffff"
@@ -139,7 +142,7 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult RemoveDataItem(string dictionaryName, FormElementField field, int dataItemIndex)
     {
-        field.DataItem!.Items.RemoveAt(dataItemIndex);
+        field.DataItem?.Items?.RemoveAt(dataItemIndex);
         return RedirectToIndex(dictionaryName, field);
     }
 
@@ -171,7 +174,7 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public IActionResult RemoveElementMapFilter(string dictionaryName, FormElementField field, string elementMapFieldName)
     {
-        field.DataItem!.ElementMap.MapFilters.RemoveAll(x => x.FieldName.Equals(elementMapFieldName));
+        field.DataItem!.ElementMap!.MapFilters.RemoveAll(x => x.FieldName.Equals(elementMapFieldName));
         return RedirectToIndex(dictionaryName, field);
     }
 
@@ -193,6 +196,7 @@ public class FieldController : DataDictionaryController
             throw new ArgumentNullException(nameof(field));
 
         field.DataItem ??= new FormElementDataItem();
+        field.DataItem.ElementMap ??= new DataElementMap();
         field.DataItem.ElementMap.MapFilters ??= new List<DataElementMapFilter>();
         field.DataFile ??= new FormElementDataFile
         {

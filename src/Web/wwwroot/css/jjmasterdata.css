@@ -408,12 +408,6 @@ ul.dropdown-menu.inner {
     background-color: #e7e7e7 !important
 }
 
-/*Bootstrap 4*/
-
-.dropdown-item.active{
-    background-color: #e7e7e7 !important
-}
-
 /* Legacy bootstrap-theme.css implementation */
 
 a.list-group-item,
@@ -702,28 +696,78 @@ button.dropdown-toggle.form-control {
     background-size: calc(.75em + .375rem) calc(.75em + .375rem);
 }
 
-.btn-secondary {
+[data-bs-theme=light] .btn-secondary {
     color: #333;
     background-color: #fff;
     border-color: #ccc;
 }
-.btn-secondary:focus {
+[data-bs-theme=light] .btn-secondary:focus {
     color: #333;
     background-color: #e6e6e6;
     border-color: #8c8c8c;
 }
-.btn-secondary:hover {
+[data-bs-theme=light] .btn-secondary:hover {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad;
 }
-.btn-secondary:active {
+[data-bs-theme=light] .btn-secondary:active {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad;
 }
 
-.modal-body{
-    height: 80vh;
-    overflow-y: auto;
+
+[data-bs-theme=dark] .btn-secondary {
+    color: #ccc;
+    background-color: #212529;
+    border-color: #555;
+}
+[data-bs-theme=dark] .btn-secondary:focus {
+    color: #ccc;
+    background-color: #212529;
+    border-color: #8c8c8c;
+}
+[data-bs-theme=dark] .btn-secondary:hover {
+    color: #ccc;
+    background-color: #212529;
+    border-color: #adadad;
+}
+[data-bs-theme=dark] .btn-secondary:active {
+    color: #ccc;
+    background-color: #212529;
+    border-color: #adadad;
+}
+
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-border-lg {
+    width: 5rem;
+    height: 5rem;
+    border-width: 0.45em;
+}
+
+.jj-modal-sm{
+    --bs-modal-width: 50% !important;
+}
+.jj-modal-default{
+    --bs-modal-width: 75% !important;
+}
+.jj-modal-lg{
+    --bs-modal-width: 85% !important;
+    --bs-modal-height: 5% !important;
+}
+.jj-modal-xl{
+    --bs-modal-width: 95% !important;
 }

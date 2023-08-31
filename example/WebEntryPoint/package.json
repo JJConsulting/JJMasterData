@@ -1,0 +1,26 @@
+{
+  "name": "jjmasterdata-web-entry-point",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "bootstrap": "^5.3.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jjconsulting/jjmasterdata.git"
+  },
+  "keywords": [
+    "jjmasterdata"
+  ],
+  "author": "JJ Consulting",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jjconsulting/jjmasterdata/issues"
+  },
+  "homepage": "https://github.com/jjconsulting/jjmasterdata#readme"
+}

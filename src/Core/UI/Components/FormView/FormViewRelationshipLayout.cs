@@ -24,11 +24,9 @@ internal class FormViewRelationshipLayout
 
     public async Task<ComponentResult> GetRelationshipsResult(JJDataPanel parentPanel, List<FormElementRelationship> relationships)
     {
-        var visibleRelationships = await GetVisibleRelationships(relationships).ToListAsync();
-
         var relationshipsDiv = new HtmlBuilder(HtmlTag.Div);
         
-        if (visibleRelationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
+        if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
         {
             var tabNavResult = await GetTabRelationshipsResult(parentPanel, relationships);
 
@@ -42,7 +40,7 @@ internal class FormViewRelationshipLayout
             }
         }
 
-        foreach (var relationship in visibleRelationships.Where(r => r.Panel.Layout is not PanelLayout.Tab))
+        foreach (var relationship in relationships.Where(r => r.Panel.Layout is not PanelLayout.Tab))
         {
             var relationshipResult = await GetRelationshipResult(parentPanel, relationship);
 

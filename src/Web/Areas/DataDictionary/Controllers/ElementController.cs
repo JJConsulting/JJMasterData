@@ -4,6 +4,7 @@ using JJMasterData.Core.FormEvents.Args;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Extensions;
@@ -17,17 +18,20 @@ public class ElementController : DataDictionaryController
     private readonly ElementService _elementService;
     private readonly ClassGenerationService _classGenerationService;
     private readonly ScriptsService _scriptsService;
+    private readonly IComponentFactory<JJUploadArea> _uploadAreaFactory;
 
     public ElementController(
         ElementService elementService,
         ClassGenerationService classGenerationService,
         ScriptsService scriptsService,
+        IComponentFactory<JJUploadArea> uploadAreaFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         _stringLocalizer = stringLocalizer;
         _elementService = elementService;
         _classGenerationService = classGenerationService;
         _scriptsService = scriptsService;
+        _uploadAreaFactory = uploadAreaFactory;
     }
 
     public async Task<IActionResult> Index()
@@ -72,9 +76,20 @@ public class ElementController : DataDictionaryController
         return File(zipBytes, "application/zip", "Dictionaries.zip");
     }
 
-    public IActionResult Import()
+    public async Task<IActionResult> Import()
     {
-        return View(new ImportViewModel(ConfigureUploadArea));
+
+        var uploadArea = _uploadAreaFactory.Create();
+
+        
+        ConfigureUploadArea(uploadArea);
+        
+        var result = await uploadArea.GetResultAsync();
+
+        if (result.IsActionResult())
+            return result.ToActionResult();
+        
+        return View(new ImportViewModel(result.Content));
     }
 
     private void ConfigureUploadArea(JJUploadArea upload)

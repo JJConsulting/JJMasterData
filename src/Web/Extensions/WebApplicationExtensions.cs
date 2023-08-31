@@ -40,13 +40,13 @@ public static class WebApplicationExtensions
 
         configure?.Invoke(options);
 
-        var pattern = "{area:exists}/{controller=Element}/{action=Index}/{dictionaryName?}/";
+        var pattern = "{area=DataDictionary}/{controller=Element}/{action=Index}/{dictionaryName?}/";
         
         if (options.Prefix is not null)
             pattern = options.Prefix.Replace("/",string.Empty) + "/" + pattern;
         
         if (options.EnableCultureProvider)
-            pattern = "/{culture}/" + pattern;
+            pattern = "/{culture=en-US}/" + pattern;
 
         return app.MapControllerRoute(
             name: "JJMasterData",

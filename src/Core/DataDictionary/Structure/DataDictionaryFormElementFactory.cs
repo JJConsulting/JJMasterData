@@ -4,7 +4,7 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -45,18 +45,7 @@ public class DataDictionaryFormElementFactory
     private FormElement GetFormElement(Element element)
     {
         var formElement = new FormElement(element);
-
-        var appPath = HttpContext.Request.ApplicationPath;
-
-        var baseUrl = string.IsNullOrEmpty(appPath) ? "/" : appPath;
-        
-        var image = new HtmlBuilder(HtmlTag.Img)
-            .WithAttribute("src",
-                baseUrl + "_content/JJMasterData.Web/images/JJMasterData.png")
-            .WithAttribute("style", "width:8%;height:8%;");
-        
-        formElement.Title = image.ToString();
-        
+        formElement.Title =  JJImage.GetMasterDataLogo(HttpContext).GetHtml();
         ConfigureFields(formElement);
         
         return formElement;

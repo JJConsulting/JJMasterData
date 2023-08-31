@@ -209,8 +209,8 @@
                             @{
 
                                 var iconSearchBox = SearchBoxFactory.Create();
-                                iconSearchBox.Name = Html.NameFor(m=>m.DataItem!.Items[i].Icon);
-                                iconSearchBox.HtmlId = Html.IdFor(m=>m.DataItem!.Items[i].Icon);
+                                iconSearchBox.Name = Html.NameFor(m=>m.DataItem!.Items![i].Icon);
+                                iconSearchBox.HtmlId = Html.IdFor(m=>m.DataItem!.Items![i].Icon);
                                 iconSearchBox.DataItem.ShowImageLegend = true;
                                 iconSearchBox.SelectedValue = ((int)Model.DataItem.Items[i].Icon).ToString();
                                 iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()

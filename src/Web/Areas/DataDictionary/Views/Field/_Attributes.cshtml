@@ -46,7 +46,7 @@
     case FormComponent.Lookup:
         <div class="@BootstrapHelper.FormGroup col-sm-2">
             <label class="@BootstrapHelper.Label " for="cboLkPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Popup Size"]">@StringLocalizer["Popup Size"]</label>
-            <select id="cboLkPopUpSize" name="cboLkPopUpSize" class="form-control form-select" asp-items="@Html.GetEnumSelectList<PopupSize>()"></select>
+            <select id="cboLkPopUpSize" name="cboLkPopUpSize" class="form-control form-select" asp-items="@Html.GetEnumSelectList<ModalSize>()"></select>
         </div>
 
         <div class="@BootstrapHelper.FormGroup col-sm-4">

@@ -24,7 +24,7 @@
         <label for="icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
         <a href="javascript: void(0);" 
            @BootstrapHelper.GetDataToggle("tooltip")
-           title="Search Icon" onclick="popup.showHtmlFromUrl('Icons','@Url.Action("Index", "Icons", new {inputId = "icon"})');" 
+           title="Search Icon" onclick="defaultModal.showUrl('Icons','@Url.Action("Index", "Icons", new {inputId = "icon"})');" 
            style="text-decoration:none">
             <span class="fa fa-search "></span>
         </a>

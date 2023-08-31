@@ -67,7 +67,7 @@ public class FieldService : BaseService
                 case DataItemType.Dictionary:
                     field.DataFile = null;
                     field.DataItem.Command = null;
-                    field.DataItem.Items.Clear();
+                    field.DataItem.Items?.Clear();
                     break;
                 case DataItemType.Manual:
                     field.DataFile = null;
@@ -77,7 +77,7 @@ public class FieldService : BaseService
                 case DataItemType.SqlCommand:
                     field.DataFile = null;
                     field.DataItem.ElementMap = null;
-                    field.DataItem.Items.Clear();
+                    field.DataItem.Items?.Clear();
                     break;
             }
         }
@@ -209,10 +209,10 @@ public class FieldService : BaseService
         {
             case DataItemType.SqlCommand:
             {
-                if (string.IsNullOrEmpty(data.Command.Sql))
+                if (data.Command != null && string.IsNullOrEmpty(data.Command?.Sql))
                     AddError("Command.Sql", StringLocalizer["[Field Command.Sql] required"]);
 
-                if (data.ReplaceTextOnGrid && !data.Command!.Sql!.Contains("{search_id}"))
+                if (data.ReplaceTextOnGrid && !data.Command.Sql!.Contains("{search_id}"))
                 {
                     AddError("Command.Sql", "{search_id} is required at queries using ReplaceTextOnGrid. " +
                                             "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
@@ -221,6 +221,7 @@ public class FieldService : BaseService
                 break;
             }
             case DataItemType.Manual:
+                RemoveError("DataItem.Command.Sql");
                 ValidateManualItens(data.Items);
                 break;
             case DataItemType.Dictionary:

@@ -28,13 +28,10 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public class JJDataPanel : AsyncComponent
 {
-    #region "Events"
-
-    #endregion
-
     #region "Properties"
 
     private FormUI _formUI;
+    private ComponentContext? _componentContext;
 
     /// <summary>
     /// Layout form settings
@@ -91,7 +88,19 @@ public class JJDataPanel : AsyncComponent
     internal IFormValuesService FormValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
     internal ComponentFactory ComponentFactory { get; }
+    internal ComponentContext ComponentContext
+    {
+        get
+        {
+            if (_componentContext != null)
+                return _componentContext.Value;
+            
+            var resolver = new ComponentContextResolver(this);
+            _componentContext = resolver.GetContext();
 
+            return _componentContext.Value;
+        }
+    }
 
     #endregion
 
@@ -185,33 +194,26 @@ public class JJDataPanel : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         Values ??= await GetFormValuesAsync();
-        string context = CurrentContext.Request.QueryString("context");
-        string panelName = CurrentContext.Request.QueryString("panelName");
         
-        if (JJLookup.IsLookupRoute(this, CurrentContext))
+        if (ComponentContext is ComponentContext.Lookup)
             return await JJLookup.GetResultFromPanel(this);
         
-        if (JJTextFile.IsUploadViewRoute(this, CurrentContext))
+        if (ComponentContext is ComponentContext.FileUpload)
             return await JJTextFile.GetResultFromPanel(this);
         
-        if (JJFileDownloader.IsDownloadRoute(CurrentContext))
+        if (ComponentContext is ComponentContext.DownloadFile)
             return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService, ComponentFactory.Downloader);
 
-        if (JJSearchBox.IsSearchBoxRoute(FormElement.Name, CurrentContext))
+        if (ComponentContext is ComponentContext.SearchBox)
             return await JJSearchBox.GetResultFromPanel(this);
 
-        if ("panelReload".Equals(context) && Name.Equals(panelName))
+        if (ComponentContext is ComponentContext.PanelReload)
         {
             var html = await GetPanelHtmlAsync();
             var panelHtml = html.ToString();
             return new HtmlComponentResult(panelHtml);
         }
 
-        if ("urlRedirect".Equals(context))
-        {
-            var encryptedActionMap = CurrentContext.Request["current-form-action-" + Name.ToLower()];
-            return await GetUrlRedirectResult(EncryptionService.DecryptActionMap(encryptedActionMap));
-        }
 
         return new RenderedComponentResult(await GetPanelHtmlAsync());
     }

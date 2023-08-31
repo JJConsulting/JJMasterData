@@ -87,11 +87,11 @@
     public string GetCmdEdit(BasicAction action)
     {
         var script = new StringBuilder();
-        script.Append("popup.show('");
-        script.Append(Model.Context.ToString().FirstCharToUpper());
-        script.Append(" Action', '");
+        script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Edit", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
+        script.Append("','"+Model.Context.ToString().FirstCharToUpper());
+        script.Append(" Action");
         script.Append("');");
 
         return script.ToString();
@@ -100,11 +100,11 @@
     public string GetCmdAdd(Type actionType)
     {
         var script = new StringBuilder();
-        script.Append("popup.show('");
-        script.Append(Model.Context.ToString().FirstCharToUpper());
-        script.Append(" Action', '");
+        script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Add", "Actions",
-            new { dictionaryName = Model.DictionaryName, actionType = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
+            new { dictionaryName = Model.DictionaryName, actionName = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
+        script.Append("','"+Model.Context.ToString().FirstCharToUpper());
+        script.Append(" Action");
         script.Append("');");
 
         return script.ToString();

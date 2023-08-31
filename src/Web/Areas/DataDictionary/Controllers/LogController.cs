@@ -8,6 +8,7 @@ using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Extensions;
@@ -49,6 +50,25 @@ public class LogController : DataDictionaryController
 
         var formView = FormViewFactory.Create(formElement);
         formView.GridView.CurrentOrder = OrderByData.FromString($"{Options.CreatedColumnName} DESC");
+
+        formView.GridView.OnRenderCell += (sender, args) =>
+        {
+            string? message = string.Empty;
+            if (args.Field.Name.Equals(Options.MessageColumnName))
+            {
+                message = args.DataRow[Options.MessageColumnName].ToString()?.Replace("\n", "<br>");
+            }
+            else
+            {
+                if (args.Sender is HtmlComponent component)
+                {
+                    message = component.GetHtml();
+                }
+            
+            }
+            args.HtmlResult = message;
+        };
+        
         var result = await formView.GetResultAsync();
 
         if (result.IsActionResult())

@@ -24,7 +24,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success === true) {
-                    window.parent.popup.hide();
+                    window.parent.defaultModal.hide();
                     window.parent.location.reload();
                 } else {
                     document.querySelector('#divError').innerHTML = data.errorMessage;
@@ -99,7 +99,7 @@
                     <span>&nbsp;@StringLocalizer["Save"]</span>
                 </button>
 
-                <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.popup.hide();">
+                <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.defaultModal.hide();">
                     <span class="fa fa-times"></span>
                     <span>&nbsp;@StringLocalizer["Cancel"]</span>
                 </button>

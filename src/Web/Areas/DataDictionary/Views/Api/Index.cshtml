@@ -1,11 +1,10 @@
 ﻿@using JJMasterData.Core.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
-
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ApiViewModel
 
 @{
-    ViewData["Title"] = $"{Model.DictionaryName} - API";
+    ViewData["Title"] = $"{Model.DictionaryName} - {StringLocalizer["API"]}";
 }
 
 <partial name="_Menu"/>

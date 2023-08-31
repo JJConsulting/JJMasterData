@@ -1,11 +1,10 @@
-﻿@{
-    Layout = "_MasterDataLayout.Popup";
-}
-
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@using JJMasterData.Web.TagHelpers
+﻿@inject IOptions<JJMasterDataWebOptions> Options
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ImportViewModel
 
+@{
+    Layout = Options.Value.PopUpLayoutPath;
+}
+
 <form asp-action="Import" method="post">
-    <jj-upload-area name="metadata-import" configure="Model.Configure"/>
+    @Html.Raw(Model.UploadAreaHtml)
 </form>

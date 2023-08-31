@@ -287,7 +287,7 @@ public class JJAuditLogView : AsyncComponent
         {
             Type = LinkButtonType.Button,
             CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = $"JJView.viewLog('{Name}','');",
+            OnClientClick = $"JJViewHelper.viewLog('{Name}','');",
             IconClass = IconType.ArrowLeft.GetCssClass(),
             Text = "Back"
         };
@@ -363,7 +363,7 @@ public class JJAuditLogView : AsyncComponent
                             componentName = Name
                         })
                     : string.Empty;
-                a.WithAttribute("href", $"javascript:loadAuditLog('{Name}','{logId}', '{url}')");
+                a.WithAttribute("href", $"javascript:AuditLogHelper.loadAuditLog('{Name}','{logId}', '{url}')");
                 a.WithNameAndId(logId);
                 a.WithCssClass("list-group-item ui-sortable-handle");
                 a.WithCssClassIf(logId.Equals(viewId), "active");

@@ -1,16 +1,4 @@
-
 class ActionManager {
-    static executePanelAction(name: string, action: string){
-        $("#current-panel-action-" + name).val(action);
-        let form = document.querySelector<HTMLFormElement>(`form#${name}`);
-
-        if(!form){
-            form = document.forms[0];
-        }
-
-        form.requestSubmit()
-        return false;
-    }
 
     static executeRedirectActionAtSamePage(componentName: string, encryptedActionMap: string, confirmMessage?: string){
         this.executeRedirectAction(null,componentName,encryptedActionMap,confirmMessage);
@@ -24,13 +12,13 @@ class ActionManager {
             }
         }
 
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-form-action-" + componentName);
+        const currentFormActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
         currentFormActionInput.value = encryptedActionMap;
 
         if(!url){
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "urlRedirect");
-            urlBuilder.addQueryParameter("objname", componentName);
+            urlBuilder.addQueryParameter("componentName", componentName);
 
             url = urlBuilder.build();
         }
@@ -41,50 +29,87 @@ class ActionManager {
     }
 
     private static executeUrlRedirect(url: string) {
-        fetch(url, {
-            method: "POST",
-            body: new FormData(document.querySelector<HTMLFormElement>("form"))
-        }).then(response => response.json()).then(data => {
-            if (data.urlAsPopUp) {
-                popup.show(data.popUpTitle, data.urlRedirect);
-            } else {
-                window.location.href = data.urlRedirect;
+        postFormValues({
+            url: url,
+            success: (data)=>{
+                if (data.urlAsPopUp) {
+                    defaultModal.showIframe(data.urlRedirect,data.popUpTitle);
+                } else {
+                    window.location.href = data.urlRedirect;
+                }
             }
         })
     }
 
-    static executeFormAction(componentName: string, encryptedActionMap: string, confirmationMessage?: string) {
+    static executeAction(componentName, encryptedActionMap, confirmationMessage, isModal) {
         if (confirmationMessage) {
-            if (confirm(confirmationMessage)) {
+            if (!confirm(confirmationMessage)) {
                 return false;
             }
         }
 
-        const currentTableActionInput = document.querySelector<HTMLInputElement>("#current-table-action-" + componentName);
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-form-action-" + componentName);
-        
-        currentTableActionInput.value = null;
-        currentFormActionInput.value = encryptedActionMap;
+        const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
+        const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
 
+        if(gridViewActionInput){
+            gridViewActionInput.value = null;
+        }
+        if(formViewActionInput){
+            formViewActionInput.value = encryptedActionMap;
+        }
 
         let form = document.querySelector<HTMLFormElement>("form");
 
-        if(!form){
-            form = document.forms[0];
+        if (!form) {
+            return;
         }
-        
-        form.submit();
+
+        if (isModal) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "modal");
+            
+            postFormValues({
+                url: urlBuilder.build(),
+                success:function(data){
+                    const outputElement = document.getElementById(componentName);
+                    if (outputElement) {
+                        if (typeof data === "object") {
+                            if(data.closeModal){
+                                const modal = new Modal();
+                                modal.modalId = componentName +"-modal";
+
+                                modal.hide();
+
+                                JJViewHelper.refresh(componentName,true)
+                            }
+                        } else {
+                            outputElement.innerHTML = data;
+                        }
+                    }
+                }
+            })
+        } else {
+            form.submit();
+        }
     }
 
-    static executeFormActionAsPopUp(componentName: string,title: string, encryptedActionMap: string, confirmationMessage?: string) {
+    static executeFormAction(componentName: string, encryptedActionMap: string, confirmationMessage: string) {
+        this.executeAction(componentName, encryptedActionMap, confirmationMessage, false);
+    }
+
+    static executeModalAction(componentName: string, encryptedActionMap: string, confirmationMessage: string) {
+        this.executeAction(componentName, encryptedActionMap, confirmationMessage, true);
+    }
+
+    static executeFormActionAsModal(componentName: string,title: string, encryptedActionMap: string, confirmationMessage?: string) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
                 return false;
             }
         }
         
-        const currentTableActionInput = document.querySelector<HTMLInputElement>("#current-table-action-" + componentName);
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#current-form-action-" + componentName);
+        const currentTableActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
+        const currentFormActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
 
         currentTableActionInput.value = null;
         currentFormActionInput.value = encryptedActionMap;
@@ -94,9 +119,12 @@ class ActionManager {
         
         const url = urlBuilder.build()
         
-        popup.showHtmlFromUrl(title, url, {
-            method: "POST",
-            body: new FormData(document.querySelector("form"))
-        },1).then(_=>loadJJMasterData())
+        const modal = new Modal();
+        modal.modalId = componentName +"-modal";
+
+        modal.showUrl({url:url,requestOptions:{
+                method: "POST",
+                body: new FormData(document.querySelector("form"))
+            }},title).then(_=>loadJJMasterData())
     }
 }

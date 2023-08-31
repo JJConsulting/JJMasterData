@@ -37,7 +37,7 @@ public class GridSortingConfig
         {
             Name = "sort-modal-" + Name,
             Title = "Sort Fields",
-            Size = MessageSize.Default
+            Size = ModalSize.Small
         };
 
         var btnSort = new JJLinkButton
@@ -46,7 +46,7 @@ public class GridSortingConfig
             IconClass = IconType.Check.GetCssClass(),
             ShowAsButton = true,
             Text = "Sort",
-            OnClientClick = $"JJView.sortItems('{Name}');"
+            OnClientClick = $"JJViewHelper.sortItems('{Name}');"
         };
         dialog.Buttons.Add(btnSort);
 

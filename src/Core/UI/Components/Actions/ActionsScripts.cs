@@ -49,7 +49,7 @@ internal class ActionsScripts
         string popUpTitle = formElement.Title;
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
         string popup = "true";
-        int popupSize = (int)elementRedirect.PopupSize;
+        int popupSize = (int)elementRedirect.ModalSize;
 
         var @params = new StringBuilder();
 
@@ -110,12 +110,20 @@ internal class ActionsScripts
         if (isPopup)
         {
             functionSignature =
-                $"ActionManager.executeFormActionAsPopUp('{actionContext.ParentComponentName}','{formElement.Title}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+                $"ActionManager.executeFormActionAsModal('{actionContext.ParentComponentName}','{formElement.Title}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
         else
         {
-            functionSignature =
-                $"ActionManager.executeFormAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            if (actionContext.IsInsideModal)
+            {
+                functionSignature =
+                    $"ActionManager.executeModalAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            }
+            else
+            {
+                functionSignature =
+                    $"ActionManager.executeFormAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            }
         }
 
         return functionSignature;
@@ -152,7 +160,7 @@ internal class ActionsScripts
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
         return
-            $"JJView.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            $"JJViewHelper.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
     public string GetRefreshScript(ActionContext actionContext)
@@ -163,6 +171,6 @@ internal class ActionsScripts
             string dictionaryNameEncrypted = EncryptionService.EncryptString(actionContext.FormElement.Name);
             return UrlHelper.GetUrl("GetGridViewTable", "Grid","MasterData",  new { dictionaryName = dictionaryNameEncrypted });
         }
-        return $"JJView.refresh('{name}', true)";
+        return $"JJViewHelper.refresh('{name}', true)";
     }
 }

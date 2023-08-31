@@ -361,7 +361,7 @@ public class MasterApiService
         var values = ParseFilter(dictionary, paramValues);
         var userValues = new Dictionary<string, object?>
         {
-            { "objname", objname }
+            { "componentName", objname }
         };
 
         var newValues = await FieldsService.MergeWithExpressionValuesAsync(dictionary, values, pageState, false);

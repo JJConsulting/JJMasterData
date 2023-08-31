@@ -152,7 +152,7 @@ public class JJUploadView : AsyncComponent
             Icon = IconType.CloudDownload,
             ToolTip = "Download File",
             Name = "DOWNLOADFILE",
-            OnClientClick = "JJView.downloadFile('" + Name + "','{NameJS}');"
+            OnClientClick = "JJViewHelper.downloadFile('" + Name + "','{NameJS}');"
         };
 
     public ScriptAction DeleteAction
@@ -167,7 +167,7 @@ public class JJUploadView : AsyncComponent
             {
                 Icon = IconType.Trash,
                 ToolTip = "Delete File",
-                OnClientClick = "JJView.deleteFile('" + Name + "','{NameJS}', '" + promptStr + "');",
+                OnClientClick = "JJViewHelper.deleteFile('" + Name + "','{NameJS}', '" + promptStr + "');",
                 Name = "DELFILE"
             };
             return _deleteAction;
@@ -186,7 +186,7 @@ public class JJUploadView : AsyncComponent
             {
                 Icon = IconType.PencilSquareO,
                 ToolTip = "Rename File",
-                OnClientClick = "JJView.renameFile('" + Name + "','{NameJS}','" + promptStr + "');",
+                OnClientClick = "JJViewHelper.renameFile('" + Name + "','{NameJS}','" + promptStr + "');",
                 Name = "RENAMEFILE"
             };
             _renameAction.SetVisible(false);
@@ -570,7 +570,7 @@ public class JJUploadView : AsyncComponent
         url += EncryptionService.EncryptStringWithUrlEscape(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
-        .WithAttribute("href", $"javascript:popup.show('{fileName}','{url}', 1);")
+        .WithAttribute("href", $"javascript:defaultModal.showIframe('{url}', '{fileName}',1);")
         .Append(HtmlTag.Img, img =>
         {
             img.WithAttribute("loading", "lazy")
@@ -596,7 +596,7 @@ public class JJUploadView : AsyncComponent
         videoUrl += EncryptionService.EncryptStringWithUrlEscape(fileName);
 
         var html = new HtmlBuilder(HtmlTag.A)
-         .WithAttribute("href", $"javascript:popup.show('{fileName}','{videoUrl}', 1);")
+         .WithAttribute("href", $"javascript:defaultModal.showIframe('{videoUrl}', '{fileName}',1);")
          .Append(GetHtmlItemBox(fileName, "fa fa-play-circle", "red"));
 
         return html;

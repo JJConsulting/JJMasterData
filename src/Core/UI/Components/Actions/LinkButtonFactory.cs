@@ -86,8 +86,15 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
             case UserCreatedAction userCreatedAction:
                 button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.GridTable);
                 break;
-            case GridTableAction:
-                button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable);
+            case GridTableAction gridTableAction:
+                var isModal = false;
+
+                if (gridTableAction is EditAction editAction)
+                {
+                    isModal = editAction.ShowAsPopup;
+                }
+                
+                button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable,isModal);
                 break;
             default:
                 throw new JJMasterDataException("Action is not user created or a GridTableAction.");
@@ -167,17 +174,14 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
             switch (action)
             {
                 case BackAction or CancelAction:
-                    button.OnClientClick =
-                        $"return ActionManager.executePanelAction('{actionContext.ParentComponentName}','CANCEL');";
+                    button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
                     break;
                 case SaveAction saveAction:
                     if (saveAction.EnterKeyBehavior == FormEnterKey.Submit)
                         button.Type = LinkButtonType.Submit;
                     else
                         button.Type = saveAction.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
-
-                    button.OnClientClick =
-                        $"return ActionManager.executePanelAction('{actionContext.ParentComponentName}','OK');";
+                    button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
                     break;
             }
         }

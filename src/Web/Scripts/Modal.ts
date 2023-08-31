@@ -1,179 +1,290 @@
-﻿class Modal {
-    modalId: string = "popup-modal";
-    modalTitleId: string = "popup-modal-title";
+﻿enum ModalSize {
+    Default,
+    ExtraLarge,
+    Large,
+    Small,
+    Fullscreen
+}
 
-    private setTitle(title: string) {
-        document.getElementById(this.modalTitleId).innerHTML = title;
+class ModalUrlOptions{
+    url: string
+    requestOptions?: RequestInit
+}
+
+abstract class ModalBase{
+    modalId: string;
+    modalTitle: string;
+    modalSize: ModalSize;
+    modalElement: HTMLElement;
+    centered: boolean;
+
+    public constructor() {
+        this.modalId = "jjmasterdata-modal";
+        this.modalSize = ModalSize.ExtraLarge;
     }
 
-    private showModal(isIframe: boolean = true) {
-        if (bootstrapVersion < 5) {
-            $("#" + this.modalId).modal();
-        }
-        else {
-            const modal = new bootstrap.Modal(document.getElementById(this.modalId), {});
-            modal.show();
-        }
+    abstract showIframe(url: string, title: string, size: ModalSize);
 
-        if(isIframe){
-            SpinnerOverlay.show();
-            $("iframe").on("load", function () {
-                SpinnerOverlay.hide();
+    abstract showUrl(options: ModalUrlOptions, title: string, size: ModalSize) : Promise<void>;
+    abstract hide();
+}
+
+class _Modal extends ModalBase {
+
+    private modalSizeCssClass = {
+        Default: "jj-modal-default",
+        ExtraLarge: "jj-modal-xl",
+        Large: "jj-modal-lg",
+        Small: "jj-modal-sm",
+        Fullscreen: "modal-fullscreen",
+    };
+    
+    private showModal(){
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.show();
+    }
+
+    private hideModal(){
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.hide();
+    }
+    
+    private getModalCssClass(){
+        return this.modalSizeCssClass[ModalSize[this.modalSize]];
+    }
+    
+    private createModalElement() {
+        if (!document.getElementById(this.modalId)) {
+            this.modalElement = document.createElement("div");
+            this.modalElement.id = this.modalId;
+            this.modalElement.classList.add("modal", "fade");
+            this.modalElement.tabIndex = -1;
+            this.modalElement.setAttribute("role", "dialog");
+            this.modalElement.setAttribute("aria-labelledby", `${this.modalId}-label`);
+            this.modalElement.innerHTML = `
+      <div id="${this.modalId}-dialog" class="modal-dialog ${this.centered ? "modal-dialog-centered" : ""} modal-dialog-scrollable ${this.getModalCssClass()}" role="document">
+        <div class="modal-content" >
+          <div class="modal-header">
+            <h5 class="modal-title" id="${this.modalId}-label">${this.modalTitle}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body"> </div>
+        </div>
+      </div>`;
+            let form = document.forms[0];
+            if(form){
+                form.appendChild(this.modalElement);
+            }
+            else{
+                document.body.appendChild(this.modalElement);
+            }
+        } else {
+            this.modalElement = document.getElementById(this.modalId);
+
+            const dialog = document.getElementById(this.modalId + "-dialog");
+
+            //@ts-ignore
+            Object.values(ModalSize).forEach(cssClass => {
+                //@ts-ignore
+                dialog.classList.remove(cssClass)
             });
+            
+            dialog.classList.add(this.getModalCssClass())
         }
     }
 
-    private loadHtml(content, size, isIframe = true) {
-        const modalIdSelector = `#${this.modalId}`;
-        if ($(modalIdSelector).length) {
-            $(modalIdSelector).remove();
-        }
+    override showIframe(url: string, title: string, size: ModalSize = null) {
+        this.modalTitle = title;
+        this.modalSize = size || this.modalSize;
+        this.createModalElement();
+        const modalBody = this.modalElement.querySelector(".modal-body");
+        
+        let style = "width: 100vw; height: 100vh;";
+        
+        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
 
-        let width;
-        let height;
-
-        if (size === undefined) {
-            size = "1";
-        }
-
-        size = parseInt(size);
-
-        let modalDialogDiv;
-
-        switch (size) {
-            case 1:
-                width = "98%";
-                height = "92%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"margin:0.7em;left:0px;right:0px;top:0px;bottom:0px; position:fixed;width:auto;\">\r\n";
-
-                break;
-            case 2:
-                width = "auto";
-                height = "95%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 95vh;width:auto;\">\r\n";
-
-                break;
-            case 3:
-                width = "50%";
-                height = "65%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 65vh;width:50%\">\r\n";
-                break;
-            default:
-                width = "65%";
-                height = "80%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 80vh;width:65%\">\r\n";
-
-                break;
-        }
-
-        let modalDialogCss = `
-@media (min-width: 576px) {
-  .modal-dialog { max-width: none; }
-}
-
-.modal-dialog {
-  width: ${width};
-  height: ${height};
-  padding: 0;
-}
-
-.modal-content {
-  height: 100%;
-}
-`
-        let html = "";
-
-        html += `<div id=\"${this.modalId}\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n`;
-
-        if (bootstrapVersion == 3 ) {
-            html += modalDialogDiv;
-        }
-        else {
-            $('head').append(`<style type="text/css">${modalDialogCss}</style>`);
-            html += "<div class=\"modal-dialog\">";
-        }
-
-        if (bootstrapVersion != 3) {
-            html += `    <div class="modal-content">\r\n`;
-        }
-        else {
-            html += `    <div class="modal-content" style="height:100%;width:auto;">\r\n`;
-        }
-
-        html += "      <div class=\"modal-header\">\r\n";
-
-        if (bootstrapVersion == 3) {
-            html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\r\n";
-            html += `       <h4 id=\"${this.modalTitleId}\" class=\"modal-title\"></h4>\r\n`;
-        }
-        else {
-            html += `        <h4 id=\"${this.modalTitleId}\" class=\"modal-title\"></h4>\r\n`;
-            if (bootstrapVersion >= 5) {
-                html += "        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\"></button>\r\n";
-            }
-            else {
-                html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\r\n";
-            }
-        }
-
-        html += "      </div>\r\n";
-        html += "      <div class=\"modal-body\"  style=\"height:90%;width:auto;\">\r\n";
-
-        if(isIframe){
-
-            html += "         <iframe style=\"border: 0px;\" ";
-            html += " src='";
-            html += content;
-            html += "' width='100%' height='97%'>Waiting...</iframe>";
-        }
-        else{
-            html += content;
-        }
-
-        html += "      </div>\r\n";
-
-        html += "    </div>\r\n";
-        html += "  </div>\r\n";
-        html += "</div>\r\n";
-        $(html).appendTo($("body"));
-    }
-
-    show(title, url, size = 1) {
-        this.loadHtml(url, size);
-        this.setTitle(title);
         this.showModal();
     }
 
-    showHtml(title, html, size = 1) {
-        this.loadHtml(html, size, false);
-        this.setTitle(title);
-        this.showModal(false);
-    }
+    override async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null) {
+        this.modalTitle = title;
+        this.modalSize = size ?? ModalSize.Default;
+        this.createModalElement();
+        const modalBody = this.modalElement.querySelector(".modal-body");
+        await fetch(options.url, options.requestOptions)
+            .then((response) => response.text())
+            .then((content) => {
+                modalBody.innerHTML = content;
 
-    async showHtmlFromUrl(title: string, url: RequestInfo | URL, options: RequestInit = null, size = 1) {
-        SpinnerOverlay.show();
-        await fetch(url,options)
-            .then(response => response.text())
-            .then(html => {
-                this.showHtml(title, html, size)
-                SpinnerOverlay.hide();
-            })
-            .catch(error => {
-                console.error('Error fetching HTML from URL:', error);
+                this.showModal();
             });
     }
 
     hide() {
-        window.parent.$("#" + this.modalId).modal("hide");
-    }
-
-    modal() {
-        return $("#" + this.modalId);
+        this.hideModal();
     }
 }
 
-var popup = function () {
+class _LegacyModal extends ModalBase {
+    private createModalHtml(content: string, isIframe: boolean) {
+        const size = isIframe
+            ? this.modalSize === ModalSize.Small
+                ? "auto"
+                : this.modalSize === ModalSize.ExtraLarge
+                    ? "65%"
+                    : "auto"
+            : "auto";
+
+        const html = `
+            <div id="${this.modalId}" tabindex="-1" class="modal fade" role="dialog">
+                <div class="modal-dialog" style="position: auto; height: ${
+            this.modalSize === ModalSize.ExtraLarge
+                ? "95"
+                : this.modalSize === ModalSize.Large
+                    ? "75"
+                    : this.modalSize === ModalSize.Fullscreen
+                        ? "100"
+                        : "90"
+        }vh; width: ${size};">
+                    <div class="modal-content" style="height:100%;width:auto;">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title" id="${this.modalId}-title"></h4>
+                        </div>
+                        <div class="modal-body" style="height:90%;width:auto;">
+                            ${isIframe ? `<iframe style="border: 0px;" src="${content}" width="100%" height="97%">Waiting...</iframe>` : content}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        return html;
+    }
+
+    private showModal() {
+        $(`#${this.modalId}`).modal();
+
+        $("iframe").on("load", () => {
+            SpinnerOverlay.hide();
+        });
+    }
+
+    private setTitle(title: string) {
+        $(`#${this.modalId}-title`).html(title);
+    }
+
+    override showIframe(url: string, title: string, size: ModalSize = null) {
+        this.modalSize = size || this.modalSize;
+        const modalHtml = this.createModalHtml(url, true); // Using iframe
+        $(modalHtml).appendTo($("body"));
+        this.setTitle(title);
+        this.showModal();
+    }
+
+    override async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null) {
+        this.modalSize = size || this.modalSize;
+
+        try {
+            const response = await fetch(options.url, options.requestOptions);
+            if (response.ok) {
+                const content = await response.text();
+                const modalHtml = this.createModalHtml(content, false); // Not using iframe
+                $(modalHtml).appendTo($("body"));
+                this.setTitle(title);
+                this.showModal();
+            } else {
+                console.error(`Failed to fetch content from URL: ${options.url}`);
+            }
+        } catch (error) {
+            console.error("An error occurred while fetching content:", error);
+        }
+    }
+
+    override hide() {
+        $(`#${this.modalId}`).modal("hide");
+    }
+}
+
+
+
+
+class Modal {
+    private instance: ModalBase;
+    constructor() {
+        if (bootstrapVersion === 5) {
+            this.instance = new _Modal();
+        } else {
+            this.instance = new _LegacyModal();
+        }
+
+        this.instance.modalId = "jjmasterdata-modal";
+        this.instance.modalSize = ModalSize.ExtraLarge;
+    }
+
+    showIframe(url: string, title: string, size: ModalSize = null) {
+        this.instance.showIframe(url,title,size);
+    }
+    async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null): Promise<void> {
+        await this.instance.showUrl(options,title,size);
+    }
+    hide() {
+        this.instance.hide();
+    }
+    
+    get modalId(): string {
+        return this.instance.modalId;
+    }
+
+    set modalId(value: string) {
+        this.instance.modalId = value;
+    }
+
+    get modalTitle(): string {
+        return this.instance.modalTitle;
+    }
+
+    set modalTitle(value: string) {
+        this.instance.modalTitle = value;
+    }
+
+    get modalSize(): ModalSize {
+        return this.instance.modalSize;
+    }
+
+    set modalSize(value: ModalSize) {
+        this.instance.modalSize = value;
+    }
+
+    get modalElement(): HTMLElement {
+        return this.instance.modalElement;
+    }
+
+    set modalElement(value: HTMLElement) {
+        this.instance.modalElement = value;
+    }
+
+    get centered(): boolean {
+        return this.instance.centered;
+    }
+
+    set centered(value: boolean) {
+        this.instance.centered = value;
+    }
+}
+var defaultModal = function () {
     if (!(this instanceof Modal)) {
         return new Modal();
     }
-}()
+}();
+
+// Compatibility with legacy systems.
+class popup{
+    //Yes, the parameters are inverted.
+    static show(title,url,size = null){
+        defaultModal.showIframe(url,title,size)
+    }
+    static hide(){
+        defaultModal.hide()
+    }
+}

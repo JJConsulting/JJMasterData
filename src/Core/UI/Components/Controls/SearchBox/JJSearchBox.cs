@@ -61,7 +61,7 @@ public class JJSearchBox : AsyncControl
         set => _fieldName = value;
     }
 
-    internal string? DictionaryName { get; set; }
+    internal string? ElementName { get; set; }
 
     public string HtmlId
     {
@@ -183,9 +183,13 @@ public class JJSearchBox : AsyncControl
     {
         get
         {
-            var context = CurrentContext.Request.QueryString("context");
+            if (_componentContext != null)
+                return _componentContext.Value;
+            
+            var resolver = new ComponentContextResolver(this);
+            _componentContext = resolver.GetContext();
 
-            return _componentContext ??= ComponentContextParser.FromString(context);
+            return _componentContext.Value;
         }
     }
 
@@ -219,11 +223,9 @@ public class JJSearchBox : AsyncControl
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (IsSearchBoxRoute(DictionaryName, CurrentContext))
+        var fieldName = CurrentContext.Request.QueryString("fieldName");
+        if (ComponentContext is ComponentContext.SearchBox && FieldName == fieldName)
         {
-            if (!FieldName.Equals(CurrentContext.Request.QueryString("fieldName")))
-                return new EmptyComponentResult();
-
             return new JsonComponentResult(await GetSearchBoxItemsAsync());
         }
 
@@ -231,14 +233,6 @@ public class JJSearchBox : AsyncControl
 
         return new RenderedComponentResult(html);
     }
-    
-    public static bool IsSearchBoxRoute(string? dictionaryName, IHttpContext httpContext)
-    {
-        string context = httpContext.Request.QueryString("context");
-        string requestedDictionaryName = httpContext.Request.QueryString("dictionaryName");
-        return "searchBox".Equals(context) && (requestedDictionaryName == dictionaryName || dictionaryName is null);
-    }
-
     public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
         return await GetResultFromComponent(
@@ -321,7 +315,7 @@ public class JJSearchBox : AsyncControl
         var url = new StringBuilder();
         if (IsExternalRoute)
         {
-            string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEscape(DictionaryName);
+            string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEscape(ElementName);
             url.Append(UrlHelper.GetUrl("GetItems","Search", "MasterData", new
             {
                 dictionaryName = dictionaryNameEncrypted,
@@ -334,7 +328,7 @@ public class JJSearchBox : AsyncControl
         else
         {
             url.Append("context=searchBox");
-            url.Append($"&dictionaryName={DictionaryName}");
+            url.Append($"&dictionaryName={ElementName}");
             url.Append($"&fieldName={FieldName}");
             url.Append($"&fieldSearchName={Name + "_text"}");
             url.Append($"&pageState={(int)FormStateData.PageState}");

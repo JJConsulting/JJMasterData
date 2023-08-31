@@ -52,7 +52,7 @@ internal class GridToolbar
             switch (action)
             {
                 case ExportAction when GridView.DataExportation.IsRunning():
-                    linkButton.Spinner.Name = "dataexp_spinner_" + GridView.Name;
+                    linkButton.Spinner.Name = "data-exportation-spinner-" + GridView.Name;
                     linkButton.Spinner.Visible = true;
                     break;
                 case ImportAction when GridView.DataImportation.IsRunning():

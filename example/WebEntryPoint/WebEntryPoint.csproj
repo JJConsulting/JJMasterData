@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LangVersion>11</LangVersion>
+        <AssemblyName>JJMasterData.WebEntryPoint</AssemblyName>
+        <RootNamespace>JJMasterData.WebEntryPoint</RootNamespace>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Plugins\MongoDB\MongoDB.csproj" />
+      <ProjectReference Include="..\..\src\Plugins\Pdf\Pdf.csproj" />
+      <ProjectReference Include="..\..\src\Web\Web.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="JJMasterData.Web.Test" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Styles\" />
+    </ItemGroup>
+
+</Project>

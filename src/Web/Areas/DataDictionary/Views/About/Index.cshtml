@@ -1,10 +1,11 @@
 ﻿@using JJMasterData.Core.Web
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.AboutViewModel;
 @inject IStringLocalizer<JJMasterDataResources> Localizer
+@inject IOptions<JJMasterDataWebOptions> Options
 
 @{
-    Layout = "_MasterDataLayout.Popup";
-    ViewData["Title"] = "About";
+    Layout = Options.Value.PopUpLayoutPath;
+    ViewData["Title"] = Localizer["About"];
 }
 
 <div class="col-sm-12 text-center">

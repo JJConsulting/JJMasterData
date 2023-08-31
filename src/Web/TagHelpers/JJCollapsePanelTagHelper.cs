@@ -61,7 +61,7 @@ public class JJCollapsePanelTagHelper : TagHelper
 
         if (Partial == null)
         {
-            var content = output.GetChildContentAsync().Result.GetContent();
+            var content = (await output.GetChildContentAsync()).GetContent();
             panel.HtmlContent = content;
         }
         else

@@ -1,11 +1,9 @@
 ﻿@model string
-
+@inject IOptions<JJMasterDataWebOptions> Options
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @{
-    ViewData["Title"] = "Localization";
-}
-
-@{
-    Layout = "_MasterDataLayout.Popup";
+    ViewData["Title"] = StringLocalizer["Localization"];
+    Layout = Options.Value.PopUpLayoutPath;
 }
 
 @using (Html.BeginForm())

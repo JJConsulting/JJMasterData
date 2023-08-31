@@ -11,6 +11,6 @@
     "moduleResolution": "node",
     "outFile": "../wwwroot/js/jjmasterdata/jjmasterdata.js"
   },
-  "include": ["./*.ts"],
+  "include": ["**/*.ts"],
   "exclude": [""]
 }

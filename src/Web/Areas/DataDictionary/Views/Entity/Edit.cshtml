@@ -2,11 +2,10 @@
 @using JJMasterData.Core.Web
 @using JJMasterData.Web.TagHelpers
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
-
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel;
 
 @{
-    ViewData["Title"] = $"{Model.DictionaryName} - Entity";
+    ViewData["Title"] = $"{Model.DictionaryName} - {StringLocalizer["Entity"]}";
 }
 
 <partial name="_Menu"></partial>

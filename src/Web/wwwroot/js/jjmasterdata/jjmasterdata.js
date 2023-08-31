@@ -8,15 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 class ActionManager {
-    static executePanelAction(name, action) {
-        $("#current-panel-action-" + name).val(action);
-        let form = document.querySelector(`form#${name}`);
-        if (!form) {
-            form = document.forms[0];
-        }
-        form.requestSubmit();
-        return false;
-    }
     static executeRedirectActionAtSamePage(componentName, encryptedActionMap, confirmMessage) {
         this.executeRedirectAction(null, componentName, encryptedActionMap, confirmMessage);
     }
@@ -27,94 +18,186 @@ class ActionManager {
                 return false;
             }
         }
-        const currentFormActionInput = document.querySelector("#current-form-action-" + componentName);
+        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
         currentFormActionInput.value = encryptedActionMap;
         if (!url) {
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "urlRedirect");
-            urlBuilder.addQueryParameter("objname", componentName);
+            urlBuilder.addQueryParameter("componentName", componentName);
             url = urlBuilder.build();
         }
         this.executeUrlRedirect(url);
         return true;
     }
     static executeUrlRedirect(url) {
-        fetch(url, {
-            method: "POST",
-            body: new FormData(document.querySelector("form"))
-        }).then(response => response.json()).then(data => {
-            if (data.urlAsPopUp) {
-                popup.show(data.popUpTitle, data.urlRedirect);
-            }
-            else {
-                window.location.href = data.urlRedirect;
+        postFormValues({
+            url: url,
+            success: (data) => {
+                if (data.urlAsPopUp) {
+                    defaultModal.showIframe(data.urlRedirect, data.popUpTitle);
+                }
+                else {
+                    window.location.href = data.urlRedirect;
+                }
             }
         });
     }
-    static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
+    static executeAction(componentName, encryptedActionMap, confirmationMessage, isModal) {
         if (confirmationMessage) {
-            if (confirm(confirmationMessage)) {
+            if (!confirm(confirmationMessage)) {
                 return false;
             }
         }
-        const currentTableActionInput = document.querySelector("#current-table-action-" + componentName);
-        const currentFormActionInput = document.querySelector("#current-form-action-" + componentName);
-        currentTableActionInput.value = null;
-        currentFormActionInput.value = encryptedActionMap;
+        const gridViewActionInput = document.querySelector("#grid-view-action-" + componentName);
+        const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
+        if (gridViewActionInput) {
+            gridViewActionInput.value = null;
+        }
+        if (formViewActionInput) {
+            formViewActionInput.value = encryptedActionMap;
+        }
         let form = document.querySelector("form");
         if (!form) {
-            form = document.forms[0];
+            return;
         }
-        form.submit();
+        if (isModal) {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "modal");
+            postFormValues({
+                url: urlBuilder.build(),
+                success: function (data) {
+                    const outputElement = document.getElementById(componentName);
+                    if (outputElement) {
+                        if (typeof data === "object") {
+                            if (data.closeModal) {
+                                const modal = new Modal();
+                                modal.modalId = componentName + "-modal";
+                                modal.hide();
+                                JJViewHelper.refresh(componentName, true);
+                            }
+                        }
+                        else {
+                            outputElement.innerHTML = data;
+                        }
+                    }
+                }
+            });
+        }
+        else {
+            form.submit();
+        }
     }
-    static executeFormActionAsPopUp(componentName, title, encryptedActionMap, confirmationMessage) {
+    static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
+        this.executeAction(componentName, encryptedActionMap, confirmationMessage, false);
+    }
+    static executeModalAction(componentName, encryptedActionMap, confirmationMessage) {
+        this.executeAction(componentName, encryptedActionMap, confirmationMessage, true);
+    }
+    static executeFormActionAsModal(componentName, title, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
             if (confirm(confirmationMessage)) {
                 return false;
             }
         }
-        const currentTableActionInput = document.querySelector("#current-table-action-" + componentName);
-        const currentFormActionInput = document.querySelector("#current-form-action-" + componentName);
+        const currentTableActionInput = document.querySelector("#grid-view-action-" + componentName);
+        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
         currentTableActionInput.value = null;
         currentFormActionInput.value = encryptedActionMap;
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("context", "modal");
         const url = urlBuilder.build();
-        popup.showHtmlFromUrl(title, url, {
-            method: "POST",
-            body: new FormData(document.querySelector("form"))
-        }, 1).then(_ => loadJJMasterData());
+        const modal = new Modal();
+        modal.modalId = componentName + "-modal";
+        modal.showUrl({ url: url, requestOptions: {
+                method: "POST",
+                body: new FormData(document.querySelector("form"))
+            } }, title).then(_ => loadJJMasterData());
     }
 }
-function loadAuditLog(componentName, logId, url = null) {
-    $("#sortable-grid a").removeClass("active");
-    if (logId != "")
-        $("#" + logId).addClass("active");
-    document.querySelector('#audit-log-id-' + componentName).value = logId;
-    if (url == null || url.length == 0) {
-        let builder = new UrlBuilder();
-        builder.addQueryParameter("context", "htmlContent");
-        url = builder.build();
+class AuditLogHelper {
+    static loadAuditLog(componentName, logId, url = null) {
+        $("#sortable-grid a").removeClass("active");
+        if (logId != "")
+            $("#" + logId).addClass("active");
+        document.querySelector('#audit-log-id-' + componentName).value = logId;
+        if (url == null || url.length == 0) {
+            let builder = new UrlBuilder();
+            builder.addQueryParameter("context", "htmlContent");
+            url = builder.build();
+        }
+        postFormValues({
+            url: url,
+            success: function (data) {
+                document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
+            }
+        });
     }
-    fetch(url, {
-        method: "POST",
-        body: new FormData(document.querySelector("form"))
-    }).then(response => response.text()).then(data => {
-        document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
-    });
 }
-function setupCollapsePanel(name) {
-    let nameSelector = "#" + name;
-    let collapseSelector = '#collapse_mode_' + name;
-    document.addEventListener("DOMContentLoaded", function () {
-        let collapseElement = document.querySelector(nameSelector);
-        collapseElement.addEventListener("hidden.bs.collapse", function () {
-            document.querySelector(collapseSelector).value = "0";
+class CalendarListener {
+    static listen(prefixSelector) {
+        $(prefixSelector + ".jjform-datetime").flatpickr({
+            enableTime: true,
+            wrap: true,
+            allowInput: true,
+            altInput: false,
+            time_24hr: true,
+            dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
+            onOpen: function (selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") == 1) {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode
         });
-        collapseElement.addEventListener("show.bs.collapse", function () {
-            document.querySelector(collapseSelector).value = "1";
+        $(prefixSelector + ".jjform-date").flatpickr({
+            enableTime: false,
+            wrap: true,
+            allowInput: true,
+            altInput: false,
+            dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
+            onOpen: function (selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") == 1) {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode
         });
-    });
+        $(prefixSelector + ".jjform-hour").flatpickr({
+            enableTime: true,
+            wrap: true,
+            noCalendar: true,
+            allowInput: true,
+            altInput: false,
+            dateFormat: "H:i",
+            time_24hr: true,
+            onOpen: function (selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") == 1) {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode
+        });
+        $(prefixSelector + ".jjdecimal").each(applyDecimalPlaces);
+        $(prefixSelector + "[data-toggle='tooltip'], " + prefixSelector + "[data-bs-toggle='tooltip']").tooltip({
+            container: "body",
+            trigger: "hover"
+        });
+    }
+}
+class CollapsePanelListener {
+    static listen(name) {
+        let nameSelector = "#" + name;
+        let collapseSelector = '#collapse_mode_' + name;
+        document.addEventListener("DOMContentLoaded", function () {
+            let collapseElement = document.querySelector(nameSelector);
+            collapseElement.addEventListener("hidden.bs.collapse", function () {
+                document.querySelector(collapseSelector).value = "0";
+            });
+            collapseElement.addEventListener("show.bs.collapse", function () {
+                document.querySelector(collapseSelector).value = "1";
+            });
+        });
+    }
 }
 class DataDictionaryUtils {
     static deleteAction(actionName, url, questionStr) {
@@ -203,11 +286,11 @@ class DataDictionaryUtils {
     static refreshAction(isPopup = false) {
         SpinnerOverlay.show();
         if (isPopup) {
-            window.parent.popup.hide();
+            window.parent.defaultModal.hide();
             window.parent.document.forms[0].submit();
         }
         else {
-            popup.hide();
+            defaultModal.hide();
             document.forms[0].submit();
         }
     }
@@ -216,7 +299,7 @@ class DataDictionaryUtils {
         $("form:first").attr("action", url).submit();
     }
     static exportElement(id, url, validStr) {
-        var values = $("#selected-rows" + id).val();
+        var values = $("#grid-view-selected-rows" + id).val();
         if (values == "") {
             messageBox.show("JJMasterData", validStr, 3);
             return false;
@@ -232,17 +315,17 @@ class DataDictionaryUtils {
         return true;
     }
 }
-class DataExportation {
+class DataExportationHelper {
     static startProgressVerificationAtSamePage(componentName) {
         return __awaiter(this, void 0, void 0, function* () {
-            DataExportation.setLoadMessage();
+            DataExportationHelper.setLoadMessage();
             let urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "dataExportation");
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
             var isCompleted = false;
             while (!isCompleted) {
-                isCompleted = yield DataExportation.checkProgress(urlBuilder.build(), componentName);
+                isCompleted = yield DataExportationHelper.checkProgress(urlBuilder.build(), componentName);
                 yield sleep(3000);
             }
         });
@@ -253,7 +336,7 @@ class DataExportation {
             urlBuilder.addQueryParameter("context", "dataExportation");
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
-            yield DataExportation.stopExportation(urlBuilder.build(), stopMessage);
+            yield DataExportationHelper.stopExportation(urlBuilder.build(), stopMessage);
         });
     }
     static openExportPopupAtSamePage(componentName) {
@@ -261,7 +344,7 @@ class DataExportation {
         urlBuilder.addQueryParameter("context", "dataExportation");
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("dataExportationOperation", "showOptions");
-        DataExportation.openExportPopup(urlBuilder.build(), componentName);
+        DataExportationHelper.openExportPopup(urlBuilder.build(), componentName);
     }
     static startExportationAtSamePage(componentName) {
         let urlBuilder = new UrlBuilder();
@@ -275,7 +358,7 @@ class DataExportation {
             const modalBody = "#export-modal-" + componentName + " .modal-body ";
             document.querySelector(modalBody).innerHTML = html;
             loadJJMasterData(null, modalBody);
-            yield DataExportation.startProgressVerificationAtSamePage(componentName);
+            yield DataExportationHelper.startProgressVerificationAtSamePage(componentName);
         }));
     }
     static checkProgress(url, componentName) {
@@ -382,7 +465,7 @@ class DataExportation {
             const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body");
             modalBody.innerHTML = data;
             loadJJMasterData();
-            DataExportation.startProgressVerification(checkProgressUrl, componentName);
+            DataExportationHelper.startProgressVerification(checkProgressUrl, componentName);
         })
             .catch(error => {
             console.log(error);
@@ -397,16 +480,16 @@ class DataExportation {
     }
     static startProgressVerification(url, componentName) {
         return __awaiter(this, void 0, void 0, function* () {
-            DataExportation.setLoadMessage();
+            DataExportationHelper.setLoadMessage();
             var isCompleted = false;
             while (!isCompleted) {
-                isCompleted = yield DataExportation.checkProgress(url, componentName);
+                isCompleted = yield DataExportationHelper.checkProgress(url, componentName);
                 yield sleep(3000);
             }
         });
     }
 }
-class DataImportation {
+class DataImportationHelper {
     static setLoadMessage() {
         const options = {
             lines: 13,
@@ -444,7 +527,7 @@ class DataImportation {
             let urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "dataImportation");
             urlBuilder.addQueryParameter("current_uploadaction", "process_check");
-            urlBuilder.addQueryParameter("objname", componentName);
+            urlBuilder.addQueryParameter("componentName", componentName);
             url = urlBuilder.build();
         }
         fetch(url, {
@@ -479,9 +562,9 @@ class DataImportation {
                     document.querySelector("#lblInsertCount").textContent = result.Insert;
                 }
                 else {
-                    jjutil.animateValue("lblInsertCount", DataImportation.insertCount, result.Insert, 1000);
+                    jjutil.animateValue("lblInsertCount", DataImportationHelper.insertCount, result.Insert, 1000);
                 }
-                DataImportation.insertCount = result.Insert;
+                DataImportationHelper.insertCount = result.Insert;
             }
             if (result.Update > 0) {
                 document.querySelector("#lblUpdate").style.display = "";
@@ -489,9 +572,9 @@ class DataImportation {
                     document.querySelector("#lblUpdateCount").textContent = result.Update;
                 }
                 else {
-                    jjutil.animateValue("lblUpdateCount", DataImportation.updateCount, result.Update, 1000);
+                    jjutil.animateValue("lblUpdateCount", DataImportationHelper.updateCount, result.Update, 1000);
                 }
-                DataImportation.updateCount = result.Update;
+                DataImportationHelper.updateCount = result.Update;
             }
             if (result.Delete > 0) {
                 document.querySelector("#lblDelete").style.display = "";
@@ -499,9 +582,9 @@ class DataImportation {
                     document.querySelector("#lblDeleteCount").textContent = result.Delete;
                 }
                 else {
-                    jjutil.animateValue("lblDeleteCount", DataImportation.deleteCount, result.Delete, 1000);
+                    jjutil.animateValue("lblDeleteCount", DataImportationHelper.deleteCount, result.Delete, 1000);
                 }
-                DataImportation.deleteCount = result.Delete;
+                DataImportationHelper.deleteCount = result.Delete;
             }
             if (result.Ignore > 0) {
                 document.querySelector("#lblIgnore").style.display = "";
@@ -509,9 +592,9 @@ class DataImportation {
                     document.querySelector("#lblIgnoreCount").textContent = result.Ignore;
                 }
                 else {
-                    jjutil.animateValue("lblIgnoreCount", DataImportation.ignoreCount, result.Ignore, 1000);
+                    jjutil.animateValue("lblIgnoreCount", DataImportationHelper.ignoreCount, result.Ignore, 1000);
                 }
-                DataImportation.ignoreCount = result.Ignore;
+                DataImportationHelper.ignoreCount = result.Ignore;
             }
             if (result.Error > 0) {
                 document.querySelector("#lblError").style.display = "";
@@ -519,9 +602,9 @@ class DataImportation {
                     document.querySelector("#lblErrorCount").textContent = result.Error;
                 }
                 else {
-                    jjutil.animateValue("lblErrorCount", DataImportation.errorCount, result.Error, 1000);
+                    jjutil.animateValue("lblErrorCount", DataImportationHelper.errorCount, result.Error, 1000);
                 }
-                DataImportation.errorCount = result.Error;
+                DataImportationHelper.errorCount = result.Error;
             }
             if (!result.IsProcessing) {
                 document.querySelector("#current_uploadaction").value = "process_finished";
@@ -536,9 +619,9 @@ class DataImportation {
     }
     static startProcess(objname) {
         $(document).ready(function () {
-            DataImportation.setLoadMessage();
+            DataImportationHelper.setLoadMessage();
             setInterval(function () {
-                DataImportation.checkProgress(objname);
+                DataImportationHelper.checkProgress(objname);
             }, 3000);
         });
     }
@@ -553,7 +636,7 @@ class DataImportation {
             let urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("context", "dataImportation");
             urlBuilder.addQueryParameter("current_uploadaction", "process_check");
-            urlBuilder.addQueryParameter("objname", componentName);
+            urlBuilder.addQueryParameter("componentName", componentName);
             url = urlBuilder.build();
         }
         fetch(url).then(response => response.json()).then(data => {
@@ -583,20 +666,20 @@ class DataImportation {
         });
     }
 }
-DataImportation.insertCount = 0;
-DataImportation.updateCount = 0;
-DataImportation.deleteCount = 0;
-DataImportation.ignoreCount = 0;
-DataImportation.errorCount = 0;
-class DataPanel {
-    static ReloadAtSamePage(panelname, objid) {
+DataImportationHelper.insertCount = 0;
+DataImportationHelper.updateCount = 0;
+DataImportationHelper.deleteCount = 0;
+DataImportationHelper.ignoreCount = 0;
+DataImportationHelper.errorCount = 0;
+class DataPanelHelper {
+    static reloadAtSamePage(panelname, objid) {
         let url = new UrlBuilder();
         url.addQueryParameter("panelName", panelname);
-        url.addQueryParameter("objname", objid);
+        url.addQueryParameter("componentName", objid);
         url.addQueryParameter("context", "panelReload");
-        DataPanel.Reload(url.build(), panelname, objid);
+        DataPanelHelper.reload(url.build(), panelname, objid);
     }
-    static Reload(url, componentName, fieldName) {
+    static reload(url, componentName, fieldName) {
         const form = document.querySelector("form");
         fetch(url, {
             method: form.method,
@@ -646,37 +729,44 @@ FeedbackIcon.warningClass = "jj-icon-warning";
 FeedbackIcon.errorClass = "jj-icon-error";
 var _a, _b;
 var showWaitOnPost = true;
-var bootstrapVersion = 3;
+var bootstrapVersion = (() => {
+    const htmlElement = document.querySelector('html');
+    const versionAttribute = htmlElement === null || htmlElement === void 0 ? void 0 : htmlElement.getAttribute('data-bs-version');
+    if (versionAttribute) {
+        return parseInt(versionAttribute, 10);
+    }
+    return 5;
+})();
 const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
 const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
-class GridView {
+class GridViewHelper {
     static sorting(componentName, url, tableOrder) {
-        const tableOrderElement = document.querySelector("#current-table-order-" + componentName);
+        const tableOrderElement = document.querySelector("#grid-view-order-" + componentName);
         if (tableOrder + " ASC" === tableOrderElement.value)
             tableOrderElement.value = tableOrder + " DESC";
         else
             tableOrderElement.value = tableOrder + " ASC";
-        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
-        GridView.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, url);
     }
     static clearCurrentFormAction(componentName) {
-        const currentFormAction = document.querySelector("#current-form-action-" + componentName);
+        const currentFormAction = document.querySelector("#form-view-action-map-" + componentName);
         if (currentFormAction)
             currentFormAction.value = "";
     }
     static pagination(componentName, url, currentPage) {
-        document.querySelector("#current-table-page-" + componentName).value = currentPage;
-        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#grid-view-page-" + componentName).value = currentPage;
+        document.querySelector("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
-        GridView.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, url);
     }
     static filter(componentName, url) {
-        document.querySelector("#current-filter-action-" + componentName).value = "FILTERACTION";
-        document.querySelector("#current-table-action-" + componentName).value = "";
-        document.querySelector("#current-table-page-" + componentName).value = "1";
+        document.querySelector("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        document.querySelector("#grid-view-page-" + componentName).value = "1";
         this.clearCurrentFormAction(componentName);
-        GridView.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, url);
     }
     static clearFilterInputs(componentName) {
         const divId = "#current-grid-filter-" + componentName;
@@ -706,30 +796,30 @@ class GridView {
                 }
             }
         });
-        document.querySelector("#current-filter-action-" + componentName).value = "CLEARACTION";
-        document.querySelector("#current-table-action-" + componentName).value = "";
+        document.querySelector("#grid-view-filter-action-" + componentName).value = "CLEARACTION";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
     }
     static clearFilter(componentName, url) {
         this.clearFilterInputs(componentName);
-        GridView.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, url);
     }
     static refresh(componentName, url) {
-        document.querySelector("#current-table-action-" + componentName).value = "";
-        document.querySelector("#current-table-row-" + componentName).value = "";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        document.querySelector("#grid-view-row-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
-        GridView.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, url);
     }
     static selectAllRows(componentName, url) {
         fetch(url, { method: "POST" })
             .then(response => response.json())
-            .then(data => GridView.selectAllRowsElements(componentName, data.selectedRows));
+            .then(data => GridViewHelper.selectAllRowsElements(componentName, data.selectedRows));
     }
     static selectAllRowsElements(componentName, rows) {
         const values = rows.split(",");
         const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
         checkboxes.forEach(checkbox => checkbox.checked = true);
-        const selectedRowsInput = document.getElementById("selected-rows" + componentName);
+        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName);
         selectedRowsInput.value = values.join(",");
         const selectedText = document.getElementById("selected-text-" + componentName);
         selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
@@ -738,82 +828,49 @@ class GridView {
         const form = document.querySelector("form");
         let urlBuilder = new UrlBuilder(url);
         urlBuilder.addQueryParameter("componentName", componentName);
-        SpinnerOverlay.show();
-        const filterAction = document.querySelector("#current-filter-action-" + componentName);
-        fetch(urlBuilder.build(), {
-            method: form.method,
-            body: new FormData(form)
-        })
-            .then(response => response.text())
-            .then(data => {
-            document.querySelector("#grid-view-" + componentName).innerHTML = data;
-            loadJJMasterData();
-            if (filterAction)
-                filterAction.value = "";
-            SpinnerOverlay.hide();
-        })
-            .catch(error => {
-            console.log(error);
-            if (filterAction)
-                filterAction.value = "";
-        });
+        const filterAction = document.querySelector("#grid-view-filter-action-" + componentName);
+        postFormValues({ url: urlBuilder.build(), success: (data) => {
+                document.querySelector("#grid-view-" + componentName).innerHTML = data;
+                loadJJMasterData();
+                if (filterAction)
+                    filterAction.value = "";
+            } });
     }
 }
 $(function () {
-    bootstrapVersion = $.fn.tooltip.Constructor.VERSION.charAt(0);
     loadJJMasterData("load", null);
 });
-class JJSortable {
-    static setup() {
-        $(".jjsortable").sortable({
-            helper: function (e, tr) {
-                var $originals = tr.children();
-                var $helper = tr.clone();
-                $helper.children().each(function (index) {
-                    $(this).width($originals.eq(index).width());
-                });
-                return $helper;
-            },
-            change: function (event, ui) {
-                ui.placeholder.css({
-                    visibility: "visible",
-                    background: "#fbfbfb"
-                });
-            }
-        });
-    }
-}
-class JJView {
-    static postFormValues(objid, enableAjax, loadform) {
+class JJViewHelper {
+    static postFormValues(componentName, enableAjax, loadform) {
         if (enableAjax) {
-            const frm = $("form");
-            let surl = frm.attr("action");
-            if (surl.includes("?"))
-                surl += "&context=htmlContent";
-            else
-                surl += "?context=htmlContent";
-            surl += "&objname=" + objid;
-            $.ajax({
-                async: true,
-                type: frm.attr("method"),
-                url: surl,
-                data: frm.serialize(),
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("context", "htmlContent");
+            urlBuilder.addQueryParameter("componentName", componentName);
+            postFormValues({
+                url: urlBuilder.build(),
                 success: function (data) {
-                    if (data.substring(2, 18) == "<!--ErrorPage-->") {
-                        $("form:first").trigger("submit");
-                        return;
+                    const gridViewElement = document.querySelector("#grid-view-" + componentName);
+                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                    if (gridViewElement && filterActionElement) {
+                        gridViewElement.innerHTML = data;
+                        if (loadform) {
+                            loadJJMasterData();
+                        }
+                        filterActionElement.value = "";
                     }
-                    $("#grid-view-" + objid).html(data);
-                    if (loadform) {
-                        loadJJMasterData();
+                    else {
+                        console.error("One or both of the elements were not found.");
                     }
-                    $("#current-filter-action-" + objid).val("");
                 },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                    console.log(textStatus);
-                    console.log(jqXHR);
-                    $("#current-filter-action-" + objid).val("");
+                error: function (error) {
+                    console.error(error);
+                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                    if (filterActionElement) {
+                        filterActionElement.value = "";
+                    }
+                    else {
+                        console.error("Filter action element was not found.");
+                    }
                 }
             });
         }
@@ -822,7 +879,7 @@ class JJView {
         }
     }
     static selectItem(objid, obj) {
-        var values = $("#selected-rows" + objid).val().toString();
+        var values = $("#grid-view-selected-rows" + objid).val().toString();
         var valuesList = [];
         if (obj.attr("id") == "jjcheckbox-select-all-rows")
             return;
@@ -838,7 +895,7 @@ class JJView {
                 return item !== obj.val();
             });
         }
-        $("#selected-rows" + objid).val(valuesList);
+        $("#grid-view-selected-rows" + objid).val(valuesList);
         var textInfo = "";
         var selectedText = $("#selected-text-" + objid);
         if (valuesList.length == 0)
@@ -851,39 +908,28 @@ class JJView {
     }
     static unSelectAll(objid) {
         $(".jjselect input").not(":disabled").prop("checked", false);
-        $("#selected-rows" + objid).val("");
+        $("#grid-view-selected-rows" + objid).val("");
         var oSelectedtext = $("#selected-text-" + objid);
         oSelectedtext.text(oSelectedtext.attr("no-record-selected-label"));
     }
-    static selectAll(objid) {
-        var frm = $("form");
-        var surl = frm.attr("action");
-        if (surl.includes("?"))
-            surl += "&context=selectall";
-        else
-            surl += "?context=selectall";
-        $.ajax({
-            async: true,
-            type: frm.attr("method"),
-            url: surl,
-            success: function (data) {
-                GridView.selectAllRowsElements(objid, JSON.parse(data).selectedRows);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-                console.log(textStatus);
-                console.log(jqXHR);
+    static selectAll(componentName) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("context", "selectAll");
+        postFormValues({
+            url: urlBuilder.build(),
+            success: (data) => {
+                GridViewHelper.selectAllRowsElements(componentName, data.selectedRows);
             }
         });
     }
     static sortFormValues(objid, enableAjax, v) {
-        var tableOrder = "#current-table-order-" + objid;
+        var tableOrder = "#grid-view-order-" + objid;
         if (v + " ASC" == $(tableOrder).val())
             $(tableOrder).val(v + " DESC");
         else
             $(tableOrder).val(v + " ASC");
-        $("#current-table-action-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
     static sortItems(objid) {
@@ -901,28 +947,28 @@ class JJView {
             }
         }
         descCommand = descCommand.substring(0, descCommand.length - 1);
-        $("#current-table-order-" + objid).val(descCommand);
+        $("#grid-view-order-" + objid).val(descCommand);
         $("#sort-modal-" + objid).modal('hide');
-        $("#current-form-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.refresh(objid, true);
     }
     static paginateGrid(objid, enableAjax, v) {
-        $("#current-table-page-" + objid).val(v);
-        $("#current-table-action-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-page-" + objid).val(v);
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, true);
     }
-    static refresh(objid, enableAjax) {
-        $("#current-table-action-" + objid).val("");
-        $("#current-table-row-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
-        this.postFormValues(objid, enableAjax, true);
+    static refresh(componentName, enableAjax) {
+        $("#grid-view-action-" + componentName).val("");
+        $("#grid-view-row-" + componentName).val("");
+        $("#form-view-action-map-" + componentName).val("");
+        this.postFormValues(componentName, enableAjax, true);
     }
     static openSettingsModal(componentName, encryptedActionMap) {
-        $("#current-table-action-" + componentName).val(encryptedActionMap);
-        $("#current-table-page-" + componentName).val("1");
-        $("#current-table-row-" + componentName).val("");
-        $("#current-form-action-" + componentName).val("");
+        $("#grid-view-action-" + componentName).val(encryptedActionMap);
+        $("#grid-view-page-" + componentName).val("1");
+        $("#grid-view-row-" + componentName).val("");
+        $("#form-view-action-map-" + componentName).val("");
         $("form:first").trigger("submit");
     }
     static closeSettingsModal(objid) {
@@ -931,20 +977,20 @@ class JJView {
         $("#config-modal-" + objid).modal("hide");
     }
     static filter(objid, enableAjax) {
-        $("#current-filter-action-" + objid).val("FILTERACTION");
-        $("#current-table-action-" + objid).val("");
-        $("#current-table-page-" + objid).val("1");
-        $("#current-form-action-" + objid).val("");
+        $("#grid-view-filter-action-" + objid).val("FILTERACTION");
+        $("#grid-view-action-" + objid).val("");
+        $("#grid-view-page-" + objid).val("1");
+        $("#form-view-action-map-" + objid).val("");
         this.postFormValues(objid, enableAjax, false);
         return false;
     }
     static openSelectElementInsert(componentName, encryptedActionMap) {
-        $("#current-panel-action-" + componentName).val("ELEMENTSEL");
-        $("#current-select-action-values" + componentName).val(encryptedActionMap);
+        $("#form-view-current-action-" + componentName).val("ELEMENTSEL");
+        $("#form-view-select-action-values" + componentName).val(encryptedActionMap);
         $("form:first").trigger("submit");
     }
     static clearFilter(componentName, enableAjax) {
-        GridView.clearFilterInputs(componentName);
+        GridViewHelper.clearFilterInputs(componentName);
         this.postFormValues(componentName, enableAjax, false);
     }
     static executeGridAction(componentName, encryptedActionMap, confirmMessage) {
@@ -954,8 +1000,8 @@ class JJView {
                 return false;
             }
         }
-        $("#current-table-action-" + componentName).val(encryptedActionMap);
-        $("#current-form-action-" + componentName).val("");
+        $("#grid-view-action-" + componentName).val(encryptedActionMap);
+        $("#form-view-action-map-" + componentName).val("");
         $("form:first").trigger("submit");
     }
     static executeSqlCommand(objid, criptid, confirmMessage) {
@@ -965,13 +1011,13 @@ class JJView {
                 return false;
             }
         }
-        $("#current-table-action-" + objid).val("");
-        $("#current-form-action-" + objid).val("");
-        $("#current-table-row-" + objid).val(criptid);
+        $("#grid-view-action-" + objid).val("");
+        $("#form-view-action-map-" + objid).val("");
+        $("#grid-view-row-" + objid).val(criptid);
         $("form:first").trigger("submit");
     }
     static setLookup(objid, value) {
-        window.parent.popup.hide();
+        window.parent.defaultModal.hide();
         setTimeout(function () {
             window.parent.$("#id_" + objid).val(value);
             window.parent.$("#" + objid).val(value).change().blur();
@@ -985,7 +1031,7 @@ class JJView {
             }
         }
         if (ispopup) {
-            popup.show(title, url, popupSize);
+            defaultModal.showIframe(url, title, popupSize);
         }
         else {
             window.location.href = url;
@@ -1026,7 +1072,7 @@ class JJView {
         SpinnerOverlay.show();
         var url = $("form").attr("action");
         url += url.includes("?") ? "&" : "?";
-        url += "jjuploadview_" + panelName + "=" + objid;
+        url += "uploadView-" + panelName + "=" + objid;
         url += "&downloadfile=" + filename;
         window.location.assign(url);
         setTimeout(function () {
@@ -1107,61 +1153,15 @@ function loadJJMasterData(event, prefixSelector) {
         iconBase: 'fa'
     });
     $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
-    $(prefixSelector + ".jjform-datetime").flatpickr({
-        enableTime: true,
-        wrap: true,
-        allowInput: true,
-        altInput: false,
-        time_24hr: true,
-        dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
-        onOpen: function (selectedDates, dateStr, instance) {
-            if (instance.input.getAttribute("autocompletePicker") == 1) {
-                instance.setDate(Date.now());
-            }
-        },
-        locale: localeCode
-    });
-    $(prefixSelector + ".jjform-date").flatpickr({
-        enableTime: false,
-        wrap: true,
-        allowInput: true,
-        altInput: false,
-        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
-        onOpen: function (selectedDates, dateStr, instance) {
-            if (instance.input.getAttribute("autocompletePicker") == 1) {
-                instance.setDate(Date.now());
-            }
-        },
-        locale: localeCode
-    });
-    $(prefixSelector + ".jjform-hour").flatpickr({
-        enableTime: true,
-        wrap: true,
-        noCalendar: true,
-        allowInput: true,
-        altInput: false,
-        dateFormat: "H:i",
-        time_24hr: true,
-        onOpen: function (selectedDates, dateStr, instance) {
-            if (instance.input.getAttribute("autocompletePicker") == 1) {
-                instance.setDate(Date.now());
-            }
-        },
-        locale: localeCode
-    });
-    $(prefixSelector + ".jjdecimal").each(applyDecimalPlaces);
-    $(prefixSelector + "[data-toggle='tooltip'], " + prefixSelector + "[data-bs-toggle='tooltip']").tooltip({
-        container: "body",
-        trigger: "hover"
-    });
-    TextArea.setup();
-    SearchBox.setup();
-    Lookup.setup();
-    JJSortable.setup();
-    UploadArea.setup();
-    TabNav.setup();
-    Slider.observeSliders();
-    Slider.observeInputs();
+    CalendarListener.listen(prefixSelector);
+    TextAreaListener.listenKeydown();
+    SearchBoxListener.listenTypeahed();
+    LookupListener.listenChanges();
+    SortableListener.listenSorting();
+    UploadAreaListener.listenFileUpload();
+    TabNavListener.listenTabNavs();
+    SliderListener.listenSliders();
+    SliderListener.listenInputs();
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&
@@ -1187,8 +1187,8 @@ function loadJJMasterData(event, prefixSelector) {
         }
     });
 }
-class Lookup {
-    static setup() {
+class LookupListener {
+    static listenChanges() {
         $("input.jjlookup").each(function () {
             let lookupInput = $(this);
             let lookupId = lookupInput.attr("id");
@@ -1199,11 +1199,10 @@ class Lookup {
             let lookupResultUrl = lookupInput.attr("lookup-result-url");
             let dataPanelReloadUrl = lookupInput.attr("data-panel-reload-url");
             let popupSize = +lookupInput.attr("popupsize");
-            let form = document.querySelector("form");
             const jjLookupSelector = "#" + lookupId + "";
             const jjHiddenLookupSelector = "#id_" + lookupId + "";
             $("#btn_" + lookupId).on("click", function () {
-                popup.show(popupTitle, lookupUrl, popupSize);
+                defaultModal.showIframe(lookupUrl, popupTitle, popupSize);
             });
             function setHiddenLookup() {
                 $("#id_" + lookupId).val(lookupInput.val());
@@ -1230,40 +1229,31 @@ class Lookup {
                     lookupResultUrl = urlBuilder.build();
                 }
                 lookupInput.addClass("loading-circle");
-                const formData = new FormData(form);
-                fetch(lookupResultUrl, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json',
-                    },
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                    showWaitOnPost = true;
-                    lookupInput.removeClass("loading-circle");
-                    if (data.description === "") {
-                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass);
-                    }
-                    else {
-                        const lookupHiddenInputElement = document.querySelector("#id_" + lookupId);
-                        const lookupInputElement = document.querySelector("#" + lookupId);
-                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
-                        lookupInputElement.value = data.description;
-                        lookupHiddenInputElement.value = data.id;
-                        if (dataPanelReloadUrl) {
-                            DataPanel.Reload(dataPanelReloadUrl, panelName, lookupId);
+                postFormValues({
+                    url: lookupResultUrl, success: (data) => {
+                        showWaitOnPost = true;
+                        lookupInput.removeClass("loading-circle");
+                        if (data.description === "") {
+                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass);
                         }
                         else {
-                            DataPanel.ReloadAtSamePage(panelName, lookupId);
+                            const lookupHiddenInputElement = document.querySelector("#id_" + lookupId);
+                            const lookupInputElement = document.querySelector("#" + lookupId);
+                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
+                            lookupInputElement.value = data.description;
+                            lookupHiddenInputElement.value = data.id;
+                            if (dataPanelReloadUrl) {
+                                DataPanelHelper.reload(dataPanelReloadUrl, panelName, lookupId);
+                            }
+                            else {
+                                DataPanelHelper.reloadAtSamePage(panelName, lookupId);
+                            }
                         }
+                    }, error: (_) => {
+                        showWaitOnPost = true;
+                        lookupInput.removeClass("loading-circle");
+                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass);
                     }
-                })
-                    .catch(error => {
-                    showWaitOnPost = true;
-                    lookupInput.removeClass("loading-circle");
-                    FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass);
-                    console.log(error);
                 });
             });
         });
@@ -1441,162 +1431,281 @@ MessageBox.modalId = MessageBox.jQueryModalId.substring(1);
 MessageBox.button1Id = MessageBox.jQueryModalButton1Id.substring(1);
 MessageBox.bootstrapVersion = 5;
 const messageBox = MessageBox;
-class Modal {
+var ModalSize;
+(function (ModalSize) {
+    ModalSize[ModalSize["Default"] = 0] = "Default";
+    ModalSize[ModalSize["ExtraLarge"] = 1] = "ExtraLarge";
+    ModalSize[ModalSize["Large"] = 2] = "Large";
+    ModalSize[ModalSize["Small"] = 3] = "Small";
+    ModalSize[ModalSize["Fullscreen"] = 4] = "Fullscreen";
+})(ModalSize || (ModalSize = {}));
+class ModalUrlOptions {
+}
+class ModalBase {
     constructor() {
-        this.modalId = "popup-modal";
-        this.modalTitleId = "popup-modal-title";
+        this.modalId = "jjmasterdata-modal";
+        this.modalSize = ModalSize.ExtraLarge;
     }
-    setTitle(title) {
-        document.getElementById(this.modalTitleId).innerHTML = title;
+}
+class _Modal extends ModalBase {
+    constructor() {
+        super(...arguments);
+        this.modalSizeCssClass = {
+            Default: "jj-modal-default",
+            ExtraLarge: "jj-modal-xl",
+            Large: "jj-modal-lg",
+            Small: "jj-modal-sm",
+            Fullscreen: "modal-fullscreen",
+        };
     }
-    showModal(isIframe = true) {
-        if (bootstrapVersion < 5) {
-            $("#" + this.modalId).modal();
-        }
-        else {
-            const modal = new bootstrap.Modal(document.getElementById(this.modalId), {});
-            modal.show();
-        }
-        if (isIframe) {
-            SpinnerOverlay.show();
-            $("iframe").on("load", function () {
-                SpinnerOverlay.hide();
-            });
-        }
+    showModal() {
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.show();
     }
-    loadHtml(content, size, isIframe = true) {
-        const modalIdSelector = `#${this.modalId}`;
-        if ($(modalIdSelector).length) {
-            $(modalIdSelector).remove();
-        }
-        let width;
-        let height;
-        if (size === undefined) {
-            size = "1";
-        }
-        size = parseInt(size);
-        let modalDialogDiv;
-        switch (size) {
-            case 1:
-                width = "98%";
-                height = "92%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"margin:0.7em;left:0px;right:0px;top:0px;bottom:0px; position:fixed;width:auto;\">\r\n";
-                break;
-            case 2:
-                width = "auto";
-                height = "95%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 95vh;width:auto;\">\r\n";
-                break;
-            case 3:
-                width = "50%";
-                height = "65%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 65vh;width:50%\">\r\n";
-                break;
-            default:
-                width = "65%";
-                height = "80%";
-                modalDialogDiv = "<div class=\"modal-dialog\" style=\"position: auto; height: 80vh;width:65%\">\r\n";
-                break;
-        }
-        let modalDialogCss = `
-@media (min-width: 576px) {
-  .modal-dialog { max-width: none; }
-}
-
-.modal-dialog {
-  width: ${width};
-  height: ${height};
-  padding: 0;
-}
-
-.modal-content {
-  height: 100%;
-}
-`;
-        let html = "";
-        html += `<div id=\"${this.modalId}\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n`;
-        if (bootstrapVersion == 3) {
-            html += modalDialogDiv;
-        }
-        else {
-            $('head').append(`<style type="text/css">${modalDialogCss}</style>`);
-            html += "<div class=\"modal-dialog\">";
-        }
-        if (bootstrapVersion != 3) {
-            html += `    <div class="modal-content">\r\n`;
-        }
-        else {
-            html += `    <div class="modal-content" style="height:100%;width:auto;">\r\n`;
-        }
-        html += "      <div class=\"modal-header\">\r\n";
-        if (bootstrapVersion == 3) {
-            html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\r\n";
-            html += `       <h4 id=\"${this.modalTitleId}\" class=\"modal-title\"></h4>\r\n`;
-        }
-        else {
-            html += `        <h4 id=\"${this.modalTitleId}\" class=\"modal-title\"></h4>\r\n`;
-            if (bootstrapVersion >= 5) {
-                html += "        <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\"></button>\r\n";
+    hideModal() {
+        const bootstrapModal = new bootstrap.Modal(this.modalElement);
+        bootstrapModal.hide();
+    }
+    getModalCssClass() {
+        return this.modalSizeCssClass[ModalSize[this.modalSize]];
+    }
+    createModalElement() {
+        if (!document.getElementById(this.modalId)) {
+            this.modalElement = document.createElement("div");
+            this.modalElement.id = this.modalId;
+            this.modalElement.classList.add("modal", "fade");
+            this.modalElement.tabIndex = -1;
+            this.modalElement.setAttribute("role", "dialog");
+            this.modalElement.setAttribute("aria-labelledby", `${this.modalId}-label`);
+            this.modalElement.innerHTML = `
+      <div id="${this.modalId}-dialog" class="modal-dialog ${this.centered ? "modal-dialog-centered" : ""} modal-dialog-scrollable ${this.getModalCssClass()}" role="document">
+        <div class="modal-content" >
+          <div class="modal-header">
+            <h5 class="modal-title" id="${this.modalId}-label">${this.modalTitle}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body"> </div>
+        </div>
+      </div>`;
+            let form = document.forms[0];
+            if (form) {
+                form.appendChild(this.modalElement);
             }
             else {
-                html += "        <button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>\r\n";
+                document.body.appendChild(this.modalElement);
             }
         }
-        html += "      </div>\r\n";
-        html += "      <div class=\"modal-body\"  style=\"height:90%;width:auto;\">\r\n";
-        if (isIframe) {
-            html += "         <iframe style=\"border: 0px;\" ";
-            html += " src='";
-            html += content;
-            html += "' width='100%' height='97%'>Waiting...</iframe>";
-        }
         else {
-            html += content;
+            this.modalElement = document.getElementById(this.modalId);
+            const dialog = document.getElementById(this.modalId + "-dialog");
+            Object.values(ModalSize).forEach(cssClass => {
+                dialog.classList.remove(cssClass);
+            });
+            dialog.classList.add(this.getModalCssClass());
         }
-        html += "      </div>\r\n";
-        html += "    </div>\r\n";
-        html += "  </div>\r\n";
-        html += "</div>\r\n";
-        $(html).appendTo($("body"));
     }
-    show(title, url, size = 1) {
-        this.loadHtml(url, size);
-        this.setTitle(title);
+    showIframe(url, title, size = null) {
+        this.modalTitle = title;
+        this.modalSize = size || this.modalSize;
+        this.createModalElement();
+        const modalBody = this.modalElement.querySelector(".modal-body");
+        let style = "width: 100vw; height: 100vh;";
+        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
         this.showModal();
     }
-    showHtml(title, html, size = 1) {
-        this.loadHtml(html, size, false);
-        this.setTitle(title);
-        this.showModal(false);
-    }
-    showHtmlFromUrl(title, url, options = null, size = 1) {
+    showUrl(options, title, size = null) {
         return __awaiter(this, void 0, void 0, function* () {
-            SpinnerOverlay.show();
-            yield fetch(url, options)
-                .then(response => response.text())
-                .then(html => {
-                this.showHtml(title, html, size);
-                SpinnerOverlay.hide();
-            })
-                .catch(error => {
-                console.error('Error fetching HTML from URL:', error);
+            this.modalTitle = title;
+            this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
+            this.createModalElement();
+            const modalBody = this.modalElement.querySelector(".modal-body");
+            yield fetch(options.url, options.requestOptions)
+                .then((response) => response.text())
+                .then((content) => {
+                modalBody.innerHTML = content;
+                this.showModal();
             });
         });
     }
     hide() {
-        window.parent.$("#" + this.modalId).modal("hide");
-    }
-    modal() {
-        return $("#" + this.modalId);
+        this.hideModal();
     }
 }
-var popup = function () {
+class _LegacyModal extends ModalBase {
+    createModalHtml(content, isIframe) {
+        const size = isIframe
+            ? this.modalSize === ModalSize.Small
+                ? "auto"
+                : this.modalSize === ModalSize.ExtraLarge
+                    ? "65%"
+                    : "auto"
+            : "auto";
+        const html = `
+            <div id="${this.modalId}" tabindex="-1" class="modal fade" role="dialog">
+                <div class="modal-dialog" style="position: auto; height: ${this.modalSize === ModalSize.ExtraLarge
+            ? "95"
+            : this.modalSize === ModalSize.Large
+                ? "75"
+                : this.modalSize === ModalSize.Fullscreen
+                    ? "100"
+                    : "90"}vh; width: ${size};">
+                    <div class="modal-content" style="height:100%;width:auto;">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title" id="${this.modalId}-title"></h4>
+                        </div>
+                        <div class="modal-body" style="height:90%;width:auto;">
+                            ${isIframe ? `<iframe style="border: 0px;" src="${content}" width="100%" height="97%">Waiting...</iframe>` : content}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        return html;
+    }
+    showModal() {
+        $(`#${this.modalId}`).modal();
+        $("iframe").on("load", () => {
+            SpinnerOverlay.hide();
+        });
+    }
+    setTitle(title) {
+        $(`#${this.modalId}-title`).html(title);
+    }
+    showIframe(url, title, size = null) {
+        this.modalSize = size || this.modalSize;
+        const modalHtml = this.createModalHtml(url, true);
+        $(modalHtml).appendTo($("body"));
+        this.setTitle(title);
+        this.showModal();
+    }
+    showUrl(options, title, size = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.modalSize = size || this.modalSize;
+            try {
+                const response = yield fetch(options.url, options.requestOptions);
+                if (response.ok) {
+                    const content = yield response.text();
+                    const modalHtml = this.createModalHtml(content, false);
+                    $(modalHtml).appendTo($("body"));
+                    this.setTitle(title);
+                    this.showModal();
+                }
+                else {
+                    console.error(`Failed to fetch content from URL: ${options.url}`);
+                }
+            }
+            catch (error) {
+                console.error("An error occurred while fetching content:", error);
+            }
+        });
+    }
+    hide() {
+        $(`#${this.modalId}`).modal("hide");
+    }
+}
+class Modal {
+    constructor() {
+        if (bootstrapVersion === 5) {
+            this.instance = new _Modal();
+        }
+        else {
+            this.instance = new _LegacyModal();
+        }
+        this.instance.modalId = "jjmasterdata-modal";
+        this.instance.modalSize = ModalSize.ExtraLarge;
+    }
+    showIframe(url, title, size = null) {
+        this.instance.showIframe(url, title, size);
+    }
+    showUrl(options, title, size = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.instance.showUrl(options, title, size);
+        });
+    }
+    hide() {
+        this.instance.hide();
+    }
+    get modalId() {
+        return this.instance.modalId;
+    }
+    set modalId(value) {
+        this.instance.modalId = value;
+    }
+    get modalTitle() {
+        return this.instance.modalTitle;
+    }
+    set modalTitle(value) {
+        this.instance.modalTitle = value;
+    }
+    get modalSize() {
+        return this.instance.modalSize;
+    }
+    set modalSize(value) {
+        this.instance.modalSize = value;
+    }
+    get modalElement() {
+        return this.instance.modalElement;
+    }
+    set modalElement(value) {
+        this.instance.modalElement = value;
+    }
+    get centered() {
+        return this.instance.centered;
+    }
+    set centered(value) {
+        this.instance.centered = value;
+    }
+}
+var defaultModal = function () {
     if (!(this instanceof Modal)) {
         return new Modal();
     }
 }();
-class SearchBox {
-    static setup() {
+class popup {
+    static show(title, url, size = null) {
+        defaultModal.showIframe(url, title, size);
+    }
+    static hide() {
+        defaultModal.hide();
+    }
+}
+class PostFormValuesOptions {
+}
+function postFormValues(options) {
+    SpinnerOverlay.show();
+    const formData = new FormData(document.querySelector("form"));
+    const requestOptions = {
+        method: "POST",
+        body: formData
+    };
+    fetch(options.url, requestOptions)
+        .then(response => {
+        var _a;
+        if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
+            return response.json();
+        }
+        else {
+            return response.text();
+        }
+    })
+        .then(data => {
+        options.success(data);
+    })
+        .catch(error => {
+        if (options.error) {
+            options.error(error);
+        }
+        else {
+            console.error(error);
+        }
+    })
+        .then(() => {
+        SpinnerOverlay.hide();
+    });
+}
+class SearchBoxListener {
+    static listenTypeahed() {
         $("input.jjsearchbox").each(function () {
             const hiddenInputId = $(this).attr("hidden-input-id");
             let urltypehead = $(this).attr("urltypehead");
@@ -1679,8 +1788,8 @@ class SearchBox {
         });
     }
 }
-class Slider {
-    static observeSliders() {
+class SliderListener {
+    static listenSliders() {
         let sliders = document.getElementsByClassName("jjslider");
         Array.from(sliders).forEach((slider) => {
             let sliderInput = document.getElementById(slider.id + "-value");
@@ -1699,7 +1808,7 @@ class Slider {
             };
         });
     }
-    static observeInputs() {
+    static listenInputs() {
         let inputs = document.getElementsByClassName("jjslider-value");
         Array.from(inputs).forEach((input) => {
             let slider = document.getElementById(input.id.replace("-value", ""));
@@ -1709,66 +1818,103 @@ class Slider {
         });
     }
 }
+class SortableListener {
+    static listenSorting() {
+        $(".jjsortable").sortable({
+            helper: function (e, tr) {
+                var originals = tr.children();
+                var helper = tr.clone();
+                helper.children().each(function (index) {
+                    $(this).width(originals.eq(index).width());
+                });
+                return helper;
+            },
+            change: function (event, ui) {
+                ui.placeholder.css({
+                    visibility: "visible",
+                    background: "#fbfbfb"
+                });
+            }
+        });
+    }
+}
 class SpinnerOverlay {
     static loadHtml() {
-        if (!$(this.spinnerOverlayId).length) {
-            const html = `
-                <div id="spinner-overlay">
-                    <div class="ajaxImage"></div>
-                    <div class="ajaxMessage">Loading...</div>
-                </div>
+        if (!document.querySelector("#" + this.spinnerOverlayId)) {
+            if (bootstrapVersion < 5) {
+                const spinnerOverlay = document.createElement("div");
+                spinnerOverlay.id = this.spinnerOverlayId;
+                spinnerOverlay.innerHTML = `
+            <div class="ajaxImage"></div>
+            <div class="ajaxMessage">Loading...</div>
             `;
-            $(html).insertAfter($("body"));
-            const options = {
-                lines: 17,
-                length: 28,
-                width: 14,
-                radius: 38,
-                scale: 0.40,
-                corners: 1,
-                color: "#000",
-                opacity: 0.3,
-                rotate: 0,
-                direction: 1,
-                speed: 1.2,
-                trail: 62,
-                fps: 20,
-                zIndex: 2e9,
-                className: "spinner",
-                top: "50%",
-                left: "50%",
-                shadow: false,
-                hwaccel: false,
-                position: "absolute",
-            };
-            this.spinner = new Spinner(options).spin();
-            if (this.spinner.el) {
-                $(this.spinner.el).insertAfter($("#spinner-overlay .ajaxImage"));
+                document.body.appendChild(spinnerOverlay);
+                const options = {
+                    lines: 17,
+                    length: 28,
+                    width: 14,
+                    radius: 38,
+                    scale: 0.40,
+                    corners: 1,
+                    color: "#000",
+                    opacity: 0.3,
+                    rotate: 0,
+                    direction: 1,
+                    speed: 1.2,
+                    trail: 62,
+                    fps: 20,
+                    zIndex: 2e9,
+                    className: "spinner",
+                    top: "50%",
+                    left: "50%",
+                    shadow: false,
+                    hwaccel: false,
+                    position: "absolute",
+                };
+                const spinner = new Spinner(options).spin();
+                if (spinner.el) {
+                    const spinnerOverlayElement = document.querySelector("#spinner-overlay .ajaxImage");
+                    spinnerOverlayElement.parentNode.insertBefore(spinner.el, spinnerOverlayElement.nextSibling);
+                }
+            }
+            else {
+                const spinnerOverlayDiv = document.createElement('div');
+                spinnerOverlayDiv.id = this.spinnerOverlayId;
+                spinnerOverlayDiv.classList.add('spinner-overlay', 'text-center');
+                const spinnerDiv = document.createElement('div');
+                spinnerDiv.classList.add('spinner-border', 'spinner-border-lg');
+                spinnerDiv.setAttribute('role', 'status');
+                const spanElement = document.createElement('span');
+                spanElement.classList.add('visually-hidden');
+                spanElement.textContent = 'Loading...';
+                spinnerDiv.appendChild(spanElement);
+                spinnerOverlayDiv.appendChild(spinnerDiv);
+                document.body.appendChild(spinnerOverlayDiv);
             }
         }
     }
     static show() {
         this.loadHtml();
-        document.querySelector(this.spinnerOverlayId).style.display = "";
+        document.querySelector("#" + this.spinnerOverlayId).style.display = "";
     }
     static hide() {
-        const overlay = document.querySelector(this.spinnerOverlayId);
+        const overlay = document.querySelector("#" + this.spinnerOverlayId);
         if (overlay) {
             overlay.style.display = "none";
         }
     }
 }
-SpinnerOverlay.spinnerOverlayId = "#spinner-overlay";
-class TabNav {
-    static setup() {
+SpinnerOverlay.spinnerOverlayId = "spinner-overlay";
+class TabNavListener {
+    static listenTabNavs() {
         $("a.jj-tab-link").on("shown.bs.tab", function (e) {
-            var link = $(e.target);
+            const link = $(e.target);
             $("#" + link.attr("jj-objectid")).val(link.attr("jj-tabindex"));
         });
     }
 }
-class TextArea {
-    static setup() {
+class TextAreaListener {
+    static listenKeydown() {
         $("textarea").keydown(function () {
             const jjTextArea = $(this);
             let maxLength = jjTextArea.attr("maxlength");
@@ -1814,8 +1960,8 @@ class FileUploadOptions {
         this.autoSubmit = autoSubmit;
     }
 }
-class UploadArea {
-    static uploadFile(options) {
+class UploadAreaListener {
+    static configureFileUpload(options) {
         const selector = "#" + options.componentName;
         $(selector).uploadFile({
             url: options.url,
@@ -1893,7 +2039,7 @@ class UploadArea {
             document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
         });
     }
-    static setup() {
+    static listenFileUpload() {
         document.querySelectorAll("div.fileUpload").forEach((element) => {
             let componentName = element.getAttribute("id");
             let multiple = element.getAttribute("jjmultiple") === "true";
@@ -1912,11 +2058,11 @@ class UploadArea {
             else {
                 let urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("context", "fileUpload");
-                urlBuilder.addQueryParameter("objname", componentName);
+                urlBuilder.addQueryParameter("componentName", componentName);
                 url = urlBuilder.build();
             }
             const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);
-            this.uploadFile(fileUploadOptions);
+            this.configureFileUpload(fileUploadOptions);
             window.addEventListener("resize", () => {
                 document.querySelector("#" + componentName + " .ajax-upload-dragdrop").style.width =
                     document.querySelector("#" + componentName).clientWidth - 30 + "px";
@@ -1927,26 +2073,20 @@ class UploadArea {
         });
     }
 }
-class UploadView {
+class UploadViewHelper {
     static open(componentName, title, values, url = null) {
         const panelName = $("#v_" + componentName).attr("panelName");
-        if (url == null) {
+        if (url == null || url.length == 0) {
             const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("jjuploadview_" + panelName, componentName);
+            urlBuilder.addQueryParameter("uploadView-" + panelName, componentName);
             urlBuilder.addQueryParameter("uploadViewParams", values);
             url = urlBuilder.build();
         }
-        const popup = new Modal();
-        popup.modalId = componentName + "-popup";
-        popup.modalTitleId = componentName + "-popup-title";
-        if (url == null || url.length == 0) {
-            popup.show(title, url, 1);
-        }
-        else {
-            popup.showHtmlFromUrl(title, url, null, 1).then(_ => {
-                loadJJMasterData();
-            });
-        }
+        const modal = new Modal();
+        modal.modalId = componentName + "-upload-popup";
+        modal.showUrl({ url: url }, null, 1).then(_ => {
+            loadJJMasterData();
+        });
     }
 }
 class UrlBuilder {

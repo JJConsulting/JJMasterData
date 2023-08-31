@@ -1,12 +1,24 @@
-﻿namespace JJMasterData.Core.DataDictionary;
+﻿using System.ComponentModel;
+
+namespace JJMasterData.Core.DataDictionary;
 
 /// <summary>
 /// Tamanho da janela do popup
 /// </summary>
-public enum PopupSize
+public enum ModalSize
 {
-    Default = 0,
-    Full = 1,
-    Large = 2,
-    Small = 3
+    [Description("modal-fullscreen")]
+    Fullscreen,
+
+    [Description("jj-modal-xl")]
+    ExtraLarge,
+
+    [Description("jj-modal-lg")]
+    Large,
+
+    [Description("jj-modal-default")]
+    Default,
+
+    [Description("jj-modal-sm")]
+    Small
 }

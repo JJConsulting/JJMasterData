@@ -3,8 +3,9 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementPanel
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+
 @{
-    ViewData["Title"] = $"{ViewBag.DictionaryName} - Panels";
+    ViewData["Title"] = $"{ViewBag.DictionaryName} - {StringLocalizer["Panels"]}";
 }
 
 <script type="text/javascript">

@@ -184,7 +184,7 @@ public class JJDataImportation : ProcessComponent
             .WithAttribute("style", "text-align: center;")
             .WithAttributeIf(IsExternalRoute,"check-progress-url",UrlHelper.GetUrl("CheckProgress","Importation","MasterData",  new {dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name)}))
             .WithAttributeIf(IsExternalRoute,"stop-process-url",UrlHelper.GetUrl("StopProcess","Importation","MasterData", new {dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name)}))
-            .AppendScript($"DataImportation.startProcess('{Upload.Name}'); ")
+            .AppendScript($"DataImportationHelper.startProcess('{Upload.Name}'); ")
             .AppendHiddenInput("current_uploadaction")
             .Append(HtmlTag.Div, spin =>
             {
@@ -243,7 +243,7 @@ public class JJDataImportation : ProcessComponent
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
-            .AppendScript("DataImportation.addPasteListener();")
+            .AppendScript("DataImportationHelper.addPasteListener();")
             .AppendHiddenInput("current_uploadaction")
             .AppendHiddenInput("filename")
             .Append(HtmlTag.TextArea, area =>

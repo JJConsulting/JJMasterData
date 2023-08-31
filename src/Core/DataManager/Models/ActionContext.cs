@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataManager.Models;
@@ -14,6 +15,7 @@ public class ActionContext
     public required FormStateData FormStateData { get; init; }
     public required string? ParentComponentName { get; init; }
     public bool IsExternalRoute { get; init; }
+    public bool IsInsideModal { get; init; }
     public string? FieldName { get; init; }
     
     public static async Task<ActionContext> FromFormViewAsync(JJFormView formView)
@@ -22,6 +24,7 @@ public class ActionContext
         {
             FormElement = formView.FormElement,
             FormStateData = await formView.GetFormStateDataAsync(),
+            IsInsideModal = formView.ComponentContext is ComponentContext.Modal,
             ParentComponentName = formView.Name,
             IsExternalRoute = formView.IsExternalRoute
         };
@@ -34,6 +37,7 @@ public class ActionContext
             FormElement = gridView.FormElement,
             FormStateData = formStateData,
             ParentComponentName = gridView.Name,
+            IsInsideModal = gridView.ComponentContext is ComponentContext.Modal,
             IsExternalRoute = gridView.IsExternalRoute
         };
     }
@@ -47,9 +51,6 @@ public class ActionContext
             ActionSource = actionSource,
             FieldName = FieldName
         };
-
-        if (FormStateData.UserValues is not null)
-            actionMap.UserValues = FormStateData.UserValues;
 
         if (!FormStateData.FormValues.Any()) 
             return actionMap;

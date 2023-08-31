@@ -34,7 +34,6 @@ public class InternalRedirectController : MasterDataController
     {
         LoadParameters(parameters);
         var userId = HttpContext.GetUserId();
-        bool isAjax = HttpContext.Request.Query.ContainsKey("uploadViewParams");
 
         InternalRedirectViewModel model;
 
@@ -57,7 +56,7 @@ public class InternalRedirectController : MasterDataController
                     await form.GridView.SetCurrentFilterAsync("USERID", userId);
                 }
 
-                model = new(result.Content!, false);
+                model = new(result.Content!, true);
                 break;
             }
             case RelationshipViewType.View:
@@ -75,7 +74,7 @@ public class InternalRedirectController : MasterDataController
 
                 await panel.LoadValuesFromPkAsync(RelationValues);
 
-                model = new(result.Content!, false);
+                model = new(result.Content!, true);
                 break;
             }
             case RelationshipViewType.Update:
@@ -90,7 +89,7 @@ public class InternalRedirectController : MasterDataController
 
                 await panel.LoadValuesFromPkAsync(RelationValues);
 
-                model = new(result.Content!, !isAjax);
+                model = new(result.Content!, true);
                 break;
             }
             default:

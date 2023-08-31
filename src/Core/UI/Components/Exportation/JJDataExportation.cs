@@ -48,8 +48,8 @@ public class JJDataExportation : ProcessComponent
     /// <summary>
     /// Event fired when the cell is rendered.
     /// </summary>
-    public event EventHandler<GridCellEventArgs> OnRenderCell = null;
-
+    public event EventHandler<GridCellEventArgs> OnRenderCell;
+    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
     #endregion
 
     #region "Properties"
@@ -240,6 +240,7 @@ public class JJDataExportation : ProcessComponent
     private DataExportationWriterBase CreateWriter()
     {
         DataExportationWriterFactory.OnRenderCell += OnRenderCell;
+        DataExportationWriterFactory.OnRenderCellAsync += OnRenderCellAsync;
         return DataExportationWriterFactory.GetInstance(this);
     }
 
