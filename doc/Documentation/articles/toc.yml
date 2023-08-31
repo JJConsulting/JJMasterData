@@ -30,7 +30,9 @@
   - name: Configuring Data Upload
     href: tutorials/data_file.md
   - name: Importing and Exporting Data Dictionaries
-    href: tutorials/import_export.md    
+    href: tutorials/import_export.md
+  - name: How to create a Relationship
+    href: tutorials/relationship.md    
 - name: Components
   href: components/intro.md
   items:
