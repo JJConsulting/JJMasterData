@@ -1,11 +1,5 @@
 #nullable enable
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Web;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.DataDictionary;
-
 namespace JJMasterData.Core.UI.Components;
 
 public class RouteContext
@@ -14,23 +8,36 @@ public class RouteContext
     public string? ParentElementName { get; set; }
     public ComponentContext ComponentContext { get; set; }
 
-    public RouteContext()
+    internal RouteContext()
     {
         ComponentContext = ComponentContext.RenderComponent;
     }
-    
 
-    public RouteContext(string? elementName, string? parentElementName, ComponentContext componentContext = ComponentContext.RenderComponent)
+    internal RouteContext(string? elementName, string? parentElementName, ComponentContext componentContext)
     {
         ComponentContext = componentContext;
         ElementName = elementName;
         ParentElementName = parentElementName;
     }
     
-    public RouteContext(FormElement formElement, ComponentContext componentContext)
+    public bool CanRender(string elementName)
     {
-        ComponentContext = componentContext;
-        ElementName = formElement.Name;
-        ParentElementName = formElement.ParentName;
+        if (ParentElementName is not null)
+        {
+            return ParentElementName == elementName || ParentElementName == elementName;
+        }
+
+        return IsCurrentFormElement(elementName);
+    }
+    
+    public bool IsCurrentFormElement(string elementName)
+    {
+        if (ElementName is null) 
+            return true;
+        
+        if (elementName.Equals(ElementName))
+            return true;
+
+        return false;
     }
 }

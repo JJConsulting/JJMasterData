@@ -306,19 +306,19 @@ public class JJFormView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (!RouteResolver.CanRender(FormElement))
+        if (!RouteContext.CanRender(FormElement.Name))
             return new EmptyComponentResult();
 
-        if (FormElement.Name == RouteContext.ElementName || RouteContext.ElementName is null)
-            return await BuildFormResultAsync();
+        if (RouteContext.IsCurrentFormElement(FormElement.Name))
+            return await GetFormResultAsync();
 
         var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
 
-        return await formView.BuildFormResultAsync();
+        return await formView.GetFormResultAsync();
     }
 
     
-    internal async Task<ComponentResult> BuildFormResultAsync()
+    internal async Task<ComponentResult> GetFormResultAsync()
     {
         if (ComponentContext is ComponentContext.FileUpload)
             return await DataPanel.GetResultAsync();
@@ -354,7 +354,7 @@ public class JJFormView : AsyncComponent
         }
 
 
-        return await GetFormResult();
+        return await GetFormActionResult();
     }
     
     internal async Task<ComponentResult> GetReloadPanelResultAsync()
@@ -441,7 +441,7 @@ public class JJFormView : AsyncComponent
         return await GridView.GetResultAsync();
     }
 
-    private async Task<ComponentResult> GetFormResult()
+    private async Task<ComponentResult> GetFormActionResult()
     {
         var currentAction = CurrentActionMap?.GetCurrentAction(FormElement);
 

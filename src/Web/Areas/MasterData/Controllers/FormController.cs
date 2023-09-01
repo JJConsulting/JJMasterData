@@ -2,6 +2,7 @@
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
@@ -15,18 +16,17 @@ public class FormController : MasterDataController
 {
     private readonly IFormElementComponentFactory<JJFormView> _formViewFactory;
 
-    public FormController(IFormElementComponentFactory<JJFormView>  formViewFactory)
+    public FormController(IFormElementComponentFactory<JJFormView> formViewFactory)
     {
         _formViewFactory = formViewFactory;
     }
     
     public async Task<IActionResult> Render(string dictionaryName)
     {
-//      var ignorar = await _formViewFactory.CreateAsync("SingleExample");
         var formView = await _formViewFactory.CreateAsync(dictionaryName);
         
         ConfigureFormView(formView);
-//      var resultIgnorar = await ignorar.GetResultAsync();
+
         var result = await formView.GetResultAsync();
 
         if (result.IsActionResult())

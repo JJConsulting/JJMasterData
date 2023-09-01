@@ -65,6 +65,8 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IComponentFactory<JJFileDownloader>, FileDownloaderFactory>();
         services.AddTransient<IComponentFactory<JJUploadArea>, UploadAreaFactory>();
         services.AddTransient<IComponentFactory<JJTextBox>,TextBoxFactory>();
+
+        services.AddScoped<RouteContextFactory>();
         
         services.AddTransient<ComponentFactory>();
 
