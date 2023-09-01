@@ -24,7 +24,7 @@ public class JJCheckBox : HtmlControl
     {
         get
         {
-            if (_isChecked == null && CurrentContext.IsPost)
+            if (_isChecked == null && CurrentContext.Request.IsPost)
                 _isChecked = Value.Equals(CurrentContext.Request[Name]);
 
             return _isChecked ?? false;

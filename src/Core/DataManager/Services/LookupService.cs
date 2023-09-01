@@ -121,7 +121,7 @@ public class LookupService : ILookupService
 
     public object? GetSelectedValue(string componentName)
     {
-        return HttpContext.IsPost ? HttpContext.Request.Form(componentName) : null;
+        return HttpContext.Request.IsPost ? HttpContext.Request.GetFormValue(componentName) : null;
     }
 
     

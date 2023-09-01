@@ -45,7 +45,7 @@ public class JJComboBox : AsyncControl
     {
         get
         {
-            if (_selectedValue == null && CurrentContext.IsPost)
+            if (_selectedValue == null && CurrentContext.Request.IsPost)
             {
                 _selectedValue = CurrentContext.Request[Name];
             }

@@ -144,7 +144,7 @@ public class JJDataImportation : ProcessComponent
                 //Process de text from clipboard
                 if (!IsRunning())
                 {
-                    string pasteValue = CurrentContext.Request.Form("pasteValue");
+                    string pasteValue = CurrentContext.Request.GetFormValue("pasteValue");
                     ImportInBackground(pasteValue);
                 }
                 html = GetHtmlWaitProcess();

@@ -18,12 +18,8 @@ public class DataContext
     {
         Source = source;
         UserId = userId;
-        
-        if (httpContext.HasContext())
-        {
-            IpAddress = httpContext.Request.UserHostAddress;
-            BrowserInfo = httpContext.Request.UserAgent;
-        }
+        IpAddress = httpContext.Request.UserHostAddress;
+        BrowserInfo = httpContext.Request.UserAgent;
     }
 
 }

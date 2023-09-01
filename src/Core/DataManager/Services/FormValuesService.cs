@@ -50,7 +50,7 @@ public class FormValuesService : IFormValuesService
         {
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
             var value = field.ValidateRequest
-                ? CurrentContext.Request.Form(fieldName)
+                ? CurrentContext.Request.GetFormValue(fieldName)
                 : CurrentContext.Request.GetUnvalidated(fieldName);
 
 
@@ -87,7 +87,7 @@ public class FormValuesService : IFormValuesService
 
                     break;
                 case FormComponent.CheckBox:
-                    value ??= CurrentContext.Request.Form(fieldName + "_hidden");
+                    value ??= CurrentContext.Request.GetFormValue(fieldName + "_hidden");
                     break;
             }
 
@@ -123,22 +123,19 @@ public class FormValuesService : IFormValuesService
         var valuesToBeReceived = new Dictionary<string, object?>();
         DataHelper.CopyIntoDictionary(valuesToBeReceived, values, true);
 
-        if (CurrentContext.IsPost && autoReloadFormFields)
+        if (CurrentContext.Request.IsPost && autoReloadFormFields)
         {
             var requestedValues = await GetFormValuesAsync(formElement, pageState, prefix);
             DataHelper.CopyIntoDictionary(valuesToBeReceived, requestedValues, true);
         }
 
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !CurrentContext.IsPost);
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !CurrentContext.Request.IsPost);
     }
 
 
 
     private async Task<IDictionary<string, object?>?> GetDbValues(Element element)
     {
-        if (!CurrentContext.HasContext())
-            return null;
-
         string encryptedPkValues = CurrentContext.Request["data-panel-pk-values-" + element.Name];
         if (string.IsNullOrEmpty(encryptedPkValues))
             return null;

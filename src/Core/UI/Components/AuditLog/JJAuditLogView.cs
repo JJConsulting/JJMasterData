@@ -85,7 +85,7 @@ public class JJAuditLogView : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         string ajax = CurrentContext.Request.QueryString("context");
-        string logId = CurrentContext.Request.Form("audit-log-id-" + Name);
+        string logId = CurrentContext.Request.GetFormValue("audit-log-id-" + Name);
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(logId))

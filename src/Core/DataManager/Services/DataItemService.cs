@@ -29,9 +29,9 @@ public class DataItemService : IDataItemService
     
     public async Task<string?> GetSelectedValueAsync(FormElementField field, FormStateData formStateData, string? searchText = null, string? searchId = null)
     {
-        if (HttpContext.IsPost)
+        if (HttpContext.Request.IsPost)
         {
-            string? value = HttpContext.Request.Form(field.Name);
+            string? value = HttpContext.Request.GetFormValue(field.Name);
             if (value is not null)
                 return value;
         }

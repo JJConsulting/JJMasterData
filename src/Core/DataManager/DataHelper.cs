@@ -21,13 +21,7 @@ public static class DataHelper
             return value.ToString();
         }
 
-        if (currentContext.HasContext() &&
-            currentContext.Session?["USERID"] != null)
-        {
-            return currentContext.Session["USERID"];
-        }
-
-        return null;
+        return currentContext.Session?["USERID"];
     }
 
     public static IDictionary<string, object?> GetElementValues(Element element, IDictionary<string, object?> values)

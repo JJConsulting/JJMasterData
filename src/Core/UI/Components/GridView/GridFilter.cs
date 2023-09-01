@@ -61,7 +61,7 @@ internal class GridFilter
             return _currentFilter;
 
         //Ação é capturada aqui, pois o usuário pode chamar o metodo as antes do GetHtml
-        string currentFilterAction = CurrentContext.Request.Form("grid-view-filter-action-" + GridView.Name);
+        string currentFilterAction = CurrentContext.Request.GetFormValue("grid-view-filter-action-" + GridView.Name);
         switch (currentFilterAction)
         {
             case FilterActionName:
@@ -82,7 +82,7 @@ internal class GridFilter
             return _currentFilter;
         }
         
-        var filters = CurrentContext.Request.Form($"grid-view-{GridView.FormElement.Name}-filters");
+        var filters = CurrentContext.Request.GetFormValue($"grid-view-{GridView.FormElement.Name}-filters");
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
@@ -90,7 +90,7 @@ internal class GridFilter
             return _currentFilter;
         }
 
-        if (sessionFilter != null && (CurrentContext.IsPost || IsAjaxPost()))
+        if (sessionFilter != null && (CurrentContext.Request.IsPost || IsAjaxPost()))
         {
             _currentFilter = sessionFilter;
             return _currentFilter;
@@ -263,7 +263,7 @@ internal class GridFilter
             PlaceHolder = StringLocalizer["Filter"],
             CssClass = "jj-icon-search",
             Name = searchId,
-            Text = CurrentContext.Request.Form(searchId)
+            Text = CurrentContext.Request.GetFormValue(searchId)
         };
         
         var html = new HtmlBuilder();
@@ -300,7 +300,7 @@ internal class GridFilter
 
         //Relation Filters
         var values = new Dictionary<string, object>();
-        var filters = CurrentContext.Request.Form($"grid-view-{GridView.FormElement.Name}-filters");
+        var filters = CurrentContext.Request.GetFormValue($"grid-view-{GridView.FormElement.Name}-filters");
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
@@ -314,7 +314,7 @@ internal class GridFilter
 
             if (f.Filter.Type == FilterMode.Range)
             {
-                string sfrom = CurrentContext.Request.Form(name + "_from");
+                string sfrom = CurrentContext.Request.GetFormValue(name + "_from");
                 if (values == null && sfrom != null)
                     values = new Dictionary<string, object>();
 
@@ -323,7 +323,7 @@ internal class GridFilter
                     values.Add(f.Name + "_from", sfrom);
                 }
 
-                string sto = CurrentContext.Request.Form(name + "_to");
+                string sto = CurrentContext.Request.GetFormValue(name + "_to");
                 if (!string.IsNullOrEmpty(sto))
                 {
                     if (f.DataType is FieldType.DateTime or FieldType.DateTime2 && f.Component == FormComponent.Date)
@@ -338,9 +338,9 @@ internal class GridFilter
             }
             else
             {
-                object value = CurrentContext.Request.Form(name);
+                object value = CurrentContext.Request.GetFormValue(name);
 
-                if (values == null && CurrentContext.Request.Form(name) != null)
+                if (values == null && CurrentContext.Request.GetFormValue(name) != null)
                     values = new Dictionary<string, object>();
 
                 switch (f.Component)

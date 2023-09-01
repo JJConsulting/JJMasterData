@@ -73,7 +73,7 @@ public class JJSearchBox : AsyncControl
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && CurrentContext.IsPost)
+            if (AutoReloadFormFields && _text == null && CurrentContext.Request.IsPost)
             {
                 _text = CurrentContext.Request[Name];
             }
@@ -141,7 +141,7 @@ public class JJSearchBox : AsyncControl
     /// </summary>
     public async Task<string?> GetSelectedValueAsync()
     {
-        if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPost)
+        if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.Request.IsPost)
         {
             _selectedValue = CurrentContext.Request[Name];
         }
@@ -365,7 +365,7 @@ public class JJSearchBox : AsyncControl
     public async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
         string componentName = CurrentContext.Request.QueryString("fieldName");
-        string textSearch = CurrentContext.Request.Form(componentName);
+        string textSearch = CurrentContext.Request.GetFormValue(componentName);
 
         var values = await GetValuesAsync(textSearch);
         var items = DataItemService.GetItems(DataItem, values);

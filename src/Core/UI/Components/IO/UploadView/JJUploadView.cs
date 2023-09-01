@@ -351,7 +351,7 @@ public class JJUploadView : AsyncComponent
 
     private HtmlBuilder GetResponseAction(string uploadAction)
     {
-        string fileName = CurrentContext.Request.Form("filename-" + Name);
+        string fileName = CurrentContext.Request.GetFormValue("filename-" + Name);
         try
         {
             if ("DELFILE".Equals(uploadAction))

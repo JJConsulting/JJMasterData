@@ -43,7 +43,7 @@ public abstract class ControlBase : ComponentBase
     {
         get
         {
-            if (_text == null && CurrentContext.IsPost)
+            if (_text == null && CurrentContext.Request.IsPost)
             {
                 _text = CurrentContext.Request[Name];
             }

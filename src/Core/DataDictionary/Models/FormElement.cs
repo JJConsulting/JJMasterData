@@ -12,6 +12,7 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class FormElement : Element
 {
+    
     [JsonIgnore]
     internal string? ParentName { get; set; }
     

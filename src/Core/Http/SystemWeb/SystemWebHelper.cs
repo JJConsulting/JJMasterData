@@ -2,7 +2,7 @@
 
 using JJMasterData.Core.UI.Components;
 
-namespace JJMasterData.Core.Http;
+namespace JJMasterData.Core.Http.SystemWeb;
 
 internal static class SystemWebHelper
 {

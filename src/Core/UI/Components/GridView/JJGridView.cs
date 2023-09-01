@@ -220,7 +220,7 @@ public class JJGridView : AsyncComponent
             if (_currentOrder != null)
                 return _currentOrder;
             
-            if (!CurrentContext.IsPost)
+            if (!CurrentContext.Request.IsPost)
             {
                 if (MaintainValuesOnLoad)
                 {
@@ -267,7 +267,7 @@ public class JJGridView : AsyncComponent
                 return _currentPage;
             }
 
-            if (CurrentContext.IsPost)
+            if (CurrentContext.Request.IsPost)
             {
                 int currentPage = 1;
                 string tablePageId = "grid-view-page-" + Name;
@@ -383,7 +383,7 @@ public class JJGridView : AsyncComponent
                 return _currentExportConfig;
 
             _currentExportConfig = new ExportOptions();
-            if (CurrentContext.IsPost)
+            if (CurrentContext.Request.IsPost)
             {
                 _currentExportConfig = ExportOptions.LoadFromForm(CurrentContext, Name);
             }

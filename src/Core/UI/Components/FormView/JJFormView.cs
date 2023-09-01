@@ -80,7 +80,7 @@ public class JJFormView : AsyncComponent
     private bool? _showTitle;
     private PageState? _pageState;
     private IDictionary<string, object> _relationValues = new Dictionary<string, object>();
-    private ComponentContext? _componentContext;
+    private RouteContext? _routeContext;
 
     #endregion
 
@@ -132,7 +132,7 @@ public class JJFormView : AsyncComponent
         get
         {
             _dataPanel ??= ComponentFactory.DataPanel.Create(FormElement);
-            _dataPanel.Name = "jjpanel_" + FormElement.Name.ToLower();
+            _dataPanel.Name = "data-panel-" + FormElement.Name.ToLower();
             _dataPanel.FormUI = FormElement.Options.Form;
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
@@ -156,7 +156,7 @@ public class JJFormView : AsyncComponent
         {
             if (!_relationValues.Any())
             {
-                var encryptedRelationValues = CurrentContext.Request.Form($"form-view-relation-values-{Name}");
+                var encryptedRelationValues = CurrentContext.Request.GetFormValue($"form-view-relation-values-{Name}");
 
                 if (encryptedRelationValues is null)
                     return _relationValues;
@@ -224,20 +224,21 @@ public class JJFormView : AsyncComponent
             return _currentActionMap;
         }
     }
-
-    internal ComponentContext ComponentContext
+    
+    internal RouteContext RouteContext
     {
         get
         {
-            if (_componentContext != null)
-                return _componentContext.Value;
+            if (_routeContext != null)
+                return _routeContext;
 
-            var resolver = new ComponentContextResolver(this);
-            _componentContext = resolver.GetContext();
+            _routeContext = RouteContext.FromQueryString(CurrentContext.Request.GetQueryString());
 
-            return _componentContext.Value;
+            return _routeContext;
         }
     }
+
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
 
     public bool ShowTitle
     {
@@ -325,8 +326,6 @@ public class JJFormView : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         var componentName = CurrentContext.Request.QueryString("componentName");
-        if (ComponentContext is ComponentContext.Lookup)
-            return await DataPanel.GetResultAsync();
 
         if (ComponentContext is ComponentContext.FileUpload)
             return await DataPanel.GetResultAsync();
@@ -549,6 +548,7 @@ public class JJFormView : AsyncComponent
     {
         var action = GridView.ToolBarActions.InsertAction;
         var formData = new FormStateData(RelationValues!, UserValues, PageState.List);
+        
         bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Insert action is not enabled"]);
@@ -630,7 +630,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
-        string encryptedActionMap = CurrentContext.Request.Form("form-view-select-action-values" + Name);
+        string encryptedActionMap = CurrentContext.Request.GetFormValue("form-view-select-action-values" + Name);
         var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement =
@@ -1208,7 +1208,7 @@ public class JJFormView : AsyncComponent
     {
         var values =
             await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState,
-                CurrentContext.IsPost);
+                CurrentContext.Request.IsPost);
 
         return new FormStateData(values, UserValues, PageState);
     }

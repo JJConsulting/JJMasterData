@@ -60,7 +60,7 @@ public class JJLookup : AsyncControl
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && CurrentContext.IsPost)
+            if (AutoReloadFormFields && _text == null && CurrentContext.Request.IsPost)
             {
                 _text = CurrentContext.Request[Name];
             }

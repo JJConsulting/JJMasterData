@@ -86,10 +86,6 @@ internal class ComponentContextResolver
         
         if (IsUploadViewRoute())
             return ComponentContext.FileUpload;
-        
-        if (IsLookupRoute())
-            return ComponentContext.Lookup;
-        
         if (IsDownloadRoute())
             return ComponentContext.DownloadFile;
         
