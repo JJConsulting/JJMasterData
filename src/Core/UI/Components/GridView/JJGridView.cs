@@ -241,10 +241,10 @@ public class JJGridView : AsyncComponent
                     {
                         _currentOrder = OrderByData.FromString(tableOrder);
                     }
-                }
-                else
-                {
-                    _currentOrder = new OrderByData();
+                    else
+                    {
+                        _currentOrder = new OrderByData();
+                    }
                 }
             }
 
