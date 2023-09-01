@@ -46,7 +46,6 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IControlFactory<JJComboBox>,ComboBoxFactory>();
         services.AddTransient<IControlFactory<JJLookup>,LookupFactory>();
         services.AddTransient<IControlFactory<JJSearchBox>,SearchBoxFactory>();
-        services.AddTransient<IDynamicControlFactory<JJSearchBox>,SearchBoxFactory>();
         services.AddTransient<IControlFactory<JJTextArea>,TextAreaFactory>();
         services.AddTransient<IControlFactory<JJSlider>,SliderFactory>();
         services.AddTransient<IControlFactory<JJTextGroup>,TextGroupFactory>();

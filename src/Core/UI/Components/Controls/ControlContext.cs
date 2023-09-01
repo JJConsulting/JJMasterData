@@ -6,4 +6,4 @@ namespace JJMasterData.Core.Web.Factories;
 
 public record ControlContext(
     FormStateData FormStateData,
-    object? Value);
+    object? Value = null);

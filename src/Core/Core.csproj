@@ -80,9 +80,6 @@
       <Compile Update="UI\Components\RedirectComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
-      <Compile Update="UI\Components\Controls\IDynamicControlFactory.cs">
-        <DependentUpon>IControlFactory.cs</DependentUpon>
-      </Compile>
       <Compile Update="UI\Components\ComponentContextFactory.cs">
         <DependentUpon>ComponentContext.cs</DependentUpon>
       </Compile>

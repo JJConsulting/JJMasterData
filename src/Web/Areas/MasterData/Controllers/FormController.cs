@@ -22,10 +22,11 @@ public class FormController : MasterDataController
     
     public async Task<IActionResult> Render(string dictionaryName)
     {
+//      var ignorar = await _formViewFactory.CreateAsync("SingleExample");
         var formView = await _formViewFactory.CreateAsync(dictionaryName);
         
         ConfigureFormView(formView);
-        
+//      var resultIgnorar = await ignorar.GetResultAsync();
         var result = await formView.GetResultAsync();
 
         if (result.IsActionResult())

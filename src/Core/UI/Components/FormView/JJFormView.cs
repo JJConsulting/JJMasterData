@@ -306,10 +306,8 @@ public class JJFormView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (!RouteContext.CanRender(FormElement))
+        if (!RouteResolver.CanRender(FormElement))
             return new EmptyComponentResult();
-        
-        var componentName = CurrentContext.Request.QueryString["componentName"];
 
         if (ComponentContext is ComponentContext.FileUpload)
             return await DataPanel.GetResultAsync();
@@ -318,13 +316,11 @@ public class JJFormView : AsyncComponent
             return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService,
                 ComponentFactory.Downloader);
 
-        if (ComponentContext is ComponentContext.SearchBox)
+        if (RouteResolver.IsSearchBoxRoute(FormElement, out var field))
         {
-            var factory = ComponentFactory.Controls.GetDynamicControlFactory<JJSearchBox>();
-            var searchBox = factory.Create(FormElement, DataPanel.Values, UserValues);
-            
+            var formStateData = new FormStateData(DataPanel.Values, UserValues,PageState);
+            var searchBox = ComponentFactory.Controls.Create<JJSearchBox>(FormElement,field,new ControlContext(formStateData));
             return await searchBox.GetResultAsync();
-            
         }
 
         if (ComponentContext is ComponentContext.PanelReload)
@@ -336,7 +332,7 @@ public class JJFormView : AsyncComponent
 
         if (ComponentContext is ComponentContext.DataImportation or ComponentContext.FileUpload)
         {
-            if (!DataImportation.Upload.Name.Equals(componentName))
+            if (!DataImportation.Upload.Name.Equals("todo"))
                 return new EmptyComponentResult();
 
             return await GetImportationResult();

@@ -33,19 +33,4 @@ public class RouteContext
         ElementName = formElement.Name;
         ParentElementName = formElement.ParentName;
     }
-    
-    public bool CanRender(FormElement formElement)
-    {
-        if (ParentElementName is not null)
-        {
-            return ParentElementName == formElement.ParentName || ParentElementName == formElement.Name;
-        }
-
-        if (ElementName is not null)
-        {
-            return ElementName == formElement.Name;
-        }
-        
-        return true;
-    }
 }

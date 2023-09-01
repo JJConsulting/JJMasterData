@@ -35,11 +35,7 @@ public class ControlFactory
     {
         return ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
     }
-    
-    public IDynamicControlFactory<TDynamicControl> GetDynamicControlFactory<TDynamicControl>() where TDynamicControl : ControlBase
-    {
-        return ServiceProvider.GetRequiredService<IDynamicControlFactory<TDynamicControl>>();
-    }
+
 
     public TControl Create<TControl>() where TControl : ControlBase
     {

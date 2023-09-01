@@ -271,8 +271,6 @@ public class JJSearchBox : ControlBase
         
         url.Append($"routeContext={encryptedRoute}");
         url.Append($"&fieldName={FieldName}");
-        url.Append($"&fieldSearchName={Name + "_text"}");
-        url.Append($"&pageState={(int)FormStateData.PageState}");
         
         return url.ToString();
     }

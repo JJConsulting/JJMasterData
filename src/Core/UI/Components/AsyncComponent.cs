@@ -14,11 +14,12 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public abstract class AsyncComponent : ComponentBase
 {
+    private RouteContextResolver? _routeResolver;
     private RouteContext? _routeContext;
     private IQueryString QueryString { get; }
     internal IEncryptionService EncryptionService { get; }
     
-    internal RouteContext RouteContext
+    protected RouteContext RouteContext
     {
         get
         {
@@ -31,6 +32,21 @@ public abstract class AsyncComponent : ComponentBase
             return _routeContext;
         }
     }
+    
+    
+    protected RouteContextResolver RouteResolver
+    {
+        get
+        {
+            if (_routeResolver != null)
+                return _routeResolver;
+
+            _routeResolver = new RouteContextResolver(RouteContext, QueryString);
+            
+            return _routeResolver;
+        }
+    }
+    
     internal ComponentContext ComponentContext => RouteContext.ComponentContext;
     
     protected AsyncComponent(IQueryString queryString, IEncryptionService encryptionService)

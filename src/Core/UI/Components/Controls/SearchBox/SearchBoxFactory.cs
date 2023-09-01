@@ -14,7 +14,7 @@ using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Factories;
 
-internal class SearchBoxFactory : IDynamicControlFactory<JJSearchBox>
+internal class SearchBoxFactory : IControlFactory<JJSearchBox>
 {
     private IDataItemService DataItemService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
@@ -65,17 +65,4 @@ internal class SearchBoxFactory : IDynamicControlFactory<JJSearchBox>
         return search;
     }
     
-
-    public JJSearchBox Create(FormElement formElement, IDictionary<string,object?> values, IDictionary<string,object?> userValues)
-    {
-        var elementName = HttpContext.Request.QueryString["elementName"];
-        var fieldName = HttpContext.Request.QueryString["fieldName"];
-        var pageState = (PageState)int.Parse(HttpContext.Request.QueryString["pageState"]);
-
-        var field = formElement.Fields[fieldName];
-        var expOptions = new FormStateData(values, userValues, pageState);
-
-        var searchBox = Create(formElement, field, new(expOptions, elementName));
-        return searchBox;
-    }
 }
