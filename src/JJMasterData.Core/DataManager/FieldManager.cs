@@ -94,6 +94,7 @@ public class FieldManager
         string stringValue = null;
         switch (field.Component)
         {
+            case FormComponent.Number:
             case FormComponent.Slider:
                 switch (field.DataType)
                 {
@@ -184,7 +185,7 @@ public class FieldManager
                     case FieldType.Int when !field.IsPk:
                     {
                         if (int.TryParse(stringValue, out int intVal))
-                            stringValue = intVal.ToString("N0");
+                            stringValue = intVal.ToString();
                         break;
                     }
                 }
