@@ -44,7 +44,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)
     {
-        var (formStateData, parentName, value) = context;
+        var (formStateData, value) = context;
 
         if (field == null)
             throw new ArgumentNullException(nameof(field));
@@ -59,7 +59,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         text.FormValues = formStateData.FormValues;
         text.Name = field.Name;
 
-        text.Attributes.Add("panelName", parentName);
+        text.Attributes.Add("parentElementName", formElement.ParentName);
         text.UserValues = formStateData.UserValues;
         text.FormElement = formElement;
 

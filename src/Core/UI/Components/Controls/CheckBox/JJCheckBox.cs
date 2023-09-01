@@ -1,15 +1,17 @@
-﻿using JJMasterData.Commons.Configuration;
+﻿using System.Threading.Tasks;
+using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJCheckBox : HtmlControl
+public class JJCheckBox : ControlBase
 {
     private bool? _isChecked;
 
@@ -40,14 +42,17 @@ public class JJCheckBox : HtmlControl
     }
 
 
-    internal override HtmlBuilder BuildHtml()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")
             .WithCssClassIf(!Enabled, "disabled")
             .Append(GetInputHtml());
 
-        return html;
+        var result = new RenderedComponentResult(html);
+        
+        return await Task.FromResult(result);
+        
     }
 
     private HtmlBuilder GetInputHtml()

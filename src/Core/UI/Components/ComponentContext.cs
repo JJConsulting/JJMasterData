@@ -42,10 +42,7 @@ internal enum ComponentContext
     
     DownloadFile,
     
-    Lookup,
-    
     SelectAllGridRows,
     
     GridViewRow
-    
 }

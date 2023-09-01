@@ -21,27 +21,24 @@ internal class SearchBoxFactory : IDynamicControlFactory<JJSearchBox>
     private IFormValuesService FormValuesService { get; }
     private IHttpContext HttpContext { get; }
     private IEncryptionService EncryptionService { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
 
     public SearchBoxFactory(
         IDataItemService dataItemService,
         IDataDictionaryRepository dataDictionaryRepository,
         IFormValuesService formValuesService,
         IHttpContext httpContext,
-        IEncryptionService encryptionService,
-        JJMasterDataUrlHelper urlHelper)
+        IEncryptionService encryptionService)
     {
         DataItemService = dataItemService;
         DataDictionaryRepository = dataDictionaryRepository;
         FormValuesService = formValuesService;
         HttpContext = httpContext;
         EncryptionService = encryptionService;
-        UrlHelper = urlHelper;
     }
 
     public JJSearchBox Create()
     {
-        return new JJSearchBox(HttpContext, EncryptionService, DataItemService, UrlHelper);
+        return new JJSearchBox(HttpContext, EncryptionService, DataItemService);
     }
 
     public JJSearchBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)
@@ -49,11 +46,12 @@ internal class SearchBoxFactory : IDynamicControlFactory<JJSearchBox>
         if (field.DataItem == null)
             throw new ArgumentNullException(nameof(field.DataItem));
 
-        var search = new JJSearchBox(HttpContext, EncryptionService, DataItemService, UrlHelper)
+        var search = new JJSearchBox(HttpContext, EncryptionService, DataItemService)
         {
             DataItem = field.DataItem,
             Name = field.Name,
             FieldName = field.Name,
+            ParentElementName = formElement.ParentName,
             ElementName = formElement.Name,
             Visible = true,
             AutoReloadFormFields = false,
@@ -66,41 +64,18 @@ internal class SearchBoxFactory : IDynamicControlFactory<JJSearchBox>
 
         return search;
     }
+    
 
-    public async Task<JJSearchBox?> CreateAsync(string? dictionaryName, string fieldName, PageState pageState, IDictionary<string, object?> userValues)
+    public JJSearchBox Create(FormElement formElement, IDictionary<string,object?> values, IDictionary<string,object?> userValues)
     {
-        if (string.IsNullOrEmpty(dictionaryName))
-            return null;
-
-        IDictionary<string, object?>? formValues = null;
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
-        var dataItem = formElement.Fields[fieldName].DataItem;
-        if (dataItem == null)
-            throw new ArgumentNullException(nameof(dataItem));
-
-        if (dataItem.HasSqlExpression())
-        {
-            formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, pageState, true);
-        }
-
-        var field = formElement.Fields[fieldName];
-        var expOptions = new FormStateData(userValues, formValues, pageState);
-        return Create(formElement, field, new(expOptions, null, null));
-    }
-
-    public JJSearchBox? CreateIfExists(FormElement formElement, IDictionary<string,object?> values, IDictionary<string,object?> userValues)
-    {
-        var elementName = HttpContext.Request.QueryString("dictionaryName");
+        var elementName = HttpContext.Request.QueryString("elementName");
         var fieldName = HttpContext.Request.QueryString("fieldName");
         var pageState = (PageState)int.Parse(HttpContext.Request.QueryString("pageState"));
-
-        if (!formElement.Name.Equals(elementName))
-            return null;
 
         var field = formElement.Fields[fieldName];
         var expOptions = new FormStateData(values, userValues, pageState);
 
-        var searchBox = Create(formElement, field, new(expOptions, formElement.Name, elementName));
+        var searchBox = Create(formElement, field, new(expOptions, elementName));
         return searchBox;
     }
 }

@@ -9,7 +9,6 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -17,7 +16,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextFile : AsyncControl
+public class JJTextFile : ControlBase
 {
     
     public const string UploadViewParameterName = "uploadView-";
@@ -72,7 +71,7 @@ public class JJTextFile : AsyncControl
         if (IsUploadViewRoute())
             return await GetUploadViewResultAsync();
 
-        return new RenderedComponentResult(GetHtmlTextGroup());
+        return new RenderedComponentResult(await GetHtmlTextGroup());
     }
 
     internal async Task<ComponentResult> GetUploadViewResultAsync()
@@ -100,7 +99,7 @@ public class JJTextFile : AsyncControl
         return HtmlComponentResult.FromHtmlBuilder(html);
     }
 
-    private HtmlBuilder GetHtmlTextGroup()
+    private async Task<HtmlBuilder> GetHtmlTextGroup()
     {
         var formUpload = GetUploadView();
 
@@ -124,8 +123,10 @@ public class JJTextFile : AsyncControl
         };
         textGroup.Actions.Add(btn);
 
+        var textGroupHtml = await textGroup.GetHtmlBuilderAsync();
+        
         var html = new HtmlBuilder(HtmlTag.Div)
-            .AppendComponent(textGroup)
+            .Append(textGroupHtml)
             .Append(HtmlTag.Input, i =>
             {
                 i.WithAttribute("type", "hidden")

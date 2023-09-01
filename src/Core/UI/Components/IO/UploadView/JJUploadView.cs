@@ -267,7 +267,7 @@ public class JJUploadView : AsyncComponent
 
         html.Append(GetHtmlForm());
         html.Append(ViewGallery ? await GetHtmlGallery() : await GetHtmlGridView());
-        html.AppendComponent(GetHtmlPreviewModal());
+        html.AppendComponent(await GetHtmlPreviewModal());
 
         return new RenderedComponentResult(html);
     }
@@ -615,22 +615,22 @@ public class JJUploadView : AsyncComponent
         return dictionary;
     }
 
-    private JJModalDialog GetHtmlPreviewModal()
+    private async Task<JJModalDialog> GetHtmlPreviewModal()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
 
-        html.Append(HtmlTag.Div, row =>
+        await html.AppendAsync(HtmlTag.Div, async row =>
         {
             row.WithCssClass("row");
-            row.Append(HtmlTag.Div, col =>
+            await row.AppendAsync(HtmlTag.Div, async col =>
             {
                 col.WithCssClass("col-sm-12")
                    .AppendComponent(new JJLabel
                    {
                        LabelFor = $"preview_filename-{Upload.Name}",
                        Text = "File name"
-                   })
-                   .AppendComponent(new JJTextGroup(CurrentContext)
+                   });
+                   await col.AppendControlAsync(new JJTextGroup(CurrentContext)
                    {
                        Name = $"preview_filename-{Upload.Name}",
                        Addons = new InputAddons(".png"),

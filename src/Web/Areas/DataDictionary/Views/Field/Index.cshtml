@@ -4,6 +4,22 @@
 @using JJMasterData.Core.Web.Http.Abstractions
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementField
+
+@functions {
+    private void ConfigureFieldSearchBox(JJTextGroup fieldSearchBox)
+    {
+        fieldSearchBox.Name = "txtFilter";
+        fieldSearchBox.PlaceHolder = StringLocalizer["Search..."];
+        fieldSearchBox.ToolTip = StringLocalizer["Filter by any field visible in the list"];
+
+        fieldSearchBox.Attributes.Add("onkeyup", "searchFields(this);");
+        fieldSearchBox.Actions.Add(new JJLinkButton
+        {
+            IconClass = "fa fa-plus",
+            OnClientClick = $"loadIframe('{Url.Action("Add", new { dictionaryName = ViewBag.DictionaryName })}', '');"
+        });
+    }
+}
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IHttpContext HttpContext
 
@@ -132,28 +148,13 @@
 }
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
-@{
-    var fieldSearchBox = new JJTextGroup(HttpContext)
-    {
-       Name = "txtFilter",
-       PlaceHolder = StringLocalizer["Search..."],
-       ToolTip = StringLocalizer["Filter by any field visible in the list"]
-    };
-    
-    fieldSearchBox.Attributes.Add("onkeyup","searchFields(this);");
-    fieldSearchBox.Actions.Add(new JJLinkButton
-    {
-        IconClass = "fa fa-plus",
-        OnClientClick = $"loadIframe('{Url.Action("Add", new { dictionaryName = ViewBag.DictionaryName })}', '');"
-    });
-}
 
 @using (Html.BeginForm("Index", "Field", FormMethod.Post))
 {
     <input type="hidden" name="selected_tab" id="selected_tab" value="@ViewBag.Tab" />
     <div class="row">
         <div class="col-sm-3">
-            @Html.Raw(fieldSearchBox.GetHtml())
+            <jj-text-group configure="ConfigureFieldSearchBox"/>
             <br/>
             <div class="jjrelative">
                 <div id="listField">

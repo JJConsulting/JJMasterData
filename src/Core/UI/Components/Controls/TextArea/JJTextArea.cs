@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Localization;
+﻿using System.Threading.Tasks;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -6,7 +8,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextArea : HtmlControl
+public class JJTextArea : ControlBase
 {
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public int Rows { get; set; }
@@ -18,7 +20,7 @@ public class JJTextArea : HtmlControl
         Rows = 5;
     }
 
-    internal override HtmlBuilder BuildHtml()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         var html = new HtmlBuilder(HtmlTag.TextArea)
             .WithAttributes(Attributes)
@@ -35,6 +37,8 @@ public class JJTextArea : HtmlControl
             .WithAttributeIf(!Enabled, "disabled", "disabled")
             .AppendText(Text);
 
-        return html;
+        var result = new RenderedComponentResult(html);
+        
+        return await Task.FromResult(result);
     }
 }

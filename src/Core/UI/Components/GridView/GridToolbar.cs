@@ -45,7 +45,7 @@ internal class GridToolbar
 
             if (action is FilterAction { EnableScreenSearch: true })
             {
-                yield return GridView.Filter.GetHtmlToolBarSearch();
+                yield return await GridView.Filter.GetHtmlToolBarSearch();
                 continue;
             }
             

@@ -232,7 +232,7 @@ public class JJFormView : AsyncComponent
             if (_routeContext != null)
                 return _routeContext;
 
-            _routeContext = RouteContext.FromQueryString(CurrentContext.Request.GetQueryString());
+            _routeContext = EncryptionService.DecryptRoute(CurrentContext.Request.QueryString("context"));
 
             return _routeContext;
         }
@@ -325,6 +325,9 @@ public class JJFormView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
+        if (!RouteContext.CanRender(FormElement))
+            return new EmptyComponentResult();
+        
         var componentName = CurrentContext.Request.QueryString("componentName");
 
         if (ComponentContext is ComponentContext.FileUpload)
@@ -337,12 +340,10 @@ public class JJFormView : AsyncComponent
         if (ComponentContext is ComponentContext.SearchBox)
         {
             var factory = ComponentFactory.Controls.GetDynamicControlFactory<JJSearchBox>();
-            var searchBox = factory.CreateIfExists(FormElement, DataPanel.Values, UserValues);
-
-            if (searchBox is not null)
-            {
-                return await searchBox.GetResultAsync();
-            }
+            var searchBox = factory.Create(FormElement, DataPanel.Values, UserValues);
+            
+            return await searchBox.GetResultAsync();
+            
         }
 
         if (ComponentContext is ComponentContext.PanelReload)

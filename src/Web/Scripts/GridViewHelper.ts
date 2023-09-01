@@ -57,7 +57,7 @@
                 currentObj.val("");
                 if (currentObj.hasClass("selectpicker")) {
                     currentObj.selectpicker("render");
-                } else if (currentObj.hasClass("jjsearchbox")) {
+                } else if (currentObj.hasClass("jj-search-box")) {
                     currentObj.blur();
                 } else if (currentObj.hasClass("jjlookup")) {
                     currentObj.blur();

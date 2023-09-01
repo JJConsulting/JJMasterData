@@ -4,7 +4,6 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -20,10 +19,10 @@ using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.Web.Components;
 
-/// Represents a field with a value from another Data Dictionary accessed via modal.
-public class JJLookup : AsyncControl
+/// Represents a field with a value from another FormElement accessed via modal.
+public class JJLookup : ControlBase
 {
-    internal FormElement FormElement { get; set; }
+    private FormElement FormElement { get; set; }
     private ILookupService LookupService { get; }
     private IEncryptionService EncryptionService { get; }
 
@@ -114,7 +113,6 @@ public class JJLookup : AsyncControl
         UserValues = controlContext.FormStateData.UserValues;
         SelectedValue = controlContext.Value?.ToString();
         SetAttr(field.Attributes);
-        SetAttr("panelName", controlContext.ParentComponentName);
 
         if (field.DataType is FieldType.Int)
         {
@@ -179,8 +177,8 @@ public class JJLookup : AsyncControl
         
         descriptionTextBox.Attributes["style"] = "flex:10";
         
-        div.AppendComponent(idTextBox);
-        div.AppendComponent(descriptionTextBox);
+        await div.AppendControlAsync(idTextBox);
+        await div.AppendControlAsync(descriptionTextBox);
 
         var formViewUrl = LookupService.GetFormViewUrl(ElementMap, FormStateData, Name);
         

@@ -42,10 +42,10 @@ internal class GridFilter
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        if (GridView.FilterAction.ShowAsCollapse &&
-            GridView.FilterAction.EnableScreenSearch)
+        if (GridView.FilterAction is { ShowAsCollapse: true, EnableScreenSearch: true })
         {
-            return GetFilterScreenCollapse().BuildHtml();
+            var collapse = await GetFilterScreenCollapse();
+            return collapse.GetHtmlBuilder();
         }
 
         return await GetDefaultFilter();
@@ -232,11 +232,11 @@ internal class GridFilter
     }
 
 
-    private JJCollapsePanel GetFilterScreenCollapse()
+    private async Task<JJCollapsePanel> GetFilterScreenCollapse()
     {
         var body = new HtmlBuilder(HtmlTag.Div);
         body.WithCssClass("col-sm-12");
-        body.Append(GetHtmlToolBarSearch(isToolBar:false));
+        body.Append(await GetHtmlToolBarSearch(isToolBar:false));
         
         var panel = new JJCollapsePanel( GridView.CurrentContext)
         {
@@ -249,7 +249,7 @@ internal class GridFilter
         return panel;
     }
 
-    public HtmlBuilder GetHtmlToolBarSearch(bool isToolBar = true)
+    public async Task<HtmlBuilder> GetHtmlToolBarSearch(bool isToolBar = true)
     {
         string searchId = "jjsearch_" + GridView.Name;
 
@@ -269,15 +269,15 @@ internal class GridFilter
         var html = new HtmlBuilder();
         if (isToolBar)
         {
-            html.Append(HtmlTag.Div, div =>
+            await html.AppendAsync(HtmlTag.Div, async div =>
             {
                 div.WithCssClass($"{BootstrapHelper.PullRight}");
-                div.AppendComponent(textBox);
+                await div.AppendControlAsync(textBox);
             });
         }
         else
         {
-            html.Append(HtmlTag.Div, div =>
+            await html.AppendAsync(HtmlTag.Div, async div =>
             {
                 div.WithCssClass(BootstrapHelper.FormGroup);
                 div.WithCssClass("has-feedback jjsearch");
@@ -286,7 +286,7 @@ internal class GridFilter
                     label.WithCssClass(BootstrapHelper.Label);
                     label.AppendText(StringLocalizer["Filter by any field visible in the list"]);
                 });
-                div.AppendComponent(textBox);
+                await div.AppendControlAsync(textBox);
             });
         }
 

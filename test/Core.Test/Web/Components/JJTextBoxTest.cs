@@ -8,7 +8,7 @@ namespace JJMasterData.Core.Test.Web.Components
     public class JJTextBoxTest
     {
         [Fact]
-        public void RenderTest()
+        public async Task RenderTest()
         {
             var text = GetTextBox();
             var expected = new StringBuilder();
@@ -25,15 +25,15 @@ namespace JJMasterData.Core.Test.Web.Components
             expected.Append("value=\"1188880000\" ");
             expected.Append("/>");
 
-            var html = text.GetHtmlBuilder();
+            var html = await text.GetHtmlBuilderAsync();
             Assert.Equal(expected.ToString(), html.ToString(true));
         }
 
         [Fact]
-        public void RenderTestAttrs()
+        public async Task RenderTestAttrs()
         {
             var text = GetTextBox();
-            var actual = text.GetHtmlBuilder();
+            var actual = await text.GetHtmlBuilderAsync();
 
             Assert.Equal(text.Name, actual.GetAttribute("name"));
             Assert.Equal(text.Name, actual.GetAttribute("id"));

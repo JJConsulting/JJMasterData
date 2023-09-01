@@ -11,9 +11,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Abstractions;
-using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -310,7 +307,7 @@ internal class DataPanelControl
 
     private async Task<HtmlBuilder> GetControlField(FormElementField field, object? value)
     {
-        var control = await ControlFactory.CreateAsync(FormElement, field, new(Values, UserValues, PageState), Name, value);
+        var control = await ControlFactory.CreateAsync(FormElement, field, new(Values, UserValues, PageState), value);
         control.IsExternalRoute = IsExternalRoute;
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
@@ -351,20 +348,7 @@ internal class DataPanelControl
             }
         }
 
-        switch (control)
-        {
-            case HtmlControl htmlControl:
-                return htmlControl.GetHtmlBuilder();
-            case AsyncControl asyncControl:
-            {
-                var result = await asyncControl.GetResultAsync();
-                if (result is RenderedComponentResult renderedComponentResult)
-                    return renderedComponentResult.HtmlBuilder;
-                break;
-            }
-        }
-
-        return new HtmlBuilder();
+        return await control.GetHtmlBuilderAsync();
     }
 
     private string GetScriptReload(FormElementField field)

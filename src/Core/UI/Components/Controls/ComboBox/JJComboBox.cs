@@ -1,8 +1,6 @@
 #nullable enable
 
-using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
@@ -12,19 +10,14 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Abstractions;
-using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJComboBox : AsyncControl
+public class JJComboBox : ControlBase
 {
     private string? _selectedValue;
 

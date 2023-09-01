@@ -1,10 +1,13 @@
-﻿using JJMasterData.Core.UI.Components;
+﻿using System;
+using System.Threading.Tasks;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public abstract class ControlBase : ComponentBase
+public abstract class ControlBase : AsyncComponent
 {
     private string _text;
 
@@ -57,4 +60,15 @@ public abstract class ControlBase : ComponentBase
         CurrentContext = currentContext;
     }
 
+    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
+    {
+        var result = await GetResultAsync();
+
+        if (result is RenderedComponentResult renderedResult)
+        {
+            return renderedResult.HtmlBuilder;
+        }
+
+        return new HtmlBuilder();
+    }
 }

@@ -8,14 +8,19 @@ using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class RouteContext
+internal record RouteContext
 {
-    public required string CurrentElementName { get; set; }
+    public string? CurrentElementName { get; set; }
     public string? ParentElementName { get; set; }
     public required ComponentContext ComponentContext { get; set; }
 
+    public RouteContext()
+    {
+        
+    }
+    
     [SetsRequiredMembers]
-    private RouteContext(string currentElementName, string? parentElementName, ComponentContext componentContext = ComponentContext.RenderComponent)
+    public RouteContext(string? currentElementName, string? parentElementName, ComponentContext componentContext = ComponentContext.RenderComponent)
     {
         ComponentContext = componentContext;
         CurrentElementName = currentElementName;
@@ -34,7 +39,7 @@ internal class RouteContext
     {
         var parsedQuery = HttpUtility.ParseQueryString(queryString);
         
-        var currentElementName = parsedQuery["currentElementName"]!;
+        var currentElementName = parsedQuery["currentElementName"];
         var parentElementName = parsedQuery["parentElementName"];
         var componentContextString = parsedQuery["componentContext"];
 
@@ -44,5 +49,20 @@ internal class RouteContext
         }
         
         return new RouteContext(currentElementName, parentElementName, componentContext);
+    }
+
+    public bool CanRender(FormElement formElement)
+    {
+        if (ParentElementName is not null)
+        {
+            return ParentElementName == formElement.ParentName || ParentElementName == formElement.Name;
+        }
+
+        if (CurrentElementName is not null)
+        {
+            return CurrentElementName == formElement.Name;
+        }
+        
+        return true;
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -39,7 +41,7 @@ public class JJTextGroup : JJTextBox
         Text = text;
     }
 
-    internal override HtmlBuilder BuildHtml()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
         if (!Enabled)
@@ -51,12 +53,12 @@ public class JJTextGroup : JJTextBox
             }
         }
 
-        var input = base.BuildHtml();
+        var input = await GetHtmlBuilderAsync();
         bool hasAction = Actions.ToList().Exists(x => x.Visible);
         bool hasAddons = Addons != null;
 
         if (!hasAction && !hasAddons)
-            return input;
+            return new RenderedComponentResult(input);
 
 
         if (defaultAction is { Enabled: true })
@@ -77,7 +79,7 @@ public class JJTextGroup : JJTextBox
         if (hasAction)
             AddActionsAt(inputGroup);
 
-        return inputGroup;
+        return new RenderedComponentResult(inputGroup);
     }
 
     private void AddActionsAt(HtmlBuilder inputGroup)

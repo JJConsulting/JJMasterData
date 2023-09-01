@@ -6,7 +6,6 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using System;
@@ -22,7 +21,7 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Represents a searchable combobox.
 /// </summary>
-public class JJSearchBox : AsyncControl
+public class JJSearchBox : ControlBase
 {
     
     
@@ -55,6 +54,8 @@ public class JJSearchBox : AsyncControl
     private const string ScrollbarAttribute = "scrollbar";
     private const string TriggerLengthAttribute = "triggerlength";
 
+    internal string? ParentElementName { get; set; }
+    
     internal string FieldName
     {
         get => _fieldName ?? Name;
@@ -171,23 +172,21 @@ public class JJSearchBox : AsyncControl
 
     public IDataItemService DataItemService { get; }
     private IEncryptionService EncryptionService { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
     public FormStateData FormStateData { get; internal set; }
 
     public string SelectedValue
     {
         set => _selectedValue = value;
     }
-    
-    internal ComponentContext ComponentContext
+
+    private ComponentContext ComponentContext
     {
         get
         {
             if (_componentContext != null)
                 return _componentContext.Value;
             
-            var resolver = new ComponentContextResolver(this);
-            _componentContext = resolver.GetContext();
+            _componentContext = ComponentContextFactory.FromQueryString(CurrentContext.Request.GetQueryString());
 
             return _componentContext.Value;
         }
@@ -200,12 +199,10 @@ public class JJSearchBox : AsyncControl
     public JJSearchBox(
         IHttpContext httpContext,
         IEncryptionService encryptionService,
-        IDataItemService dataItemService,
-        JJMasterDataUrlHelper urlHelper) : base(httpContext)
+        IDataItemService dataItemService) : base(httpContext)
     {
         HtmlId = Name;
         EncryptionService = encryptionService;
-        UrlHelper = urlHelper;
         DataItemService = dataItemService;
         Enabled = true;
         TriggerLength = 1;
@@ -256,7 +253,7 @@ public class JJSearchBox : AsyncControl
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
             input.WithAttributes(Attributes);
             input.WithToolTip(ToolTip);
-            input.WithCssClass("form-control jjsearchbox");
+            input.WithCssClass("form-control jj-search-box");
             input.WithCssClassIf(string.IsNullOrEmpty(selectedValue), "jj-icon-search");
             input.WithCssClassIf(!string.IsNullOrEmpty(selectedValue), "jj-icon-success");
             input.WithCssClass(CssClass);
@@ -282,29 +279,16 @@ public class JJSearchBox : AsyncControl
     private string GetUrl()
     {
         var url = new StringBuilder();
-        if (IsExternalRoute)
-        {
-            string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEscape(ElementName);
-            url.Append(UrlHelper.GetUrl("GetItems","Search", "MasterData", new
-            {
-                dictionaryName = dictionaryNameEncrypted,
-                fieldName = FieldName,
-                fieldSearchName = Name + "_text",
-                pageState = (int)FormStateData.PageState,
-                Area = "MasterData"
-            }));
-        }
-        else
-        {
-            url.Append("context=searchBox");
-            url.Append($"&dictionaryName={ElementName}");
-            url.Append($"&fieldName={FieldName}");
-            url.Append($"&fieldSearchName={Name + "_text"}");
-            url.Append($"&pageState={(int)FormStateData.PageState}");
-        }
 
+        var context = new RouteContext(ElementName,ParentElementName,ComponentContext.SearchBox);
 
-
+        var encryptedRoute = EncryptionService.EncryptRoute(context);
+        
+        url.Append($"context={encryptedRoute}");
+        url.Append($"&fieldName={FieldName}");
+        url.Append($"&fieldSearchName={Name + "_text"}");
+        url.Append($"&pageState={(int)FormStateData.PageState}");
+        
         return url.ToString();
     }
 

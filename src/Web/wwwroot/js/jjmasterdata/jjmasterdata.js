@@ -790,7 +790,7 @@ class GridViewHelper {
                 if (currentObj.hasClass("selectpicker")) {
                     currentObj.selectpicker("render");
                 }
-                else if (currentObj.hasClass("jjsearchbox")) {
+                else if (currentObj.hasClass("jj-search-box")) {
                     currentObj.blur();
                 }
                 else if (currentObj.hasClass("jjlookup")) {
@@ -1669,7 +1669,7 @@ function postFormValues(options) {
 }
 class SearchBoxListener {
     static listenTypeahed() {
-        $("input.jjsearchbox").each(function () {
+        $("input.jj-search-box").each(function () {
             const hiddenInputId = $(this).attr("hidden-input-id");
             let urltypehead = $(this).attr("urltypehead");
             let triggerlength = $(this).attr("triggerlength");

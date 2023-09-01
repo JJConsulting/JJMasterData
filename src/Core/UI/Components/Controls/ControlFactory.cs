@@ -1,14 +1,11 @@
 ﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -39,7 +36,7 @@ public class ControlFactory
         return ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
     }
     
-    public IDynamicControlFactory<TDynamicControl> GetDynamicControlFactory<TDynamicControl>() where TDynamicControl : AsyncControl
+    public IDynamicControlFactory<TDynamicControl> GetDynamicControlFactory<TDynamicControl>() where TDynamicControl : ControlBase
     {
         return ServiceProvider.GetRequiredService<IDynamicControlFactory<TDynamicControl>>();
     }
@@ -61,13 +58,13 @@ public class ControlFactory
             controlContext);
     }
 
-    public async Task<ControlBase> CreateAsync(FormElement formElement,
+    public async Task<ControlBase> CreateAsync(
+        FormElement formElement,
         FormElementField field,
         FormStateData formStateData,
-        string parentName,
         object value = null)
     {
-        var context = new ControlContext(formStateData, parentName, value);
+        var context = new ControlContext(formStateData, value);
         if (formStateData.PageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {
             var factory = GetControlFactory<JJTextRange>();

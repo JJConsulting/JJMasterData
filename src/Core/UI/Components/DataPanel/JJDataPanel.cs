@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
@@ -31,7 +32,7 @@ public class JJDataPanel : AsyncComponent
     #region "Properties"
 
     private FormUI _formUI;
-    private ComponentContext? _componentContext;
+    [CanBeNull] private RouteContext _routeContext;
 
     /// <summary>
     /// Layout form settings
@@ -88,19 +89,20 @@ public class JJDataPanel : AsyncComponent
     internal IFormValuesService FormValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
     internal ComponentFactory ComponentFactory { get; }
-    internal ComponentContext ComponentContext
+    internal RouteContext RouteContext
     {
         get
         {
-            if (_componentContext != null)
-                return _componentContext.Value;
-            
-            var resolver = new ComponentContextResolver(this);
-            _componentContext = resolver.GetContext();
+            if (_routeContext != null)
+                return _routeContext;
 
-            return _componentContext.Value;
+            _routeContext = RouteContext.FromQueryString(CurrentContext.Request.GetQueryString());
+
+            return _routeContext;
         }
     }
+
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
 
     #endregion
 
@@ -204,13 +206,7 @@ public class JJDataPanel : AsyncComponent
         if (ComponentContext is ComponentContext.SearchBox)
         {
             var factory = ComponentFactory.Controls.GetDynamicControlFactory<JJSearchBox>();
-            var searchBox = factory.CreateIfExists(FormElement, Values, UserValues);
-
-            if (searchBox is null)
-            {
-                return new EmptyComponentResult();
-            }
-            
+            var searchBox = factory.Create(FormElement, Values, UserValues);
             return await searchBox.GetResultAsync();
         }
 

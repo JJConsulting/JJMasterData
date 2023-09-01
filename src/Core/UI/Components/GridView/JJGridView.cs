@@ -97,7 +97,7 @@ public class JJGridView : AsyncComponent
     private JJDataImportation? _dataImportation;
     private JJDataExportation? _dataExportation;
     private GridScripts? _gridScripts;
-    private ComponentContext? _componentContext;
+    private RouteContext? _routeContext;
 
     internal JJDataImportation DataImportation
     {
@@ -504,19 +504,20 @@ public class JJGridView : AsyncComponent
         set => _selectedRowsId = value ?? "";
     }
 
-    internal ComponentContext ComponentContext
+    internal RouteContext RouteContext
     {
         get
         {
-            if (_componentContext != null)
-                return _componentContext.Value;
-            
-            var resolver = new ComponentContextResolver(this);
-            _componentContext = resolver.GetContext();
+            if (_routeContext != null)
+                return _routeContext;
 
-            return _componentContext.Value;
+            _routeContext = RouteContext.FromQueryString(CurrentContext.Request.GetQueryString());
+
+            return _routeContext;
         }
     }
+
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
     
     #endregion
 
@@ -580,12 +581,6 @@ public class JJGridView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string lookupRoute = CurrentContext.Request.QueryString("lookup-" + Name);
-        if (!string.IsNullOrEmpty(lookupRoute))
-            return await GetLookupResult(lookupRoute);
-
-        string context = CurrentContext.Request.QueryString("context");
-
         if (ComponentContext is ComponentContext.HtmlContent)
         {
             var componentName = CurrentContext.Request.QueryString("componentName");
@@ -745,19 +740,6 @@ public class JJGridView : AsyncComponent
             .AggregateAsync(string.Empty, (current, td) => current + td);
     }
     
-    private async Task<ComponentResult> GetLookupResult(string lookupRoute)
-    {
-        string fieldName = lookupRoute[GridFilter.FilterFieldPrefix.Length..];
-        var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(fieldName));
-
-        if (field == null) 
-            return new EmptyComponentResult();
-
-        var lookup = ComponentFactory.Controls.Create<JJLookup>(FormElement, field, new(new FormStateData(new Dictionary<string, object?>(), null, PageState.Filter), null, Name));
-        lookup.Name = lookupRoute;
-        lookup.ElementMap.EnableElementActions = false;
-        return await lookup.GetResultAsync();
-    }
 
     internal JJTitle GetTitle(IDictionary<string, object?>? values = null)
     {

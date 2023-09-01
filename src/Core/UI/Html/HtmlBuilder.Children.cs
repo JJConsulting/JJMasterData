@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
+using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.Html;
 
@@ -181,10 +182,10 @@ public partial class HtmlBuilder
         return this;
     }
     
-    public HtmlBuilder AppendComponent(HtmlControl? control)
+    public async Task<HtmlBuilder> AppendControlAsync(ControlBase? control)
     {
         if (control != null)
-            Append(control.GetHtmlBuilder());
+            Append(await control.GetHtmlBuilderAsync());
 
         return this;
     }

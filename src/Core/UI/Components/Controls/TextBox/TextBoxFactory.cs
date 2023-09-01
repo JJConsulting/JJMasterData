@@ -79,8 +79,8 @@ internal class TextBoxFactory : IControlFactory<JJTextGroup>
         {
             FormElement = formElement,
             FormStateData = controlContext.FormStateData,
-            ParentComponentName = controlContext.ParentComponentName,
             FieldName = field.Name,
+            ParentComponentName = "TODO",
             IsExternalRoute = textGroup.IsExternalRoute
         };
         

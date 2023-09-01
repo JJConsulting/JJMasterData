@@ -1,6 +1,6 @@
 ﻿class SearchBoxListener {
     static listenTypeahed(){
-        $("input.jjsearchbox").each(function () {
+        $("input.jj-search-box").each(function () {
             const hiddenInputId = $(this).attr("hidden-input-id");
             let urltypehead: string = $(this).attr("urltypehead");
             let triggerlength = $(this).attr("triggerlength");

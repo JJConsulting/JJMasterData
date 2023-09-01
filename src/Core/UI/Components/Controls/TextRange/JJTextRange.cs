@@ -1,24 +1,21 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Components.Controls;
-using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextRange : HtmlControl
+public class JJTextRange : ControlBase
 {
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    internal HtmlControl FromField { get; set; }
-    internal HtmlControl ToField { get; set; }
+    internal ControlBase FromField { get; set; }
+    internal ControlBase ToField { get; set; }
 
     public FieldType FieldType { get; set; }
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
@@ -30,28 +27,28 @@ public class JJTextRange : HtmlControl
         StringLocalizer = stringLocalizer;
     }
 
-    internal override HtmlBuilder BuildHtml()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         var div = new HtmlBuilder(string.Empty);
         div.WithCssClass(CssClass);
         div.WithAttributes(Attributes);
-        div.Append(HtmlTag.Div, div =>
+        await div.AppendAsync(HtmlTag.Div, async div =>
         {
             div.WithCssClass("col-sm-3");
             
             FromField.Name = Name + "_from";
             FromField.Enabled = Enabled;
             
-            div.AppendComponent(FromField);
+            await div.AppendControlAsync(FromField);
         });
-        div.Append(HtmlTag.Div, div =>
+        await div.AppendAsync(HtmlTag.Div, async div =>
         {
             div.WithCssClass("col-sm-3");
             
             ToField.Name = Name + "_to";
             ToField.Enabled = Enabled;
             
-            div.AppendComponent(ToField);
+            await div.AppendControlAsync(ToField);
         });
         div.Append(HtmlTag.Div, div =>
         {
@@ -59,7 +56,9 @@ public class JJTextRange : HtmlControl
             div.AppendIf(EnableDatePeriods, GetDatePeriodsHtmlElement);
         });
 
-        return div;
+        var result = new RenderedComponentResult(div);
+        
+        return await Task.FromResult(result);
     }
 
     private HtmlBuilder GetDatePeriodsHtmlElement()
