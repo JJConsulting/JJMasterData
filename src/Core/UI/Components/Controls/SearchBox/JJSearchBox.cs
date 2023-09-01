@@ -23,8 +23,6 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public class JJSearchBox : ControlBase
 {
-    
-    
     #region "Events"
 
     /// <summary>
@@ -40,6 +38,7 @@ public class JJSearchBox : ControlBase
     #endregion
 
     #region "Fields"
+
     private IEnumerable<DataItemValue>? _values;
     private string? _selectedValue;
     private string? _text;
@@ -47,7 +46,7 @@ public class JJSearchBox : ControlBase
     private string? _htmlId;
 
     #endregion
-    
+
     #region "Properties"
 
     private const string NumberOfItemsAttribute = "number-of-items";
@@ -55,7 +54,7 @@ public class JJSearchBox : ControlBase
     private const string TriggerLengthAttribute = "trigger-length";
 
     internal string? ParentElementName { get; set; }
-    
+
     internal string FieldName
     {
         get => _fieldName ?? Name;
@@ -149,7 +148,7 @@ public class JJSearchBox : ControlBase
 
         if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
         {
-            var values =await  GetValuesAsync(Text);
+            var values = await GetValuesAsync(Text);
             var item = values.FirstOrDefault();
             if (item == null)
                 return null;
@@ -160,9 +159,9 @@ public class JJSearchBox : ControlBase
         return _selectedValue;
     }
 
-    
+
     public FormElementDataItem DataItem { get; set; }
-    
+
 
     /// <summary>
     /// Ao recarregar o painel, manter os valores digitados no formulário
@@ -202,10 +201,11 @@ public class JJSearchBox : ControlBase
     }
 
     #endregion
-    
+
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         var fieldName = Request.QueryString["fieldName"];
+        
         if (ComponentContext is ComponentContext.SearchBox && FieldName == fieldName)
         {
             return new JsonComponentResult(await GetSearchBoxItemsAsync());
@@ -215,7 +215,7 @@ public class JJSearchBox : ControlBase
 
         return new RenderedComponentResult(html);
     }
-    
+
     private async Task<HtmlBuilder> GetSearchBoxHtml()
     {
         if (DataItem == null)
@@ -248,14 +248,13 @@ public class JJSearchBox : ControlBase
                 description = await GetDescriptionAsync(selectedValue);
 
             input.WithAttributeIfNotEmpty("value", description);
-
         });
         div.Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("hidden", "hidden");
             input.WithAttribute("id", HtmlId);
             input.WithAttribute("name", Name);
-            input.WithAttributeIfNotEmpty("value",selectedValue);
+            input.WithAttributeIfNotEmpty("value", selectedValue);
         });
 
         return div;
@@ -265,13 +264,17 @@ public class JJSearchBox : ControlBase
     {
         var url = new StringBuilder();
 
-        var context = new RouteContext(ElementName,ParentElementName,ComponentContext.SearchBox);
-
-        var encryptedRoute = EncryptionService.EncryptRouteContext(context);
+        var componentContext = FormStateData.PageState is PageState.Filter
+            ? ComponentContext.GridViewFilterSearchBox
+            : ComponentContext.SearchBox;
         
+        var context = new RouteContext(ElementName, ParentElementName, componentContext);
+        
+        var encryptedRoute = EncryptionService.EncryptRouteContext(context);
+
         url.Append($"routeContext={encryptedRoute}");
         url.Append($"&fieldName={FieldName}");
-        
+
         return url.ToString();
     }
 
@@ -305,7 +308,7 @@ public class JJSearchBox : ControlBase
     /// <summary>
     /// Recover values from the given text.
     /// </summary>
-    public async Task<List<DataItemValue>>GetValuesAsync(string? searchText)
+    public async Task<List<DataItemValue>> GetValuesAsync(string? searchText)
     {
         var list = new List<DataItemValue>();
         if (OnSearchQuery != null)
@@ -327,7 +330,7 @@ public class JJSearchBox : ControlBase
 
         return list;
     }
-    
+
 
     public async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
@@ -339,6 +342,4 @@ public class JJSearchBox : ControlBase
 
         return items.ToList();
     }
-
-
 }

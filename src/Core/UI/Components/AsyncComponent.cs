@@ -16,7 +16,7 @@ public abstract class AsyncComponent : ComponentBase
 {
     private RouteContextResolver? _routeResolver;
     private RouteContext? _routeContext;
-    private IQueryString QueryString { get; }
+    internal IQueryString QueryString { get; }
     internal IEncryptionService EncryptionService { get; }
     
     protected RouteContext RouteContext

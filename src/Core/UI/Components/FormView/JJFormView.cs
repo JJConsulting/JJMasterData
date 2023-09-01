@@ -309,6 +309,17 @@ public class JJFormView : AsyncComponent
         if (!RouteResolver.CanRender(FormElement))
             return new EmptyComponentResult();
 
+        if (FormElement.Name == RouteContext.ElementName || RouteContext.ElementName is null)
+            return await BuildFormResultAsync();
+
+        var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
+
+        return await formView.BuildFormResultAsync();
+    }
+
+    
+    internal async Task<ComponentResult> BuildFormResultAsync()
+    {
         if (ComponentContext is ComponentContext.FileUpload)
             return await DataPanel.GetResultAsync();
 
@@ -316,13 +327,12 @@ public class JJFormView : AsyncComponent
             return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService,
                 ComponentFactory.Downloader);
 
-        if (RouteResolver.IsSearchBoxRoute(FormElement, out var field))
-        {
-            var formStateData = new FormStateData(DataPanel.Values, UserValues,PageState);
-            var searchBox = ComponentFactory.Controls.Create<JJSearchBox>(FormElement,field,new ControlContext(formStateData));
-            return await searchBox.GetResultAsync();
-        }
+        if (ComponentContext is ComponentContext.SearchBox)
+            return await DataPanel.GetResultAsync();
 
+        if (ComponentContext is ComponentContext.GridViewFilterSearchBox)
+            return await GridView.GetResultAsync();
+        
         if (ComponentContext is ComponentContext.PanelReload)
         {
             var panelHtml = await GetReloadPanelResultAsync();
@@ -346,7 +356,7 @@ public class JJFormView : AsyncComponent
 
         return await GetFormResult();
     }
-
+    
     internal async Task<ComponentResult> GetReloadPanelResultAsync()
     {
         var filter = GridView.GetSelectedRowId();

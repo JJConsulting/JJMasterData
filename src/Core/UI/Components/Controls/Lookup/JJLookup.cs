@@ -151,7 +151,7 @@ public class JJLookup : ControlBase
 
         var idTextBox = TextBoxFactory.Create();
         idTextBox.Name = Name;
-        idTextBox.CssClass = $"form-control jj-lookup {CssClass}";
+        idTextBox.CssClass = $"form-control jj-lookup {GetFeedbackIcon(inputValue?.ToString(), description)} {CssClass}";
         idTextBox.InputType = OnlyNumbers ? InputType.Number : InputType.Text;
         idTextBox.MaxLength = MaxLength;
         idTextBox.Text = SelectedValue?.ToString();
@@ -160,22 +160,27 @@ public class JJLookup : ControlBase
         idTextBox.ReadOnly = ReadOnly;
         idTextBox.Enabled = Enabled;
 
-        idTextBox.Attributes["style"] = "flex:2";
 
-        var descriptionTextBox = TextBoxFactory.Create();
-        descriptionTextBox.Name = $"{Name}-description";
-        descriptionTextBox.CssClass = $"form-control jj-lookup {GetFeedbackIcon(inputValue?.ToString(), description)} {CssClass}";
-        descriptionTextBox.InputType = InputType.Text;
-        descriptionTextBox.MaxLength = MaxLength;
-        descriptionTextBox.Text = description;
-        descriptionTextBox.Attributes = Attributes.DeepCopy();
-        descriptionTextBox.ToolTip = ToolTip;
-        descriptionTextBox.Enabled = false;
-
-        descriptionTextBox.Attributes["style"] = "flex:10";
-        
         await div.AppendControlAsync(idTextBox);
-        await div.AppendControlAsync(descriptionTextBox);
+        
+        if (!string.IsNullOrEmpty(FormElement.Fields[FieldName].DataItem!.ElementMap!.FieldDescription))
+        {
+            idTextBox.Attributes["style"] = "flex:2";
+            
+            var descriptionTextBox = TextBoxFactory.Create();
+            descriptionTextBox.Name = $"{Name}-description";
+            descriptionTextBox.CssClass = $"form-control jj-lookup {CssClass}";
+            descriptionTextBox.InputType = InputType.Text;
+            descriptionTextBox.MaxLength = MaxLength;
+            descriptionTextBox.Text = description;
+            descriptionTextBox.Attributes = Attributes.DeepCopy();
+            descriptionTextBox.ToolTip = ToolTip;
+            descriptionTextBox.Enabled = false;
+
+            descriptionTextBox.Attributes["style"] = "flex:10";
+            
+            await div.AppendControlAsync(descriptionTextBox);
+        }
 
         var formViewUrl = LookupService.GetFormViewUrl(ElementMap, FormStateData, Name);
         

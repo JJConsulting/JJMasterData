@@ -186,9 +186,14 @@ public class JJDataPanel : AsyncComponent
 
         if (ComponentContext is ComponentContext.SearchBox)
         {
-            // var factory = ComponentFactory.Controls.GetDynamicControlFactory<JJSearchBox>();
-            // var searchBox = factory.Create(FormElement, Values, UserValues);
-            // return await searchBox.GetResultAsync();
+            var formStateData = new FormStateData(Values, UserValues,PageState);
+            
+            var fieldName = QueryString["fieldName"];
+
+            var field = FormElement.Fields[fieldName];
+            
+            var searchBox = ComponentFactory.Controls.Create<JJSearchBox>(FormElement,field,new ControlContext(formStateData));
+            return await searchBox.GetResultAsync();
         }
 
         if (ComponentContext is ComponentContext.PanelReload)

@@ -34,7 +34,9 @@ public class FieldService : BaseService
             field.DataFile.FolderPath = field.DataFile.FolderPath?.Trim();
         }
 
-        if (!ValidateField(formElement, field, originalName))
+        var fieldIsValid =await ValidateFieldAsync(formElement, field, originalName);
+
+        if (!fieldIsValid)
         {
             if (string.IsNullOrEmpty(field.Name))
                 field.Name = originalName;
@@ -92,7 +94,7 @@ public class FieldService : BaseService
         }
     }
 
-    private bool ValidateField(FormElement formElement, FormElementField field, string originalName)
+    private async Task<bool> ValidateFieldAsync(FormElement formElement, FormElementField field, string originalName)
     {
         ValidateName(field.Name);
 
@@ -163,7 +165,7 @@ public class FieldService : BaseService
         }
         else if (field.Component is FormComponent.Lookup or FormComponent.ComboBox or FormComponent.Search)
         {
-            ValidateDataItem(field.DataItem);
+            await ValidateDataItemAsync(field);
         }
         else if (field.Component == FormComponent.File)
         {
@@ -198,40 +200,41 @@ public class FieldService : BaseService
         }
     }
 
-    private void ValidateDataItem(FormElementDataItem data)
+    private async Task ValidateDataItemAsync(FormElementField field)
     {
-        if (data == null)
+        var dataItem = field.DataItem;
+        if (dataItem == null)
         {
             AddError("DataItem", StringLocalizer["DataItem cannot be empty."]);
             return;
         }
 
-        if (data.DataItemType == DataItemType.SqlCommand)
+        if (dataItem.DataItemType == DataItemType.SqlCommand)
         {
-            if (data.Command == null)
+            if (dataItem.Command == null)
             {
                 AddError("Command", StringLocalizer["[Command] required"]);
                 return;
             }
                
-            if (string.IsNullOrEmpty(data.Command.Sql))
+            if (string.IsNullOrEmpty(dataItem.Command.Sql))
                 AddError("Command.Sql", StringLocalizer["[Field Command.Sql] required"]);
 
-            if (data.ReplaceTextOnGrid && !data.Command.Sql.Contains("{search_id}"))
+            if (dataItem.ReplaceTextOnGrid && !dataItem.Command.Sql.Contains("{search_id}"))
             {
                 AddError("Command.Sql", "{search_id} is required at queries using ReplaceTextOnGrid. " +
                                         "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
             }
         }
-        else if (data.DataItemType == DataItemType.Manual)
+        else if (dataItem.DataItemType == DataItemType.Manual)
         {
             RemoveError("DataItem.Command.Sql");
-            ValidateManualItens(data.Items);
+            ValidateManualItens(dataItem.Items);
         }
-        else if (data.DataItemType == DataItemType.Dictionary)
+        else if (dataItem.DataItemType == DataItemType.Dictionary)
         {
             
-            ValidateDataElementMap(data);
+            await ValidateDataElementMapAsync(field);
         }
     }
 
@@ -254,22 +257,44 @@ public class FieldService : BaseService
             }
     }
 
-    private void ValidateDataElementMap(FormElementDataItem dataItem)
+    private async Task ValidateDataElementMapAsync(FormElementField field)
     {
-        var data = dataItem.ElementMap;
-        if (data == null)
+        var dataItem = field.DataItem;
+        
+        if (dataItem!.ElementMap == null)
         {
             AddError("ElementMap", StringLocalizer["Undefined mapping settings"]);
             return;
         }
+        
+        var elementMap = dataItem.ElementMap;
 
-        if (string.IsNullOrEmpty(data.ElementName))
-            AddError(nameof(data.ElementName), StringLocalizer["Required field [ElementName]"]);
+        if (string.IsNullOrEmpty(elementMap.ElementName))
+        {
+            AddError(nameof(elementMap.ElementName), StringLocalizer["Required field [ElementName]"]);
+            return;
+        }
         
-        if (data.FieldKey.Equals(data.FieldDescription))
-            AddError(nameof(data.FieldDescription), StringLocalizer["[FieldDescription] can not be equal a [FieldKey]"]);
+        var childFormElement = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
+
+        if (childFormElement is null)
+        {
+            AddError(nameof(elementMap.ElementName),$"Element {elementMap.ElementName} not found at your data source.");
+            return;
+        }
+
+        var childField = childFormElement.Fields[elementMap.FieldKey];
+
+        if (field.DataType != childField.DataType)
+        {
+            AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldKey] DataType must be the same of your field."]);
+        }
         
-        if (dataItem.ReplaceTextOnGrid && string.IsNullOrEmpty(data.FieldDescription))
+        
+        if (elementMap.FieldKey.Equals(elementMap.FieldDescription))
+            AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldDescription] can not be equal a [FieldKey]"]);
+        
+        if (dataItem.ReplaceTextOnGrid && string.IsNullOrEmpty(elementMap.FieldDescription))
             AddError(nameof(dataItem.ReplaceTextOnGrid), StringLocalizer["[ReplaceTextOnGrid] invalid fill a [FieldDescription]"]);
     }
 

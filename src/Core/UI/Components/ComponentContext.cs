@@ -40,6 +40,11 @@ public enum ComponentContext
     /// </summary>
     SearchBox,
     
+    /// <summary>
+    /// The component is requesting a JJSearchBox result from a GridView filter
+    /// </summary>
+    GridViewFilterSearchBox,
+    
     DownloadFile,
     
     SelectAllGridRows,

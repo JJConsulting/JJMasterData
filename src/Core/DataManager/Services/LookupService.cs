@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
@@ -84,7 +85,17 @@ public class LookupService : ILookupService
 
         var filters = GetFilters(elementMap, value, formStateData);
 
-        var fields = await GetFieldsAsync(elementMap, filters);
+        IDictionary<string, object?> fields;
+        
+        try
+        {
+            fields = await GetFieldsAsync(elementMap, filters);
+        }
+        catch
+        {
+            return null;
+        }
+
 
         if (string.IsNullOrEmpty(elementMap.FieldDescription))
             return fields[elementMap.FieldKey]?.ToString();

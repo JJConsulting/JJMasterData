@@ -1188,7 +1188,9 @@ class LookupHelper {
         const idInput = document.querySelector("#" + fieldName);
         idInput.value = id;
         const descriptionInput = document.querySelector("#" + fieldName + "-description");
-        descriptionInput.value = description;
+        if (descriptionInput) {
+            descriptionInput.value = description;
+        }
     }
 }
 class LookupListener {
@@ -1210,13 +1212,15 @@ class LookupListener {
                         else {
                             const lookupIdInput = document.querySelector(lookupIdSelector);
                             const lookupDescriptionInput = document.querySelector(lookupDescriptionSelector);
-                            FeedbackIcon.setIcon(lookupDescriptionSelector, FeedbackIcon.successClass);
+                            FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.successClass);
                             lookupIdInput.value = data.id;
-                            lookupDescriptionInput.value = data.description;
+                            if (lookupDescriptionInput) {
+                                lookupDescriptionInput.value = data.description;
+                            }
                         }
                     },
                     error: (_) => {
-                        FeedbackIcon.setIcon(lookupDescriptionSelector, FeedbackIcon.errorClass);
+                        FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.errorClass);
                     }
                 });
             });

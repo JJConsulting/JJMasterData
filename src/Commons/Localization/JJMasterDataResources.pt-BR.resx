@@ -3421,4 +3421,10 @@
   <data name="[ReplaceTextOnGrid] invalid fill a [FieldDescription]" xml:space="preserve">
     <value>[Substituir texto na grade] inválido, preencha a [Descrição do Campo]</value>
   </data>
+  <data name="[FieldKey] DataType must be the same of your field." xml:space="preserve">
+    <value>[Campo Chave] deve ser do mesmo tipo de dados que o seu campo.</value>
+  </data>
+  <data name="Element {elementMap.ElementName} not found at your data source." xml:space="preserve">
+    <value>Elemento filho não encontrado na sua fonte de dados.</value>
+  </data>
 </root>

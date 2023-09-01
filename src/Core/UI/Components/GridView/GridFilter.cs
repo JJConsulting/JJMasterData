@@ -150,6 +150,7 @@ internal class GridFilter
 
     private async Task<HtmlBuilder> GetDefaultFilter()
     {
+        
         var action = GridView.FilterAction;
         var fields = GridView.FormElement.Fields.ToList().FindAll(
             field => field.Filter.Type != FilterMode.None && !field.VisibleExpression.Equals("val:0"));

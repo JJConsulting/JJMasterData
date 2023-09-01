@@ -563,6 +563,7 @@ public class JJGridView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
+        
         if (ComponentContext is ComponentContext.HtmlContent)
         {
             var componentName = CurrentContext.Request.QueryString["componentName"];
@@ -594,7 +595,7 @@ public class JJGridView : AsyncComponent
             return new JsonComponentResult(new {selectedRows});
         }
 
-        if (ComponentContext is ComponentContext.SearchBox)
+        if (ComponentContext is ComponentContext.GridViewFilterSearchBox)
         {
             var objName = CurrentContext.Request.QueryString["componentName"];
             if (objName == null || !objName.StartsWith(GridFilter.FilterFieldPrefix))

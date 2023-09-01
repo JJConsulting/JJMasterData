@@ -6,6 +6,9 @@ class LookupHelper {
         idInput.value = id;
         
         const descriptionInput   = document.querySelector<HTMLInputElement>("#" + fieldName + "-description");
-        descriptionInput.value = description;
+        
+        if(descriptionInput){
+            descriptionInput.value = description;
+        }
     }
 }
