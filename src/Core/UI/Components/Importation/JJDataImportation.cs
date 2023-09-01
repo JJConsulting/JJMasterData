@@ -69,7 +69,6 @@ public class JJDataImportation : ProcessComponent
     internal  IControlFactory<JJComboBox> ComboBoxFactory { get; }
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private IEncryptionService EncryptionService { get; }
 
     #endregion
 
@@ -89,14 +88,13 @@ public class JJDataImportation : ProcessComponent
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
-        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(), stringLocalizer)
+        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService, stringLocalizer)
     {
         CurrentContext = currentContext;
         UploadAreaFactory = uploadAreaFactory;
         ComboBoxFactory = comboBoxFactory;
         DataImportationWorkerFactory = dataImportationWorkerFactory;
         UrlHelper = urlHelper;
-        EncryptionService = encryptionService;
         FormService = formService;
         FormElement = formElement;
         var importAction = formElement.Options.GridToolbarActions.ImportAction;
@@ -308,7 +306,7 @@ public class JJDataImportation : ProcessComponent
 
     private DataImportationWorker CreateImportationTextWorker(string postedText, char separator)
     {
-        var dataContext = new DataContext(CurrentContext,DataContextSource.Upload, UserId);
+        var dataContext = new DataContext(CurrentContext.Request,DataContextSource.Upload, UserId);
         
         var worker = DataImportationWorkerFactory.Create(new DataImportationContext(FormElement, dataContext, postedText, separator));
         worker.UserId = UserId;

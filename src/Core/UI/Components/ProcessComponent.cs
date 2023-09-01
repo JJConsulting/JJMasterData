@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
@@ -68,7 +69,8 @@ public abstract class ProcessComponent : AsyncComponent
         IFieldsService fieldsService,
         IBackgroundTask backgroundTask,
         ILogger<ProcessComponent> logger,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IEncryptionService encryptionService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext.Request.QueryString, encryptionService)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;

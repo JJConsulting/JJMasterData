@@ -116,7 +116,7 @@ internal class GridFilter
 
     private bool IsAjaxPost()
     {
-        return !string.IsNullOrEmpty(CurrentContext.Request.QueryString("context"));
+        return !string.IsNullOrEmpty(CurrentContext.Request.QueryString["context"]);
     }
     
     public async Task ApplyCurrentFilter(IDictionary<string, object> values)
@@ -253,7 +253,7 @@ internal class GridFilter
     {
         string searchId = "jjsearch_" + GridView.Name;
 
-        var textBox = new JJTextBox( GridView.CurrentContext)
+        var textBox = new JJTextBox( GridView.CurrentContext.Request, GridView.EncryptionService)
         {
             Attributes =
             {
@@ -395,7 +395,7 @@ internal class GridFilter
 
             if (f.Filter.Type == FilterMode.Range)
             {
-                string sfrom = CurrentContext.Request.QueryString(name + "_from");
+                string sfrom = CurrentContext.Request.QueryString[name + "_from"];
                 if (values == null && sfrom != null)
                     values = new Dictionary<string, object>();
 
@@ -404,7 +404,7 @@ internal class GridFilter
                     values.Add(f.Name + "_from", sfrom);
                 }
 
-                string sto = CurrentContext.Request.QueryString(name + "_to");
+                string sto = CurrentContext.Request.QueryString[name + "_to"];
                 if (!string.IsNullOrEmpty(sto))
                 {
                     values.Add(f.Name + "_to", sto);
@@ -412,7 +412,7 @@ internal class GridFilter
             }
             else
             {
-                string val = CurrentContext.Request.QueryString(name);
+                string val = CurrentContext.Request.QueryString[name];
                 if (!string.IsNullOrEmpty(val))
                 {
                     if (values == null)

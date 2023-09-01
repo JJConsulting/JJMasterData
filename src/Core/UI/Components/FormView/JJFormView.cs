@@ -80,7 +80,6 @@ public class JJFormView : AsyncComponent
     private bool? _showTitle;
     private PageState? _pageState;
     private IDictionary<string, object> _relationValues = new Dictionary<string, object>();
-    private RouteContext? _routeContext;
 
     #endregion
 
@@ -225,21 +224,6 @@ public class JJFormView : AsyncComponent
         }
     }
     
-    internal RouteContext RouteContext
-    {
-        get
-        {
-            if (_routeContext != null)
-                return _routeContext;
-
-            _routeContext = EncryptionService.DecryptRoute(CurrentContext.Request.QueryString("context"));
-
-            return _routeContext;
-        }
-    }
-
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
-
     public bool ShowTitle
     {
         get
@@ -252,7 +236,6 @@ public class JJFormView : AsyncComponent
 
     internal IHttpContext CurrentContext { get; }
     internal IEntityRepository EntityRepository { get; }
-    internal IEncryptionService EncryptionService { get; }
     internal IFieldValuesService FieldValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -266,14 +249,13 @@ public class JJFormView : AsyncComponent
 
 #if NET48
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    private JJFormView()
+    private JJFormView() : base(StaticServiceLocator.Provider.GetScopedDependentService<IQueryString>(), StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>())
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         CurrentContext = StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
         EntityRepository = StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
         ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<ComponentFactory>();
         FormService = StaticServiceLocator.Provider.GetScopedDependentService<IFormService>();
-        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>();
         FieldValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldValuesService>();
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
         StringLocalizer = StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
@@ -306,14 +288,13 @@ public class JJFormView : AsyncComponent
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ComponentFactory componentFactory)
+        ComponentFactory componentFactory) : base(currentContext.Request.QueryString, encryptionService)
     {
         Name = "jj-" + formElement.Name.ToLower();
         FormElement = formElement;
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
         FormService = formService;
-        EncryptionService = encryptionService;
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
@@ -328,7 +309,7 @@ public class JJFormView : AsyncComponent
         if (!RouteContext.CanRender(FormElement))
             return new EmptyComponentResult();
         
-        var componentName = CurrentContext.Request.QueryString("componentName");
+        var componentName = CurrentContext.Request.QueryString["componentName"];
 
         if (ComponentContext is ComponentContext.FileUpload)
             return await DataPanel.GetResultAsync();
@@ -1078,7 +1059,7 @@ public class JJFormView : AsyncComponent
         bool validateFields = true)
     {
         var result = await FormService.InsertAsync(FormElement, values,
-            new DataContext(CurrentContext, DataContextSource.Form, UserId),
+            new DataContext(CurrentContext.Request, DataContextSource.Form, UserId),
             validateFields);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
@@ -1091,7 +1072,7 @@ public class JJFormView : AsyncComponent
     public async Task<IDictionary<string, string>> UpdateFormValuesAsync(IDictionary<string, object?> values)
     {
         var result = await FormService.UpdateAsync(FormElement, values,
-            new DataContext(CurrentContext, DataContextSource.Form, UserId));
+            new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }
@@ -1101,7 +1082,7 @@ public class JJFormView : AsyncComponent
         var values =
             await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, filter, PageState.Delete, true);
         var result = await FormService.DeleteAsync(FormElement, values,
-            new DataContext(CurrentContext, DataContextSource.Form, UserId));
+            new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }

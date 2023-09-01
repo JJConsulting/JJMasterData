@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
@@ -7,22 +8,23 @@ namespace JJMasterData.Core.Web.Factories;
 
 internal class CheckBoxFactory : IControlFactory<JJCheckBox>
 {
-    private IHttpContext HttpContext { get; }
+    private IHttpRequest HttpRequest { get; }
+    private IEncryptionService EncryptionService { get; }
 
-    public CheckBoxFactory(IHttpContext httpContext)
+
+    public CheckBoxFactory(IHttpRequest httpRequest, IEncryptionService encryptionService)
     {
-        HttpContext = httpContext;
+        HttpRequest = httpRequest;
+        EncryptionService = encryptionService;
     }
 
-    public JJCheckBox Create() => new(HttpContext);
+    public JJCheckBox Create() => new(HttpRequest,EncryptionService);
     public JJCheckBox Create(FormElement formElement, FormElementField field, ControlContext context)
     {
-        var check = new JJCheckBox(HttpContext)
-        {
-            Name = field.Name,
-            IsChecked = StringManager.ParseBool(context.Value),
-            ToolTip = field.HelpDescription
-        };
-        return check;
+        var checkBox = Create();
+        checkBox.Name = field.Name;
+        checkBox.IsChecked = StringManager.ParseBool(context.Value);
+        checkBox.ToolTip = field.HelpDescription;
+        return checkBox;
     }
 }

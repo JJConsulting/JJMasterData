@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Moq;
@@ -49,7 +50,7 @@ namespace JJMasterData.Core.Test.Web.Components
 
         private JJTextBox GetTextBox()
         {
-            return new JJTextBox(new Mock<IHttpContext>().Object)
+            return new JJTextBox(new Mock<IHttpRequest>().Object,new Mock<IEncryptionService>().Object)
             {
                 Name = "id1",
                 ToolTip = "teste",

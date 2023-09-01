@@ -24,7 +24,6 @@ public class JJTextFile : ControlBase
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
-    private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     private IDictionary<string, object> _formValues;
@@ -52,17 +51,16 @@ public class JJTextFile : ControlBase
 
 
     public JJTextFile(
-        IHttpContext currentContext,
+        IHttpRequest httpRequest,
         JJMasterDataUrlHelper urlHelper,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup> textBoxFactory,
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
+        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(httpRequest, encryptionService)
     {
         UrlHelper = urlHelper;
         UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
-        EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
     }
 
@@ -186,7 +184,7 @@ public class JJTextFile : ControlBase
 
     private void LoadValuesFromQuery()
     {
-        var uploadViewParams = CurrentContext.Request.QueryString("uploadViewParams");
+        var uploadViewParams = Request.QueryString["uploadViewParams"];
         if (string.IsNullOrEmpty(uploadViewParams))
             throw new ArgumentNullException(nameof(uploadViewParams));
 
@@ -341,7 +339,7 @@ public class JJTextFile : ControlBase
     public string GetDownloadLink(string fileName, bool isExternalLink = false, string absoluteUri = null)
     {
         string filePath = GetFolderPath() + fileName;
-        string url = CurrentContext.Request.AbsoluteUri;
+        string url = Request.AbsoluteUri;
         if (url.Contains('?'))
             url += "&";
         else
@@ -361,13 +359,13 @@ public class JJTextFile : ControlBase
     private bool IsUploadViewRoute()
     {
         string panelName = GetPanelName();
-        string lookupRoute = CurrentContext.Request.QueryString(UploadViewParameterName + panelName);
+        string lookupRoute = Request.QueryString[UploadViewParameterName + panelName];
         return Name.Equals(lookupRoute);
     }
     
     internal static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
-        string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadViewParameterName + view.Name);
+        string uploadFormRoute = view.CurrentContext.Request.QueryString[UploadViewParameterName + view.Name];
         if (uploadFormRoute == null)
             return new EmptyComponentResult();
 

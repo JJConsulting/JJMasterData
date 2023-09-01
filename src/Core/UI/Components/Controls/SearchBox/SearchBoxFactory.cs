@@ -68,9 +68,9 @@ internal class SearchBoxFactory : IDynamicControlFactory<JJSearchBox>
 
     public JJSearchBox Create(FormElement formElement, IDictionary<string,object?> values, IDictionary<string,object?> userValues)
     {
-        var elementName = HttpContext.Request.QueryString("elementName");
-        var fieldName = HttpContext.Request.QueryString("fieldName");
-        var pageState = (PageState)int.Parse(HttpContext.Request.QueryString("pageState"));
+        var elementName = HttpContext.Request.QueryString["elementName"];
+        var fieldName = HttpContext.Request.QueryString["fieldName"];
+        var pageState = (PageState)int.Parse(HttpContext.Request.QueryString["pageState"]);
 
         var field = formElement.Fields[fieldName];
         var expOptions = new FormStateData(values, userValues, pageState);

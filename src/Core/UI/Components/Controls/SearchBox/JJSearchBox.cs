@@ -45,14 +45,14 @@ public class JJSearchBox : ControlBase
     private string? _text;
     private string? _fieldName;
     private string? _htmlId;
-    private ComponentContext? _componentContext;
+
     #endregion
     
     #region "Properties"
 
-    private const string NumberOfItemsAttribute = "numberofitems";
+    private const string NumberOfItemsAttribute = "number-of-items";
     private const string ScrollbarAttribute = "scrollbar";
-    private const string TriggerLengthAttribute = "triggerlength";
+    private const string TriggerLengthAttribute = "trigger-length";
 
     internal string? ParentElementName { get; set; }
     
@@ -74,9 +74,9 @@ public class JJSearchBox : ControlBase
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && CurrentContext.Request.IsPost)
+            if (AutoReloadFormFields && _text == null && Request.IsPost)
             {
-                _text = CurrentContext.Request[Name];
+                _text = Request[Name];
             }
 
             return _text;
@@ -142,9 +142,9 @@ public class JJSearchBox : ControlBase
     /// </summary>
     public async Task<string?> GetSelectedValueAsync()
     {
-        if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.Request.IsPost)
+        if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && Request.IsPost)
         {
-            _selectedValue = CurrentContext.Request[Name];
+            _selectedValue = Request[Name];
         }
 
         if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
@@ -171,25 +171,11 @@ public class JJSearchBox : ControlBase
     public bool AutoReloadFormFields { get; set; }
 
     public IDataItemService DataItemService { get; }
-    private IEncryptionService EncryptionService { get; }
     public FormStateData FormStateData { get; internal set; }
 
     public string SelectedValue
     {
         set => _selectedValue = value;
-    }
-
-    private ComponentContext ComponentContext
-    {
-        get
-        {
-            if (_componentContext != null)
-                return _componentContext.Value;
-            
-            _componentContext = ComponentContextFactory.FromQueryString(CurrentContext.Request.GetQueryString());
-
-            return _componentContext.Value;
-        }
     }
 
     #endregion
@@ -199,10 +185,9 @@ public class JJSearchBox : ControlBase
     public JJSearchBox(
         IHttpContext httpContext,
         IEncryptionService encryptionService,
-        IDataItemService dataItemService) : base(httpContext)
+        IDataItemService dataItemService) : base(httpContext.Request, encryptionService)
     {
         HtmlId = Name;
-        EncryptionService = encryptionService;
         DataItemService = dataItemService;
         Enabled = true;
         TriggerLength = 1;
@@ -220,7 +205,7 @@ public class JJSearchBox : ControlBase
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        var fieldName = CurrentContext.Request.QueryString("fieldName");
+        var fieldName = Request.QueryString["fieldName"];
         if (ComponentContext is ComponentContext.SearchBox && FieldName == fieldName)
         {
             return new JsonComponentResult(await GetSearchBoxItemsAsync());
@@ -245,10 +230,10 @@ public class JJSearchBox : ControlBase
             input.WithAttribute("name", HtmlId + "_text");
             input.WithAttribute("hidden-input-id", HtmlId);
             input.WithAttribute("type", "text");
-            input.WithAttribute("urltypehead", GetUrl());
+            input.WithAttribute("query-string", GetQueryString());
             input.WithAttribute("autocomplete", "off");
             input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
-            input.WithAttributeIf(DataItem.ShowImageLegend, "showimagelegend", "true");
+            input.WithAttributeIf(DataItem.ShowImageLegend, "show-image-legend", "true");
             input.WithAttributeIf(ReadOnly, "readonly", "readonly");
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
             input.WithAttributes(Attributes);
@@ -276,15 +261,15 @@ public class JJSearchBox : ControlBase
         return div;
     }
 
-    private string GetUrl()
+    private string GetQueryString()
     {
         var url = new StringBuilder();
 
         var context = new RouteContext(ElementName,ParentElementName,ComponentContext.SearchBox);
 
-        var encryptedRoute = EncryptionService.EncryptRoute(context);
+        var encryptedRoute = EncryptionService.EncryptRouteContext(context);
         
-        url.Append($"context={encryptedRoute}");
+        url.Append($"routeContext={encryptedRoute}");
         url.Append($"&fieldName={FieldName}");
         url.Append($"&fieldSearchName={Name + "_text"}");
         url.Append($"&pageState={(int)FormStateData.PageState}");
@@ -295,7 +280,7 @@ public class JJSearchBox : ControlBase
     /// <summary>
     /// Recupera descrição com base no id
     /// </summary>
-    /// <param name="idSearch">Id a ser pesquisado</param>
+    /// <param name="searchId">Id a ser pesquisado</param>
     /// <returns>Retorna descrição referente ao id</returns>
     public async Task<string?> GetDescriptionAsync(string searchId)
     {
@@ -348,8 +333,8 @@ public class JJSearchBox : ControlBase
 
     public async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
-        string componentName = CurrentContext.Request.QueryString("fieldName");
-        string textSearch = CurrentContext.Request.GetFormValue(componentName);
+        string componentName = Request.QueryString["fieldName"];
+        string textSearch = Request.GetFormValue(componentName);
 
         var values = await GetValuesAsync(textSearch);
         var items = DataItemService.GetItems(DataItem, values);

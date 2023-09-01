@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Components;
 
@@ -38,9 +39,9 @@ public class JJComboBox : ControlBase
     {
         get
         {
-            if (_selectedValue == null && CurrentContext.Request.IsPost)
+            if (_selectedValue == null && Request.IsPost)
             {
-                _selectedValue = CurrentContext.Request[Name];
+                _selectedValue = Request[Name];
             }
 
             return _selectedValue;
@@ -49,11 +50,12 @@ public class JJComboBox : ControlBase
     }
 
     public JJComboBox(
-        IHttpContext httpContext,
+        IHttpRequest httpRequest,
         IDataItemService dataItemService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ILogger<JJComboBox> logger) : base(httpContext)
+        IEncryptionService encryptionService,
+        ILogger<JJComboBox> logger) : base(httpRequest,encryptionService)
     {
         DataItemService = dataItemService;
         Logger = logger;

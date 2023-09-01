@@ -32,7 +32,6 @@ public class JJDataPanel : AsyncComponent
     #region "Properties"
 
     private FormUI _formUI;
-    [CanBeNull] private RouteContext _routeContext;
 
     /// <summary>
     /// Layout form settings
@@ -84,42 +83,25 @@ public class JJDataPanel : AsyncComponent
 
     internal IHttpContext CurrentContext { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
-    internal IEncryptionService EncryptionService { get; }
     internal IFieldsService FieldsService { get; }
     internal IFormValuesService FormValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
     internal ComponentFactory ComponentFactory { get; }
-    internal RouteContext RouteContext
-    {
-        get
-        {
-            if (_routeContext != null)
-                return _routeContext;
-
-            _routeContext = RouteContext.FromQueryString(CurrentContext.Request.GetQueryString());
-
-            return _routeContext;
-        }
-    }
-
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
 
     #endregion
 
     #region "Constructors"
 #if NET48
-    public JJDataPanel()
+    public JJDataPanel() : base(StaticServiceLocator.Provider.GetScopedDependentService<IQueryString>(), StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>())
     {
         ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<ComponentFactory>();
         EntityRepository =  StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
         DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         CurrentContext =  StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
-        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>();
         FieldsService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldsService>();
         FormValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFormValuesService>();
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
         UrlHelper = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
-        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>();
 
         Values = new Dictionary<string, object>();
         Errors =  new Dictionary<string, string>();
@@ -156,12 +138,11 @@ public class JJDataPanel : AsyncComponent
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
         ComponentFactory componentFactory
-    )
+    ) : base(currentContext.Request.QueryString, encryptionService)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         CurrentContext = currentContext;
-        EncryptionService = encryptionService;
         UrlHelper = urlHelper;
         FieldsService = fieldsService;
         FormValuesService = formValuesService;

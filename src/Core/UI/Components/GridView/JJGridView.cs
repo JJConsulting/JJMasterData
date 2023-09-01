@@ -97,7 +97,6 @@ public class JJGridView : AsyncComponent
     private JJDataImportation? _dataImportation;
     private JJDataExportation? _dataExportation;
     private GridScripts? _gridScripts;
-    private RouteContext? _routeContext;
 
     internal JJDataImportation DataImportation
     {
@@ -503,28 +502,12 @@ public class JJGridView : AsyncComponent
         get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("grid-view-selected-rows" + Name)?.ToString();
         set => _selectedRowsId = value ?? "";
     }
-
-    internal RouteContext RouteContext
-    {
-        get
-        {
-            if (_routeContext != null)
-                return _routeContext;
-
-            _routeContext = RouteContext.FromQueryString(CurrentContext.Request.GetQueryString());
-
-            return _routeContext;
-        }
-    }
-
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
     
     #endregion
 
     #region Injected Services
     internal IFieldsService FieldsService { get; }
     internal IExpressionsService ExpressionsService { get; }
-    internal IEncryptionService EncryptionService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal ComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
@@ -551,7 +534,7 @@ public class JJGridView : AsyncComponent
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ComponentFactory componentFactory)
+        ComponentFactory componentFactory) : base(currentContext.Request.QueryString,encryptionService)
     {
         Name = "jj-" + formElement.Name.ToLower();
         ShowTitle = true;
@@ -567,7 +550,6 @@ public class JJGridView : AsyncComponent
         FormElement = formElement;
         FieldsService = fieldsService;
         ExpressionsService = expressionsService;
-        EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         ComponentFactory = componentFactory;
         EntityRepository = entityRepository;
@@ -583,7 +565,7 @@ public class JJGridView : AsyncComponent
     {
         if (ComponentContext is ComponentContext.HtmlContent)
         {
-            var componentName = CurrentContext.Request.QueryString("componentName");
+            var componentName = CurrentContext.Request.QueryString["componentName"];
 
             if (Name.Equals(componentName))
             {
@@ -598,7 +580,7 @@ public class JJGridView : AsyncComponent
 
         if (ComponentContext is ComponentContext.GridViewRow)
         {
-            int rowIndex = int.Parse(CurrentContext.Request.QueryString("gridViewRowIndex"));
+            int rowIndex = int.Parse(CurrentContext.Request.QueryString["gridViewRowIndex"]);
 
             var htmlResponse = await GetTableRowHtmlAsync(rowIndex);
 
@@ -614,7 +596,7 @@ public class JJGridView : AsyncComponent
 
         if (ComponentContext is ComponentContext.SearchBox)
         {
-            var objName = CurrentContext.Request.QueryString("componentName");
+            var objName = CurrentContext.Request.QueryString["componentName"];
             if (objName == null || !objName.StartsWith(GridFilter.FilterFieldPrefix))
                 return new EmptyComponentResult();
 
@@ -1068,7 +1050,7 @@ public class JJGridView : AsyncComponent
 
     private async Task<ComponentResult> GetExportationResult()
     {
-        string expressionType = CurrentContext.Request.QueryString("dataExportationOperation");
+        string expressionType = CurrentContext.Request.QueryString["dataExportationOperation"];
         switch (expressionType)
         {
             case "showOptions":

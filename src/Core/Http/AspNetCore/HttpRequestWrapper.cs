@@ -9,6 +9,7 @@ namespace JJMasterData.Core.Http.AspNetCore;
 
 public class HttpRequestWrapper : IHttpRequest
 {
+    public IQueryString QueryString { get; }
     private ConnectionInfo Connection { get; }
     private HttpRequest Request { get; }
     public string UserHostAddress => Connection.RemoteIpAddress?.ToString();
@@ -17,8 +18,9 @@ public class HttpRequestWrapper : IHttpRequest
     public string AbsoluteUri => Request.GetDisplayUrl();
     public string ApplicationPath => Request.PathBase;
 
-    public HttpRequestWrapper(IHttpContextAccessor httpContextAccessor)
+    public HttpRequestWrapper(IHttpContextAccessor httpContextAccessor, IQueryString queryString)
     {
+        QueryString = queryString;
         var httpContext = httpContextAccessor.HttpContext;
         Request = httpContext.Request;
         Connection = httpContext.Connection;
@@ -29,10 +31,6 @@ public class HttpRequestWrapper : IHttpRequest
     public object GetUnvalidated(string key) => GetFormValue(key);
 
     public string this[string key] => GetValue(key);
-    
-    public string QueryString(string key) => Request.Query[key];
-
-    public string GetQueryString() => Request.QueryString.Value;
 
     public string GetFormValue(string key)
     {

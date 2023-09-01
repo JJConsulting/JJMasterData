@@ -143,10 +143,10 @@ public class JJFileDownloader : HtmlComponent
         IComponentFactory<JJFileDownloader> factory)
     {
         bool isExternalLink = false;
-        string criptFilePath = currentContext.Request.QueryString(DownloadParameter);
+        string criptFilePath = currentContext.Request.QueryString[DownloadParameter];
         if (criptFilePath == null)
         {
-            criptFilePath = currentContext.Request.QueryString(DirectDownloadParameter);
+            criptFilePath = currentContext.Request.QueryString[DirectDownloadParameter];
             isExternalLink = true;
         }
 

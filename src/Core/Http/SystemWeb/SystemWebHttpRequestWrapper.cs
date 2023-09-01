@@ -17,10 +17,7 @@ internal class SystemWebHttpRequestWrapper : IHttpRequest
     public object GetUnvalidated(string key) => Request.Unvalidated[key];
 
     public string this[string key] =>Request[key];
-    
-    public string QueryString(string key) => Request.QueryString[key];
-
-    public string GetQueryString() => Request.QueryString.ToString();
+    public IQueryString QueryString { get; }
 
     public string GetFormValue(string key) => Request.Form.Get(key);
 

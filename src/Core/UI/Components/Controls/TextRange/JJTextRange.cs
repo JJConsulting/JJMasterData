@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Components;
@@ -11,7 +12,7 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJTextRange : ControlBase
 {
-    private IControlFactory<JJTextGroup> TextBoxFactory { get; }
+    private IControlFactory<JJTextGroup> TextBoxGroupFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     internal ControlBase FromField { get; set; }
@@ -21,9 +22,11 @@ public class JJTextRange : ControlBase
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
     private bool IsTimeAware => FieldType is FieldType.DateTime or FieldType.DateTime2;
 
-    public JJTextRange(IHttpContext currentContext, IControlFactory<JJTextGroup> textBoxFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
+    public JJTextRange(IHttpRequest httpRequest, IControlFactory<JJTextGroup> textBoxGroupFactory,
+        IEncryptionService encryptionService, IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(
+        httpRequest, encryptionService)
     {
-        TextBoxFactory = textBoxFactory;
+        TextBoxGroupFactory = textBoxGroupFactory;
         StringLocalizer = stringLocalizer;
     }
 
@@ -35,19 +38,19 @@ public class JJTextRange : ControlBase
         await div.AppendAsync(HtmlTag.Div, async div =>
         {
             div.WithCssClass("col-sm-3");
-            
+
             FromField.Name = Name + "_from";
             FromField.Enabled = Enabled;
-            
+
             await div.AppendControlAsync(FromField);
         });
         await div.AppendAsync(HtmlTag.Div, async div =>
         {
             div.WithCssClass("col-sm-3");
-            
+
             ToField.Name = Name + "_to";
             ToField.Enabled = Enabled;
-            
+
             await div.AppendControlAsync(ToField);
         });
         div.Append(HtmlTag.Div, div =>
@@ -57,7 +60,7 @@ public class JJTextRange : ControlBase
         });
 
         var result = new RenderedComponentResult(div);
-        
+
         return await Task.FromResult(result);
     }
 
@@ -82,7 +85,7 @@ public class JJTextRange : ControlBase
 
         return dropdown;
     }
-    
+
     private HtmlBuilder GetDropdownButton()
     {
         return new HtmlBuilder(HtmlTag.Button)
@@ -103,10 +106,11 @@ public class JJTextRange : ControlBase
 
     private string GetLastThreeMonthsScript(DateTime now)
     {
-        var lastQuarter =now.AddMonths(-3);
+        var lastQuarter = now.AddMonths(-3);
         var dtLastQuarterFrom = new DateTime(lastQuarter.Year, lastQuarter.Month, 1).ToShortDateString();
-        var dtMonthTo = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month)).ToShortDateString();
-        
+        var dtMonthTo = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month))
+            .ToShortDateString();
+
         return GetjQueryFromToScript(dtLastQuarterFrom, dtMonthTo, IsTimeAware);
     }
 
@@ -116,7 +120,7 @@ public class JJTextRange : ControlBase
         var dtLastMonthFrom = new DateTime(lastMonth.Year, lastMonth.Month, 1).ToShortDateString();
         var dtLastMonthTo = new DateTime(lastMonth.Year, lastMonth.Month,
             DateTime.DaysInMonth(lastMonth.Year, lastMonth.Month)).ToShortDateString();
-        
+
         return GetjQueryFromToScript(dtLastMonthFrom, dtLastMonthTo, IsTimeAware);
     }
 
@@ -150,15 +154,12 @@ public class JJTextRange : ControlBase
                 a.AppendText(label);
             });
     }
-    
+
 
     private string GetjQueryFromToScript(string valueFrom, string valueTo, bool isTimeAware)
     {
-        
         string timeAwareTo = isTimeAware ? " 23:59" : string.Empty;
         string timeAwareFrom = isTimeAware ? " 00:00" : string.Empty;
         return $"$('#{Name}_from').val('{valueFrom}{timeAwareFrom}');$('#{Name}_to').val('{valueTo}{timeAwareTo}')";
     }
-
-
 }

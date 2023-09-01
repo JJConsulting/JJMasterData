@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -26,15 +27,15 @@ public class JJCheckBox : ControlBase
     {
         get
         {
-            if (_isChecked == null && CurrentContext.Request.IsPost)
-                _isChecked = Value.Equals(CurrentContext.Request[Name]);
+            if (_isChecked == null && Request.IsPost)
+                _isChecked = Value.Equals(Request[Name]);
 
             return _isChecked ?? false;
         }
         set => _isChecked = value;
     }
 
-    public JJCheckBox(IHttpContext httpContext) : base(httpContext)
+    public JJCheckBox(IHttpRequest httpRequest, IEncryptionService encryptionService) : base(httpRequest, encryptionService)
     {
         Visible = true;
         Enabled = true;

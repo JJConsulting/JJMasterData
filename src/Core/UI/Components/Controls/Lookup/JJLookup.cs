@@ -24,7 +24,7 @@ public class JJLookup : ControlBase
 {
     private FormElement FormElement { get; set; }
     private ILookupService LookupService { get; }
-    private IEncryptionService EncryptionService { get; }
+    private IComponentFactory<JJTextBox> TextBoxFactory { get; }
 
     #region "Properties"
 
@@ -59,9 +59,9 @@ public class JJLookup : ControlBase
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && CurrentContext.Request.IsPost)
+            if (AutoReloadFormFields && _text == null && Request.IsPost)
             {
-                _text = CurrentContext.Request[Name];
+                _text = Request[Name];
             }
 
             return _text;
@@ -95,15 +95,16 @@ public class JJLookup : ControlBase
         FormElement formElement,
         FormElementField field,
         ControlContext controlContext,
-        IHttpContext httpContext,
+        IHttpRequest httpRequest,
         ILookupService lookupService,
-        IEncryptionService encryptionService) : base(httpContext)
+        IEncryptionService encryptionService,
+        IComponentFactory<JJTextBox> textBoxFactory) : base(httpRequest,encryptionService)
     {
         FormElement = formElement;
         ElementMap = field.DataItem?.ElementMap ?? throw new ArgumentException("ElementMap cannot be null.");
         FieldName = field.Name;
         LookupService = lookupService;
-        EncryptionService = encryptionService;
+        TextBoxFactory = textBoxFactory;
         Enabled = true;
         AutoReloadFormFields = true;
         Name = field.Name;
@@ -147,34 +148,30 @@ public class JJLookup : ControlBase
         div.WithCssClass("input-group mb-3 d-flex" );
         
         Attributes["lookup-description-url"] = LookupService.GetDescriptionUrl(FormElement.Name,FieldName,Name,FormStateData.PageState);
-        
-        var idTextBox = new JJTextBox(CurrentContext)
-        {
-            Name = Name,
-            CssClass = $"form-control jj-lookup {CssClass}",
-            InputType = OnlyNumbers ? InputType.Number : InputType.Text,
-            MaxLength = MaxLength,
-            Text = SelectedValue?.ToString(),
-            Attributes = Attributes.DeepCopy(),
-            ToolTip = ToolTip,
-            ReadOnly = ReadOnly, 
-            Enabled = Enabled,
-        };
+
+        var idTextBox = TextBoxFactory.Create();
+        idTextBox.Name = Name;
+        idTextBox.CssClass = $"form-control jj-lookup {CssClass}";
+        idTextBox.InputType = OnlyNumbers ? InputType.Number : InputType.Text;
+        idTextBox.MaxLength = MaxLength;
+        idTextBox.Text = SelectedValue?.ToString();
+        idTextBox.Attributes = Attributes.DeepCopy();
+        idTextBox.ToolTip = ToolTip;
+        idTextBox.ReadOnly = ReadOnly;
+        idTextBox.Enabled = Enabled;
 
         idTextBox.Attributes["style"] = "flex:2";
 
-        var descriptionTextBox = new JJTextBox(CurrentContext)
-        {
-            Name = $"{Name}-description",
-            CssClass = $"form-control jj-lookup {GetFeedbackIcon(inputValue?.ToString(), description)} {CssClass}",
-            InputType = InputType.Text, 
-            MaxLength = MaxLength,
-            Text = description,
-            Attributes = Attributes.DeepCopy(),
-            ToolTip = ToolTip,
-            Enabled = false
-        };
-        
+        var descriptionTextBox = TextBoxFactory.Create();
+        descriptionTextBox.Name = $"{Name}-description";
+        descriptionTextBox.CssClass = $"form-control jj-lookup {GetFeedbackIcon(inputValue?.ToString(), description)} {CssClass}";
+        descriptionTextBox.InputType = InputType.Text;
+        descriptionTextBox.MaxLength = MaxLength;
+        descriptionTextBox.Text = description;
+        descriptionTextBox.Attributes = Attributes.DeepCopy();
+        descriptionTextBox.ToolTip = ToolTip;
+        descriptionTextBox.Enabled = false;
+
         descriptionTextBox.Attributes["style"] = "flex:10";
         
         await div.AppendControlAsync(idTextBox);

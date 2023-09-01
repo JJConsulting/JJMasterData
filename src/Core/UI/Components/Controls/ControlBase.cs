@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http;
@@ -37,7 +38,7 @@ public abstract class ControlBase : AsyncComponent
     /// </summary>
     public int MaxLength { get; set; }
 
-    internal IHttpContext CurrentContext { get; }
+    internal IHttpRequest Request { get; }
     
     /// <summary>
     /// Conteudo da caixa de texto 
@@ -46,18 +47,18 @@ public abstract class ControlBase : AsyncComponent
     {
         get
         {
-            if (_text == null && CurrentContext.Request.IsPost)
+            if (_text == null && Request.IsPost)
             {
-                _text = CurrentContext.Request[Name];
+                _text = Request.GetFormValue(Name);
             }
             return _text;
         }
         set => _text = value;
     }
 
-    protected ControlBase(IHttpContext currentContext)
+    protected ControlBase(IHttpRequest request, IEncryptionService encryptionService) : base(request.QueryString, encryptionService)
     {
-        CurrentContext = currentContext;
+        Request = request;
     }
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()

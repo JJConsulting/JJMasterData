@@ -15,12 +15,14 @@ public static class HttpServiceExtensions
         services.AddHttpContextAccessor();
         services.AddScoped<IHttpSession, Http.AspNetCore.HttpSessionWrapper>();
         services.AddScoped<IHttpRequest, Http.AspNetCore.HttpRequestWrapper>();
+        services.AddScoped<IQueryString, Http.AspNetCore.QueryStringWrapper>();  
 #endif
         services.AddScoped<JJMasterDataUrlHelper>();
 
 #if NETFRAMEWORK
         services.AddScoped<IHttpSession, Http.SystemWeb.SystemWebHttpSessionWrapper>();
         services.AddScoped<IHttpRequest, Http.SystemWeb.SystemWebHttpRequestWrapper>();
+        services.AddScoped<IQueryString, Http.SystemWeb.SystemWebQueryStringWrapper>();
 #endif
 
 

@@ -6,6 +6,7 @@ using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.UI.Components;
 
@@ -93,7 +94,8 @@ public class JJUploadArea : AsyncComponent
         IHttpContext currentContext,
         IUploadAreaService uploadAreaService,
         JJMasterDataUrlHelper urlHelper,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IEncryptionService encryptionService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext.Request.QueryString, encryptionService)
     {
         CurrentContext = currentContext;
         UploadAreaService = uploadAreaService;
@@ -119,7 +121,7 @@ public class JJUploadArea : AsyncComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string context = CurrentContext.Request.QueryString("context");
+        string context = CurrentContext.Request.QueryString["context"];
         if ("fileUpload".Equals(context))
         {
             if (OnFileUploaded != null) 

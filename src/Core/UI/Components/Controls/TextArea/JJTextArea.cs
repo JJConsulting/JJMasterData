@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
@@ -13,7 +14,7 @@ public class JJTextArea : ControlBase
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public int Rows { get; set; }
 
-    public JJTextArea(IHttpContext httpContext, IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(httpContext)
+    public JJTextArea(IHttpRequest httpRequest, IEncryptionService encryptionService,IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(httpRequest,encryptionService)
     {
         StringLocalizer = stringLocalizer;
         Attributes.Add("class", "form-control");

@@ -95,7 +95,7 @@ public class JJDataExportation : ProcessComponent
         JJMasterDataUrlHelper urlHelper, 
         IEncryptionService encryptionService, 
         DataExportationWriterFactory dataExportationWriterFactory) : 
-        base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(),stringLocalizer)
+        base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
         _urlHelper = urlHelper;
         _encryptionService = encryptionService;

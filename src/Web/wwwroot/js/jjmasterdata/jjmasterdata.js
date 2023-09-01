@@ -1671,28 +1671,24 @@ class SearchBoxListener {
     static listenTypeahed() {
         $("input.jj-search-box").each(function () {
             const hiddenInputId = $(this).attr("hidden-input-id");
-            let urltypehead = $(this).attr("urltypehead");
-            let triggerlength = $(this).attr("triggerlength");
-            let numberofitems = $(this).attr("numberofitems");
+            let queryString = $(this).attr("query-string");
+            let triggerLength = $(this).attr("trigger-length");
+            let numberOfItems = $(this).attr("number-of-items");
             let scrollbar = Boolean($(this).attr("scrollbar"));
-            let showimagelegend = Boolean($(this).attr("showimagelegend"));
-            if (triggerlength == null)
-                triggerlength = "1";
-            if (numberofitems == null)
-                numberofitems = "10";
+            let showImageLegend = Boolean($(this).attr("show-image-legend"));
+            if (triggerLength == null)
+                triggerLength = "1";
+            if (numberOfItems == null)
+                numberOfItems = "10";
             if (scrollbar == null)
                 scrollbar = false;
-            if (showimagelegend == null)
-                showimagelegend = false;
-            const frm = $("form");
-            if (!urltypehead.includes("GetItems")) {
-                let url = frm.attr("action");
-                if (url.includes("?"))
-                    url += "&";
-                else
-                    url += "?";
-                urltypehead = url + urltypehead;
-            }
+            if (showImageLegend == null)
+                showImageLegend = false;
+            const form = $("form");
+            let url = new UrlBuilder().build();
+            if (!url.endsWith("?"))
+                url += "?";
+            url += queryString;
             const jjSearchBoxSelector = "#" + hiddenInputId + "_text";
             const jjSearchBoxHiddenSelector = "#" + hiddenInputId;
             $(this).blur(function () {
@@ -1706,14 +1702,14 @@ class SearchBoxListener {
             });
             $(this).typeahead({
                 ajax: {
-                    url: urltypehead,
+                    url: url,
                     method: "POST",
                     loadingClass: "loading-circle",
-                    triggerLength: triggerlength,
+                    triggerLength: triggerLength,
                     preDispatch: function () {
                         $(jjSearchBoxHiddenSelector).val("");
-                        FeedbackIcon.setIcon(jjSearchBoxSelector, "");
-                        return frm.serializeArray();
+                        FeedbackIcon.removeAllIcons(jjSearchBoxSelector);
+                        return form.serializeArray();
                     },
                 },
                 onSelect: function (item) {
@@ -1726,14 +1722,14 @@ class SearchBoxListener {
                 },
                 displayField: "name",
                 valueField: "id",
-                triggerLength: triggerlength,
-                items: numberofitems,
+                triggerLength: triggerLength,
+                items: numberOfItems,
                 scrollBar: scrollbar,
                 item: '<li class="dropdown-item"><a href="#"></a></li>',
                 highlighter: function (item) {
                     const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
                     let textSel;
-                    if (showimagelegend) {
+                    if (showImageLegend) {
                         const parts = item.split("|");
                         textSel = parts[0].replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
                             return "<strong>" + match + "</strong>";

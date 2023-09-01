@@ -1,6 +1,6 @@
 namespace JJMasterData.Core.UI.Components;
 
-internal enum ComponentContext
+public enum ComponentContext
 {
     /// <summary>
     /// Renders the component

@@ -74,7 +74,7 @@ public class FormValuesService : IFormValuesService
                     break;
                 case FormComponent.Currency:
                 case FormComponent.Number:
-                    string context = CurrentContext.Request.QueryString("context");
+                    string context = CurrentContext.Request.QueryString["context"];
                     if (value != null && ("panelReload".Equals(context) || "gridViewRow".Equals(context) ||
                                           "htmlContent".Equals(context)))
                     {

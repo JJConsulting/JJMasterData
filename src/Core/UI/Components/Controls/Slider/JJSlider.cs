@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
@@ -10,6 +11,7 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJSlider : ControlBase
 {
+    private IComponentFactory<JJTextBox> TextBoxFactory { get; }
     public double MinValue { get; set; }
     public double MaxValue { get; set; }
     public double? Value { get; set; }
@@ -17,9 +19,9 @@ public class JJSlider : ControlBase
     public bool ShowInput { get; set; } = true;
     public int NumberOfDecimalPlaces { get; set; }
     
-    public JJSlider(IHttpContext httpContext) : base(httpContext)
+    public JJSlider(IHttpRequest httpRequest, IEncryptionService encryptionService, IComponentFactory<JJTextBox> textBoxFactory) : base(httpRequest,encryptionService)
     {
-
+        TextBoxFactory = textBoxFactory;
     }
 
     protected override async Task<ComponentResult> BuildResultAsync()
@@ -36,21 +38,16 @@ public class JJSlider : ControlBase
 
         if (ShowInput)
         {
-            var number = new JJTextBox(CurrentContext)
-            {
-                InputType = InputType.Number,
-                Name = $"{Name}-value",
-                MinValue = MinValue,
-                Enabled = Enabled,
-                Text = Value.ToString(),
-                NumberOfDecimalPlaces = NumberOfDecimalPlaces,
-                MaxValue = MaxValue,
-                CssClass = "jjslider-value",
-                Attributes =
-                {
-                    ["step"] = Step.ToString()
-                }
-            };
+            var number = TextBoxFactory.Create();
+            number.InputType = InputType.Number;
+            number.Name = $"{Name}-value";
+            number.MinValue = MinValue;
+            number.Enabled = Enabled;
+            number.Text = Value.ToString();
+            number.NumberOfDecimalPlaces = NumberOfDecimalPlaces;
+            number.MaxValue = MaxValue;
+            number.CssClass = "jjslider-value";
+            number.Attributes["step"] = Step.ToString();
 
             await html.AppendAsync(HtmlTag.Div, async row =>
             {

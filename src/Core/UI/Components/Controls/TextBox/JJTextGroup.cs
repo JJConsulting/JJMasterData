@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
@@ -30,15 +31,8 @@ public class JJTextGroup : JJTextBox
 
     public string GroupCssClass { get; set; }
 
-    public JJTextGroup(IHttpContext httpContext) : base(httpContext)
+    public JJTextGroup(IHttpContext httpContext, IEncryptionService encryptionService) :  base(httpContext.Request, encryptionService)
     {
-    }
-
-    public JJTextGroup(string name, InputAddons addons, string text, IHttpContext httpContext) : base(httpContext)
-    {
-        Name = name;
-        Addons = addons;
-        Text = text;
     }
 
     protected override async Task<ComponentResult> BuildResultAsync()
@@ -53,7 +47,8 @@ public class JJTextGroup : JJTextBox
             }
         }
 
-        var input = await GetHtmlBuilderAsync();
+        var baseResult = (RenderedComponentResult)await base.BuildResultAsync();
+        var input =  baseResult.HtmlBuilder;
         bool hasAction = Actions.ToList().Exists(x => x.Visible);
         bool hasAddons = Addons != null;
 

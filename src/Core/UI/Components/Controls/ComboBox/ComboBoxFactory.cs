@@ -7,36 +7,44 @@ using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
 internal class ComboBoxFactory : IControlFactory<JJComboBox>
 {
-    private IHttpContext HttpContext { get; }
+    private IHttpRequest HttpRequest { get; }
     private IDataItemService DataItemService { get; }
     private IExpressionsService ExpressionsService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IEncryptionService EncryptionService { get; }
     private ILoggerFactory LoggerFactory { get; }
 
     public ComboBoxFactory(
-        IHttpContext httpContext, 
+        IHttpRequest httpRequest, 
         IDataItemService dataItemService,
         IExpressionsService expressionsService, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IEncryptionService encryptionService,
         ILoggerFactory loggerFactory)
     {
-        HttpContext = httpContext;
+        HttpRequest = httpRequest;
         DataItemService = dataItemService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
+        EncryptionService = encryptionService;
         LoggerFactory = loggerFactory;
     }
 
     public JJComboBox Create()
     {
-        return new JJComboBox(HttpContext, DataItemService, ExpressionsService,
+        return new JJComboBox(
+            HttpRequest,
+            DataItemService,
+            ExpressionsService,
             StringLocalizer,
+            EncryptionService,
             LoggerFactory.CreateLogger<JJComboBox>());
     }
 
