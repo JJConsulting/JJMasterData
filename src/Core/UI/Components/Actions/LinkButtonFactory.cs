@@ -128,10 +128,9 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                     ActionsScripts.GetFormActionScript(toolbarAction, actionContext, ActionSource.GridToolbar);
                 break;
             case ExportAction:
-                var exportationScripts = new DataExportationScripts(UrlHelper, EncryptionService);
+                var exportationScripts = new DataExportationScripts(actionContext.ParentComponentName, actionContext.FormElement, EncryptionService);
                 button.OnClientClick =
-                    exportationScripts.GetExportPopupScript(actionContext.FormElement.Name,
-                        actionContext.ParentComponentName, actionContext.IsExternalRoute);
+                    exportationScripts.GetExportPopupScript();
                 break;
             case FilterAction filterAction:
                 if (filterAction.ShowAsCollapse)

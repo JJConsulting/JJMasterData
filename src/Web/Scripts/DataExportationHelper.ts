@@ -1,9 +1,9 @@
 class DataExportationHelper {
-    static async startProgressVerification(componentName) {
+    static async startProgressVerification(componentName: string, routeContext: string) {
         DataExportationHelper.setLoadMessage();
 
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context","dataExportation")
+        urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","checkProgress")
         
@@ -15,19 +15,19 @@ class DataExportationHelper {
         }
     }
 
-    static async stopProcess(componentName, stopMessage) {
+    static async stopExportation(componentName: string, routeContext: string, stopMessage: string) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context","dataExportation")
+        urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","stopProcess")
         
-        await DataExportationHelper.stopExportation(urlBuilder.build(), stopMessage);
+        await DataExportationHelper.stopProcess(urlBuilder.build(), stopMessage);
     }
 
 
-    static openExportPopup(componentName) {
+    static openExportPopup(componentName: string, routeContext: string) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context","dataExportation")
+        urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","showOptions")
 
@@ -41,10 +41,10 @@ class DataExportationHelper {
             });
     }
 
-    static startExportation(componentName) {
+    static startExportation(componentName: string, routeContext: string) {
 
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context","dataExportation")
+        urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","startProcess")
 
@@ -52,11 +52,11 @@ class DataExportationHelper {
             method:"POST",
             body: new FormData(document.querySelector<HTMLFormElement>("form"))
         }).then(response=>response.text()).then(async html => {
-            const modalBody = "#export-modal-" + componentName + " .modal-body ";
+            const modalBody = "#data-exportation-modal-" + componentName + " .modal-body ";
             document.querySelector<HTMLElement>(modalBody).innerHTML = html;
             
             loadJJMasterData(null, modalBody);
-            await DataExportationHelper.startProgressVerification(componentName)
+            await DataExportationHelper.startProgressVerification(componentName,routeContext)
         });
         
     }
@@ -70,7 +70,7 @@ class DataExportationHelper {
 
             if (data.FinishedMessage) {
                 showWaitOnPost = true;
-                document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
+                document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
                 const linkFile = document.querySelector<HTMLLinkElement>("#export_link_" + componentName);
                 if (linkFile)
                     linkFile.click();
@@ -86,8 +86,8 @@ class DataExportationHelper {
             }
         } catch (e) {
             showWaitOnPost = true;
-            document.querySelector<HTMLElement>("#dataexp_spinner_" + componentName).style.display = "none";
-            document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = e.message;
+            document.querySelector<HTMLElement>("#data-exportation-spinner" + componentName).style.display = "none";
+            document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = e.message;
 
             return false;
         }
@@ -119,13 +119,13 @@ class DataExportationHelper {
             , position: "absolute" // Element positioning
 
         }
-        const target = document.getElementById('exportationSpinner');
+        const target = document.getElementById('data-exportation-spinner');
         // @ts-ignore
         var spinner = new Spinner(options).spin(target);
     }
     
     private static setSettingsHTML(componentName, html) {
-        const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body ");
+        const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
         loadJJMasterData(null);
 
@@ -138,14 +138,14 @@ class DataExportationHelper {
         }
 
         if (bootstrapVersion < 5) {
-            $("#export-modal-" + componentName).modal();
+            $("#data-exportation-modal-" + componentName).modal();
         } else {
-            const modal = new bootstrap.Modal(document.querySelector("#export-modal-" + componentName), {});
+            const modal = new bootstrap.Modal(document.querySelector("#data-exportation-modal-" + componentName), {});
             modal.show();
         }
     }
     
-    static async stopExportation(url: string, stopMessage: string) {
+    static async stopProcess(url: string, stopMessage: string) {
         document.querySelector<HTMLElement>("#divMsgProcess").innerHTML = stopMessage;
         showWaitOnPost = false;
         await fetch(url);

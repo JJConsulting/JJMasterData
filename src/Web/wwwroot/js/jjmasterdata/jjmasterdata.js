@@ -341,11 +341,11 @@ class DataDictionaryUtils {
     }
 }
 class DataExportationHelper {
-    static startProgressVerification(componentName) {
+    static startProgressVerification(componentName, routeContext) {
         return __awaiter(this, void 0, void 0, function* () {
             DataExportationHelper.setLoadMessage();
             let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataExportation");
+            urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
             var isCompleted = false;
@@ -355,18 +355,18 @@ class DataExportationHelper {
             }
         });
     }
-    static stopProcess(componentName, stopMessage) {
+    static stopExportation(componentName, routeContext, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataExportation");
+            urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
-            yield DataExportationHelper.stopExportation(urlBuilder.build(), stopMessage);
+            yield DataExportationHelper.stopProcess(urlBuilder.build(), stopMessage);
         });
     }
-    static openExportPopup(componentName) {
+    static openExportPopup(componentName, routeContext) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "dataExportation");
+        urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("dataExportationOperation", "showOptions");
         fetch(urlBuilder.build())
@@ -378,19 +378,19 @@ class DataExportationHelper {
             console.log(error);
         });
     }
-    static startExportation(componentName) {
+    static startExportation(componentName, routeContext) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "dataExportation");
+        urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("dataExportationOperation", "startProcess");
         fetch(urlBuilder.build(), {
             method: "POST",
             body: new FormData(document.querySelector("form"))
         }).then(response => response.text()).then((html) => __awaiter(this, void 0, void 0, function* () {
-            const modalBody = "#export-modal-" + componentName + " .modal-body ";
+            const modalBody = "#data-exportation-modal-" + componentName + " .modal-body ";
             document.querySelector(modalBody).innerHTML = html;
             loadJJMasterData(null, modalBody);
-            yield DataExportationHelper.startProgressVerification(componentName);
+            yield DataExportationHelper.startProgressVerification(componentName, routeContext);
         }));
     }
     static checkProgress(url, componentName) {
@@ -401,7 +401,7 @@ class DataExportationHelper {
                 const data = yield response.json();
                 if (data.FinishedMessage) {
                     showWaitOnPost = true;
-                    document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
+                    document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
                     const linkFile = document.querySelector("#export_link_" + componentName);
                     if (linkFile)
                         linkFile.click();
@@ -418,8 +418,8 @@ class DataExportationHelper {
             }
             catch (e) {
                 showWaitOnPost = true;
-                document.querySelector("#dataexp_spinner_" + componentName).style.display = "none";
-                document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = e.message;
+                document.querySelector("#data-exportation-spinner" + componentName).style.display = "none";
+                document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = e.message;
                 return false;
             }
         });
@@ -447,11 +447,11 @@ class DataExportationHelper {
             hwaccel: false,
             position: "absolute"
         };
-        const target = document.getElementById('exportationSpinner');
+        const target = document.getElementById('data-exportation-spinner');
         var spinner = new Spinner(options).spin(target);
     }
     static setSettingsHTML(componentName, html) {
-        const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body ");
+        const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
         loadJJMasterData(null);
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
@@ -462,14 +462,14 @@ class DataExportationHelper {
             }
         }
         if (bootstrapVersion < 5) {
-            $("#export-modal-" + componentName).modal();
+            $("#data-exportation-modal-" + componentName).modal();
         }
         else {
-            const modal = new bootstrap.Modal(document.querySelector("#export-modal-" + componentName), {});
+            const modal = new bootstrap.Modal(document.querySelector("#data-exportation-modal-" + componentName), {});
             modal.show();
         }
     }
-    static stopExportation(url, stopMessage) {
+    static stopProcess(url, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             document.querySelector("#divMsgProcess").innerHTML = stopMessage;
             showWaitOnPost = false;
@@ -540,20 +540,13 @@ class DataImportationHelper {
         const target = document.getElementById('impSpin');
         new Spinner(options).spin(target);
     }
-    static checkProgress(componentName) {
+    static checkProgress(componentName, routeContext) {
         showWaitOnPost = false;
-        let checkProgressUrl = document.getElementById("divProcess").getAttribute("check-progress-url");
-        let url;
-        if (checkProgressUrl) {
-            url = checkProgressUrl;
-        }
-        else {
-            let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataImportation");
-            urlBuilder.addQueryParameter("current_uploadaction", "process_check");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            url = urlBuilder.build();
-        }
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
+        urlBuilder.addQueryParameter("componentName", componentName);
+        const url = urlBuilder.build();
         fetch(url, {
             method: 'GET',
             cache: 'no-cache',
@@ -631,7 +624,7 @@ class DataImportationHelper {
                 DataImportationHelper.errorCount = result.Error;
             }
             if (!result.IsProcessing) {
-                document.querySelector("#current_uploadaction").value = "process_finished";
+                document.querySelector("#dataImportationOperation").value = "finished";
                 setTimeout(function () {
                     document.querySelector("form").dispatchEvent(new Event("submit"));
                 }, 1000);
@@ -641,28 +634,21 @@ class DataImportationHelper {
             console.error('Error fetching data:', error);
         });
     }
-    static startProcess(objname) {
+    static startImportation(componentName, routeContext) {
         $(document).ready(function () {
             DataImportationHelper.setLoadMessage();
             setInterval(function () {
-                DataImportationHelper.checkProgress(objname);
+                DataImportationHelper.checkProgress(componentName, routeContext);
             }, 3000);
         });
     }
-    static stopProcess(componentName, stopLabel) {
+    static stopImportation(componentName, routeContext, stopLabel) {
         showWaitOnPost = false;
-        let stopProcessUrl = document.getElementById("divProcess").getAttribute("stop-process-url");
-        let url;
-        if (stopProcessUrl) {
-            url = stopProcessUrl;
-        }
-        else {
-            let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataImportation");
-            urlBuilder.addQueryParameter("current_uploadaction", "process_check");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            url = urlBuilder.build();
-        }
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
+        urlBuilder.addQueryParameter("componentName", componentName);
+        const url = urlBuilder.build();
         fetch(url).then(response => response.json()).then(data => {
             if (data.isProcessing === false) {
                 document.getElementById("divMsgProcess").innerHTML = stopLabel;
@@ -681,7 +667,7 @@ class DataImportationHelper {
                 }
                 e.preventDefault();
                 if (pastedText != undefined) {
-                    $("#current_uploadaction").val("posted_past_text");
+                    $("#dataImportationOperation").val("processPastedText");
                     $("#pasteValue").val(pastedText);
                     $("form:first").trigger("submit");
                 }

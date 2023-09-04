@@ -342,9 +342,6 @@ public class JJFormView : AsyncComponent
 
         if (ComponentContext is ComponentContext.DataImportation or ComponentContext.FileUpload)
         {
-            if (!DataImportation.Upload.Name.Equals("todo"))
-                return new EmptyComponentResult();
-
             return await GetImportationResult();
         }
 

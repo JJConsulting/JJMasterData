@@ -18,9 +18,4 @@
     <ItemGroup>
         <InternalsVisibleTo Include="JJMasterData.Web.Test" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Styles\" />
-    </ItemGroup>
-
 </Project>

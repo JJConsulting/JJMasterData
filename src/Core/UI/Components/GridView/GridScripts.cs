@@ -19,8 +19,6 @@ public class GridScripts
 {
     private readonly JJGridView _gridView;
     private IEncryptionService EncryptionService => _gridView.EncryptionService;
-    private IExpressionsService ExpressionsService => _gridView.ExpressionsService;
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer => _gridView.StringLocalizer;
 
     public GridScripts(JJGridView gridView)
     {

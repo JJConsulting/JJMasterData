@@ -978,7 +978,7 @@ public class JJGridView : AsyncComponent
 
         var modal = new JJModalDialog
         {
-            Name = "export-modal-" + Name,
+            Name = "data-exportation-modal-" + Name,
             Title = "Export"
         };
 
