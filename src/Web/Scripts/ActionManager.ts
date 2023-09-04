@@ -1,9 +1,5 @@
 class ActionManager {
-
-    static executeRedirectActionAtSamePage(componentName: string, encryptedActionMap: string, confirmMessage?: string){
-        this.executeRedirectAction(null,componentName,encryptedActionMap,confirmMessage);
-    }
-
+    
     static executeSqlCommand(componentName, rowId, confirmMessage) {
         if (confirmMessage) {
             var result = confirm(confirmMessage);
@@ -24,9 +20,9 @@ class ActionManager {
         document.querySelector("form").dispatchEvent(new Event("submit"));
     }
     
-    static executeRedirectAction(url: string, componentName: string, encryptedActionMap: string, confirmMessage?: string){
-        if (confirmMessage) {
-            const result = confirm(confirmMessage);
+    static executeRedirectAction(componentName: string, routeContext:string, encryptedActionMap: string, confirmationMessage?: string){
+        if (confirmationMessage) {
+            const result = confirm(confirmationMessage);
             if (!result) {
                 return false;
             }
@@ -35,13 +31,11 @@ class ActionManager {
         const currentFormActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
         currentFormActionInput.value = encryptedActionMap;
 
-        if(!url){
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "urlRedirect");
-            urlBuilder.addQueryParameter("componentName", componentName);
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("componentName", componentName);
 
-            url = urlBuilder.build();
-        }
+        const url = urlBuilder.build();
 
         this.executeUrlRedirect(url);
 

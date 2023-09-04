@@ -43,33 +43,43 @@ public static class FactoriesServiceExtensions
     {
         services.AddTransient<LinkButtonFactory>();
         
-        services.AddTransient<IControlFactory<JJComboBox>,ComboBoxFactory>();
-        services.AddTransient<IControlFactory<JJLookup>,LookupFactory>();
-        services.AddTransient<IControlFactory<JJSearchBox>,SearchBoxFactory>();
-        services.AddTransient<IControlFactory<JJTextArea>,TextAreaFactory>();
-        services.AddTransient<IControlFactory<JJSlider>,SliderFactory>();
-        services.AddTransient<IControlFactory<JJTextGroup>,TextGroupFactory>();
-        services.AddTransient<IControlFactory<JJTextRange>,TextRangeFactory>();
-        services.AddTransient<IControlFactory<JJTextFile>,TextFileFactory>();
-        services.AddTransient<IControlFactory<JJCheckBox>,CheckBoxFactory>();
-        services.AddTransient<IControlFactory,ControlFactory>();
+        services.AddControlsFactories();
 
+        services.AddFormElementComponentsFactories();
+
+        services.AddTransient<IComponentFactory<JJUploadView>, UploadViewFactory>();
+        services.AddTransient<IComponentFactory<JJFileDownloader>, FileDownloaderFactory>();
+        services.AddTransient<IComponentFactory<JJUploadArea>, UploadAreaFactory>();
+        services.AddTransient<IComponentFactory<JJTextBox>,TextBoxFactory>();
+        
+        services.AddScoped<RouteContextFactory>();
+        
+        services.AddTransient<IComponentFactory,ComponentFactory>();
+
+        return services;
+    }
+
+    private static void AddFormElementComponentsFactories(this IServiceCollection services)
+    {
         services.AddTransient<IFormElementComponentFactory<JJAuditLogView>, AuditLogViewFactory>();
         services.AddTransient<IFormElementComponentFactory<JJDataPanel>, DataPanelFactory>();
         services.AddTransient<IFormElementComponentFactory<JJFormView>, FormViewFactory>();
         services.AddTransient<IFormElementComponentFactory<JJGridView>, GridViewFactory>();
         services.AddTransient<IFormElementComponentFactory<JJDataExportation>, DataExportationFactory>();
         services.AddTransient<IFormElementComponentFactory<JJDataImportation>, DataImportationFactory>();
+    }
 
-        services.AddTransient<IComponentFactory<JJUploadView>, UploadViewFactory>();
-        services.AddTransient<IComponentFactory<JJFileDownloader>, FileDownloaderFactory>();
-        services.AddTransient<IComponentFactory<JJUploadArea>, UploadAreaFactory>();
-        services.AddTransient<IComponentFactory<JJTextBox>,TextBoxFactory>();
-
-        services.AddScoped<RouteContextFactory>();
-        
-        services.AddTransient<IComponentFactory,ComponentFactory>();
-
-        return services;
+    private static void AddControlsFactories(this IServiceCollection services)
+    {
+        services.AddTransient<IControlFactory<JJComboBox>, ComboBoxFactory>();
+        services.AddTransient<IControlFactory<JJLookup>, LookupFactory>();
+        services.AddTransient<IControlFactory<JJSearchBox>, SearchBoxFactory>();
+        services.AddTransient<IControlFactory<JJTextArea>, TextAreaFactory>();
+        services.AddTransient<IControlFactory<JJSlider>, SliderFactory>();
+        services.AddTransient<IControlFactory<JJTextGroup>, TextGroupFactory>();
+        services.AddTransient<IControlFactory<JJTextRange>, TextRangeFactory>();
+        services.AddTransient<IControlFactory<JJTextFile>, TextFileFactory>();
+        services.AddTransient<IControlFactory<JJCheckBox>, CheckBoxFactory>();
+        services.AddTransient<IControlFactory, ControlFactory>();
     }
 }

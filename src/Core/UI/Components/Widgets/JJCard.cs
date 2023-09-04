@@ -17,16 +17,11 @@ public class JJCard : HtmlComponent
 
     public PanelLayout Layout { get; set; }
 
-    public PanelColor Color { get; set; }
+    public PanelColor Color { get; set; } = PanelColor.Default;
 
     public HtmlBuilder HtmlBuilderContent { get; set; }
 
     private bool HasTitle => !string.IsNullOrEmpty(Title) | !string.IsNullOrEmpty(SubTitle);
-
-    public JJCard()
-    {
-        Color = PanelColor.Default;
-    }
 
     internal override HtmlBuilder BuildHtml()
     {

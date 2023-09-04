@@ -6,6 +6,7 @@
     private static errorCount = 0;
     
     private static pasteEventListener;
+    private static intervalId;
     private static setLoadMessage() {
         const options = {
             lines: 13, // The number of lines to draw
@@ -132,6 +133,7 @@
                     urlBuilder.addQueryParameter("dataImportationOperation", "log")
                     DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small).then(_ => {
                         GridViewHelper.refreshGrid(componentName,gridRouteContext)
+                        clearInterval(DataImportationHelper.intervalId)
                     })
                 }
             })
@@ -154,15 +156,14 @@
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
-        DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small).then(_ => {
-        })
+        DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small);
     }
 
     static start(componentName, routeContext, gridRouteContext) {
         document.addEventListener("DOMContentLoaded", function () {
             DataImportationHelper.setLoadMessage();
 
-            setInterval(function () {
+            DataImportationHelper.intervalId = setInterval(function () {
                 DataImportationHelper.checkProgress(componentName, routeContext,gridRouteContext);
             }, 3000);
         });

@@ -11,18 +11,13 @@ public class JJAlert : HtmlComponent
     public PanelColor Color { get; set; }
     public IconType? Icon { get; set; }
     public string Title { get; set; }
-    public IList<string> Messages { get; set; }
+    public IList<string> Messages { get; set; } = new List<string>();
     public bool ShowCloseButton { get; set; }
 
     /// <remarks>
     /// Default = true
     /// </remarks>
     public bool ShowIcon { get; set; } = true;
-
-    internal JJAlert()
-    {
-        Messages = new List<string>();
-    }
 
     internal override HtmlBuilder BuildHtml()
     {

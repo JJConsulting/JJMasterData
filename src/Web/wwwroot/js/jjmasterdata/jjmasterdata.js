@@ -8,9 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 class ActionManager {
-    static executeRedirectActionAtSamePage(componentName, encryptedActionMap, confirmMessage) {
-        this.executeRedirectAction(null, componentName, encryptedActionMap, confirmMessage);
-    }
     static executeSqlCommand(componentName, rowId, confirmMessage) {
         if (confirmMessage) {
             var result = confirm(confirmMessage);
@@ -26,21 +23,19 @@ class ActionManager {
         }
         document.querySelector("form").dispatchEvent(new Event("submit"));
     }
-    static executeRedirectAction(url, componentName, encryptedActionMap, confirmMessage) {
-        if (confirmMessage) {
-            const result = confirm(confirmMessage);
+    static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
+        if (confirmationMessage) {
+            const result = confirm(confirmationMessage);
             if (!result) {
                 return false;
             }
         }
         const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
         currentFormActionInput.value = encryptedActionMap;
-        if (!url) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "urlRedirect");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            url = urlBuilder.build();
-        }
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("componentName", componentName);
+        const url = urlBuilder.build();
         this.executeUrlRedirect(url);
         return true;
     }
@@ -629,6 +624,7 @@ class DataImportationHelper {
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
                 DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
                     GridViewHelper.refreshGrid(componentName, gridRouteContext);
+                    clearInterval(DataImportationHelper.intervalId);
                 });
             }
         })
@@ -648,13 +644,12 @@ class DataImportationHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
-        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
-        });
+        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small);
     }
     static start(componentName, routeContext, gridRouteContext) {
         document.addEventListener("DOMContentLoaded", function () {
             DataImportationHelper.setLoadMessage();
-            setInterval(function () {
+            DataImportationHelper.intervalId = setInterval(function () {
                 DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
             }, 3000);
         });
@@ -684,6 +679,7 @@ class DataImportationHelper {
     }
     static addPasteListener(componentName, routeContext, gridRouteContext) {
         DataImportationHelper.pasteEventListener = function onPaste(e) {
+            DataImportationHelper.removePasteListener();
             let pastedText = undefined;
             if (window.clipboardData && window.clipboardData.getData) {
                 pastedText = window.clipboardData.getData("Text");
@@ -709,7 +705,7 @@ class DataImportationHelper {
             }
             return false;
         };
-        document.addEventListener("paste", this.pasteEventListener, { once: true });
+        document.addEventListener("paste", DataImportationHelper.pasteEventListener, { once: true });
     }
     static removePasteListener() {
         if (DataImportationHelper.pasteEventListener) {
