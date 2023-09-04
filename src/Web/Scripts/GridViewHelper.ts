@@ -40,12 +40,12 @@
         }
     }
     
-    static sorting(componentName, routeContext, tableOrder) {
+    static sortGridValues(componentName, routeContext, field) {
         const tableOrderElement = document.querySelector<HTMLInputElement>("#grid-view-order-" + componentName);
-        if (tableOrder + " ASC" === tableOrderElement.value)
-            tableOrderElement.value = tableOrder + " DESC";
+        if (field + " ASC" === tableOrderElement.value)
+            tableOrderElement.value = field + " DESC";
         else
-            tableOrderElement.value = tableOrder + " ASC";
+            tableOrderElement.value = field + " ASC";
 
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
@@ -103,25 +103,6 @@
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
-    static selectAllRows(componentName, url) {
-        fetch(url, {method:"POST"})
-            .then(response => response.json())
-            .then(data => GridViewHelper.selectAllRowsElements(componentName, data.selectedRows))
-    }
-
-    static selectAllRowsElements(componentName, rows) {
-        const values = rows.split(",");
-
-        const checkboxes = document.querySelectorAll<HTMLInputElement>(".jjselect input:not(:disabled)");
-        checkboxes.forEach(checkbox => checkbox.checked = true);
-
-        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName) as HTMLInputElement;
-        selectedRowsInput.value = values.join(",");
-
-        const selectedText = document.getElementById("selected-text-" + componentName);
-        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
-    }
-    
     static refreshGrid(componentName: string, routeContext: string, reloadListeners = false) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);

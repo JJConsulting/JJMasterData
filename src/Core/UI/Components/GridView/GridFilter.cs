@@ -258,7 +258,7 @@ internal class GridFilter
         {
             Attributes =
             {
-                { "onkeyup", $"JJViewHelper.searchOnDOM('{GridView.Name}', this);" }
+                { "onkeyup", $"GridViewFilterHelper.searchOnDOM('{GridView.Name}', this);" }
             },
             ToolTip = StringLocalizer["Filter by any field visible in the list"],
             PlaceHolder = StringLocalizer["Filter"],

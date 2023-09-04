@@ -38,18 +38,32 @@ class GridViewSelectionHelper{
         }
     }
 
-    static selectAll(componentName) {
+    static selectAll(componentName, routeContext) {
         const urlBuilder = new UrlBuilder()
-        urlBuilder.addQueryParameter("context","selectAll")
-
+        urlBuilder.addQueryParameter("routeContext",routeContext)
         postFormValues({
             url: urlBuilder.build(),
             success: (data)=>{
-                GridViewHelper.selectAllRowsElements(componentName, data.selectedRows)
+                this.selectAllRowsElements(componentName, data.selectedRows)
             }
         })
     }
-    
+
+
+    static selectAllRowsElements(componentName, rows) {
+        const values = rows.split(",");
+
+        const checkboxes = document.querySelectorAll<HTMLInputElement>(".jjselect input:not(:disabled)");
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+
+        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName) as HTMLInputElement;
+        selectedRowsInput.value = values.join(",");
+
+        const selectedText = document.getElementById("selected-text-" + componentName);
+        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
+    }
+
+
     static unSelectAll(componentName: string) {
         const checkboxes = document.querySelectorAll(`#${componentName} .jjselect input:not(:disabled)`) as NodeListOf<HTMLInputElement>;
         const valuesInput = document.getElementById("grid-view-selected-rows" + componentName) as HTMLInputElement;

@@ -1,10 +1,10 @@
 class GridViewFilterHelper{
-    static filter(componentName, url) {
+    static filter(componentName, routeContext) {
         document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         document.querySelector<HTMLInputElement>("#grid-view-page-" + componentName).value = "1";
         GridViewHelper.clearCurrentFormAction(componentName)
-        GridViewHelper.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
 
@@ -41,10 +41,10 @@ class GridViewFilterHelper{
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         GridViewHelper.clearCurrentFormAction(componentName)
     }
-    static clearFilter(componentName, url) {
+    static clearFilter(componentName, routeContext) {
         this.clearFilterInputs(componentName);
 
-        GridViewHelper.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
     static searchOnDOM(objid, oDom) {

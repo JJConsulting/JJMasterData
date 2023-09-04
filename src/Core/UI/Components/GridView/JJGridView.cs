@@ -392,8 +392,6 @@ public class JJGridView : AsyncComponent
         set => _currentExportConfig = value;
     }
 
-    public static bool EnableAjax => true;
-
     public bool EnableEditMode { get; set; }
 
     /// <remarks>
@@ -582,7 +580,7 @@ public class JJGridView : AsyncComponent
             return new HtmlComponentResult(htmlResponse);
         }
 
-        if (ComponentContext is ComponentContext.SelectAllGridRows)
+        if (ComponentContext is ComponentContext.GridViewSelectAllRows)
         {
             string selectedRows = await GetEncryptedSelectedRowsAsync();
             

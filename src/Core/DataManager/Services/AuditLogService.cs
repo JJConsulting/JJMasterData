@@ -152,7 +152,7 @@ public class AuditLogService : IAuditLogService
             ToolTip = "View"
         };
         btnViewLog.Name = nameof(btnViewLog);
-        btnViewLog.OnClientClick = $"JJViewHelper.viewLog('{formElement.Name}','{{{DicId}}}');";
+        btnViewLog.OnClientClick = $"AuditLogHelper.viewAuditLog('{formElement.Name}','{{{DicId}}}');";
 
         formElement.Options.GridTableActions.Add(btnViewLog);
         return formElement;

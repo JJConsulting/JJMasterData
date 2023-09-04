@@ -790,12 +790,12 @@ var bootstrapVersion = (() => {
 const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
 const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
 class GridViewFilterHelper {
-    static filter(componentName, url) {
+    static filter(componentName, routeContext) {
         document.querySelector("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
         document.querySelector("#grid-view-action-" + componentName).value = "";
         document.querySelector("#grid-view-page-" + componentName).value = "1";
         GridViewHelper.clearCurrentFormAction(componentName);
-        GridViewHelper.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static clearFilterInputs(componentName) {
         const divId = "#current-grid-filter-" + componentName;
@@ -829,9 +829,9 @@ class GridViewFilterHelper {
         document.querySelector("#grid-view-action-" + componentName).value = "";
         GridViewHelper.clearCurrentFormAction(componentName);
     }
-    static clearFilter(componentName, url) {
+    static clearFilter(componentName, routeContext) {
         this.clearFilterInputs(componentName);
-        GridViewHelper.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static searchOnDOM(objid, oDom) {
         var value = $(oDom).val().toString().toLowerCase();
@@ -908,12 +908,12 @@ class GridViewHelper {
             modal.style.display = "none";
         }
     }
-    static sorting(componentName, routeContext, tableOrder) {
+    static sortGridValues(componentName, routeContext, field) {
         const tableOrderElement = document.querySelector("#grid-view-order-" + componentName);
-        if (tableOrder + " ASC" === tableOrderElement.value)
-            tableOrderElement.value = tableOrder + " DESC";
+        if (field + " ASC" === tableOrderElement.value)
+            tableOrderElement.value = field + " DESC";
         else
-            tableOrderElement.value = tableOrder + " ASC";
+            tableOrderElement.value = field + " ASC";
         document.querySelector("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
         GridViewHelper.refreshGrid(componentName, routeContext);
@@ -953,20 +953,6 @@ class GridViewHelper {
         document.querySelector("#grid-view-row-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
         GridViewHelper.refreshGrid(componentName, routeContext);
-    }
-    static selectAllRows(componentName, url) {
-        fetch(url, { method: "POST" })
-            .then(response => response.json())
-            .then(data => GridViewHelper.selectAllRowsElements(componentName, data.selectedRows));
-    }
-    static selectAllRowsElements(componentName, rows) {
-        const values = rows.split(",");
-        const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
-        checkboxes.forEach(checkbox => checkbox.checked = true);
-        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName);
-        selectedRowsInput.value = values.join(",");
-        const selectedText = document.getElementById("selected-text-" + componentName);
-        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
     }
     static refreshGrid(componentName, routeContext, reloadListeners = false) {
         const urlBuilder = new UrlBuilder();
@@ -1036,15 +1022,24 @@ class GridViewSelectionHelper {
             selectedText.textContent = textInfo;
         }
     }
-    static selectAll(componentName) {
+    static selectAll(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "selectAll");
+        urlBuilder.addQueryParameter("routeContext", routeContext);
         postFormValues({
             url: urlBuilder.build(),
             success: (data) => {
-                GridViewHelper.selectAllRowsElements(componentName, data.selectedRows);
+                this.selectAllRowsElements(componentName, data.selectedRows);
             }
         });
+    }
+    static selectAllRowsElements(componentName, rows) {
+        const values = rows.split(",");
+        const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName);
+        selectedRowsInput.value = values.join(",");
+        const selectedText = document.getElementById("selected-text-" + componentName);
+        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
     }
     static unSelectAll(componentName) {
         const checkboxes = document.querySelectorAll(`#${componentName} .jjselect input:not(:disabled)`);

@@ -8,13 +8,13 @@ public enum ComponentContext
     /// Renders the component
     /// </summary>
     RenderComponent,
-    
+        
     /// <summary>
-    /// Returns only part of the component
+    /// The component is requesting a JJSearchBox result from a GridView filter
     /// </summary>
-    [Obsolete("Replace this with a more specific enum for every action.")]
-    HtmlContent,
-    
+    GridViewFilterSearchBox,
+    GridViewSelectAllRows,
+    GridViewRow,
     GridViewReload,
         
     /// <summary>
@@ -44,15 +44,6 @@ public enum ComponentContext
     /// The component is requesting a JJSearchBox result
     /// </summary>
     SearchBox,
-    
-    /// <summary>
-    /// The component is requesting a JJSearchBox result from a GridView filter
-    /// </summary>
-    GridViewFilterSearchBox,
-    
-    DownloadFile,
-    
-    SelectAllGridRows,
-    
-    GridViewRow
+    DownloadFile
+
 }
