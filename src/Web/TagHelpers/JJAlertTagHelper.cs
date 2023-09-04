@@ -1,4 +1,5 @@
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Web.TagHelpers;
@@ -8,6 +9,8 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 public class JJAlertTagHelper : TagHelper
 {
+    private IComponentFactory<JJAlert> AlertFactory { get; }
+
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
     
@@ -28,15 +31,19 @@ public class JJAlertTagHelper : TagHelper
 
     [HtmlAttributeName("css-class")]
     public string? CssClass { get; set; }
+
+    public JJAlertTagHelper(IComponentFactory<JJAlert> alertFactory)
+    {
+        AlertFactory = alertFactory;
+    }
+    
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var alert = new JJAlert
-        {
-            Color = Color,
-            CssClass = CssClass,
-            Title = Title,
-            ShowCloseButton = ShowCloseButton
-        };
+        var alert = AlertFactory.Create();
+        alert.Color = Color;
+        alert.CssClass = CssClass;
+        alert.Title = Title;
+        alert.ShowCloseButton = ShowCloseButton;
 
         if (Icon is not null)
             alert.Icon = Icon.Value;

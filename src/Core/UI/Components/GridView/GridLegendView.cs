@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.Localization;
 

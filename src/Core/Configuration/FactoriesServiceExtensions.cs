@@ -52,7 +52,7 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IControlFactory<JJTextRange>,TextRangeFactory>();
         services.AddTransient<IControlFactory<JJTextFile>,TextFileFactory>();
         services.AddTransient<IControlFactory<JJCheckBox>,CheckBoxFactory>();
-        services.AddTransient<ControlFactory>();
+        services.AddTransient<IControlFactory,ControlFactory>();
 
         services.AddTransient<IFormElementComponentFactory<JJAuditLogView>, AuditLogViewFactory>();
         services.AddTransient<IFormElementComponentFactory<JJDataPanel>, DataPanelFactory>();
@@ -68,7 +68,7 @@ public static class FactoriesServiceExtensions
 
         services.AddScoped<RouteContextFactory>();
         
-        services.AddTransient<ComponentFactory>();
+        services.AddTransient<IComponentFactory,ComponentFactory>();
 
         return services;
     }

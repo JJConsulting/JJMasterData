@@ -28,7 +28,7 @@ internal class DataPanelControl
 
     public FormUI FormUI { get; }
 
-    public ControlFactory ControlFactory { get; }
+    public IControlFactory ControlFactory { get; }
     
     public IDictionary<string, string> Errors { get; }
 
@@ -141,7 +141,7 @@ internal class DataPanelControl
             row?.Append(htmlField);
 
             string fieldClass;
-            if (ControlFactory.IsRange(field, PageState))
+            if (IsRange(field, PageState))
             {
                 fieldClass = string.Empty;
             }
@@ -174,6 +174,11 @@ internal class DataPanelControl
         }
 
         return html;
+    }
+    
+    private static bool IsRange(FormElementField field, PageState pageState)
+    {
+        return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
     }
 
     private async Task<HtmlBuilder> GetHtmlFormHorizontal(List<FormElementField> fields)
@@ -276,7 +281,7 @@ internal class DataPanelControl
             row?.WithCssClass(cssClass)
              .AppendComponent(label);
 
-            if (ControlFactory.IsRange(f, PageState))
+            if (IsRange(f, PageState))
             {
                 row?.Append(await GetControlField(f, value));
             }

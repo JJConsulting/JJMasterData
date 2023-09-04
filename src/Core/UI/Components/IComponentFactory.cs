@@ -1,22 +1,22 @@
-using JJMasterData.Core.DataDictionary;
+#nullable enable
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Widgets;
 using JJMasterData.Core.Web.Components;
-using System.Threading.Tasks;
 
-namespace JJMasterData.Core.UI.Components;
+namespace JJMasterData.Core.Web.Factories;
 
 public interface IComponentFactory
 {
-    
-}
-
-public interface IComponentFactory<out TComponent> : IComponentFactory where TComponent : ComponentBase
-{
-    TComponent Create();
-}
-
-public interface IFormElementComponentFactory<TComponent> : IComponentFactory where TComponent : ComponentBase
-{
-    TComponent Create(FormElement formElement);
-
-    Task<TComponent> CreateAsync(string elementName);
+    IFormElementComponentFactory<JJAuditLogView> AuditLog { get; }
+    IFormElementComponentFactory<JJDataExportation> DataExportation { get; }
+    IFormElementComponentFactory<JJDataImportation> DataImportation { get; }
+    IFormElementComponentFactory<JJDataPanel> DataPanel { get; }
+    IFormElementComponentFactory<JJFormView> FormView { get; }
+    IFormElementComponentFactory<JJGridView> GridView { get; }
+    IComponentFactory<JJUploadView> FormUpload { get; }
+    IComponentFactory<JJFileDownloader> Downloader { get; }
+    IComponentFactory<JJUploadArea> UploadArea { get; }
+    LinkButtonFactory LinkButton { get; }
+    IControlFactory Controls { get; }
+    RouteContext RouteContext { get; }
 }

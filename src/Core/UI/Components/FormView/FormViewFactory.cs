@@ -28,7 +28,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     private IFieldValuesService FieldValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private ComponentFactory Factory { get; }
+    private IComponentFactory Factory { get; }
     private IFormEventHandlerFactory FormEventHandlerFactory { get; }
 
     public FormViewFactory(
@@ -40,7 +40,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ComponentFactory factory,
+        IComponentFactory factory,
         IFormEventHandlerFactory formEventHandlerFactory
     )
     {

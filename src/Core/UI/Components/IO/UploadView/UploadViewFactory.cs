@@ -15,11 +15,11 @@ internal class UploadViewFactory : IComponentFactory<JJUploadView>
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IHttpContext CurrentContext { get; }
-    private ComponentFactory ComponentFactory { get; }
+    private IComponentFactory ComponentFactory { get; }
     
     public UploadViewFactory(
         IHttpContext currentContext,
-        ComponentFactory componentFactory,
+        IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)

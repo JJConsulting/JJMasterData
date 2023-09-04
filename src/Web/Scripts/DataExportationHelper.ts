@@ -1,5 +1,5 @@
 class DataExportationHelper {
-    static async startProgressVerificationAtSamePage(componentName) {
+    static async startProgressVerification(componentName) {
         DataExportationHelper.setLoadMessage();
 
         let urlBuilder = new UrlBuilder();
@@ -15,7 +15,7 @@ class DataExportationHelper {
         }
     }
 
-    static async stopProcessAtSamePage(componentName, stopMessage) {
+    static async stopProcess(componentName, stopMessage) {
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("context","dataExportation")
         urlBuilder.addQueryParameter("gridViewName",componentName)
@@ -25,16 +25,23 @@ class DataExportationHelper {
     }
 
 
-    static openExportPopupAtSamePage(componentName) {
+    static openExportPopup(componentName) {
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("context","dataExportation")
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","showOptions")
 
-        DataExportationHelper.openExportPopup(urlBuilder.build(), componentName)
+        fetch(urlBuilder.build())
+            .then(response => response.text())
+            .then(data => {
+                this.setSettingsHTML(componentName, data)
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
 
-    static startExportationAtSamePage(componentName) {
+    static startExportation(componentName) {
 
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("context","dataExportation")
@@ -49,7 +56,7 @@ class DataExportationHelper {
             document.querySelector<HTMLElement>(modalBody).innerHTML = html;
             
             loadJJMasterData(null, modalBody);
-            await DataExportationHelper.startProgressVerificationAtSamePage(componentName)
+            await DataExportationHelper.startProgressVerification(componentName)
         });
         
     }
@@ -137,44 +144,7 @@ class DataExportationHelper {
             modal.show();
         }
     }
-    static openExportPopup(url: string, componentName: string) {
-        fetch(url)
-            .then(response => response.text())
-            .then(data => {
-                this.setSettingsHTML(componentName, data)
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }
-    static startExportation(startExportationUrl,checkProgressUrl, componentName) {
-        
-        const form = document.querySelector("form");
-        
-        fetch(startExportationUrl, {
-            method: "POST",
-            body: new FormData(form)
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.text();
-                } else {
-                    throw new Error("Request failed with status: " + response.status);
-                }
-            })
-            .then(data => {
-                const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body");
-                modalBody.innerHTML = data;
-                loadJJMasterData();
-                DataExportationHelper.startProgressVerification(checkProgressUrl,componentName)
- 
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }
-
-
+    
     static async stopExportation(url: string, stopMessage: string) {
         document.querySelector<HTMLElement>("#divMsgProcess").innerHTML = stopMessage;
         showWaitOnPost = false;
@@ -182,14 +152,29 @@ class DataExportationHelper {
     }
 
 
-    static async startProgressVerification(url, componentName) {
-        DataExportationHelper.setLoadMessage();
+    static showOptions(componentName: string, exportType: string) {
+        const orientationDiv = document.getElementById(`${componentName}-div-export-orientation`);
+        const allDiv = document.getElementById(`${componentName}-div-export-all`);
+        const delimiterDiv = document.getElementById(`${componentName}-div-export-delimiter`);
+        const firstlineDiv = document.getElementById(`${componentName}-div-export-firstline`);
 
-        var isCompleted : boolean = false;
-
-        while(!isCompleted){
-            isCompleted = await DataExportationHelper.checkProgress(url,componentName);
-            await sleep(3000);
+        if (exportType === "1") { // XLS
+            if (orientationDiv) orientationDiv.style.display = "none";
+            if (allDiv) allDiv.style.display = "block";
+            if (delimiterDiv) delimiterDiv.style.display = "none";
+            if (firstlineDiv) firstlineDiv.style.display = "block";
+        } else if (exportType === "2") { // PDF
+            if (orientationDiv) orientationDiv.style.display = "block";
+            if (allDiv) allDiv.style.display = "none";
+            if (delimiterDiv) delimiterDiv.style.display = "none";
+            if (firstlineDiv) firstlineDiv.style.display = "none";
+        } else {
+            if (orientationDiv) orientationDiv.style.display = "none";
+            if (allDiv) allDiv.style.display = "block";
+            if (delimiterDiv) delimiterDiv.style.display = "block";
+            if (firstlineDiv) firstlineDiv.style.display = "block";
         }
     }
+
+
 }

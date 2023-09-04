@@ -43,7 +43,6 @@
     <ItemGroup>
         <ProjectReference Include="..\Commons\Commons.csproj" />
         <InternalsVisibleTo Include="JJMasterData.FormElementUpdater" />
-        <InternalsVisibleTo Include="JJMasterData.Web" />
     </ItemGroup>
     
     <ItemGroup>
@@ -82,6 +81,12 @@
       </Compile>
       <Compile Update="UI\Components\ComponentContextFactory.cs">
         <DependentUpon>ComponentContext.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\Controls\IControlFactoryOfT.cs">
+        <DependentUpon>IControlFactory.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\IComponentFactoryOfT.cs">
+        <DependentUpon>IComponentFactory.cs</DependentUpon>
       </Compile>
     </ItemGroup>
     

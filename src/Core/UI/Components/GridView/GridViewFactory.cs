@@ -32,7 +32,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IGridEventHandlerFactory GridEventHandlerFactory { get; }
-    private ComponentFactory Factory { get; }
+    private IComponentFactory Factory { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IHttpContext CurrentContext { get; }
@@ -50,7 +50,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IGridEventHandlerFactory gridEventHandlerFactory,
-        ComponentFactory factory)
+        IComponentFactory factory)
     {
         UrlHelper = urlHelper;
         CurrentContext = currentContext;

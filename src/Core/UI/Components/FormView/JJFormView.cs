@@ -241,7 +241,7 @@ public class JJFormView : AsyncComponent
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IFormService FormService { get; }
-    internal ComponentFactory ComponentFactory { get; }
+    internal IComponentFactory ComponentFactory { get; }
 
     #endregion
 
@@ -254,7 +254,7 @@ public class JJFormView : AsyncComponent
     {
         CurrentContext = StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
         EntityRepository = StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
-        ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<ComponentFactory>();
+        ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<IComponentFactory>();
         FormService = StaticServiceLocator.Provider.GetScopedDependentService<IFormService>();
         FieldValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldValuesService>();
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
@@ -288,7 +288,7 @@ public class JJFormView : AsyncComponent
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ComponentFactory componentFactory) : base(currentContext.Request.QueryString, encryptionService)
+        IComponentFactory componentFactory) : base(currentContext.Request.QueryString, encryptionService)
     {
         Name = "jj-" + formElement.Name.ToLower();
         FormElement = formElement;
@@ -320,6 +320,9 @@ public class JJFormView : AsyncComponent
     
     internal async Task<ComponentResult> GetFormResultAsync()
     {
+        if (ComponentContext is ComponentContext.GridViewReload)
+            return await GridView.GetResultAsync();
+        
         if (ComponentContext is ComponentContext.FileUpload)
             return await DataPanel.GetResultAsync();
 

@@ -1,4 +1,19 @@
 class AuditLogHelper{
+
+    static viewAuditLog(componentName: string, id: string) {
+        const auditLogIdInput = document.getElementById("audit-log-id-" + componentName) as HTMLInputElement;
+        const form = document.querySelector<HTMLFormElement>("form");
+
+        if (auditLogIdInput) {
+            auditLogIdInput.value = id;
+        }
+
+        if (form) {
+            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: false    }));
+        }
+    }
+
+    
     static loadAuditLog(componentName, logId, url = null) {
         $("#sortable-grid a").removeClass("active");
 

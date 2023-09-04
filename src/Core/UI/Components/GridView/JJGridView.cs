@@ -509,7 +509,7 @@ public class JJGridView : AsyncComponent
     internal IFieldsService FieldsService { get; }
     internal IExpressionsService ExpressionsService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    internal ComponentFactory ComponentFactory { get; }
+    internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
 
@@ -534,7 +534,7 @@ public class JJGridView : AsyncComponent
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ComponentFactory componentFactory) : base(currentContext.Request.QueryString,encryptionService)
+        IComponentFactory componentFactory) : base(currentContext.Request.QueryString,encryptionService)
     {
         Name = "jj-" + formElement.Name.ToLower();
         ShowTitle = true;
@@ -563,15 +563,9 @@ public class JJGridView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        
-        if (ComponentContext is ComponentContext.HtmlContent)
+        if (ComponentContext is ComponentContext.GridViewReload)
         {
-            var componentName = CurrentContext.Request.QueryString["componentName"];
-
-            if (Name.Equals(componentName))
-            {
-                return HtmlComponentResult.FromHtmlBuilder(await GetTableHtmlBuilder());
-            }
+            return HtmlComponentResult.FromHtmlBuilder(await GetTableHtmlBuilder());
         }
         
         if (ComponentContext is ComponentContext.DataExportation)

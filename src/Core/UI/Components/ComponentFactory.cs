@@ -8,7 +8,7 @@ using System;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class ComponentFactory
+internal class ComponentFactory : IComponentFactory
 {
     private RouteContext? _routeContext;
     private IServiceProvider ServiceProvider { get; }
@@ -43,8 +43,8 @@ public class ComponentFactory
     public LinkButtonFactory LinkButton =>
         GetFactory<LinkButtonFactory>();
 
-    public ControlFactory Controls =>
-        GetFactory<ControlFactory>();
+    public IControlFactory Controls =>
+        GetFactory<IControlFactory>();
 
     public RouteContext RouteContext =>
         _routeContext ??= ServiceProvider.GetRequiredService<RouteContextFactory>().Create();

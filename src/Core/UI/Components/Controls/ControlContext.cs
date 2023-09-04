@@ -4,6 +4,6 @@ using JJMasterData.Core.DataManager;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public record ControlContext(
+internal record ControlContext(
     FormStateData FormStateData,
     object? Value = null);

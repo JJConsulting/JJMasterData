@@ -1,5 +1,7 @@
 #nullable enable
 
+using JJMasterData.Core.DataDictionary;
+
 namespace JJMasterData.Core.UI.Components;
 
 public class RouteContext
@@ -18,6 +20,11 @@ public class RouteContext
         ComponentContext = componentContext;
         ElementName = elementName;
         ParentElementName = parentElementName;
+    }
+
+    internal static RouteContext FromFormElement(FormElement formElement,ComponentContext context)
+    {
+        return new RouteContext(formElement.Name, formElement.ParentName, context);
     }
     
     public bool CanRender(string elementName)

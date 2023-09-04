@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.UI.Components.Controls;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class ControlFactory
+internal class ControlFactory : IControlFactory
 {
     private IServiceScopeFactory ServiceScopeFactory { get; }
     private IExpressionsService ExpressionsService { get; }
@@ -72,13 +72,9 @@ public class ControlFactory
 
         return control;
     }
+    
 
-    public static bool IsRange(FormElementField field, PageState pageState)
-    {
-        return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
-    }
-
-    private ControlBase Create(
+    public ControlBase Create(
         FormElement formElement,
         FormElementField field,
         ControlContext context)

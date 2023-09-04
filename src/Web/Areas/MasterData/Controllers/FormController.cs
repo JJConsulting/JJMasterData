@@ -36,31 +36,13 @@ public class FormController : MasterDataController
         return View(model);
     }
     
-    [ServiceFilter<FormElementDecryptionFilter>]
-    [HttpPost]
-    public async Task<IActionResult> ReloadPanel(
-        FormElement formElement,
-        PageState pageState,
-        string componentName)
-    {
-        var formView = _formViewFactory.Create(formElement);
-        formView.Name = componentName;
-        formView.DataPanel.FieldNamePrefix = componentName + "_";
-        formView.PageState = pageState;
-        formView.IsExternalRoute = true;
-
-        var html = await formView.GetReloadPanelResultAsync();
-        
-        return Content(html);
-    }
-    
     private void ConfigureFormView(JJFormView formView)
     {
         var userId = HttpContext.GetUserId();
 
         if (userId == null) 
             return;
-        formView.IsExternalRoute = true;
+        
         formView.GridView.SetCurrentFilter("USERID", userId);
         formView.SetUserValues("USERID", userId);
     }

@@ -21,13 +21,13 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
     private IFieldsService FieldsService { get; }
     private IFormValuesService FormValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
-    private ComponentFactory ComponentFactory { get; }
+    private IComponentFactory ComponentFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public DataPanelFactory(IEntityRepository entityRepository, IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext httpContext, IEncryptionService encryptionService, IFieldsService fieldsService,
         IFormValuesService formValuesService, IExpressionsService expressionsService,
-        ComponentFactory componentFactory, JJMasterDataUrlHelper urlHelper)
+        IComponentFactory componentFactory, JJMasterDataUrlHelper urlHelper)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;

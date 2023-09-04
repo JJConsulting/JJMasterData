@@ -1,3 +1,5 @@
+using System;
+
 namespace JJMasterData.Core.UI.Components;
 
 public enum ComponentContext
@@ -10,7 +12,10 @@ public enum ComponentContext
     /// <summary>
     /// Returns only part of the component
     /// </summary>
+    [Obsolete("Replace this with a more specific enum for every action.")]
     HtmlContent,
+    
+    GridViewReload,
         
     /// <summary>
     /// Reloads the current JJDataPanel

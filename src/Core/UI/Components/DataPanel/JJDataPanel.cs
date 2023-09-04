@@ -86,7 +86,7 @@ public class JJDataPanel : AsyncComponent
     internal IFieldsService FieldsService { get; }
     internal IFormValuesService FormValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
-    internal ComponentFactory ComponentFactory { get; }
+    internal IComponentFactory ComponentFactory { get; }
 
     #endregion
 
@@ -94,7 +94,7 @@ public class JJDataPanel : AsyncComponent
 #if NET48
     public JJDataPanel() : base(StaticServiceLocator.Provider.GetScopedDependentService<IQueryString>(), StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>())
     {
-        ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<ComponentFactory>();
+        ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<IComponentFactory>();
         EntityRepository =  StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
         DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         CurrentContext =  StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
@@ -137,7 +137,7 @@ public class JJDataPanel : AsyncComponent
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
-        ComponentFactory componentFactory
+        IComponentFactory componentFactory
     ) : base(currentContext.Request.QueryString, encryptionService)
     {
         EntityRepository = entityRepository;
@@ -164,7 +164,7 @@ public class JJDataPanel : AsyncComponent
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
-        ComponentFactory componentFactory
+        IComponentFactory componentFactory
     ) : this(entityRepository, dataDictionaryRepository, currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
     {
         Name = "pnl_" + formElement.Name.ToLower();

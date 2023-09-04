@@ -10,6 +10,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
@@ -47,13 +48,9 @@ public class GridScripts
     public string GetPaginationScript(int page)
     {
         string name = _gridView.Name;
-        if (_gridView.IsExternalRoute)
-        {
-            var url = GetUrl();
-            return $"GridView.pagination('{name}', '{url}', {page})";
-        }
-
-        return $"JJViewHelper.paginateGrid('{name}', {JJGridView.EnableAjax.ToString().ToLower()}, {page})";
+        var routeContext = RouteContext.FromFormElement(_gridView.FormElement, ComponentContext.GridViewReload);
+        var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+        return $"GridViewHelper.paginate('{name}', '{encryptedRouteContext}', {page})";
     }
     
     public string GetFilterScript()

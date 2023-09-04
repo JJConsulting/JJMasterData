@@ -3,6 +3,26 @@ class ActionManager {
     static executeRedirectActionAtSamePage(componentName: string, encryptedActionMap: string, confirmMessage?: string){
         this.executeRedirectAction(null,componentName,encryptedActionMap,confirmMessage);
     }
+
+    static executeSqlCommand(componentName, rowId, confirmMessage) {
+        if (confirmMessage) {
+            var result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+
+        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-row-" + componentName).value = rowId;
+        
+        const formViewActionMapElement = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
+        
+        if(formViewActionMapElement){
+            formViewActionMapElement.value = "";
+        }
+        
+        document.querySelector("form").dispatchEvent(new Event("submit"));
+    }
     
     static executeRedirectAction(url: string, componentName: string, encryptedActionMap: string, confirmMessage?: string){
         if (confirmMessage) {
@@ -79,8 +99,9 @@ class ActionManager {
                                 modal.modalId = componentName +"-modal";
 
                                 modal.hide();
-
-                                JJViewHelper.refresh(componentName,true)
+                                
+                                //todo
+                                GridViewHelper.refresh(componentName,"")
                             }
                         } else {
                             outputElement.innerHTML = data;

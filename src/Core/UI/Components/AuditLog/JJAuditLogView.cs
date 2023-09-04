@@ -21,7 +21,7 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJAuditLogView : AsyncComponent
 {
-    private readonly ComponentFactory _componentFactory;
+    private readonly IComponentFactory _componentFactory;
     private JJGridView _gridView;
     private JJDataPanel _dataPainel;
     private string _userId;
@@ -65,7 +65,7 @@ public class JJAuditLogView : AsyncComponent
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IAuditLogService auditLogService,
-        ComponentFactory componentFactory,
+        IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext.Request.QueryString, encryptionService)

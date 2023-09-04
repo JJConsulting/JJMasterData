@@ -37,8 +37,9 @@ public class ActionMapDecryptionFilter : ActionFilterAttribute
 
     private void SetActionMap(ActionExecutingContext context, StringValues encryptedQueryActionMap)
     {
-        var actionMap = _encryptionService.DecryptActionMap(encryptedQueryActionMap);
+        //TODO: Removing this.
+        //var actionMap = _encryptionService.DecryptActionMap(encryptedQueryActionMap);
 
-        context.ActionArguments["actionMap"] = actionMap;
+        //context.ActionArguments["actionMap"] = actionMap;
     }
 }
