@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Hashing;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
@@ -126,7 +127,7 @@ public class JJDataPanel : AsyncComponent
     [Obsolete("This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use ComponentsFactory.")]
     public JJDataPanel(string elementName): this()
     {
-        Name = "pnl_" + elementName;
+        Name = ComponentNameGenerator.Create(elementName) + "-data-panel";
         FormElement = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>()
             .GetMetadataAsync(elementName).GetAwaiter().GetResult();
         RenderPanelGroup = FormElement.Panels.Count > 0;
@@ -136,7 +137,7 @@ public class JJDataPanel : AsyncComponent
     public JJDataPanel(
         FormElement formElement) : this()
     {
-        Name = "pnl_" + formElement.Name.ToLower();
+        Name = ComponentNameGenerator.Create(formElement.Name) + "-data-panel";
         FormElement = formElement;
         RenderPanelGroup = formElement.Panels.Count > 0;
     }
@@ -179,7 +180,7 @@ public class JJDataPanel : AsyncComponent
         IComponentFactory componentFactory
     ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
     {
-        Name = "pnl_" + formElement.Name.ToLower();
+        Name = ComponentNameGenerator.Create(formElement.Name) + "-data-panel";
         FormElement = formElement;
         RenderPanelGroup = formElement.Panels.Count > 0;
     }
@@ -228,7 +229,7 @@ public class JJDataPanel : AsyncComponent
 
         if (PageState == PageState.Update)
         {
-            html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
+            html.AppendHiddenInput($"data-panel-pk-values-{Name}", GetPkHiddenInput());
         }
 
         var panelGroup = new DataPanelLayout(this);

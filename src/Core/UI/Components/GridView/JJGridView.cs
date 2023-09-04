@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Hashing;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Actions;
@@ -497,7 +498,7 @@ public class JJGridView : AsyncComponent
 
     private string? SelectedRowsId
     {
-        get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("grid-view-selected-rows" + Name)?.ToString();
+        get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("grid-view-selected-rows-" + Name)?.ToString();
         set => _selectedRowsId = value ?? "";
     }
     
@@ -554,7 +555,7 @@ public class JJGridView : AsyncComponent
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
     {
-        Name = "jj-" + formElement.Name.ToLower();
+        Name = ComponentNameGenerator.Create(formElement.Name) + "-grid-view";
         ShowTitle = true;
         EnableFilter = true;
         EnableSorting = true;
@@ -723,7 +724,7 @@ public class JJGridView : AsyncComponent
 
         if (EnableMultiSelect)
         {
-            yield return new HtmlBuilder().AppendHiddenInput($"grid-view-selected-rows{Name}", SelectedRowsId ?? string.Empty);
+            yield return new HtmlBuilder().AppendHiddenInput($"grid-view-selected-rows-{Name}", SelectedRowsId ?? string.Empty);
         }
     }
 
@@ -1016,6 +1017,7 @@ public class JJGridView : AsyncComponent
 
         var legend = new GridLegendView(ComponentFactory.Controls.GetControlFactory<JJComboBox>(), StringLocalizer)
         {
+            Name = Name,
             ShowAsModal = true,
             FormElement = FormElement
         };

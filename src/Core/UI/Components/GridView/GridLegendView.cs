@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Hashing;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
@@ -14,6 +16,7 @@ internal class GridLegendView
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public bool ShowAsModal { get; set; }
     
+    public required string Name { get; init; }
     public required FormElement FormElement { get; init; }
 
     #region "Constructors"
@@ -31,10 +34,10 @@ internal class GridLegendView
     {
         if (ShowAsModal)
         {
-            return await GetModalHtmlBuilder(FormElement);
+            return await GetModalHtmlBuilder();
         }
 
-        var field = GetLegendField(FormElement);
+        var field = GetLegendField();
 
         return  await GetLegendHtmlBuilder(field);
     }
@@ -81,9 +84,9 @@ internal class GridLegendView
         return div;
     }
 
-    private async Task<HtmlBuilder> GetModalHtmlBuilder(FormElement formElement)
+    private async Task<HtmlBuilder> GetModalHtmlBuilder()
     {
-        var field = GetLegendField(formElement);
+        var field = GetLegendField();
 
         var form = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("form-horizontal")
@@ -92,7 +95,7 @@ internal class GridLegendView
         
         var dialog = new JJModalDialog
         {
-            Name = FormElement.Name +"legend_dialog",
+            Name = Name +"-legend-modal",
             Title = StringLocalizer["Information"],
             HtmlBuilderContent = form
         };
@@ -100,9 +103,9 @@ internal class GridLegendView
         return dialog.BuildHtml();
     }
     
-    private FormElementField GetLegendField(FormElement formElement)
+    private FormElementField GetLegendField()
     {
-        return formElement.Fields.FirstOrDefault(f 
+        return FormElement.Fields.FirstOrDefault(f 
             => f.Component == FormComponent.ComboBox && (f.DataItem?.ShowImageLegend ?? false));
     }
 

@@ -27,7 +27,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Hashing;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
@@ -131,7 +133,6 @@ public class JJFormView : AsyncComponent
         get
         {
             _dataPanel ??= ComponentFactory.DataPanel.Create(FormElement);
-            _dataPanel.Name = "data-panel-" + FormElement.Name.ToLower();
             _dataPanel.FormUI = FormElement.Options.Form;
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
@@ -309,8 +310,8 @@ public class JJFormView : AsyncComponent
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
     {
-        Name = "jj-" + formElement.Name.ToLower();
         FormElement = formElement;
+        Name = ComponentNameGenerator.Create(FormElement.Name).ToString();
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
         FormService = formService;

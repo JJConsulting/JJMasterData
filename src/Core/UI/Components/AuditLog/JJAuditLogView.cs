@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Hashing;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -71,7 +72,7 @@ public class JJAuditLogView : AsyncComponent
         JJMasterDataUrlHelper urlHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        Name = formElement.Name;
+        Name = ComponentNameGenerator.Create(formElement.Name) + "audit-log";
         _componentFactory = componentFactory;
         FormElement = formElement;
         CurrentContext = currentContext;

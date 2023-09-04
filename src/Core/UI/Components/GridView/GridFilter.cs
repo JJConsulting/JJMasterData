@@ -82,7 +82,7 @@ internal class GridFilter
             return _currentFilter;
         }
         
-        var filters = CurrentContext.Request.GetFormValue($"grid-view-{GridView.FormElement.Name}-filters");
+        var filters = CurrentContext.Request.GetFormValue($"grid-view-{GridView.Name}-filters");
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
@@ -301,7 +301,7 @@ internal class GridFilter
 
         //Relation Filters
         var values = new Dictionary<string, object>();
-        var filters = CurrentContext.Request.GetFormValue($"grid-view-{GridView.FormElement.Name}-filters");
+        var filters = CurrentContext.Request.GetFormValue($"grid-view-{GridView.Name}-filters");
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);

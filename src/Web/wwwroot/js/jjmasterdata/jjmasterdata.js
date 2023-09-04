@@ -319,7 +319,7 @@ class DataDictionaryUtils {
         $("form:first").attr("action", url).submit();
     }
     static exportElement(id, url, validStr) {
-        var values = $("#grid-view-selected-rows" + id).val();
+        var values = $("#grid-view-selected-rows-" + id).val();
         if (values == "") {
             messageBox.show("JJMasterData", validStr, 3);
             return false;
@@ -1022,7 +1022,7 @@ class GridViewHelper {
 }
 class GridViewSelectionHelper {
     static selectItem(componentName, obj) {
-        const valuesInput = document.getElementById("grid-view-selected-rows" + componentName);
+        const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName);
         const values = valuesInput.value.toString();
         let valuesList = [];
         if (obj.id === "jjcheckbox-select-all-rows") {
@@ -1070,14 +1070,14 @@ class GridViewSelectionHelper {
         const values = rows.split(",");
         const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
         checkboxes.forEach(checkbox => checkbox.checked = true);
-        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName);
+        const selectedRowsInput = document.getElementById("grid-view-selected-rows-" + componentName);
         selectedRowsInput.value = values.join(",");
         const selectedText = document.getElementById("selected-text-" + componentName);
         selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
     }
     static unSelectAll(componentName) {
         const checkboxes = document.querySelectorAll(`#${componentName} .jjselect input:not(:disabled)`);
-        const valuesInput = document.getElementById("grid-view-selected-rows" + componentName);
+        const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName);
         const selectedText = document.getElementById("selected-text-" + componentName);
         if (checkboxes) {
             checkboxes.forEach((checkbox) => {

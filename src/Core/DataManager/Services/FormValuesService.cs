@@ -12,6 +12,7 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -136,11 +137,11 @@ public class FormValuesService : IFormValuesService
 
     private async Task<IDictionary<string, object?>?> GetDbValues(Element element)
     {
-        string encryptedPkValues = CurrentContext.Request["data-panel-pk-values-" + element.Name];
+        string encryptedPkValues = CurrentContext.Request["data-panel-pk-values-" + ComponentNameGenerator.Create(element.Name)];
         if (string.IsNullOrEmpty(encryptedPkValues))
             return null;
 
-        string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues);
+        string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
 
         return await EntityRepository.GetFieldsAsync(element, filters);

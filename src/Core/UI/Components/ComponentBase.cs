@@ -42,7 +42,8 @@ public abstract class ComponentBase
     public bool Visible { get; set; } = true;
 
     /// <summary>
-    /// Represents the component unique identifier
+    /// Represents the component unique identifier.
+    /// The name will be sent to the client, do not expose table names and/or sensitive data. 
     /// </summary>
     public string Name { get; set; }
 

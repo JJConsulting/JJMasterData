@@ -56,12 +56,13 @@ public class JJTextFile : ControlBase
         JJMasterDataUrlHelper urlHelper,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup> textBoxFactory,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(httpRequest)
+        IStringLocalizer<JJMasterDataResources> stringLocalizer, IEncryptionService encryptionService) : base(httpRequest)
     {
         UrlHelper = urlHelper;
         UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
         StringLocalizer = stringLocalizer;
+        EncryptionService = encryptionService;
     }
 
     protected override async Task<ComponentResult> BuildResultAsync()

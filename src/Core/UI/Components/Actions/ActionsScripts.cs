@@ -21,11 +21,11 @@ namespace JJMasterData.Core.UI.Components.FormView;
 
 internal class ActionsScripts
 {
-    internal IExpressionsService ExpressionsService { get; }
+    private IExpressionsService ExpressionsService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    internal IEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
 
     public ActionsScripts(
         IExpressionsService expressionsService,

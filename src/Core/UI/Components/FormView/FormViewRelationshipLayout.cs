@@ -199,7 +199,7 @@ internal class FormViewRelationshipLayout
                     if (result is RenderedComponentResult renderedComponentResult)
                     {
                         var filters = ParentFormView.EncryptionService.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(filter));
-                        renderedComponentResult.HtmlBuilder.AppendHiddenInput($"grid-view-{childElement.Name}-filters", filters);
+                        renderedComponentResult.HtmlBuilder.AppendHiddenInput($"grid-view-{childFormView.GridView.Name}-filters", filters);
                     
                         return renderedComponentResult;
                     }
