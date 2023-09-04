@@ -327,8 +327,7 @@ public class JJFormView : AsyncComponent
             return await DataPanel.GetResultAsync();
 
         if (ComponentContext is ComponentContext.DownloadFile)
-            return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService,
-                ComponentFactory.Downloader);
+            return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
 
         if (ComponentContext is ComponentContext.SearchBox)
             return await DataPanel.GetResultAsync();
@@ -338,9 +337,7 @@ public class JJFormView : AsyncComponent
         
         if (ComponentContext is ComponentContext.PanelReload)
         {
-            var panelHtml = await GetReloadPanelResultAsync();
-
-            return new HtmlComponentResult(panelHtml);
+            return await GetReloadPanelResultAsync();
         }
 
         if (ComponentContext is ComponentContext.DataImportation or ComponentContext.FileUpload)
@@ -367,9 +364,7 @@ public class JJFormView : AsyncComponent
             values = await GetFormValuesAsync();
 
         DataPanel.Values = values;
-
-        var htmlPanel = await DataPanel.GetResultAsync();
-        return htmlPanel;
+        return await DataPanel.GetResultAsync();
     }
 
 
@@ -1236,7 +1231,7 @@ public class JJFormView : AsyncComponent
     }
 
     [Obsolete("Please use GridView.AddGridAction")]
-    private void AddGridAction(UserCreatedAction userCreatedAction)
+    public void AddGridAction(UserCreatedAction userCreatedAction)
     {
         switch (userCreatedAction)
         {
@@ -1256,7 +1251,7 @@ public class JJFormView : AsyncComponent
     }
 
     [Obsolete("Please use GridView.ClearSelectedGridValues")]
-    private void ClearSelectedGridValues()
+    public void ClearSelectedGridValues()
     {
         GridView.ClearSelectedGridValues();
     }
