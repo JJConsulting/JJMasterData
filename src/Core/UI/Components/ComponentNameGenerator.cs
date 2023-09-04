@@ -1,6 +1,6 @@
 #nullable  enable
 
-using JJMasterData.Commons.Hashing;
+using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -8,6 +8,6 @@ public static class ComponentNameGenerator
 {
     public static string Create(string elementName)
     {
-        return GuidGenerator.FromValue(elementName).ToString();
+        return StringManager.ToParamCase(elementName);
     }
 }

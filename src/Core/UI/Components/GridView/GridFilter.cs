@@ -82,7 +82,7 @@ internal class GridFilter
             return _currentFilter;
         }
         
-        var filters = CurrentContext.Request.GetFormValue($"grid-view-{GridView.Name}-filters");
+        var filters = CurrentContext.Request.GetFormValue($"{GridView.Name}-filters");
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
@@ -90,7 +90,7 @@ internal class GridFilter
             return _currentFilter;
         }
 
-        if (sessionFilter != null && (CurrentContext.Request.IsPost || IsAjaxPost()))
+        if (sessionFilter != null && (CurrentContext.Request.IsPost || IsDynamicPost()))
         {
             _currentFilter = sessionFilter;
             return _currentFilter;
@@ -114,9 +114,9 @@ internal class GridFilter
         }
     }
 
-    private bool IsAjaxPost()
+    private bool IsDynamicPost()
     {
-        return !string.IsNullOrEmpty(CurrentContext.Request.QueryString["context"]);
+        return !string.IsNullOrEmpty(CurrentContext.Request.QueryString["routeContext"]);
     }
     
     public async Task ApplyCurrentFilter(IDictionary<string, object> values)
@@ -301,7 +301,7 @@ internal class GridFilter
 
         //Relation Filters
         var values = new Dictionary<string, object>();
-        var filters = CurrentContext.Request.GetFormValue($"grid-view-{GridView.Name}-filters");
+        var filters = CurrentContext.Request.GetFormValue($"{GridView.Name}-filters");
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);

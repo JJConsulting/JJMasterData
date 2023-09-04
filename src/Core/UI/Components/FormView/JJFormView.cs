@@ -334,7 +334,12 @@ public class JJFormView : AsyncComponent
             return await GetFormResultAsync();
 
         var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
-
+        formView.FormElement.ParentName = RouteContext.ParentElementName;
+        formView.UserValues = UserValues;
+        
+        var fkValues = EncryptionService.DecryptDictionary(CurrentContext.Request.GetFormValue(formView.GridView.Name + "-fk-values"));
+        formView.RelationValues = fkValues;
+        
         return await formView.GetFormResultAsync();
     }
 

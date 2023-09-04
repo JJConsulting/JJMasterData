@@ -7,6 +7,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.Localization;
+using Microsoft.IdentityModel.Tokens;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -110,13 +111,8 @@ internal class GridTableHeader
             }
 
             var currentFilter = await GridView.GetCurrentFilterAsync();
-            bool isAppliedFilter = 
-                                   field.Filter.Type != FilterMode.None &&
-                                   !GridView.RelationValues.ContainsKey(field.Name) &&
-                                   (currentFilter.ContainsKey(field.Name) ||
-                                    currentFilter.ContainsKey(field.Name + "_from"));
 
-            if (isAppliedFilter)
+            if (IsAppliedFilter(field, currentFilter))
             {
                 th.AppendText("&nbsp;");
                 th.Append(new JJIcon("fa fa-filter").GetHtmlBuilder()
@@ -127,7 +123,16 @@ internal class GridTableHeader
         }
     }
 
-    private void SetSortAttributes(HtmlBuilder span, FormElementField field)
+    private bool IsAppliedFilter(ElementField field, IDictionary<string, object> currentFilter)
+    {
+        var hasFilterType = field.Filter.Type != FilterMode.None;
+        var hasRelationValue = !GridView.RelationValues.Any() || (GridView.RelationValues.Any() && GridView.RelationValues.ContainsKey(field.Name));
+        var hasFieldOrFromKey = currentFilter.ContainsKey(field.Name) || currentFilter.ContainsKey(field.Name + "_from");
+
+        return hasFilterType && hasRelationValue && hasFieldOrFromKey;
+    }
+
+    private void SetSortAttributes(HtmlBuilder span, ElementField field)
     {
         span.WithCssClass("jjenable-sorting");
         span.WithAttribute("onclick", GridView.Scripts.GetSortingScript(field.Name));

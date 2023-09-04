@@ -43,4 +43,7 @@
 	    <DependentUpon>DataAccess.cs</DependentUpon>
 	  </Compile>
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Security\" />
+	</ItemGroup>
 </Project>

@@ -39,28 +39,38 @@ public static class EncryptionServiceExtensions
         return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(actionMap));
     }
     
+    internal static string EncryptObject<T>(this IEncryptionService service, T @object)
+    {
+        return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(@object));
+    }
+    
+    internal static T DecryptObject<T>(this IEncryptionService service, string encryptedObject)
+    {
+        return JsonConvert.DeserializeObject<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!);
+    }
+    
     internal static string EncryptRouteContext(this IEncryptionService service, RouteContext routeContext)
     {
-        return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(routeContext));
+        return service.EncryptObject(routeContext);
     }
     
     internal static RouteContext DecryptRouteContext(this IEncryptionService service, string encryptedRouteContext)
     {
-        return JsonConvert.DeserializeObject<RouteContext>(service.DecryptStringWithUrlUnescape(encryptedRouteContext));
+        return service.DecryptObject<RouteContext>(encryptedRouteContext);
     }
     
     internal static ActionMap DecryptActionMap(this IEncryptionService service, string encryptedActionMap)
     {
-        return JsonConvert.DeserializeObject<ActionMap>(service.DecryptStringWithUrlUnescape(encryptedActionMap));
+        return service.DecryptObject<ActionMap>(encryptedActionMap);
     }
     
     internal static string EncryptDictionary(this IEncryptionService service, IDictionary<string,object> dictionary)
     {
-        return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(dictionary));
+        return service.EncryptObject(dictionary);
     }
     
     internal static Dictionary<string,object> DecryptDictionary(this IEncryptionService service, string encryptedDictionary)
     {
-        return JsonConvert.DeserializeObject<Dictionary<string,object>>(service.DecryptStringWithUrlUnescape(encryptedDictionary));
+        return service.DecryptObject<Dictionary<string,object>>(encryptedDictionary);
     }
 }
