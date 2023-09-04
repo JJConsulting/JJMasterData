@@ -74,7 +74,7 @@ public class JJDataExportation : ProcessComponent
     public bool ShowRowStriped { get; set; }
     internal JJMasterDataCoreOptions MasterDataOptions { get; }
 
-    internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(_urlHelper, _encryptionService);
+    internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(this);
     private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
     public DataExportationWriterFactory DataExportationWriterFactory { get; }
 

@@ -20,6 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="JJExportationFiles\Cabec\" />
       <Folder Include="Styles\" />
     </ItemGroup>
 
