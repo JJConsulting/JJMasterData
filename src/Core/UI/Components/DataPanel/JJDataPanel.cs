@@ -6,7 +6,6 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -15,7 +14,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
@@ -78,9 +76,6 @@ public class JJDataPanel : AsyncComponent
     public string FieldNamePrefix { get; set; }
     
     public IEntityRepository EntityRepository { get; }
-
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
-
     internal IHttpContext CurrentContext { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     internal IFieldsService FieldsService { get; }
@@ -96,7 +91,6 @@ public class JJDataPanel : AsyncComponent
     {
         ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<IComponentFactory>();
         EntityRepository =  StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
-        DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         CurrentContext =  StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
         FieldsService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldsService>();
         FormValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFormValuesService>();
@@ -130,7 +124,6 @@ public class JJDataPanel : AsyncComponent
 
     public JJDataPanel(
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
@@ -141,7 +134,6 @@ public class JJDataPanel : AsyncComponent
     ) : base(currentContext.Request.QueryString, encryptionService)
     {
         EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
         CurrentContext = currentContext;
         UrlHelper = urlHelper;
         FieldsService = fieldsService;
@@ -157,7 +149,6 @@ public class JJDataPanel : AsyncComponent
     public JJDataPanel(
         FormElement formElement,
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
@@ -165,7 +156,7 @@ public class JJDataPanel : AsyncComponent
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
         IComponentFactory componentFactory
-    ) : this(entityRepository, dataDictionaryRepository, currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
+    ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
     {
         Name = "pnl_" + formElement.Name.ToLower();
         FormElement = formElement;
@@ -182,7 +173,7 @@ public class JJDataPanel : AsyncComponent
             return await JJTextFile.GetResultFromPanel(this);
         
         if (ComponentContext is ComponentContext.DownloadFile)
-            return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService, ComponentFactory.Downloader);
+            return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
 
         if (ComponentContext is ComponentContext.SearchBox)
         {

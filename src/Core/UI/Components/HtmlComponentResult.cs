@@ -1,4 +1,5 @@
 #nullable enable
+
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.UI.Components;

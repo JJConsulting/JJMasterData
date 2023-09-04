@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.UI.Components;
@@ -27,6 +28,7 @@ public static class EncryptionServiceExtensions
     /// <param name="service"></param>
     /// <param name="cipherText"></param>
     /// <returns></returns>
+    [CanBeNull]
     public static string DecryptStringWithUrlUnescape(this IEncryptionService service, string cipherText)
     {
         return service.DecryptString(Uri.UnescapeDataString(cipherText));

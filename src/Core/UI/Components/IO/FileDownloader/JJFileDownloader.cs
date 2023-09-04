@@ -137,31 +137,27 @@ public class JJFileDownloader : HtmlComponent
 
 
 
-    public static RedirectComponentResult GetDirectDownloadRedirect(
-        IHttpContext currentContext, 
-        IEncryptionService encryptionService, 
-        IComponentFactory<JJFileDownloader> factory)
+    public RedirectComponentResult GetDirectDownloadFromUrl()
     {
         bool isExternalLink = false;
-        string criptFilePath = currentContext.Request.QueryString[DownloadParameter];
+        string criptFilePath = CurrentContext.Request.QueryString[DownloadParameter];
         if (criptFilePath == null)
         {
-            criptFilePath = currentContext.Request.QueryString[DirectDownloadParameter];
+            criptFilePath = CurrentContext.Request.QueryString[DirectDownloadParameter];
             isExternalLink = true;
         }
 
         if (criptFilePath == null)
             throw new JJMasterDataException("Invalid file path or badly formatted URL");
 
-        string filePath = encryptionService.DecryptStringWithUrlUnescape(criptFilePath);
+        string filePath = EncryptionService.DecryptStringWithUrlUnescape(criptFilePath);
         if (filePath == null)
             throw new JJMasterDataException("Invalid file path or badly formatted URL");
 
-        var download = factory.Create();
-        download.FilePath = filePath;
-        download.IsExternalLink = isExternalLink;
+        FilePath = filePath;
+        IsExternalLink = isExternalLink;
 
-        return download.GetDirectDownloadRedirect();
+        return GetDirectDownloadRedirect();
     }
 
 

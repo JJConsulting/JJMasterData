@@ -24,10 +24,15 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
     private IComponentFactory ComponentFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
-    public DataPanelFactory(IEntityRepository entityRepository, IDataDictionaryRepository dataDictionaryRepository,
-        IHttpContext httpContext, IEncryptionService encryptionService, IFieldsService fieldsService,
-        IFormValuesService formValuesService, IExpressionsService expressionsService,
-        IComponentFactory componentFactory, JJMasterDataUrlHelper urlHelper)
+    public DataPanelFactory(IEntityRepository entityRepository, 
+        IDataDictionaryRepository dataDictionaryRepository,
+        IHttpContext httpContext, 
+        IEncryptionService encryptionService, 
+        IFieldsService fieldsService,
+        IFormValuesService formValuesService, 
+        IExpressionsService expressionsService,
+        IComponentFactory componentFactory, 
+        JJMasterDataUrlHelper urlHelper)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -42,16 +47,20 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
 
     public JJDataPanel Create(FormElement formElement)
     {
-        var dataPanel = new JJDataPanel(formElement, EntityRepository, DataDictionaryRepository, HttpContext,
-            EncryptionService, UrlHelper, FieldsService, FormValuesService, ExpressionsService, ComponentFactory);
-        return dataPanel;
+        return new JJDataPanel(formElement, 
+            EntityRepository, 
+            HttpContext,
+            EncryptionService, 
+            UrlHelper, 
+            FieldsService, 
+            FormValuesService, 
+            ExpressionsService, 
+            ComponentFactory);
     }
 
     public async Task<JJDataPanel> CreateAsync(string elementName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
-        var dataPanel = Create(formElement);
-
-        return dataPanel;
+        return Create(formElement);
     }
 }
