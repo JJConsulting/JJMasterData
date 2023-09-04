@@ -171,6 +171,6 @@ internal class ActionsScripts
             string dictionaryNameEncrypted = EncryptionService.EncryptString(actionContext.FormElement.Name);
             return UrlHelper.GetUrl("GetGridViewTable", "Grid","MasterData",  new { dictionaryName = dictionaryNameEncrypted });
         }
-        return $"JJViewHelper.refresh('{name}', true)";
+        return $"GridViewHelper.refresh('{name}', true)";
     }
 }

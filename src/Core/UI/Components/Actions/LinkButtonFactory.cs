@@ -18,6 +18,7 @@ using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.UI.Components.Importation;
 
 namespace JJMasterData.Core.UI.Components.Widgets;
 
@@ -123,10 +124,17 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
             case ConfigAction:
                 button.OnClientClick = BootstrapHelper.GetModalScript($"config-modal-{actionContext.ParentComponentName}");
                 break;
-            case DeleteSelectedRowsAction or ImportAction or LogAction:
+            case DeleteSelectedRowsAction or LogAction:
                 button.OnClientClick =
                     ActionsScripts.GetFormActionScript(toolbarAction, actionContext, ActionSource.GridToolbar);
                 break;
+            
+            case ImportAction:
+                var importationScripts = new DataImportationScripts(actionContext.ParentComponentName, actionContext.FormElement, EncryptionService);
+                button.OnClientClick =
+                    importationScripts.GetShowScript();
+                break;
+                
             case ExportAction:
                 var exportationScripts = new DataExportationScripts(actionContext.ParentComponentName, actionContext.FormElement, EncryptionService);
                 button.OnClientClick =

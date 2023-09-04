@@ -17,12 +17,13 @@ abstract class ModalBase{
     modalSize: ModalSize;
     modalElement: HTMLElement;
     centered: boolean;
+    onModalHidden?: Function;
 
     public constructor() {
         this.modalId = "jjmasterdata-modal";
         this.modalSize = ModalSize.ExtraLarge;
-    }
 
+    }
     abstract showIframe(url: string, title: string, size: ModalSize);
 
     abstract showUrl(options: ModalUrlOptions, title: string, size: ModalSize) : Promise<void>;
@@ -30,7 +31,6 @@ abstract class ModalBase{
 }
 
 class _Modal extends ModalBase {
-    
     private bootstrapModal: bootstrap.Modal
     
     private modalSizeCssClass = {
@@ -80,6 +80,13 @@ class _Modal extends ModalBase {
             }
 
             this.bootstrapModal = new bootstrap.Modal(this.modalElement);
+            
+            var onModalHidden = this.onModalHidden;
+            
+            this.modalElement.addEventListener('hidden.bs.modal', function (event) {
+                onModalHidden();
+            })
+
         } else {
             this.modalElement = document.getElementById(this.modalId);
 
@@ -128,6 +135,15 @@ class _Modal extends ModalBase {
 }
 
 class _LegacyModal extends ModalBase {
+    
+    constructor() {
+        super();
+        let onModalHidden = this.onModalHidden;
+        $("#"+this.modalId).on('hidden.bs.modal', function () {
+            onModalHidden()
+        });
+    }
+    
     private createModalHtml(content: string, isIframe: boolean) {
         const size = isIframe
             ? this.modalSize === ModalSize.Small
@@ -213,6 +229,7 @@ class _LegacyModal extends ModalBase {
 
 class Modal {
     private instance: ModalBase;
+
     constructor() {
         if (bootstrapVersion === 5) {
             this.instance = new _Modal();
@@ -272,6 +289,14 @@ class Modal {
 
     set centered(value: boolean) {
         this.instance.centered = value;
+    }
+
+    get onModalHidden(): Function {
+        return this.instance.onModalHidden;
+    }
+
+    set onModalHidden(value: Function) {
+        this.instance.onModalHidden = value;
     }
 }
 var defaultModal = function () {

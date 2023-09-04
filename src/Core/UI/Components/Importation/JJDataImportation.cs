@@ -104,10 +104,10 @@ public class JJDataImportation : ProcessComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        HtmlBuilder html;
+        HtmlBuilder htmlBuilder;
         Upload.OnFileUploaded += FileUploaded;
 
-        string action = CurrentContext.Request["dataImportationOperation"];
+        string action = CurrentContext.Request.QueryString["dataImportationOperation"];
 
         var uploadAreaResult = await Upload.GetResultAsync();
 
@@ -128,10 +128,10 @@ public class JJDataImportation : ProcessComponent
                 StopExportation();
                 return new JsonComponentResult(new {isProcessing = false});
             case "log":
-                html = GetHtmlLogProcess();
+                htmlBuilder = GetHtmlLogProcess();
                 break;
             case "help":
-                html = await new DataImportationHelp(this).GetHtmlHelpAsync();
+                htmlBuilder = await new DataImportationHelp(this).GetHtmlHelpAsync();
                 break;
             case "processPastedText":
             {
@@ -141,26 +141,25 @@ public class JJDataImportation : ProcessComponent
                     string pasteValue = CurrentContext.Request.GetFormValue("pasteValue");
                     ImportInBackground(pasteValue);
                 }
-                html = GetHtmlWaitProcess();
+                htmlBuilder = GetHtmlWaitProcess();
                 break;
             }
             default:
             {
                 if (Upload.IsPostAfterUploadAllFiles() || IsRunning())
-                    html = GetHtmlWaitProcess();
+                    htmlBuilder = GetHtmlWaitProcess();
                 else
-                    html = GetUploadAreaCollapse(ProcessKey);
+                    htmlBuilder = GetUploadAreaCollapse(ProcessKey);
                 break;
             }
         }
 
-        return new RenderedComponentResult(html);
+        return HtmlComponentResult.FromHtmlBuilder(htmlBuilder);
     }
 
     private HtmlBuilder GetHtmlLogProcess()
     {
         var html = new DataImportationLog(this).GetHtmlLog()
-         .AppendHiddenInput("dataImportationOperation")
          .AppendHiddenInput("filename")
          .AppendComponent(BackButton);
 
@@ -176,8 +175,6 @@ public class JJDataImportation : ProcessComponent
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithAttribute("style", "text-align: center;")
-            .AppendScript(DataImportationScripts.GetStartImportationScript())
-            .AppendHiddenInput("dataImportationOperation")
             .Append(HtmlTag.Div, spin =>
             {
                 spin.WithAttribute("id", "impSpin")
@@ -222,7 +219,7 @@ public class JJDataImportation : ProcessComponent
 
         var btnStop = new JJLinkButton
         {
-            OnClientClick = DataImportationScripts.GetStopImportationScript(StringLocalizer["Stopping Processing..."]),
+            OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]),
             IconClass = IconType.Stop.GetCssClass(),
             Text = StringLocalizer["Stop the import."]
         };
@@ -236,7 +233,6 @@ public class JJDataImportation : ProcessComponent
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .AppendScript("DataImportationHelper.addPasteListener();")
-            .AppendHiddenInput("dataImportationOperation")
             .AppendHiddenInput("filename")
             .Append(HtmlTag.TextArea, area =>
             {
@@ -367,25 +363,25 @@ public class JJDataImportation : ProcessComponent
         };
     }
 
-    private static JJLinkButton GetHelpButton()
+    private JJLinkButton GetHelpButton()
     {
         return new JJLinkButton
         {
             IconClass = "fa fa-question-circle",
             Text = "Help",
             ShowAsButton = true,
-            OnClientClick = "$('#dataImportationOperation').val('help'); $('form:first').submit();"
+            OnClientClick = DataImportationScripts.GetHelpScript()
         };
     }
 
-    private static JJLinkButton GetLogButton()
+    private JJLinkButton GetLogButton()
     {
         return new JJLinkButton
         {
             IconClass = "fa fa-film",
             Text = "Last Importation",
             ShowAsButton = true,
-            OnClientClick = "$('#dataImportationOperation').val('log'); $('form:first').submit();"
+            OnClientClick = DataImportationScripts.GetLogScript()
         };
     }
 

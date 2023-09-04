@@ -1,3 +1,5 @@
+#nullable enable
+
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Extensions;
@@ -10,15 +12,19 @@ internal class DataImportationScripts
     public string Name { get; }
     public FormElement FormElement { get; }
     public IEncryptionService EncryptionService { get; }
-    
-    private string EncryptedRouteContext
+
+    private string GetEncryptedRouteContext(ComponentContext context = ComponentContext.DataImportation)
     {
-        get
-        {
-            var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.DataImportation);
-            var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
-            return encryptedRouteContext;
-        }
+        var routeContext = RouteContext.FromFormElement(FormElement, context);
+        var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+        return encryptedRouteContext;
+    }
+
+    public DataImportationScripts(string name, FormElement formElement, IEncryptionService encryptionService)
+    {
+        Name = name;
+        FormElement = formElement;
+        EncryptionService = encryptionService;
     }
     
     public DataImportationScripts(JJDataImportation dataImportation)
@@ -27,14 +33,25 @@ internal class DataImportationScripts
         FormElement = dataImportation.FormElement;
         EncryptionService = dataImportation.EncryptionService;
     }
-
-    public string GetStartImportationScript()
+    
+    public string GetShowScript()
     {
-        return $"DataImportation.startImportation('{Name}','{EncryptedRouteContext}')";
+        return $"DataImportationHelper.show('{Name}','{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
+    }
+
+    
+    public string GetHelpScript()
+    {
+        return $"DataImportationHelper.help('{Name}','{GetEncryptedRouteContext()}')";
     }
     
-    public string GetStopImportationScript(string stopMessage)
+    public string GetStopScript(string stopMessage)
     {
-        return $"DataImportation.stopImportation('{Name}','{EncryptedRouteContext}','{stopMessage}')";
+        return $"DataImportationHelper.stop('{Name}','{GetEncryptedRouteContext()}','{stopMessage}')";
+    }
+
+    public string GetLogScript()
+    {
+        return $"DataImportationHelper.showLog('{Name}','{GetEncryptedRouteContext()}')";
     }
 }

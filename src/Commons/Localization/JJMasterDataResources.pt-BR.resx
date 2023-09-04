@@ -3427,4 +3427,13 @@
   <data name="Element {elementMap.ElementName} not found at your data source." xml:space="preserve">
     <value>Elemento filho não encontrado na sua fonte de dados.</value>
   </data>
+  <data name="Start:" xml:space="preserve">
+    <value>Início</value>
+  </data>
+  <data name="End:" xml:space="preserve">
+    <value>Fim:</value>
+  </data>
+  <data name="Importation Details" xml:space="preserve">
+    <value>Detalhes da Importação</value>
+  </data>
 </root>

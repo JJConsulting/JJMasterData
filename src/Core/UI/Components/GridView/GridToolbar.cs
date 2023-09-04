@@ -22,7 +22,7 @@ internal class GridToolbar
     {
         var toolbar = new JJToolbar();
         
-        await foreach(var action in GetActionsHtmlElement())
+        await foreach(var action in GetActionsHtmlBuilderEnumerable())
         {
             toolbar.Items.Add(action);
         }
@@ -30,7 +30,7 @@ internal class GridToolbar
         return toolbar.GetHtmlBuilder();
     }
 
-    private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlElement()
+    private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlBuilderEnumerable()
     {
         var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
         var linkButtonFactory = GridView.ComponentFactory.LinkButton;

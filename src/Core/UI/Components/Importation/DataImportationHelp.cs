@@ -34,7 +34,6 @@ internal class DataImportationHelp
         };
 
         var html = panel.BuildHtml()
-           .AppendHiddenInput("dataImportationOperation", "")
            .AppendHiddenInput("filename", "")
            .AppendComponent(GetBackButton());
 
@@ -301,7 +300,7 @@ internal class DataImportationHelp
             IconClass = "fa fa-arrow-left",
             Text = "Back",
             ShowAsButton = true,
-            OnClientClick = "$('#dataImportationOperation').val(''); $('form:first').submit();"
+            OnClientClick = DataImportation.DataImportationScripts.GetShowScript()
         };
 
         return btnBack;

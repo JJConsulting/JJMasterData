@@ -46,7 +46,7 @@ public class JJLabel : HtmlComponent
     public JJLabel(FormElementField field)
     {
         if (field == null)
-            throw new ArgumentNullException(nameof(field), "FormElementField can not be null");
+            throw new ArgumentNullException(nameof(field), "FormElementField cannot be null");
 
         LabelFor = field.Name;
         Text = field.LabelOrName;

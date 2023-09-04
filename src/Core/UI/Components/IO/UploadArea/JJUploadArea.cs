@@ -5,6 +5,7 @@ using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Tasks;
@@ -121,8 +122,7 @@ public class JJUploadArea : AsyncComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string context = CurrentContext.Request.QueryString["context"];
-        if ("fileUpload".Equals(context))
+        if (ComponentContext is ComponentContext.FileUpload)
         {
             if (OnFileUploaded != null) 
                 UploadAreaService.OnFileUploaded += OnFileUploaded;

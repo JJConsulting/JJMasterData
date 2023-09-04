@@ -540,10 +540,10 @@ class DataImportationHelper {
         const target = document.getElementById('impSpin');
         new Spinner(options).spin(target);
     }
-    static checkProgress(componentName, routeContext) {
+    static checkProgress(componentName, importationRouteContext, gridRouteContext) {
         showWaitOnPost = false;
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("routeContext", importationRouteContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
         urlBuilder.addQueryParameter("componentName", componentName);
         const url = urlBuilder.build();
@@ -624,25 +624,52 @@ class DataImportationHelper {
                 DataImportationHelper.errorCount = result.Error;
             }
             if (!result.IsProcessing) {
-                document.querySelector("#dataImportationOperation").value = "finished";
-                setTimeout(function () {
-                    document.querySelector("form").dispatchEvent(new Event("submit"));
-                }, 1000);
+                let urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("routeContext", importationRouteContext);
+                urlBuilder.addQueryParameter("dataImportationOperation", "log");
+                DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
+                    GridViewHelper.refreshGrid(componentName, gridRouteContext);
+                });
             }
         })
             .catch(error => {
             console.error('Error fetching data:', error);
         });
     }
-    static startImportation(componentName, routeContext) {
-        $(document).ready(function () {
+    static show(componentName, routeContext, gridRouteContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
+            UploadAreaListener.listenFileUpload();
+            this.addPasteListener(componentName, routeContext, gridRouteContext);
+        });
+    }
+    static showLog(componentName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "log");
+        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
+        });
+    }
+    static start(componentName, routeContext, gridRouteContext) {
+        document.addEventListener("DOMContentLoaded", function () {
             DataImportationHelper.setLoadMessage();
             setInterval(function () {
-                DataImportationHelper.checkProgress(componentName, routeContext);
+                DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
             }, 3000);
         });
     }
-    static stopImportation(componentName, routeContext, stopLabel) {
+    static help(componentName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "help");
+        postFormValues({
+            url: urlBuilder.build(), success: html => {
+                document.querySelector("#" + componentName).innerHTML = html;
+            }
+        });
+    }
+    static stop(componentName, routeContext, stopLabel) {
         showWaitOnPost = false;
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
@@ -655,25 +682,39 @@ class DataImportationHelper {
             }
         });
     }
-    static addPasteListener() {
-        $(document).ready(function () {
-            document.addEventListener("paste", (e) => {
-                var pastedText = undefined;
-                if (window.clipboardData && window.clipboardData.getData) {
-                    pastedText = window.clipboardData.getData("Text");
-                }
-                else if (e.clipboardData && e.clipboardData.getData) {
-                    pastedText = e.clipboardData.getData("text/plain");
-                }
-                e.preventDefault();
-                if (pastedText != undefined) {
-                    $("#dataImportationOperation").val("processPastedText");
-                    $("#pasteValue").val(pastedText);
-                    $("form:first").trigger("submit");
-                }
-                return false;
-            });
-        });
+    static addPasteListener(componentName, routeContext, gridRouteContext) {
+        DataImportationHelper.pasteEventListener = function onPaste(e) {
+            let pastedText = undefined;
+            if (window.clipboardData && window.clipboardData.getData) {
+                pastedText = window.clipboardData.getData("Text");
+            }
+            else if (e.clipboardData && e.clipboardData.getData) {
+                pastedText = e.clipboardData.getData("text/plain");
+            }
+            e.preventDefault();
+            if (pastedText != undefined) {
+                document.querySelector("#pasteValue").value = pastedText;
+                let urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("routeContext", routeContext);
+                urlBuilder.addQueryParameter("dataImportationOperation", "processPastedText");
+                DataImportationModal.getInstance().showUrl({
+                    url: urlBuilder.build(),
+                    requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) }
+                }, "Import", ModalSize.Small).then(_ => {
+                    setInterval(function () {
+                        DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
+                    }, 3000);
+                    document.removeEventListener("paste", onPaste);
+                });
+            }
+            return false;
+        };
+        document.addEventListener("paste", this.pasteEventListener, { once: true });
+    }
+    static removePasteListener() {
+        if (DataImportationHelper.pasteEventListener) {
+            document.removeEventListener("paste", DataImportationHelper.pasteEventListener);
+        }
     }
 }
 DataImportationHelper.insertCount = 0;
@@ -681,6 +722,15 @@ DataImportationHelper.updateCount = 0;
 DataImportationHelper.deleteCount = 0;
 DataImportationHelper.ignoreCount = 0;
 DataImportationHelper.errorCount = 0;
+class DataImportationModal {
+    static getInstance() {
+        if (this.instance === undefined) {
+            this.instance = new Modal();
+            this.instance.onModalHidden = DataImportationHelper.removePasteListener;
+        }
+        return this.instance;
+    }
+}
 class DataPanelHelper {
     static reloadAtSamePage(panelname, objid) {
         let url = new UrlBuilder();
@@ -948,12 +998,14 @@ class GridViewHelper {
             success: function (data) {
                 const gridViewElement = document.querySelector("#grid-view-" + componentName);
                 const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
-                if (gridViewElement && filterActionElement) {
+                if (gridViewElement) {
                     gridViewElement.innerHTML = data;
                     if (reloadListeners) {
                         loadJJMasterData();
                     }
-                    filterActionElement.value = "";
+                    if (filterActionElement) {
+                        filterActionElement.value = "";
+                    }
                 }
                 else {
                     console.error("One or both of the elements were not found.");
@@ -1368,6 +1420,10 @@ class _Modal extends ModalBase {
                 document.body.appendChild(this.modalElement);
             }
             this.bootstrapModal = new bootstrap.Modal(this.modalElement);
+            var onModalHidden = this.onModalHidden;
+            this.modalElement.addEventListener('hidden.bs.modal', function (event) {
+                onModalHidden();
+            });
         }
         else {
             this.modalElement = document.getElementById(this.modalId);
@@ -1406,6 +1462,13 @@ class _Modal extends ModalBase {
     }
 }
 class _LegacyModal extends ModalBase {
+    constructor() {
+        super();
+        let onModalHidden = this.onModalHidden;
+        $("#" + this.modalId).on('hidden.bs.modal', function () {
+            onModalHidden();
+        });
+    }
     createModalHtml(content, isIframe) {
         const size = isIframe
             ? this.modalSize === ModalSize.Small
@@ -1529,6 +1592,12 @@ class Modal {
     }
     set centered(value) {
         this.instance.centered = value;
+    }
+    get onModalHidden() {
+        return this.instance.onModalHidden;
+    }
+    set onModalHidden(value) {
+        this.instance.onModalHidden = value;
     }
 }
 var defaultModal = function () {
@@ -1933,10 +2002,6 @@ class UploadAreaListener {
             }
             const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);
             this.configureFileUpload(fileUploadOptions);
-            window.addEventListener("resize", () => {
-                document.querySelector("#" + componentName + " .ajax-upload-dragdrop").style.width =
-                    document.querySelector("#" + componentName).clientWidth - 30 + "px";
-            });
             if (copyPaste === "true") {
                 this.handleCopyPaste(componentName);
             }

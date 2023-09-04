@@ -113,12 +113,14 @@
                 const gridViewElement = document.querySelector<HTMLInputElement>("#grid-view-" + componentName);
                 const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
 
-                if (gridViewElement && filterActionElement) {
+                if (gridViewElement) {
                     gridViewElement.innerHTML = data;
                     if (reloadListeners) {
                         loadJJMasterData();
                     }
-                    filterActionElement.value = "";
+                    if(filterActionElement){
+                        filterActionElement.value = "";
+                    }
                 } else {
                     console.error("One or both of the elements were not found.");
                 }

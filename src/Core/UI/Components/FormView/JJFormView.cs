@@ -452,7 +452,6 @@ public class JJFormView : AsyncComponent
             ViewAction => await GetViewResult(),
             EditAction => await GetUpdateResult(),
             InsertAction => await GetInsertResult(),
-            ImportAction => await GetImportationResult(),
             LogAction => await GetAuditLogResult(),
             DeleteAction => await GetDeleteResult(),
             DeleteSelectedRowsAction => await GetDeleteSelectedRowsResult(),
@@ -465,9 +464,9 @@ public class JJFormView : AsyncComponent
             return result;
 
         var html = renderedComponentResult.HtmlBuilder;
-
+        
+        html.WithNameAndId(Name);
         html.AppendHiddenInput($"form-view-page-state-{Name.ToLower()}", ((int)PageState).ToString());
-
         html.AppendHiddenInput($"form-view-action-map-{Name.ToLower()}", string.Empty);
 
         return new RenderedComponentResult(html);
@@ -630,15 +629,15 @@ public class JJFormView : AsyncComponent
 
         if (erros.Count > 0)
         {
-            var sMsg = new StringBuilder();
+            var message = new StringBuilder();
             foreach (string err in erros.Values)
             {
-                sMsg.Append(" - ");
-                sMsg.Append(err);
-                sMsg.Append("<br>");
+                message.Append(" - ");
+                message.Append(err);
+                message.Append("<br>");
             }
 
-            html.AppendComponent(new JJMessageBox(sMsg.ToString(), MessageIcon.Warning));
+            html.AppendComponent(new JJMessageBox(message.ToString(), MessageIcon.Warning));
 
             var insertSelectionResult = await GetInsertSelectionResult(GridView.ToolBarActions.InsertAction);
 
@@ -858,12 +857,10 @@ public class JJFormView : AsyncComponent
             html.AppendComponent(GridView.GetTitle(UserValues));
 
         PageState = PageState.Import;
-        var importationScript = new StringBuilder();
-        importationScript.Append($"$('#form-view-page-state-{Name}').val('{(int)PageState.List}'); ");
-        importationScript.AppendLine("$('form:first').submit(); ");
-
+        
+        
         DataImportation.UserValues = UserValues;
-        DataImportation.BackButton.OnClientClick = importationScript.ToString();
+        DataImportation.BackButton.OnClientClick = "defaultModal.hide()";
         DataImportation.ProcessOptions = action.ProcessOptions;
         DataImportation.EnableAuditLog = GridView.ToolBarActions.LogAction.IsVisible;
 

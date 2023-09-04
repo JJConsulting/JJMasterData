@@ -118,48 +118,37 @@ internal class DataImportationLog
     {
         var panel = new JJCollapsePanel(CurrentContext)
         {
-            Title = "(Click here for more details)",
+            Title = StringLocalizer["Importation Details"],
             TitleIcon = new JJIcon(IconType.Film),
-            ExpandedByDefault = false,
+            ExpandedByDefault = true,
             HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-                .Append(HtmlTag.Label, label =>
-                {
-                    label.AppendText(StringLocalizer["Date::"]);
-                })
-                .AppendText("&nbsp;")
-                .AppendText(StringLocalizer["start:"])
+                .Append(HtmlTag.B,b=>b.AppendText(StringLocalizer["Start:"]))
                 .AppendText("&nbsp;")
                 .AppendText(Reporter.StartDate.ToString(CultureInfo.CurrentCulture))
-                .AppendText("&nbsp;")
-                .AppendText(StringLocalizer["end:"])
+                .Append(HtmlTag.Br)
+                .Append(HtmlTag.B,b=>b.AppendText(StringLocalizer["End:"]))
                 .AppendText("&nbsp;")
                 .AppendText(Reporter.EndDate.ToString(CultureInfo.CurrentCulture))
-                .Append(HtmlTag.Br)
         };
 
         if (!string.IsNullOrEmpty(Reporter.UserId))
         {
-            panel.HtmlBuilderContent.Append(HtmlTag.Label, label =>
-            {
-                label.AppendText(StringLocalizer["User Id::"]);
-            })
-            .AppendText("&nbsp;")
-            .AppendText(Reporter.UserId)
-            .Append(HtmlTag.Br);
+            panel.HtmlBuilderContent.Append(HtmlTag.Br)
+                .Append(HtmlTag.B, b => b.AppendText(StringLocalizer["UserId:"]))
+                .AppendText("&nbsp;")
+                .AppendText(Reporter.UserId.ToString(CultureInfo.CurrentCulture));
         }
-
-        panel.HtmlBuilderContent
-                .Append(HtmlTag.Br)
-                .AppendText(Reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
-
+        
         return panel.BuildHtml();
     }
 
     private JJAlert GetAlertPanel()
     {
-        var alert = new JJAlert();
-        alert.CssClass = "text-center";
-        alert.ShowIcon = true;
+        var alert = new JJAlert
+        {
+            CssClass = "text-center",
+            ShowIcon = true
+        };
 
         if (Reporter.HasError || Reporter.TotalProcessed == Reporter.Error)
         {

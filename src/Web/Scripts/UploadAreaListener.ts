@@ -153,11 +153,6 @@ class UploadAreaListener {
 
             this.configureFileUpload(fileUploadOptions);
 
-            window.addEventListener("resize", () => {
-                document.querySelector<HTMLElement>("#" + componentName + " .ajax-upload-dragdrop").style.width =
-                    document.querySelector("#" + componentName).clientWidth - 30 + "px";
-            });
-
             if (copyPaste === "true") {
                 this.handleCopyPaste(componentName)
             }
