@@ -39,7 +39,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     
     public JJTextFile Create()
     {
-        return new JJTextFile(HttpRequest,UrlHelper, UploadViewFactory, TextBoxFactory, StringLocalizer);
+        return new JJTextFile(HttpRequest,UrlHelper, UploadViewFactory, TextBoxFactory, StringLocalizer, EncryptionService);
     }
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)
