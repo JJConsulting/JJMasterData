@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
@@ -44,7 +43,7 @@ public class JJTextBox : ControlBase
         }
     }
 
-    public JJTextBox(IHttpRequest request, IEncryptionService encryptionService) : base(request, encryptionService)
+    public JJTextBox(IHttpRequest request) : base(request)
     {
         InputType = InputType.Text;
         Visible = true;

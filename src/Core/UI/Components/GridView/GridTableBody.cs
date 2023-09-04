@@ -316,7 +316,7 @@ internal class GridTableBody
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jjselect");
 
-        var checkBox = new JJCheckBox(GridView.CurrentContext.Request, GridView.EncryptionService)
+        var checkBox = new JJCheckBox(GridView.CurrentContext.Request)
         {
             Name = "jjchk_" + index,
             Value = GridView.EncryptionService.EncryptStringWithUrlEscape(pkValues),

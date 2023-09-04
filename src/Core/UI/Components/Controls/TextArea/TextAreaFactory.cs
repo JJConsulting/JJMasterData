@@ -14,18 +14,17 @@ namespace JJMasterData.Core.Web.Factories;
 internal class TextAreaFactory : IControlFactory<JJTextArea>
 {
     private IHttpRequest HttpRequest { get; }
-    private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public TextAreaFactory(IHttpRequest httpRequest, IEncryptionService encryptionService,IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public TextAreaFactory(IHttpRequest httpRequest, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpRequest = httpRequest;
-        EncryptionService = encryptionService;
+
         StringLocalizer = stringLocalizer;
     }
     public JJTextArea Create()
     {
-        return new JJTextArea(HttpRequest,EncryptionService, StringLocalizer);
+        return new JJTextArea(HttpRequest,StringLocalizer);
     }
 
     public JJTextArea Create(FormElement formElement, FormElementField field, ControlContext context)

@@ -60,6 +60,7 @@ public abstract class ProcessComponent : AsyncComponent
     internal IFieldsService FieldsService { get; } 
     internal IBackgroundTask BackgroundTask { get; }
     private ILogger<ProcessComponent> Logger { get; }
+    internal IEncryptionService EncryptionService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     protected ProcessComponent(
@@ -70,13 +71,14 @@ public abstract class ProcessComponent : AsyncComponent
         IBackgroundTask backgroundTask,
         ILogger<ProcessComponent> logger,
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext.Request.QueryString, encryptionService)
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
         FieldsService = fieldsService;
         BackgroundTask = backgroundTask;
         Logger = logger;
+        EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         CurrentContext = currentContext;
     }

@@ -19,7 +19,6 @@ internal class ComboBoxFactory : IControlFactory<JJComboBox>
     private IDataItemService DataItemService { get; }
     private IExpressionsService ExpressionsService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private IEncryptionService EncryptionService { get; }
     private ILoggerFactory LoggerFactory { get; }
 
     public ComboBoxFactory(
@@ -27,14 +26,12 @@ internal class ComboBoxFactory : IControlFactory<JJComboBox>
         IDataItemService dataItemService,
         IExpressionsService expressionsService, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IEncryptionService encryptionService,
         ILoggerFactory loggerFactory)
     {
         HttpRequest = httpRequest;
         DataItemService = dataItemService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
-        EncryptionService = encryptionService;
         LoggerFactory = loggerFactory;
     }
 
@@ -45,7 +42,6 @@ internal class ComboBoxFactory : IControlFactory<JJComboBox>
             DataItemService,
             ExpressionsService,
             StringLocalizer,
-            EncryptionService,
             LoggerFactory.CreateLogger<JJComboBox>());
     }
 

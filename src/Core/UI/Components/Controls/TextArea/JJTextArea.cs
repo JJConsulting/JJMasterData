@@ -14,7 +14,7 @@ public class JJTextArea : ControlBase
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public int Rows { get; set; }
 
-    public JJTextArea(IHttpRequest httpRequest, IEncryptionService encryptionService,IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(httpRequest,encryptionService)
+    public JJTextArea(IHttpRequest httpRequest,IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(httpRequest)
     {
         StringLocalizer = stringLocalizer;
         Attributes.Add("class", "form-control");

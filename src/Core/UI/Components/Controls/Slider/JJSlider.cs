@@ -19,7 +19,7 @@ public class JJSlider : ControlBase
     public bool ShowInput { get; set; } = true;
     public int NumberOfDecimalPlaces { get; set; }
     
-    public JJSlider(IHttpRequest httpRequest, IEncryptionService encryptionService, IComponentFactory<JJTextBox> textBoxFactory) : base(httpRequest,encryptionService)
+    public JJSlider(IHttpRequest httpRequest, IComponentFactory<JJTextBox> textBoxFactory) : base(httpRequest)
     {
         TextBoxFactory = textBoxFactory;
     }

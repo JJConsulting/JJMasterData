@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
@@ -97,8 +96,7 @@ public class JJLookup : ControlBase
         ControlContext controlContext,
         IHttpRequest httpRequest,
         ILookupService lookupService,
-        IEncryptionService encryptionService,
-        IComponentFactory<JJTextBox> textBoxFactory) : base(httpRequest,encryptionService)
+        IComponentFactory<JJTextBox> textBoxFactory) : base(httpRequest)
     {
         FormElement = formElement;
         ElementMap = field.DataItem?.ElementMap ?? throw new ArgumentException("ElementMap cannot be null.");

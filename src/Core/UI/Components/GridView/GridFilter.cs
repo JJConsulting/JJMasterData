@@ -254,7 +254,7 @@ internal class GridFilter
     {
         string searchId = "jjsearch_" + GridView.Name;
 
-        var textBox = new JJTextBox( GridView.CurrentContext.Request, GridView.EncryptionService)
+        var textBox = new JJTextBox( GridView.CurrentContext.Request)
         {
             Attributes =
             {

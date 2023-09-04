@@ -91,12 +91,34 @@ public class JJUploadArea : AsyncComponent
     private IUploadAreaService UploadAreaService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    
+    
+    internal IEncryptionService EncryptionService { get; }
+    
+    
+    private RouteContext _routeContext;
+    protected RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
+        }
+    }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    
     public JJUploadArea(
         IHttpContext currentContext,
         IUploadAreaService uploadAreaService,
         JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext.Request.QueryString, encryptionService)
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         CurrentContext = currentContext;
         UploadAreaService = uploadAreaService;
@@ -107,6 +129,7 @@ public class JJUploadArea : AsyncComponent
         Multiple = true;
         EnableDragDrop = true;
         EnableCopyPaste = true;
+        EncryptionService = encryptionService;
         ShowFileSize = true;
         AutoSubmitAfterUploadAll = true;
         AddLabel = "Add";

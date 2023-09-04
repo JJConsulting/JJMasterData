@@ -31,7 +31,7 @@ public class JJTextGroup : JJTextBox
 
     public string GroupCssClass { get; set; }
 
-    public JJTextGroup(IHttpContext httpContext, IEncryptionService encryptionService) :  base(httpContext.Request, encryptionService)
+    public JJTextGroup(IHttpContext httpContext) :  base(httpContext.Request)
     {
     }
 

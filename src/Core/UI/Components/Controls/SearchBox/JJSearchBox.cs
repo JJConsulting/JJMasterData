@@ -169,6 +169,7 @@ public class JJSearchBox : ControlBase
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
+    private IEncryptionService EncryptionService { get; }
     public IDataItemService DataItemService { get; }
     public FormStateData FormStateData { get; internal set; }
 
@@ -176,6 +177,25 @@ public class JJSearchBox : ControlBase
     {
         set => _selectedValue = value;
     }
+    
+    private RouteContext? _routeContext;
+    
+    protected RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
+        }
+    }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+
 
     #endregion
 
@@ -184,9 +204,10 @@ public class JJSearchBox : ControlBase
     public JJSearchBox(
         IHttpContext httpContext,
         IEncryptionService encryptionService,
-        IDataItemService dataItemService) : base(httpContext.Request, encryptionService)
+        IDataItemService dataItemService) : base(httpContext.Request)
     {
         HtmlId = Name;
+        EncryptionService = encryptionService;
         DataItemService = dataItemService;
         Enabled = true;
         TriggerLength = 1;

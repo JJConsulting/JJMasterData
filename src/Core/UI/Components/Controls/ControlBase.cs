@@ -56,7 +56,7 @@ public abstract class ControlBase : AsyncComponent
         set => _text = value;
     }
 
-    protected ControlBase(IHttpRequest request, IEncryptionService encryptionService) : base(request.QueryString, encryptionService)
+    protected ControlBase(IHttpRequest request) 
     {
         Request = request;
     }

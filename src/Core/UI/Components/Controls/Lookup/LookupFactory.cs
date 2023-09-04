@@ -13,7 +13,6 @@ internal class LookupFactory : IControlFactory<JJLookup>
 {
     private IHttpRequest HttpRequest { get; }
     private ILookupService LookupService { get; }
-    private IEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJTextBox> TextBoxFactory { get; }
 
@@ -22,14 +21,12 @@ internal class LookupFactory : IControlFactory<JJLookup>
     public LookupFactory(       
         IHttpRequest httpRequest,
         ILookupService lookupService,
-        IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         IComponentFactory<JJTextBox> textBoxFactory,
         ILoggerFactory loggerFactory)
     {
         HttpRequest = httpRequest;
         LookupService = lookupService;
-        EncryptionService = encryptionService;
         UrlHelper = urlHelper;
         TextBoxFactory = textBoxFactory;
         LoggerFactory = loggerFactory;
@@ -48,7 +45,6 @@ internal class LookupFactory : IControlFactory<JJLookup>
             controlContext,
             HttpRequest,
             LookupService,
-            EncryptionService,
             TextBoxFactory);
        
         return lookup;

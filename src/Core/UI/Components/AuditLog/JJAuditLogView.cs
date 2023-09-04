@@ -38,6 +38,7 @@ public class JJAuditLogView : AsyncComponent
     private IHttpContext CurrentContext { get; }
 
     public IAuditLogService AuditLogService { get; }
+    private IEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
 
@@ -68,7 +69,7 @@ public class JJAuditLogView : AsyncComponent
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext.Request.QueryString, encryptionService)
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         Name = formElement.Name;
         _componentFactory = componentFactory;
@@ -76,6 +77,7 @@ public class JJAuditLogView : AsyncComponent
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
         AuditLogService = auditLogService;
+        EncryptionService = encryptionService;
         UrlHelper = urlHelper;
         StringLocalizer = stringLocalizer;
     }

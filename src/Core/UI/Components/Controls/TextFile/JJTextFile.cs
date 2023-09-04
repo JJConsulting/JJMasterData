@@ -24,6 +24,7 @@ public class JJTextFile : ControlBase
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
+    private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     private IDictionary<string, object> _formValues;
@@ -55,8 +56,7 @@ public class JJTextFile : ControlBase
         JJMasterDataUrlHelper urlHelper,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup> textBoxFactory,
-        IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(httpRequest, encryptionService)
+        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(httpRequest)
     {
         UrlHelper = urlHelper;
         UploadViewFactory = uploadViewFactory;
@@ -76,6 +76,9 @@ public class JJTextFile : ControlBase
     {
         //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
         //por esse motivo passamos os valores nessários do form anterior por parametro o:)
+        
+        //Update 2023: Agora podemos abrir popups sem frame usando POST, que tal tentar?
+
         LoadValuesFromQuery();
 
         var uploadView = GetUploadView();

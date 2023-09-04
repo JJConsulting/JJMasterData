@@ -10,16 +10,14 @@ namespace JJMasterData.Core.Web.Factories;
 internal class CheckBoxFactory : IControlFactory<JJCheckBox>
 {
     private IHttpRequest HttpRequest { get; }
-    private IEncryptionService EncryptionService { get; }
 
 
-    public CheckBoxFactory(IHttpRequest httpRequest, IEncryptionService encryptionService)
+    public CheckBoxFactory(IHttpRequest httpRequest)
     {
         HttpRequest = httpRequest;
-        EncryptionService = encryptionService;
     }
 
-    public JJCheckBox Create() => new(HttpRequest,EncryptionService);
+    public JJCheckBox Create() => new(HttpRequest);
     public JJCheckBox Create(FormElement formElement, FormElementField field, ControlContext context)
     {
         var checkBox = Create();

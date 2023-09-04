@@ -75,8 +75,28 @@ public class JJDataPanel : AsyncComponent
 
     public string FieldNamePrefix { get; set; }
     
+    
+    private RouteContext _routeContext;
+    protected RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
+        }
+    }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    
+    
     public IEntityRepository EntityRepository { get; }
     internal IHttpContext CurrentContext { get; }
+    internal IEncryptionService EncryptionService { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     internal IFieldsService FieldsService { get; }
     internal IFormValuesService FormValuesService { get; }
@@ -87,7 +107,7 @@ public class JJDataPanel : AsyncComponent
 
     #region "Constructors"
 #if NET48
-    public JJDataPanel() : base(StaticServiceLocator.Provider.GetScopedDependentService<IQueryString>(), StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>())
+    public JJDataPanel() 
     {
         ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<IComponentFactory>();
         EntityRepository =  StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
@@ -131,10 +151,11 @@ public class JJDataPanel : AsyncComponent
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
         IComponentFactory componentFactory
-    ) : base(currentContext.Request.QueryString, encryptionService)
+    ) 
     {
         EntityRepository = entityRepository;
         CurrentContext = currentContext;
+        EncryptionService = encryptionService;
         UrlHelper = urlHelper;
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
@@ -179,7 +200,7 @@ public class JJDataPanel : AsyncComponent
         {
             var formStateData = new FormStateData(Values, UserValues,PageState);
             
-            var fieldName = QueryString["fieldName"];
+            var fieldName = CurrentContext.Request.QueryString["fieldName"];
 
             var field = FormElement.Fields[fieldName];
             

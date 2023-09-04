@@ -80,7 +80,7 @@ public class JJGridView : AsyncComponent
     #endregion
 
     #region "Properties"
-
+    private RouteContext? _routeContext;
     private OrderByData? _currentOrder;
     private string? _selectedRowsId;
     private int _currentPage;
@@ -501,11 +501,31 @@ public class JJGridView : AsyncComponent
         set => _selectedRowsId = value ?? "";
     }
     
+
+    
+    protected RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
+        }
+    }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+
+    
     #endregion
 
     #region Injected Services
     internal IFieldsService FieldsService { get; }
     internal IExpressionsService ExpressionsService { get; }
+
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
@@ -515,7 +535,7 @@ public class JJGridView : AsyncComponent
 
     internal IHttpContext CurrentContext { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-
+    internal IEncryptionService EncryptionService { get; }
 
     #endregion
 
@@ -532,7 +552,7 @@ public class JJGridView : AsyncComponent
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IComponentFactory componentFactory) : base(currentContext.Request.QueryString,encryptionService)
+        IComponentFactory componentFactory)
     {
         Name = "jj-" + formElement.Name.ToLower();
         ShowTitle = true;
@@ -548,6 +568,7 @@ public class JJGridView : AsyncComponent
         FormElement = formElement;
         FieldsService = fieldsService;
         ExpressionsService = expressionsService;
+        EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         ComponentFactory = componentFactory;
         EntityRepository = entityRepository;

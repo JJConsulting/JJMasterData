@@ -9,20 +9,18 @@ namespace JJMasterData.Core.Web.Factories;
 internal class SliderFactory : IControlFactory<JJSlider>
 {
     private IHttpRequest HttpRequest { get; }
-    private IEncryptionService EncryptionService { get; }
     private IComponentFactory<JJTextBox> TextBoxFactory { get; }
 
 
-    public SliderFactory(IHttpRequest httpRequest, IEncryptionService encryptionService, IComponentFactory<JJTextBox> textBoxFactory)
+    public SliderFactory(IHttpRequest httpRequest, IComponentFactory<JJTextBox> textBoxFactory)
     {
         HttpRequest = httpRequest;
-        EncryptionService = encryptionService;
         TextBoxFactory = textBoxFactory;
     }
     
     public JJSlider Create()
     {
-        return new JJSlider(HttpRequest,EncryptionService,TextBoxFactory);
+        return new JJSlider(HttpRequest,TextBoxFactory);
     }
 
     public JJSlider Create(FormElement formElement, FormElementField field, ControlContext context)

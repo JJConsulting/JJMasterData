@@ -22,7 +22,8 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private LinkButtonFactory LinkButtonFactory { get; }
 
-    public TextGroupFactory(IHttpContext httpContext, 
+    public TextGroupFactory(
+        IHttpContext httpContext, 
                           IEncryptionService encryptionService,
                           IStringLocalizer<JJMasterDataResources> stringLocalizer, 
                           LinkButtonFactory linkButtonFactory)
@@ -35,7 +36,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
     
     public JJTextGroup Create()
     {
-        return new JJTextGroup(HttpContext,EncryptionService);
+        return new JJTextGroup(HttpContext);
     }
     
     public JJTextGroup Create(FormElementField field, object value)
@@ -113,7 +114,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
 
     public JJTextGroup CreateTextDate()
     {
-        var textGroup = new JJTextGroup(HttpContext,EncryptionService);
+        var textGroup = new JJTextGroup(HttpContext);
         SetDefaultAttrs(textGroup, FormComponent.Date);
         return textGroup;
     }

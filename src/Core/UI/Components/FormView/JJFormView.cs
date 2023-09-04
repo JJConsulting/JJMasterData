@@ -224,6 +224,24 @@ public class JJFormView : AsyncComponent
         }
     }
     
+    private RouteContext? _routeContext;
+
+    protected RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
+        }
+    }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    
     public bool ShowTitle
     {
         get
@@ -241,6 +259,7 @@ public class JJFormView : AsyncComponent
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IFormService FormService { get; }
+    internal IEncryptionService EncryptionService { get; }
     internal IComponentFactory ComponentFactory { get; }
 
     #endregion
@@ -249,7 +268,7 @@ public class JJFormView : AsyncComponent
 
 #if NET48
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    private JJFormView() : base(StaticServiceLocator.Provider.GetScopedDependentService<IQueryString>(), StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>())
+    private JJFormView() 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         CurrentContext = StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
@@ -288,13 +307,14 @@ public class JJFormView : AsyncComponent
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IComponentFactory componentFactory) : base(currentContext.Request.QueryString, encryptionService)
+        IComponentFactory componentFactory)
     {
         Name = "jj-" + formElement.Name.ToLower();
         FormElement = formElement;
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
         FormService = formService;
+        EncryptionService = encryptionService;
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;

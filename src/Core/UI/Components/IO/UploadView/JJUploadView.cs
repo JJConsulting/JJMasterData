@@ -214,6 +214,7 @@ public class JJUploadView : AsyncComponent
 
     private IHttpContext CurrentContext { get; }
     private IComponentFactory ComponentFactory { get; }
+    private IEncryptionService EncryptionService { get; }
 
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
@@ -223,10 +224,11 @@ public class JJUploadView : AsyncComponent
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ILoggerFactory loggerFactory) : base(currentContext.Request.QueryString, encryptionService)
+        ILoggerFactory loggerFactory)
     {
         CurrentContext = currentContext;
         ComponentFactory = componentFactory;
+        EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
         Logger = loggerFactory.CreateLogger<JJUploadView>();
@@ -629,7 +631,7 @@ public class JJUploadView : AsyncComponent
                        LabelFor = $"preview_filename-{Upload.Name}",
                        Text = "File name"
                    });
-                   await col.AppendControlAsync(new JJTextGroup(CurrentContext,EncryptionService)
+                   await col.AppendControlAsync(new JJTextGroup(CurrentContext)
                    {
                        Name = $"preview_filename-{Upload.Name}",
                        Addons = new InputAddons(".png"),

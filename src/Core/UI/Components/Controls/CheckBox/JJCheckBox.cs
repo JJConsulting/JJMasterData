@@ -35,7 +35,7 @@ public class JJCheckBox : ControlBase
         set => _isChecked = value;
     }
 
-    public JJCheckBox(IHttpRequest httpRequest, IEncryptionService encryptionService) : base(httpRequest, encryptionService)
+    public JJCheckBox(IHttpRequest httpRequest) : base(httpRequest)
     {
         Visible = true;
         Enabled = true;

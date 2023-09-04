@@ -22,9 +22,8 @@ public class JJTextRange : ControlBase
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
     private bool IsTimeAware => FieldType is FieldType.DateTime or FieldType.DateTime2;
 
-    public JJTextRange(IHttpRequest httpRequest, IControlFactory<JJTextGroup> textBoxGroupFactory,
-        IEncryptionService encryptionService, IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(
-        httpRequest, encryptionService)
+    public JJTextRange(IHttpRequest httpRequest, IControlFactory<JJTextGroup> textBoxGroupFactory,IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(
+        httpRequest)
     {
         TextBoxGroupFactory = textBoxGroupFactory;
         StringLocalizer = stringLocalizer;

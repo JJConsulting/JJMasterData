@@ -14,32 +14,6 @@ namespace JJMasterData.Core.Web.Components;
 /// </summary>
 public abstract class AsyncComponent : ComponentBase
 {
-    private RouteContext? _routeContext;
-    internal IQueryString QueryString { get; }
-    internal IEncryptionService EncryptionService { get; }
-    
-    protected RouteContext RouteContext
-    {
-        get
-        {
-            if (_routeContext != null)
-                return _routeContext;
-
-            var factory = new RouteContextFactory(QueryString, EncryptionService);
-            _routeContext = factory.Create();
-            
-            return _routeContext;
-        }
-    }
-    
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
-    
-    protected AsyncComponent(IQueryString queryString, IEncryptionService encryptionService)
-    {
-        QueryString = queryString;
-        EncryptionService = encryptionService;
-    }
-    
     public async Task<ComponentResult> GetResultAsync()
     {
         if (Visible)

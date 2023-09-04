@@ -54,8 +54,7 @@ public class JJComboBox : ControlBase
         IDataItemService dataItemService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IEncryptionService encryptionService,
-        ILogger<JJComboBox> logger) : base(httpRequest,encryptionService)
+        ILogger<JJComboBox> logger) : base(httpRequest)
     {
         DataItemService = dataItemService;
         Logger = logger;

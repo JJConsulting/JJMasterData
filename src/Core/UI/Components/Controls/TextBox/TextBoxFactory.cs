@@ -19,6 +19,6 @@ public class TextBoxFactory : IComponentFactory<JJTextBox>
     }
     public JJTextBox Create()
     {
-        return new JJTextBox(HttpRequest, EncryptionService);
+        return new JJTextBox(HttpRequest);
     }
 }
