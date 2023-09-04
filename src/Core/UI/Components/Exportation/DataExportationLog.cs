@@ -66,7 +66,7 @@ internal class DataExportationLog
         return new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithAttribute("style", "text-align:center;")
-            .AppendHiddenInput("current_uploadaction", string.Empty)
+            .AppendHiddenInput("dataImportationOperation", string.Empty)
             .Append(HtmlTag.Div, div =>
             {
                 div.WithAttribute("id", "data-exportation-spinner");

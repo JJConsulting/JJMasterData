@@ -34,7 +34,7 @@ internal class DataImportationHelp
         };
 
         var html = panel.BuildHtml()
-           .AppendHiddenInput("current_uploadaction", "")
+           .AppendHiddenInput("dataImportationOperation", "")
            .AppendHiddenInput("filename", "")
            .AppendComponent(GetBackButton());
 
@@ -252,7 +252,7 @@ internal class DataImportationHelp
         var defaultValues = await DataImportation.FieldsService.GetDefaultValuesAsync(DataImportation.FormElement,null, PageState.Import);
         var expOptions = new FormStateData(defaultValues, DataImportation.UserValues, PageState.Import);
         //TODO: DataItemService is better
-        var comboBox = DataImportation.ComboBoxFactory.Create(null,field, new(expOptions,null));
+        var comboBox = DataImportation.ComponentFactory.Controls.Create<JJComboBox>(null,field, new(expOptions,null));
         var items = await comboBox.GetValuesAsync().ToListAsync();
 
         if (items.Count == 0)
@@ -301,7 +301,7 @@ internal class DataImportationHelp
             IconClass = "fa fa-arrow-left",
             Text = "Back",
             ShowAsButton = true,
-            OnClientClick = "$('#current_uploadaction').val(''); $('form:first').submit();"
+            OnClientClick = "$('#dataImportationOperation').val(''); $('form:first').submit();"
         };
 
         return btnBack;

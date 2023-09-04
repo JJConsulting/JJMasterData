@@ -34,22 +34,16 @@
         new Spinner(options).spin(target);
     }
 
-    private static checkProgress(componentName) {
+    private static checkProgress(componentName, routeContext) {
         showWaitOnPost = false;
 
-        let checkProgressUrl = document.getElementById("divProcess").getAttribute("check-progress-url")
+  
+        let urlBuilder = new UrlBuilder()
+        urlBuilder.addQueryParameter("routeContext",routeContext)
+        urlBuilder.addQueryParameter("dataImportationOperation","checkProgress")
+        urlBuilder.addQueryParameter("componentName",componentName)
+        const url = urlBuilder.build()
         
-        let url: string;
-        
-        if(checkProgressUrl){
-            url = checkProgressUrl
-        }else{
-            let urlBuilder = new UrlBuilder()
-            urlBuilder.addQueryParameter("context","dataImportation")
-            urlBuilder.addQueryParameter("current_uploadaction","process_check")
-            urlBuilder.addQueryParameter("componentName",componentName)
-            url = urlBuilder.build()
-        }
         
         fetch(url, {
             method: 'GET',
@@ -131,7 +125,7 @@
                 }
 
                 if (!result.IsProcessing) {
-                    document.querySelector<HTMLInputElement>("#current_uploadaction").value = "process_finished";
+                    document.querySelector<HTMLInputElement>("#dataImportationOperation").value = "finished";
                     setTimeout(function () {
                         document.querySelector("form").dispatchEvent(new Event("submit"));
                     }, 1000);
@@ -141,34 +135,25 @@
                 console.error('Error fetching data:', error);
             });
     }
-    static startProcess(objname) {
+    static startImportation(componentName, routeContext) {
         $(document).ready(function () {
             DataImportationHelper.setLoadMessage();
 
             setInterval(function () {
-                DataImportationHelper.checkProgress(objname);
+                DataImportationHelper.checkProgress(componentName, routeContext);
             }, 3000);
         });
     }
 
-    static stopProcess(componentName, stopLabel) {
+    static stopImportation(componentName,routeContext, stopLabel) {
         showWaitOnPost = false;
-
-        let stopProcessUrl = document.getElementById("divProcess").getAttribute("stop-process-url")
-
-        let url: string;
-
-        if(stopProcessUrl){
-            url = stopProcessUrl
-        }else{
-            let urlBuilder = new UrlBuilder()
-            urlBuilder.addQueryParameter("context","dataImportation")
-            urlBuilder.addQueryParameter("current_uploadaction","process_check")
-            urlBuilder.addQueryParameter("componentName",componentName)
-            url = urlBuilder.build()
-        }
-
-
+        
+        let urlBuilder = new UrlBuilder()
+        urlBuilder.addQueryParameter("routeContext",routeContext)
+        urlBuilder.addQueryParameter("dataImportationOperation","checkProgress")
+        urlBuilder.addQueryParameter("componentName",componentName)
+        const url = urlBuilder.build()
+        
         fetch(url).then(response=>response.json()).then(data=>{
             if(data.isProcessing === false){
                 document.getElementById("divMsgProcess").innerHTML = stopLabel;
@@ -188,7 +173,7 @@
                 e.preventDefault();
                 if (pastedText != undefined) {
 
-                    $("#current_uploadaction").val("posted_past_text");
+                    $("#dataImportationOperation").val("processPastedText");
                     $("#pasteValue").val(pastedText);
                     $("form:first").trigger("submit");
                 }

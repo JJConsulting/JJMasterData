@@ -6,7 +6,7 @@ using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
-public class DataExportationScripts
+internal class DataExportationScripts
 {
     private string Name { get; }
     private FormElement FormElement { get; }
