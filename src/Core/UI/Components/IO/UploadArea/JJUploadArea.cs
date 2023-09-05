@@ -5,8 +5,11 @@ using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
@@ -89,10 +92,33 @@ public class JJUploadArea : AsyncComponent
     private IUploadAreaService UploadAreaService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    
+    
+    internal IEncryptionService EncryptionService { get; }
+    
+    
+    private RouteContext _routeContext;
+    internal RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
+        }
+    }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    
     public JJUploadArea(
         IHttpContext currentContext,
         IUploadAreaService uploadAreaService,
         JJMasterDataUrlHelper urlHelper,
+        IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         CurrentContext = currentContext;
@@ -104,6 +130,7 @@ public class JJUploadArea : AsyncComponent
         Multiple = true;
         EnableDragDrop = true;
         EnableCopyPaste = true;
+        EncryptionService = encryptionService;
         ShowFileSize = true;
         AutoSubmitAfterUploadAll = true;
         AddLabel = "Add";
@@ -119,23 +146,27 @@ public class JJUploadArea : AsyncComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string context = CurrentContext.Request.QueryString("context");
-        if ("fileUpload".Equals(context))
+        if (ComponentContext is ComponentContext.FileUpload)
         {
-            if (OnFileUploaded != null) 
-                UploadAreaService.OnFileUploaded += OnFileUploaded;
-            
-            if (OnFileUploadedAsync != null) 
-                UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
-            
-            var result = await UploadAreaService.UploadFileAsync("file",AllowedTypes);
-            return new JsonComponentResult(result);
+            return await GetFileUploadResultAsync();
         }
 
-        return new RenderedComponentResult(GetUploadAreaHtml());
+        return new RenderedComponentResult(GetUploadAreaHtmlBuilder());
     }
 
-    internal HtmlBuilder GetUploadAreaHtml()
+    public async Task<ComponentResult> GetFileUploadResultAsync()
+    {
+        if (OnFileUploaded != null)
+            UploadAreaService.OnFileUploaded += OnFileUploaded;
+
+        if (OnFileUploadedAsync != null)
+            UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
+
+        var result = await UploadAreaService.UploadFileAsync("uploadAreaFile", AllowedTypes);
+        return new JsonComponentResult(result);
+    }
+
+    internal HtmlBuilder GetUploadAreaHtmlBuilder()
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divupload")
@@ -143,8 +174,9 @@ public class JJUploadArea : AsyncComponent
             .Append(HtmlTag.Div,  div =>
                 {
                     div.WithCssClass("fileUpload");
+                    div.WithAttributes(Attributes);
                     div.WithAttribute("id", Name);
-                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","UploadArea", "MasterData", new {componentName = Name}));
+                    div.WithAttribute("routecontext", EncryptionService.EncryptRouteContext(RouteContext));
                     div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
                     div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
                     div.WithAttribute("dragDrop", EnableDragDrop.ToString().ToLower());

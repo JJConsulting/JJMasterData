@@ -1,6 +1,7 @@
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
@@ -21,13 +22,9 @@ internal class DataPanelScripts
     public string GetReloadPanelScript(string fieldName)
     {
         var componentName = _dataPanelControl.Name;
-        var pageState = _dataPanelControl.PageState;
-
-        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(_dataPanelControl.FormElement.Name);
         
-        if(!_dataPanelControl.IsExternalRoute)
-            return $"DataPanel.reloadAtSamePage('{componentName}','{fieldName}');";
-
-        return $"DataPanel.reload('{UrlHelper.GetUrl("ReloadPanel","Form", "MasterData", new {dictionaryName = encryptedDictionaryName, componentName, pageState})}','{componentName}','{fieldName}')";
+        var routeContext = EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(_dataPanelControl.FormElement,ComponentContext.PanelReload));
+        
+        return $"DataPanelHelper.reload('{componentName}','{fieldName}','{routeContext}');";
     }
 }

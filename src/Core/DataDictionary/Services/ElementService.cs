@@ -15,9 +15,11 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Factories;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
@@ -30,6 +32,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 public class ElementService : BaseService
 {
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
+    private IEncryptionService EncryptionService { get; }
     private DataDictionaryFormElementFactory DataDictionaryFormElementFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private readonly IEntityRepository _entityRepository;
@@ -41,6 +44,7 @@ public class ElementService : BaseService
         IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IEntityRepository entityRepository,
+        IEncryptionService encryptionService,
         IDataDictionaryRepository dataDictionaryRepository,
         DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
         JJMasterDataUrlHelper urlHelper
@@ -48,6 +52,7 @@ public class ElementService : BaseService
         : base(validationDictionary, dataDictionaryRepository, stringLocalizer)
     {
         FormViewFactory = formViewFactory;
+        EncryptionService = encryptionService;
         DataDictionaryFormElementFactory = dataDictionaryFormElementFactory;
         UrlHelper = urlHelper;
         _entityRepository = entityRepository;
@@ -177,21 +182,24 @@ public class ElementService : BaseService
 
         formView.GridView.OnRenderAction += (sender, args) =>
         {
-            var formName = args.FieldValues["name"]?.ToString();
+            var elementName = args.FieldValues["name"]?.ToString();
+
+            var encryptedElementName = EncryptionService.EncryptStringWithUrlEscape(elementName);
+            
             switch (args.Action.Name)
             {
                 case "preview":
                     args.LinkButton.OnClientClick =
-                        $"window.open('{UrlHelper.GetUrl("Render", "Form", "MasterData", new { dictionaryName = formName })}', '_blank').focus();";
+                        $"window.open('{UrlHelper.GetUrl("Render", "Form", "MasterData", new { dictionaryName = encryptedElementName })}', '_blank').focus();";
                     break;
                 case "tools":
                     args.LinkButton.UrlAction = UrlHelper.GetUrl("Index", "Entity", "DataDictionary",
-                        new { dictionaryName = formName });
+                        new { dictionaryName = elementName });
                     args.LinkButton.OnClientClick = "";
                     break;
                 case "duplicate":
                     args.LinkButton.UrlAction = UrlHelper.GetUrl("Duplicate", "Element", "DataDictionary",
-                        new { dictionaryName = formName });
+                        new { dictionaryName = elementName });
                     args.LinkButton.OnClientClick = "";
                     break;
             }

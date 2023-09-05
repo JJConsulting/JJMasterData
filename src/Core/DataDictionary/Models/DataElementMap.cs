@@ -50,14 +50,9 @@ public class DataElementMap
     }
 
     [JsonProperty("mapFilters")]
-    public List<DataElementMapFilter> MapFilters { get; set; }
-        
+    public List<DataElementMapFilter> MapFilters { get; set; } = new();
+
 
     [JsonProperty("enableElementActions")]
     public bool EnableElementActions { get; set; }
-
-    public DataElementMap()
-    {
-        MapFilters = new List<DataElementMapFilter>();
-    }
 }

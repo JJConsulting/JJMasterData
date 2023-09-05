@@ -9,17 +9,11 @@ internal class DataExportationLog
 {
     private DataExportationScripts Scripts { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private readonly string _componentName;
-    private readonly bool _isExternalRoute;
-    private readonly string _dictionaryName;
 
     public DataExportationLog(JJDataExportation dataExportation)
     {
         Scripts = dataExportation.Scripts;
         StringLocalizer = dataExportation.StringLocalizer;
-        _componentName = dataExportation.Name;
-        _isExternalRoute = dataExportation.IsExternalRoute;
-        _dictionaryName = dataExportation.FormElement.Name;
     }
 
     internal HtmlBuilder GetHtmlProcess()
@@ -55,8 +49,7 @@ internal class DataExportationLog
 
             div.Append(HtmlTag.A, a =>
             {
-                var stopExportationScript = Scripts.GetStopExportationScript(_dictionaryName, _componentName,
-                    StringLocalizer["Stopping Processing..."], _isExternalRoute);
+                var stopExportationScript = Scripts.GetStopExportationScript(StringLocalizer["Stopping Processing..."]);
                 a.WithAttribute("href", $"javascript:{stopExportationScript}");
                 a.Append(HtmlTag.Span, span =>
                 {
@@ -73,10 +66,9 @@ internal class DataExportationLog
         return new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithAttribute("style", "text-align:center;")
-            .AppendHiddenInput("current_uploadaction", string.Empty)
             .Append(HtmlTag.Div, div =>
             {
-                div.WithAttribute("id", "exportationSpinner");
+                div.WithAttribute("id", "data-exportation-spinner");
                 div.WithAttribute("style", "position: relative; height: 80px");
             });
     }

@@ -19,7 +19,7 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
     private IEntityRepository EntityRepository { get; }
     private IAuditLogService AuditLogService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private ComponentFactory ComponentFactory { get; }
+    private IComponentFactory ComponentFactory { get; }
     private IEncryptionService EncryptionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -29,7 +29,7 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
         IEntityRepository entityRepository,
         IAuditLogService auditLogService,
         IDataDictionaryRepository dataDictionaryRepository,
-        ComponentFactory componentFactory,
+        IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)

@@ -1,4 +1,3 @@
-﻿$(function () {
-    // @ts-ignore
-    loadJJMasterData("load", null);
+﻿document.addEventListener("DOMContentLoaded", function () {
+    listenAllEvents()
 });

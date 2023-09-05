@@ -8,5 +8,4 @@ public record LookupResultDto(string Id,string Description)
     public string Id { get; } = Id;
     [JsonProperty("description")]
     public string Description { get; } = Description;
-    public string ToJson() => JsonConvert.SerializeObject(this);
 }

@@ -11,10 +11,10 @@
     private autoSubmit: boolean;
     constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, autoSubmit) {
         this.componentName = componentName;
-        this.url = url;
         this.form = form;
         this.allowMultiple = allowMultiple;
         this.maxFileSize = maxFileSize;
+        this.url = url;
         this.allowDragDrop = allowDragDrop;
         this.showFileSize = showFileSize;
         this.allowedTypes = allowedTypes;
@@ -31,7 +31,7 @@ class UploadAreaListener {
         $(selector).uploadFile({
             url: options.url,
             formData: $(options.form).serializeArray(),
-            fileName: "file",
+            fileName: "uploadAreaFile",
             multiple: options.allowMultiple,
             maxFileSize: options.maxFileSize,
             maxFileCount: 1000,
@@ -68,7 +68,7 @@ class UploadAreaListener {
                 if (options.autoSubmit && element.selectedFiles > 0) {
                     $("#upload-action-" + options.componentName).val("afteruploadall");
                 }
-                loadJJMasterData()
+                listenAllEvents()
             },
         });
     }
@@ -112,14 +112,15 @@ class UploadAreaListener {
         });
     }
 
-    static listenFileUpload() {
-        document.querySelectorAll("div.fileUpload").forEach((element) => {
+    static listenFileUpload(selectorPrefix = String()) {
+        document.querySelectorAll(selectorPrefix + "div.fileUpload").forEach((element) => {
             let componentName = element.getAttribute("id");
             let multiple = element.getAttribute("jjmultiple") === "true";
             let autoSubmit = element.getAttribute("autoSubmit") === "true";
             let maxFileSize = element.getAttribute("maxFileSize");
             let dragDrop = element.getAttribute("dragDrop");
             let copyPaste = element.getAttribute("copyPaste");
+            let routeContext = element.getAttribute("routecontext");
             let showFileSize = element.getAttribute("showFileSize");
             let allowedTypes = element.getAttribute("allowedTypes");
             let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
@@ -128,15 +129,9 @@ class UploadAreaListener {
             
             let url : string;
             
-            if(element.getAttribute("url") != null){
-                url = element.getAttribute("url");
-            }
-            else{
-                let urlBuilder = new UrlBuilder();
-                urlBuilder.addQueryParameter("context","fileUpload")
-                urlBuilder.addQueryParameter("componentName",componentName)
-                url = urlBuilder.build();
-            }
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext",routeContext)
+            url = urlBuilder.build();
 
             const fileUploadOptions = new FileUploadOptions(
                 componentName,
@@ -152,11 +147,6 @@ class UploadAreaListener {
             );
 
             this.configureFileUpload(fileUploadOptions);
-
-            window.addEventListener("resize", () => {
-                document.querySelector<HTMLElement>("#" + componentName + " .ajax-upload-dragdrop").style.width =
-                    document.querySelector("#" + componentName).clientWidth - 30 + "px";
-            });
 
             if (copyPaste === "true") {
                 this.handleCopyPaste(componentName)

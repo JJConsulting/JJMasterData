@@ -1,6 +1,6 @@
 ﻿class TextAreaListener {
-    static listenKeydown(){
-        $("textarea").keydown(function () {
+    static listenKeydown(selectorPrefix){
+        $(selectorPrefix + "textarea").keydown(function () {
             const jjTextArea = $(this);
             let maxLength : any = jjTextArea.attr("maxlength");
             let maximumLimitLabel : any = jjTextArea.attr("maximum-limit-of-characters-label");

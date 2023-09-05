@@ -47,4 +47,9 @@
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
+    
+	<ItemGroup>
+	  <TypeScriptCompile Remove="Scripts\DownloadHelper.ts" />
+	</ItemGroup>
+   
 </Project>

@@ -18,6 +18,7 @@ using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.UI.Components.Importation;
 
 namespace JJMasterData.Core.UI.Components.Widgets;
 
@@ -87,14 +88,13 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                 button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.GridTable);
                 break;
             case GridTableAction gridTableAction:
-                var isModal = false;
 
                 if (gridTableAction is EditAction editAction)
                 {
-                    isModal = editAction.ShowAsPopup;
+                    actionContext.IsModal = editAction.ShowAsPopup;
                 }
                 
-                button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable,isModal);
+                button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable);
                 break;
             default:
                 throw new JJMasterDataException("Action is not user created or a GridTableAction.");
@@ -123,15 +123,21 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
             case ConfigAction:
                 button.OnClientClick = BootstrapHelper.GetModalScript($"config-modal-{actionContext.ParentComponentName}");
                 break;
-            case DeleteSelectedRowsAction or ImportAction or LogAction:
+            case DeleteSelectedRowsAction or LogAction:
                 button.OnClientClick =
                     ActionsScripts.GetFormActionScript(toolbarAction, actionContext, ActionSource.GridToolbar);
                 break;
-            case ExportAction:
-                var exportationScripts = new DataExportationScripts(UrlHelper, EncryptionService);
+            
+            case ImportAction:
+                var importationScripts = new DataImportationScripts(actionContext.ParentComponentName, actionContext.FormElement, EncryptionService);
                 button.OnClientClick =
-                    exportationScripts.GetExportPopupScript(actionContext.FormElement.Name,
-                        actionContext.ParentComponentName, actionContext.IsExternalRoute);
+                    importationScripts.GetShowScript();
+                break;
+                
+            case ExportAction:
+                var exportationScripts = new DataExportationScripts(actionContext.ParentComponentName, actionContext.FormElement, EncryptionService);
+                button.OnClientClick =
+                    exportationScripts.GetExportPopupScript();
                 break;
             case FilterAction filterAction:
                 if (filterAction.ShowAsCollapse)
@@ -141,15 +147,19 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                     BootstrapHelper.GetModalScript($"filter_modal_{actionContext.ParentComponentName}");
                 break;
             case InsertAction insertAction:
+                if (insertAction.ShowAsPopup)
+                {
+                    actionContext.IsModal = true;
+                }
                 button.OnClientClick = ActionsScripts.GetFormActionScript(insertAction, actionContext,
-                    ActionSource.GridToolbar, insertAction.ShowAsPopup);
+                    ActionSource.GridToolbar);
                 break;
             case LegendAction:
                 button.OnClientClick =
                     BootstrapHelper.GetModalScript($"iconlegend_modal_{actionContext.ParentComponentName}");
                 break;
             case RefreshAction:
-                button.OnClientClick = ActionsScripts.GetRefreshScript(actionContext);
+                button.OnClientClick = gridView.Scripts.GetRefreshScript();
                 break;
             case SortAction:
                 button.OnClientClick =
@@ -174,7 +184,14 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
             switch (action)
             {
                 case BackAction or CancelAction:
-                    button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
+                    if (actionContext.IsModal)
+                    {
+                        button.OnClientClick = ActionsScripts.GetHideModalScript(actionContext.ParentComponentName);
+                    }
+                    else
+                    {
+                        button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
+                    }
                     break;
                 case SaveAction saveAction:
                     if (saveAction.EnterKeyBehavior == FormEnterKey.Submit)

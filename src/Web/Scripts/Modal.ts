@@ -17,15 +17,16 @@ abstract class ModalBase{
     modalSize: ModalSize;
     modalElement: HTMLElement;
     centered: boolean;
+    onModalHidden?: Function;
 
     public constructor() {
         this.modalId = "jjmasterdata-modal";
         this.modalSize = ModalSize.ExtraLarge;
-    }
 
+    }
     abstract showIframe(url: string, title: string, size: ModalSize);
 
-    abstract showUrl(options: ModalUrlOptions, title: string, size: ModalSize) : Promise<void>;
+    abstract showUrl(options: ModalUrlOptions, title: string, size: ModalSize) : Promise<any>;
     abstract hide();
 }
 
@@ -39,14 +40,16 @@ class _Modal extends ModalBase {
         Fullscreen: "modal-fullscreen",
     };
     
+    private getBootstrapModal(){
+        return bootstrap.Modal.getOrCreateInstance("#" + this.modalId);
+    }
+    
     private showModal(){
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.show();
+        this.getBootstrapModal().show();
     }
 
     private hideModal(){
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.hide();
+        this.getBootstrapModal().hide();
     }
     
     private getModalCssClass(){
@@ -78,9 +81,18 @@ class _Modal extends ModalBase {
             else{
                 document.body.appendChild(this.modalElement);
             }
+            
+            const onModalHidden = this.onModalHidden;
+            
+            this.modalElement.addEventListener('hidden.bs.modal', () => {
+                if(onModalHidden){
+                    onModalHidden();
+                }
+            })
+
         } else {
             this.modalElement = document.getElementById(this.modalId);
-
+            
             const dialog = document.getElementById(this.modalId + "-dialog");
 
             //@ts-ignore
@@ -88,7 +100,7 @@ class _Modal extends ModalBase {
                 //@ts-ignore
                 dialog.classList.remove(cssClass)
             });
-            
+
             dialog.classList.add(this.getModalCssClass())
         }
     }
@@ -110,14 +122,42 @@ class _Modal extends ModalBase {
         this.modalTitle = title;
         this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
-        const modalBody = this.modalElement.querySelector(".modal-body");
-        await fetch(options.url, options.requestOptions)
-            .then((response) => response.text())
-            .then((content) => {
-                modalBody.innerHTML = content;
 
-                this.showModal();
+        return await fetch(options.url, options.requestOptions)
+            .then( async response => {
+                if (response.headers.get("content-type")?.includes("application/json")) {
+                    return response.json();
+                } else {
+                   return response.text().then((htmlData)=>{
+                        this.setAndShowModal(htmlData)
+                    });
+                }
+        })
+    }
+    
+    private setAndShowModal(content: string){
+        const modalBody = this.modalElement.querySelector<HTMLElement>(`#${this.modalId} .modal-body`);
+        this.setInnerHTML(modalBody, content)
+
+        this.showModal();
+    }
+
+
+    private setInnerHTML(element: HTMLElement, html: string): void {
+        element.innerHTML = html;
+
+        Array.from(element.querySelectorAll("script")).forEach((oldScriptElement: HTMLScriptElement) => {
+            const newScriptElement = document.createElement("script");
+
+            Array.from(oldScriptElement.attributes).forEach((attr) => {
+                newScriptElement.setAttribute(attr.name, attr.value);
             });
+
+            const scriptText = document.createTextNode(oldScriptElement.innerHTML);
+            newScriptElement.appendChild(scriptText);
+
+            oldScriptElement.parentNode?.replaceChild(newScriptElement, oldScriptElement);
+        });
     }
 
     hide() {
@@ -126,6 +166,15 @@ class _Modal extends ModalBase {
 }
 
 class _LegacyModal extends ModalBase {
+    
+    constructor() {
+        super();
+        let onModalHidden = this.onModalHidden;
+        $("#"+this.modalId).on('hidden.bs.modal', function () {
+            onModalHidden()
+        });
+    }
+    
     private createModalHtml(content: string, isIframe: boolean) {
         const size = isIframe
             ? this.modalSize === ModalSize.Small
@@ -211,6 +260,7 @@ class _LegacyModal extends ModalBase {
 
 class Modal {
     private instance: ModalBase;
+
     constructor() {
         if (bootstrapVersion === 5) {
             this.instance = new _Modal();
@@ -225,8 +275,8 @@ class Modal {
     showIframe(url: string, title: string, size: ModalSize = null) {
         this.instance.showIframe(url,title,size);
     }
-    async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null): Promise<void> {
-        await this.instance.showUrl(options,title,size);
+    async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null): Promise<any> {
+        return await this.instance.showUrl(options,title,size);
     }
     hide() {
         this.instance.hide();
@@ -270,6 +320,14 @@ class Modal {
 
     set centered(value: boolean) {
         this.instance.centered = value;
+    }
+
+    get onModalHidden(): Function {
+        return this.instance.onModalHidden;
+    }
+
+    set onModalHidden(value: Function) {
+        this.instance.onModalHidden = value;
     }
 }
 var defaultModal = function () {

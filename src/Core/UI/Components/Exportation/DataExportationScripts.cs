@@ -1,55 +1,54 @@
 ﻿using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 
 
 namespace JJMasterData.Core.Web.Components.Scripts;
 
-public class DataExportationScripts
+internal class DataExportationScripts
 {
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    private string Name { get; }
+    private FormElement FormElement { get; }
     private IEncryptionService EncryptionService { get; }
 
-    public DataExportationScripts(JJMasterDataUrlHelper urlHelper, IEncryptionService encryptionService)
+    public DataExportationScripts(JJDataExportation dataExportation)
     {
-        UrlHelper = urlHelper;
+        Name = dataExportation.Name;
+        FormElement = dataExportation.FormElement;
+        EncryptionService = dataExportation.EncryptionService;
+    }
+    
+    public DataExportationScripts(string componentName,FormElement formElement, IEncryptionService encryptionService)
+    {
+        Name = componentName;
+        FormElement = formElement;
         EncryptionService = encryptionService;
     }
-    public string GetStartExportationScript(string dictionaryName,string componentName, bool isExternalRoute)
-    {
-        if (!isExternalRoute) 
-            return $"DataExportationHelper.startExportationAtSamePage('{componentName}');";
 
-        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
-        
-        var startExportationUrl = UrlHelper.GetUrl("StartExportation","Exportation","MasterData", new { dictionaryName=encryptedDictionaryName, componentName});
-        
-        var checkProgressUrl = UrlHelper.GetUrl("CheckProgress","Exportation","MasterData", new { dictionaryName=encryptedDictionaryName, componentName });
-        
-        return $"DataExportationHelper.startExportation('{startExportationUrl}','{checkProgressUrl}', '{componentName}');";
+
+    private string EncryptedRouteContext
+    {
+        get
+        {
+            var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.DataExportation);
+            var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+            return encryptedRouteContext;
+        }
+    }
+
+    public string GetStartExportationScript()
+    {
+        return $"DataExportationHelper.startExportation( '{Name}','{EncryptedRouteContext}');";
     }
     
-    public string GetStopExportationScript(string dictionaryName,string componentName,string stopMessage, bool isExternalRoute)
+    public string GetStopExportationScript(string stopMessage)
     {
-        if (!isExternalRoute) 
-            return $"DataExportationHelper.stopExportationAtSamePage('{componentName}');";
-
-        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
-        
-        var stopExportationUrl = UrlHelper.GetUrl("StopExportation","Exportation","MasterData", new { dictionaryName=encryptedDictionaryName, componentName});
-        
-        return $"DataExportationHelper.stopExportation('{stopExportationUrl}', '{stopMessage}', '{componentName}');";
-
+        return $"DataExportationHelper.stopExportation('{Name}','{EncryptedRouteContext}','{stopMessage}');";
     }
     
-    public string GetExportPopupScript(string dictionaryName,string componentName, bool isExternalRoute)
+    public string GetExportPopupScript()
     {
-        if (!isExternalRoute) 
-            return $"DataExportationHelper.openExportPopupAtSamePage('{componentName}');";
-        
-        var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(dictionaryName);
-        
-        var url = UrlHelper.GetUrl("Settings","Exportation","MasterData", new { dictionaryName=encryptedDictionaryName, componentName});
-        
-        return $"DataExportationHelper.openExportPopup('{url}', '{componentName}');";
+        return $"DataExportationHelper.openExportPopup('{Name}','{EncryptedRouteContext}');";
     }
 }

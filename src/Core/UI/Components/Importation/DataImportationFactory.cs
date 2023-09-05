@@ -31,8 +31,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     private IFormService FormService { get; }
     private IFormEventHandlerFactory FormEventHandlerFactory { get; }
     private IHttpContext HttpContext { get; }
-    private IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
-    private IControlFactory<JJComboBox> ComboBoxFactory { get; }
+    private IComponentFactory ComponentFactory { get; }
 
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
 
@@ -51,10 +50,8 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         IFieldsService fieldsService,
         IFormEventHandlerFactory formEventHandlerFactory,
         IHttpContext httpContext,
-        IComponentFactory<JJUploadArea> uploadAreaFactory,
-        IControlFactory<JJComboBox> comboBoxFactory,
+        IComponentFactory componentFactory,
         DataImportationWorkerFactory dataImportationWorkerFactory,
-        JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
@@ -67,10 +64,8 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         FormService = formService;
         FormEventHandlerFactory = formEventHandlerFactory;
         HttpContext = httpContext;
-        UploadAreaFactory = uploadAreaFactory;
-        ComboBoxFactory = comboBoxFactory;
+        ComponentFactory = componentFactory;
         DataImportationWorkerFactory = dataImportationWorkerFactory;
-        UrlHelper = urlHelper;
         EncryptionService = encryptionService;
         LoggerFactory = loggerFactory;
         StringLocalizer = stringLocalizer;
@@ -79,8 +74,8 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     public JJDataImportation Create(FormElement formElement)
     {
         return new JJDataImportation(formElement, EntityRepository, ExpressionsService, FormService,
-            FieldsService, BackgroundTask, HttpContext, UploadAreaFactory, ComboBoxFactory,
-            DataImportationWorkerFactory, UrlHelper, EncryptionService, LoggerFactory,
+            FieldsService, BackgroundTask, HttpContext, ComponentFactory,
+            DataImportationWorkerFactory, EncryptionService, LoggerFactory,
             StringLocalizer);
     }
 
@@ -91,7 +86,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
 
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
-        var dataContext = new DataContext(HttpContext, DataContextSource.Upload,
+        var dataContext = new DataContext(HttpContext.Request, DataContextSource.Upload,
             DataHelper.GetCurrentUserId(HttpContext, null));
 
         var formEvent = FormEventHandlerFactory.GetFormEvent(elementName);

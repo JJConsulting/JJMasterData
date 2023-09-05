@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
@@ -59,6 +60,7 @@ public abstract class ProcessComponent : AsyncComponent
     internal IFieldsService FieldsService { get; } 
     internal IBackgroundTask BackgroundTask { get; }
     private ILogger<ProcessComponent> Logger { get; }
+    internal IEncryptionService EncryptionService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     protected ProcessComponent(
@@ -68,6 +70,7 @@ public abstract class ProcessComponent : AsyncComponent
         IFieldsService fieldsService,
         IBackgroundTask backgroundTask,
         ILogger<ProcessComponent> logger,
+        IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
@@ -75,6 +78,7 @@ public abstract class ProcessComponent : AsyncComponent
         FieldsService = fieldsService;
         BackgroundTask = backgroundTask;
         Logger = logger;
+        EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         CurrentContext = currentContext;
     }

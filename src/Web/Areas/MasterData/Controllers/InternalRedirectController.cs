@@ -19,11 +19,11 @@ public class InternalRedirectController : MasterDataController
     private string? _dictionaryName;
     private RelationshipViewType _relationshipType;
 
-    private ComponentFactory ComponentFactory { get; }
+    private IComponentFactory ComponentFactory { get; }
     private IEncryptionService EncryptionService { get; }
     private IDictionary<string, object> RelationValues { get; }
 
-    public InternalRedirectController(ComponentFactory componentFactory, IEncryptionService encryptionService)
+    public InternalRedirectController(IComponentFactory componentFactory, IEncryptionService encryptionService)
     {
         ComponentFactory = componentFactory;
         EncryptionService = encryptionService;

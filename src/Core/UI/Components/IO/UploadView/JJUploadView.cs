@@ -88,7 +88,6 @@ public class JJUploadView : AsyncComponent
             
             _upload = ComponentFactory.UploadArea.Create();
             _upload.Name = Name + "-files";
-            _upload.IsExternalRoute = IsExternalRoute;
 
             return _upload;
         }
@@ -116,7 +115,6 @@ public class JJUploadView : AsyncComponent
             
             _gridView.Name = Name + "_gridview";
             _gridView.UserValues = UserValues;
-            _gridView.IsExternalRoute = IsExternalRoute;
             _gridView.ShowPagging = false;
             _gridView.ShowTitle = false;
 
@@ -213,14 +211,15 @@ public class JJUploadView : AsyncComponent
     }
 
     private IHttpContext CurrentContext { get; }
-    private ComponentFactory ComponentFactory { get; }
+    private IComponentFactory ComponentFactory { get; }
     private IEncryptionService EncryptionService { get; }
+
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
     private ILogger<JJUploadView> Logger { get; }
     public JJUploadView(
         IHttpContext currentContext,
-        ComponentFactory componentFactory,
+        IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
@@ -267,7 +266,7 @@ public class JJUploadView : AsyncComponent
 
         html.Append(GetHtmlForm());
         html.Append(ViewGallery ? await GetHtmlGallery() : await GetHtmlGridView());
-        html.AppendComponent(GetHtmlPreviewModal());
+        html.AppendComponent(await GetHtmlPreviewModal());
 
         return new RenderedComponentResult(html);
     }
@@ -351,7 +350,7 @@ public class JJUploadView : AsyncComponent
 
     private HtmlBuilder GetResponseAction(string uploadAction)
     {
-        string fileName = CurrentContext.Request.Form("filename-" + Name);
+        string fileName = CurrentContext.Request.GetFormValue("filename-" + Name);
         try
         {
             if ("DELFILE".Equals(uploadAction))
@@ -402,7 +401,7 @@ public class JJUploadView : AsyncComponent
         if (!Upload.Multiple && FormFileManager.CountFiles() > 0)
             Upload.AddLabel = StringLocalizer["Update"];
 
-        panelContent.Append(Upload.GetUploadAreaHtml());
+        panelContent.Append(Upload.GetUploadAreaHtmlBuilder());
         return panelContent;
     }
 
@@ -615,22 +614,22 @@ public class JJUploadView : AsyncComponent
         return dictionary;
     }
 
-    private JJModalDialog GetHtmlPreviewModal()
+    private async Task<JJModalDialog> GetHtmlPreviewModal()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
 
-        html.Append(HtmlTag.Div, row =>
+        await html.AppendAsync(HtmlTag.Div, async row =>
         {
             row.WithCssClass("row");
-            row.Append(HtmlTag.Div, col =>
+            await row.AppendAsync(HtmlTag.Div, async col =>
             {
                 col.WithCssClass("col-sm-12")
                    .AppendComponent(new JJLabel
                    {
                        LabelFor = $"preview_filename-{Upload.Name}",
                        Text = "File name"
-                   })
-                   .AppendComponent(new JJTextGroup(CurrentContext)
+                   });
+                   await col.AppendControlAsync(new JJTextGroup(CurrentContext)
                    {
                        Name = $"preview_filename-{Upload.Name}",
                        Addons = new InputAddons(".png"),

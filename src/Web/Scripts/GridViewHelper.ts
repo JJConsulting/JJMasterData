@@ -1,17 +1,85 @@
 ﻿class GridViewHelper {
-    static sorting(componentName, url, tableOrder) {
+
+    static openSettingsModal(componentName: string, encryptedActionMap: string) {
+        const gridViewActionInput = document.getElementById("grid-view-action-" + componentName) as HTMLInputElement;
+        const gridViewPageInput = document.getElementById("grid-view-page-" + componentName) as HTMLInputElement;
+        const gridViewRowInput = document.getElementById("grid-view-row-" + componentName) as HTMLInputElement;
+        const form = document.querySelector("form") as HTMLFormElement;
+
+        if (gridViewActionInput && gridViewPageInput && gridViewRowInput && form) {
+            gridViewActionInput.value = encryptedActionMap;
+            gridViewPageInput.value = "1";
+            gridViewRowInput.value = "";
+            
+            this.clearCurrentFormAction(componentName);
+            
+            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+        }
+    }
+
+    static closeSettingsModal(componentName: string) {
+        const form = document.querySelector("form");
+        const checkboxes = document.querySelectorAll("form");
+        const modal = document.getElementById("config-modal-" + componentName);
+
+        if (form) {
+            form.reset();
+        }
+
+        if (checkboxes) {
+            checkboxes.forEach((checkbox) => {
+                if (checkbox instanceof HTMLInputElement) {
+                    checkbox.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+                }
+            });
+        }
+
+        if (modal) {
+            modal.classList.remove("show");
+            modal.style.display = "none";
+        }
+    }
+    
+    static sortGridValues(componentName, routeContext, field) {
         const tableOrderElement = document.querySelector<HTMLInputElement>("#grid-view-order-" + componentName);
-        if (tableOrder + " ASC" === tableOrderElement.value)
-            tableOrderElement.value = tableOrder + " DESC";
+        if (field + " ASC" === tableOrderElement.value)
+            tableOrderElement.value = field + " DESC";
         else
-            tableOrderElement.value = tableOrder + " ASC";
+            tableOrderElement.value = field + " ASC";
 
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
 
-        GridViewHelper.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
-    
+
+    static sortItems(componentName) {
+        var descCommand = "";
+
+        // @ts-ignore
+        var order = $("#sortable-" + componentName).sortable("toArray");
+
+        for (var i = 0; i < order.length; i++) {
+            var sortingType = $("#" + order[i] + "_order").children("option:selected").val();
+            switch (sortingType) {
+                case "A":
+                    descCommand += order[i] + " ASC,";
+                    break;
+                case "D":
+                    descCommand += order[i] + " DESC,";
+                    break;
+            }
+        }
+        descCommand = descCommand.substring(0, descCommand.length - 1);
+        
+        document.querySelector<HTMLInputElement>("#grid-view-order-" + componentName).value = descCommand;
+        
+        $("#sort-modal-" + componentName).modal('hide');
+        
+        this.clearCurrentFormAction(componentName);
+    }
+
+
     static clearCurrentFormAction(componentName){
         const currentFormAction = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
         
@@ -19,104 +87,54 @@
             currentFormAction.value = "";
     }
 
-    static pagination(componentName, url, currentPage) {
+    static paginate(componentName, routeContext, currentPage) {
         document.querySelector<HTMLInputElement>("#grid-view-page-" + componentName).value = currentPage;
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
 
-        GridViewHelper.refreshGrid(componentName, url);
-    }
-
-    static filter(componentName, url) {
-        document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
-        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#grid-view-page-" + componentName).value = "1";
-        this.clearCurrentFormAction(componentName)
-        GridViewHelper.refreshGrid(componentName, url);
-    }
-
-    
-    static clearFilterInputs(componentName){
-        const divId = "#current-grid-filter-" + componentName;
-        const selector = divId + " input:enabled, " + divId + " select:enabled";
-
-
-        $(selector).each(function () {
-            let currentObj = $(this);
-
-            if (currentObj.hasClass("flatpickr-input")) {
-                currentObj.val("")
-            }
-            let inputType: string = (this as any).type;
-
-            if (inputType == "checkbox") {
-                currentObj.prop("checked", false);
-            } else if (inputType != "input" && currentObj.attr("data-role") == "tagsinput") {
-                currentObj.tagsinput('removeAll');
-            } else if (inputType != "hidden") {
-                currentObj.val("");
-                if (currentObj.hasClass("selectpicker")) {
-                    currentObj.selectpicker("render");
-                } else if (currentObj.hasClass("jjsearchbox")) {
-                    currentObj.blur();
-                } else if (currentObj.hasClass("jjlookup")) {
-                    currentObj.blur();
-                }
-            }
-        });
-
-        document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "CLEARACTION";
-        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
-        this.clearCurrentFormAction(componentName)
-    }
-    static clearFilter(componentName, url) {
-        this.clearFilterInputs(componentName);
-        
-        GridViewHelper.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
 
-    static refresh(componentName, url) {
+    static refresh(componentName: string, routeContext: string) {
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         document.querySelector<HTMLInputElement>("#grid-view-row-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
-        GridViewHelper.refreshGrid(componentName, url);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
-    static selectAllRows(componentName, url) {
-        fetch(url, {method:"POST"})
-            .then(response => response.json())
-            .then(data => GridViewHelper.selectAllRowsElements(componentName, data.selectedRows))
-    }
+    static refreshGrid(componentName: string, routeContext: string, reloadListeners = false) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
 
-    static selectAllRowsElements(componentName, rows) {
-        const values = rows.split(",");
+        postFormValues({
+            url: urlBuilder.build(),
+            success: function (data) {
+                const gridViewElement = document.querySelector<HTMLInputElement>("#grid-view-" + componentName);
+                const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
 
-        const checkboxes = document.querySelectorAll<HTMLInputElement>(".jjselect input:not(:disabled)");
-        checkboxes.forEach(checkbox => checkbox.checked = true);
+                if (gridViewElement) {
+                    gridViewElement.innerHTML = data;
+                    if (reloadListeners) {
+                        listenAllEvents();
+                    }
+                    if(filterActionElement){
+                        filterActionElement.value = "";
+                    }
+                } else {
+                    console.error("One or both of the elements were not found.");
+                }
+            },
+            error: function (error) {
+                console.error(error);
+                const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
 
-        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName) as HTMLInputElement;
-        selectedRowsInput.value = values.join(",");
-
-        const selectedText = document.getElementById("selected-text-" + componentName);
-        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
-    }
-
-    static refreshGrid(componentName, url) {
-        const form = document.querySelector("form");
-
-        let urlBuilder = new UrlBuilder(url)
-
-        urlBuilder.addQueryParameter("componentName", componentName)
-        
-
-        const filterAction = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
-        postFormValues({url: urlBuilder.build(), success:(data)=>{
-                document.querySelector<HTMLInputElement>("#grid-view-" + componentName).innerHTML = data;
-                loadJJMasterData();
-
-                if(filterAction)
-                    filterAction.value = "";
-            }});
+                if (filterActionElement) {
+                    filterActionElement.value = "";
+                } else {
+                    console.error("Filter action element was not found.");
+                }
+            }
+        });
     }
 }

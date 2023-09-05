@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Localization;
@@ -541,5 +542,37 @@ public static class StringManager
         return input;
 #endif
 
+    }
+    
+    public static string ToParamCase(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return input;
+        }
+
+        var paramCaseString = new StringBuilder();
+        bool isFirstChar = true;
+
+        foreach (var c in input.Where(char.IsLetterOrDigit))
+        {
+            if (char.IsUpper(c))
+            {
+                if (!isFirstChar)
+                {
+                    paramCaseString.Append('-');
+                }
+
+                paramCaseString.Append(char.ToLower(c, CultureInfo.InvariantCulture));
+            }
+            else
+            {
+                paramCaseString.Append(c);
+            }
+
+            isFirstChar = false;
+        }
+
+        return paramCaseString.ToString();
     }
 }

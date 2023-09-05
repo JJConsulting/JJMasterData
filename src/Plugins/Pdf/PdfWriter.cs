@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,12 +24,14 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
@@ -48,19 +51,22 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
 
     public bool IsLandscape { get; set; }
 
+    private IDataItemService DataItemService { get; }
     public IEntityRepository EntityRepository { get; } 
     
     public IFieldFormattingService FieldFormattingService { get; }
     
-    public ControlFactory ControlFactory { get; }
+    public IControlFactory ControlFactory { get; }
     public PdfWriter(IExpressionsService expressionsService, 
                      IStringLocalizer<JJMasterDataResources> stringLocalizer, 
                      IOptions<JJMasterDataCoreOptions> options, 
+                     IDataItemService dataItemService,
                      IControlFactory<JJTextFile> textFileFactory, 
                      ILogger<PdfWriter> logger, 
                      IEntityRepository entityRepository, 
-                     IFieldFormattingService fieldFormattingService, ControlFactory controlFactory) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+                     IFieldFormattingService fieldFormattingService, IControlFactory controlFactory) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
     {
+        DataItemService = dataItemService;
         EntityRepository = entityRepository;
         FieldFormattingService = fieldFormattingService;
         ControlFactory = controlFactory;
@@ -308,8 +314,9 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         Text image = null;
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
-        var cbo = (JJComboBox)(await ControlFactory.CreateAsync(FormElement,field,new(values,PageState.List),null, selectedValue));
-        var item = cbo.GetValue(selectedValue);
+        var formStateData = new FormStateData(values, PageState.List);
+        var dataItemValues = DataItemService.GetValuesAsync(field.DataItem!, formStateData);
+        var item = await dataItemValues.FirstAsync(v=>v.Id == selectedValue);
 
         if (item != null)
         {

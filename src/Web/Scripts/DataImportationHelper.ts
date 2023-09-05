@@ -4,7 +4,9 @@
     private static deleteCount = 0;
     private static ignoreCount = 0;
     private static errorCount = 0;
-
+    
+    private static pasteEventListener;
+    private static intervalId;
     private static setLoadMessage() {
         const options = {
             lines: 13, // The number of lines to draw
@@ -34,23 +36,17 @@
         new Spinner(options).spin(target);
     }
 
-    private static checkProgress(componentName) {
+    private static checkProgress(componentName, importationRouteContext, gridRouteContext) {
         showWaitOnPost = false;
 
-        let checkProgressUrl = document.getElementById("divProcess").getAttribute("check-progress-url")
-        
-        let url: string;
-        
-        if(checkProgressUrl){
-            url = checkProgressUrl
-        }else{
-            let urlBuilder = new UrlBuilder()
-            urlBuilder.addQueryParameter("context","dataImportation")
-            urlBuilder.addQueryParameter("current_uploadaction","process_check")
-            urlBuilder.addQueryParameter("componentName",componentName)
-            url = urlBuilder.build()
-        }
-        
+
+        let urlBuilder = new UrlBuilder()
+        urlBuilder.addQueryParameter("routeContext", importationRouteContext)
+        urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress")
+        urlBuilder.addQueryParameter("componentName", componentName)
+        const url = urlBuilder.build()
+
+
         fetch(url, {
             method: 'GET',
             cache: 'no-cache',
@@ -64,18 +60,18 @@
                 if (divMsgProcess) {
                     divMsgProcess.style.display = "";
                 }
-                
+
                 const progressBar = document.querySelector<HTMLElement>(".progress-bar");
                 if (progressBar) {
                     progressBar.style.width = result.PercentProcess + "%";
                     progressBar.textContent = result.PercentProcess + "%";
                 }
-                
+
                 const lblResumeLog = document.querySelector<HTMLElement>("#lblResumeLog");
                 if (lblResumeLog) {
                     lblResumeLog.textContent = result.Message;
                 }
-                
+
                 const lblStartDate = document.querySelector<HTMLElement>("#start-date-label");
                 if (lblStartDate) {
                     lblStartDate.textContent = result.StartDate;
@@ -131,70 +127,117 @@
                 }
 
                 if (!result.IsProcessing) {
-                    document.querySelector<HTMLInputElement>("#current_uploadaction").value = "process_finished";
-                    setTimeout(function () {
-                        document.querySelector("form").dispatchEvent(new Event("submit"));
-                    }, 1000);
+
+                    clearInterval(DataImportationHelper.intervalId)
+                    let urlBuilder = new UrlBuilder();
+                    urlBuilder.addQueryParameter("routeContext", importationRouteContext)
+                    urlBuilder.addQueryParameter("dataImportationOperation", "log")
+                    DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small).then(_ => {
+                        GridViewHelper.refreshGrid(componentName,gridRouteContext)
+                    })
                 }
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
     }
-    static startProcess(objname) {
-        $(document).ready(function () {
-            DataImportationHelper.setLoadMessage();
 
-            setInterval(function () {
-                DataImportationHelper.checkProgress(objname);
-            }, 3000);
-        });
+    static show(componentName: string, routeContext: string, gridRouteContext: string) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        
+        DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+        
+        
+        const uploadAreaSelector = "#" + componentName + "-upload-area";
+
+        // @ts-ignore
+        $(uploadAreaSelector).uploadFile.afterUploadAll = ()=>DataImportationHelper.start(componentName,routeContext,gridRouteContext)
+        
+        DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small).then(_ => {
+            UploadAreaListener.listenFileUpload();
+        })
     }
 
-    static stopProcess(componentName, stopLabel) {
+    static showLog(componentName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "log");
+        DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small);
+    }
+
+    static start(componentName, routeContext, gridRouteContext) {
+
+        DataImportationHelper.setLoadMessage();
+
+        DataImportationHelper.intervalId = setInterval(function () {
+            DataImportationHelper.checkProgress(componentName, routeContext,gridRouteContext);
+        }, 3000);
+  
+    }
+
+    static help(componentName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "help");
+        postFormValues({
+            url: urlBuilder.build(), success: html => {
+                document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
+            }
+        })
+    }
+
+    static stop(componentName, routeContext, stopLabel) {
         showWaitOnPost = false;
 
-        let stopProcessUrl = document.getElementById("divProcess").getAttribute("stop-process-url")
+        let urlBuilder = new UrlBuilder()
+        urlBuilder.addQueryParameter("routeContext", routeContext)
+        urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress")
+        urlBuilder.addQueryParameter("componentName", componentName)
+        const url = urlBuilder.build()
 
-        let url: string;
-
-        if(stopProcessUrl){
-            url = stopProcessUrl
-        }else{
-            let urlBuilder = new UrlBuilder()
-            urlBuilder.addQueryParameter("context","dataImportation")
-            urlBuilder.addQueryParameter("current_uploadaction","process_check")
-            urlBuilder.addQueryParameter("componentName",componentName)
-            url = urlBuilder.build()
-        }
-
-
-        fetch(url).then(response=>response.json()).then(data=>{
-            if(data.isProcessing === false){
+        fetch(url).then(response => response.json()).then(data => {
+            if (data.isProcessing === false) {
                 document.getElementById("divMsgProcess").innerHTML = stopLabel;
             }
         });
     }
 
-    static addPasteListener() {
-        $(document).ready(function () {
-            document.addEventListener("paste", (e: Event) => {
-                var pastedText = undefined;
-                if (window.clipboardData && window.clipboardData.getData) { // IE 
-                    pastedText = window.clipboardData.getData("Text");
-                } else if (e.clipboardData && e.clipboardData.getData) {
-                    pastedText = e.clipboardData.getData("text/plain");
-                }
-                e.preventDefault();
-                if (pastedText != undefined) {
+    static addPasteListener(componentName: string,routeContext: string, gridRouteContext: string) {
+        DataImportationHelper.pasteEventListener = function onPaste(e) {
+            DataImportationHelper.removePasteListener();
+            let pastedText = undefined;
+            if (window.clipboardData && window.clipboardData.getData) { // IE 
+                pastedText = window.clipboardData.getData("Text");
+            } else if (e.clipboardData && e.clipboardData.getData) {
+                pastedText = e.clipboardData.getData("text/plain");
+            }
+            e.preventDefault();
+            if (pastedText != undefined) {
+                document.querySelector<HTMLInputElement>("#pasteValue").value = pastedText;
 
-                    $("#current_uploadaction").val("posted_past_text");
-                    $("#pasteValue").val(pastedText);
-                    $("form:first").trigger("submit");
-                }
-                return false;
-            });
-        });
+                let urlBuilder = new UrlBuilder();
+
+                urlBuilder.addQueryParameter("routeContext", routeContext)
+                urlBuilder.addQueryParameter("dataImportationOperation", "processPastedText")
+                DataImportationModal.getInstance().showUrl({
+                    url: urlBuilder.build(),
+                    requestOptions: {method: "POST", body: new FormData(document.querySelector("form"))}
+                }, "Import", ModalSize.Small).then(_=>{
+                    DataImportationHelper.start(componentName,routeContext,gridRouteContext)
+                })
+
+            }
+            return false;
+        }
+        
+        document.addEventListener("paste",  DataImportationHelper.pasteEventListener, { once: true });
     }
 
+    static removePasteListener() {
+        if (DataImportationHelper.pasteEventListener) {
+            document.removeEventListener("paste", DataImportationHelper.pasteEventListener);
+        }
+    }
 }
+

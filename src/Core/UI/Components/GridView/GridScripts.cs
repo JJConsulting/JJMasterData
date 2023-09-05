@@ -10,6 +10,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components.Scripts;
@@ -18,77 +19,49 @@ public class GridScripts
 {
     private readonly JJGridView _gridView;
     private IEncryptionService EncryptionService => _gridView.EncryptionService;
-    private JJMasterDataUrlHelper UrlHelper => _gridView.UrlHelper;
-    private IExpressionsService ExpressionsService => _gridView.ExpressionsService;
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer => _gridView.StringLocalizer;
 
     public GridScripts(JJGridView gridView)
     {
         _gridView = gridView;
     }
-
-    private string GetUrl()
-    {
-        string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEscape(_gridView.FormElement.Name);
-        return UrlHelper.GetUrl("GetGridViewTable", "Grid", "MasterData", new { dictionaryName = dictionaryNameEncrypted});
-    }
+    
 
     public string GetSortingScript(string fieldName)
     {
-        if (_gridView.IsExternalRoute)
-        {
-            var url = GetUrl();
-            return $"GridView.sorting('{_gridView.Name}','{url}','{fieldName}')";
-        }
+        var encryptedRouteContext = GetEncryptedRouteContext();
         
-        return $"JJViewHelper.sortFormValues('{_gridView.Name}','{JJGridView.EnableAjax.ToString().ToLower()}','{fieldName}')";
+        return $"GridViewHelper.sortGridValues('{_gridView.Name}','{encryptedRouteContext}','{fieldName}')";
     }
 
     public string GetPaginationScript(int page)
     {
-        string name = _gridView.Name;
-        if (_gridView.IsExternalRoute)
-        {
-            var url = GetUrl();
-            return $"GridView.pagination('{name}', '{url}', {page})";
-        }
-
-        return $"JJViewHelper.paginateGrid('{name}', {JJGridView.EnableAjax.ToString().ToLower()}, {page})";
+        var encryptedRouteContext = GetEncryptedRouteContext();
+        return $"GridViewHelper.paginate('{_gridView.Name}', '{encryptedRouteContext}', {page})";
     }
-    
+
+    private string GetEncryptedRouteContext(ComponentContext componentContext = ComponentContext.GridViewReload)
+    {
+        var routeContext = RouteContext.FromFormElement(_gridView.FormElement, componentContext);
+        var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+        return encryptedRouteContext;
+    }
+
     public string GetFilterScript()
     {
-        string name = _gridView.Name;
-        if (_gridView.IsExternalRoute)
-        {
-            var url = GetUrl();
-            return $"GridView.filter('{name}', '{url}')";
-        }
-        return $"JJViewHelper.filter('{name}','{JJGridView.EnableAjax.ToString().ToLower()}')";
+        var encryptedRouteContext = GetEncryptedRouteContext();
+        return $"GridViewFilterHelper.filter('{_gridView.Name}','{encryptedRouteContext}')";
     }
     
     public string GetClearFilterScript()
     {
-        string name = _gridView.Name;
-        if (_gridView.IsExternalRoute)
-        {
-            var url = GetUrl();
-            return $"GridView.clearFilter('{name}', '{url}')";
-        }
-        return $"JJViewHelper.clearFilter('{_gridView.Name}','{JJGridView.EnableAjax.ToString().ToLower()}')";
+        var encryptedRouteContext = GetEncryptedRouteContext();
+        return $"GridViewFilterHelper.clearFilter('{_gridView.Name}','{encryptedRouteContext}')";
     }
 
     public string GetSelectAllScript()
     {
-        string name = _gridView.Name;
-        if (_gridView.IsExternalRoute)
-        {
-            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(_gridView.FormElement.Name);
-            var url = UrlHelper.GetUrl("SelectAllRows", "Grid", "MasterData", new { dictionaryName = encryptedDictionaryName });
-            return $"GridView.selectAllRows('{name}', '{url}')";
-        }
-
-        return $"JJViewHelper.selectAll('{name}','{JJGridView.EnableAjax.ToString().ToLower()}')";
+        var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.GridViewSelectAllRows);
+        return $"GridViewHelper.selectAll('{_gridView.Name}','{encryptedRouteContext}')";
     }
     
     public string GetConfigUIScript(ConfigAction action, IDictionary<string, object> formValues)
@@ -96,13 +69,17 @@ public class GridScripts
         var actionMap = new ActionMap(ActionSource.GridToolbar, _gridView.FormElement, formValues, action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
 
-        return $"JJViewHelper.openSettingsModal('{_gridView.Name}','{encryptedActionMap}');";
+        return $"GridViewHelper.openSettingsModal('{_gridView.Name}','{encryptedActionMap}');";
     }
 
     public string GetCloseConfigUIScript()
     {
-        return $"JJViewHelper.closeSettingsModal('{_gridView.Name}');";
+        return $"GridViewHelper.closeSettingsModal('{_gridView.Name}');";
     }
 
 
+    public string GetRefreshScript()
+    {
+        return $"GridViewHelper.refresh('{_gridView.Name}','{GetEncryptedRouteContext()}');";
+    }
 }

@@ -1,4 +1,5 @@
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Web.TagHelpers;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 public class JJAlertTagHelper : TagHelper
 {
+
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
     
@@ -28,6 +30,7 @@ public class JJAlertTagHelper : TagHelper
 
     [HtmlAttributeName("css-class")]
     public string? CssClass { get; set; }
+    
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var alert = new JJAlert

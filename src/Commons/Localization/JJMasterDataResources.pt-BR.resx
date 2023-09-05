@@ -3415,4 +3415,25 @@
   <data name="Bit fields can only be a checkbox (true or false.)" xml:space="preserve">
     <value>Campos do tipo Bit só podem ser uma checkbox (true ou false).</value>
   </data>
+  <data name="[FieldDescription] can not be equal a [FieldKey]" xml:space="preserve">
+    <value>[Descrição do Campo] não pode ser igual ao  [Campo Chave]</value>
+  </data>
+  <data name="[ReplaceTextOnGrid] invalid fill a [FieldDescription]" xml:space="preserve">
+    <value>[Substituir texto na grade] inválido, preencha a [Descrição do Campo]</value>
+  </data>
+  <data name="[FieldKey] DataType must be the same of your field." xml:space="preserve">
+    <value>[Campo Chave] deve ser do mesmo tipo de dados que o seu campo.</value>
+  </data>
+  <data name="Element {elementMap.ElementName} not found at your data source." xml:space="preserve">
+    <value>Elemento filho não encontrado na sua fonte de dados.</value>
+  </data>
+  <data name="Start:" xml:space="preserve">
+    <value>Início</value>
+  </data>
+  <data name="End:" xml:space="preserve">
+    <value>Fim:</value>
+  </data>
+  <data name="Importation Details" xml:space="preserve">
+    <value>Detalhes da Importação</value>
+  </data>
 </root>

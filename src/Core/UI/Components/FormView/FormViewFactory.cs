@@ -15,6 +15,8 @@ using System;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.Options;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -28,7 +30,8 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     private IFieldValuesService FieldValuesService { get; }
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private ComponentFactory Factory { get; }
+    private IOptions<JJMasterDataCoreOptions> Options { get; }
+    private IComponentFactory Factory { get; }
     private IFormEventHandlerFactory FormEventHandlerFactory { get; }
 
     public FormViewFactory(
@@ -40,7 +43,8 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ComponentFactory factory,
+        IOptions<JJMasterDataCoreOptions> options,
+        IComponentFactory factory,
         IFormEventHandlerFactory formEventHandlerFactory
     )
     {
@@ -52,6 +56,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
+        Options = options;
         Factory = factory;
         FormEventHandlerFactory = formEventHandlerFactory;
     }
@@ -67,9 +72,9 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
             EncryptionService, 
             FieldValuesService, 
             ExpressionsService,
+            Options,
             StringLocalizer,
             Factory);
-
         return formView;
     }
 
@@ -85,8 +90,6 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     {
         var formEventHandler = FormEventHandlerFactory.GetFormEvent(formElement.Name);
         formView.FormService.AddFormEventHandler(formEventHandler);
-
-        formView.Name = "jj-form-view-" + formElement.Name.ToLower();
 
         if (formEventHandler != null)
         {

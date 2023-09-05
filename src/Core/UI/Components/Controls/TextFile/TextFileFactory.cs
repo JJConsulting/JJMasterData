@@ -13,23 +13,20 @@ namespace JJMasterData.Core.Web.Factories;
 
 internal class TextFileFactory : IControlFactory<JJTextFile>
 {
-    private IHttpContext HttpContext { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    private IHttpRequest HttpRequest { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public TextFileFactory(
-        IHttpContext httpContext,
-        JJMasterDataUrlHelper urlHelper,
+        IHttpRequest httpRequest,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup>  textBoxFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        HttpContext = httpContext;
-        UrlHelper = urlHelper;
+        HttpRequest = httpRequest;
         UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
         EncryptionService = encryptionService;
@@ -39,12 +36,12 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     
     public JJTextFile Create()
     {
-        return new JJTextFile(HttpContext,UrlHelper, UploadViewFactory, TextBoxFactory,EncryptionService, StringLocalizer);
+        return new JJTextFile(HttpRequest,UploadViewFactory, TextBoxFactory, StringLocalizer, EncryptionService);
     }
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)
     {
-        var (formStateData, parentName, value) = context;
+        var (formStateData, value) = context;
 
         if (field == null)
             throw new ArgumentNullException(nameof(field));
@@ -59,7 +56,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         text.FormValues = formStateData.FormValues;
         text.Name = field.Name;
 
-        text.Attributes.Add("panelName", parentName);
+        text.Attributes.Add("parentElementName", formElement.ParentName);
         text.UserValues = formStateData.UserValues;
         text.FormElement = formElement;
 

@@ -22,6 +22,7 @@ public class ActionMap
 
     [JsonProperty("pkFieldValues")] public IDictionary<string, object> PkFieldValues { get; set; }
     
+    
     [JsonProperty("contextAction")] 
     public required ActionSource ActionSource { get; set; }
 

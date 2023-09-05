@@ -1,16 +1,21 @@
+using System;
+
 namespace JJMasterData.Core.UI.Components;
 
-internal enum ComponentContext
+public enum ComponentContext
 {
     /// <summary>
     /// Renders the component
     /// </summary>
     RenderComponent,
-    
+        
     /// <summary>
-    /// Returns only part of the component
+    /// The component is requesting a JJSearchBox result from a GridView filter
     /// </summary>
-    HtmlContent,
+    GridViewFilterSearchBox,
+    GridViewSelectAllRows,
+    GridViewRow,
+    GridViewReload,
         
     /// <summary>
     /// Reloads the current JJDataPanel
@@ -23,7 +28,9 @@ internal enum ComponentContext
     Modal,
         
     DataExportation,
+    
     DataImportation,
+    DataImportationFileUpload,
     
     /// <summary>
     /// The component is uploading a file
@@ -39,12 +46,7 @@ internal enum ComponentContext
     /// The component is requesting a JJSearchBox result
     /// </summary>
     SearchBox,
-    
     DownloadFile,
     
-    Lookup,
-    
-    SelectAllGridRows,
-    
-    GridViewRow
+    AuditLogView
 }

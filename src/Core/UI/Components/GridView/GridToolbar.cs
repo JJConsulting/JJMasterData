@@ -22,7 +22,7 @@ internal class GridToolbar
     {
         var toolbar = new JJToolbar();
         
-        await foreach(var action in GetActionsHtmlElement())
+        await foreach(var action in GetActionsHtmlBuilderEnumerable())
         {
             toolbar.Items.Add(action);
         }
@@ -30,7 +30,7 @@ internal class GridToolbar
         return toolbar.GetHtmlBuilder();
     }
 
-    private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlElement()
+    private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlBuilderEnumerable()
     {
         var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
         var linkButtonFactory = GridView.ComponentFactory.LinkButton;
@@ -45,14 +45,14 @@ internal class GridToolbar
 
             if (action is FilterAction { EnableScreenSearch: true })
             {
-                yield return GridView.Filter.GetHtmlToolBarSearch();
+                yield return await GridView.Filter.GetHtmlToolBarSearch();
                 continue;
             }
             
             switch (action)
             {
                 case ExportAction when GridView.DataExportation.IsRunning():
-                    linkButton.Spinner.Name = "data-exportation-spinner-" + GridView.Name;
+                    linkButton.Spinner.Name = "data-exportation-spinner-" + GridView.DataExportation.Name;
                     linkButton.Spinner.Visible = true;
                     break;
                 case ImportAction when GridView.DataImportation.IsRunning():

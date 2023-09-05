@@ -1,5 +1,5 @@
+#nullable enable
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
@@ -7,42 +7,35 @@ using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Factories;
 
 internal class SearchBoxFactory : IControlFactory<JJSearchBox>
 {
-    private IEntityRepository EntityRepository { get; }
     private IDataItemService DataItemService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IFormValuesService FormValuesService { get; }
     private IHttpContext HttpContext { get; }
     private IEncryptionService EncryptionService { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
 
     public SearchBoxFactory(
-        IEntityRepository entityRepository,
         IDataItemService dataItemService,
         IDataDictionaryRepository dataDictionaryRepository,
         IFormValuesService formValuesService,
         IHttpContext httpContext,
-        IEncryptionService encryptionService,
-        JJMasterDataUrlHelper urlHelper)
+        IEncryptionService encryptionService)
     {
-        EntityRepository = entityRepository;
         DataItemService = dataItemService;
         DataDictionaryRepository = dataDictionaryRepository;
         FormValuesService = formValuesService;
         HttpContext = httpContext;
         EncryptionService = encryptionService;
-        UrlHelper = urlHelper;
     }
 
     public JJSearchBox Create()
     {
-        return new JJSearchBox(HttpContext, EncryptionService, DataItemService, UrlHelper);
+        return new JJSearchBox(HttpContext, EncryptionService, DataItemService);
     }
 
     public JJSearchBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)
@@ -50,11 +43,12 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
         if (field.DataItem == null)
             throw new ArgumentNullException(nameof(field.DataItem));
 
-        var search = new JJSearchBox(HttpContext, EncryptionService, DataItemService, UrlHelper)
+        var search = new JJSearchBox(HttpContext, EncryptionService, DataItemService)
         {
             DataItem = field.DataItem,
             Name = field.Name,
             FieldName = field.Name,
+            ParentElementName = formElement.ParentName,
             ElementName = formElement.Name,
             Visible = true,
             AutoReloadFormFields = false,
@@ -63,29 +57,9 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
         };
 
         if (controlContext.Value != null)
-            search.SelectedValue = controlContext.Value.ToString();
+            search.SelectedValue = controlContext.Value.ToString()!;
 
         return search;
     }
-
-    public async Task<JJSearchBox> CreateAsync(string dictionaryName, string fieldName, PageState pageState, IDictionary<string, object> userValues)
-    {
-        if (string.IsNullOrEmpty(dictionaryName))
-            return null;
-
-        IDictionary<string, object> formValues = null;
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
-        var dataItem = formElement.Fields[fieldName].DataItem;
-        if (dataItem == null)
-            throw new ArgumentNullException(nameof(dataItem));
-
-        if (dataItem.HasSqlExpression())
-        {
-            formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, pageState, true);
-        }
-
-        var field = formElement.Fields[fieldName];
-        var expOptions = new FormStateData(userValues, formValues, pageState);
-        return Create(formElement, field, new(expOptions, null, null));
-    }
+    
 }

@@ -15,17 +15,21 @@ using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.UI.Components.Actions;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.UI.Components.FormView;
 
 internal class ActionsScripts
 {
-    internal IExpressionsService ExpressionsService { get; }
+    private IExpressionsService ExpressionsService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    internal IEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; }
 
     public ActionsScripts(
         IExpressionsService expressionsService,
@@ -88,45 +92,45 @@ internal class ActionsScripts
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
-        if (actionContext.IsExternalRoute)
-        {
-            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(actionContext.FormElement.Name);
-            var url = UrlHelper.GetUrl("GetUrlRedirect", "UrlRedirect","MasterData", new { dictionaryName = encryptedDictionaryName, componentName = actionContext.ParentComponentName });
-            return $"ActionManager.executeRedirectAction('{url}','{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")})";
-        }
+        var routeContext = RouteContext.FromFormElement(actionContext.FormElement, ComponentContext.UrlRedirect);
 
+        var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+        
         return
-            $"ActionManager.executeRedirectActionAtSamePage('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            $"ActionManager.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
-    public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource, bool isPopup = false)
+    public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)
     {
         var formElement = actionContext.FormElement;
         var actionMap = actionContext.ToActionMap(action.Name, actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
-
-        string functionSignature;
-        if (isPopup)
+        
+        var actionData = new ActionData
         {
-            functionSignature =
-                $"ActionManager.executeFormActionAsModal('{actionContext.ParentComponentName}','{formElement.Title}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
-        }
-        else
+            ComponentName = actionContext.ParentComponentName,
+            EncryptedActionMap = encryptedActionMap,
+            ConfirmationMessage = confirmationMessage.IsNullOrEmpty() ? null : confirmationMessage
+        };
+        
+        if (actionContext.IsModal)
         {
-            if (actionContext.IsInsideModal)
-            {
-                functionSignature =
-                    $"ActionManager.executeModalAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
-            }
-            else
-            {
-                functionSignature =
-                    $"ActionManager.executeFormAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
-            }
+            var modalRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);
+            var gridViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
+
+            actionData.ModalTitle = actionContext.FormElement.Title;
+            actionData.EncryptedModalRouteContext =
+                EncryptionService.EncryptRouteContext(modalRouteContext);
+            actionData.EncryptedGridRouteContext =
+                EncryptionService.EncryptRouteContext(gridViewRouteContext);
         }
 
-        return functionSignature;
+        var actionDataJson = actionData.ToJson();
+
+        var encodedFunction= HttpUtility.HtmlAttributeEncode($"ActionManager.executeAction('{actionDataJson}')");
+        
+        return encodedFunction;
     }
     
 
@@ -160,17 +164,11 @@ internal class ActionsScripts
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
         return
-            $"JJViewHelper.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            $"ActionManager.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
-    public string GetRefreshScript(ActionContext actionContext)
+    public static string GetHideModalScript(string componentName)
     {
-        string name = actionContext.ParentComponentName;
-        if (actionContext.IsExternalRoute)
-        {
-            string dictionaryNameEncrypted = EncryptionService.EncryptString(actionContext.FormElement.Name);
-            return UrlHelper.GetUrl("GetGridViewTable", "Grid","MasterData",  new { dictionaryName = dictionaryNameEncrypted });
-        }
-        return $"JJViewHelper.refresh('{name}', true)";
+        return $"ActionManager.hideActionModal('{componentName}')";
     }
 }

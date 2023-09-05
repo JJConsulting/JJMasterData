@@ -39,8 +39,7 @@ internal class DataExportationSettings
             div.WithCssClass("row");
             div.Append(HtmlTag.Div, div =>
             {
-                string onClientClick = DataExportation.Scripts.GetStartExportationScript(
-                    DataExportation.FormElement.Name, DataExportation.Name, DataExportation.IsExternalRoute);
+                string onClientClick = DataExportation.Scripts.GetStartExportationScript();
                 
                 var btnOk = new JJLinkButton
                 {

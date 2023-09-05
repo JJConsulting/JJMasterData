@@ -43,10 +43,11 @@ public class JJDataImportation : ProcessComponent
     #region "Properties"
 
     private JJUploadArea _upload;
-    
     private JJLinkButton _backButton;
     private JJLinkButton _helpButton;
     private JJLinkButton _logButton;
+    private RouteContext _routeContext;
+    private DataImportationScripts _dataImportationScripts;
 
     public JJLinkButton BackButton => _backButton ??= GetBackButton();
 
@@ -63,13 +64,26 @@ public class JJDataImportation : ProcessComponent
     /// </summary>
     public bool ExpandedByDefault { get; set; } = true;
     
-    private  IComponentFactory<JJUploadArea> UploadAreaFactory { get; }
-
     internal IFormService FormService { get; }
-    internal  IControlFactory<JJComboBox> ComboBoxFactory { get; }
+    internal IComponentFactory ComponentFactory { get; }
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
-    private IEncryptionService EncryptionService { get; }
+
+    internal RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
+        }
+    }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    internal DataImportationScripts DataImportationScripts => _dataImportationScripts ??= new DataImportationScripts(this);
 
     #endregion
 
@@ -82,22 +96,17 @@ public class JJDataImportation : ProcessComponent
         IFieldsService fieldsService,
         IBackgroundTask backgroundTask,
         IHttpContext currentContext,
-        IComponentFactory<JJUploadArea> uploadAreaFactory,
-        IControlFactory<JJComboBox> comboBoxFactory,
+        IComponentFactory componentFactory,
         DataImportationWorkerFactory dataImportationWorkerFactory,
-        JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
-        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(), stringLocalizer)
+        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService, stringLocalizer)
     {
         CurrentContext = currentContext;
-        UploadAreaFactory = uploadAreaFactory;
-        ComboBoxFactory = comboBoxFactory;
         DataImportationWorkerFactory = dataImportationWorkerFactory;
-        UrlHelper = urlHelper;
-        EncryptionService = encryptionService;
         FormService = formService;
+        ComponentFactory = componentFactory;
         FormElement = formElement;
         var importAction = formElement.Options.GridToolbarActions.ImportAction;
         if (importAction is not null)
@@ -110,63 +119,60 @@ public class JJDataImportation : ProcessComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        HtmlBuilder html = null;
-        Upload.OnFileUploaded += FileUploaded;
+        HtmlBuilder htmlBuilder;
 
-        string action = CurrentContext.Request["current_uploadaction"];
-
-        var uploadAreaResult = await Upload.GetResultAsync();
-
-        if (uploadAreaResult is JsonComponentResult)
+        if (ComponentContext is ComponentContext.DataImportationFileUpload)
         {
-            return uploadAreaResult;
+            Upload.OnFileUploaded += FileUploaded;
+            return await Upload.GetFileUploadResultAsync();
         }
-
+        
+        string action = CurrentContext.Request.QueryString["dataImportationOperation"];
+        
         switch (action)
         {
-            case "process_check":
+            case "checkProgress":
             {
                 var reporterProgress = GetCurrentProgress();
                 
                 return new JsonComponentResult(reporterProgress);
             }
-            case "process_stop":
+            case "stop":
                 StopExportation();
                 return new JsonComponentResult(new {isProcessing = false});
-            case "process_finished":
-                html = GetHtmlLogProcess();
+            case "log":
+                htmlBuilder = GetHtmlLogProcess();
                 break;
-            case "process_help":
-                html = await new DataImportationHelp(this).GetHtmlHelpAsync();
+            case "help":
+                htmlBuilder = await new DataImportationHelp(this).GetHtmlHelpAsync();
                 break;
-            case "posted_past_text":
+            case "processPastedText":
             {
                 //Process de text from clipboard
                 if (!IsRunning())
                 {
-                    string pasteValue = CurrentContext.Request.Form("pasteValue");
+                    string pasteValue = CurrentContext.Request.GetFormValue("pasteValue");
                     ImportInBackground(pasteValue);
                 }
-                html = GetHtmlWaitProcess();
+                htmlBuilder = GetHtmlWaitProcess();
                 break;
             }
             default:
             {
                 if (Upload.IsPostAfterUploadAllFiles() || IsRunning())
-                    html = GetHtmlWaitProcess();
+                    htmlBuilder = GetHtmlWaitProcess();
                 else
-                    html = GetUploadAreaCollapse(ProcessKey);
+                    htmlBuilder = GetUploadAreaCollapse(ProcessKey);
                 break;
             }
         }
 
-        return new RenderedComponentResult(html);
+        return HtmlComponentResult.FromHtmlBuilder(htmlBuilder);
     }
 
     private HtmlBuilder GetHtmlLogProcess()
     {
         var html = new DataImportationLog(this).GetHtmlLog()
-         .AppendHiddenInput("current_uploadaction")
          .AppendHiddenInput("filename")
          .AppendComponent(BackButton);
 
@@ -182,10 +188,6 @@ public class JJDataImportation : ProcessComponent
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divProcess")
             .WithAttribute("style", "text-align: center;")
-            .WithAttributeIf(IsExternalRoute,"check-progress-url",UrlHelper.GetUrl("CheckProgress","Importation","MasterData",  new {dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name)}))
-            .WithAttributeIf(IsExternalRoute,"stop-process-url",UrlHelper.GetUrl("StopProcess","Importation","MasterData", new {dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name)}))
-            .AppendScript($"DataImportationHelper.startProcess('{Upload.Name}'); ")
-            .AppendHiddenInput("current_uploadaction")
             .Append(HtmlTag.Div, spin =>
             {
                 spin.WithAttribute("id", "impSpin")
@@ -230,7 +232,7 @@ public class JJDataImportation : ProcessComponent
 
         var btnStop = new JJLinkButton
         {
-            OnClientClick = $"javascript:DataImportation.stopProcess('{Upload.Name}','{StringLocalizer["Stopping Processing..."]}');",
+            OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]),
             IconClass = IconType.Stop.GetCssClass(),
             Text = StringLocalizer["Stop the import."]
         };
@@ -244,7 +246,6 @@ public class JJDataImportation : ProcessComponent
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .AppendScript("DataImportationHelper.addPasteListener();")
-            .AppendHiddenInput("current_uploadaction")
             .AppendHiddenInput("filename")
             .Append(HtmlTag.TextArea, area =>
             {
@@ -263,7 +264,7 @@ public class JJDataImportation : ProcessComponent
                 {
                     label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes]);
                 })
-                .Append( Upload.GetUploadAreaHtml())
+                .Append( Upload.GetUploadAreaHtmlBuilder())
         };
 
         html.AppendComponent(collapsePanel);
@@ -303,12 +304,13 @@ public class JJDataImportation : ProcessComponent
         {
             var worker = CreateImportationTextWorker(sb.ToString(), ';');
             BackgroundTask.Run(ProcessKey, worker);
+            e.SuccessMessage = StringLocalizer["File successfuly imported."];
         }
     }
 
     private DataImportationWorker CreateImportationTextWorker(string postedText, char separator)
     {
-        var dataContext = new DataContext(CurrentContext,DataContextSource.Upload, UserId);
+        var dataContext = new DataContext(CurrentContext.Request,DataContextSource.Upload, UserId);
         
         var worker = DataImportationWorkerFactory.Create(new DataImportationContext(FormElement, dataContext, postedText, separator));
         worker.UserId = UserId;
@@ -375,34 +377,35 @@ public class JJDataImportation : ProcessComponent
         };
     }
 
-    private static JJLinkButton GetHelpButton()
+    private JJLinkButton GetHelpButton()
     {
         return new JJLinkButton
         {
             IconClass = "fa fa-question-circle",
             Text = "Help",
             ShowAsButton = true,
-            OnClientClick = "$('#current_uploadaction').val('process_help'); $('form:first').submit();"
+            OnClientClick = DataImportationScripts.GetHelpScript()
         };
     }
 
-    private static JJLinkButton GetLogButton()
+    private JJLinkButton GetLogButton()
     {
         return new JJLinkButton
         {
             IconClass = "fa fa-film",
-            Text = "Last Import",
+            Text = "Last Importation",
             ShowAsButton = true,
-            OnClientClick = "$('#current_uploadaction').val('process_finished'); $('form:first').submit();"
+            OnClientClick = DataImportationScripts.GetLogScript()
         };
     }
 
     private JJUploadArea GetUploadArea()
     {
-        var area = UploadAreaFactory.Create();
+        var area = ComponentFactory.UploadArea.Create();
+        area.RouteContext.ComponentContext = ComponentContext.DataImportationFileUpload;
         area.Multiple = false;
         area.EnableCopyPaste = false;
-        area.Name = Name + "_upload";
+        area.Name += "-upload-area";
         area.AllowedTypes = "txt,csv,log";
         return area;
     }

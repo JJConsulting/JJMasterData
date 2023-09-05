@@ -11,9 +11,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Abstractions;
-using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -31,7 +28,7 @@ internal class DataPanelControl
 
     public FormUI FormUI { get; }
 
-    public ControlFactory ControlFactory { get; }
+    public IControlFactory ControlFactory { get; }
     
     public IDictionary<string, string> Errors { get; }
 
@@ -65,7 +62,6 @@ internal class DataPanelControl
         FieldsService = dataPanel.FieldsService;
         Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
-        IsExternalRoute = dataPanel.IsExternalRoute;
         FieldNamePrefix = dataPanel.FieldNamePrefix;
         FormState = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
     }
@@ -84,7 +80,6 @@ internal class DataPanelControl
         ControlFactory = gridView.ComponentFactory.Controls;
         ExpressionsService = gridView.ExpressionsService;
         FieldsService = gridView.FieldsService;
-        IsExternalRoute = gridView.IsExternalRoute;
         FormState = new FormStateData(values, gridView.UserValues, PageState.Filter);
     }
 
@@ -144,7 +139,7 @@ internal class DataPanelControl
             row?.Append(htmlField);
 
             string fieldClass;
-            if (ControlFactory.IsRange(field, PageState))
+            if (IsRange(field, PageState))
             {
                 fieldClass = string.Empty;
             }
@@ -177,6 +172,11 @@ internal class DataPanelControl
         }
 
         return html;
+    }
+    
+    private static bool IsRange(FormElementField field, PageState pageState)
+    {
+        return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
     }
 
     private async Task<HtmlBuilder> GetHtmlFormHorizontal(List<FormElementField> fields)
@@ -279,7 +279,7 @@ internal class DataPanelControl
             row?.WithCssClass(cssClass)
              .AppendComponent(label);
 
-            if (ControlFactory.IsRange(f, PageState))
+            if (IsRange(f, PageState))
             {
                 row?.Append(await GetControlField(f, value));
             }
@@ -310,8 +310,7 @@ internal class DataPanelControl
 
     private async Task<HtmlBuilder> GetControlField(FormElementField field, object? value)
     {
-        var control = await ControlFactory.CreateAsync(FormElement, field, new(Values, UserValues, PageState), Name, value);
-        control.IsExternalRoute = IsExternalRoute;
+        var control = await ControlFactory.CreateAsync(FormElement, field, new(Values, UserValues, PageState), value);
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             control.Name = FieldNamePrefix + field.Name;
@@ -351,20 +350,7 @@ internal class DataPanelControl
             }
         }
 
-        switch (control)
-        {
-            case HtmlControl htmlControl:
-                return htmlControl.GetHtmlBuilder();
-            case AsyncControl asyncControl:
-            {
-                var result = await asyncControl.GetResultAsync();
-                if (result is RenderedComponentResult renderedComponentResult)
-                    return renderedComponentResult.HtmlBuilder;
-                break;
-            }
-        }
-
-        return new HtmlBuilder();
+        return await control.GetHtmlBuilderAsync();
     }
 
     private string GetScriptReload(FormElementField field)

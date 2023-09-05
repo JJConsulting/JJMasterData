@@ -2,11 +2,9 @@
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -18,9 +16,12 @@ using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
+
 #if NET48
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 #endif
+
 namespace JJMasterData.Core.Web.Components;
 
 /// <summary>
@@ -31,7 +32,6 @@ public class JJDataPanel : AsyncComponent
     #region "Properties"
 
     private FormUI _formUI;
-    private ComponentContext? _componentContext;
 
     /// <summary>
     /// Layout form settings
@@ -77,47 +77,47 @@ public class JJDataPanel : AsyncComponent
 
     public string FieldNamePrefix { get; set; }
     
-    public IEntityRepository EntityRepository { get; }
-
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
-
-    internal IHttpContext CurrentContext { get; }
-    internal JJMasterDataUrlHelper UrlHelper { get; }
-    internal IEncryptionService EncryptionService { get; }
-    internal IFieldsService FieldsService { get; }
-    internal IFormValuesService FormValuesService { get; }
-    internal IExpressionsService ExpressionsService { get; }
-    internal ComponentFactory ComponentFactory { get; }
-    internal ComponentContext ComponentContext
+    
+    private RouteContext _routeContext;
+    protected RouteContext RouteContext
     {
         get
         {
-            if (_componentContext != null)
-                return _componentContext.Value;
-            
-            var resolver = new ComponentContextResolver(this);
-            _componentContext = resolver.GetContext();
+            if (_routeContext != null)
+                return _routeContext;
 
-            return _componentContext.Value;
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
         }
     }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    
+    
+    public IEntityRepository EntityRepository { get; }
+    internal IHttpContext CurrentContext { get; }
+    internal IEncryptionService EncryptionService { get; }
+    internal JJMasterDataUrlHelper UrlHelper { get; }
+    internal IFieldsService FieldsService { get; }
+    internal IFormValuesService FormValuesService { get; }
+    internal IExpressionsService ExpressionsService { get; }
+    internal IComponentFactory ComponentFactory { get; }
 
     #endregion
 
     #region "Constructors"
 #if NET48
-    public JJDataPanel()
+    public JJDataPanel() 
     {
-        ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<ComponentFactory>();
+        ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<IComponentFactory>();
         EntityRepository =  StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
-        DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         CurrentContext =  StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
-        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>();
         FieldsService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldsService>();
         FormValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFormValuesService>();
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
         UrlHelper = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
-        EncryptionService = StaticServiceLocator.Provider.GetScopedDependentService<IEncryptionService>();
 
         Values = new Dictionary<string, object>();
         Errors =  new Dictionary<string, string>();
@@ -128,7 +128,7 @@ public class JJDataPanel : AsyncComponent
     [Obsolete("This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use ComponentsFactory.")]
     public JJDataPanel(string elementName): this()
     {
-        Name = "pnl_" + elementName;
+        Name = ComponentNameGenerator.Create(elementName) + "-data-panel";
         FormElement = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>()
             .GetMetadataAsync(elementName).GetAwaiter().GetResult();
         RenderPanelGroup = FormElement.Panels.Count > 0;
@@ -138,7 +138,7 @@ public class JJDataPanel : AsyncComponent
     public JJDataPanel(
         FormElement formElement) : this()
     {
-        Name = "pnl_" + formElement.Name.ToLower();
+        Name = ComponentNameGenerator.Create(formElement.Name) + "-data-panel";
         FormElement = formElement;
         RenderPanelGroup = formElement.Panels.Count > 0;
     }
@@ -146,18 +146,16 @@ public class JJDataPanel : AsyncComponent
 
     public JJDataPanel(
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
-        ComponentFactory componentFactory
-    )
+        IComponentFactory componentFactory
+    ) 
     {
         EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
         CurrentContext = currentContext;
         EncryptionService = encryptionService;
         UrlHelper = urlHelper;
@@ -174,17 +172,16 @@ public class JJDataPanel : AsyncComponent
     public JJDataPanel(
         FormElement formElement,
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         IFieldsService fieldsService,
         IFormValuesService formValuesService,
         IExpressionsService expressionsService,
-        ComponentFactory componentFactory
-    ) : this(entityRepository, dataDictionaryRepository, currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
+        IComponentFactory componentFactory
+    ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
     {
-        Name = "pnl_" + formElement.Name.ToLower();
+        Name = ComponentNameGenerator.Create(formElement.Name) + "-data-panel";
         FormElement = formElement;
         RenderPanelGroup = formElement.Panels.Count > 0;
     }
@@ -195,30 +192,33 @@ public class JJDataPanel : AsyncComponent
     {
         Values ??= await GetFormValuesAsync();
         
-        if (ComponentContext is ComponentContext.Lookup)
-            return await JJLookup.GetResultFromPanel(this);
-        
         if (ComponentContext is ComponentContext.FileUpload)
             return await JJTextFile.GetResultFromPanel(this);
         
         if (ComponentContext is ComponentContext.DownloadFile)
-            return JJFileDownloader.GetDirectDownloadRedirect(CurrentContext, EncryptionService, ComponentFactory.Downloader);
+            return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
 
         if (ComponentContext is ComponentContext.SearchBox)
-            return await JJSearchBox.GetResultFromPanel(this);
+        {
+            var formStateData = new FormStateData(Values, UserValues, PageState);
+            var controlContext = new ControlContext(formStateData);
+            var fieldName = CurrentContext.Request.QueryString["fieldName"];
+            var field = FormElement.Fields[fieldName];
+            var searchBox = ComponentFactory.Controls.Create<JJSearchBox>(FormElement, field, controlContext);
+            return await searchBox.GetResultAsync();
+        }
 
         if (ComponentContext is ComponentContext.PanelReload)
         {
-            var html = await GetPanelHtmlAsync();
+            var html = await GetPanelHtmlBuilderAsync();
             var panelHtml = html.ToString();
             return new HtmlComponentResult(panelHtml);
         }
 
-
-        return new RenderedComponentResult(await GetPanelHtmlAsync());
+        return new RenderedComponentResult(await GetPanelHtmlBuilderAsync());
     }
 
-    internal async Task<HtmlBuilder> GetPanelHtmlAsync()
+    internal async Task<HtmlBuilder> GetPanelHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
@@ -227,7 +227,7 @@ public class JJDataPanel : AsyncComponent
 
         if (PageState == PageState.Update)
         {
-            html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
+            html.AppendHiddenInput($"data-panel-pk-values-{Name}", GetPkHiddenInput());
         }
 
         var panelGroup = new DataPanelLayout(this);

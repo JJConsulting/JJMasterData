@@ -9,7 +9,6 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -17,12 +16,11 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextFile : AsyncControl
+public class JJTextFile : ControlBase
 {
     
     public const string UploadViewParameterName = "uploadView-";
     
-    private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IEncryptionService EncryptionService { get; }
@@ -53,18 +51,15 @@ public class JJTextFile : AsyncControl
 
 
     public JJTextFile(
-        IHttpContext currentContext,
-        JJMasterDataUrlHelper urlHelper,
+        IHttpRequest httpRequest,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup> textBoxFactory,
-        IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
+        IStringLocalizer<JJMasterDataResources> stringLocalizer, IEncryptionService encryptionService) : base(httpRequest)
     {
-        UrlHelper = urlHelper;
         UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
-        EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
+        EncryptionService = encryptionService;
     }
 
     protected override async Task<ComponentResult> BuildResultAsync()
@@ -72,13 +67,16 @@ public class JJTextFile : AsyncControl
         if (IsUploadViewRoute())
             return await GetUploadViewResultAsync();
 
-        return new RenderedComponentResult(GetHtmlTextGroup());
+        return new RenderedComponentResult(await GetHtmlTextGroup());
     }
 
     internal async Task<ComponentResult> GetUploadViewResultAsync()
     {
         //Ao abrir uma nova pagina no iframe o "jumi da india" não conseguiu fazer o iframe via post 
         //por esse motivo passamos os valores nessários do form anterior por parametro o:)
+        
+        //Update 2023: Agora podemos abrir popups sem frame usando POST, que tal tentar?
+
         LoadValuesFromQuery();
 
         var uploadView = GetUploadView();
@@ -100,7 +98,7 @@ public class JJTextFile : AsyncControl
         return HtmlComponentResult.FromHtmlBuilder(html);
     }
 
-    private HtmlBuilder GetHtmlTextGroup()
+    private async Task<HtmlBuilder> GetHtmlTextGroup()
     {
         var formUpload = GetUploadView();
 
@@ -124,8 +122,10 @@ public class JJTextFile : AsyncControl
         };
         textGroup.Actions.Add(btn);
 
+        var textGroupHtml = await textGroup.GetHtmlBuilderAsync();
+        
         var html = new HtmlBuilder(HtmlTag.Div)
-            .AppendComponent(textGroup)
+            .Append(textGroupHtml)
             .Append(HtmlTag.Input, i =>
             {
                 i.WithAttribute("type", "hidden")
@@ -167,25 +167,12 @@ public class JJTextFile : AsyncControl
 
         var url = string.Empty;
 
-        if (IsExternalRoute)
-        {
-            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
-            url = UrlHelper.GetUrl("GetUploadView", "TextFile","MasterData", 
-                new
-                {
-                    dictionaryName = encryptedDictionaryName, 
-                    fieldName = FormElementField.Name, 
-                    componentName = Name,
-                    uploadViewParams = values
-                });
-        }
-
-        return $"UploadView.open('{Name}','{title}','{values}', '{url}');";
+        return $"UploadViewHelper.open('{Name}','{title}','{values}', '{url}');";
     }
 
     private void LoadValuesFromQuery()
     {
-        var uploadViewParams = CurrentContext.Request.QueryString("uploadViewParams");
+        var uploadViewParams = Request.QueryString["uploadViewParams"];
         if (string.IsNullOrEmpty(uploadViewParams))
             throw new ArgumentNullException(nameof(uploadViewParams));
 
@@ -228,7 +215,6 @@ public class JJTextFile : AsyncControl
         var dataFile = FormElementField.DataFile!;
         form.Name = FormElementField.Name + "_uploadview"; //this is important
         form.Title = "";
-        form.IsExternalRoute = IsExternalRoute;
         form.AutoSave = false;
         form.GridView.ShowToolbar = false;
         form.RenameAction.SetVisible(true);
@@ -340,7 +326,7 @@ public class JJTextFile : AsyncControl
     public string GetDownloadLink(string fileName, bool isExternalLink = false, string absoluteUri = null)
     {
         string filePath = GetFolderPath() + fileName;
-        string url = CurrentContext.Request.AbsoluteUri;
+        string url = Request.AbsoluteUri;
         if (url.Contains('?'))
             url += "&";
         else
@@ -360,13 +346,13 @@ public class JJTextFile : AsyncControl
     private bool IsUploadViewRoute()
     {
         string panelName = GetPanelName();
-        string lookupRoute = CurrentContext.Request.QueryString(UploadViewParameterName + panelName);
+        string lookupRoute = Request.QueryString[UploadViewParameterName + panelName];
         return Name.Equals(lookupRoute);
     }
     
     internal static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
     {
-        string uploadFormRoute = view.CurrentContext.Request.QueryString(UploadViewParameterName + view.Name);
+        string uploadFormRoute = view.CurrentContext.Request.QueryString[UploadViewParameterName + view.Name];
         if (uploadFormRoute == null)
             return new EmptyComponentResult();
 

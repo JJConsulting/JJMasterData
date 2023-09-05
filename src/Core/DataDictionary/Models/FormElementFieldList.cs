@@ -1,5 +1,4 @@
 ﻿using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Localization;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -9,9 +8,9 @@ using System.Linq;
 namespace JJMasterData.Core.DataDictionary;
 
 /// <summary>
-/// Implementation of ICollection representing a list of data dictionary fields.
+/// Implementation of IList representing a list of data dictionary fields.
 /// </summary>
-public class FormElementFieldList : ICollection<FormElementField>
+public class FormElementFieldList : IList<FormElementField>
 {
     private readonly IList<FormElementField> _formFields;
     private readonly ElementFieldList _baseFields;
@@ -95,6 +94,20 @@ public class FormElementFieldList : ICollection<FormElementField>
     public bool IsReadOnly => _formFields.IsReadOnly;
 
     #endregion
+
+    public int IndexOf(FormElementField item) => _formFields.IndexOf(item);
+
+    public void Insert(int index, FormElementField item)
+    {
+        _formFields.Insert(index,item);
+        _baseFields.Insert(index,item);
+    }
+
+    public void RemoveAt(int index)
+    {
+        _formFields.RemoveAt(index);
+        _baseFields.RemoveAt(index);
+    }
 
     public FormElementField this[int index]
     {

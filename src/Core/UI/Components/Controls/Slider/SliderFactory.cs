@@ -1,4 +1,6 @@
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 
@@ -6,29 +8,30 @@ namespace JJMasterData.Core.Web.Factories;
 
 internal class SliderFactory : IControlFactory<JJSlider>
 {
-    private IHttpContext HttpContext { get; }
+    private IHttpRequest HttpRequest { get; }
+    private IComponentFactory<JJTextBox> TextBoxFactory { get; }
 
-    public SliderFactory(IHttpContext httpContext)
+
+    public SliderFactory(IHttpRequest httpRequest, IComponentFactory<JJTextBox> textBoxFactory)
     {
-        HttpContext = httpContext;
+        HttpRequest = httpRequest;
+        TextBoxFactory = textBoxFactory;
     }
     
     public JJSlider Create()
     {
-        return new JJSlider(HttpContext);
+        return new JJSlider(HttpRequest,TextBoxFactory);
     }
 
     public JJSlider Create(FormElement formElement, FormElementField field, ControlContext context)
     {
-        var slider = new JJSlider(HttpContext)
-        {
-            Name =  field.Name,
-            NumberOfDecimalPlaces = field.NumberOfDecimalPlaces,
-            MinValue = (double)(field.Attributes[FormElementField.MinValueAttribute] ?? 0f),
-            MaxValue = (double)(field.Attributes[FormElementField.MaxValueAttribute] ?? 100),
-            Step = (double)field.Attributes![FormElementField.StepAttribute],
-            Value = !string.IsNullOrEmpty(context.Value?.ToString()) ? double.Parse(context.Value.ToString()!) : null
-        };
+        var slider = Create();
+        slider.Name = field.Name;
+        slider.NumberOfDecimalPlaces = field.NumberOfDecimalPlaces;
+        slider.MinValue = (double)(field.Attributes[FormElementField.MinValueAttribute] ?? 0f);
+        slider.MaxValue = (double)(field.Attributes[FormElementField.MaxValueAttribute] ?? 100);
+        slider.Step = (double)field.Attributes![FormElementField.StepAttribute];
+        slider.Value = !string.IsNullOrEmpty(context.Value?.ToString()) ? double.Parse(context.Value.ToString()!) : null;
         return slider;
     }
 }

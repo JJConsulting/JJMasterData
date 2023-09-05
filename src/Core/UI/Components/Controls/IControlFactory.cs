@@ -1,29 +1,28 @@
+#nullable enable
 using System.Threading.Tasks;
 
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 
 namespace JJMasterData.Core.Web;
 
-/// <summary>
-/// Marker class used to identify control factories.
-/// </summary>
-public interface IControlFactory : IComponentFactory
+public interface IControlFactory
 {
+    IControlFactory<TControl> GetControlFactory<TControl>() where TControl : ControlBase;
+    TControl Create<TControl>() where TControl : ControlBase;
+    internal TControl Create<TControl>(FormElement formElement,FormElementField field, ControlContext controlContext) where TControl : ControlBase;
 
-}
-
-
-/// <summary>
-/// Factory class used to create instance of JJBaseControls.
-/// </summary>
-/// <typeparam name="TControl"></typeparam>
-public interface IControlFactory<out TControl> : IControlFactory where TControl : ControlBase
-{
-    public TControl Create();
-    public TControl Create(FormElement formElement,
+    internal ControlBase Create(
+        FormElement formElement,
         FormElementField field,
         ControlContext context);
+
+    internal Task<ControlBase> CreateAsync(
+        FormElement formElement,
+        FormElementField field,
+        FormStateData formStateData,
+        object? value = null);
 }

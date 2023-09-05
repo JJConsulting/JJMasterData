@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Hashing;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -21,11 +22,29 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJAuditLogView : AsyncComponent
 {
-    private readonly ComponentFactory _componentFactory;
+    private readonly IComponentFactory _componentFactory;
     private JJGridView _gridView;
     private JJDataPanel _dataPainel;
     private string _userId;
+    private RouteContext _routeContext;
 
+
+    internal RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
+        }
+    }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    
     /// <summary>
     /// Id do usuário Atual
     /// </summary>
@@ -66,14 +85,14 @@ public class JJAuditLogView : AsyncComponent
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IAuditLogService auditLogService,
-        ComponentFactory componentFactory,
+        IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        Name = formElement.Name;
+        Name = ComponentNameGenerator.Create(formElement.Name) + "-audit-log-view";
         _componentFactory = componentFactory;
-        FormElement = formElement ?? throw new ArgumentNullException(nameof(formElement));
+        FormElement = formElement;
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
         AuditLogService = auditLogService;
@@ -84,8 +103,7 @@ public class JJAuditLogView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string ajax = CurrentContext.Request.QueryString("context");
-        string logId = CurrentContext.Request.Form("audit-log-id-" + Name);
+        string logId = CurrentContext.Request.GetFormValue("audit-log-id-" + Name);
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(logId))
@@ -102,13 +120,13 @@ public class JJAuditLogView : AsyncComponent
         }
         else
         {
-            if ("htmlContent".Equals(ajax))
+            if (ComponentContext is ComponentContext.AuditLogView)
             {
                 var panel = await GetDetailsPanel(logId);
 
-                var panelHtml = (await panel.GetPanelHtmlAsync()).ToString();
+                var panelHtmlBuilder = await panel.GetPanelHtmlBuilderAsync();
                 
-                return new HtmlComponentResult(panelHtml);
+                return HtmlComponentResult.FromHtmlBuilder(panelHtmlBuilder);
             }
 
             html.Append(await GetLogDetailsHtmlAsync(logId));
@@ -229,7 +247,7 @@ public class JJAuditLogView : AsyncComponent
                             {
                                 p.Append(HtmlTag.B, b => { b.AppendText($"{StringLocalizer["Record Snapshot"]}:"); });
                             });
-                    divDetail.Append( await panel.GetPanelHtmlAsync());
+                    divDetail.Append( await panel.GetPanelHtmlBuilderAsync());
                 });
             });
         });
@@ -260,7 +278,9 @@ public class JJAuditLogView : AsyncComponent
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var grid = _componentFactory.GridView.Create(AuditLogService.GetFormElement());
+        var gridViewFormElement = AuditLogService.GetFormElement();
+        gridViewFormElement.ParentName = FormElement.ParentName;
+        var grid = _componentFactory.GridView.Create(gridViewFormElement);
         grid.FormElement.Title = FormElement.Title;
         grid.SetCurrentFilter(DataManager.Services.AuditLogService.DicName, FormElement.Name);
         grid.CurrentOrder = new OrderByData().AddOrReplace(DataManager.Services.AuditLogService.DicModified,OrderByDirection.Desc);
@@ -355,15 +375,11 @@ public class JJAuditLogView : AsyncComponent
 
             html.Append(HtmlTag.A, a =>
             {
-                var url = IsExternalRoute
-                    ? UrlHelper.GetUrl("GetDetailsPanel", "AuditLog","MasterData", 
-                        new
-                        {
-                            dictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name),
-                            componentName = Name
-                        })
-                    : string.Empty;
-                a.WithAttribute("href", $"javascript:AuditLogHelper.loadAuditLog('{Name}','{logId}', '{url}')");
+                var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.AuditLogView);
+
+                var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+                
+                a.WithAttribute("href", $"javascript:AuditLogViewHelper.loadAuditLog('{Name}','{logId}', '{encryptedRouteContext}')");
                 a.WithNameAndId(logId);
                 a.WithCssClass("list-group-item ui-sortable-handle");
                 a.WithCssClassIf(logId.Equals(viewId), "active");

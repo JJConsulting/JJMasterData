@@ -1,16 +1,14 @@
 class DataPanelHelper {
-    static reloadAtSamePage(panelname, objid){
-        let url = new UrlBuilder()
-        url.addQueryParameter("panelName",panelname)
-        url.addQueryParameter("componentName",objid)
-        url.addQueryParameter("context","panelReload")
-
-        DataPanelHelper.reload(url.build(), panelname, objid)
-    }
     
-    static reload(url, componentName, fieldName) {
+    static reload(componentName, fieldName, routeContext) {
+
+        let urlBuilder = new UrlBuilder()
+        urlBuilder.addQueryParameter("panelName",componentName)
+        urlBuilder.addQueryParameter("componentName",fieldName)
+        urlBuilder.addQueryParameter("routeContext",routeContext)
+        
         const form = document.querySelector("form");
-        fetch(url, {
+        fetch(urlBuilder.build(), {
             method: form.method,
             body: new FormData(form),
         })
@@ -22,7 +20,7 @@ class DataPanelHelper {
             })
             .then(data => {
                 document.getElementById(componentName).outerHTML = data;
-                loadJJMasterData();
+                listenAllEvents();
                 jjutil.gotoNextFocus(fieldName);
             })
             .catch(error => {

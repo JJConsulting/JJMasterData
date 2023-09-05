@@ -75,12 +75,12 @@ public class JJMasterDataUrlHelper
             url += $"{dictionaryName}";
         }
         
-        if (valuesDictionary?.Count > 0)
+        if (valuesDictionary.Count > 0)
         {
             url += "?" + string.Join("&", valuesDictionary.Select(kv => $"{kv.Key}={kv.Value}"));
         }
         
 
-         return url;
+        return url;
     }
 }

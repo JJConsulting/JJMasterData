@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -28,18 +31,11 @@ public class JJTextGroup : JJTextBox
 
     public string GroupCssClass { get; set; }
 
-    public JJTextGroup(IHttpContext httpContext) : base(httpContext)
+    public JJTextGroup(IHttpContext httpContext) :  base(httpContext.Request)
     {
     }
 
-    public JJTextGroup(string name, InputAddons addons, string text, IHttpContext httpContext) : base(httpContext)
-    {
-        Name = name;
-        Addons = addons;
-        Text = text;
-    }
-
-    internal override HtmlBuilder BuildHtml()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
         if (!Enabled)
@@ -51,12 +47,13 @@ public class JJTextGroup : JJTextBox
             }
         }
 
-        var input = base.BuildHtml();
+        var baseResult = (RenderedComponentResult)await base.BuildResultAsync();
+        var input =  baseResult.HtmlBuilder;
         bool hasAction = Actions.ToList().Exists(x => x.Visible);
         bool hasAddons = Addons != null;
 
         if (!hasAction && !hasAddons)
-            return input;
+            return new RenderedComponentResult(input);
 
 
         if (defaultAction is { Enabled: true })
@@ -77,7 +74,7 @@ public class JJTextGroup : JJTextBox
         if (hasAction)
             AddActionsAt(inputGroup);
 
-        return inputGroup;
+        return new RenderedComponentResult(inputGroup);
     }
 
     private void AddActionsAt(HtmlBuilder inputGroup)

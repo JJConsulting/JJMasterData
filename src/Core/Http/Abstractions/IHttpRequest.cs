@@ -21,7 +21,10 @@ public interface IHttpRequest
 #endif
     object GetUnvalidated(string key);
     string this[string key] { get; }
-    string GetValue(string key);
-    string QueryString(string key);
-    string Form(string key);
+    
+    public IQueryString QueryString { get; }
+    
+    string GetFormValue(string key);
+    
+    bool IsPost { get; }
 }

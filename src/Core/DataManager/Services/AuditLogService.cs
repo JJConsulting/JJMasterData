@@ -129,6 +129,7 @@ public class AuditLogService : IAuditLogService
         formElement.Fields[DicModified].Component = FormComponent.DateTime;
 
         formElement.Options.GridTableActions.Clear();
+        formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
         
         var origin = formElement.Fields[DicOrigin];
         origin.Component = FormComponent.ComboBox;
@@ -152,7 +153,7 @@ public class AuditLogService : IAuditLogService
             ToolTip = "View"
         };
         btnViewLog.Name = nameof(btnViewLog);
-        btnViewLog.OnClientClick = $"JJViewHelper.viewLog('{formElement.Name}','{{{DicId}}}');";
+        btnViewLog.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{formElement.Name}','{{{DicId}}}');";
 
         formElement.Options.GridTableActions.Add(btnViewLog);
         return formElement;

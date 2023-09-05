@@ -1,3 +1,5 @@
+#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
@@ -39,24 +41,36 @@ public class LookupService : ILookupService
     }
 
     
-    public string GetLookupUrl(DataElementMap elementMap, FormStateData formStateData, string componentName)
+    public string GetFormViewUrl(DataElementMap elementMap, FormStateData formStateData, string componentName)
     {
-        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.FieldKey,
+        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.FieldKey,elementMap.FieldDescription,
             elementMap.EnableElementActions, elementMap.Filters);
 
         var encryptedLookupParameters =
             EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString(ExpressionsService, formStateData));
         
-        return UrlHelper.GetUrl("Index", "Lookup", "MasterData",new { lookupParameters = encryptedLookupParameters });
+        return UrlHelper.GetUrl("GetFormView", "Lookup", "MasterData",new { lookupParameters = encryptedLookupParameters });
     }
-    
-    public async Task<string> GetDescriptionAsync(
+
+    public string GetDescriptionUrl(string elementName, string fieldName, string componentName, PageState pageState)
+    {
+        return UrlHelper.GetUrl("GetDescription", "Lookup","MasterData", 
+            new
+            {
+                dictionaryName = EncryptionService.EncryptStringWithUrlEscape(elementName),
+                componentName,
+                fieldName,
+                pageState
+            });
+    }
+
+    public async Task<string?> GetDescriptionAsync(
         DataElementMap elementMap,
         FormStateData formStateData,
-        string searchId,
+        object? value,
         bool allowOnlyNumbers)
     {
-        if (string.IsNullOrEmpty(searchId))
+        if (string.IsNullOrEmpty(value?.ToString()))
             return null;
 
         if (elementMap.Filters == null)
@@ -64,17 +78,24 @@ public class LookupService : ILookupService
 
         if (allowOnlyNumbers)
         {
-            bool isNumeric = int.TryParse(searchId, out _);
+            bool isNumeric = int.TryParse(value?.ToString(), out _);
             if (!isNumeric)
                 return null;
         }
 
-        var filters = GetFilters(elementMap, searchId, formStateData);
+        var filters = GetFilters(elementMap, value, formStateData);
 
-        var fields = await GetFieldsAsync(elementMap, filters);
-
-        if (fields == null)
+        IDictionary<string, object?> fields;
+        
+        try
+        {
+            fields = await GetFieldsAsync(elementMap, filters);
+        }
+        catch
+        {
             return null;
+        }
+
 
         if (string.IsNullOrEmpty(elementMap.FieldDescription))
             return fields[elementMap.FieldKey]?.ToString();
@@ -82,7 +103,7 @@ public class LookupService : ILookupService
         return fields[elementMap.FieldDescription]?.ToString();
     }
 
-    private IDictionary<string, object> GetFilters(DataElementMap elementMap, string searchId, FormStateData formStateData)
+    private IDictionary<string, object> GetFilters(DataElementMap elementMap, object? value, FormStateData formStateData)
     {
         var filters = new Dictionary<string, object>();
 
@@ -90,17 +111,17 @@ public class LookupService : ILookupService
         {
             foreach (var filter in elementMap.Filters)
             {
-                string filterParsed =
+                string? filterParsed =
                     ExpressionsService.ParseExpression(filter.Value?.ToString(), formStateData, false);
                 filters[filter.Key] = StringManager.ClearText(filterParsed);
             }
         }
 
-        filters[elementMap.FieldKey] = StringManager.ClearText(searchId);
+        filters[elementMap.FieldKey] = StringManager.ClearText(value?.ToString());
         return filters;
     }
 
-    private async Task<IDictionary<string, object>> GetFieldsAsync(DataElementMap elementMap, IDictionary<string, object> filters)
+    private async Task<IDictionary<string, object?>> GetFieldsAsync(DataElementMap elementMap, IDictionary<string, object> filters)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
         return await EntityRepository.GetFieldsAsync(formElement, filters);
@@ -109,9 +130,9 @@ public class LookupService : ILookupService
 
     
 
-    public object GetSelectedValue(string componentName)
+    public object? GetSelectedValue(string componentName)
     {
-        return HttpContext.IsPost ? HttpContext.Request.Form("id_" + componentName) : null;
+        return HttpContext.Request.IsPost ? HttpContext.Request.GetFormValue(componentName) : null;
     }
 
     

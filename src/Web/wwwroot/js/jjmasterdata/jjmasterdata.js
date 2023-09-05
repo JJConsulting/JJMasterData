@@ -7,25 +7,37 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class ActionData {
+}
 class ActionManager {
-    static executeRedirectActionAtSamePage(componentName, encryptedActionMap, confirmMessage) {
-        this.executeRedirectAction(null, componentName, encryptedActionMap, confirmMessage);
-    }
-    static executeRedirectAction(url, componentName, encryptedActionMap, confirmMessage) {
+    static executeSqlCommand(componentName, rowId, confirmMessage) {
         if (confirmMessage) {
-            const result = confirm(confirmMessage);
+            var result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        document.querySelector("#grid-view-row-" + componentName).value = rowId;
+        const formViewActionMapElement = document.querySelector("#form-view-action-map-" + componentName);
+        if (formViewActionMapElement) {
+            formViewActionMapElement.value = "";
+        }
+        document.querySelector("form").dispatchEvent(new Event("submit"));
+    }
+    static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
+        if (confirmationMessage) {
+            const result = confirm(confirmationMessage);
             if (!result) {
                 return false;
             }
         }
         const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
         currentFormActionInput.value = encryptedActionMap;
-        if (!url) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "urlRedirect");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            url = urlBuilder.build();
-        }
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("componentName", componentName);
+        const url = urlBuilder.build();
         this.executeUrlRedirect(url);
         return true;
     }
@@ -42,7 +54,8 @@ class ActionManager {
             }
         });
     }
-    static executeAction(componentName, encryptedActionMap, confirmationMessage, isModal) {
+    static executeActionData(actionData) {
+        const { componentName, actionMap, modalTitle, modalRouteContext, gridRouteContext, confirmationMessage } = actionData;
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -54,31 +67,28 @@ class ActionManager {
             gridViewActionInput.value = null;
         }
         if (formViewActionInput) {
-            formViewActionInput.value = encryptedActionMap;
+            formViewActionInput.value = actionMap;
         }
         let form = document.querySelector("form");
         if (!form) {
             return;
         }
-        if (isModal) {
+        if (modalRouteContext) {
             const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "modal");
-            postFormValues({
-                url: urlBuilder.build(),
-                success: function (data) {
-                    const outputElement = document.getElementById(componentName);
-                    if (outputElement) {
-                        if (typeof data === "object") {
-                            if (data.closeModal) {
-                                const modal = new Modal();
-                                modal.modalId = componentName + "-modal";
-                                modal.hide();
-                                JJViewHelper.refresh(componentName, true);
-                            }
-                        }
-                        else {
-                            outputElement.innerHTML = data;
-                        }
+            urlBuilder.addQueryParameter("routeContext", modalRouteContext);
+            const modal = new Modal();
+            modal.modalId = componentName + "-modal";
+            modal.showUrl({
+                url: urlBuilder.build(), requestOptions: {
+                    method: "POST",
+                    body: new FormData(document.querySelector("form"))
+                }
+            }, modalTitle).then(function (data) {
+                listenAllEvents("#" + modal.modalId + " ");
+                if (typeof data === "object") {
+                    if (data.closeModal) {
+                        modal.hide();
+                        GridViewHelper.refresh(componentName, gridRouteContext);
                     }
                 }
             });
@@ -87,46 +97,36 @@ class ActionManager {
             form.submit();
         }
     }
-    static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
-        this.executeAction(componentName, encryptedActionMap, confirmationMessage, false);
+    static executeAction(actionDataJson) {
+        const actionData = JSON.parse(actionDataJson);
+        return this.executeActionData(actionData);
     }
-    static executeModalAction(componentName, encryptedActionMap, confirmationMessage) {
-        this.executeAction(componentName, encryptedActionMap, confirmationMessage, true);
-    }
-    static executeFormActionAsModal(componentName, title, encryptedActionMap, confirmationMessage) {
-        if (confirmationMessage) {
-            if (confirm(confirmationMessage)) {
-                return false;
-            }
-        }
-        const currentTableActionInput = document.querySelector("#grid-view-action-" + componentName);
-        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
-        currentTableActionInput.value = null;
-        currentFormActionInput.value = encryptedActionMap;
-        let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "modal");
-        const url = urlBuilder.build();
+    static hideActionModal(componentName) {
         const modal = new Modal();
         modal.modalId = componentName + "-modal";
-        modal.showUrl({ url: url, requestOptions: {
-                method: "POST",
-                body: new FormData(document.querySelector("form"))
-            } }, title).then(_ => loadJJMasterData());
+        modal.hide();
     }
 }
-class AuditLogHelper {
-    static loadAuditLog(componentName, logId, url = null) {
+class AuditLogViewHelper {
+    static viewAuditLog(componentName, id) {
+        const auditLogIdInput = document.getElementById("audit-log-id-" + componentName);
+        const form = document.querySelector("form");
+        if (auditLogIdInput) {
+            auditLogIdInput.value = id;
+        }
+        if (form) {
+            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: false }));
+        }
+    }
+    static loadAuditLog(componentName, logId, routeContext) {
         $("#sortable-grid a").removeClass("active");
         if (logId != "")
             $("#" + logId).addClass("active");
         document.querySelector('#audit-log-id-' + componentName).value = logId;
-        if (url == null || url.length == 0) {
-            let builder = new UrlBuilder();
-            builder.addQueryParameter("context", "htmlContent");
-            url = builder.build();
-        }
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
         postFormValues({
-            url: url,
+            url: urlBuilder.build(),
             success: function (data) {
                 document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
             }
@@ -134,7 +134,7 @@ class AuditLogHelper {
     }
 }
 class CalendarListener {
-    static listen(prefixSelector) {
+    static listen(prefixSelector = String()) {
         $(prefixSelector + ".jjform-datetime").flatpickr({
             enableTime: true,
             wrap: true,
@@ -299,7 +299,7 @@ class DataDictionaryUtils {
         $("form:first").attr("action", url).submit();
     }
     static exportElement(id, url, validStr) {
-        var values = $("#grid-view-selected-rows" + id).val();
+        var values = $("#grid-view-selected-rows-" + id).val();
         if (values == "") {
             messageBox.show("JJMasterData", validStr, 3);
             return false;
@@ -316,11 +316,11 @@ class DataDictionaryUtils {
     }
 }
 class DataExportationHelper {
-    static startProgressVerificationAtSamePage(componentName) {
+    static startProgressVerification(componentName, routeContext) {
         return __awaiter(this, void 0, void 0, function* () {
             DataExportationHelper.setLoadMessage();
             let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataExportation");
+            urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
             var isCompleted = false;
@@ -330,35 +330,42 @@ class DataExportationHelper {
             }
         });
     }
-    static stopProcessAtSamePage(componentName, stopMessage) {
+    static stopExportation(componentName, routeContext, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataExportation");
+            urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
-            yield DataExportationHelper.stopExportation(urlBuilder.build(), stopMessage);
+            yield DataExportationHelper.stopProcess(urlBuilder.build(), stopMessage);
         });
     }
-    static openExportPopupAtSamePage(componentName) {
+    static openExportPopup(componentName, routeContext) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "dataExportation");
+        urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("dataExportationOperation", "showOptions");
-        DataExportationHelper.openExportPopup(urlBuilder.build(), componentName);
+        fetch(urlBuilder.build())
+            .then(response => response.text())
+            .then(data => {
+            this.setSettingsHTML(componentName, data);
+        })
+            .catch(error => {
+            console.log(error);
+        });
     }
-    static startExportationAtSamePage(componentName) {
+    static startExportation(componentName, routeContext) {
         let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "dataExportation");
+        urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("dataExportationOperation", "startProcess");
         fetch(urlBuilder.build(), {
             method: "POST",
             body: new FormData(document.querySelector("form"))
         }).then(response => response.text()).then((html) => __awaiter(this, void 0, void 0, function* () {
-            const modalBody = "#export-modal-" + componentName + " .modal-body ";
+            const modalBody = "#data-exportation-modal-" + componentName + " .modal-body ";
             document.querySelector(modalBody).innerHTML = html;
-            loadJJMasterData(null, modalBody);
-            yield DataExportationHelper.startProgressVerificationAtSamePage(componentName);
+            listenAllEvents(modalBody);
+            yield DataExportationHelper.startProgressVerification(componentName, routeContext);
         }));
     }
     static checkProgress(url, componentName) {
@@ -369,7 +376,7 @@ class DataExportationHelper {
                 const data = yield response.json();
                 if (data.FinishedMessage) {
                     showWaitOnPost = true;
-                    document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
+                    document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
                     const linkFile = document.querySelector("#export_link_" + componentName);
                     if (linkFile)
                         linkFile.click();
@@ -386,8 +393,8 @@ class DataExportationHelper {
             }
             catch (e) {
                 showWaitOnPost = true;
-                document.querySelector("#dataexp_spinner_" + componentName).style.display = "none";
-                document.querySelector("#export-modal-" + componentName + " .modal-body").innerHTML = e.message;
+                document.querySelector("#data-exportation-spinner" + componentName).style.display = "none";
+                document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = e.message;
                 return false;
             }
         });
@@ -415,13 +422,13 @@ class DataExportationHelper {
             hwaccel: false,
             position: "absolute"
         };
-        const target = document.getElementById('exportationSpinner');
+        const target = document.getElementById('data-exportation-spinner');
         var spinner = new Spinner(options).spin(target);
     }
     static setSettingsHTML(componentName, html) {
-        const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body ");
+        const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
-        loadJJMasterData(null);
+        listenAllEvents();
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
@@ -430,63 +437,55 @@ class DataExportationHelper {
             }
         }
         if (bootstrapVersion < 5) {
-            $("#export-modal-" + componentName).modal();
+            $("#data-exportation-modal-" + componentName).modal();
         }
         else {
-            const modal = new bootstrap.Modal(document.querySelector("#export-modal-" + componentName), {});
+            const modal = new bootstrap.Modal(document.querySelector("#data-exportation-modal-" + componentName), {});
             modal.show();
         }
     }
-    static openExportPopup(url, componentName) {
-        fetch(url)
-            .then(response => response.text())
-            .then(data => {
-            this.setSettingsHTML(componentName, data);
-        })
-            .catch(error => {
-            console.log(error);
-        });
-    }
-    static startExportation(startExportationUrl, checkProgressUrl, componentName) {
-        const form = document.querySelector("form");
-        fetch(startExportationUrl, {
-            method: "POST",
-            body: new FormData(form)
-        })
-            .then(response => {
-            if (response.ok) {
-                return response.text();
-            }
-            else {
-                throw new Error("Request failed with status: " + response.status);
-            }
-        })
-            .then(data => {
-            const modalBody = document.querySelector("#export-modal-" + componentName + " .modal-body");
-            modalBody.innerHTML = data;
-            loadJJMasterData();
-            DataExportationHelper.startProgressVerification(checkProgressUrl, componentName);
-        })
-            .catch(error => {
-            console.log(error);
-        });
-    }
-    static stopExportation(url, stopMessage) {
+    static stopProcess(url, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             document.querySelector("#divMsgProcess").innerHTML = stopMessage;
             showWaitOnPost = false;
             yield fetch(url);
         });
     }
-    static startProgressVerification(url, componentName) {
-        return __awaiter(this, void 0, void 0, function* () {
-            DataExportationHelper.setLoadMessage();
-            var isCompleted = false;
-            while (!isCompleted) {
-                isCompleted = yield DataExportationHelper.checkProgress(url, componentName);
-                yield sleep(3000);
-            }
-        });
+    static showOptions(componentName, exportType) {
+        const orientationDiv = document.getElementById(`${componentName}-div-export-orientation`);
+        const allDiv = document.getElementById(`${componentName}-div-export-all`);
+        const delimiterDiv = document.getElementById(`${componentName}-div-export-delimiter`);
+        const firstlineDiv = document.getElementById(`${componentName}-div-export-firstline`);
+        if (exportType === "1") {
+            if (orientationDiv)
+                orientationDiv.style.display = "none";
+            if (allDiv)
+                allDiv.style.display = "block";
+            if (delimiterDiv)
+                delimiterDiv.style.display = "none";
+            if (firstlineDiv)
+                firstlineDiv.style.display = "block";
+        }
+        else if (exportType === "2") {
+            if (orientationDiv)
+                orientationDiv.style.display = "block";
+            if (allDiv)
+                allDiv.style.display = "none";
+            if (delimiterDiv)
+                delimiterDiv.style.display = "none";
+            if (firstlineDiv)
+                firstlineDiv.style.display = "none";
+        }
+        else {
+            if (orientationDiv)
+                orientationDiv.style.display = "none";
+            if (allDiv)
+                allDiv.style.display = "block";
+            if (delimiterDiv)
+                delimiterDiv.style.display = "block";
+            if (firstlineDiv)
+                firstlineDiv.style.display = "block";
+        }
     }
 }
 class DataImportationHelper {
@@ -516,20 +515,13 @@ class DataImportationHelper {
         const target = document.getElementById('impSpin');
         new Spinner(options).spin(target);
     }
-    static checkProgress(componentName) {
+    static checkProgress(componentName, importationRouteContext, gridRouteContext) {
         showWaitOnPost = false;
-        let checkProgressUrl = document.getElementById("divProcess").getAttribute("check-progress-url");
-        let url;
-        if (checkProgressUrl) {
-            url = checkProgressUrl;
-        }
-        else {
-            let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataImportation");
-            urlBuilder.addQueryParameter("current_uploadaction", "process_check");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            url = urlBuilder.build();
-        }
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", importationRouteContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
+        urlBuilder.addQueryParameter("componentName", componentName);
+        const url = urlBuilder.build();
         fetch(url, {
             method: 'GET',
             cache: 'no-cache',
@@ -607,63 +599,95 @@ class DataImportationHelper {
                 DataImportationHelper.errorCount = result.Error;
             }
             if (!result.IsProcessing) {
-                document.querySelector("#current_uploadaction").value = "process_finished";
-                setTimeout(function () {
-                    document.querySelector("form").dispatchEvent(new Event("submit"));
-                }, 1000);
+                clearInterval(DataImportationHelper.intervalId);
+                let urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("routeContext", importationRouteContext);
+                urlBuilder.addQueryParameter("dataImportationOperation", "log");
+                DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
+                    GridViewHelper.refreshGrid(componentName, gridRouteContext);
+                });
             }
         })
             .catch(error => {
             console.error('Error fetching data:', error);
         });
     }
-    static startProcess(objname) {
-        $(document).ready(function () {
-            DataImportationHelper.setLoadMessage();
-            setInterval(function () {
-                DataImportationHelper.checkProgress(objname);
-            }, 3000);
+    static show(componentName, routeContext, gridRouteContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+        const uploadAreaSelector = "#" + componentName + "-upload-area";
+        $(uploadAreaSelector).uploadFile.afterUploadAll = () => DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
+            UploadAreaListener.listenFileUpload();
         });
     }
-    static stopProcess(componentName, stopLabel) {
+    static showLog(componentName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "log");
+        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small);
+    }
+    static start(componentName, routeContext, gridRouteContext) {
+        DataImportationHelper.setLoadMessage();
+        DataImportationHelper.intervalId = setInterval(function () {
+            DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
+        }, 3000);
+    }
+    static help(componentName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "help");
+        postFormValues({
+            url: urlBuilder.build(), success: html => {
+                document.querySelector("#" + componentName).innerHTML = html;
+            }
+        });
+    }
+    static stop(componentName, routeContext, stopLabel) {
         showWaitOnPost = false;
-        let stopProcessUrl = document.getElementById("divProcess").getAttribute("stop-process-url");
-        let url;
-        if (stopProcessUrl) {
-            url = stopProcessUrl;
-        }
-        else {
-            let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "dataImportation");
-            urlBuilder.addQueryParameter("current_uploadaction", "process_check");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            url = urlBuilder.build();
-        }
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
+        urlBuilder.addQueryParameter("componentName", componentName);
+        const url = urlBuilder.build();
         fetch(url).then(response => response.json()).then(data => {
             if (data.isProcessing === false) {
                 document.getElementById("divMsgProcess").innerHTML = stopLabel;
             }
         });
     }
-    static addPasteListener() {
-        $(document).ready(function () {
-            document.addEventListener("paste", (e) => {
-                var pastedText = undefined;
-                if (window.clipboardData && window.clipboardData.getData) {
-                    pastedText = window.clipboardData.getData("Text");
-                }
-                else if (e.clipboardData && e.clipboardData.getData) {
-                    pastedText = e.clipboardData.getData("text/plain");
-                }
-                e.preventDefault();
-                if (pastedText != undefined) {
-                    $("#current_uploadaction").val("posted_past_text");
-                    $("#pasteValue").val(pastedText);
-                    $("form:first").trigger("submit");
-                }
-                return false;
-            });
-        });
+    static addPasteListener(componentName, routeContext, gridRouteContext) {
+        DataImportationHelper.pasteEventListener = function onPaste(e) {
+            DataImportationHelper.removePasteListener();
+            let pastedText = undefined;
+            if (window.clipboardData && window.clipboardData.getData) {
+                pastedText = window.clipboardData.getData("Text");
+            }
+            else if (e.clipboardData && e.clipboardData.getData) {
+                pastedText = e.clipboardData.getData("text/plain");
+            }
+            e.preventDefault();
+            if (pastedText != undefined) {
+                document.querySelector("#pasteValue").value = pastedText;
+                let urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("routeContext", routeContext);
+                urlBuilder.addQueryParameter("dataImportationOperation", "processPastedText");
+                DataImportationModal.getInstance().showUrl({
+                    url: urlBuilder.build(),
+                    requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) }
+                }, "Import", ModalSize.Small).then(_ => {
+                    DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+                });
+            }
+            return false;
+        };
+        document.addEventListener("paste", DataImportationHelper.pasteEventListener, { once: true });
+    }
+    static removePasteListener() {
+        if (DataImportationHelper.pasteEventListener) {
+            document.removeEventListener("paste", DataImportationHelper.pasteEventListener);
+        }
     }
 }
 DataImportationHelper.insertCount = 0;
@@ -671,17 +695,23 @@ DataImportationHelper.updateCount = 0;
 DataImportationHelper.deleteCount = 0;
 DataImportationHelper.ignoreCount = 0;
 DataImportationHelper.errorCount = 0;
-class DataPanelHelper {
-    static reloadAtSamePage(panelname, objid) {
-        let url = new UrlBuilder();
-        url.addQueryParameter("panelName", panelname);
-        url.addQueryParameter("componentName", objid);
-        url.addQueryParameter("context", "panelReload");
-        DataPanelHelper.reload(url.build(), panelname, objid);
+class DataImportationModal {
+    static getInstance() {
+        if (this.instance === undefined) {
+            this.instance = new Modal();
+            this.instance.onModalHidden = DataImportationHelper.removePasteListener;
+        }
+        return this.instance;
     }
-    static reload(url, componentName, fieldName) {
+}
+class DataPanelHelper {
+    static reload(componentName, fieldName, routeContext) {
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("panelName", componentName);
+        urlBuilder.addQueryParameter("componentName", fieldName);
+        urlBuilder.addQueryParameter("routeContext", routeContext);
         const form = document.querySelector("form");
-        fetch(url, {
+        fetch(urlBuilder.build(), {
             method: form.method,
             body: new FormData(form),
         })
@@ -693,7 +723,7 @@ class DataPanelHelper {
         })
             .then(data => {
             document.getElementById(componentName).outerHTML = data;
-            loadJJMasterData();
+            listenAllEvents();
             jjutil.gotoNextFocus(fieldName);
         })
             .catch(error => {
@@ -712,21 +742,47 @@ function applyDecimalPlaces() {
 }
 class FeedbackIcon {
     static removeAllIcons(selector) {
-        $(selector)
-            .removeClass(FeedbackIcon.successClass)
-            .removeClass(FeedbackIcon.warningClass)
-            .removeClass(FeedbackIcon.searchClass)
-            .removeClass(FeedbackIcon.errorClass);
+        const elements = document.querySelectorAll(selector);
+        elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
+            element.classList.remove(FeedbackIcon.successClass, FeedbackIcon.warningClass, FeedbackIcon.searchClass, FeedbackIcon.errorClass);
+        });
     }
     static setIcon(selector, iconClass) {
         this.removeAllIcons(selector);
-        $(selector).addClass(iconClass);
+        const elements = document.querySelectorAll(selector);
+        elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
+            element.classList.add(iconClass);
+        });
     }
 }
 FeedbackIcon.searchClass = "jj-icon-search";
 FeedbackIcon.successClass = "jj-icon-success";
 FeedbackIcon.warningClass = "jj-icon-warning";
 FeedbackIcon.errorClass = "jj-icon-error";
+class FormViewHelper {
+    static showInsertSuccess(componentName) {
+        const insertMessagePanel = document.getElementById("insert-message-panel" + componentName);
+        const insertPanel = document.getElementById("insert-panel" + componentName);
+        if (insertMessagePanel && insertPanel) {
+            insertMessagePanel.style.transition = "opacity 2s ease";
+            insertMessagePanel.style.opacity = "0";
+            setTimeout(() => {
+                insertMessagePanel.style.display = "none";
+                insertPanel.style.display = "block";
+            }, 2000);
+        }
+    }
+    static openSelectElementInsert(componentName, encryptedActionMap) {
+        const currentActionInput = document.querySelector(`#form-view-current-action-${componentName}`);
+        const selectActionValuesInput = document.querySelector(`#form-view-select-action-values${componentName}`);
+        const form = document.querySelector('form');
+        if (currentActionInput && selectActionValuesInput && form) {
+            currentActionInput.value = 'ELEMENTSEL';
+            selectActionValuesInput.value = encryptedActionMap;
+            form.dispatchEvent(new Event('submit'));
+        }
+    }
+}
 var _a, _b;
 var showWaitOnPost = true;
 var bootstrapVersion = (() => {
@@ -739,34 +795,13 @@ var bootstrapVersion = (() => {
 })();
 const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
 const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
-class GridViewHelper {
-    static sorting(componentName, url, tableOrder) {
-        const tableOrderElement = document.querySelector("#grid-view-order-" + componentName);
-        if (tableOrder + " ASC" === tableOrderElement.value)
-            tableOrderElement.value = tableOrder + " DESC";
-        else
-            tableOrderElement.value = tableOrder + " ASC";
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        this.clearCurrentFormAction(componentName);
-        GridViewHelper.refreshGrid(componentName, url);
-    }
-    static clearCurrentFormAction(componentName) {
-        const currentFormAction = document.querySelector("#form-view-action-map-" + componentName);
-        if (currentFormAction)
-            currentFormAction.value = "";
-    }
-    static pagination(componentName, url, currentPage) {
-        document.querySelector("#grid-view-page-" + componentName).value = currentPage;
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        this.clearCurrentFormAction(componentName);
-        GridViewHelper.refreshGrid(componentName, url);
-    }
-    static filter(componentName, url) {
+class GridViewFilterHelper {
+    static filter(componentName, routeContext) {
         document.querySelector("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
         document.querySelector("#grid-view-action-" + componentName).value = "";
         document.querySelector("#grid-view-page-" + componentName).value = "1";
-        this.clearCurrentFormAction(componentName);
-        GridViewHelper.refreshGrid(componentName, url);
+        GridViewHelper.clearCurrentFormAction(componentName);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static clearFilterInputs(componentName) {
         const divId = "#current-grid-filter-" + componentName;
@@ -788,7 +823,7 @@ class GridViewHelper {
                 if (currentObj.hasClass("selectpicker")) {
                     currentObj.selectpicker("render");
                 }
-                else if (currentObj.hasClass("jjsearchbox")) {
+                else if (currentObj.hasClass("jj-search-box")) {
                     currentObj.blur();
                 }
                 else if (currentObj.hasClass("jjlookup")) {
@@ -798,310 +833,11 @@ class GridViewHelper {
         });
         document.querySelector("#grid-view-filter-action-" + componentName).value = "CLEARACTION";
         document.querySelector("#grid-view-action-" + componentName).value = "";
-        this.clearCurrentFormAction(componentName);
+        GridViewHelper.clearCurrentFormAction(componentName);
     }
-    static clearFilter(componentName, url) {
+    static clearFilter(componentName, routeContext) {
         this.clearFilterInputs(componentName);
-        GridViewHelper.refreshGrid(componentName, url);
-    }
-    static refresh(componentName, url) {
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        document.querySelector("#grid-view-row-" + componentName).value = "";
-        this.clearCurrentFormAction(componentName);
-        GridViewHelper.refreshGrid(componentName, url);
-    }
-    static selectAllRows(componentName, url) {
-        fetch(url, { method: "POST" })
-            .then(response => response.json())
-            .then(data => GridViewHelper.selectAllRowsElements(componentName, data.selectedRows));
-    }
-    static selectAllRowsElements(componentName, rows) {
-        const values = rows.split(",");
-        const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
-        checkboxes.forEach(checkbox => checkbox.checked = true);
-        const selectedRowsInput = document.getElementById("grid-view-selected-rows" + componentName);
-        selectedRowsInput.value = values.join(",");
-        const selectedText = document.getElementById("selected-text-" + componentName);
-        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
-    }
-    static refreshGrid(componentName, url) {
-        const form = document.querySelector("form");
-        let urlBuilder = new UrlBuilder(url);
-        urlBuilder.addQueryParameter("componentName", componentName);
-        const filterAction = document.querySelector("#grid-view-filter-action-" + componentName);
-        postFormValues({ url: urlBuilder.build(), success: (data) => {
-                document.querySelector("#grid-view-" + componentName).innerHTML = data;
-                loadJJMasterData();
-                if (filterAction)
-                    filterAction.value = "";
-            } });
-    }
-}
-$(function () {
-    loadJJMasterData("load", null);
-});
-class JJViewHelper {
-    static postFormValues(componentName, enableAjax, loadform) {
-        if (enableAjax) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "htmlContent");
-            urlBuilder.addQueryParameter("componentName", componentName);
-            postFormValues({
-                url: urlBuilder.build(),
-                success: function (data) {
-                    const gridViewElement = document.querySelector("#grid-view-" + componentName);
-                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
-                    if (gridViewElement && filterActionElement) {
-                        gridViewElement.innerHTML = data;
-                        if (loadform) {
-                            loadJJMasterData();
-                        }
-                        filterActionElement.value = "";
-                    }
-                    else {
-                        console.error("One or both of the elements were not found.");
-                    }
-                },
-                error: function (error) {
-                    console.error(error);
-                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
-                    if (filterActionElement) {
-                        filterActionElement.value = "";
-                    }
-                    else {
-                        console.error("Filter action element was not found.");
-                    }
-                }
-            });
-        }
-        else {
-            $("form:first").trigger("submit");
-        }
-    }
-    static selectItem(objid, obj) {
-        var values = $("#grid-view-selected-rows" + objid).val().toString();
-        var valuesList = [];
-        if (obj.attr("id") == "jjcheckbox-select-all-rows")
-            return;
-        if (values.length > 0) {
-            valuesList = values.split(",");
-        }
-        if (obj.prop("checked")) {
-            if ($.inArray(obj.val(), valuesList) < 0)
-                valuesList.push(obj.val());
-        }
-        else {
-            valuesList = valuesList.filter(function (item) {
-                return item !== obj.val();
-            });
-        }
-        $("#grid-view-selected-rows" + objid).val(valuesList);
-        var textInfo = "";
-        var selectedText = $("#selected-text-" + objid);
-        if (valuesList.length == 0)
-            textInfo = selectedText.attr("no-record-selected-label");
-        else if (valuesList.length == 1)
-            textInfo = selectedText.attr("one-record-selected-label");
-        else
-            textInfo = selectedText.attr("multiple-records-selected-label").replace("{0}", valuesList.length.toString());
-        selectedText.text(textInfo);
-    }
-    static unSelectAll(objid) {
-        $(".jjselect input").not(":disabled").prop("checked", false);
-        $("#grid-view-selected-rows" + objid).val("");
-        var oSelectedtext = $("#selected-text-" + objid);
-        oSelectedtext.text(oSelectedtext.attr("no-record-selected-label"));
-    }
-    static selectAll(componentName) {
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "selectAll");
-        postFormValues({
-            url: urlBuilder.build(),
-            success: (data) => {
-                GridViewHelper.selectAllRowsElements(componentName, data.selectedRows);
-            }
-        });
-    }
-    static sortFormValues(objid, enableAjax, v) {
-        var tableOrder = "#grid-view-order-" + objid;
-        if (v + " ASC" == $(tableOrder).val())
-            $(tableOrder).val(v + " DESC");
-        else
-            $(tableOrder).val(v + " ASC");
-        $("#grid-view-action-" + objid).val("");
-        $("#form-view-action-map-" + objid).val("");
-        this.postFormValues(objid, enableAjax, true);
-    }
-    static sortItems(objid) {
-        var descCommand = "";
-        var order = $("#sortable-" + objid).sortable("toArray");
-        for (var i = 0; i < order.length; i++) {
-            var tipoOrdenacao = $("#" + order[i] + "_order").children("option:selected").val();
-            switch (tipoOrdenacao) {
-                case "A":
-                    descCommand += order[i] + " ASC,";
-                    break;
-                case "D":
-                    descCommand += order[i] + " DESC,";
-                    break;
-            }
-        }
-        descCommand = descCommand.substring(0, descCommand.length - 1);
-        $("#grid-view-order-" + objid).val(descCommand);
-        $("#sort-modal-" + objid).modal('hide');
-        $("#form-view-action-map-" + objid).val("");
-        this.refresh(objid, true);
-    }
-    static paginateGrid(objid, enableAjax, v) {
-        $("#grid-view-page-" + objid).val(v);
-        $("#grid-view-action-" + objid).val("");
-        $("#form-view-action-map-" + objid).val("");
-        this.postFormValues(objid, enableAjax, true);
-    }
-    static refresh(componentName, enableAjax) {
-        $("#grid-view-action-" + componentName).val("");
-        $("#grid-view-row-" + componentName).val("");
-        $("#form-view-action-map-" + componentName).val("");
-        this.postFormValues(componentName, enableAjax, true);
-    }
-    static openSettingsModal(componentName, encryptedActionMap) {
-        $("#grid-view-action-" + componentName).val(encryptedActionMap);
-        $("#grid-view-page-" + componentName).val("1");
-        $("#grid-view-row-" + componentName).val("");
-        $("#form-view-action-map-" + componentName).val("");
-        $("form:first").trigger("submit");
-    }
-    static closeSettingsModal(objid) {
-        $("form").trigger("reset");
-        $("form :checkbox").change();
-        $("#config-modal-" + objid).modal("hide");
-    }
-    static filter(objid, enableAjax) {
-        $("#grid-view-filter-action-" + objid).val("FILTERACTION");
-        $("#grid-view-action-" + objid).val("");
-        $("#grid-view-page-" + objid).val("1");
-        $("#form-view-action-map-" + objid).val("");
-        this.postFormValues(objid, enableAjax, false);
-        return false;
-    }
-    static openSelectElementInsert(componentName, encryptedActionMap) {
-        $("#form-view-current-action-" + componentName).val("ELEMENTSEL");
-        $("#form-view-select-action-values" + componentName).val(encryptedActionMap);
-        $("form:first").trigger("submit");
-    }
-    static clearFilter(componentName, enableAjax) {
-        GridViewHelper.clearFilterInputs(componentName);
-        this.postFormValues(componentName, enableAjax, false);
-    }
-    static executeGridAction(componentName, encryptedActionMap, confirmMessage) {
-        if (confirmMessage) {
-            var result = confirm(confirmMessage);
-            if (!result) {
-                return false;
-            }
-        }
-        $("#grid-view-action-" + componentName).val(encryptedActionMap);
-        $("#form-view-action-map-" + componentName).val("");
-        $("form:first").trigger("submit");
-    }
-    static executeSqlCommand(objid, criptid, confirmMessage) {
-        if (confirmMessage) {
-            var result = confirm(confirmMessage);
-            if (!result) {
-                return false;
-            }
-        }
-        $("#grid-view-action-" + objid).val("");
-        $("#form-view-action-map-" + objid).val("");
-        $("#grid-view-row-" + objid).val(criptid);
-        $("form:first").trigger("submit");
-    }
-    static setLookup(objid, value) {
-        window.parent.defaultModal.hide();
-        setTimeout(function () {
-            window.parent.$("#id_" + objid).val(value);
-            window.parent.$("#" + objid).val(value).change().blur();
-        }, 100);
-    }
-    static executeUrlRedirect(url, ispopup, title, confirmMessage, popupSize = 1) {
-        if (confirmMessage) {
-            const result = confirm(confirmMessage);
-            if (!result) {
-                return false;
-            }
-        }
-        if (ispopup) {
-            defaultModal.showIframe(url, title, popupSize);
-        }
-        else {
-            window.location.href = url;
-        }
-    }
-    static showInsertSucess(objid) {
-        $("#insert-message-panel" + objid).fadeOut(2000, function () {
-            $("#insert-panel" + objid).slideDown();
-        });
-    }
-    static deleteFile(objid, filename, promptStr) {
-        const result = confirm(promptStr);
-        if (!result) {
-            return false;
-        }
-        $("#upload-action-" + objid).val("DELFILE");
-        $("#filename-" + objid).val(filename);
-        $("form:first").trigger("submit");
-    }
-    static downloadFile(objid, filename) {
-        $("#upload-action-" + objid).val("DOWNLOADFILE");
-        $("#filename-" + objid).val(filename);
-        $("form:first").trigger("submit");
-        setTimeout(function () {
-            SpinnerOverlay.hide();
-            $("#upload-action-" + objid).val("");
-        }, 1500);
-    }
-    static renameFile(objid, filename, promptStr) {
-        var newFileName = prompt(promptStr, filename);
-        if (newFileName != null && newFileName != filename) {
-            $("#upload-action-" + objid).val("RENAMEFILE");
-            $("#filename-" + objid).val(filename + ";" + newFileName);
-            $("form:first").trigger("submit");
-        }
-    }
-    static directDownload(objid, panelName, filename) {
-        SpinnerOverlay.show();
-        var url = $("form").attr("action");
-        url += url.includes("?") ? "&" : "?";
-        url += "uploadView-" + panelName + "=" + objid;
-        url += "&downloadfile=" + filename;
-        window.location.assign(url);
-        setTimeout(function () {
-            SpinnerOverlay.hide();
-        }, 1500);
-    }
-    static showExportOptions(objid, exportType) {
-        if (exportType == "1") {
-            $("#" + objid + "-div-export-orientation").hide();
-            $("#" + objid + "-div-export-all").show();
-            $("#" + objid + "-div-export-delimiter").hide();
-            $("#" + objid + "-div-export-firstline").show();
-        }
-        else if (exportType == "2") {
-            $("#" + objid + "-div-export-orientation").show();
-            $("#" + objid + "-div-export-all").hide();
-            $("#" + objid + "-div-export-delimiter").hide();
-            $("#" + objid + "-div-export-firstline").hide();
-        }
-        else {
-            $("#" + objid + "-div-export-orientation").hide();
-            $("#" + objid + "-div-export-all").show();
-            $("#" + objid + "-div-export-delimiter").show();
-            $("#" + objid + "-div-export-firstline").show();
-        }
-    }
-    static viewLog(objid, id) {
-        $("#audit-log-id-" + objid).val(id);
-        $("form:first").trigger("submit");
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static searchOnDOM(objid, oDom) {
         var value = $(oDom).val().toString().toLowerCase();
@@ -1145,23 +881,208 @@ class JJViewHelper {
         }
     }
 }
-function loadJJMasterData(event, prefixSelector) {
-    if (prefixSelector === undefined || prefixSelector === null) {
-        prefixSelector = "";
+class GridViewHelper {
+    static openSettingsModal(componentName, encryptedActionMap) {
+        const gridViewActionInput = document.getElementById("grid-view-action-" + componentName);
+        const gridViewPageInput = document.getElementById("grid-view-page-" + componentName);
+        const gridViewRowInput = document.getElementById("grid-view-row-" + componentName);
+        const form = document.querySelector("form");
+        if (gridViewActionInput && gridViewPageInput && gridViewRowInput && form) {
+            gridViewActionInput.value = encryptedActionMap;
+            gridViewPageInput.value = "1";
+            gridViewRowInput.value = "";
+            this.clearCurrentFormAction(componentName);
+            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+        }
     }
-    $(prefixSelector + ".selectpicker").selectpicker({
+    static closeSettingsModal(componentName) {
+        const form = document.querySelector("form");
+        const checkboxes = document.querySelectorAll("form");
+        const modal = document.getElementById("config-modal-" + componentName);
+        if (form) {
+            form.reset();
+        }
+        if (checkboxes) {
+            checkboxes.forEach((checkbox) => {
+                if (checkbox instanceof HTMLInputElement) {
+                    checkbox.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+                }
+            });
+        }
+        if (modal) {
+            modal.classList.remove("show");
+            modal.style.display = "none";
+        }
+    }
+    static sortGridValues(componentName, routeContext, field) {
+        const tableOrderElement = document.querySelector("#grid-view-order-" + componentName);
+        if (field + " ASC" === tableOrderElement.value)
+            tableOrderElement.value = field + " DESC";
+        else
+            tableOrderElement.value = field + " ASC";
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
+        GridViewHelper.refreshGrid(componentName, routeContext);
+    }
+    static sortItems(componentName) {
+        var descCommand = "";
+        var order = $("#sortable-" + componentName).sortable("toArray");
+        for (var i = 0; i < order.length; i++) {
+            var sortingType = $("#" + order[i] + "_order").children("option:selected").val();
+            switch (sortingType) {
+                case "A":
+                    descCommand += order[i] + " ASC,";
+                    break;
+                case "D":
+                    descCommand += order[i] + " DESC,";
+                    break;
+            }
+        }
+        descCommand = descCommand.substring(0, descCommand.length - 1);
+        document.querySelector("#grid-view-order-" + componentName).value = descCommand;
+        $("#sort-modal-" + componentName).modal('hide');
+        this.clearCurrentFormAction(componentName);
+    }
+    static clearCurrentFormAction(componentName) {
+        const currentFormAction = document.querySelector("#form-view-action-map-" + componentName);
+        if (currentFormAction)
+            currentFormAction.value = "";
+    }
+    static paginate(componentName, routeContext, currentPage) {
+        document.querySelector("#grid-view-page-" + componentName).value = currentPage;
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
+        GridViewHelper.refreshGrid(componentName, routeContext);
+    }
+    static refresh(componentName, routeContext) {
+        document.querySelector("#grid-view-action-" + componentName).value = "";
+        document.querySelector("#grid-view-row-" + componentName).value = "";
+        this.clearCurrentFormAction(componentName);
+        GridViewHelper.refreshGrid(componentName, routeContext);
+    }
+    static refreshGrid(componentName, routeContext, reloadListeners = false) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        postFormValues({
+            url: urlBuilder.build(),
+            success: function (data) {
+                const gridViewElement = document.querySelector("#grid-view-" + componentName);
+                const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                if (gridViewElement) {
+                    gridViewElement.innerHTML = data;
+                    if (reloadListeners) {
+                        listenAllEvents();
+                    }
+                    if (filterActionElement) {
+                        filterActionElement.value = "";
+                    }
+                }
+                else {
+                    console.error("One or both of the elements were not found.");
+                }
+            },
+            error: function (error) {
+                console.error(error);
+                const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                if (filterActionElement) {
+                    filterActionElement.value = "";
+                }
+                else {
+                    console.error("Filter action element was not found.");
+                }
+            }
+        });
+    }
+}
+class GridViewSelectionHelper {
+    static selectItem(componentName, obj) {
+        const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName);
+        const values = valuesInput.value.toString();
+        let valuesList = [];
+        if (obj.id === "jjcheckbox-select-all-rows") {
+            return;
+        }
+        if (values.length > 0) {
+            valuesList = values.split(",");
+        }
+        if (obj.checked) {
+            if (valuesList.indexOf(obj.value) < 0) {
+                valuesList.push(obj.value);
+            }
+        }
+        else {
+            valuesList = valuesList.filter((item) => item !== obj.value);
+        }
+        valuesInput.value = valuesList.join(",");
+        let textInfo = "";
+        const selectedText = document.getElementById("selected-text-" + componentName);
+        if (valuesList.length === 0) {
+            textInfo = (selectedText === null || selectedText === void 0 ? void 0 : selectedText.getAttribute("no-record-selected-label")) || "";
+        }
+        else if (valuesList.length === 1) {
+            textInfo = (selectedText === null || selectedText === void 0 ? void 0 : selectedText.getAttribute("one-record-selected-label")) || "";
+        }
+        else {
+            const multipleRecordsLabel = (selectedText === null || selectedText === void 0 ? void 0 : selectedText.getAttribute("multiple-records-selected-label")) || "";
+            textInfo = multipleRecordsLabel.replace("{0}", valuesList.length.toString());
+        }
+        if (selectedText) {
+            selectedText.textContent = textInfo;
+        }
+    }
+    static selectAll(componentName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        postFormValues({
+            url: urlBuilder.build(),
+            success: (data) => {
+                this.selectAllRowsElements(componentName, data.selectedRows);
+            }
+        });
+    }
+    static selectAllRowsElements(componentName, rows) {
+        const values = rows.split(",");
+        const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+        const selectedRowsInput = document.getElementById("grid-view-selected-rows-" + componentName);
+        selectedRowsInput.value = values.join(",");
+        const selectedText = document.getElementById("selected-text-" + componentName);
+        selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
+    }
+    static unSelectAll(componentName) {
+        const checkboxes = document.querySelectorAll(`#${componentName} .jjselect input:not(:disabled)`);
+        const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName);
+        const selectedText = document.getElementById("selected-text-" + componentName);
+        if (checkboxes) {
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = false;
+            });
+        }
+        if (valuesInput) {
+            valuesInput.value = "";
+        }
+        if (selectedText) {
+            selectedText.textContent = selectedText.getAttribute("no-record-selected-label") || "";
+        }
+    }
+}
+document.addEventListener("DOMContentLoaded", function () {
+    listenAllEvents();
+});
+const listenAllEvents = (selectorPrefix = String()) => {
+    $(selectorPrefix + ".selectpicker").selectpicker({
         iconBase: 'fa'
     });
-    $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
-    CalendarListener.listen(prefixSelector);
-    TextAreaListener.listenKeydown();
-    SearchBoxListener.listenTypeahed();
-    LookupListener.listenChanges();
-    SortableListener.listenSorting();
-    UploadAreaListener.listenFileUpload();
-    TabNavListener.listenTabNavs();
-    SliderListener.listenSliders();
-    SliderListener.listenInputs();
+    $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
+    CalendarListener.listen(selectorPrefix);
+    TextAreaListener.listenKeydown(selectorPrefix);
+    SearchBoxListener.listenTypeahed(selectorPrefix);
+    LookupListener.listenChanges(selectorPrefix);
+    SortableListener.listenSorting(selectorPrefix);
+    UploadAreaListener.listenFileUpload(selectorPrefix);
+    TabNavListener.listenTabNavs(selectorPrefix);
+    SliderListener.listenSliders(selectorPrefix);
+    SliderListener.listenInputs(selectorPrefix);
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&
@@ -1186,73 +1107,46 @@ function loadJJMasterData(event, prefixSelector) {
             setTimeout(function () { SpinnerOverlay.show(); }, 1);
         }
     });
+};
+class LookupHelper {
+    static setLookupValues(fieldName, id, description) {
+        defaultModal.hide();
+        const idInput = document.querySelector("#" + fieldName);
+        idInput.value = id;
+        const descriptionInput = document.querySelector("#" + fieldName + "-description");
+        if (descriptionInput) {
+            descriptionInput.value = description;
+        }
+    }
 }
 class LookupListener {
-    static listenChanges() {
-        $("input.jjlookup").each(function () {
-            let lookupInput = $(this);
-            let lookupId = lookupInput.attr("id");
-            let fieldName = lookupInput.attr("lookup-field-name");
-            let panelName = lookupInput.attr("panelName");
-            let popupTitle = lookupInput.attr("popuptitle");
-            let lookupUrl = lookupInput.attr("lookup-url");
-            let lookupResultUrl = lookupInput.attr("lookup-result-url");
-            let dataPanelReloadUrl = lookupInput.attr("data-panel-reload-url");
-            let popupSize = +lookupInput.attr("popupsize");
-            const jjLookupSelector = "#" + lookupId + "";
-            const jjHiddenLookupSelector = "#id_" + lookupId + "";
-            $("#btn_" + lookupId).on("click", function () {
-                defaultModal.showIframe(lookupUrl, popupTitle, popupSize);
-            });
-            function setHiddenLookup() {
-                $("#id_" + lookupId).val(lookupInput.val());
-            }
-            lookupInput.one("focus", function () {
-                lookupInput.val($("#id_" + lookupId).val()).select();
-            });
-            lookupInput.one("change", function () {
-                $("#id_" + lookupId).val(lookupInput.val());
-            });
-            lookupInput.one("blur", function () {
-                showWaitOnPost = false;
-                setHiddenLookup();
-                FeedbackIcon.removeAllIcons(jjLookupSelector);
-                lookupInput.removeAttr("readonly");
-                if (lookupInput.val() == "") {
-                    return;
-                }
-                if (!lookupResultUrl) {
-                    let urlBuilder = new UrlBuilder();
-                    urlBuilder.addQueryParameter("lookup-" + panelName, fieldName);
-                    urlBuilder.addQueryParameter("lookupAction", "getDescription");
-                    urlBuilder.addQueryParameter("lkid", lookupInput.val().toString());
-                    lookupResultUrl = urlBuilder.build();
-                }
-                lookupInput.addClass("loading-circle");
+    static listenChanges(selectorPrefix = String()) {
+        const lookupInputs = document.querySelectorAll(selectorPrefix + "input.jj-lookup");
+        lookupInputs.forEach(lookupInput => {
+            let lookupId = lookupInput.id;
+            let lookupDescriptionUrl = lookupInput.getAttribute("lookup-description-url");
+            const lookupIdSelector = "#" + lookupId;
+            const lookupDescriptionSelector = lookupIdSelector + "-description";
+            lookupInput.addEventListener("blur", function () {
+                FeedbackIcon.removeAllIcons(lookupDescriptionSelector);
                 postFormValues({
-                    url: lookupResultUrl, success: (data) => {
-                        showWaitOnPost = true;
-                        lookupInput.removeClass("loading-circle");
+                    url: lookupDescriptionUrl,
+                    success: (data) => {
                         if (data.description === "") {
-                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.warningClass);
+                            FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.warningClass);
                         }
                         else {
-                            const lookupHiddenInputElement = document.querySelector("#id_" + lookupId);
-                            const lookupInputElement = document.querySelector("#" + lookupId);
-                            FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.successClass);
-                            lookupInputElement.value = data.description;
-                            lookupHiddenInputElement.value = data.id;
-                            if (dataPanelReloadUrl) {
-                                DataPanelHelper.reload(dataPanelReloadUrl, panelName, lookupId);
-                            }
-                            else {
-                                DataPanelHelper.reloadAtSamePage(panelName, lookupId);
+                            const lookupIdInput = document.querySelector(lookupIdSelector);
+                            const lookupDescriptionInput = document.querySelector(lookupDescriptionSelector);
+                            FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.successClass);
+                            lookupIdInput.value = data.id;
+                            if (lookupDescriptionInput) {
+                                lookupDescriptionInput.value = data.description;
                             }
                         }
-                    }, error: (_) => {
-                        showWaitOnPost = true;
-                        lookupInput.removeClass("loading-circle");
-                        FeedbackIcon.setIcon(jjLookupSelector, FeedbackIcon.errorClass);
+                    },
+                    error: (_) => {
+                        FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.errorClass);
                     }
                 });
             });
@@ -1458,13 +1352,14 @@ class _Modal extends ModalBase {
             Fullscreen: "modal-fullscreen",
         };
     }
+    getBootstrapModal() {
+        return bootstrap.Modal.getOrCreateInstance("#" + this.modalId);
+    }
     showModal() {
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.show();
+        this.getBootstrapModal().show();
     }
     hideModal() {
-        const bootstrapModal = new bootstrap.Modal(this.modalElement);
-        bootstrapModal.hide();
+        this.getBootstrapModal().hide();
     }
     getModalCssClass() {
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
@@ -1494,6 +1389,12 @@ class _Modal extends ModalBase {
             else {
                 document.body.appendChild(this.modalElement);
             }
+            const onModalHidden = this.onModalHidden;
+            this.modalElement.addEventListener('hidden.bs.modal', () => {
+                if (onModalHidden) {
+                    onModalHidden();
+                }
+            });
         }
         else {
             this.modalElement = document.getElementById(this.modalId);
@@ -1518,13 +1419,36 @@ class _Modal extends ModalBase {
             this.modalTitle = title;
             this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
             this.createModalElement();
-            const modalBody = this.modalElement.querySelector(".modal-body");
-            yield fetch(options.url, options.requestOptions)
-                .then((response) => response.text())
-                .then((content) => {
-                modalBody.innerHTML = content;
-                this.showModal();
+            return yield fetch(options.url, options.requestOptions)
+                .then((response) => __awaiter(this, void 0, void 0, function* () {
+                var _a;
+                if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
+                    return response.json();
+                }
+                else {
+                    return response.text().then((htmlData) => {
+                        this.setAndShowModal(htmlData);
+                    });
+                }
+            }));
+        });
+    }
+    setAndShowModal(content) {
+        const modalBody = this.modalElement.querySelector(`#${this.modalId} .modal-body`);
+        this.setInnerHTML(modalBody, content);
+        this.showModal();
+    }
+    setInnerHTML(element, html) {
+        element.innerHTML = html;
+        Array.from(element.querySelectorAll("script")).forEach((oldScriptElement) => {
+            var _a;
+            const newScriptElement = document.createElement("script");
+            Array.from(oldScriptElement.attributes).forEach((attr) => {
+                newScriptElement.setAttribute(attr.name, attr.value);
             });
+            const scriptText = document.createTextNode(oldScriptElement.innerHTML);
+            newScriptElement.appendChild(scriptText);
+            (_a = oldScriptElement.parentNode) === null || _a === void 0 ? void 0 : _a.replaceChild(newScriptElement, oldScriptElement);
         });
     }
     hide() {
@@ -1532,6 +1456,13 @@ class _Modal extends ModalBase {
     }
 }
 class _LegacyModal extends ModalBase {
+    constructor() {
+        super();
+        let onModalHidden = this.onModalHidden;
+        $("#" + this.modalId).on('hidden.bs.modal', function () {
+            onModalHidden();
+        });
+    }
     createModalHtml(content, isIframe) {
         const size = isIframe
             ? this.modalSize === ModalSize.Small
@@ -1620,7 +1551,7 @@ class Modal {
     }
     showUrl(options, title, size = null) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.instance.showUrl(options, title, size);
+            return yield this.instance.showUrl(options, title, size);
         });
     }
     hide() {
@@ -1655,6 +1586,12 @@ class Modal {
     }
     set centered(value) {
         this.instance.centered = value;
+    }
+    get onModalHidden() {
+        return this.instance.onModalHidden;
+    }
+    set onModalHidden(value) {
+        this.instance.onModalHidden = value;
     }
 }
 var defaultModal = function () {
@@ -1705,31 +1642,27 @@ function postFormValues(options) {
     });
 }
 class SearchBoxListener {
-    static listenTypeahed() {
-        $("input.jjsearchbox").each(function () {
+    static listenTypeahed(selectorPrefix = String()) {
+        $(selectorPrefix + "input.jj-search-box").each(function () {
             const hiddenInputId = $(this).attr("hidden-input-id");
-            let urltypehead = $(this).attr("urltypehead");
-            let triggerlength = $(this).attr("triggerlength");
-            let numberofitems = $(this).attr("numberofitems");
+            let queryString = $(this).attr("query-string");
+            let triggerLength = $(this).attr("trigger-length");
+            let numberOfItems = $(this).attr("number-of-items");
             let scrollbar = Boolean($(this).attr("scrollbar"));
-            let showimagelegend = Boolean($(this).attr("showimagelegend"));
-            if (triggerlength == null)
-                triggerlength = "1";
-            if (numberofitems == null)
-                numberofitems = "10";
+            let showImageLegend = Boolean($(this).attr("show-image-legend"));
+            if (triggerLength == null)
+                triggerLength = "1";
+            if (numberOfItems == null)
+                numberOfItems = "10";
             if (scrollbar == null)
                 scrollbar = false;
-            if (showimagelegend == null)
-                showimagelegend = false;
-            const frm = $("form");
-            if (!urltypehead.includes("GetItems")) {
-                let url = frm.attr("action");
-                if (url.includes("?"))
-                    url += "&";
-                else
-                    url += "?";
-                urltypehead = url + urltypehead;
-            }
+            if (showImageLegend == null)
+                showImageLegend = false;
+            const form = $("form");
+            let url = new UrlBuilder().build();
+            if (!url.endsWith("?"))
+                url += "?";
+            url += queryString;
             const jjSearchBoxSelector = "#" + hiddenInputId + "_text";
             const jjSearchBoxHiddenSelector = "#" + hiddenInputId;
             $(this).blur(function () {
@@ -1743,14 +1676,14 @@ class SearchBoxListener {
             });
             $(this).typeahead({
                 ajax: {
-                    url: urltypehead,
+                    url: url,
                     method: "POST",
                     loadingClass: "loading-circle",
-                    triggerLength: triggerlength,
+                    triggerLength: triggerLength,
                     preDispatch: function () {
                         $(jjSearchBoxHiddenSelector).val("");
-                        FeedbackIcon.setIcon(jjSearchBoxSelector, "");
-                        return frm.serializeArray();
+                        FeedbackIcon.removeAllIcons(jjSearchBoxSelector);
+                        return form.serializeArray();
                     },
                 },
                 onSelect: function (item) {
@@ -1763,14 +1696,14 @@ class SearchBoxListener {
                 },
                 displayField: "name",
                 valueField: "id",
-                triggerLength: triggerlength,
-                items: numberofitems,
+                triggerLength: triggerLength,
+                items: numberOfItems,
                 scrollBar: scrollbar,
                 item: '<li class="dropdown-item"><a href="#"></a></li>',
                 highlighter: function (item) {
                     const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
                     let textSel;
-                    if (showimagelegend) {
+                    if (showImageLegend) {
                         const parts = item.split("|");
                         textSel = parts[0].replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
                             return "<strong>" + match + "</strong>";
@@ -1789,7 +1722,7 @@ class SearchBoxListener {
     }
 }
 class SliderListener {
-    static listenSliders() {
+    static listenSliders(selectorPrefix = String()) {
         let sliders = document.getElementsByClassName("jjslider");
         Array.from(sliders).forEach((slider) => {
             let sliderInput = document.getElementById(slider.id + "-value");
@@ -1808,8 +1741,8 @@ class SliderListener {
             };
         });
     }
-    static listenInputs() {
-        let inputs = document.getElementsByClassName("jjslider-value");
+    static listenInputs(selectorPrefix = String()) {
+        let inputs = document.getElementsByClassName(selectorPrefix + "jjslider-value");
         Array.from(inputs).forEach((input) => {
             let slider = document.getElementById(input.id.replace("-value", ""));
             input.oninput = function () {
@@ -1819,8 +1752,8 @@ class SliderListener {
     }
 }
 class SortableListener {
-    static listenSorting() {
-        $(".jjsortable").sortable({
+    static listenSorting(selectorPrefix = String()) {
+        $(selectorPrefix + ".jjsortable").sortable({
             helper: function (e, tr) {
                 var originals = tr.children();
                 var helper = tr.clone();
@@ -1906,16 +1839,16 @@ class SpinnerOverlay {
 }
 SpinnerOverlay.spinnerOverlayId = "spinner-overlay";
 class TabNavListener {
-    static listenTabNavs() {
-        $("a.jj-tab-link").on("shown.bs.tab", function (e) {
+    static listenTabNavs(selectorPrefix = String()) {
+        $(selectorPrefix + "a.jj-tab-link").on("shown.bs.tab", function (e) {
             const link = $(e.target);
             $("#" + link.attr("jj-objectid")).val(link.attr("jj-tabindex"));
         });
     }
 }
 class TextAreaListener {
-    static listenKeydown() {
-        $("textarea").keydown(function () {
+    static listenKeydown(selectorPrefix) {
+        $(selectorPrefix + "textarea").keydown(function () {
             const jjTextArea = $(this);
             let maxLength = jjTextArea.attr("maxlength");
             let maximumLimitLabel = jjTextArea.attr("maximum-limit-of-characters-label");
@@ -1949,10 +1882,10 @@ class TextAreaListener {
 class FileUploadOptions {
     constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, autoSubmit) {
         this.componentName = componentName;
-        this.url = url;
         this.form = form;
         this.allowMultiple = allowMultiple;
         this.maxFileSize = maxFileSize;
+        this.url = url;
         this.allowDragDrop = allowDragDrop;
         this.showFileSize = showFileSize;
         this.allowedTypes = allowedTypes;
@@ -1966,7 +1899,7 @@ class UploadAreaListener {
         $(selector).uploadFile({
             url: options.url,
             formData: $(options.form).serializeArray(),
-            fileName: "file",
+            fileName: "uploadAreaFile",
             multiple: options.allowMultiple,
             maxFileSize: options.maxFileSize,
             maxFileCount: 1000,
@@ -2003,7 +1936,7 @@ class UploadAreaListener {
                 if (options.autoSubmit && element.selectedFiles > 0) {
                     $("#upload-action-" + options.componentName).val("afteruploadall");
                 }
-                loadJJMasterData();
+                listenAllEvents();
             },
         });
     }
@@ -2039,34 +1972,25 @@ class UploadAreaListener {
             document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
         });
     }
-    static listenFileUpload() {
-        document.querySelectorAll("div.fileUpload").forEach((element) => {
+    static listenFileUpload(selectorPrefix = String()) {
+        document.querySelectorAll(selectorPrefix + "div.fileUpload").forEach((element) => {
             let componentName = element.getAttribute("id");
             let multiple = element.getAttribute("jjmultiple") === "true";
             let autoSubmit = element.getAttribute("autoSubmit") === "true";
             let maxFileSize = element.getAttribute("maxFileSize");
             let dragDrop = element.getAttribute("dragDrop");
             let copyPaste = element.getAttribute("copyPaste");
+            let routeContext = element.getAttribute("routecontext");
             let showFileSize = element.getAttribute("showFileSize");
             let allowedTypes = element.getAttribute("allowedTypes");
             let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
             let frm = document.querySelector("form");
             let url;
-            if (element.getAttribute("url") != null) {
-                url = element.getAttribute("url");
-            }
-            else {
-                let urlBuilder = new UrlBuilder();
-                urlBuilder.addQueryParameter("context", "fileUpload");
-                urlBuilder.addQueryParameter("componentName", componentName);
-                url = urlBuilder.build();
-            }
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", routeContext);
+            url = urlBuilder.build();
             const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);
             this.configureFileUpload(fileUploadOptions);
-            window.addEventListener("resize", () => {
-                document.querySelector("#" + componentName + " .ajax-upload-dragdrop").style.width =
-                    document.querySelector("#" + componentName).clientWidth - 30 + "px";
-            });
             if (copyPaste === "true") {
                 this.handleCopyPaste(componentName);
             }
@@ -2083,10 +2007,39 @@ class UploadViewHelper {
             url = urlBuilder.build();
         }
         const modal = new Modal();
-        modal.modalId = componentName + "-upload-popup";
+        modal.modalId = componentName + "-upload-modal";
         modal.showUrl({ url: url }, null, 1).then(_ => {
-            loadJJMasterData();
+            listenAllEvents();
         });
+    }
+    static performFileAction(componentName, filename, action, promptStr = null) {
+        if (promptStr && !confirm(promptStr)) {
+            return false;
+        }
+        const uploadActionInput = document.getElementById("upload-action-" + componentName);
+        const filenameInput = document.getElementById("filename-" + componentName);
+        const form = document.querySelector("form");
+        if (uploadActionInput && filenameInput && form) {
+            uploadActionInput.value = action;
+            filenameInput.value = action === "RENAMEFILE" ? filename + ";" + prompt(promptStr, filename) : filename;
+            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+            if (action === "DOWNLOADFILE") {
+                setTimeout(() => {
+                    SpinnerOverlay.hide();
+                    uploadActionInput.value = "";
+                }, 1500);
+            }
+        }
+        return true;
+    }
+    static deleteFile(componentName, filename, promptStr) {
+        return this.performFileAction(componentName, filename, "DELFILE", promptStr);
+    }
+    static downloadFile(componentName, filename) {
+        this.performFileAction(componentName, filename, "DOWNLOADFILE");
+    }
+    static renameFile(componentName, filename, promptStr) {
+        this.performFileAction(componentName, filename, "RENAMEFILE", promptStr);
     }
 }
 class UrlBuilder {
@@ -2216,4 +2169,4 @@ var jjutil = (function () {
     };
 })();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-//# sourceMappingURL=/Scripts/jjmasterdata.js.map
+//# sourceMappingURL=jjmasterdata.js.map

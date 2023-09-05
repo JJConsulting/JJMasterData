@@ -5,6 +5,20 @@
 @using JJMasterData.Core.Web.Components
 @using JJMasterData.Core.Web.Http.Abstractions
 @model List<JJMasterData.Commons.Data.Entity.ElementIndex>
+
+@functions {
+    private void ConfigureFilterTextGroup(JJTextGroup filterTextBox)
+    {
+        filterTextBox.Name = "txtFilter";
+        filterTextBox.PlaceHolder = StringLocalizer["Search..."];
+
+        filterTextBox.Actions.Add(new JJLinkButton
+        {
+            OnClientClick = null,
+            IconClass = "fa fa-search"
+        });
+    }
+}
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @inject IHttpContext HttpContext
@@ -46,19 +60,7 @@
 
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
-@{
-    var filterTextBox = new JJTextGroup(HttpContext)
-    {
-       Name = "txtFilter",
-       PlaceHolder = StringLocalizer["Search..."]
-    };
 
-    filterTextBox.Actions.Add(new JJLinkButton
-    {
-        OnClientClick = null,
-        IconClass = "fa fa-search"
-    });
-}
 
 @using (Html.BeginForm())
 {
@@ -70,7 +72,7 @@
             </button>
         </div>
         <div class="col-sm-4">
-            @Html.Raw(filterTextBox.GetHtml())
+            <jj-text-group configure="ConfigureFilterTextGroup"/>
         </div>
     </div>
     <br/>

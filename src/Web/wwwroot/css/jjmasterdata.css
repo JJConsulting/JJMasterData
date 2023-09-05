@@ -225,9 +225,7 @@ a.disabled {
     margin: 5px;
 }
 
-.ajax-upload-dragdrop {
-    height: 100px;
-}
+
 
 .ajax-file-upload-statusbar {
     margin-left: 0px !important;
@@ -623,7 +621,8 @@ button.dropdown-toggle.form-control {
     border: 2px dotted #a5a5c7;
     color: #dadce3;
     text-align: left;
-    vertical-align: middle;
+    vertical-align: middle !important;
+    width: 100% !important;
     padding: 10px 10px 0 10px
 }
 

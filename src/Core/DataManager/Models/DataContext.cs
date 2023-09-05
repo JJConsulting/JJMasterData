@@ -14,16 +14,12 @@ public class DataContext
     
     public string? BrowserInfo { get; internal set; }
 
-    public DataContext(IHttpContext httpContext,DataContextSource source, string? userId)
+    public DataContext(IHttpRequest request,DataContextSource source, string? userId)
     {
         Source = source;
         UserId = userId;
-        
-        if (httpContext.HasContext())
-        {
-            IpAddress = httpContext.Request.UserHostAddress;
-            BrowserInfo = httpContext.Request.UserAgent;
-        }
+        IpAddress = request.UserHostAddress;
+        BrowserInfo = request.UserAgent;
     }
 
 }

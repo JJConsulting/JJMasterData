@@ -74,7 +74,7 @@ public class JJDataExportation : ProcessComponent
     public bool ShowRowStriped { get; set; }
     internal JJMasterDataCoreOptions MasterDataOptions { get; }
 
-    internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(_urlHelper, _encryptionService);
+    internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(this);
     private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
     public DataExportationWriterFactory DataExportationWriterFactory { get; }
 
@@ -95,7 +95,7 @@ public class JJDataExportation : ProcessComponent
         JJMasterDataUrlHelper urlHelper, 
         IEncryptionService encryptionService, 
         DataExportationWriterFactory dataExportationWriterFactory) : 
-        base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(),stringLocalizer)
+        base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
         _urlHelper = urlHelper;
         _encryptionService = encryptionService;

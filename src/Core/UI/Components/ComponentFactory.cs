@@ -1,4 +1,6 @@
-﻿using JJMasterData.Core.UI.Components;
+﻿#nullable enable
+
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Widgets;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,8 +8,9 @@ using System;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class ComponentFactory
+internal class ComponentFactory : IComponentFactory
 {
+    private RouteContext? _routeContext;
     private IServiceProvider ServiceProvider { get; }
 
     public IFormElementComponentFactory<JJAuditLogView> AuditLog =>
@@ -40,15 +43,18 @@ public class ComponentFactory
     public LinkButtonFactory LinkButton =>
         GetFactory<LinkButtonFactory>();
 
-    public ControlFactory Controls =>
-        GetFactory<ControlFactory>();
+    public IControlFactory Controls =>
+        GetFactory<IControlFactory>();
+
+    public RouteContext RouteContext =>
+        _routeContext ??= ServiceProvider.GetRequiredService<RouteContextFactory>().Create();
 
     public ComponentFactory(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
     }
 
-    private T GetFactory<T>()
+    private T GetFactory<T>() where T : notnull
     {
         return ServiceProvider.GetRequiredService<T>();
     }

@@ -36,7 +36,7 @@ public class LookupController : MasterDataController
     }
 
     [ServiceFilter<LookupParametersDecryptionFilter>]
-    public async Task<IActionResult> Index(LookupParameters lookupParameters)
+    public async Task<IActionResult> GetFormView(LookupParameters lookupParameters)
     {
         var formView = await FormViewFactory.CreateAsync(lookupParameters.ElementName);
 
@@ -46,27 +46,24 @@ public class LookupController : MasterDataController
 
         if (result.IsActionResult())
             return result.ToActionResult();
-        
-        return View(new LookupViewModel
-        {
-            LookupFormHtml = result.Content!
-        });
+
+        return Content(result.Content);
     }
 
     [ServiceFilter<FormElementDecryptionFilter>]
-    public async Task<IActionResult> GetResult(
+    public async Task<IActionResult> GetDescription(
         FormElement formElement,
         string fieldName,
         string componentName,
-        PageState pageState,
-        string searchId)
+        PageState pageState)
     {
         var elementMap = formElement.Fields[fieldName].DataItem!.ElementMap;
         var formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, pageState, true);
         var formStateData = new FormStateData(formValues, pageState);
         var selectedValue = LookupService.GetSelectedValue(componentName).ToString();
+        
         var description = await LookupService.GetDescriptionAsync(elementMap, formStateData, selectedValue, false);
-        return Json(new LookupResultDto(searchId, description));
+        return Json(new LookupResultDto(selectedValue, description));
     }
 
     private void ConfigureLookupForm(JJFormView form, LookupParameters lookupParameters)
@@ -91,7 +88,7 @@ public class LookupController : MasterDataController
             action.IsDefaultOption = false;
         }
 
-        var script = $"JJViewHelper.setLookup('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKey}}}');";
+        var script = $"LookupHelper.setLookupValues('{lookupParameters.ComponentName}','{{{lookupParameters.FieldKeyName}}}','{{{lookupParameters.FieldValueName}}}');";
         var selAction = new ScriptAction
         {
             Name = "jjselLookup",

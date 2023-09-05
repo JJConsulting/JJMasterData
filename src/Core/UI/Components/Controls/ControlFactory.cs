@@ -1,17 +1,16 @@
 ﻿using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Factories;
 
-public class ControlFactory
+internal class ControlFactory : IControlFactory
 {
     private IServiceScopeFactory ServiceScopeFactory { get; }
     private IExpressionsService ExpressionsService { get; }
@@ -32,10 +31,11 @@ public class ControlFactory
         }
     }
     
-    public TFactory GetFactory<TFactory>() where TFactory : IControlFactory
+    public IControlFactory<TControl> GetControlFactory<TControl>() where TControl : ControlBase
     {
-        return ServiceProvider.GetRequiredService<TFactory>();
+        return ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
     }
+
 
     public TControl Create<TControl>() where TControl : ControlBase
     {
@@ -54,16 +54,16 @@ public class ControlFactory
             controlContext);
     }
 
-    public async Task<ControlBase> CreateAsync(FormElement formElement,
+    public async Task<ControlBase> CreateAsync(
+        FormElement formElement,
         FormElementField field,
         FormStateData formStateData,
-        string parentName,
         object value = null)
     {
-        var context = new ControlContext(formStateData, parentName, value);
+        var context = new ControlContext(formStateData, value);
         if (formStateData.PageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {
-            var factory = GetFactory<IControlFactory<JJTextRange>>();
+            var factory = GetControlFactory<JJTextRange>();
             return factory.Create(formElement, field, context);
         }
         
@@ -72,13 +72,9 @@ public class ControlFactory
 
         return control;
     }
+    
 
-    public static bool IsRange(FormElementField field, PageState pageState)
-    {
-        return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
-    }
-
-    private ControlBase Create(
+    public ControlBase Create(
         FormElement formElement,
         FormElementField field,
         ControlContext context)

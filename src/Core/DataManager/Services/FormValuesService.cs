@@ -12,6 +12,7 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager;
 
@@ -50,7 +51,7 @@ public class FormValuesService : IFormValuesService
         {
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
             var value = field.ValidateRequest
-                ? CurrentContext.Request.Form(fieldName)
+                ? CurrentContext.Request.GetFormValue(fieldName)
                 : CurrentContext.Request.GetUnvalidated(fieldName);
 
 
@@ -59,7 +60,7 @@ public class FormValuesService : IFormValuesService
                 case FormComponent.Search:
                     {
                         var formData = new FormStateData(values, pageState);
-                        value = await DataItemService.GetSelectedValueAsync(field, formData, null);
+                        value = await DataItemService.GetSelectedValueAsync(field, formData);
                         break;
                     }
                 case FormComponent.Lookup:
@@ -74,7 +75,7 @@ public class FormValuesService : IFormValuesService
                     break;
                 case FormComponent.Currency:
                 case FormComponent.Number:
-                    string context = CurrentContext.Request.QueryString("context");
+                    string context = CurrentContext.Request.QueryString["context"];
                     if (value != null && ("panelReload".Equals(context) || "gridViewRow".Equals(context) ||
                                           "htmlContent".Equals(context)))
                     {
@@ -87,7 +88,7 @@ public class FormValuesService : IFormValuesService
 
                     break;
                 case FormComponent.CheckBox:
-                    value ??= CurrentContext.Request.Form(fieldName + "_hidden");
+                    value ??= CurrentContext.Request.GetFormValue(fieldName + "_hidden");
                     break;
             }
 
@@ -123,27 +124,24 @@ public class FormValuesService : IFormValuesService
         var valuesToBeReceived = new Dictionary<string, object?>();
         DataHelper.CopyIntoDictionary(valuesToBeReceived, values, true);
 
-        if (CurrentContext.IsPost && autoReloadFormFields)
+        if (CurrentContext.Request.IsPost && autoReloadFormFields)
         {
             var requestedValues = await GetFormValuesAsync(formElement, pageState, prefix);
             DataHelper.CopyIntoDictionary(valuesToBeReceived, requestedValues, true);
         }
 
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !CurrentContext.IsPost);
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !CurrentContext.Request.IsPost);
     }
 
 
 
     private async Task<IDictionary<string, object?>?> GetDbValues(Element element)
     {
-        if (!CurrentContext.HasContext())
-            return null;
-
-        string encryptedPkValues = CurrentContext.Request["data-panel-pk-values-" + element.Name];
+        string encryptedPkValues = CurrentContext.Request["data-panel-pk-values-" + ComponentNameGenerator.Create(element.Name)];
         if (string.IsNullOrEmpty(encryptedPkValues))
             return null;
 
-        string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues);
+        string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
 
         return await EntityRepository.GetFieldsAsync(element, filters);

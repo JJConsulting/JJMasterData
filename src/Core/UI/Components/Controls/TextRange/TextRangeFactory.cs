@@ -4,6 +4,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Widgets;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -13,17 +14,16 @@ namespace JJMasterData.Core.Web.Factories;
 
 internal class TextRangeFactory : IControlFactory<JJTextRange>
 {
-    private IEncryptionService EncryptionService { get; }
+
     private IHttpContext HttpContext { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private TextBoxFactory TextBoxFactory { get; }
+    private IControlFactory<JJTextGroup> TextBoxFactory { get; }
 
     public TextRangeFactory(IHttpContext httpContext,
                             IStringLocalizer<JJMasterDataResources> stringLocalizer,
-                            TextBoxFactory textBoxFactory,
+                            IControlFactory<JJTextGroup> textBoxFactory,
                             IEncryptionService encryptionService)
     {
-        EncryptionService = encryptionService;
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
         TextBoxFactory = textBoxFactory;
@@ -31,7 +31,7 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
 
     public JJTextRange Create()
     {
-        return new JJTextRange(HttpContext, TextBoxFactory, StringLocalizer);
+        return new JJTextRange(HttpContext.Request, TextBoxFactory,StringLocalizer);
     }
 
     public JJTextRange Create(FormElement formElement, FormElementField field, ControlContext context)

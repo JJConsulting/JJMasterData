@@ -1,57 +1,56 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Components.Controls;
-using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJTextRange : HtmlControl
+public class JJTextRange : ControlBase
 {
-    private IControlFactory<JJTextGroup> TextBoxFactory { get; }
+    private IControlFactory<JJTextGroup> TextBoxGroupFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    internal HtmlControl FromField { get; set; }
-    internal HtmlControl ToField { get; set; }
+    internal ControlBase FromField { get; set; }
+    internal ControlBase ToField { get; set; }
 
     public FieldType FieldType { get; set; }
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
     private bool IsTimeAware => FieldType is FieldType.DateTime or FieldType.DateTime2;
 
-    public JJTextRange(IHttpContext currentContext, IControlFactory<JJTextGroup> textBoxFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(currentContext)
+    public JJTextRange(IHttpRequest httpRequest, IControlFactory<JJTextGroup> textBoxGroupFactory,IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(
+        httpRequest)
     {
-        TextBoxFactory = textBoxFactory;
+        TextBoxGroupFactory = textBoxGroupFactory;
         StringLocalizer = stringLocalizer;
     }
 
-    internal override HtmlBuilder BuildHtml()
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         var div = new HtmlBuilder(string.Empty);
         div.WithCssClass(CssClass);
         div.WithAttributes(Attributes);
-        div.Append(HtmlTag.Div, div =>
+        await div.AppendAsync(HtmlTag.Div, async div =>
         {
             div.WithCssClass("col-sm-3");
-            
+
             FromField.Name = Name + "_from";
             FromField.Enabled = Enabled;
-            
-            div.AppendComponent(FromField);
+
+            await div.AppendControlAsync(FromField);
         });
-        div.Append(HtmlTag.Div, div =>
+        await div.AppendAsync(HtmlTag.Div, async div =>
         {
             div.WithCssClass("col-sm-3");
-            
+
             ToField.Name = Name + "_to";
             ToField.Enabled = Enabled;
-            
-            div.AppendComponent(ToField);
+
+            await div.AppendControlAsync(ToField);
         });
         div.Append(HtmlTag.Div, div =>
         {
@@ -59,7 +58,9 @@ public class JJTextRange : HtmlControl
             div.AppendIf(EnableDatePeriods, GetDatePeriodsHtmlElement);
         });
 
-        return div;
+        var result = new RenderedComponentResult(div);
+
+        return await Task.FromResult(result);
     }
 
     private HtmlBuilder GetDatePeriodsHtmlElement()
@@ -83,7 +84,7 @@ public class JJTextRange : HtmlControl
 
         return dropdown;
     }
-    
+
     private HtmlBuilder GetDropdownButton()
     {
         return new HtmlBuilder(HtmlTag.Button)
@@ -104,10 +105,11 @@ public class JJTextRange : HtmlControl
 
     private string GetLastThreeMonthsScript(DateTime now)
     {
-        var lastQuarter =now.AddMonths(-3);
+        var lastQuarter = now.AddMonths(-3);
         var dtLastQuarterFrom = new DateTime(lastQuarter.Year, lastQuarter.Month, 1).ToShortDateString();
-        var dtMonthTo = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month)).ToShortDateString();
-        
+        var dtMonthTo = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month))
+            .ToShortDateString();
+
         return GetjQueryFromToScript(dtLastQuarterFrom, dtMonthTo, IsTimeAware);
     }
 
@@ -117,7 +119,7 @@ public class JJTextRange : HtmlControl
         var dtLastMonthFrom = new DateTime(lastMonth.Year, lastMonth.Month, 1).ToShortDateString();
         var dtLastMonthTo = new DateTime(lastMonth.Year, lastMonth.Month,
             DateTime.DaysInMonth(lastMonth.Year, lastMonth.Month)).ToShortDateString();
-        
+
         return GetjQueryFromToScript(dtLastMonthFrom, dtLastMonthTo, IsTimeAware);
     }
 
@@ -151,15 +153,12 @@ public class JJTextRange : HtmlControl
                 a.AppendText(label);
             });
     }
-    
+
 
     private string GetjQueryFromToScript(string valueFrom, string valueTo, bool isTimeAware)
     {
-        
         string timeAwareTo = isTimeAware ? " 23:59" : string.Empty;
         string timeAwareFrom = isTimeAware ? " 00:00" : string.Empty;
         return $"$('#{Name}_from').val('{valueFrom}{timeAwareFrom}');$('#{Name}_to').val('{valueTo}{timeAwareTo}')";
     }
-
-
 }

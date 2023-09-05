@@ -1,6 +1,6 @@
 ﻿class SortableListener {
-    static listenSorting(){
-        ($(".jjsortable") as any).sortable({
+    static listenSorting(selectorPrefix = String()){
+        ($(selectorPrefix + ".jjsortable") as any).sortable({
             helper: function (e, tr) {
                 var originals = tr.children();
                 var helper = tr.clone();

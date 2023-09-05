@@ -1,8 +1,6 @@
 #nullable enable
 
-using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
@@ -12,22 +10,21 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using JJMasterData.Commons.Data;
+using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.UI.Components.Controls;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJComboBox : HtmlControl
+public class JJComboBox : ControlBase
 {
-    private IList<DataItemValue>? _values;
     private string? _selectedValue;
 
     private IExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    internal IEntityRepository EntityRepository { get; }
+    private IDataItemService DataItemService { get; }
     internal ILogger<JJComboBox> Logger { get; }
     internal FormStateData FormStateData { get; set; }
 
@@ -42,9 +39,9 @@ public class JJComboBox : HtmlControl
     {
         get
         {
-            if (_selectedValue == null && CurrentContext.IsPost)
+            if (_selectedValue == null && Request.IsPost)
             {
-                _selectedValue = CurrentContext.Request[Name];
+                _selectedValue = Request[Name];
             }
 
             return _selectedValue;
@@ -52,13 +49,14 @@ public class JJComboBox : HtmlControl
         set => _selectedValue = value;
     }
 
-    public JJComboBox(IHttpContext httpContext,
-        IEntityRepository entityRepository,
+    public JJComboBox(
+        IHttpRequest httpRequest,
+        IDataItemService dataItemService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ILogger<JJComboBox> logger) : base(httpContext)
+        ILogger<JJComboBox> logger) : base(httpRequest)
     {
-        EntityRepository = entityRepository;
+        DataItemService = dataItemService;
         Logger = logger;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
@@ -68,27 +66,24 @@ public class JJComboBox : HtmlControl
         var defaultValues = new Dictionary<string, object?>();
         FormStateData = new FormStateData(defaultValues, PageState.List);
     }
-
-    internal override HtmlBuilder BuildHtml()
+    
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (DataItem == null)
-            throw new ArgumentException("[DataItem] properties not defined for combo", Name);
+            throw new ArgumentException($"FormElementDataItem property is null for JJComboBox {Name}");
 
-        var values = GetValues();
-
-        if (values == null)
-            throw new ArgumentException("Data source not defined for combo", Name);
+        var values = await GetValuesAsync().ToListAsync();
 
         if (ReadOnly)
         {
             var combobox = new HtmlBuilder(HtmlTag.Div);
             combobox.AppendRange(GetReadOnlyInputs(values));
-            return combobox;
+            return new RenderedComponentResult(combobox);
         }
 
-        return GetSelectHtml(values);
+        return new RenderedComponentResult(GetSelectHtml(values));
     }
-
+    
     private HtmlBuilder GetSelectHtml(IEnumerable<DataItemValue> values)
     {
         var select = new HtmlBuilder(HtmlTag.Select)
@@ -190,29 +185,19 @@ public class JJComboBox : HtmlControl
         return selectedText;
     }
 
-    public IList<DataItemValue>? GetValues()
+    public IAsyncEnumerable<DataItemValue> GetValuesAsync()
     {
-        try
-        {
-            _values ??= GetValues(null);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error loading data from JJComboBox");
-            throw;
-        }
-
-        return _values;
+        return DataItemService.GetValuesAsync(DataItem,FormStateData);
     }
 
 
     /// <summary>
     /// Recovers the description from the selected value;
     /// </summary>
-    public string? GetDescription()
+    public async Task<string?> GetDescriptionAsync()
     {
         string description;
-        var item = GetValue(SelectedValue);
+        var item = await GetValueAsync(SelectedValue);
         if (item == null)
             return null;
 
@@ -245,66 +230,12 @@ public class JJComboBox : HtmlControl
     }
 
 
-    public DataItemValue? GetValue(string? searchId)
+    public async Task<DataItemValue?> GetValueAsync(string? searchId)
     {
-        if (searchId == null)
-            return null;
-
-        var listValues = _values ?? GetValues(searchId);
-        if (listValues == null)
-            return null;
-
-        return listValues.ToList().Find(x => x.Id.Equals(searchId));
+        var values = DataItemService.GetValuesAsync(DataItem,FormStateData,null,searchId);
+        return await values.FirstOrDefaultAsync(v=> v.Id==searchId);
     }
-
-    private IList<DataItemValue>? GetValues(string? searchId)
-    {
-        IList<DataItemValue> values = new List<DataItemValue>();
-        if (DataItem.Command != null && !string.IsNullOrEmpty(DataItem.Command.Sql))
-        {
-            string? sql = DataItem.Command.Sql;
-            if (sql.Contains("{"))
-            {
-                if (searchId != null)
-                {
-                    if (!UserValues.ContainsKey("search_id"))
-                        UserValues.Add("search_id", StringManager.ClearText(searchId));
-                }
-                else
-                {
-                    if (!UserValues.ContainsKey("search_id"))
-                        UserValues.Add("search_id", null);
-                }
-
-                sql = ExpressionsService.ParseExpression(sql, FormStateData, false);
-            }
-
-            var dt = EntityRepository.GetDictionaryListAsync(new DataAccessCommand(sql!)).GetAwaiter().GetResult();
-            foreach (var row in dt)
-            {
-                var item = new DataItemValue
-                {
-                    Id = row.ElementAt(0).Value?.ToString(),
-                    Description = row.ElementAt(1).Value?.ToString()?.Trim()
-                };
-                if (DataItem.ShowImageLegend)
-                {
-                    item.Icon = (IconType)int.Parse(row.ElementAt(2).Value?.ToString() ?? string.Empty);
-                    item.ImageColor = row.ElementAt(3).Value?.ToString();
-                }
-
-                values.Add(item);
-            }
-        }
-        else
-        {
-            values = DataItem.Items!;
-        }
-
-
-        return values;
-    }
-
+    
 
     private bool IsManualValues()
     {

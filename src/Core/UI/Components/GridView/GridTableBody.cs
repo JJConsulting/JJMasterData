@@ -9,11 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Abstractions;
-using JJMasterData.Core.UI.Components.Controls;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -84,7 +80,7 @@ internal class GridTableBody
             var checkBox = await GetMultiSelect(row, index, values);
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("jjselect");
-            td.AppendComponent(checkBox);
+            await td.AppendControlAsync(checkBox);
 
             if (!GridView.EnableEditMode && onClickScript == string.Empty)
             {
@@ -156,7 +152,7 @@ internal class GridTableBody
                 {
                     if (field.Component == FormComponent.File)
                     {
-                        var upload = (JJTextFile)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List), GridView.Name, value);
+                        var upload = (JJTextFile)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List),  value);
                         td.Append(upload.GetButtonGroupHtml());
                     }
                     else
@@ -189,7 +185,7 @@ internal class GridTableBody
             value = value1.ToString();
         }
 
-        var control = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List), GridView.Name, value);
+        var control = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List), value);
         control.Name = name;
         control.Attributes.Add("nRowId", index.ToString());
         control.CssClass = field.Name;
@@ -204,20 +200,7 @@ internal class GridTableBody
         }
         else
         {
-            //TODO: Handle control external route
-            if (control is HtmlControl htmlControl)
-            {
-                div.AppendComponent(htmlControl);
-            }
-            else if(control is AsyncControl asyncControl)
-            {
-                var result = await asyncControl.GetResultAsync();
-
-                if (result is RenderedComponentResult renderedComponentResult)
-                {
-                    div.Append(renderedComponentResult.HtmlBuilder);
-                }
-            }
+            await div.AppendControlAsync(control);
         }
           
 
@@ -333,10 +316,12 @@ internal class GridTableBody
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("jjselect");
 
-        var checkBox = new JJCheckBox(GridView.CurrentContext);
-        checkBox.Name = "jjchk_" + index;
-        checkBox.Value = GridView.EncryptionService.EncryptStringWithUrlEscape(pkValues);
-        checkBox.Text = string.Empty;
+        var checkBox = new JJCheckBox(GridView.CurrentContext.Request)
+        {
+            Name = "jjchk_" + index,
+            Value = GridView.EncryptionService.EncryptStringWithUrlEscape(pkValues),
+            Text = string.Empty
+        };
 
         var selectedGridValues = GridView.GetSelectedGridValues();
         

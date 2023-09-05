@@ -2,6 +2,18 @@
 @using JJMasterData.Core.Web.Components
 @using JJMasterData.Core.Web.Http.Abstractions
 @model FormElementField
+
+@functions {
+    private void ConfigureSlider(JJSlider slider)
+    {
+        slider.MinValue = 0;
+        slider.MaxValue = 28;
+        slider.Name = @Html.NameFor(m => m.DataFile!.MaxFileSize);
+        slider.Value = Model.DataFile!.MaxFileSize;
+        slider.Enabled = true;
+        slider.CssClass = "row";
+    }
+}
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @inject IHttpContext HttpContext
@@ -23,18 +35,6 @@
             });
         });
     </script>
-}
-
-@{
-    var slider = new JJSlider(HttpContext)
-    {
-        MinValue = 0,
-        MaxValue = 28,
-        Name = @Html.NameFor(m=>m.DataFile!.MaxFileSize),
-        Value = Model.DataFile!.MaxFileSize,
-        Enabled = true,
-        CssClass = "row"
-    };
 }
 
 <div class="row">
@@ -60,7 +60,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
         @Html.LabelFor(m=>m.DataFile!.MaxFileSize,@StringLocalizer["Max File Size (MB)"], new {@class = BootstrapHelper.Label})
-        @Html.Raw(slider.GetHtml())
+        <jj-slider configure="ConfigureSlider"/>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">

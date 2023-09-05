@@ -383,7 +383,7 @@ public class MasterApiService
                 if (field.Component is FormComponent.ComboBox or FormComponent.Search)
                 {
                     formValues.DataItems = await DataItemService
-                        .GetValuesAsync(field.DataItem, formData, null,null )
+                        .GetValuesAsync(field.DataItem!, formData, null,null )
                         .ToListAsync();
                 }
             }
@@ -469,7 +469,7 @@ public class MasterApiService
     private DataContext GetDataContext()
     {
         var userId = GetUserId();
-        return new DataContext(HttpContext, DataContextSource.Api, userId);
+        return new DataContext(HttpContext.Request, DataContextSource.Api, userId);
     }
 
     private async Task<FormElement> GetDataDictionary(string elementName)

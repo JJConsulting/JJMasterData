@@ -6,7 +6,6 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.UI.Components.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using System;
@@ -22,10 +21,8 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// Represents a searchable combobox.
 /// </summary>
-public class JJSearchBox : AsyncControl
+public class JJSearchBox : ControlBase
 {
-    
-    
     #region "Events"
 
     /// <summary>
@@ -41,19 +38,22 @@ public class JJSearchBox : AsyncControl
     #endregion
 
     #region "Fields"
+
     private IEnumerable<DataItemValue>? _values;
     private string? _selectedValue;
     private string? _text;
     private string? _fieldName;
     private string? _htmlId;
-    private ComponentContext? _componentContext;
+
     #endregion
-    
+
     #region "Properties"
 
-    private const string NumberOfItemsAttribute = "numberofitems";
+    private const string NumberOfItemsAttribute = "number-of-items";
     private const string ScrollbarAttribute = "scrollbar";
-    private const string TriggerLengthAttribute = "triggerlength";
+    private const string TriggerLengthAttribute = "trigger-length";
+
+    internal string? ParentElementName { get; set; }
 
     internal string FieldName
     {
@@ -73,9 +73,9 @@ public class JJSearchBox : AsyncControl
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && CurrentContext.IsPost)
+            if (AutoReloadFormFields && _text == null && Request.IsPost)
             {
-                _text = CurrentContext.Request[Name];
+                _text = Request[Name];
             }
 
             return _text;
@@ -141,14 +141,14 @@ public class JJSearchBox : AsyncControl
     /// </summary>
     public async Task<string?> GetSelectedValueAsync()
     {
-        if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && CurrentContext.IsPost)
+        if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && Request.IsPost)
         {
-            _selectedValue = CurrentContext.Request[Name];
+            _selectedValue = Request[Name];
         }
 
         if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
         {
-            var values =await  GetValuesAsync(Text);
+            var values = await GetValuesAsync(Text);
             var item = values.FirstOrDefault();
             if (item == null)
                 return null;
@@ -159,9 +159,9 @@ public class JJSearchBox : AsyncControl
         return _selectedValue;
     }
 
-    
+
     public FormElementDataItem DataItem { get; set; }
-    
+
 
     /// <summary>
     /// Ao recarregar o painel, manter os valores digitados no formulário
@@ -169,9 +169,8 @@ public class JJSearchBox : AsyncControl
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
-    public IDataItemService DataItemService { get; }
     private IEncryptionService EncryptionService { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    public IDataItemService DataItemService { get; }
     public FormStateData FormStateData { get; internal set; }
 
     public string SelectedValue
@@ -179,19 +178,24 @@ public class JJSearchBox : AsyncControl
         set => _selectedValue = value;
     }
     
-    internal ComponentContext ComponentContext
+    private RouteContext? _routeContext;
+    
+    protected RouteContext RouteContext
     {
         get
         {
-            if (_componentContext != null)
-                return _componentContext.Value;
-            
-            var resolver = new ComponentContextResolver(this);
-            _componentContext = resolver.GetContext();
+            if (_routeContext != null)
+                return _routeContext;
 
-            return _componentContext.Value;
+            var factory = new RouteContextFactory(Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
         }
     }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+
 
     #endregion
 
@@ -200,12 +204,10 @@ public class JJSearchBox : AsyncControl
     public JJSearchBox(
         IHttpContext httpContext,
         IEncryptionService encryptionService,
-        IDataItemService dataItemService,
-        JJMasterDataUrlHelper urlHelper) : base(httpContext)
+        IDataItemService dataItemService) : base(httpContext.Request)
     {
         HtmlId = Name;
         EncryptionService = encryptionService;
-        UrlHelper = urlHelper;
         DataItemService = dataItemService;
         Enabled = true;
         TriggerLength = 1;
@@ -220,10 +222,11 @@ public class JJSearchBox : AsyncControl
     }
 
     #endregion
-    
+
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        var fieldName = CurrentContext.Request.QueryString("fieldName");
+        var fieldName = Request.QueryString["fieldName"];
+        
         if (ComponentContext is ComponentContext.SearchBox && FieldName == fieldName)
         {
             return new JsonComponentResult(await GetSearchBoxItemsAsync());
@@ -233,37 +236,6 @@ public class JJSearchBox : AsyncControl
 
         return new RenderedComponentResult(html);
     }
-    public static async Task<ComponentResult> GetResultFromPanel(JJDataPanel view)
-    {
-        return await GetResultFromComponent(
-            view,
-            view.FormElement,
-            view.Values, 
-            view.CurrentContext,
-            view.ComponentFactory.Controls.GetFactory<IControlFactory<JJSearchBox>>());
-    }
-
-    internal static async Task<ComponentResult> GetResultFromComponent(
-        ComponentBase view,
-        FormElement formElement,
-        IDictionary<string, object?> formValues,
-        IHttpContext httpContext,
-        IControlFactory<JJSearchBox> searchBoxFactory)
-    {
-        string dictionaryName = httpContext.Request.QueryString("dictionaryName");
-        string fieldName = httpContext.Request.QueryString("fieldName");
-        var pageState = (PageState)int.Parse(httpContext.Request.QueryString("pageState"));
-
-        if (!formElement.Name.Equals(dictionaryName))
-            return new EmptyComponentResult();
-
-        var field = formElement.Fields[fieldName];
-        var expOptions = new FormStateData(formValues, view.UserValues, pageState);
-
-        var searchBox = searchBoxFactory.Create(formElement, field, new(expOptions, view.Name, dictionaryName));
-        return await searchBox.GetResultAsync();
-    }
-
 
     private async Task<HtmlBuilder> GetSearchBoxHtml()
     {
@@ -279,15 +251,15 @@ public class JJSearchBox : AsyncControl
             input.WithAttribute("name", HtmlId + "_text");
             input.WithAttribute("hidden-input-id", HtmlId);
             input.WithAttribute("type", "text");
-            input.WithAttribute("urltypehead", GetUrl());
+            input.WithAttribute("query-string", GetQueryString());
             input.WithAttribute("autocomplete", "off");
             input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
-            input.WithAttributeIf(DataItem.ShowImageLegend, "showimagelegend", "true");
+            input.WithAttributeIf(DataItem.ShowImageLegend, "show-image-legend", "true");
             input.WithAttributeIf(ReadOnly, "readonly", "readonly");
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
             input.WithAttributes(Attributes);
             input.WithToolTip(ToolTip);
-            input.WithCssClass("form-control jjsearchbox");
+            input.WithCssClass("form-control jj-search-box");
             input.WithCssClassIf(string.IsNullOrEmpty(selectedValue), "jj-icon-search");
             input.WithCssClassIf(!string.IsNullOrEmpty(selectedValue), "jj-icon-success");
             input.WithCssClass(CssClass);
@@ -297,44 +269,32 @@ public class JJSearchBox : AsyncControl
                 description = await GetDescriptionAsync(selectedValue);
 
             input.WithAttributeIfNotEmpty("value", description);
-
         });
         div.Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("hidden", "hidden");
             input.WithAttribute("id", HtmlId);
             input.WithAttribute("name", Name);
-            input.WithAttributeIfNotEmpty("value",selectedValue);
+            input.WithAttributeIfNotEmpty("value", selectedValue);
         });
 
         return div;
     }
 
-    private string GetUrl()
+    private string GetQueryString()
     {
         var url = new StringBuilder();
-        if (IsExternalRoute)
-        {
-            string dictionaryNameEncrypted = EncryptionService.EncryptStringWithUrlEscape(ElementName);
-            url.Append(UrlHelper.GetUrl("GetItems","Search", "MasterData", new
-            {
-                dictionaryName = dictionaryNameEncrypted,
-                fieldName = FieldName,
-                fieldSearchName = Name + "_text",
-                pageState = (int)FormStateData.PageState,
-                Area = "MasterData"
-            }));
-        }
-        else
-        {
-            url.Append("context=searchBox");
-            url.Append($"&dictionaryName={ElementName}");
-            url.Append($"&fieldName={FieldName}");
-            url.Append($"&fieldSearchName={Name + "_text"}");
-            url.Append($"&pageState={(int)FormStateData.PageState}");
-        }
 
+        var componentContext = FormStateData.PageState is PageState.Filter
+            ? ComponentContext.GridViewFilterSearchBox
+            : ComponentContext.SearchBox;
+        
+        var context = new RouteContext(ElementName, ParentElementName, componentContext);
+        
+        var encryptedRoute = EncryptionService.EncryptRouteContext(context);
 
+        url.Append($"routeContext={encryptedRoute}");
+        url.Append($"&fieldName={FieldName}");
 
         return url.ToString();
     }
@@ -342,23 +302,23 @@ public class JJSearchBox : AsyncControl
     /// <summary>
     /// Recupera descrição com base no id
     /// </summary>
-    /// <param name="idSearch">Id a ser pesquisado</param>
+    /// <param name="searchId">Id a ser pesquisado</param>
     /// <returns>Retorna descrição referente ao id</returns>
-    public async Task<string?> GetDescriptionAsync(string idSearch)
+    public async Task<string?> GetDescriptionAsync(string searchId)
     {
         string? description = null;
         if (OnSearchQuery != null)
         {
-            var args = new SearchBoxItemEventArgs(idSearch);
+            var args = new SearchBoxItemEventArgs(searchId);
             OnSearchId?.Invoke(this, args);
             description = args.ResultText;
         }
         else
         {
-            _values ??= await DataItemService.GetValuesAsync(DataItem, FormStateData, null, idSearch).ToListAsync();
+            _values ??= await DataItemService.GetValuesAsync(DataItem, FormStateData, null, searchId).ToListAsync();
         }
 
-        var item = _values?.ToList().Find(x => x.Id.Equals(idSearch));
+        var item = _values?.ToList().Find(x => x.Id.Equals(searchId));
 
         if (item != null)
             description = item.Description;
@@ -369,7 +329,7 @@ public class JJSearchBox : AsyncControl
     /// <summary>
     /// Recover values from the given text.
     /// </summary>
-    public async Task<List<DataItemValue>>GetValuesAsync(string? searchText)
+    public async Task<List<DataItemValue>> GetValuesAsync(string? searchText)
     {
         var list = new List<DataItemValue>();
         if (OnSearchQuery != null)
@@ -391,18 +351,16 @@ public class JJSearchBox : AsyncControl
 
         return list;
     }
-    
+
 
     public async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
-        string componentName = CurrentContext.Request.QueryString("fieldName");
-        string textSearch = CurrentContext.Request.Form(componentName);
+        string componentName = Request.QueryString["fieldName"];
+        string textSearch = Request.GetFormValue(componentName);
 
         var values = await GetValuesAsync(textSearch);
         var items = DataItemService.GetItems(DataItem, values);
 
         return items.ToList();
     }
-
-
 }

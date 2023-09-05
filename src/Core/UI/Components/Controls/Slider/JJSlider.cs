@@ -1,13 +1,17 @@
 using System.Globalization;
+using System.Threading.Tasks;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class JJSlider : HtmlControl
+public class JJSlider : ControlBase
 {
+    private IComponentFactory<JJTextBox> TextBoxFactory { get; }
     public double MinValue { get; set; }
     public double MaxValue { get; set; }
     public double? Value { get; set; }
@@ -15,12 +19,12 @@ public class JJSlider : HtmlControl
     public bool ShowInput { get; set; } = true;
     public int NumberOfDecimalPlaces { get; set; }
     
-    public JJSlider(IHttpContext httpContext) : base(httpContext)
+    public JJSlider(IHttpRequest httpRequest, IComponentFactory<JJTextBox> textBoxFactory) : base(httpRequest)
     {
-
+        TextBoxFactory = textBoxFactory;
     }
 
-    internal override HtmlBuilder BuildHtml()  
+    protected override async Task<ComponentResult> BuildResultAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
@@ -34,30 +38,27 @@ public class JJSlider : HtmlControl
 
         if (ShowInput)
         {
-            var number = new JJTextBox(CurrentContext)
-            {
-                InputType = InputType.Number,
-                Name = $"{Name}-value",
-                MinValue = MinValue,
-                Enabled = Enabled,
-                Text = Value.ToString(),
-                NumberOfDecimalPlaces = NumberOfDecimalPlaces,
-                MaxValue = MaxValue,
-                CssClass = "jjslider-value",
-                Attributes =
-                {
-                    ["step"] = Step.ToString()
-                }
-            };
+            var number = TextBoxFactory.Create();
+            number.InputType = InputType.Number;
+            number.Name = $"{Name}-value";
+            number.MinValue = MinValue;
+            number.Enabled = Enabled;
+            number.Text = Value.ToString();
+            number.NumberOfDecimalPlaces = NumberOfDecimalPlaces;
+            number.MaxValue = MaxValue;
+            number.CssClass = "jjslider-value";
+            number.Attributes["step"] = Step.ToString();
 
-            html.Append(HtmlTag.Div, row =>
+            await html.AppendAsync(HtmlTag.Div, async row =>
             {
                 row.WithCssClass("col-sm-3");
-                row.AppendComponent(number);
+                row.Append(await number.GetHtmlBuilderAsync());
             });
         }
-
-        return html;
+        
+        var result = new RenderedComponentResult(html);
+        
+        return await Task.FromResult(result);
     }
     
     private HtmlBuilder GetHtmlSlider()

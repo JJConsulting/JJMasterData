@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
@@ -8,17 +10,16 @@ namespace JJMasterData.Core.DataManager.Services.Abstractions;
 public interface IDataItemService
 {
     IEnumerable<DataItemResult> GetItems(
-        FormElementDataItem dataItem, 
+        FormElementDataItem dataItem,
         IEnumerable<DataItemValue> values);
-    
+
     IAsyncEnumerable<DataItemValue> GetValuesAsync(
         FormElementDataItem dataItem,
         FormStateData formStateData,
-        string searchText,
-        string searchId);
+        string? searchText = null,
+        string? searchId = null);
 
-    Task<string> GetSelectedValueAsync(
-        FormElementField field,
-        FormStateData formStateData,
-        string searchText);
+    Task<string?> GetSelectedValueAsync(
+        FormElementField field, FormStateData formStateData, string? searchText = null, string? searchId = null
+    );
 }
