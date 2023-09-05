@@ -41,7 +41,7 @@ class _Modal extends ModalBase {
     };
     
     private getBootstrapModal(){
-        return bootstrap.Modal.getOrCreateInstance(this.modalElement);
+        return bootstrap.Modal.getOrCreateInstance("#" + this.modalId);
     }
     
     private showModal(){

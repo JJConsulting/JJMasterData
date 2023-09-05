@@ -101,6 +101,11 @@ class ActionManager {
         const actionData = JSON.parse(actionDataJson);
         return this.executeActionData(actionData);
     }
+    static hideActionModal(componentName) {
+        const modal = new Modal();
+        modal.modalId = componentName + "-modal";
+        modal.hide();
+    }
 }
 class AuditLogViewHelper {
     static viewAuditLog(componentName, id) {
@@ -1348,7 +1353,7 @@ class _Modal extends ModalBase {
         };
     }
     getBootstrapModal() {
-        return bootstrap.Modal.getOrCreateInstance(this.modalElement);
+        return bootstrap.Modal.getOrCreateInstance("#" + this.modalId);
     }
     showModal() {
         this.getBootstrapModal().show();

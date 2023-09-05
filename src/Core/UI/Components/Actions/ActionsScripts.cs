@@ -166,4 +166,9 @@ internal class ActionsScripts
         return
             $"ActionManager.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
+
+    public static string GetHideModalScript(string componentName)
+    {
+        return $"ActionManager.hideActionModal('{componentName}')";
+    }
 }

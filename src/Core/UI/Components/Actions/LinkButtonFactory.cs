@@ -184,7 +184,14 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
             switch (action)
             {
                 case BackAction or CancelAction:
-                    button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
+                    if (actionContext.IsModal)
+                    {
+                        button.OnClientClick = ActionsScripts.GetHideModalScript(actionContext.ParentComponentName);
+                    }
+                    else
+                    {
+                        button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
+                    }
                     break;
                 case SaveAction saveAction:
                     if (saveAction.EnterKeyBehavior == FormEnterKey.Submit)
