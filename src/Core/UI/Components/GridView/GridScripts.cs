@@ -69,13 +69,17 @@ public class GridScripts
         var actionMap = new ActionMap(ActionSource.GridToolbar, _gridView.FormElement, formValues, action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
 
-        return $"JJViewHelper.openSettingsModal('{_gridView.Name}','{encryptedActionMap}');";
+        return $"GridViewHelper.openSettingsModal('{_gridView.Name}','{encryptedActionMap}');";
     }
 
     public string GetCloseConfigUIScript()
     {
-        return $"JJViewHelper.closeSettingsModal('{_gridView.Name}');";
+        return $"GridViewHelper.closeSettingsModal('{_gridView.Name}');";
     }
 
 
+    public string GetRefreshScript()
+    {
+        return $"GridViewHelper.refresh('{_gridView.Name}','{GetEncryptedRouteContext()}');";
+    }
 }

@@ -159,7 +159,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                     BootstrapHelper.GetModalScript($"iconlegend_modal_{actionContext.ParentComponentName}");
                 break;
             case RefreshAction:
-                button.OnClientClick = ActionsScripts.GetRefreshScript(actionContext);
+                button.OnClientClick = gridView.Scripts.GetRefreshScript();
                 break;
             case SortAction:
                 button.OnClientClick =

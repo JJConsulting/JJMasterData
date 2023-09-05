@@ -129,6 +129,7 @@ public class AuditLogService : IAuditLogService
         formElement.Fields[DicModified].Component = FormComponent.DateTime;
 
         formElement.Options.GridTableActions.Clear();
+        formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
         
         var origin = formElement.Fields[DicOrigin];
         origin.Component = FormComponent.ComboBox;

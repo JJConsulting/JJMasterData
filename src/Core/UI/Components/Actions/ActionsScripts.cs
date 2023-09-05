@@ -156,15 +156,4 @@ internal class ActionsScripts
         return
             $"JJViewHelper.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
-
-    public string GetRefreshScript(ActionContext actionContext)
-    {
-        string name = actionContext.ParentComponentName;
-        if (actionContext.IsExternalRoute)
-        {
-            string dictionaryNameEncrypted = EncryptionService.EncryptString(actionContext.FormElement.Name);
-            return UrlHelper.GetUrl("GetGridViewTable", "Grid","MasterData",  new { dictionaryName = dictionaryNameEncrypted });
-        }
-        return $"GridViewHelper.refresh('{name}', true)";
-    }
 }

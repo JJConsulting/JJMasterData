@@ -27,9 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Hashing;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
@@ -89,8 +87,19 @@ public class JJFormView : AsyncComponent
 
     #region "Properties"
 
-    private JJAuditLogView AuditLogView =>
-        _auditLogView ??= ComponentFactory.AuditLog.Create(FormElement);
+    private JJAuditLogView AuditLogView
+    {
+        get
+        {
+            if (_auditLogView != null) 
+                return _auditLogView;
+            
+            _auditLogView = ComponentFactory.AuditLog.Create(FormElement);
+            _auditLogView.FormElement.ParentName = RouteContext.ParentElementName ?? FormElement.ParentName ?? FormElement.Name;
+
+            return _auditLogView;
+        }
+    }
 
     /// <summary>
     /// Url a ser direcionada após os eventos de Update/Delete/Save
@@ -337,11 +346,7 @@ public class JJFormView : AsyncComponent
             return new EmptyComponentResult();
 
         if (RouteContext.ElementName == Options.AuditLogTableName)
-        {
-            AuditLogView.FormElement.ParentName = RouteContext.ParentElementName;
             return await AuditLogView.GetResultAsync();
-        }
-        
         
         if (RouteContext.IsCurrentFormElement(FormElement.Name))
             return await GetFormResultAsync();
@@ -352,8 +357,8 @@ public class JJFormView : AsyncComponent
         formView.DataPanel.FieldNamePrefix = formView.DataPanel.Name + "_"; 
         var fkValues = EncryptionService.DecryptDictionary(CurrentContext.Request.GetFormValue(formView.GridView.Name + "-fk-values"));
         formView.RelationValues = fkValues;
-        
-        return await GetFormResultAsync();
+
+        return await formView.GetFormResultAsync();
     }
 
     
