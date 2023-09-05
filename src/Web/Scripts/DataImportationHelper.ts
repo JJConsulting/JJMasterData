@@ -132,7 +132,7 @@
                     let urlBuilder = new UrlBuilder();
                     urlBuilder.addQueryParameter("routeContext", importationRouteContext)
                     urlBuilder.addQueryParameter("dataImportationOperation", "log")
-                    DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small).then(_ => {
+                    DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.ExtraLarge).then(_ => {
                         GridViewHelper.refreshGrid(componentName,gridRouteContext)
                     })
                 }
@@ -154,7 +154,7 @@
         // @ts-ignore
         $(uploadAreaSelector).uploadFile.afterUploadAll = ()=>DataImportationHelper.start(componentName,routeContext,gridRouteContext)
         
-        DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small).then(_ => {
+        DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.ExtraLarge).then(_ => {
             UploadAreaListener.listenFileUpload();
         })
     }
@@ -163,7 +163,7 @@
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
-        DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small);
+        DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.ExtraLarge);
     }
 
     static start(componentName, routeContext, gridRouteContext) {
