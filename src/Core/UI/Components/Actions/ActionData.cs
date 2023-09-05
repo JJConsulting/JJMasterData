@@ -1,11 +1,10 @@
 #nullable enable
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Core.UI.Components.Actions;
 
-public record ActionData
+internal record ActionData
 {
     [JsonProperty("componentName")]
     public required string ComponentName { get; set; }
@@ -24,4 +23,13 @@ public record ActionData
     
     [JsonProperty("confirmationMessage")]
     public string? ConfirmationMessage { get; set; }
+
+    public string ToJson()
+    {
+        return JsonConvert.SerializeObject(this, new JsonSerializerSettings()
+        {
+            Formatting = Formatting.None,
+            NullValueHandling = NullValueHandling.Ignore
+        });
+    }
 }

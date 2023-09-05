@@ -79,9 +79,6 @@
       <Compile Update="UI\Components\RedirectComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
-      <Compile Update="UI\Components\ComponentContextFactory.cs">
-        <DependentUpon>ComponentContext.cs</DependentUpon>
-      </Compile>
       <Compile Update="UI\Components\Controls\IControlFactoryOfT.cs">
         <DependentUpon>IControlFactory.cs</DependentUpon>
       </Compile>

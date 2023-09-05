@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Components.Actions;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.UI.Components.FormView;
@@ -110,7 +111,7 @@ internal class ActionsScripts
         {
             ComponentName = actionContext.ParentComponentName,
             EncryptedActionMap = encryptedActionMap,
-            ConfirmationMessage = confirmationMessage
+            ConfirmationMessage = confirmationMessage.IsNullOrEmpty() ? null : confirmationMessage
         };
         
         if (actionContext.IsModal)
@@ -118,13 +119,14 @@ internal class ActionsScripts
             var modalRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);
             var gridViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
 
+            actionData.ModalTitle = actionContext.FormElement.Title;
             actionData.EncryptedModalRouteContext =
                 EncryptionService.EncryptRouteContext(modalRouteContext);
             actionData.EncryptedGridRouteContext =
                 EncryptionService.EncryptRouteContext(gridViewRouteContext);
         }
 
-        var actionDataJson = JsonConvert.SerializeObject(actionData, Formatting.None);
+        var actionDataJson = actionData.ToJson();
 
         var encodedFunction= HttpUtility.HtmlAttributeEncode($"ActionManager.executeAction('{actionDataJson}')");
         
