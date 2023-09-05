@@ -43,10 +43,10 @@ public class JJDataImportation : ProcessComponent
     #region "Properties"
 
     private JJUploadArea _upload;
-    
     private JJLinkButton _backButton;
     private JJLinkButton _helpButton;
     private JJLinkButton _logButton;
+    private RouteContext _routeContext;
     private DataImportationScripts _dataImportationScripts;
 
     public JJLinkButton BackButton => _backButton ??= GetBackButton();
@@ -68,6 +68,21 @@ public class JJDataImportation : ProcessComponent
     internal IComponentFactory ComponentFactory { get; }
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
 
+    internal RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
+        }
+    }
+    
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
     internal DataImportationScripts DataImportationScripts => _dataImportationScripts ??= new DataImportationScripts(this);
 
     #endregion
@@ -105,17 +120,15 @@ public class JJDataImportation : ProcessComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         HtmlBuilder htmlBuilder;
-        Upload.OnFileUploaded += FileUploaded;
 
-        string action = CurrentContext.Request.QueryString["dataImportationOperation"];
-
-        var uploadAreaResult = await Upload.GetResultAsync();
-
-        if (uploadAreaResult is JsonComponentResult)
+        if (ComponentContext is ComponentContext.DataImportationFileUpload)
         {
-            return uploadAreaResult;
+            Upload.OnFileUploaded += FileUploaded;
+            return await Upload.GetFileUploadResultAsync();
         }
-
+        
+        string action = CurrentContext.Request.QueryString["dataImportationOperation"];
+        
         switch (action)
         {
             case "checkProgress":
@@ -251,7 +264,7 @@ public class JJDataImportation : ProcessComponent
                 {
                     label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes]);
                 })
-                .Append( Upload.GetUploadAreaHtml())
+                .Append( Upload.GetUploadAreaHtmlBuilder())
         };
 
         html.AppendComponent(collapsePanel);
@@ -291,6 +304,7 @@ public class JJDataImportation : ProcessComponent
         {
             var worker = CreateImportationTextWorker(sb.ToString(), ';');
             BackgroundTask.Run(ProcessKey, worker);
+            e.SuccessMessage = StringLocalizer["File successfuly imported."];
         }
     }
 
@@ -388,6 +402,7 @@ public class JJDataImportation : ProcessComponent
     private JJUploadArea GetUploadArea()
     {
         var area = ComponentFactory.UploadArea.Create();
+        area.RouteContext.ComponentContext = ComponentContext.DataImportationFileUpload;
         area.Multiple = false;
         area.EnableCopyPaste = false;
         area.Name = Name + "_upload";

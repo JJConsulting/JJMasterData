@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
@@ -97,7 +98,7 @@ public class JJUploadArea : AsyncComponent
     
     
     private RouteContext _routeContext;
-    protected RouteContext RouteContext
+    internal RouteContext RouteContext
     {
         get
         {
@@ -147,20 +148,25 @@ public class JJUploadArea : AsyncComponent
     {
         if (ComponentContext is ComponentContext.FileUpload)
         {
-            if (OnFileUploaded != null) 
-                UploadAreaService.OnFileUploaded += OnFileUploaded;
-            
-            if (OnFileUploadedAsync != null) 
-                UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
-            
-            var result = await UploadAreaService.UploadFileAsync("file",AllowedTypes);
-            return new JsonComponentResult(result);
+            return await GetFileUploadResultAsync();
         }
 
-        return new RenderedComponentResult(GetUploadAreaHtml());
+        return new RenderedComponentResult(GetUploadAreaHtmlBuilder());
     }
 
-    internal HtmlBuilder GetUploadAreaHtml()
+    public async Task<ComponentResult> GetFileUploadResultAsync()
+    {
+        if (OnFileUploaded != null)
+            UploadAreaService.OnFileUploaded += OnFileUploaded;
+
+        if (OnFileUploadedAsync != null)
+            UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
+
+        var result = await UploadAreaService.UploadFileAsync("uploadAreaFile", AllowedTypes);
+        return new JsonComponentResult(result);
+    }
+
+    internal HtmlBuilder GetUploadAreaHtmlBuilder()
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divupload")
@@ -168,8 +174,9 @@ public class JJUploadArea : AsyncComponent
             .Append(HtmlTag.Div,  div =>
                 {
                     div.WithCssClass("fileUpload");
+                    div.WithAttributes(Attributes);
                     div.WithAttribute("id", Name);
-                    div.WithAttributeIf(IsExternalRoute, "url", UrlHelper.GetUrl("UploadFile","UploadArea", "MasterData", new {componentName = Name}));
+                    div.WithAttribute("routecontext", EncryptionService.EncryptRouteContext(RouteContext));
                     div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
                     div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
                     div.WithAttribute("dragDrop", EnableDragDrop.ToString().ToLower());

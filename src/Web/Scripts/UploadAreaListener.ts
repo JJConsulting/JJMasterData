@@ -11,10 +11,10 @@
     private autoSubmit: boolean;
     constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, autoSubmit) {
         this.componentName = componentName;
-        this.url = url;
         this.form = form;
         this.allowMultiple = allowMultiple;
         this.maxFileSize = maxFileSize;
+        this.url = url;
         this.allowDragDrop = allowDragDrop;
         this.showFileSize = showFileSize;
         this.allowedTypes = allowedTypes;
@@ -31,7 +31,7 @@ class UploadAreaListener {
         $(selector).uploadFile({
             url: options.url,
             formData: $(options.form).serializeArray(),
-            fileName: "file",
+            fileName: "uploadAreaFile",
             multiple: options.allowMultiple,
             maxFileSize: options.maxFileSize,
             maxFileCount: 1000,
@@ -120,6 +120,7 @@ class UploadAreaListener {
             let maxFileSize = element.getAttribute("maxFileSize");
             let dragDrop = element.getAttribute("dragDrop");
             let copyPaste = element.getAttribute("copyPaste");
+            let routeContext = element.getAttribute("routecontext");
             let showFileSize = element.getAttribute("showFileSize");
             let allowedTypes = element.getAttribute("allowedTypes");
             let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
@@ -128,15 +129,11 @@ class UploadAreaListener {
             
             let url : string;
             
-            if(element.getAttribute("url") != null){
-                url = element.getAttribute("url");
-            }
-            else{
-                let urlBuilder = new UrlBuilder();
-                urlBuilder.addQueryParameter("context","fileUpload")
-                urlBuilder.addQueryParameter("componentName",componentName)
-                url = urlBuilder.build();
-            }
+     
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext",routeContext)
+            url = urlBuilder.build();
+        
 
             const fileUploadOptions = new FileUploadOptions(
                 componentName,

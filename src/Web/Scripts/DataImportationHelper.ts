@@ -128,12 +128,12 @@
 
                 if (!result.IsProcessing) {
 
+                    clearInterval(DataImportationHelper.intervalId)
                     let urlBuilder = new UrlBuilder();
                     urlBuilder.addQueryParameter("routeContext", importationRouteContext)
                     urlBuilder.addQueryParameter("dataImportationOperation", "log")
                     DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small).then(_ => {
                         GridViewHelper.refreshGrid(componentName,gridRouteContext)
-                        clearInterval(DataImportationHelper.intervalId)
                     })
                 }
             })
@@ -142,13 +142,14 @@
             });
     }
 
-    static show(componentName, routeContext, gridRouteContext) {
+    static  show(componentName: string, routeContext: string, gridRouteContext: string) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
-
+        
+        DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+        
         DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small).then(_ => {
             UploadAreaListener.listenFileUpload();
-            this.addPasteListener(componentName,routeContext,gridRouteContext);
         })
     }
 
@@ -160,13 +161,13 @@
     }
 
     static start(componentName, routeContext, gridRouteContext) {
-        document.addEventListener("DOMContentLoaded", function () {
-            DataImportationHelper.setLoadMessage();
 
-            DataImportationHelper.intervalId = setInterval(function () {
-                DataImportationHelper.checkProgress(componentName, routeContext,gridRouteContext);
-            }, 3000);
-        });
+        DataImportationHelper.setLoadMessage();
+
+        DataImportationHelper.intervalId = setInterval(function () {
+            DataImportationHelper.checkProgress(componentName, routeContext,gridRouteContext);
+        }, 3000);
+  
     }
 
     static help(componentName, routeContext) {
@@ -196,7 +197,7 @@
         });
     }
 
-    static addPasteListener(componentName,routeContext: string, gridRouteContext) {
+    static addPasteListener(componentName: string,routeContext: string, gridRouteContext: string) {
         DataImportationHelper.pasteEventListener = function onPaste(e) {
             DataImportationHelper.removePasteListener();
             let pastedText = undefined;
@@ -217,10 +218,7 @@
                     url: urlBuilder.build(),
                     requestOptions: {method: "POST", body: new FormData(document.querySelector("form"))}
                 }, "Import", ModalSize.Small).then(_=>{
-                    setInterval(function () {
-                        DataImportationHelper.checkProgress(componentName, routeContext,gridRouteContext);
-                    }, 3000);
-                    document.removeEventListener("paste",onPaste);
+                    DataImportationHelper.start(componentName,routeContext,gridRouteContext)
                 })
 
             }

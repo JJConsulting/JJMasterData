@@ -403,7 +403,7 @@ public class JJUploadView : AsyncComponent
         if (!Upload.Multiple && FormFileManager.CountFiles() > 0)
             Upload.AddLabel = StringLocalizer["Update"];
 
-        panelContent.Append(Upload.GetUploadAreaHtml());
+        panelContent.Append(Upload.GetUploadAreaHtmlBuilder());
         return panelContent;
     }
 

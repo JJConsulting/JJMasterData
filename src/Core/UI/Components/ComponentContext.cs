@@ -28,7 +28,9 @@ public enum ComponentContext
     Modal,
         
     DataExportation,
+    
     DataImportation,
+    DataImportationFileUpload,
     
     /// <summary>
     /// The component is uploading a file

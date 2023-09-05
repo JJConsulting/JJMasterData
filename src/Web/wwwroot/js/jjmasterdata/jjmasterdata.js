@@ -592,12 +592,12 @@ class DataImportationHelper {
                 DataImportationHelper.errorCount = result.Error;
             }
             if (!result.IsProcessing) {
+                clearInterval(DataImportationHelper.intervalId);
                 let urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", importationRouteContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
                 DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
                     GridViewHelper.refreshGrid(componentName, gridRouteContext);
-                    clearInterval(DataImportationHelper.intervalId);
                 });
             }
         })
@@ -608,9 +608,9 @@ class DataImportationHelper {
     static show(componentName, routeContext, gridRouteContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
+        DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
         DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
             UploadAreaListener.listenFileUpload();
-            this.addPasteListener(componentName, routeContext, gridRouteContext);
         });
     }
     static showLog(componentName, routeContext) {
@@ -620,12 +620,10 @@ class DataImportationHelper {
         DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small);
     }
     static start(componentName, routeContext, gridRouteContext) {
-        document.addEventListener("DOMContentLoaded", function () {
-            DataImportationHelper.setLoadMessage();
-            DataImportationHelper.intervalId = setInterval(function () {
-                DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
-            }, 3000);
-        });
+        DataImportationHelper.setLoadMessage();
+        DataImportationHelper.intervalId = setInterval(function () {
+            DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
+        }, 3000);
     }
     static help(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -670,10 +668,7 @@ class DataImportationHelper {
                     url: urlBuilder.build(),
                     requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) }
                 }, "Import", ModalSize.Small).then(_ => {
-                    setInterval(function () {
-                        DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
-                    }, 3000);
-                    document.removeEventListener("paste", onPaste);
+                    DataImportationHelper.start(componentName, routeContext, gridRouteContext);
                 });
             }
             return false;
@@ -1881,10 +1876,10 @@ class TextAreaListener {
 class FileUploadOptions {
     constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, autoSubmit) {
         this.componentName = componentName;
-        this.url = url;
         this.form = form;
         this.allowMultiple = allowMultiple;
         this.maxFileSize = maxFileSize;
+        this.url = url;
         this.allowDragDrop = allowDragDrop;
         this.showFileSize = showFileSize;
         this.allowedTypes = allowedTypes;
@@ -1898,7 +1893,7 @@ class UploadAreaListener {
         $(selector).uploadFile({
             url: options.url,
             formData: $(options.form).serializeArray(),
-            fileName: "file",
+            fileName: "uploadAreaFile",
             multiple: options.allowMultiple,
             maxFileSize: options.maxFileSize,
             maxFileCount: 1000,
@@ -1979,20 +1974,15 @@ class UploadAreaListener {
             let maxFileSize = element.getAttribute("maxFileSize");
             let dragDrop = element.getAttribute("dragDrop");
             let copyPaste = element.getAttribute("copyPaste");
+            let routeContext = element.getAttribute("routecontext");
             let showFileSize = element.getAttribute("showFileSize");
             let allowedTypes = element.getAttribute("allowedTypes");
             let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
             let frm = document.querySelector("form");
             let url;
-            if (element.getAttribute("url") != null) {
-                url = element.getAttribute("url");
-            }
-            else {
-                let urlBuilder = new UrlBuilder();
-                urlBuilder.addQueryParameter("context", "fileUpload");
-                urlBuilder.addQueryParameter("componentName", componentName);
-                url = urlBuilder.build();
-            }
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", routeContext);
+            url = urlBuilder.build();
             const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);
             this.configureFileUpload(fileUploadOptions);
             if (copyPaste === "true") {

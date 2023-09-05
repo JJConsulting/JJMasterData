@@ -365,8 +365,7 @@ public class JJFormView : AsyncComponent
         {
             return await GetReloadPanelResultAsync();
         }
-
-        if (ComponentContext is ComponentContext.DataImportation or ComponentContext.FileUpload)
+        if (ComponentContext is ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload)
         {
             return await GetImportationResult();
         }
