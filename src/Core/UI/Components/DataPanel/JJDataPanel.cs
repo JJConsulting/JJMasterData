@@ -2,7 +2,6 @@
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
@@ -14,13 +13,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Hashing;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
+
 #if NET48
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 #endif
+
 namespace JJMasterData.Core.Web.Components;
 
 /// <summary>
@@ -199,13 +200,11 @@ public class JJDataPanel : AsyncComponent
 
         if (ComponentContext is ComponentContext.SearchBox)
         {
-            var formStateData = new FormStateData(Values, UserValues,PageState);
-            
+            var formStateData = new FormStateData(Values, UserValues, PageState);
+            var controlContext = new ControlContext(formStateData);
             var fieldName = CurrentContext.Request.QueryString["fieldName"];
-
             var field = FormElement.Fields[fieldName];
-            
-            var searchBox = ComponentFactory.Controls.Create<JJSearchBox>(FormElement,field,new ControlContext(formStateData));
+            var searchBox = ComponentFactory.Controls.Create<JJSearchBox>(FormElement, field, controlContext);
             return await searchBox.GetResultAsync();
         }
 
@@ -215,7 +214,6 @@ public class JJDataPanel : AsyncComponent
             var panelHtml = html.ToString();
             return new HtmlComponentResult(panelHtml);
         }
-
 
         return new RenderedComponentResult(await GetPanelHtmlAsync());
     }
