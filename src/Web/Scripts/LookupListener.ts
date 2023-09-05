@@ -1,6 +1,6 @@
 class LookupListener {
-    static listenChanges() {
-        const lookupInputs = document.querySelectorAll<HTMLInputElement>("input.jj-lookup");
+    static listenChanges(selectorPrefix = String()) {
+        const lookupInputs = document.querySelectorAll<HTMLInputElement>(selectorPrefix + "input.jj-lookup");
 
         lookupInputs.forEach(lookupInput => {
             let lookupId = lookupInput.id;

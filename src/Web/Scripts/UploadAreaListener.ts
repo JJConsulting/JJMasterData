@@ -68,7 +68,7 @@ class UploadAreaListener {
                 if (options.autoSubmit && element.selectedFiles > 0) {
                     $("#upload-action-" + options.componentName).val("afteruploadall");
                 }
-                loadJJMasterData()
+                listenAllEvents()
             },
         });
     }
@@ -112,8 +112,8 @@ class UploadAreaListener {
         });
     }
 
-    static listenFileUpload() {
-        document.querySelectorAll("div.fileUpload").forEach((element) => {
+    static listenFileUpload(selectorPrefix = String()) {
+        document.querySelectorAll(selectorPrefix + "div.fileUpload").forEach((element) => {
             let componentName = element.getAttribute("id");
             let multiple = element.getAttribute("jjmultiple") === "true";
             let autoSubmit = element.getAttribute("autoSubmit") === "true";
@@ -129,11 +129,9 @@ class UploadAreaListener {
             
             let url : string;
             
-     
             let urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext",routeContext)
             url = urlBuilder.build();
-        
 
             const fileUploadOptions = new FileUploadOptions(
                 componentName,

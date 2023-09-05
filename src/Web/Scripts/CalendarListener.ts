@@ -1,5 +1,5 @@
 class CalendarListener {
-    static listen(prefixSelector){
+    static listen(prefixSelector = String()){
         $(prefixSelector + ".jjform-datetime").flatpickr({
             enableTime: true,
             wrap: true,

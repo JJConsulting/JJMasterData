@@ -857,7 +857,7 @@ public class JJGridView : AsyncComponent
                 script.AppendLine("\t\t\tsuccess: function (data) { ");
                 script.AppendLine($"\t\t\t\t$(\"#grid-view-{Name} #row\" + nRow).html(data); ");
                 script.AppendLine($"\t\t\t\tdo_change_{Name}(nRow);");
-                script.AppendLine("\t\t\t\tloadJJMasterData(null, \"#row\" + nRow + \" \"); ");
+                script.AppendLine("\t\t\t\tlistenAllEvents(\"#row\" + nRow + \" \"); ");
                 script.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");
                 script.AppendLine("\t\t\t}, ");
                 script.AppendLine("\t\t\terror: function (jqXHR, textStatus, errorThrown) { ");

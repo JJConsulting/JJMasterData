@@ -75,10 +75,13 @@ class ActionManager {
             urlBuilder.addQueryParameter("routeContext", routeContext);
             const modal = new Modal();
             modal.modalId = componentName + "-modal";
-            modal.showUrl({ url: urlBuilder.build(), requestOptions: {
+            modal.showUrl({
+                url: urlBuilder.build(), requestOptions: {
                     method: "POST",
                     body: new FormData(document.querySelector("form"))
-                } }, componentName).then(data => {
+                }
+            }, componentName).then(function (data) {
+                listenAllEvents("#" + modal.modalId + " ");
                 if (typeof data === "object") {
                     if (data.closeModal) {
                         modal.hide();
@@ -124,7 +127,7 @@ class AuditLogViewHelper {
     }
 }
 class CalendarListener {
-    static listen(prefixSelector) {
+    static listen(prefixSelector = String()) {
         $(prefixSelector + ".jjform-datetime").flatpickr({
             enableTime: true,
             wrap: true,
@@ -354,7 +357,7 @@ class DataExportationHelper {
         }).then(response => response.text()).then((html) => __awaiter(this, void 0, void 0, function* () {
             const modalBody = "#data-exportation-modal-" + componentName + " .modal-body ";
             document.querySelector(modalBody).innerHTML = html;
-            loadJJMasterData(null, modalBody);
+            listenAllEvents(modalBody);
             yield DataExportationHelper.startProgressVerification(componentName, routeContext);
         }));
     }
@@ -418,7 +421,7 @@ class DataExportationHelper {
     static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
-        loadJJMasterData(null);
+        listenAllEvents();
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
@@ -713,7 +716,7 @@ class DataPanelHelper {
         })
             .then(data => {
             document.getElementById(componentName).outerHTML = data;
-            loadJJMasterData();
+            listenAllEvents();
             jjutil.gotoNextFocus(fieldName);
         })
             .catch(error => {
@@ -961,7 +964,7 @@ class GridViewHelper {
                 if (gridViewElement) {
                     gridViewElement.innerHTML = data;
                     if (reloadListeners) {
-                        loadJJMasterData();
+                        listenAllEvents();
                     }
                     if (filterActionElement) {
                         filterActionElement.value = "";
@@ -1056,26 +1059,23 @@ class GridViewSelectionHelper {
         }
     }
 }
-$(function () {
-    loadJJMasterData("load", null);
+document.addEventListener("DOMContentLoaded", function () {
+    listenAllEvents();
 });
-function loadJJMasterData(event, prefixSelector) {
-    if (prefixSelector === undefined || prefixSelector === null) {
-        prefixSelector = "";
-    }
-    $(prefixSelector + ".selectpicker").selectpicker({
+const listenAllEvents = (selectorPrefix = String()) => {
+    $(selectorPrefix + ".selectpicker").selectpicker({
         iconBase: 'fa'
     });
-    $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
-    CalendarListener.listen(prefixSelector);
-    TextAreaListener.listenKeydown();
-    SearchBoxListener.listenTypeahed();
-    LookupListener.listenChanges();
-    SortableListener.listenSorting();
-    UploadAreaListener.listenFileUpload();
-    TabNavListener.listenTabNavs();
-    SliderListener.listenSliders();
-    SliderListener.listenInputs();
+    $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
+    CalendarListener.listen(selectorPrefix);
+    TextAreaListener.listenKeydown(selectorPrefix);
+    SearchBoxListener.listenTypeahed(selectorPrefix);
+    LookupListener.listenChanges(selectorPrefix);
+    SortableListener.listenSorting(selectorPrefix);
+    UploadAreaListener.listenFileUpload(selectorPrefix);
+    TabNavListener.listenTabNavs(selectorPrefix);
+    SliderListener.listenSliders(selectorPrefix);
+    SliderListener.listenInputs(selectorPrefix);
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&
@@ -1100,7 +1100,7 @@ function loadJJMasterData(event, prefixSelector) {
             setTimeout(function () { SpinnerOverlay.show(); }, 1);
         }
     });
-}
+};
 class LookupHelper {
     static setLookupValues(fieldName, id, description) {
         defaultModal.hide();
@@ -1113,8 +1113,8 @@ class LookupHelper {
     }
 }
 class LookupListener {
-    static listenChanges() {
-        const lookupInputs = document.querySelectorAll("input.jj-lookup");
+    static listenChanges(selectorPrefix = String()) {
+        const lookupInputs = document.querySelectorAll(selectorPrefix + "input.jj-lookup");
         lookupInputs.forEach(lookupInput => {
             let lookupId = lookupInput.id;
             let lookupDescriptionUrl = lookupInput.getAttribute("lookup-description-url");
@@ -1635,8 +1635,8 @@ function postFormValues(options) {
     });
 }
 class SearchBoxListener {
-    static listenTypeahed() {
-        $("input.jj-search-box").each(function () {
+    static listenTypeahed(selectorPrefix = String()) {
+        $(selectorPrefix + "input.jj-search-box").each(function () {
             const hiddenInputId = $(this).attr("hidden-input-id");
             let queryString = $(this).attr("query-string");
             let triggerLength = $(this).attr("trigger-length");
@@ -1715,7 +1715,7 @@ class SearchBoxListener {
     }
 }
 class SliderListener {
-    static listenSliders() {
+    static listenSliders(selectorPrefix = String()) {
         let sliders = document.getElementsByClassName("jjslider");
         Array.from(sliders).forEach((slider) => {
             let sliderInput = document.getElementById(slider.id + "-value");
@@ -1734,8 +1734,8 @@ class SliderListener {
             };
         });
     }
-    static listenInputs() {
-        let inputs = document.getElementsByClassName("jjslider-value");
+    static listenInputs(selectorPrefix = String()) {
+        let inputs = document.getElementsByClassName(selectorPrefix + "jjslider-value");
         Array.from(inputs).forEach((input) => {
             let slider = document.getElementById(input.id.replace("-value", ""));
             input.oninput = function () {
@@ -1745,8 +1745,8 @@ class SliderListener {
     }
 }
 class SortableListener {
-    static listenSorting() {
-        $(".jjsortable").sortable({
+    static listenSorting(selectorPrefix = String()) {
+        $(selectorPrefix + ".jjsortable").sortable({
             helper: function (e, tr) {
                 var originals = tr.children();
                 var helper = tr.clone();
@@ -1832,16 +1832,16 @@ class SpinnerOverlay {
 }
 SpinnerOverlay.spinnerOverlayId = "spinner-overlay";
 class TabNavListener {
-    static listenTabNavs() {
-        $("a.jj-tab-link").on("shown.bs.tab", function (e) {
+    static listenTabNavs(selectorPrefix = String()) {
+        $(selectorPrefix + "a.jj-tab-link").on("shown.bs.tab", function (e) {
             const link = $(e.target);
             $("#" + link.attr("jj-objectid")).val(link.attr("jj-tabindex"));
         });
     }
 }
 class TextAreaListener {
-    static listenKeydown() {
-        $("textarea").keydown(function () {
+    static listenKeydown(selectorPrefix) {
+        $(selectorPrefix + "textarea").keydown(function () {
             const jjTextArea = $(this);
             let maxLength = jjTextArea.attr("maxlength");
             let maximumLimitLabel = jjTextArea.attr("maximum-limit-of-characters-label");
@@ -1929,7 +1929,7 @@ class UploadAreaListener {
                 if (options.autoSubmit && element.selectedFiles > 0) {
                     $("#upload-action-" + options.componentName).val("afteruploadall");
                 }
-                loadJJMasterData();
+                listenAllEvents();
             },
         });
     }
@@ -1965,8 +1965,8 @@ class UploadAreaListener {
             document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
         });
     }
-    static listenFileUpload() {
-        document.querySelectorAll("div.fileUpload").forEach((element) => {
+    static listenFileUpload(selectorPrefix = String()) {
+        document.querySelectorAll(selectorPrefix + "div.fileUpload").forEach((element) => {
             let componentName = element.getAttribute("id");
             let multiple = element.getAttribute("jjmultiple") === "true";
             let autoSubmit = element.getAttribute("autoSubmit") === "true";
@@ -2002,7 +2002,7 @@ class UploadViewHelper {
         const modal = new Modal();
         modal.modalId = componentName + "-upload-modal";
         modal.showUrl({ url: url }, null, 1).then(_ => {
-            loadJJMasterData();
+            listenAllEvents();
         });
     }
     static performFileAction(componentName, filename, action, promptStr = null) {

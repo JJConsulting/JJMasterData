@@ -1,5 +1,5 @@
 ﻿class SliderListener {
-    static listenSliders() {
+    static listenSliders(selectorPrefix = String()) {
         let sliders = document.getElementsByClassName("jjslider");
 
         Array.from(sliders).forEach((slider : HTMLInputElement) => {
@@ -26,8 +26,8 @@
         });
     }
 
-    static listenInputs() {
-        let inputs = document.getElementsByClassName("jjslider-value");
+    static listenInputs(selectorPrefix = String()) {
+        let inputs = document.getElementsByClassName(selectorPrefix + "jjslider-value");
 
         Array.from(inputs).forEach((input: HTMLInputElement) => {
             let slider= <HTMLInputElement>document.getElementById(input.id.replace("-value", ""));

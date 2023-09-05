@@ -14,7 +14,7 @@ class UploadViewHelper {
         modal.modalId =componentName + "-upload-modal"
         
         modal.showUrl({url:url},null, 1).then(_=>{
-            loadJJMasterData()
+            listenAllEvents()
         })
     }
 

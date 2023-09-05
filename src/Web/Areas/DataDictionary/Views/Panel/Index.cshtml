@@ -97,7 +97,7 @@
 
         $.get(url, function (data) {
             $("#fieldDetail").html(data);
-            loadJJMasterData(null, "#fieldDetail ");
+            listenAllEvents("#fieldDetail ");
             savePanelState();
             resizeContainer();
         });

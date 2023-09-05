@@ -20,7 +20,7 @@ class DataPanelHelper {
             })
             .then(data => {
                 document.getElementById(componentName).outerHTML = data;
-                loadJJMasterData();
+                listenAllEvents();
                 jjutil.gotoNextFocus(fieldName);
             })
             .catch(error => {

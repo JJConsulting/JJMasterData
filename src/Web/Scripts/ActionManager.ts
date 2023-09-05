@@ -1,5 +1,5 @@
 class ActionManager {
-    
+
     static executeSqlCommand(componentName, rowId, confirmMessage) {
         if (confirmMessage) {
             var result = confirm(confirmMessage);
@@ -10,17 +10,17 @@ class ActionManager {
 
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         document.querySelector<HTMLInputElement>("#grid-view-row-" + componentName).value = rowId;
-        
+
         const formViewActionMapElement = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
-        
-        if(formViewActionMapElement){
+
+        if (formViewActionMapElement) {
             formViewActionMapElement.value = "";
         }
-        
+
         document.querySelector("form").dispatchEvent(new Event("submit"));
     }
-    
-    static executeRedirectAction(componentName: string, routeContext:string, encryptedActionMap: string, confirmationMessage?: string){
+
+    static executeRedirectAction(componentName: string, routeContext: string, encryptedActionMap: string, confirmationMessage?: string) {
         if (confirmationMessage) {
             const result = confirm(confirmationMessage);
             if (!result) {
@@ -45,9 +45,9 @@ class ActionManager {
     private static executeUrlRedirect(url: string) {
         postFormValues({
             url: url,
-            success: (data)=>{
+            success: (data) => {
                 if (data.urlAsPopUp) {
-                    defaultModal.showIframe(data.urlRedirect,data.popUpTitle);
+                    defaultModal.showIframe(data.urlRedirect, data.popUpTitle);
                 } else {
                     window.location.href = data.urlRedirect;
                 }
@@ -55,7 +55,7 @@ class ActionManager {
         })
     }
 
-    static executeAction(componentName: string, encryptedActionMap: string,routeContext: string = null, confirmationMessage: string = null, isModal : boolean = false) {
+    static executeAction(componentName: string, encryptedActionMap: string, routeContext: string = null, confirmationMessage: string = null, isModal: boolean = false) {
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -65,10 +65,10 @@ class ActionManager {
         const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
         const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
 
-        if(gridViewActionInput){
+        if (gridViewActionInput) {
             gridViewActionInput.value = null;
         }
-        if(formViewActionInput){
+        if (formViewActionInput) {
             formViewActionInput.value = encryptedActionMap;
         }
 
@@ -83,14 +83,19 @@ class ActionManager {
             urlBuilder.addQueryParameter("routeContext", routeContext);
 
             const modal = new Modal();
-            modal.modalId = componentName +"-modal";
+            modal.modalId = componentName + "-modal";
 
-            modal.showUrl({url:urlBuilder.build(),requestOptions:{
+            modal.showUrl({
+                url: urlBuilder.build(), requestOptions: {
                     method: "POST",
                     body: new FormData(document.querySelector("form"))
-                }},componentName).then(data=>{
+                }
+            }, componentName).then(function (data) {
+                
+                listenAllEvents("#" + modal.modalId + " ")    
+                
                 if (typeof data === "object") {
-                    if(data.closeModal){
+                    if (data.closeModal) {
                         modal.hide();
                         //GridViewHelper.refresh(componentName,"")
                     }
@@ -102,10 +107,10 @@ class ActionManager {
     }
 
     static executeFormAction(componentName: string, encryptedActionMap: string, confirmationMessage: string) {
-        this.executeAction(componentName, encryptedActionMap, null,confirmationMessage, false);
+        this.executeAction(componentName, encryptedActionMap, null, confirmationMessage, false);
     }
 
-    static executeModalAction(componentName: string, encryptedActionMap: string, routeContext : string, confirmationMessage: string) {
-        this.executeAction(componentName, encryptedActionMap,  routeContext,confirmationMessage,true);
+    static executeModalAction(componentName: string, encryptedActionMap: string, routeContext: string, confirmationMessage: string) {
+        this.executeAction(componentName, encryptedActionMap, routeContext, confirmationMessage, true);
     }
 }

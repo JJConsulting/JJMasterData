@@ -55,7 +55,7 @@ class DataExportationHelper {
             const modalBody = "#data-exportation-modal-" + componentName + " .modal-body ";
             document.querySelector<HTMLElement>(modalBody).innerHTML = html;
             
-            loadJJMasterData(null, modalBody);
+            listenAllEvents(modalBody);
             await DataExportationHelper.startProgressVerification(componentName,routeContext)
         });
         
@@ -127,7 +127,7 @@ class DataExportationHelper {
     private static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
-        loadJJMasterData(null);
+        listenAllEvents();
 
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {

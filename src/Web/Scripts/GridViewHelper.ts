@@ -116,7 +116,7 @@
                 if (gridViewElement) {
                     gridViewElement.innerHTML = data;
                     if (reloadListeners) {
-                        loadJJMasterData();
+                        listenAllEvents();
                     }
                     if(filterActionElement){
                         filterActionElement.value = "";
