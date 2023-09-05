@@ -55,7 +55,16 @@ class ActionManager {
         })
     }
 
-    static executeAction(componentName: string, encryptedActionMap: string, routeContext: string = null, confirmationMessage: string = null, isModal: boolean = false) {
+    static executeActionData(actionData: ActionData){
+        const {
+            componentName,
+            actionMap,
+            modalTitle,
+            modalRouteContext,
+            gridRouteContext,
+            confirmationMessage
+        } = actionData;
+        
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -69,7 +78,7 @@ class ActionManager {
             gridViewActionInput.value = null;
         }
         if (formViewActionInput) {
-            formViewActionInput.value = encryptedActionMap;
+            formViewActionInput.value = actionMap;
         }
 
         let form = document.querySelector<HTMLFormElement>("form");
@@ -78,9 +87,9 @@ class ActionManager {
             return;
         }
 
-        if (isModal) {
+        if (modalRouteContext) {
             const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("routeContext", routeContext);
+            urlBuilder.addQueryParameter("routeContext", modalRouteContext);
 
             const modal = new Modal();
             modal.modalId = componentName + "-modal";
@@ -90,14 +99,14 @@ class ActionManager {
                     method: "POST",
                     body: new FormData(document.querySelector("form"))
                 }
-            }, componentName).then(function (data) {
+            }, modalTitle).then(function (data) {
                 
                 listenAllEvents("#" + modal.modalId + " ")    
                 
                 if (typeof data === "object") {
                     if (data.closeModal) {
                         modal.hide();
-                        //GridViewHelper.refresh(componentName,"")
+                        GridViewHelper.refresh(componentName,gridRouteContext)
                     }
                 }
             })
@@ -105,12 +114,10 @@ class ActionManager {
             form.submit();
         }
     }
-
-    static executeFormAction(componentName: string, encryptedActionMap: string, confirmationMessage: string) {
-        this.executeAction(componentName, encryptedActionMap, null, confirmationMessage, false);
-    }
-
-    static executeModalAction(componentName: string, encryptedActionMap: string, routeContext: string, confirmationMessage: string) {
-        this.executeAction(componentName, encryptedActionMap, routeContext, confirmationMessage, true);
+    
+    static executeAction(actionDataJson: string){
+        const actionData = JSON.parse(actionDataJson);
+        
+        return this.executeActionData(actionData);
     }
 }

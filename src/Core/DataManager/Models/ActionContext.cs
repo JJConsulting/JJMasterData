@@ -13,7 +13,7 @@ public class ActionContext
 {
     public required FormElement FormElement { get; init; }
     public required FormStateData FormStateData { get; init; }
-    public required string? ParentComponentName { get; init; }
+    public required string ParentComponentName { get; init; }
     public bool IsExternalRoute { get; init; }
     public bool IsModal { get; set; }
     public string? FieldName { get; init; }

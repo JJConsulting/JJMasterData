@@ -7,6 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class ActionData {
+}
 class ActionManager {
     static executeSqlCommand(componentName, rowId, confirmMessage) {
         if (confirmMessage) {
@@ -52,7 +54,8 @@ class ActionManager {
             }
         });
     }
-    static executeAction(componentName, encryptedActionMap, routeContext = null, confirmationMessage = null, isModal = false) {
+    static executeActionData(actionData) {
+        const { componentName, actionMap, modalTitle, modalRouteContext, gridRouteContext, confirmationMessage } = actionData;
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -64,15 +67,15 @@ class ActionManager {
             gridViewActionInput.value = null;
         }
         if (formViewActionInput) {
-            formViewActionInput.value = encryptedActionMap;
+            formViewActionInput.value = actionMap;
         }
         let form = document.querySelector("form");
         if (!form) {
             return;
         }
-        if (isModal) {
+        if (modalRouteContext) {
             const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("routeContext", routeContext);
+            urlBuilder.addQueryParameter("routeContext", modalRouteContext);
             const modal = new Modal();
             modal.modalId = componentName + "-modal";
             modal.showUrl({
@@ -80,11 +83,12 @@ class ActionManager {
                     method: "POST",
                     body: new FormData(document.querySelector("form"))
                 }
-            }, componentName).then(function (data) {
+            }, modalTitle).then(function (data) {
                 listenAllEvents("#" + modal.modalId + " ");
                 if (typeof data === "object") {
                     if (data.closeModal) {
                         modal.hide();
+                        GridViewHelper.refresh(componentName, gridRouteContext);
                     }
                 }
             });
@@ -93,11 +97,9 @@ class ActionManager {
             form.submit();
         }
     }
-    static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
-        this.executeAction(componentName, encryptedActionMap, null, confirmationMessage, false);
-    }
-    static executeModalAction(componentName, encryptedActionMap, routeContext, confirmationMessage) {
-        this.executeAction(componentName, encryptedActionMap, routeContext, confirmationMessage, true);
+    static executeAction(actionDataJson) {
+        const actionData = JSON.parse(actionDataJson);
+        return this.executeActionData(actionData);
     }
 }
 class AuditLogViewHelper {

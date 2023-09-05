@@ -15,7 +15,10 @@ using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.UI.Components.Actions;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.UI.Components.FormView;
 
@@ -102,25 +105,30 @@ internal class ActionsScripts
         var actionMap = actionContext.ToActionMap(action.Name, actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
-    
-        string functionSignature;
-
+        
+        var actionData = new ActionData
+        {
+            ComponentName = actionContext.ParentComponentName,
+            EncryptedActionMap = encryptedActionMap,
+            ConfirmationMessage = confirmationMessage
+        };
+        
         if (actionContext.IsModal)
         {
-            var routeContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);
-            var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
-            
-            functionSignature =
-                $"ActionManager.executeModalAction('{actionContext.ParentComponentName}','{encryptedActionMap}','{encryptedRouteContext}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
-        }
-        else
-        {
-            functionSignature =
-                $"ActionManager.executeFormAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
-        }
-        
+            var modalRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);
+            var gridViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
 
-        return functionSignature;
+            actionData.EncryptedModalRouteContext =
+                EncryptionService.EncryptRouteContext(modalRouteContext);
+            actionData.EncryptedGridRouteContext =
+                EncryptionService.EncryptRouteContext(gridViewRouteContext);
+        }
+
+        var actionDataJson = JsonConvert.SerializeObject(actionData, Formatting.None);
+
+        var encodedFunction= HttpUtility.HtmlAttributeEncode($"ActionManager.executeAction('{actionDataJson}')");
+        
+        return encodedFunction;
     }
     
 
@@ -154,6 +162,6 @@ internal class ActionsScripts
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
         return
-            $"JJViewHelper.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            $"ActionManager.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 }
