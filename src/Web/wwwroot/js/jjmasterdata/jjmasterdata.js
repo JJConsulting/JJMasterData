@@ -97,7 +97,7 @@ class ActionManager {
         this.executeAction(componentName, encryptedActionMap, routeContext, confirmationMessage, true);
     }
 }
-class AuditLogHelper {
+class AuditLogViewHelper {
     static viewAuditLog(componentName, id) {
         const auditLogIdInput = document.getElementById("audit-log-id-" + componentName);
         const form = document.querySelector("form");
@@ -108,18 +108,15 @@ class AuditLogHelper {
             form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: false }));
         }
     }
-    static loadAuditLog(componentName, logId, url = null) {
+    static loadAuditLog(componentName, logId, routeContext) {
         $("#sortable-grid a").removeClass("active");
         if (logId != "")
             $("#" + logId).addClass("active");
         document.querySelector('#audit-log-id-' + componentName).value = logId;
-        if (url == null || url.length == 0) {
-            let builder = new UrlBuilder();
-            builder.addQueryParameter("context", "htmlContent");
-            url = builder.build();
-        }
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
         postFormValues({
-            url: url,
+            url: urlBuilder.build(),
             success: function (data) {
                 document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
             }
@@ -609,6 +606,8 @@ class DataImportationHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+        const uploadAreaSelector = "#" + componentName + "-upload-area";
+        $(uploadAreaSelector).uploadFile.afterUploadAll = () => DataImportationHelper.start(componentName, routeContext, gridRouteContext);
         DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
             UploadAreaListener.listenFileUpload();
         });
@@ -2001,7 +2000,7 @@ class UploadViewHelper {
             url = urlBuilder.build();
         }
         const modal = new Modal();
-        modal.modalId = componentName + "-upload-popup";
+        modal.modalId = componentName + "-upload-modal";
         modal.showUrl({ url: url }, null, 1).then(_ => {
             loadJJMasterData();
         });

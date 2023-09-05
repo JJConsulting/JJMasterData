@@ -142,11 +142,17 @@
             });
     }
 
-    static  show(componentName: string, routeContext: string, gridRouteContext: string) {
+    static show(componentName: string, routeContext: string, gridRouteContext: string) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         
         DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+        
+        
+        const uploadAreaSelector = "#" + componentName + "-upload-area";
+
+        // @ts-ignore
+        $(uploadAreaSelector).uploadFile.afterUploadAll = ()=>DataImportationHelper.start(componentName,routeContext,gridRouteContext)
         
         DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.Small).then(_ => {
             UploadAreaListener.listenFileUpload();

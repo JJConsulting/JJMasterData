@@ -46,6 +46,7 @@ public enum ComponentContext
     /// The component is requesting a JJSearchBox result
     /// </summary>
     SearchBox,
-    DownloadFile
-
+    DownloadFile,
+    
+    AuditLogView
 }

@@ -210,15 +210,15 @@ public class JJDataPanel : AsyncComponent
 
         if (ComponentContext is ComponentContext.PanelReload)
         {
-            var html = await GetPanelHtmlAsync();
+            var html = await GetPanelHtmlBuilderAsync();
             var panelHtml = html.ToString();
             return new HtmlComponentResult(panelHtml);
         }
 
-        return new RenderedComponentResult(await GetPanelHtmlAsync());
+        return new RenderedComponentResult(await GetPanelHtmlBuilderAsync());
     }
 
-    internal async Task<HtmlBuilder> GetPanelHtmlAsync()
+    internal async Task<HtmlBuilder> GetPanelHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)

@@ -1,4 +1,4 @@
-class AuditLogHelper{
+class AuditLogViewHelper {
 
     static viewAuditLog(componentName: string, id: string) {
         const auditLogIdInput = document.getElementById("audit-log-id-" + componentName) as HTMLInputElement;
@@ -14,7 +14,7 @@ class AuditLogHelper{
     }
 
     
-    static loadAuditLog(componentName, logId, url = null) {
+    static loadAuditLog(componentName: string, logId: string, routeContext:string) {
         $("#sortable-grid a").removeClass("active");
 
         if (logId != "")
@@ -22,14 +22,12 @@ class AuditLogHelper{
 
         document.querySelector<HTMLInputElement>('#audit-log-id-' + componentName).value = logId;
 
-        if(url == null || url.length == 0){
-            let builder = new UrlBuilder();
-            builder.addQueryParameter("context","htmlContent");
-            url = builder.build();
-        }
+
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext",routeContext);
 
         postFormValues({
-            url:url,
+            url: urlBuilder.build(),
             success: function (data){
                 document.getElementById("auditlogview-panel-" + componentName).innerHTML = data;
             }

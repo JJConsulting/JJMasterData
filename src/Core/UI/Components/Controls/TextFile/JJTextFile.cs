@@ -183,7 +183,7 @@ public class JJTextFile : ControlBase
                 });
         }
 
-        return $"UploadView.open('{Name}','{title}','{values}', '{url}');";
+        return $"UploadViewHelper.open('{Name}','{title}','{values}', '{url}');";
     }
 
     private void LoadValuesFromQuery()

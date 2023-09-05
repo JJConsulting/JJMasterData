@@ -33,7 +33,9 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
+using Microsoft.Extensions.Options;
 
 
 #if NET48
@@ -257,6 +259,7 @@ public class JJFormView : AsyncComponent
     internal IEntityRepository EntityRepository { get; }
     internal IFieldValuesService FieldValuesService { get; }
     internal IExpressionsService ExpressionsService { get; }
+    private JJMasterDataCoreOptions Options { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal IFormService FormService { get; }
@@ -277,6 +280,7 @@ public class JJFormView : AsyncComponent
         ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<IComponentFactory>();
         FormService = StaticServiceLocator.Provider.GetScopedDependentService<IFormService>();
         FieldValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldValuesService>();
+        Options = StaticServiceLocator.Provider.GetScopedDependentService<IOptions<JJMasterDataCoreOptions>>().Value;
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
         StringLocalizer = StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
         DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
@@ -307,6 +311,7 @@ public class JJFormView : AsyncComponent
         IEncryptionService encryptionService,
         IFieldValuesService fieldValuesService,
         IExpressionsService expressionsService,
+        IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
     {
@@ -318,6 +323,7 @@ public class JJFormView : AsyncComponent
         EncryptionService = encryptionService;
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
+        Options = options.Value;
         StringLocalizer = stringLocalizer;
         DataDictionaryRepository = dataDictionaryRepository;
         ComponentFactory = componentFactory;
@@ -330,9 +336,16 @@ public class JJFormView : AsyncComponent
         if (!RouteContext.CanRender(FormElement.Name))
             return new EmptyComponentResult();
 
+        if (RouteContext.ElementName == Options.AuditLogTableName)
+        {
+            AuditLogView.FormElement.ParentName = RouteContext.ParentElementName;
+            return await AuditLogView.GetResultAsync();
+        }
+        
+        
         if (RouteContext.IsCurrentFormElement(FormElement.Name))
             return await GetFormResultAsync();
-
+        
         var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
         formView.FormElement.ParentName = RouteContext.ParentElementName;
         formView.UserValues = UserValues;
@@ -340,13 +353,13 @@ public class JJFormView : AsyncComponent
         var fkValues = EncryptionService.DecryptDictionary(CurrentContext.Request.GetFormValue(formView.GridView.Name + "-fk-values"));
         formView.RelationValues = fkValues;
         
-        return await formView.GetFormResultAsync();
+        return await GetFormResultAsync();
     }
 
     
     internal async Task<ComponentResult> GetFormResultAsync()
     {
-        if (ComponentContext is ComponentContext.GridViewReload)
+        if (ComponentContext is ComponentContext.GridViewReload)  
             return await GridView.GetResultAsync();
         
         if (ComponentContext is ComponentContext.FileUpload)
@@ -361,10 +374,15 @@ public class JJFormView : AsyncComponent
         if (ComponentContext is ComponentContext.GridViewFilterSearchBox)
             return await GridView.GetResultAsync();
         
+        if (ComponentContext is ComponentContext.AuditLogView)
+        {
+            return await AuditLogView.GetResultAsync();
+        }
         if (ComponentContext is ComponentContext.PanelReload)
         {
             return await GetReloadPanelResultAsync();
         }
+        
         if (ComponentContext is ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload)
         {
             return await GetImportationResult();
@@ -485,7 +503,7 @@ public class JJFormView : AsyncComponent
 
             html.WithNameAndId(Name);
             html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
-            html.AppendHiddenInput($"form-view-action-map-{Name}", string.Empty);
+            html.AppendHiddenInput($"form-view-action-map-{Name}", EncryptionService.EncryptActionMap(CurrentActionMap));
 
             return new RenderedComponentResult(html);
         }
@@ -835,8 +853,9 @@ public class JJFormView : AsyncComponent
     {
         var actionMap = _currentActionMap;
         var script = new StringBuilder();
-        script.Append($"$('#form-view-page-state-{Name}').val('{(int)PageState.List}'); ");
-        script.AppendLine("$('form:first').submit(); ");
+        script.Append($"document.getElementById('form-view-page-state-{Name}').value = '{(int)PageState.List}'; ");
+        script.Append($"document.getElementById('form-view-action-map-{Name}').value = null; ");
+        script.AppendLine("document.forms[0].submit(); ");
 
         var goBackAction = new ScriptAction
         {
@@ -981,7 +1000,7 @@ public class JJFormView : AsyncComponent
         if (panel.Errors.Any())
             formHtml.AppendComponent(new JJValidationSummary(panel.Errors));
 
-        var parentPanelHtml = await panel.GetPanelHtmlAsync();
+        var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
 
         var panelActions = panel.FormElement.Options.FormToolbarActions
             .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel || isParent).ToList();
