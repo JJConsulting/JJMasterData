@@ -31,8 +31,7 @@ abstract class ModalBase{
 }
 
 class _Modal extends ModalBase {
-    private bootstrapModal: bootstrap.Modal
-    
+
     private modalSizeCssClass = {
         Default: "jj-modal-default",
         ExtraLarge: "jj-modal-xl",
@@ -41,12 +40,16 @@ class _Modal extends ModalBase {
         Fullscreen: "modal-fullscreen",
     };
     
+    private getBootstrapModal(){
+        return bootstrap.Modal.getOrCreateInstance(this.modalElement);
+    }
+    
     private showModal(){
-        this.bootstrapModal.show();
+        this.getBootstrapModal().show();
     }
 
     private hideModal(){
-        this.bootstrapModal.hide();
+        this.getBootstrapModal().hide();
     }
     
     private getModalCssClass(){
@@ -78,12 +81,10 @@ class _Modal extends ModalBase {
             else{
                 document.body.appendChild(this.modalElement);
             }
-
-            this.bootstrapModal = new bootstrap.Modal(this.modalElement);
             
             const onModalHidden = this.onModalHidden;
             
-            this.modalElement.addEventListener('hidden.bs.modal', function (event) {
+            this.modalElement.addEventListener('hidden.bs.modal', () => {
                 if(onModalHidden){
                     onModalHidden();
                 }
@@ -91,7 +92,6 @@ class _Modal extends ModalBase {
 
         } else {
             this.modalElement = document.getElementById(this.modalId);
-            this.bootstrapModal = new bootstrap.Modal(this.modalElement);
             
             const dialog = document.getElementById(this.modalId + "-dialog");
 
@@ -100,7 +100,7 @@ class _Modal extends ModalBase {
                 //@ts-ignore
                 dialog.classList.remove(cssClass)
             });
-            
+
             dialog.classList.add(this.getModalCssClass())
         }
     }
@@ -124,11 +124,11 @@ class _Modal extends ModalBase {
         this.createModalElement();
 
         return await fetch(options.url, options.requestOptions)
-            .then( response => {
+            .then( async response => {
                 if (response.headers.get("content-type")?.includes("application/json")) {
                     return response.json();
                 } else {
-                   response.text().then((htmlData)=>{
+                   return response.text().then((htmlData)=>{
                         this.setAndShowModal(htmlData)
                     });
                 }
@@ -161,7 +161,6 @@ class _Modal extends ModalBase {
     }
 
     hide() {
-        this.bootstrapModal = new bootstrap.Modal("#" + this.modalId);
         this.hideModal();
     }
 }

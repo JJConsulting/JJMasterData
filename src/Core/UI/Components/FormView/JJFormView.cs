@@ -882,7 +882,7 @@ public class JJFormView : AsyncComponent
         
         
         DataImportation.UserValues = UserValues;
-        DataImportation.BackButton.OnClientClick = "defaultModal.hide()";
+        DataImportation.BackButton.OnClientClick = "DataImportationModal.getInstance().hide()";
         DataImportation.ProcessOptions = action.ProcessOptions;
         DataImportation.EnableAuditLog = GridView.ToolBarActions.LogAction.IsVisible;
 
