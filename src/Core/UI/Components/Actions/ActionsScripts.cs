@@ -96,32 +96,29 @@ internal class ActionsScripts
             $"ActionManager.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
-    public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource, bool isPopup = false)
+    public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)
     {
         var formElement = actionContext.FormElement;
         var actionMap = actionContext.ToActionMap(action.Name, actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
-
+    
         string functionSignature;
-        if (isPopup)
+
+        if (actionContext.IsModal)
         {
+            var routeContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);
+            var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+            
             functionSignature =
-                $"ActionManager.executeFormActionAsModal('{actionContext.ParentComponentName}','{formElement.Title}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+                $"ActionManager.executeModalAction('{actionContext.ParentComponentName}','{encryptedActionMap}','{encryptedRouteContext}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
         else
         {
-            if (actionContext.IsInsideModal)
-            {
-                functionSignature =
-                    $"ActionManager.executeModalAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
-            }
-            else
-            {
-                functionSignature =
-                    $"ActionManager.executeFormAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
-            }
+            functionSignature =
+                $"ActionManager.executeFormAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
         }
+        
 
         return functionSignature;
     }

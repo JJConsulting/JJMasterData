@@ -26,7 +26,7 @@ abstract class ModalBase{
     }
     abstract showIframe(url: string, title: string, size: ModalSize);
 
-    abstract showUrl(options: ModalUrlOptions, title: string, size: ModalSize) : Promise<void>;
+    abstract showUrl(options: ModalUrlOptions, title: string, size: ModalSize) : Promise<any>;
     abstract hide();
 }
 
@@ -81,15 +81,18 @@ class _Modal extends ModalBase {
 
             this.bootstrapModal = new bootstrap.Modal(this.modalElement);
             
-            var onModalHidden = this.onModalHidden;
+            const onModalHidden = this.onModalHidden;
             
             this.modalElement.addEventListener('hidden.bs.modal', function (event) {
-                onModalHidden();
+                if(onModalHidden){
+                    onModalHidden();
+                }
             })
 
         } else {
             this.modalElement = document.getElementById(this.modalId);
-
+            this.bootstrapModal = new bootstrap.Modal(this.modalElement);
+            
             const dialog = document.getElementById(this.modalId + "-dialog");
 
             //@ts-ignore
@@ -119,17 +122,46 @@ class _Modal extends ModalBase {
         this.modalTitle = title;
         this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
-        const modalBody = this.modalElement.querySelector(".modal-body");
-        await fetch(options.url, options.requestOptions)
-            .then((response) => response.text())
-            .then((content) => {
-                modalBody.innerHTML = content;
 
-                this.showModal();
+        return await fetch(options.url, options.requestOptions)
+            .then( response => {
+                if (response.headers.get("content-type")?.includes("application/json")) {
+                    return response.json();
+                } else {
+                   response.text().then((htmlData)=>{
+                        this.setAndShowModal(htmlData)
+                    });
+                }
+        })
+    }
+    
+    private setAndShowModal(content: string){
+        const modalBody = this.modalElement.querySelector<HTMLElement>(`#${this.modalId} .modal-body`);
+        this.setInnerHTML(modalBody, content)
+
+        this.showModal();
+    }
+
+
+    private setInnerHTML(element: HTMLElement, html: string): void {
+        element.innerHTML = html;
+
+        Array.from(element.querySelectorAll("script")).forEach((oldScriptElement: HTMLScriptElement) => {
+            const newScriptElement = document.createElement("script");
+
+            Array.from(oldScriptElement.attributes).forEach((attr) => {
+                newScriptElement.setAttribute(attr.name, attr.value);
             });
+
+            const scriptText = document.createTextNode(oldScriptElement.innerHTML);
+            newScriptElement.appendChild(scriptText);
+
+            oldScriptElement.parentNode?.replaceChild(newScriptElement, oldScriptElement);
+        });
     }
 
     hide() {
+        this.bootstrapModal = new bootstrap.Modal("#" + this.modalId);
         this.hideModal();
     }
 }
@@ -244,8 +276,8 @@ class Modal {
     showIframe(url: string, title: string, size: ModalSize = null) {
         this.instance.showIframe(url,title,size);
     }
-    async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null): Promise<void> {
-        await this.instance.showUrl(options,title,size);
+    async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null): Promise<any> {
+        return await this.instance.showUrl(options,title,size);
     }
     hide() {
         this.instance.hide();

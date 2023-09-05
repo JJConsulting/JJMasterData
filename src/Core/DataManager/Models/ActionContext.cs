@@ -15,7 +15,7 @@ public class ActionContext
     public required FormStateData FormStateData { get; init; }
     public required string? ParentComponentName { get; init; }
     public bool IsExternalRoute { get; init; }
-    public bool IsInsideModal { get; init; }
+    public bool IsModal { get; set; }
     public string? FieldName { get; init; }
     
     public static async Task<ActionContext> FromFormViewAsync(JJFormView formView)
@@ -24,7 +24,7 @@ public class ActionContext
         {
             FormElement = formView.FormElement,
             FormStateData = await formView.GetFormStateDataAsync(),
-            IsInsideModal = formView.ComponentContext is ComponentContext.Modal,
+            IsModal = formView.ComponentContext is ComponentContext.Modal,
             ParentComponentName = formView.Name,
             IsExternalRoute = formView.IsExternalRoute
         };
@@ -37,7 +37,7 @@ public class ActionContext
             FormElement = gridView.FormElement,
             FormStateData = formStateData,
             ParentComponentName = gridView.Name,
-            IsInsideModal = gridView.ComponentContext is ComponentContext.Modal,
+            IsModal = gridView.ComponentContext is ComponentContext.Modal,
             IsExternalRoute = gridView.IsExternalRoute
         };
     }

@@ -55,7 +55,7 @@ class ActionManager {
         })
     }
 
-    static executeAction(componentName, encryptedActionMap, confirmationMessage, isModal) {
+    static executeAction(componentName: string, encryptedActionMap: string,routeContext: string = null, confirmationMessage: string = null, isModal : boolean = false) {
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -80,26 +80,19 @@ class ActionManager {
 
         if (isModal) {
             const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "modal");
-            
-            postFormValues({
-                url: urlBuilder.build(),
-                success:function(data){
-                    const outputElement = document.getElementById(componentName);
-                    if (outputElement) {
-                        if (typeof data === "object") {
-                            if(data.closeModal){
-                                const modal = new Modal();
-                                modal.modalId = componentName +"-modal";
+            urlBuilder.addQueryParameter("routeContext", routeContext);
 
-                                modal.hide();
-                                
-                                //todo
-                                GridViewHelper.refresh(componentName,"")
-                            }
-                        } else {
-                            outputElement.innerHTML = data;
-                        }
+            const modal = new Modal();
+            modal.modalId = componentName +"-modal";
+
+            modal.showUrl({url:urlBuilder.build(),requestOptions:{
+                    method: "POST",
+                    body: new FormData(document.querySelector("form"))
+                }},componentName).then(data=>{
+                if (typeof data === "object") {
+                    if(data.closeModal){
+                        modal.hide();
+                        //GridViewHelper.refresh(componentName,"")
                     }
                 }
             })
@@ -109,37 +102,10 @@ class ActionManager {
     }
 
     static executeFormAction(componentName: string, encryptedActionMap: string, confirmationMessage: string) {
-        this.executeAction(componentName, encryptedActionMap, confirmationMessage, false);
+        this.executeAction(componentName, encryptedActionMap, null,confirmationMessage, false);
     }
 
-    static executeModalAction(componentName: string, encryptedActionMap: string, confirmationMessage: string) {
-        this.executeAction(componentName, encryptedActionMap, confirmationMessage, true);
-    }
-
-    static executeFormActionAsModal(componentName: string,title: string, encryptedActionMap: string, confirmationMessage?: string) {
-        if (confirmationMessage) {
-            if (confirm(confirmationMessage)) {
-                return false;
-            }
-        }
-        
-        const currentTableActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
-
-        currentTableActionInput.value = null;
-        currentFormActionInput.value = encryptedActionMap;
-        
-        let urlBuilder = new UrlBuilder()
-        urlBuilder.addQueryParameter("context","modal")
-        
-        const url = urlBuilder.build()
-        
-        const modal = new Modal();
-        modal.modalId = componentName +"-modal";
-
-        modal.showUrl({url:url,requestOptions:{
-                method: "POST",
-                body: new FormData(document.querySelector("form"))
-            }},title).then(_=>loadJJMasterData())
+    static executeModalAction(componentName: string, encryptedActionMap: string, routeContext : string, confirmationMessage: string) {
+        this.executeAction(componentName, encryptedActionMap,  routeContext,confirmationMessage,true);
     }
 }

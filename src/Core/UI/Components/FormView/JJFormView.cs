@@ -336,7 +336,7 @@ public class JJFormView : AsyncComponent
         var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
         formView.FormElement.ParentName = RouteContext.ParentElementName;
         formView.UserValues = UserValues;
-        
+        formView.DataPanel.FieldNamePrefix = formView.DataPanel.Name + "_"; 
         var fkValues = EncryptionService.DecryptDictionary(CurrentContext.Request.GetFormValue(formView.GridView.Name + "-fk-values"));
         formView.RelationValues = fkValues;
         
@@ -451,7 +451,6 @@ public class JJFormView : AsyncComponent
             return await GridView.GetResultAsync();
         }
 
-        PageState = PageState.Insert;
         return await GetFormResult(new FormContext(values, errors, PageState), true);
     }
 
@@ -481,16 +480,18 @@ public class JJFormView : AsyncComponent
             _ => await GetDefaultResult()
         };
 
-        if (result is not RenderedComponentResult renderedComponentResult)
-            return result;
+        if (result is RenderedComponentResult renderedComponentResult)
+        {
+            var html = renderedComponentResult.HtmlBuilder;
 
-        var html = renderedComponentResult.HtmlBuilder;
-        
-        html.WithNameAndId(Name);
-        html.AppendHiddenInput($"form-view-page-state-{Name.ToLower()}", ((int)PageState).ToString());
-        html.AppendHiddenInput($"form-view-action-map-{Name.ToLower()}", string.Empty);
+            html.WithNameAndId(Name);
+            html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
+            html.AppendHiddenInput($"form-view-action-map-{Name}", string.Empty);
 
-        return new RenderedComponentResult(html);
+            return new RenderedComponentResult(html);
+        }
+
+        return result;
     }
 
 
@@ -929,7 +930,11 @@ public class JJFormView : AsyncComponent
                 EncryptionService.EncryptDictionary(RelationValues));
 
             if (ComponentContext is ComponentContext.Modal)
+            {
+                panelHtml.AppendScript($"document.getElementById('form-view-page-state-{Name}').value={(int)PageState}");
                 return HtmlComponentResult.FromHtmlBuilder(panelHtml);
+            }
+             
 
             if (ShowTitle)
                 panelHtml.Prepend(GridView.GetTitle(values).GetHtmlBuilder());
@@ -973,7 +978,6 @@ public class JJFormView : AsyncComponent
     internal async Task<HtmlBuilder> GetHtmlFromPanel(JJDataPanel panel, bool isParent = false)
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
-        formHtml.WithNameAndId(Name);
 
         if (panel.Errors.Any())
             formHtml.AppendComponent(new JJValidationSummary(panel.Errors));

@@ -52,7 +52,7 @@ class ActionManager {
             }
         });
     }
-    static executeAction(componentName, encryptedActionMap, confirmationMessage, isModal) {
+    static executeAction(componentName, encryptedActionMap, routeContext = null, confirmationMessage = null, isModal = false) {
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -72,23 +72,16 @@ class ActionManager {
         }
         if (isModal) {
             const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("context", "modal");
-            postFormValues({
-                url: urlBuilder.build(),
-                success: function (data) {
-                    const outputElement = document.getElementById(componentName);
-                    if (outputElement) {
-                        if (typeof data === "object") {
-                            if (data.closeModal) {
-                                const modal = new Modal();
-                                modal.modalId = componentName + "-modal";
-                                modal.hide();
-                                GridViewHelper.refresh(componentName, "");
-                            }
-                        }
-                        else {
-                            outputElement.innerHTML = data;
-                        }
+            urlBuilder.addQueryParameter("routeContext", routeContext);
+            const modal = new Modal();
+            modal.modalId = componentName + "-modal";
+            modal.showUrl({ url: urlBuilder.build(), requestOptions: {
+                    method: "POST",
+                    body: new FormData(document.querySelector("form"))
+                } }, componentName).then(data => {
+                if (typeof data === "object") {
+                    if (data.closeModal) {
+                        modal.hide();
                     }
                 }
             });
@@ -98,30 +91,10 @@ class ActionManager {
         }
     }
     static executeFormAction(componentName, encryptedActionMap, confirmationMessage) {
-        this.executeAction(componentName, encryptedActionMap, confirmationMessage, false);
+        this.executeAction(componentName, encryptedActionMap, null, confirmationMessage, false);
     }
-    static executeModalAction(componentName, encryptedActionMap, confirmationMessage) {
-        this.executeAction(componentName, encryptedActionMap, confirmationMessage, true);
-    }
-    static executeFormActionAsModal(componentName, title, encryptedActionMap, confirmationMessage) {
-        if (confirmationMessage) {
-            if (confirm(confirmationMessage)) {
-                return false;
-            }
-        }
-        const currentTableActionInput = document.querySelector("#grid-view-action-" + componentName);
-        const currentFormActionInput = document.querySelector("#form-view-action-map-" + componentName);
-        currentTableActionInput.value = null;
-        currentFormActionInput.value = encryptedActionMap;
-        let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("context", "modal");
-        const url = urlBuilder.build();
-        const modal = new Modal();
-        modal.modalId = componentName + "-modal";
-        modal.showUrl({ url: url, requestOptions: {
-                method: "POST",
-                body: new FormData(document.querySelector("form"))
-            } }, title).then(_ => loadJJMasterData());
+    static executeModalAction(componentName, encryptedActionMap, routeContext, confirmationMessage) {
+        this.executeAction(componentName, encryptedActionMap, routeContext, confirmationMessage, true);
     }
 }
 class AuditLogHelper {
@@ -728,16 +701,13 @@ class DataImportationModal {
     }
 }
 class DataPanelHelper {
-    static reloadAtSamePage(panelname, objid) {
-        let url = new UrlBuilder();
-        url.addQueryParameter("panelName", panelname);
-        url.addQueryParameter("componentName", objid);
-        url.addQueryParameter("context", "panelReload");
-        DataPanelHelper.reload(url.build(), panelname, objid);
-    }
-    static reload(url, componentName, fieldName) {
+    static reload(componentName, fieldName, routeContext) {
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("panelName", componentName);
+        urlBuilder.addQueryParameter("componentName", fieldName);
+        urlBuilder.addQueryParameter("routeContext", routeContext);
         const form = document.querySelector("form");
-        fetch(url, {
+        fetch(urlBuilder.build(), {
             method: form.method,
             body: new FormData(form),
         })
@@ -1416,13 +1386,16 @@ class _Modal extends ModalBase {
                 document.body.appendChild(this.modalElement);
             }
             this.bootstrapModal = new bootstrap.Modal(this.modalElement);
-            var onModalHidden = this.onModalHidden;
+            const onModalHidden = this.onModalHidden;
             this.modalElement.addEventListener('hidden.bs.modal', function (event) {
-                onModalHidden();
+                if (onModalHidden) {
+                    onModalHidden();
+                }
             });
         }
         else {
             this.modalElement = document.getElementById(this.modalId);
+            this.bootstrapModal = new bootstrap.Modal(this.modalElement);
             const dialog = document.getElementById(this.modalId + "-dialog");
             Object.values(ModalSize).forEach(cssClass => {
                 dialog.classList.remove(cssClass);
@@ -1444,16 +1417,40 @@ class _Modal extends ModalBase {
             this.modalTitle = title;
             this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
             this.createModalElement();
-            const modalBody = this.modalElement.querySelector(".modal-body");
-            yield fetch(options.url, options.requestOptions)
-                .then((response) => response.text())
-                .then((content) => {
-                modalBody.innerHTML = content;
-                this.showModal();
+            return yield fetch(options.url, options.requestOptions)
+                .then(response => {
+                var _a;
+                if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
+                    return response.json();
+                }
+                else {
+                    response.text().then((htmlData) => {
+                        this.setAndShowModal(htmlData);
+                    });
+                }
             });
         });
     }
+    setAndShowModal(content) {
+        const modalBody = this.modalElement.querySelector(`#${this.modalId} .modal-body`);
+        this.setInnerHTML(modalBody, content);
+        this.showModal();
+    }
+    setInnerHTML(element, html) {
+        element.innerHTML = html;
+        Array.from(element.querySelectorAll("script")).forEach((oldScriptElement) => {
+            var _a;
+            const newScriptElement = document.createElement("script");
+            Array.from(oldScriptElement.attributes).forEach((attr) => {
+                newScriptElement.setAttribute(attr.name, attr.value);
+            });
+            const scriptText = document.createTextNode(oldScriptElement.innerHTML);
+            newScriptElement.appendChild(scriptText);
+            (_a = oldScriptElement.parentNode) === null || _a === void 0 ? void 0 : _a.replaceChild(newScriptElement, oldScriptElement);
+        });
+    }
     hide() {
+        this.bootstrapModal = new bootstrap.Modal("#" + this.modalId);
         this.hideModal();
     }
 }
@@ -1553,7 +1550,7 @@ class Modal {
     }
     showUrl(options, title, size = null) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.instance.showUrl(options, title, size);
+            return yield this.instance.showUrl(options, title, size);
         });
     }
     hide() {

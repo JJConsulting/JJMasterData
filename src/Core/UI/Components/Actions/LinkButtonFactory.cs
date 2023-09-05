@@ -88,14 +88,13 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                 button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.GridTable);
                 break;
             case GridTableAction gridTableAction:
-                var isModal = false;
 
                 if (gridTableAction is EditAction editAction)
                 {
-                    isModal = editAction.ShowAsPopup;
+                    actionContext.IsModal = editAction.ShowAsPopup;
                 }
                 
-                button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable,isModal);
+                button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable);
                 break;
             default:
                 throw new JJMasterDataException("Action is not user created or a GridTableAction.");
@@ -148,8 +147,12 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                     BootstrapHelper.GetModalScript($"filter_modal_{actionContext.ParentComponentName}");
                 break;
             case InsertAction insertAction:
+                if (insertAction.ShowAsPopup)
+                {
+                    actionContext.IsModal = true;
+                }
                 button.OnClientClick = ActionsScripts.GetFormActionScript(insertAction, actionContext,
-                    ActionSource.GridToolbar, insertAction.ShowAsPopup);
+                    ActionSource.GridToolbar);
                 break;
             case LegendAction:
                 button.OnClientClick =
