@@ -127,7 +127,6 @@ public class JJFormView : AsyncComponent
                 return _dataImportation;
 
             _dataImportation = GridView.DataImportation;
-            _dataImportation.IsExternalRoute = IsExternalRoute;
             _dataImportation.OnAfterDelete += OnAfterDelete;
             _dataImportation.OnAfterInsert += OnAfterInsert;
             _dataImportation.OnAfterUpdate += OnAfterUpdate;
@@ -147,7 +146,6 @@ public class JJFormView : AsyncComponent
             _dataPanel.FormUI = FormElement.Options.Form;
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
-            _dataPanel.IsExternalRoute = IsExternalRoute;
             _dataPanel.PageState = PageState;
 
             return _dataPanel;
@@ -198,7 +196,6 @@ public class JJFormView : AsyncComponent
             _gridView.Name = Name.ToLower();
             _gridView.FormElement = FormElement;
             _gridView.UserValues = UserValues;
-            _gridView.IsExternalRoute = IsExternalRoute;
             _gridView.ShowTitle = true;
 
             _gridView.ToolBarActions.Add(new DeleteSelectedRowsAction());
@@ -300,13 +297,11 @@ public class JJFormView : AsyncComponent
         var dataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         var factory = StaticServiceLocator.Provider.GetScopedDependentService<FormViewFactory>();
         FormElement = dataDictionaryRepository.GetMetadataAsync(elementName).GetAwaiter().GetResult();
-        IsExternalRoute = false;
         factory.SetFormViewParamsAsync(this, FormElement).GetAwaiter().GetResult();
     }
 
     public JJFormView(FormElement formElement) : this()
     {
-        IsExternalRoute = false;
         FormElement = formElement;
     }
 #endif
@@ -325,7 +320,7 @@ public class JJFormView : AsyncComponent
         IComponentFactory componentFactory)
     {
         FormElement = formElement;
-        Name = ComponentNameGenerator.Create(FormElement.Name).ToString();
+        Name = ComponentNameGenerator.Create(FormElement.Name);
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
         FormService = formService;
@@ -380,25 +375,17 @@ public class JJFormView : AsyncComponent
             return await GridView.GetResultAsync();
         
         if (ComponentContext is ComponentContext.AuditLogView)
-        {
             return await AuditLogView.GetResultAsync();
-        }
+        
         if (ComponentContext is ComponentContext.PanelReload)
-        {
             return await GetReloadPanelResultAsync();
-        }
         
         if (ComponentContext is ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload)
-        {
             return await GetImportationResult();
-        }
 
         if (ComponentContext is ComponentContext.UrlRedirect)
-        {
             return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
-        }
-
-
+        
         return await GetFormActionResult();
     }
     
@@ -942,7 +929,6 @@ public class JJFormView : AsyncComponent
         parentPanel.PageState = pageState;
         parentPanel.Errors = errors;
         parentPanel.Values = values;
-        parentPanel.IsExternalRoute = IsExternalRoute;
         parentPanel.AutoReloadFormFields = autoReloadFormFields;
 
         if (!visibleRelationships.Any() || visibleRelationships.Count == 1)
@@ -1197,8 +1183,7 @@ public class JJFormView : AsyncComponent
         {
             FormElement = FormElement,
             FormStateData = new FormStateData(values, UserValues, PageState),
-            ParentComponentName = Name,
-            IsExternalRoute = IsExternalRoute
+            ParentComponentName = Name
         };
         string scriptAction =
             GridView.ActionsScripts.GetFormActionScript(GridView.GridActions.ViewAction, context,
@@ -1220,8 +1205,7 @@ public class JJFormView : AsyncComponent
         {
             FormElement = FormElement,
             FormStateData = new FormStateData(values, UserValues, PageState),
-            ParentComponentName = Name,
-            IsExternalRoute = IsExternalRoute
+            ParentComponentName = Name
         };
         string scriptAction =
             GridView.ActionsScripts.GetFormActionScript(GridView.ToolBarActions.LogAction, context,

@@ -124,7 +124,6 @@ public class JJGridView : AsyncComponent
 
             _dataExportation = ComponentFactory.DataExportation.Create(FormElement);
             _dataExportation.Name = Name;
-            _dataExportation.IsExternalRoute = IsExternalRoute;
             _dataExportation.ExportOptions = CurrentExportConfig;
             _dataExportation.ShowBorder = CurrentSettings?.ShowBorder ?? false;
             _dataExportation.ShowRowStriped = CurrentSettings?.ShowRowStriped ?? false;

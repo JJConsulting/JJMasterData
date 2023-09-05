@@ -62,7 +62,6 @@ internal class DataPanelControl
         FieldsService = dataPanel.FieldsService;
         Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
-        IsExternalRoute = dataPanel.IsExternalRoute;
         FieldNamePrefix = dataPanel.FieldNamePrefix;
         FormState = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
     }
@@ -81,7 +80,6 @@ internal class DataPanelControl
         ControlFactory = gridView.ComponentFactory.Controls;
         ExpressionsService = gridView.ExpressionsService;
         FieldsService = gridView.FieldsService;
-        IsExternalRoute = gridView.IsExternalRoute;
         FormState = new FormStateData(values, gridView.UserValues, PageState.Filter);
     }
 
@@ -313,7 +311,6 @@ internal class DataPanelControl
     private async Task<HtmlBuilder> GetControlField(FormElementField field, object? value)
     {
         var control = await ControlFactory.CreateAsync(FormElement, field, new(Values, UserValues, PageState), value);
-        control.IsExternalRoute = IsExternalRoute;
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             control.Name = FieldNamePrefix + field.Name;

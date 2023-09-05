@@ -14,7 +14,6 @@ public class ActionContext
     public required FormElement FormElement { get; init; }
     public required FormStateData FormStateData { get; init; }
     public required string ParentComponentName { get; init; }
-    public bool IsExternalRoute { get; init; }
     public bool IsModal { get; set; }
     public string? FieldName { get; init; }
     
@@ -25,8 +24,7 @@ public class ActionContext
             FormElement = formView.FormElement,
             FormStateData = await formView.GetFormStateDataAsync(),
             IsModal = formView.ComponentContext is ComponentContext.Modal,
-            ParentComponentName = formView.Name,
-            IsExternalRoute = formView.IsExternalRoute
+            ParentComponentName = formView.Name
         };
     }
     
@@ -37,8 +35,7 @@ public class ActionContext
             FormElement = gridView.FormElement,
             FormStateData = formStateData,
             ParentComponentName = gridView.Name,
-            IsModal = gridView.ComponentContext is ComponentContext.Modal,
-            IsExternalRoute = gridView.IsExternalRoute
+            IsModal = gridView.ComponentContext is ComponentContext.Modal
         };
     }
     

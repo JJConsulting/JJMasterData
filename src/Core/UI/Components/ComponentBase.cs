@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http;
-using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -29,15 +24,6 @@ public abstract class ComponentBase
         get => _userValues ??= new Dictionary<string, object>();
         set => _userValues = value;
     }
-    
-    internal bool IsExternalRoute
-    {
-        get => false;
-        set
-        {
-            value = false;
-        } 
-    }
 
     public bool Visible { get; set; } = true;
 
@@ -59,7 +45,7 @@ public abstract class ComponentBase
     public string CssClass { get; set; }
 
     #endregion
-    
+
     public string GetAttr(string key)
     {
         return Attributes.TryGetValue(key, out var attribute) ? attribute : string.Empty;

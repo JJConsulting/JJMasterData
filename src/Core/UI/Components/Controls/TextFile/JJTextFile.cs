@@ -21,7 +21,6 @@ public class JJTextFile : ControlBase
     
     public const string UploadViewParameterName = "uploadView-";
     
-    private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IEncryptionService EncryptionService { get; }
@@ -53,12 +52,10 @@ public class JJTextFile : ControlBase
 
     public JJTextFile(
         IHttpRequest httpRequest,
-        JJMasterDataUrlHelper urlHelper,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup> textBoxFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer, IEncryptionService encryptionService) : base(httpRequest)
     {
-        UrlHelper = urlHelper;
         UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
         StringLocalizer = stringLocalizer;
@@ -170,19 +167,6 @@ public class JJTextFile : ControlBase
 
         var url = string.Empty;
 
-        if (IsExternalRoute)
-        {
-            var encryptedDictionaryName = EncryptionService.EncryptStringWithUrlEscape(FormElement.Name);
-            url = UrlHelper.GetUrl("GetUploadView", "TextFile","MasterData", 
-                new
-                {
-                    dictionaryName = encryptedDictionaryName, 
-                    fieldName = FormElementField.Name, 
-                    componentName = Name,
-                    uploadViewParams = values
-                });
-        }
-
         return $"UploadViewHelper.open('{Name}','{title}','{values}', '{url}');";
     }
 
@@ -231,7 +215,6 @@ public class JJTextFile : ControlBase
         var dataFile = FormElementField.DataFile!;
         form.Name = FormElementField.Name + "_uploadview"; //this is important
         form.Title = "";
-        form.IsExternalRoute = IsExternalRoute;
         form.AutoSave = false;
         form.GridView.ShowToolbar = false;
         form.RenameAction.SetVisible(true);

@@ -1,5 +1,4 @@
 ﻿using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Localization;
 using Newtonsoft.Json;
 using System;
 using System.Collections;

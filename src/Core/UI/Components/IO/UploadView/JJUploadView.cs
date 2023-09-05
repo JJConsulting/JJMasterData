@@ -88,7 +88,6 @@ public class JJUploadView : AsyncComponent
             
             _upload = ComponentFactory.UploadArea.Create();
             _upload.Name = Name + "-files";
-            _upload.IsExternalRoute = IsExternalRoute;
 
             return _upload;
         }
@@ -116,7 +115,6 @@ public class JJUploadView : AsyncComponent
             
             _gridView.Name = Name + "_gridview";
             _gridView.UserValues = UserValues;
-            _gridView.IsExternalRoute = IsExternalRoute;
             _gridView.ShowPagging = false;
             _gridView.ShowTitle = false;
 
