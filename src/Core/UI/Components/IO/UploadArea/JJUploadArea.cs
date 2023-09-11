@@ -114,6 +114,10 @@ public class JJUploadArea : AsyncComponent
     
     internal ComponentContext ComponentContext => RouteContext.ComponentContext;
     
+    private string IsFilesUploadedFieldName =>  $"{Name}-is-files-uploaded";
+
+    public string JsCallback { get; set; } = @"document.forms[0].submit()";
+
     public JJUploadArea(
         IHttpContext currentContext,
         IUploadAreaService uploadAreaService,
@@ -169,13 +173,14 @@ public class JJUploadArea : AsyncComponent
     internal HtmlBuilder GetUploadAreaHtmlBuilder()
     {
         var div = new HtmlBuilder(HtmlTag.Div)
-            .WithAttribute("id", "divupload")
-            .AppendHiddenInput($"upload-action-{Name}", string.Empty)
+            .WithAttribute("id", "upload-area-div")
+            .AppendHiddenInput(IsFilesUploadedFieldName)
             .Append(HtmlTag.Div,  div =>
                 {
                     div.WithCssClass("fileUpload");
                     div.WithAttributes(Attributes);
                     div.WithAttribute("id", Name);
+                    div.WithAttribute("js-callback",JsCallback);
                     div.WithAttribute("routecontext", EncryptionService.EncryptRouteContext(RouteContext));
                     div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
                     div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
@@ -221,9 +226,8 @@ public class JJUploadArea : AsyncComponent
     
     public bool IsPostAfterUploadAllFiles()
     {
-        string nameField = $"upload-action-{Name}";
-        string action = CurrentContext.Request[nameField];
-        return "afteruploadall".Equals(action);
+        string action = CurrentContext.Request.GetFormValue(IsFilesUploadedFieldName);
+        return "1".Equals(action);
     }
 
 }

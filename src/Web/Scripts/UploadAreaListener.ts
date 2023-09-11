@@ -8,8 +8,8 @@
     private showFileSize: boolean;
     private allowedTypes: string;
     private dragDropLabel: string;
-    private autoSubmit: boolean;
-    constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, autoSubmit) {
+    private jsCallback: string;
+    constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, jsCallback ) {
         this.componentName = componentName;
         this.form = form;
         this.allowMultiple = allowMultiple;
@@ -19,7 +19,7 @@
         this.showFileSize = showFileSize;
         this.allowedTypes = allowedTypes;
         this.dragDropLabel = dragDropLabel;
-        this.autoSubmit = autoSubmit;
+        this.jsCallback = jsCallback;
     }
 }
 
@@ -65,8 +65,9 @@ class UploadAreaListener {
                 }
             },
             afterUploadAll: function (element) {
-                if (options.autoSubmit && element.selectedFiles > 0) {
-                    $("#upload-action-" + options.componentName).val("afteruploadall");
+                if (options.jsCallback && element.selectedFiles > 0) {
+                    document.querySelector<HTMLInputElement>(options.componentName + "-is-files-uploaded").value = "1";
+                    eval(options.jsCallback)
                 }
                 listenAllEvents()
             },
@@ -116,7 +117,7 @@ class UploadAreaListener {
         document.querySelectorAll(selectorPrefix + "div.fileUpload").forEach((element) => {
             let componentName = element.getAttribute("id");
             let multiple = element.getAttribute("jjmultiple") === "true";
-            let autoSubmit = element.getAttribute("autoSubmit") === "true";
+            let jsCallback = element.getAttribute("jscallback");
             let maxFileSize = element.getAttribute("maxFileSize");
             let dragDrop = element.getAttribute("dragDrop");
             let copyPaste = element.getAttribute("copyPaste");
@@ -143,7 +144,7 @@ class UploadAreaListener {
                 showFileSize,
                 allowedTypes,
                 dragDropStr,
-                autoSubmit
+                jsCallback
             );
 
             this.configureFileUpload(fileUploadOptions);
