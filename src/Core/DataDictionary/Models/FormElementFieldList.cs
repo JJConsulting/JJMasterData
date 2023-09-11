@@ -1,8 +1,10 @@
-﻿using JJMasterData.Commons.Data.Entity;
+﻿#nullable enable
+using JJMasterData.Commons.Data.Entity;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace JJMasterData.Core.DataDictionary;
@@ -135,24 +137,23 @@ public class FormElementFieldList : IList<FormElementField>
         }
         set
         {
-            bool isOk = false;
-            for (int i = 0; i < _formFields.Count; i++)
+            var isOk = false;
+            for (var i = 0; i < _formFields.Count; i++)
             {
-                FormElementField e = _formFields[i];
-                if (e.Name.ToLower().Equals(fieldName.ToLower()))
-                {
-                    _formFields[i] = value;
-                    _baseFields[i] = value;
-                    isOk = true;
-                    break;
-                }
+                if (!_formFields[i].Name.ToLower().Equals(fieldName.ToLower()))
+                    continue;
+                
+                _formFields[i] = value;
+                _baseFields[i] = value;
+                isOk = true;
+                break;
             }
             if (!isOk)
                 throw new KeyNotFoundException($"Field {fieldName} not found.");
         }
     }
 
-    public int IndexOf(string fieldName)
+    public int IndexOf(string? fieldName)
     {
         int index = -1;
         for (int i = 0; i < _formFields.Count; i++)
@@ -164,6 +165,18 @@ public class FormElementFieldList : IList<FormElementField>
             }
         }
         return index;
+    }
+
+    public bool TryGetField(string fieldName, out FormElementField? formElementField)
+    {
+        if (Contains(fieldName))
+        {
+            formElementField = this[fieldName];
+            return true;
+        }
+
+        formElementField = null;
+        return false;
     }
  
 }

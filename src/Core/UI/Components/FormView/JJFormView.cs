@@ -359,34 +359,30 @@ public class JJFormView : AsyncComponent
     
     internal async Task<ComponentResult> GetFormResultAsync()
     {
-        if (ComponentContext is ComponentContext.GridViewReload)  
-            return await GridView.GetResultAsync();
         
-        if (ComponentContext is ComponentContext.FileUpload)
-            return await DataPanel.GetResultAsync();
-
-        if (ComponentContext is ComponentContext.DownloadFile)
-            return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
-
-        if (ComponentContext is ComponentContext.SearchBox)
-            return await DataPanel.GetResultAsync();
-
-        if (ComponentContext is ComponentContext.GridViewFilterSearchBox)
-            return await GridView.GetResultAsync();
-        
-        if (ComponentContext is ComponentContext.AuditLogView)
-            return await AuditLogView.GetResultAsync();
-        
-        if (ComponentContext is ComponentContext.PanelReload)
-            return await GetReloadPanelResultAsync();
-        
-        if (ComponentContext is ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload)
-            return await GetImportationResult();
-
-        if (ComponentContext is ComponentContext.UrlRedirect)
-            return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
-        
-        return await GetFormActionResult();
+        switch (ComponentContext)
+        {
+            case ComponentContext.FileUpload:
+            case ComponentContext.TextFile:
+            case ComponentContext.SearchBox:
+                return await DataPanel.GetResultAsync();
+            case ComponentContext.UrlRedirect:
+                return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
+            case ComponentContext.PanelReload:
+                return await GetReloadPanelResultAsync();
+            case ComponentContext.GridViewReload:
+                return await GridView.GetResultAsync();
+            case ComponentContext.GridViewFilterSearchBox:
+                return await GridView.GetResultAsync();
+            case ComponentContext.DownloadFile:
+                return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
+            case ComponentContext.AuditLogView:
+                return await AuditLogView.GetResultAsync();
+            case ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload:
+                return await GetImportationResult();
+            default:
+                return await GetFormActionResult();
+        }
     }
     
     internal async Task<ComponentResult> GetReloadPanelResultAsync()
@@ -1151,7 +1147,7 @@ public class JJFormView : AsyncComponent
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         foreach (var field in uploadFields)
         {
-            string sessionName = $"{field.Name}_uploadview_jjfiles";
+            string sessionName = $"{field.Name}-upload-view_jjfiles";
             if (CurrentContext?.Session[sessionName] != null)
                 CurrentContext.Session[sessionName] = null;
         }

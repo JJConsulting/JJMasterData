@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.UI.Components;
@@ -10,6 +11,8 @@ public class RouteContext
     public string? ParentElementName { get; set; }
     public ComponentContext ComponentContext { get; set; }
 
+    public Dictionary<string, string> AdditionalParameters { get; set; } = new();
+    
     internal RouteContext()
     {
         ComponentContext = ComponentContext.RenderComponent;

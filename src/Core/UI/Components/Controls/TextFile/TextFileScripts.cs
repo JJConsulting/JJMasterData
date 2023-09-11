@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Web;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -7,7 +8,7 @@ using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Components;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.UI.Components.Importation;
+namespace JJMasterData.Core.UI.Components.Controls;
 
 internal class TextFileScripts
 {
@@ -20,24 +21,33 @@ internal class TextFileScripts
 
     public string GetShowScript()
     {
-        var parms = new UploadViewParams
-        {
-            PageState = TextFile.PageState,
-            Enable = TextFile.Enabled && !TextFile.ReadOnly
-        };
+        var title = TextFile.FormElementField.Label?? "Manage Files";
 
-        if (TextFile.PageState != PageState.Insert)
-            parms.PkValues = DataHelper.ParsePkValues(TextFile.FormElement, TextFile.FormValues, '|');
+        title = HttpUtility.JavaScriptStringEncode(TextFile.StringLocalizer[title]);
 
-        var json = JsonConvert.SerializeObject(parms);
-        var values = TextFile.EncryptionService.EncryptStringWithUrlEscape(json);
 
-        var title = TextFile.FormElementField.Label;
-        title = title == null ? "Manage Files" : title.Replace('\'', '`').Replace('\"', ' ');
-
-        title = TextFile.StringLocalizer[title];
-
-        return $"UploadViewHelper.show('{TextFile.Name}','{title}','{values}');";
+        var routeContext = RouteContext.FromFormElement(TextFile.FormElement, ComponentContext.TextFile);
+        
+        return $"UploadViewHelper.show('{TextFile.Name}','{TextFile.FieldName}','{title}','{TextFile.EncryptionService.EncryptRouteContext(routeContext)}');";
     }
 
+    public string GetRefreshScript(JJUploadView uploadView)
+    {
+        return $$"""
+                         document.addEventListener('DOMContentLoaded', function () {
+                             var parentElement = window.parent.document.getElementById('v_{{uploadView.Name}}');
+                             var nameElement = window.parent.document.getElementById(uploadView.Name);
+                             
+                             if (parentElement) {
+                                 parentElement.value = '{{TextFile.GetPresentationText(uploadView)}}';
+                             }
+                             
+                             if (nameElement) {
+                                 nameElement.value = '{{JJTextFile.GetFileName(uploadView)}}';
+                             }
+                         });
+                   
+                 """;
+    }
+    
 }

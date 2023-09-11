@@ -49,19 +49,19 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         if (field.DataFile == null)
             throw new ArgumentException("DataFile cannot be null");
 
-        var text = Create();
-        text.FormElementField = field;
-        text.PageState = formStateData.PageState;
-        text.Text = value != null ? value.ToString() : "";
-        text.FormValues = formStateData.FormValues;
-        text.Name = field.Name;
+        var textFile = Create();
+        textFile.FormElementField = field;
+        textFile.PageState = formStateData.PageState;
+        textFile.Text = value != null ? value.ToString() : "";
+        textFile.FormValues = formStateData.FormValues;
+        textFile.Name = field.Name;
+        textFile.FieldName = field.Name;
+        textFile.Enabled = true;
+        textFile.UserValues = formStateData.UserValues;
+        textFile.FormElement = formElement;
 
-        text.Attributes.Add("parentElementName", formElement.ParentName);
-        text.UserValues = formStateData.UserValues;
-        text.FormElement = formElement;
+        textFile.SetAttr(field.Attributes);
 
-        text.SetAttr(field.Attributes);
-
-        return text;
+        return textFile;
     }
 }

@@ -92,10 +92,7 @@ public class JJUploadArea : AsyncComponent
     private IUploadAreaService UploadAreaService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    
-    
     internal IEncryptionService EncryptionService { get; }
-    
     
     private RouteContext _routeContext;
     internal RouteContext RouteContext

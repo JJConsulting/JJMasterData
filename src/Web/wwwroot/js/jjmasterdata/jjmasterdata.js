@@ -1070,6 +1070,7 @@ document.addEventListener("DOMContentLoaded", function () {
     listenAllEvents();
 });
 const listenAllEvents = (selectorPrefix = String()) => {
+    selectorPrefix += " ";
     $(selectorPrefix + ".selectpicker").selectpicker({
         iconBase: 'fa'
     });
@@ -1999,16 +2000,16 @@ class UploadAreaListener {
     }
 }
 class UploadViewHelper {
-    static show(componentName, title, values) {
-        const panelName = $("#v_" + componentName).attr("panelName");
+    static show(componentName, fieldName, title, routeContext) {
         const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("uploadView-" + panelName, componentName);
-        urlBuilder.addQueryParameter("uploadViewParams", values);
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("fieldName", fieldName);
         const url = urlBuilder.build();
+        const modalId = componentName + "-upload-modal";
         const modal = new Modal();
-        modal.modalId = componentName + "-upload-modal";
-        modal.showUrl({ url: url }, null, 1).then(_ => {
-            listenAllEvents();
+        modal.modalId = modalId;
+        modal.showUrl({ url: url, requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) } }, title, ModalSize.ExtraLarge).then(_ => {
+            listenAllEvents("#" + modalId);
         });
     }
     static performFileAction(componentName, filename, action, promptStr = null) {

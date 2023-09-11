@@ -36,6 +36,8 @@ public enum ComponentContext
     /// The component is uploading a file
     /// </summary>
     FileUpload,
+
+    TextFile,
     
     /// <summary>
     /// The component is requesting a url redirect

@@ -1,21 +1,16 @@
 class UploadViewHelper {
-    static show(componentName: string, title:string, values: string){
-
-        const panelName = $("#v_" + componentName).attr("panelName");
-        
-
+    static show(componentName: string,fieldName: string, title:string, routeContext: string){
         const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("uploadView-" + panelName, componentName)
-        urlBuilder.addQueryParameter("uploadViewParams",values)
+        urlBuilder.addQueryParameter("routeContext",routeContext)
+        urlBuilder.addQueryParameter("fieldName",fieldName)
         const url = urlBuilder.build();
-        
         
         const modalId = componentName + "-upload-modal";
 
         const modal = new Modal();
         modal.modalId =modalId;
         
-        modal.showUrl({url:url},title, ModalSize.Fullscreen).then(_=>{
+        modal.showUrl({url:url, requestOptions: {method:"POST", body: new FormData(document.querySelector("form"))}},title, ModalSize.ExtraLarge).then(_=>{
             listenAllEvents("#" + modalId)
         })
     }
