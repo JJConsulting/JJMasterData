@@ -603,7 +603,7 @@ class DataImportationHelper {
                 let urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", importationRouteContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
-                DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
+                DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.ExtraLarge).then(_ => {
                     GridViewHelper.refreshGrid(componentName, gridRouteContext);
                 });
             }
@@ -618,7 +618,7 @@ class DataImportationHelper {
         DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
         const uploadAreaSelector = "#" + componentName + "-upload-area";
         $(uploadAreaSelector).uploadFile.afterUploadAll = () => DataImportationHelper.start(componentName, routeContext, gridRouteContext);
-        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small).then(_ => {
+        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.ExtraLarge).then(_ => {
             UploadAreaListener.listenFileUpload();
         });
     }
@@ -626,7 +626,7 @@ class DataImportationHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
-        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.Small);
+        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.ExtraLarge);
     }
     static start(componentName, routeContext, gridRouteContext) {
         DataImportationHelper.setLoadMessage();
@@ -1880,7 +1880,7 @@ class TextAreaListener {
     }
 }
 class FileUploadOptions {
-    constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, autoSubmit) {
+    constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, jsCallback) {
         this.componentName = componentName;
         this.form = form;
         this.allowMultiple = allowMultiple;
@@ -1890,7 +1890,7 @@ class FileUploadOptions {
         this.showFileSize = showFileSize;
         this.allowedTypes = allowedTypes;
         this.dragDropLabel = dragDropLabel;
-        this.autoSubmit = autoSubmit;
+        this.jsCallback = jsCallback;
     }
 }
 class UploadAreaListener {
@@ -1933,8 +1933,9 @@ class UploadAreaListener {
                 }
             },
             afterUploadAll: function (element) {
-                if (options.autoSubmit && element.selectedFiles > 0) {
-                    $("#upload-action-" + options.componentName).val("afteruploadall");
+                if (options.jsCallback && element.selectedFiles > 0) {
+                    document.querySelector(selector + "-is-files-uploaded").value = "1";
+                    eval(options.jsCallback);
                 }
                 listenAllEvents();
             },
@@ -1976,7 +1977,7 @@ class UploadAreaListener {
         document.querySelectorAll(selectorPrefix + "div.fileUpload").forEach((element) => {
             let componentName = element.getAttribute("id");
             let multiple = element.getAttribute("jjmultiple") === "true";
-            let autoSubmit = element.getAttribute("autoSubmit") === "true";
+            let jsCallback = element.getAttribute("js-callback");
             let maxFileSize = element.getAttribute("maxFileSize");
             let dragDrop = element.getAttribute("dragDrop");
             let copyPaste = element.getAttribute("copyPaste");
@@ -1989,7 +1990,7 @@ class UploadAreaListener {
             let urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext);
             url = urlBuilder.build();
-            const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, autoSubmit);
+            const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, jsCallback);
             this.configureFileUpload(fileUploadOptions);
             if (copyPaste === "true") {
                 this.handleCopyPaste(componentName);

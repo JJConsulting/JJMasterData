@@ -66,7 +66,7 @@ class UploadAreaListener {
             },
             afterUploadAll: function (element) {
                 if (options.jsCallback && element.selectedFiles > 0) {
-                    document.querySelector<HTMLInputElement>(options.componentName + "-is-files-uploaded").value = "1";
+                    document.querySelector<HTMLInputElement>(selector + "-is-files-uploaded").value = "1";
                     eval(options.jsCallback)
                 }
                 listenAllEvents()
@@ -117,7 +117,7 @@ class UploadAreaListener {
         document.querySelectorAll(selectorPrefix + "div.fileUpload").forEach((element) => {
             let componentName = element.getAttribute("id");
             let multiple = element.getAttribute("jjmultiple") === "true";
-            let jsCallback = element.getAttribute("jscallback");
+            let jsCallback = element.getAttribute("js-callback");
             let maxFileSize = element.getAttribute("maxFileSize");
             let dragDrop = element.getAttribute("dragDrop");
             let copyPaste = element.getAttribute("copyPaste");
