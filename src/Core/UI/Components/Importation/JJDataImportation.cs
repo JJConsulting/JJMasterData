@@ -405,7 +405,7 @@ public class JJDataImportation : ProcessComponent
         area.RouteContext.ComponentContext = ComponentContext.DataImportationFileUpload;
         area.Multiple = false;
         area.EnableCopyPaste = false;
-        area.JsCallback = "console.log('Importation test');";
+        area.JsCallback = DataImportationScripts.GetLogScript();
         area.Name += "-upload-area";
         area.AllowedTypes = "txt,csv,log";
         return area;
