@@ -1999,14 +1999,12 @@ class UploadAreaListener {
     }
 }
 class UploadViewHelper {
-    static open(componentName, title, values, url = null) {
+    static show(componentName, title, values) {
         const panelName = $("#v_" + componentName).attr("panelName");
-        if (url == null || url.length == 0) {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("uploadView-" + panelName, componentName);
-            urlBuilder.addQueryParameter("uploadViewParams", values);
-            url = urlBuilder.build();
-        }
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("uploadView-" + panelName, componentName);
+        urlBuilder.addQueryParameter("uploadViewParams", values);
+        const url = urlBuilder.build();
         const modal = new Modal();
         modal.modalId = componentName + "-upload-modal";
         modal.showUrl({ url: url }, null, 1).then(_ => {

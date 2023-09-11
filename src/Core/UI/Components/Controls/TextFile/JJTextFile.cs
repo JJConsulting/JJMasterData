@@ -9,6 +9,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Importation;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -17,22 +18,26 @@ using Newtonsoft.Json;
 namespace JJMasterData.Core.Web.Components;
 
 public class JJTextFile : ControlBase
-{
-    
+{    
     public const string UploadViewParameterName = "uploadView-";
-    
-    private IComponentFactory<JJUploadView> UploadViewFactory { get; }
-    private IControlFactory<JJTextGroup> TextBoxFactory { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     private IDictionary<string, object> _formValues;
-    private FormFilePathBuilder _pathBuiler;
+    private FormFilePathBuilder _pathBuilder;
+    private TextFileScripts _scripts;
+    private IComponentFactory<JJUploadView> UploadViewFactory { get; }
+    private IControlFactory<JJTextGroup> TextBoxFactory { get; }
+    internal IEncryptionService EncryptionService { get; }
+    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public IDictionary<string, object> FormValues
     {
         get => _formValues ??= new Dictionary<string, object>();
         set => _formValues = value;
+    }
+
+    internal TextFileScripts Scripts
+    {
+        get => _scripts ??= new TextFileScripts(this);
     }
 
     public new string ToolTip
@@ -47,7 +52,7 @@ public class JJTextFile : ControlBase
 
     public FormElement FormElement { get; set; }
 
-    internal FormFilePathBuilder PathBuilder => _pathBuiler ??= new FormFilePathBuilder(FormElement);
+    internal FormFilePathBuilder PathBuilder => _pathBuilder ??= new FormFilePathBuilder(FormElement);
 
 
     public JJTextFile(
@@ -116,7 +121,7 @@ public class JJTextFile : ControlBase
         var btn = new JJLinkButton
         {
             ShowAsButton = true,
-            OnClientClick = GetUploadViewAction(),
+            OnClientClick = Scripts.GetShowScript(),
             ToolTip = "Manage Files",
             IconClass = IconType.Paperclip.GetCssClass()
         };
@@ -144,30 +149,6 @@ public class JJTextFile : ControlBase
                 window.parent.$("#{{Name}}").val("{{GetFileName(uploadView)}}");
             });
         """;
-    }
-
-    private string GetUploadViewAction()
-    {
-        var parms = new UploadViewParams
-        {
-            PageState = PageState,
-            Enable = Enabled && !ReadOnly
-        };
-
-        if (PageState != PageState.Insert)
-            parms.PkValues = DataHelper.ParsePkValues(FormElement, FormValues, '|');
-
-        var json = JsonConvert.SerializeObject(parms);
-        var values = EncryptionService.EncryptStringWithUrlEscape(json);
-
-        var title = FormElementField.Label;
-        title = title == null ? "Manage Files" : title.Replace('\'', '`').Replace('\"', ' ');
-
-        title = StringLocalizer[title];
-
-        var url = string.Empty;
-
-        return $"UploadViewHelper.open('{Name}','{title}','{values}', '{url}');";
     }
 
     private void LoadValuesFromQuery()
@@ -216,6 +197,7 @@ public class JJTextFile : ControlBase
         form.Name = FormElementField.Name + "_uploadview"; //this is important
         form.Title = "";
         form.AutoSave = false;
+        form.Upload.JsCallback =Scripts.GetShowScript(); 
         form.GridView.ShowToolbar = false;
         form.RenameAction.SetVisible(true);
         form.Upload.Multiple = dataFile.MultipleFile;
