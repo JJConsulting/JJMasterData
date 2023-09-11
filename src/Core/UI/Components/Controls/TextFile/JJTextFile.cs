@@ -24,7 +24,7 @@ public class JJTextFile : ControlBase
     private FormFilePathBuilder _pathBuilder;
     private RouteContext _routeContext;
     private TextFileScripts _scripts;
-    
+    private JJUploadView _uploadView;
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -56,7 +56,7 @@ public class JJTextFile : ControlBase
     internal FormFilePathBuilder PathBuilder => _pathBuilder ??= new FormFilePathBuilder(FormElement);
 
     
-    private RouteContext RouteContext
+    internal RouteContext RouteContext
     {
         get
         {
@@ -70,6 +70,42 @@ public class JJTextFile : ControlBase
         }
     }
 
+    private JJUploadView UploadView
+    {
+        get
+        {
+            if (_uploadView is not null) 
+                return _uploadView;
+            
+            _uploadView = UploadViewFactory.Create();
+            _uploadView.Name = FormElementField.Name + "-upload-view";
+            _uploadView.Title = string.Empty;
+            _uploadView.AutoSave = false;
+            _uploadView.ShowAddFiles = PageState is not PageState.View;
+            _uploadView.UploadArea.JsCallback = Scripts.GetShowScript();
+            _uploadView.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
+            _uploadView.UploadArea.QueryStringParams["fieldName"] = FieldName;
+            _uploadView.GridView.ShowToolbar = false;
+            _uploadView.RenameAction.SetVisible(true);
+
+            var dataFile = FormElementField.DataFile!;
+            _uploadView.UploadArea.Multiple = dataFile.MultipleFile;
+            _uploadView.UploadArea.MaxFileSize = dataFile.MaxFileSize;
+            _uploadView.UploadArea.ShowFileSize = dataFile.ExportAsLink;
+            _uploadView.UploadArea.AllowedTypes = dataFile.AllowedTypes;
+            _uploadView.ViewGallery = dataFile.ViewGallery;
+
+            if (HasPk())
+                _uploadView.FolderPath = GetFolderPath();
+
+            if (!Enabled)
+                _uploadView.Disable();
+
+            return _uploadView;
+        }
+    }
+
+    
 
     public JJTextFile(
         IHttpRequest httpRequest,
@@ -85,25 +121,28 @@ public class JJTextFile : ControlBase
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (IsUploadViewRoute())
-            return await GetUploadViewResultAsync();
-
-        return new RenderedComponentResult(await GetHtmlTextGroup());
+        switch (RouteContext.ComponentContext)
+        {
+            case ComponentContext.TextFileUploadView:
+                return await GetUploadViewResultAsync();
+            case ComponentContext.TextFileFileUpload:
+                return await UploadView.UploadArea.GetFileUploadResultAsync();
+            default:
+                return new RenderedComponentResult(await GetHtmlTextGroup());
+        }
     }
 
-    internal async Task<ComponentResult> GetUploadViewResultAsync()
+    private async Task<ComponentResult> GetUploadViewResultAsync()
     {
-
-        var uploadView = GetUploadView();
 
         var html = new HtmlBuilder();
 
-        var result = await uploadView.GetResultAsync();
+        var result = await UploadView.GetResultAsync();
 
-        if (result is RenderedComponentResult renderedUpload)
+        if (result is RenderedComponentResult uploadViewResult)
         {
-            html.Append(renderedUpload.HtmlBuilder);
-            html.AppendScript(Scripts.GetRefreshScript(uploadView));
+            html.Append(uploadViewResult.HtmlBuilder);
+            html.AppendScript(Scripts.GetRefreshScript(UploadView));
         }
         else
         {
@@ -115,10 +154,8 @@ public class JJTextFile : ControlBase
 
     private async Task<HtmlBuilder> GetHtmlTextGroup()
     {
-        var formUpload = GetUploadView();
-
         if (!Enabled)
-            formUpload.ClearMemoryFiles();
+            UploadView.ClearMemoryFiles();
 
         var textGroup = TextBoxFactory.Create();
         textGroup.CssClass = CssClass;
@@ -126,7 +163,7 @@ public class JJTextFile : ControlBase
         textGroup.Name = $"v_{Name}";
         textGroup.ToolTip = ToolTip;
         textGroup.Attributes = Attributes;
-        textGroup.Text = GetPresentationText(formUpload);
+        textGroup.Text = GetPresentationText();
 
         var btn = new JJLinkButton
         {
@@ -145,7 +182,7 @@ public class JJTextFile : ControlBase
             {
                 i.WithAttribute("type", "hidden")
                     .WithNameAndId(Name)
-                    .WithAttribute("value", GetFileName(formUpload));
+                    .WithAttribute("value", GetFileName());
             });
 
         return html;
@@ -154,43 +191,16 @@ public class JJTextFile : ControlBase
     public void SaveMemoryFiles()
     {
         string folderPath = GetFolderPath();
-        var uploadView = GetUploadView();
+        var uploadView = UploadView;
         uploadView.SaveMemoryFiles(folderPath);
     }
 
     public void DeleteAll()
     {
-        var uploadView = GetUploadView();
+        var uploadView = UploadView;
         uploadView.FolderPath = GetFolderPath();
         uploadView.DeleteAll();
     }
-
-    private JJUploadView GetUploadView()
-    {
-        var form = UploadViewFactory.Create();
-        var dataFile = FormElementField.DataFile!;
-        form.Name = FormElementField.Name + "-upload-view";
-        form.Title = string.Empty;
-        form.AutoSave = false;
-        form.ShowAddFiles = PageState is not PageState.View;
-        form.Upload.JsCallback = Scripts.GetShowScript();
-        form.GridView.ShowToolbar = false;
-        form.RenameAction.SetVisible(true);
-        form.Upload.Multiple = dataFile.MultipleFile;
-        form.Upload.MaxFileSize = dataFile.MaxFileSize;
-        form.Upload.ShowFileSize = dataFile.ExportAsLink;
-        form.Upload.AllowedTypes = dataFile.AllowedTypes;
-        form.ViewGallery = dataFile.ViewGallery;
-
-        if (HasPk())
-            form.FolderPath = GetFolderPath();
-
-        if (!Enabled)
-            form.Disable();
-
-        return form;
-    }
-
     private bool HasPk()
     {
         var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
@@ -205,10 +215,10 @@ public class JJTextFile : ControlBase
         return PathBuilder.GetFolderPath(FormElementField, FormValues);
     }
 
-    internal static string GetFileName(JJUploadView uploadView)
+    internal string GetFileName()
     {
         string fileNames = string.Empty;
-        var listFile = uploadView.GetFiles().FindAll(x => !x.Deleted);
+        var listFile = UploadView.GetFiles().FindAll(x => !x.Deleted);
         foreach (var file in listFile)
         {
             if (fileNames != string.Empty)
@@ -220,9 +230,9 @@ public class JJTextFile : ControlBase
         return fileNames;
     }
 
-    internal string GetPresentationText(JJUploadView uploadView)
+    internal string GetPresentationText()
     {
-        var files = uploadView.GetFiles().FindAll(x => !x.Deleted);
+        var files = UploadView.GetFiles().FindAll(x => !x.Deleted);
 
         return files.Count switch
         {
@@ -290,11 +300,5 @@ public class JJTextFile : ControlBase
         url += EncryptionService.EncryptStringWithUrlEscape(filePath);
 
         return url;
-    }
-
-    private bool IsUploadViewRoute()
-    {
-        return RouteContext.ComponentContext is ComponentContext.FileUpload || RouteContext.ComponentContext is ComponentContext.TextFile &&
-               RouteContext.IsCurrentFormElement(FormElement.Name);
     }
 }

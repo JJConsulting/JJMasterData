@@ -31,13 +31,9 @@ public enum ComponentContext
     
     DataImportation,
     DataImportationFileUpload,
-    
-    /// <summary>
-    /// The component is uploading a file
-    /// </summary>
-    FileUpload,
-
-    TextFile,
+        
+    TextFileUploadView,
+    TextFileFileUpload,
     
     /// <summary>
     /// The component is requesting a url redirect
@@ -50,5 +46,6 @@ public enum ComponentContext
     SearchBox,
     DownloadFile,
     
-    AuditLogView
+    AuditLogView,
+
 }

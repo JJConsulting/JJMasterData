@@ -5,8 +5,11 @@ using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Extensions;
@@ -111,9 +114,11 @@ public class JJUploadArea : AsyncComponent
     
     internal ComponentContext ComponentContext => RouteContext.ComponentContext;
     
-    private string IsFilesUploadedFieldName =>  $"{Name}-is-files-uploaded";
+    private string AreFilesUploadedFieldName =>  $"{Name}-are-files-uploaded";
 
     public string JsCallback { get; set; } = @"document.forms[0].submit()";
+
+    public Dictionary<string, string> QueryStringParams { get; } = new();
 
     public JJUploadArea(
         IHttpContext currentContext,
@@ -147,11 +152,9 @@ public class JJUploadArea : AsyncComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (ComponentContext is ComponentContext.FileUpload)
-        {
+        if (IsPostAfterUploadAllFiles())
             return await GetFileUploadResultAsync();
-        }
-
+        
         return new RenderedComponentResult(GetUploadAreaHtmlBuilder());
     }
 
@@ -171,15 +174,16 @@ public class JJUploadArea : AsyncComponent
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "upload-area-div")
-            .AppendHiddenInput(IsFilesUploadedFieldName)
+            .AppendHiddenInput(AreFilesUploadedFieldName)
             .Append(HtmlTag.Div,  div =>
                 {
                     div.WithCssClass("fileUpload");
                     div.WithAttributes(Attributes);
                     div.WithAttribute("id", Name);
                     div.WithAttribute("js-callback",JsCallback);
-                    div.WithAttribute("routecontext", EncryptionService.EncryptRouteContext(RouteContext));
+                    div.WithAttribute("route-context", EncryptionService.EncryptRouteContext(RouteContext));
                     div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
+                    div.WithAttribute("query-string-params", GetQueryStringParams());
                     div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
                     div.WithAttribute("dragDrop", EnableDragDrop.ToString().ToLower());
                     div.WithAttribute("copyPaste", EnableCopyPaste.ToString().ToLower());
@@ -223,8 +227,21 @@ public class JJUploadArea : AsyncComponent
     
     public bool IsPostAfterUploadAllFiles()
     {
-        string action = CurrentContext.Request.GetFormValue(IsFilesUploadedFieldName);
+        string action = CurrentContext.Request.GetFormValue(AreFilesUploadedFieldName);
         return "1".Equals(action);
     }
+    
+    public string GetQueryStringParams()
+    {
+        if (QueryStringParams.Count == 0)
+            return string.Empty;
 
+        var keyValuePairs = 
+            from kvp in QueryStringParams
+            let key = HttpUtility.UrlEncode(kvp.Key) 
+            let value = HttpUtility.UrlEncode(kvp.Value)
+            select $"{key}={value}";
+        return string.Join("&", keyValuePairs);
+    }
+    
 }

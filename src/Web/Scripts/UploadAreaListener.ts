@@ -66,7 +66,7 @@ class UploadAreaListener {
             },
             afterUploadAll: function (element) {
                 if (options.jsCallback && element.selectedFiles > 0) {
-                    document.querySelector<HTMLInputElement>(selector + "-is-files-uploaded").value = "1";
+                    document.querySelector<HTMLInputElement>(selector + "-are-files-uploaded").value = "1";
                     eval(options.jsCallback)
                 }
                 listenAllEvents()
@@ -121,7 +121,8 @@ class UploadAreaListener {
             let maxFileSize = element.getAttribute("maxFileSize");
             let dragDrop = element.getAttribute("dragDrop");
             let copyPaste = element.getAttribute("copyPaste");
-            let routeContext = element.getAttribute("routecontext");
+            let routeContext = element.getAttribute("route-context");
+            let queryStringParams = element.getAttribute("query-string-params");
             let showFileSize = element.getAttribute("showFileSize");
             let allowedTypes = element.getAttribute("allowedTypes");
             let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
@@ -132,6 +133,16 @@ class UploadAreaListener {
             
             let urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext",routeContext)
+
+            const params = queryStringParams.split('&');
+
+            for (let i = 0; i < params.length; i++) {
+                const param = params[i].split('=');
+                const key = decodeURIComponent(param[0]);
+                const value = decodeURIComponent(param[1]);
+                urlBuilder.addQueryParameter(key,value);
+            }
+            
             url = urlBuilder.build();
 
             const fileUploadOptions = new FileUploadOptions(

@@ -69,7 +69,7 @@ public class FormElementFieldList : IList<FormElementField>
         _formFields.Clear();
     }
 
-    public bool Contains(string fieldName)
+    public bool Contains(string? fieldName)
     {
         return _formFields.Any(val => val.Name.Equals(fieldName));
     }

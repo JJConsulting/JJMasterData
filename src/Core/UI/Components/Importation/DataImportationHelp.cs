@@ -221,7 +221,7 @@ internal class DataImportationHelp
 
     private string GetInfoText(int columnsCount)
     {
-        var upload = DataImportation.Upload;
+        var upload = DataImportation.UploadArea;
         var text = new StringBuilder();
         text.Append(StringLocalizer["To bulk insert records, select a file of type"]);
         text.Append("<b>");

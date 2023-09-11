@@ -154,7 +154,7 @@
         // @ts-ignore
         $(uploadAreaSelector).uploadFile.afterUploadAll = ()=>DataImportationHelper.start(componentName,routeContext,gridRouteContext)
         
-        DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.ExtraLarge).then(_ => {
+        DataImportationModal.getInstance().showUrl({url: urlBuilder.build(),requestOptions: {method: "POST", body: new FormData(document.querySelector("form"))}}, "Import", ModalSize.ExtraLarge).then(_ => {
             UploadAreaListener.listenFileUpload();
         })
     }

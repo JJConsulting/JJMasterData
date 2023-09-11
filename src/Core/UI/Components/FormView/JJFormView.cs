@@ -362,8 +362,8 @@ public class JJFormView : AsyncComponent
         
         switch (ComponentContext)
         {
-            case ComponentContext.FileUpload:
-            case ComponentContext.TextFile:
+            case ComponentContext.TextFileUploadView:
+            case ComponentContext.TextFileFileUpload:
             case ComponentContext.SearchBox:
                 return await DataPanel.GetResultAsync();
             case ComponentContext.UrlRedirect:

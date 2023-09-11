@@ -194,7 +194,8 @@ public class JJDataPanel : AsyncComponent
 
         switch (ComponentContext)
         {
-            case ComponentContext.FileUpload or ComponentContext.TextFile:
+            case ComponentContext.TextFileUploadView:
+            case ComponentContext.TextFileFileUpload:
                 return await GetFieldResultAsync<JJTextFile>();
             case ComponentContext.SearchBox:
                 return await GetFieldResultAsync<JJSearchBox>();
