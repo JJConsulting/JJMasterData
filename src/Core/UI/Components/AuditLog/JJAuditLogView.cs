@@ -307,7 +307,7 @@ public class JJAuditLogView : AsyncComponent
         {
             Type = LinkButtonType.Button,
             CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = $"JJViewHelper.viewLog('{Name}','');",
+            OnClientClick = $"AuditLogViewHelper.viewLog('{Name}','');",
             IconClass = IconType.ArrowLeft.GetCssClass(),
             Text = "Back"
         };

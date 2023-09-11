@@ -28,6 +28,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Hashing;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
@@ -51,7 +52,7 @@ namespace JJMasterData.Core.Web.Components;
 /// </example>
 public class JJGridView : AsyncComponent
 {
-    #region "Events"
+    #region Events
 
     public event EventHandler<GridCellEventArgs>? OnRenderCell;
 
@@ -80,7 +81,7 @@ public class JJGridView : AsyncComponent
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
     #endregion
 
-    #region "Properties"
+    #region Properties
     private RouteContext? _routeContext;
     private OrderByData? _currentOrder;
     private string? _selectedRowsId;
@@ -539,7 +540,7 @@ public class JJGridView : AsyncComponent
 
     #endregion
 
-    #region "Constructors"
+    #region Constructors
 
     internal JJGridView(
         FormElement formElement,
@@ -824,7 +825,7 @@ public class JJGridView : AsyncComponent
         {
             script.AppendLine("\t$(document).ready(function () {");
             script.AppendLine("\t\t$(\".jjselect input\").change(function() {");
-            script.AppendLine("\t\t\tJJViewHelper.selectItem('" + Name + "', $(this)); ");
+            script.AppendLine("\t\t\tGridViewSelectionHelper.selectItem('" + Name + "', $(this)); ");
             script.AppendLine("\t\t});");
             script.AppendLine("\t});");
         }
@@ -1132,7 +1133,7 @@ public class JJGridView : AsyncComponent
     
     private async Task SetDataSource()
     {
-        if (_dataSource == null || IsUserSetDataSource)
+        if (DataSource == null && !IsUserSetDataSource)
         {
             var result = await GetDataSourceAsync(new EntityParameters
             {
@@ -1166,7 +1167,7 @@ public class JJGridView : AsyncComponent
         if (IsUserSetDataSource && DataSource != null)
         {
 
-            var dataView = new DataView(EnumerableHelper.ConvertToDataTable(DataSource));
+            var dataView = new DataView(EnumerableHelper.ConvertToDataTable(DataSource.DeepCopy()));
             dataView.Sort = parameters.OrderBy.ToQueryParameter();
 
             dataTable = dataView.ToTable();

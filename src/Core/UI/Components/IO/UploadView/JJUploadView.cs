@@ -46,7 +46,7 @@ public class JJUploadView : AsyncComponent
     private ScriptAction _deleteAction;
     private ScriptAction _renameAction;
     private JJGridView _gridView;
-    private JJUploadArea _upload;
+    private JJUploadArea _uploadArea;
     private FormFileManager _formFileManager;
 
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
@@ -83,13 +83,14 @@ public class JJUploadView : AsyncComponent
     {
         get
         {
-            if (_upload != null)
-                return _upload;
+            if (_uploadArea != null)
+                return _uploadArea;
             
-            _upload = ComponentFactory.UploadArea.Create();
-            _upload.Name = Name + "-files";
+            _uploadArea = ComponentFactory.UploadArea.Create();
+            _uploadArea.OnFileUploaded += OnFileUploaded;
+            _uploadArea.Name = Name + "-files";
 
-            return _upload;
+            return _uploadArea;
         }
     }
 
@@ -100,7 +101,7 @@ public class JJUploadView : AsyncComponent
             if (_gridView != null)
                 return _gridView;
 
-            var dt = GetDataTableFiles();
+            var dt = GetFilesDataTable();
             _gridView = ComponentFactory.GridView.Create(new FormElement(dt));
             _gridView.DataSource = EnumerableHelper.ConvertToDictionaryList(dt);
             _gridView.TotalOfRecords = dt.Rows.Count;
@@ -150,7 +151,7 @@ public class JJUploadView : AsyncComponent
             Icon = IconType.CloudDownload,
             ToolTip = "Download File",
             Name = "DOWNLOADFILE",
-            OnClientClick = "JJViewHelper.downloadFile('" + Name + "','{NameJS}');"
+            OnClientClick = "UploadViewHelper.downloadFile('" + Name + "','{NameJS}');"
         };
 
     public ScriptAction DeleteAction
@@ -165,7 +166,7 @@ public class JJUploadView : AsyncComponent
             {
                 Icon = IconType.Trash,
                 ToolTip = "Delete File",
-                OnClientClick = "JJViewHelper.deleteFile('" + Name + "','{NameJS}', '" + promptStr + "');",
+                OnClientClick = "UploadViewHelper.deleteFile('" + Name + "','{NameJS}', '" + promptStr + "');",
                 Name = "DELFILE"
             };
             return _deleteAction;
@@ -184,7 +185,7 @@ public class JJUploadView : AsyncComponent
             {
                 Icon = IconType.PencilSquareO,
                 ToolTip = "Rename File",
-                OnClientClick = "JJViewHelper.renameFile('" + Name + "','{NameJS}','" + promptStr + "');",
+                OnClientClick = "UploadViewHelper.renameFile('" + Name + "','{NameJS}','" + promptStr + "');",
                 Name = "RENAMEFILE"
             };
             _renameAction.SetVisible(false);
@@ -238,7 +239,6 @@ public class JJUploadView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        UploadArea.OnFileUploaded += OnFileUploaded;
         
         var uploadAreaResult = await UploadArea.GetResultAsync();
 
@@ -247,6 +247,11 @@ public class JJUploadView : AsyncComponent
             return uploadAreaResult;
         }
         
+        return await GetUploadViewResult();
+    }
+
+    public async Task<ComponentResult> GetUploadViewResult()
+    {
         string previewImage = CurrentContext.Request["previewImage"];
         if (!string.IsNullOrEmpty(previewImage))
             return HtmlComponentResult.FromHtmlBuilder(GetHtmlPreviewImage(previewImage));
@@ -264,9 +269,18 @@ public class JJUploadView : AsyncComponent
         if (!string.IsNullOrEmpty(Title))
             html.AppendComponent(new JJTitle(Title, SubTitle));
 
-        html.Append(GetHtmlForm());
-        html.Append(ViewGallery ? await GetHtmlGallery() : await GetHtmlGridView());
-        html.AppendComponent(await GetHtmlPreviewModal());
+        html.Append(GetUploadAreaHtml());
+
+        if (ViewGallery)
+        {
+            html.Append(await GetGalleryHtml());
+        }
+        else
+        {
+            html.Append(await GetGridViewHtml());
+        }
+
+        html.AppendComponent(await GetPreviewModalHtml());
 
         return new RenderedComponentResult(html);
     }
@@ -367,7 +381,7 @@ public class JJUploadView : AsyncComponent
         return null;
     }
 
-    private HtmlBuilder GetHtmlForm()
+    private HtmlBuilder GetUploadAreaHtml()
     {
         var html = new HtmlBuilder()
            .AppendHiddenInput($"upload-action-{Name}")
@@ -404,16 +418,13 @@ public class JJUploadView : AsyncComponent
         return panelContent;
     }
 
-    private async Task<HtmlBuilder> GetHtmlGridView()
+    private async Task<HtmlBuilder> GetGridViewHtml()
     {
-        var result = await GridView.GetResultAsync();
-        if (result is RenderedComponentResult renderedComponentResult)
-            return renderedComponentResult.HtmlBuilder;
-
-        throw new InvalidOperationException("Invalid GridView result");
+        return await GridView.GetHtmlBuilderAsync();
+        
     }
 
-    private async Task<HtmlBuilder> GetHtmlGallery()
+    private async Task<HtmlBuilder> GetGalleryHtml()
     {
         var files = FormFileManager.GetFiles();
         if (files.Count <= 0) return null;
@@ -444,9 +455,9 @@ public class JJUploadView : AsyncComponent
                     await li.AppendAsync(HtmlTag.Table, async table =>
                     {
                         table.WithCssClass("table-gallery");
-                        var files = ConvertFormFileToDictionary(file);
-                        var formState = new FormStateData(files, UserValues, PageState.List);
-                        var htmlActions = GridView.Table.Body.GetActionsHtmlListAsync(formState);
+                        var fileValues = ConvertFormFileToDictionary(file);
+                        var formStateData = new FormStateData(fileValues, UserValues, PageState.List);
+                        var htmlActions = GridView.Table.Body.GetActionsHtmlListAsync(formStateData);
                         await table.AppendRangeAsync(htmlActions);
                     });
                 });
@@ -613,7 +624,7 @@ public class JJUploadView : AsyncComponent
         return dictionary;
     }
 
-    private async Task<JJModalDialog> GetHtmlPreviewModal()
+    private async Task<JJModalDialog> GetPreviewModalHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
 
@@ -685,7 +696,7 @@ public class JJUploadView : AsyncComponent
         return modal;
     }
 
-    private DataTable GetDataTableFiles()
+    private DataTable GetFilesDataTable()
     {
         var files = FormFileManager.GetFiles();
         var dt = new DataTable();
@@ -708,11 +719,12 @@ public class JJUploadView : AsyncComponent
         return dt;
     }
 
-    public void OnFileUploaded(object sender, FormUploadFileEventArgs args)
+    private void OnFileUploaded(object sender, FormUploadFileEventArgs args)
     {
         try
         {
             CreateFile(args.File);
+            args.SuccessMessage = "File sucessfully created.";
         }
         catch (Exception ex)
         {

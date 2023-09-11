@@ -53,10 +53,9 @@ public class JJTextFile : ControlBase
 
     public FormElement FormElement { get; set; }
 
-    internal FormFilePathBuilder PathBuilder => _pathBuilder ??= new FormFilePathBuilder(FormElement);
-
+    private FormFilePathBuilder PathBuilder => _pathBuilder ??= new FormFilePathBuilder(FormElement);
     
-    internal RouteContext RouteContext
+    private RouteContext RouteContext
     {
         get
         {
@@ -137,14 +136,14 @@ public class JJTextFile : ControlBase
 
         var html = new HtmlBuilder();
 
-        var result = await UploadView.GetResultAsync();
+        var result = await UploadView.GetUploadViewResult();
 
         if (result is RenderedComponentResult uploadViewResult)
         {
             html.Append(uploadViewResult.HtmlBuilder);
             html.AppendScript(Scripts.GetRefreshScript(UploadView));
         }
-        else
+        else 
         {
             return result;
         }

@@ -48,7 +48,7 @@ internal class GridSortingConfig
             IconClass = IconType.Check.GetCssClass(),
             ShowAsButton = true,
             Text = "Sort",
-            OnClientClick = $"JJViewHelper.sortItems('{Name}');"
+            OnClientClick = $"GridViewHelper.sortItems('{Name}');"
         };
         dialog.Buttons.Add(btnSort);
 

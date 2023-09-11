@@ -438,7 +438,7 @@ public class JJFormView : AsyncComponent
                             .WithAttribute("style", "display:none")
                             .Append(alertHtml);
                     });
-                    htmlResult.AppendScript($"JJViewHelper.showInsertSucess('{Name}');");
+                    htmlResult.AppendScript($"FormViewHelper.showInsertSucess('{Name}');");
 
                     return new RenderedComponentResult(htmlResult);
                 }
@@ -1081,7 +1081,7 @@ public class JJFormView : AsyncComponent
 
         var map = new ActionMap(ActionSource.GridTable, grid.FormElement, e.FieldValues, e.Action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(map);
-        e.LinkButton.OnClientClick = $"JJViewHelper.openSelectElementInsert('{Name}','{encryptedActionMap}');";
+        e.LinkButton.OnClientClick = $"FormViewHelper.openSelectElementInsert('{Name}','{encryptedActionMap}');";
     }
 
     /// <summary>

@@ -23,7 +23,7 @@ internal class TextFileScripts
 
         var routeContext = RouteContext.FromFormElement(TextFile.FormElement, ComponentContext.TextFileUploadView);
         
-        return $"UploadViewHelper.show('{TextFile.Name}','{TextFile.FieldName}','{title}','{TextFile.EncryptionService.EncryptRouteContext(routeContext)}');";
+        return $"UploadViewHelper.show('{TextFile.FieldName}','{title}','{TextFile.EncryptionService.EncryptRouteContext(routeContext)}');";
     }
 
     public string GetRefreshScript(JJUploadView uploadView)

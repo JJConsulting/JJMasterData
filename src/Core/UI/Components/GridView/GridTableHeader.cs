@@ -227,7 +227,7 @@ internal class GridTableHeader
                     {
                         a.WithCssClass("dropdown-item");
                         a.WithAttribute("href", "javascript:void(0);");
-                        a.WithAttribute("onclick", $"JJViewHelper.unSelectAll('{GridView.Name}')");
+                        a.WithAttribute("onclick", $"GridViewHelper.unSelectAll('{GridView.Name}')");
                         a.AppendText(StringLocalizer["Unmark all selected records"]);
                     });
                 });

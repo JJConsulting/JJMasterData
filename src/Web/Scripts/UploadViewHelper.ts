@@ -1,11 +1,11 @@
 class UploadViewHelper {
-    static show(componentName: string,fieldName: string, title:string, routeContext: string){
+    static show(fieldName: string, title:string, routeContext: string){
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("fieldName",fieldName)
         const url = urlBuilder.build();
         
-        const modalId = componentName + "-upload-modal";
+        const modalId = fieldName + "-upload-modal";
 
         const modal = new Modal();
         modal.modalId =modalId;

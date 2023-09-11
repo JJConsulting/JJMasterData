@@ -126,7 +126,7 @@ internal class DataExportationSettings
                 div.Append(HtmlTag.Select, select =>
                 {
                     select.WithNameAndId($"{DataExportation.Name}{ExportOptions.FileName}");
-                    select.WithAttribute("onchange", $"JJViewHelper.showExportOptions('{DataExportation.Name}',this.value);");
+                    //select.WithAttribute("onchange", $"DataExportationHelper.showExportOptions('{DataExportation.Name}',this.value);");
                     select.WithCssClass("form-control form-select");
                     select.Append(HtmlTag.Option, option =>
                     {

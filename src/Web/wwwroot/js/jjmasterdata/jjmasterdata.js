@@ -2008,12 +2008,12 @@ class UploadAreaListener {
     }
 }
 class UploadViewHelper {
-    static show(componentName, fieldName, title, routeContext) {
+    static show(fieldName, title, routeContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("fieldName", fieldName);
         const url = urlBuilder.build();
-        const modalId = componentName + "-upload-modal";
+        const modalId = fieldName + "-upload-modal";
         const modal = new Modal();
         modal.modalId = modalId;
         modal.showUrl({ url: url, requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) } }, title, ModalSize.ExtraLarge).then(_ => {
