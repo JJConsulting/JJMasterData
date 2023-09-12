@@ -1,18 +1,18 @@
 ﻿
 class UploadAreaListener {
-    static configureFileUpload(options) {
+    static configureFileUpload(options: UploadAreaOptions) {
         
         const selector = "div#" + options.componentName;
         
         let dropzone = new window.Dropzone(selector, {
-            paramName:"uploadAreaFile",
-            maxFilesize:options.maxFileSize,
+            paramName: "uploadAreaFile",
+            maxFilesize: options.maxFileSize,
             uploadMultiple: options.allowMultipleFiles,
             method: "POST",
             dictDefaultMessage :options.dragDropLabel,
             dictFileTooBig: options.fileSizeErrorLabel,
             dictUploadCanceled: options.abortLabel,
-            dictInvalidFileType:options.extensionNotAllowedLabel,
+            dictInvalidFileType: options.extensionNotAllowedLabel,
             clickable:true,
             parallelUploads: options.parallelUploads,
             url: options.url
@@ -20,7 +20,7 @@ class UploadAreaListener {
         
         dropzone.on("successmultiple",()=>{
             if (options.jsCallback) {
-                //document.querySelector<HTMLInputElement>(options.componentName + "-are-files-uploaded").value = "1";
+                document.querySelector<HTMLInputElement>("#" + options.componentName + "-are-files-uploaded").value = "1";
                 
                 if(dropzone.getQueuedFiles().length === 0){
                     eval(options.jsCallback)

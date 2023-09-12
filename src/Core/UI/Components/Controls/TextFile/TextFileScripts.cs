@@ -17,7 +17,7 @@ internal class TextFileScripts
 
     public string GetShowScript()
     {
-        var title = _textFile.FormElementField.Label ?? "Manage Files";
+        var title = _textFile.FormElementField.Label ?? _textFile.StringLocalizer["Manage Files"];
 
         title = HttpUtility.JavaScriptStringEncode(_textFile.StringLocalizer[title]);
 

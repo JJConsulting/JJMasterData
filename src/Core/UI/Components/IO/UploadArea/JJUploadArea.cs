@@ -78,12 +78,12 @@ public class JJUploadArea : AsyncComponent
     /// How many server-side uploads can happen at the same time.
     /// </summary>
     public int ParallelUploads { get; set; } = 1;
-    
-    internal IHttpContext CurrentContext { get; }
+
+    private IHttpContext CurrentContext { get; }
     private IUploadAreaService UploadAreaService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    internal IEncryptionService EncryptionService { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IEncryptionService EncryptionService { get; }
     
     private RouteContext _routeContext;
     internal RouteContext RouteContext

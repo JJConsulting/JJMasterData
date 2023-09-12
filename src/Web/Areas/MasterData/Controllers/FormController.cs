@@ -47,7 +47,4 @@ public class FormController : MasterDataController
         formView.GridView.SetCurrentFilter("USERID", userId);
         formView.SetUserValues("USERID", userId);
     }
-
-
-
 }

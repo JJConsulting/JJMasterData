@@ -1932,6 +1932,7 @@ class UploadAreaListener {
         });
         dropzone.on("successmultiple", () => {
             if (options.jsCallback) {
+                document.querySelector("#" + options.componentName + "-are-files-uploaded").value = "1";
                 if (dropzone.getQueuedFiles().length === 0) {
                     eval(options.jsCallback);
                 }

@@ -2,7 +2,7 @@ class UploadAreaOptions {
     public componentName: string;
     public url: string;
     public allowMultipleFiles: boolean;
-    public maxFileSize: Number;
+    public maxFileSize: number;
     public allowDragDrop: boolean;
     public showFileSize: boolean;
     public allowedTypes: string;
@@ -12,7 +12,7 @@ class UploadAreaOptions {
     public extensionNotAllowedLabel: string;
     public fileSizeErrorLabel: string;
     public abortLabel: string;
-    public parallelUploads: Number;
+    public parallelUploads: number;
 
     constructor(element: Element) {
         let dropzone = element.lastChild as Element;

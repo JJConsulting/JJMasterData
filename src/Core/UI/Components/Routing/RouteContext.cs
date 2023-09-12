@@ -31,31 +31,16 @@ public class RouteContext
     public bool CanRender(string elementName)
     {
         if (ElementName is null)
-        {
             return true;
-        } 
         
         if (ParentElementName is not null)
-        {
             return ParentElementName == elementName || ParentElementName == elementName;
-        }
 
         return IsCurrentFormElement(elementName);
     }
     
     public bool IsCurrentFormElement(string elementName)
     {
-        if (ElementName is null) 
-            return true;
-        
-        if (elementName.Equals(ElementName))
-            return true;
-
-        return false;
-    }
-
-    public bool IsUploadViewGridView()
-    {
-        return ElementName?.Contains("-upload-view") ?? false;
+        return ElementName is null || elementName.Equals(ElementName);
     }
 }

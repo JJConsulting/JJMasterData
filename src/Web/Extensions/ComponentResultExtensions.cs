@@ -1,5 +1,6 @@
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.Web.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Extensions;
@@ -8,7 +9,7 @@ public static class ComponentResultExtensions
 {
     public static bool IsActionResult(this ComponentResult componentResult)
     {
-        return componentResult is HtmlComponentResult or JsonComponentResult or RedirectComponentResult;
+        return AsyncComponent.CanSendResult(componentResult);
     }   
     
     public static IActionResult ToActionResult(this ComponentResult componentResult)
