@@ -616,9 +616,10 @@ class DataImportationHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
-        const uploadAreaSelector = "#" + componentName + "-upload-area";
-        $(uploadAreaSelector).uploadFile.afterUploadAll = () => DataImportationHelper.start(componentName, routeContext, gridRouteContext);
-        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build(), requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) } }, "Import", ModalSize.ExtraLarge).then(_ => {
+        DataImportationModal.getInstance().showUrl({
+            url: urlBuilder.build(),
+            requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) }
+        }, "Import", ModalSize.ExtraLarge).then(_ => {
             UploadAreaListener.listenFileUpload();
         });
     }
@@ -1933,14 +1934,19 @@ class UploadAreaListener {
             parallelUploads: options.parallelUploads,
             url: options.url
         });
-        dropzone.on("successmultiple", () => {
-            if (options.jsCallback) {
+        const onSuccess = (file = null) => {
+            if (dropzone.getQueuedFiles().length === 0) {
                 document.querySelector("#" + options.componentName + "-are-files-uploaded").value = "1";
-                if (dropzone.getQueuedFiles().length === 0) {
+                if (options.callback) {
+                    options.callback();
+                }
+                if (options.jsCallback) {
                     eval(options.jsCallback);
                 }
             }
-        });
+        };
+        dropzone.on("success", onSuccess);
+        dropzone.on("successmultiple", onSuccess);
         if (options.allowCopyPaste) {
             document.onpaste = function (event) {
                 const items = Array.from(event.clipboardData.items);

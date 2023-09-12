@@ -18,15 +18,22 @@ class UploadAreaListener {
             url: options.url
         });
         
-        dropzone.on("successmultiple",()=>{
-            if (options.jsCallback) {
+        const onSuccess = (file = null)=>{
+            if(dropzone.getQueuedFiles().length === 0){
                 document.querySelector<HTMLInputElement>("#" + options.componentName + "-are-files-uploaded").value = "1";
-                
-                if(dropzone.getQueuedFiles().length === 0){
+
+                if(options.callback){
+                    options.callback()
+                }
+
+                if(options.jsCallback){
                     eval(options.jsCallback)
                 }
             }
-        })
+        }
+
+        dropzone.on("success",onSuccess)
+        dropzone.on("successmultiple",onSuccess)
 
         if (options.allowCopyPaste) {
             document.onpaste = function (event) {

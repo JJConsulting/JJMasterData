@@ -1,18 +1,19 @@
 class UploadAreaOptions {
     public componentName: string;
     public url: string;
-    public allowMultipleFiles: boolean;
-    public maxFileSize: number;
-    public allowDragDrop: boolean;
-    public showFileSize: boolean;
-    public allowedTypes: string;
-    public dragDropLabel: string;
-    public jsCallback: string;
-    public allowCopyPaste: boolean;
-    public extensionNotAllowedLabel: string;
-    public fileSizeErrorLabel: string;
-    public abortLabel: string;
-    public parallelUploads: number;
+    public allowMultipleFiles?: boolean;
+    public maxFileSize?: number;
+    public allowDragDrop?: boolean;
+    public showFileSize?: boolean;
+    public allowedTypes?: string;
+    public dragDropLabel?: string;
+    public jsCallback?: string;
+    public callback?: Function;
+    public allowCopyPaste?: boolean;
+    public extensionNotAllowedLabel?: string;
+    public fileSizeErrorLabel?: string;
+    public abortLabel?: string;
+    public parallelUploads?: number;
 
     constructor(element: Element) {
         let dropzone = element.lastChild as Element;

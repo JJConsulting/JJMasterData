@@ -132,7 +132,7 @@ public class JJUploadArea : AsyncComponent
         if (OnFileUploadedAsync != null)
             UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
 
-        var result = await UploadAreaService.UploadFileAsync("uploadAreaFile[0]", AllowedTypes);
+        var result = await UploadAreaService.UploadFileAsync(Multiple ? "uploadAreaFile[0]" : "uploadAreaFile", AllowedTypes);
         return new JsonComponentResult(result);
     }
 

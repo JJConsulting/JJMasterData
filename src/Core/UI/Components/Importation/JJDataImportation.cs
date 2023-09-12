@@ -406,7 +406,7 @@ public class JJDataImportation : ProcessComponent
         area.Multiple = false;
         area.EnableCopyPaste = false;
         area.JsCallback = DataImportationScripts.GetLogScript();
-        area.Name += "-upload-area";
+        area.Name += "-import";
         area.AllowedTypes = "txt,csv,log";
         return area;
     }

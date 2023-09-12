@@ -4,9 +4,10 @@
     private static deleteCount = 0;
     private static ignoreCount = 0;
     private static errorCount = 0;
-    
+
     private static pasteEventListener;
     private static intervalId;
+
     private static setLoadMessage() {
         const options = {
             lines: 13, // The number of lines to draw
@@ -133,7 +134,7 @@
                     urlBuilder.addQueryParameter("routeContext", importationRouteContext)
                     urlBuilder.addQueryParameter("dataImportationOperation", "log")
                     DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.ExtraLarge).then(_ => {
-                        GridViewHelper.refreshGrid(componentName,gridRouteContext)
+                        GridViewHelper.refreshGrid(componentName, gridRouteContext)
                     })
                 }
             })
@@ -145,17 +146,14 @@
     static show(componentName: string, routeContext: string, gridRouteContext: string) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
-        
-        DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
-        
-        
-        const uploadAreaSelector = "#" + componentName + "-upload-area";
 
-        // @ts-ignore
-        $(uploadAreaSelector).uploadFile.afterUploadAll = ()=>DataImportationHelper.start(componentName,routeContext,gridRouteContext)
-        
-        DataImportationModal.getInstance().showUrl({url: urlBuilder.build(),requestOptions: {method: "POST", body: new FormData(document.querySelector("form"))}}, "Import", ModalSize.ExtraLarge).then(_ => {
-            UploadAreaListener.listenFileUpload();
+        DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+
+        DataImportationModal.getInstance().showUrl({
+            url: urlBuilder.build(),
+            requestOptions: {method: "POST", body: new FormData(document.querySelector("form"))}
+        }, "Import", ModalSize.ExtraLarge).then(_ => {
+            UploadAreaListener.listenFileUpload()
         })
     }
 
@@ -171,9 +169,9 @@
         DataImportationHelper.setLoadMessage();
 
         DataImportationHelper.intervalId = setInterval(function () {
-            DataImportationHelper.checkProgress(componentName, routeContext,gridRouteContext);
+            DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
         }, 3000);
-  
+
     }
 
     static help(componentName, routeContext) {
@@ -203,7 +201,7 @@
         });
     }
 
-    static addPasteListener(componentName: string,routeContext: string, gridRouteContext: string) {
+    static addPasteListener(componentName: string, routeContext: string, gridRouteContext: string) {
         DataImportationHelper.pasteEventListener = function onPaste(e) {
             DataImportationHelper.removePasteListener();
             let pastedText = undefined;
@@ -223,15 +221,15 @@
                 DataImportationModal.getInstance().showUrl({
                     url: urlBuilder.build(),
                     requestOptions: {method: "POST", body: new FormData(document.querySelector("form"))}
-                }, "Import", ModalSize.Small).then(_=>{
-                    DataImportationHelper.start(componentName,routeContext,gridRouteContext)
+                }, "Import", ModalSize.Small).then(_ => {
+                    DataImportationHelper.start(componentName, routeContext, gridRouteContext)
                 })
 
             }
             return false;
         }
-        
-        document.addEventListener("paste",  DataImportationHelper.pasteEventListener, { once: true });
+
+        document.addEventListener("paste", DataImportationHelper.pasteEventListener, {once: true});
     }
 
     static removePasteListener() {
