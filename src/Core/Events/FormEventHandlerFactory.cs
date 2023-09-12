@@ -1,14 +1,12 @@
-using JetBrains.Annotations;
+using System.Collections.Generic;
 using JJMasterData.Core.FormEvents;
 using JJMasterData.Core.FormEvents.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.FormEvents;
 
 public class FormEventHandlerFactory : EventHandlerFactoryBase<IFormEventHandler>, IFormEventHandlerFactory
 {
-    public FormEventHandlerFactory(IOptions<EventHandlerFactoryOptions> options,IServiceScopeFactory serviceScopeFactory) : base(options, serviceScopeFactory)
+    public FormEventHandlerFactory(IEnumerable<IFormEventHandler> eventHandlers) : base(eventHandlers)
     {
     }
 

@@ -75,27 +75,35 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
             Options,
             StringLocalizer,
             Factory);
+        
+        SetFormEventHandler(formView, formElement);
+        
         return formView;
     }
 
     public async Task<JJFormView> CreateAsync(string elementName)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
-        var form = Create(formElement);
-        await SetFormViewParamsAsync(form, formElement);
-        return form;
+        var formView = Create(formElement);
+        await SetFormEventHandlerAsync(formView, formElement);
+        return formView;
     }
 
-    internal async Task SetFormViewParamsAsync(JJFormView formView, FormElement formElement)
+    private void SetFormEventHandler(JJFormView formView, FormElement formElement)
+    {
+        var formEventHandler = FormEventHandlerFactory.GetFormEvent(formElement.Name);
+        formView.FormService.AddFormEventHandler(formEventHandler);
+
+        formEventHandler?.OnFormElementLoad(this, new FormElementLoadEventArgs(formElement));
+    }
+    
+    internal async Task SetFormEventHandlerAsync(JJFormView formView, FormElement formElement)
     {
         var formEventHandler = FormEventHandlerFactory.GetFormEvent(formElement.Name);
         formView.FormService.AddFormEventHandler(formEventHandler);
 
         if (formEventHandler != null)
         {
-            // ReSharper disable once MethodHasAsyncOverload
-            formEventHandler.OnFormElementLoad(this, new FormElementLoadEventArgs(formElement));
-                    
             await formEventHandler.OnFormElementLoadAsync(this, new FormElementLoadEventArgs(formElement))!;
         }
     }
