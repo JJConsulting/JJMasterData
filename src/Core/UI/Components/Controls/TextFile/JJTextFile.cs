@@ -29,8 +29,9 @@ public class JJTextFile : ControlBase
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     internal IEncryptionService EncryptionService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
 
-    
+
     public string FieldName { get; set; }
     
     public IDictionary<string, object> FormValues
@@ -84,7 +85,9 @@ public class JJTextFile : ControlBase
             _uploadView.JsCallback = Scripts.GetShowScript();
             _uploadView.RenameAction.SetVisible(true);
             
-            _uploadView.GridView.FormElement.ParentName = FormElement.ParentName;
+            if (HasPk())
+                _uploadView.FolderPath = GetFolderPath();
+            
             _uploadView.GridView.ShowToolbar = false;
             
             var dataFile = FormElementField.DataFile!;
@@ -96,9 +99,6 @@ public class JJTextFile : ControlBase
             _uploadView.UploadArea.QueryStringParams["fieldName"] = FieldName;
             
             _uploadView.ViewGallery = dataFile.ViewGallery;
-
-            if (HasPk())
-                _uploadView.FolderPath = GetFolderPath();
 
             if (!Enabled)
                 _uploadView.Disable();
@@ -113,11 +113,14 @@ public class JJTextFile : ControlBase
         IHttpRequest httpRequest,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup> textBoxFactory,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer, IEncryptionService encryptionService) : base(httpRequest)
+        IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
+        IEncryptionService encryptionService) : base(httpRequest)
     {
         UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
         StringLocalizer = stringLocalizer;
+        FileDownloaderFactory = fileDownloaderFactory;
         EncryptionService = encryptionService;
     }
 
@@ -288,20 +291,9 @@ public class JJTextFile : ControlBase
     public string GetDownloadLink(string fileName, bool isExternalLink = false)
     {
         var filePath = GetFolderPath() + fileName;
-        var url = Request.AbsoluteUri;
-        if (url.Contains('?'))
-            url += "&";
-        else
-            url += "?";
 
-        if (isExternalLink)
-            url += JJFileDownloader.DirectDownloadParameter;
-        else
-            url += JJFileDownloader.DownloadParameter;
-
-        url += "=";
-        url += EncryptionService.EncryptStringWithUrlEscape(filePath);
-
-        return url;
+        var fileDownloader = FileDownloaderFactory.Create();
+        
+        return fileDownloader.GetDownloadUrl(filePath);
     }
 }

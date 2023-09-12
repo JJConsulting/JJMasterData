@@ -21,7 +21,7 @@ public class UploadViewScripts
     public string GetDownloadFileScript()
     {
         return
-            $"UploadViewHelper.downloadFile('{_uploadView.Name}','{{NameJS}}');";
+            $"UploadViewHelper.downloadFile('{_uploadView.Name}','{{NameJS}}', '{HttpUtility.JavaScriptStringEncode(_uploadView.JsCallback)}');";
     }
     
     public string GetRenameFileScript()

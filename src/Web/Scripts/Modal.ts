@@ -127,7 +127,11 @@ class _Modal extends ModalBase {
             .then( async response => {
                 if (response.headers.get("content-type")?.includes("application/json")) {
                     return response.json();
-                } else {
+                } 
+                else if(response.redirected){
+                    window.open(response.url, '_blank').focus();
+                }
+                else {
                    return response.text().then((htmlData)=>{
                         this.setAndShowModal(htmlData)
                     });

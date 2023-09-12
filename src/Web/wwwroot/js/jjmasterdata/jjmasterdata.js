@@ -1437,6 +1437,9 @@ class _Modal extends ModalBase {
                 if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
                     return response.json();
                 }
+                else if (response.redirected) {
+                    window.open(response.url, '_blank').focus();
+                }
                 else {
                     return response.text().then((htmlData) => {
                         this.setAndShowModal(htmlData);
@@ -1936,9 +1939,9 @@ class UploadAreaListener {
         });
         const onSuccess = (file = null) => {
             if (dropzone.getQueuedFiles().length === 0) {
-                document.querySelector("#" + options.componentName + "-are-files-uploaded").value = "1";
-                if (options.callback) {
-                    options.callback();
+                const areFilesUploadedInput = document.querySelector("#" + options.componentName + "-are-files-uploaded");
+                if (areFilesUploadedInput) {
+                    areFilesUploadedInput.value = "1";
                 }
                 if (options.jsCallback) {
                     eval(options.jsCallback);
@@ -1997,8 +2000,8 @@ class UploadAreaOptions {
 }
 class UploadViewHelper {
     static performFileAction(componentName, filename, action, promptMessage = null) {
-        const uploadActionInput = document.getElementById("upload-action-" + componentName);
-        const filenameInput = document.getElementById("filename-" + componentName);
+        const uploadActionInput = document.getElementById("upload-view-action-" + componentName);
+        const filenameInput = document.getElementById("upload-view-file-name-" + componentName);
         if (uploadActionInput && filenameInput) {
             uploadActionInput.value = action;
             filenameInput.value = action === "renameFile" ? filename + ";" + prompt(promptMessage, filename) : filename;
@@ -2014,8 +2017,9 @@ class UploadViewHelper {
         this.performFileAction(componentName, fileName, "deleteFile");
         eval(jsCallback);
     }
-    static downloadFile(componentName, fileName) {
+    static downloadFile(componentName, fileName, jsCallback) {
         this.performFileAction(componentName, fileName, "downloadFile");
+        eval(jsCallback);
     }
     static renameFile(componentName, fileName, promptMessage, jsCallback) {
         this.performFileAction(componentName, fileName, "renameFile", promptMessage);

@@ -1,7 +1,7 @@
 class UploadViewHelper {
     static performFileAction(componentName: string, filename: string, action: string, promptMessage: string = null ) {
-        const uploadActionInput = document.getElementById("upload-action-" + componentName) as HTMLInputElement;
-        const filenameInput = document.getElementById("filename-" + componentName) as HTMLInputElement;
+        const uploadActionInput = document.getElementById("upload-view-action-" + componentName) as HTMLInputElement;
+        const filenameInput = document.getElementById("upload-view-file-name-" + componentName) as HTMLInputElement;
         
         if (uploadActionInput && filenameInput) {
             uploadActionInput.value = action;
@@ -21,8 +21,9 @@ class UploadViewHelper {
         eval(jsCallback)
     }
 
-    static downloadFile(componentName: string, fileName: string) {
+    static downloadFile(componentName: string, fileName: string, jsCallback: string) {
         this.performFileAction(componentName, fileName, "downloadFile");
+        eval(jsCallback)
     }
 
     static renameFile(componentName: string, fileName: string, promptMessage: string, jsCallback: string) {

@@ -25,4 +25,6 @@ public abstract class HtmlComponent : ComponentBase
     {
         return Visible ? BuildHtml()?.ToString(true) : string.Empty;
     }
+
+    public static explicit operator RenderedComponentResult(HtmlComponent component) => new(component.GetHtmlBuilder());
 }

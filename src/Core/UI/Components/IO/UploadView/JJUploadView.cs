@@ -274,10 +274,20 @@ public class JJUploadView : AsyncComponent
 
         var html = new HtmlBuilder();
 
-        var uploadAction = CurrentContext.Request.GetFormValue($"upload-action-{Name}");
+        var uploadAction = CurrentContext.Request.GetFormValue($"upload-view-action-{Name}");
         if (!string.IsNullOrEmpty(uploadAction))
-            GetUploadActionResult(uploadAction);
+        {
+            var result = GetUploadActionResult(uploadAction);
 
+            if (result is RenderedComponentResult renderedComponent)
+            {
+                html.Append(renderedComponent.HtmlBuilder);
+            }
+            else
+            {
+                return result;
+            }
+        }
         if (!string.IsNullOrEmpty(Title))
             html.AppendComponent(new JJTitle(Title, SubTitle));
 
@@ -373,31 +383,34 @@ public class JJUploadView : AsyncComponent
         return html;
     }
 
-    private ComponentResult GetUploadActionResult(string uploadAction)
+    private ComponentResult GetUploadActionResult(string uploadViewAction)
     {
-        var fileName = CurrentContext.Request.GetFormValue($"filename-{Name}");
+        var fileName = CurrentContext.Request.GetFormValue($"upload-view-file-name-{Name}");
         try
         {
-            if ("deleteFile".Equals(uploadAction))
-                DeleteFile(fileName);
-            else if ("downloadFile".Equals(uploadAction))
-                DownloadFile(Path.Combine(FormFileManager.FolderPath, fileName));
-            else if ("renameFile".Equals(uploadAction))
-                RenameFile(fileName);
+            switch (uploadViewAction)
+            {
+                case "deleteFile":
+                    return GetDeleteFileResult(fileName);
+                case "downloadFile":
+                    return GetDownloadFileResult(Path.Combine(FormFileManager.FolderPath, fileName));
+                case "renameFile":
+                    return GetRenameFileResult(fileName);
+            }
         }
         catch (Exception ex)
         {
-            return new RenderedComponentResult(new JJMessageBox(ex.Message, MessageIcon.Warning).GetHtmlBuilder());
+            return (RenderedComponentResult)new JJMessageBox(ex.Message, MessageIcon.Warning);
         }
 
-        return new RenderedComponentResult(new JJMessageBox("Success", MessageIcon.Info).GetHtmlBuilder());
+        throw new InvalidOperationException("Invalid JJUploadView action.");
     }
 
     private HtmlBuilder GetUploadAreaHtml()
     {
         var html = new HtmlBuilder()
-           .AppendHiddenInput($"upload-action-{Name}")
-           .AppendHiddenInput($"filename-{Name}");
+           .AppendHiddenInput($"upload-view-action-{Name}")
+           .AppendHiddenInput($"upload-view-file-name-{Name}");
 
         if (!ShowAddFiles)
             return html;
@@ -744,12 +757,15 @@ public class JJUploadView : AsyncComponent
         }
     }
 
-    private void RenameFile(string fileName)
+    private RenderedComponentResult GetRenameFileResult(string fileName)
     {
         var names = fileName.Split(';');
         var currentName = names[0];
         var newName = names[1];
         RenameFile(currentName, newName);
+
+        return (RenderedComponentResult)new JJMessageBox(StringLocalizer["File successfully renamed."],
+            MessageIcon.Info);
     }
 
     public void RenameFile(string currentName, string newName) =>
@@ -758,8 +774,12 @@ public class JJUploadView : AsyncComponent
     public void CreateFile(FormFileContent file) =>
         FormFileManager.CreateFile(file, !UploadArea.Multiple);
 
-    public void DeleteFile(string fileName) =>
+    public ComponentResult GetDeleteFileResult(string fileName)
+    {
         FormFileManager.DeleteFile(fileName);
+        return (RenderedComponentResult)new JJMessageBox(StringLocalizer["File successfully deleted."],
+            MessageIcon.Info);
+    }
 
     internal void DeleteAll() => 
         FormFileManager.DeleteAll();
@@ -773,7 +793,7 @@ public class JJUploadView : AsyncComponent
     public void SaveMemoryFiles(string folderPath) =>
         FormFileManager.SaveMemoryFiles(folderPath);
 
-    public void DownloadFile(string fileName)
+    public RedirectComponentResult GetDownloadFileResult(string fileName)
     {
         if (OnBeforeDownloadFile != null)
         {
@@ -790,7 +810,7 @@ public class JJUploadView : AsyncComponent
         }
         var downloader = ComponentFactory.Downloader.Create();
         downloader.FilePath = fileName;
-        downloader.GetDirectDownloadRedirect();
+        return downloader.GetDirectDownloadRedirect();
     }
 
     /// <summary>

@@ -20,12 +20,12 @@ class UploadAreaListener {
         
         const onSuccess = (file = null)=>{
             if(dropzone.getQueuedFiles().length === 0){
-                document.querySelector<HTMLInputElement>("#" + options.componentName + "-are-files-uploaded").value = "1";
+                const areFilesUploadedInput = document.querySelector<HTMLInputElement>("#" + options.componentName + "-are-files-uploaded");
 
-                if(options.callback){
-                    options.callback()
+                if(areFilesUploadedInput){
+                    areFilesUploadedInput.value = "1";
                 }
-
+                
                 if(options.jsCallback){
                     eval(options.jsCallback)
                 }

@@ -16,6 +16,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     private IHttpRequest HttpRequest { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
+    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
@@ -23,12 +24,14 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         IHttpRequest httpRequest,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup>  textBoxFactory,
+        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpRequest = httpRequest;
         UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
+        FileDownloaderFactory = fileDownloaderFactory;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
     }
@@ -36,7 +39,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     
     public JJTextFile Create()
     {
-        return new JJTextFile(HttpRequest,UploadViewFactory, TextBoxFactory, StringLocalizer, EncryptionService);
+        return new JJTextFile(HttpRequest,UploadViewFactory, TextBoxFactory, StringLocalizer, FileDownloaderFactory,EncryptionService);
     }
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)

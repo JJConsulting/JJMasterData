@@ -14,7 +14,7 @@ public static class ComponentResultExtensions
     
     public static IActionResult ToActionResult(this ComponentResult componentResult)
     {
-        if (componentResult is not (HtmlComponentResult or JsonComponentResult))
+        if (componentResult is not (HtmlComponentResult or JsonComponentResult or RedirectComponentResult))
             throw new JJMasterDataException("ComponentResults of ContentType.RenderedComponent must be rendered at your View.");
 
         if (componentResult is RedirectComponentResult redirectComponentResult)
