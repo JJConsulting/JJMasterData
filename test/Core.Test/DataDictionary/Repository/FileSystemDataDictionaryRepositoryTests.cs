@@ -14,7 +14,7 @@ public class FileSystemDataDictionaryRepositoryTests : IDisposable
 
     private const string FolderPath = "Metadata";
     private const string DictionaryName = "Example";
-    private static string DictionaryFilePath { get; } = Path.Combine(FolderPath, DictionaryName + ".json");
+    private static string DictionaryFilePath { get; } = Path.Combine(FolderPath, $"{DictionaryName}.json");
     
     public FileSystemDataDictionaryRepositoryTests()
     {
@@ -71,7 +71,7 @@ public class FileSystemDataDictionaryRepositoryTests : IDisposable
     {
         // Arrange
         CreateMetadataIfNotExists();
-        var testData = "Test: " + DateTime.Now;
+        var testData = $"Test: {DateTime.Now}";
         var metadata = await _repository.GetMetadataAsync(DictionaryName);
         metadata.Info = testData;
         

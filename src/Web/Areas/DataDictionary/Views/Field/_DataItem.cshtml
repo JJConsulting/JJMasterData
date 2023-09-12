@@ -195,11 +195,11 @@
             {
                 <tr>
                     <td>
-                        @Html.TextBox("DataItem.Items[" + i + "].Id",
+                        @Html.TextBox($"DataItem.Items[{i}].Id",
                             Model.DataItem.Items[i].Id, new { @class = "form-control" })
                     </td>
                     <td>
-                        @Html.TextBox("DataItem.Items[" + i + "].Description",
+                        @Html.TextBox($"DataItem.Items[{i}].Description",
                             Model.DataItem.Items[i].Description, new { @class = "form-control" })
                     </td>
 
@@ -222,7 +222,7 @@
                             </div>
                         </td>
                         <td>
-                            @Html.TextBox("DataItem.Items["+i +"].ImageColor",
+                            @Html.TextBox($"DataItem.Items[{i}].ImageColor",
                                 Model.DataItem.Items[i].ImageColor, new { @class = "form-control", type = "color" })
                         </td>
                     }

@@ -22,7 +22,7 @@ public class FormFileService
         foreach (var field in uploadFields)
         {
             string folderPath = pathBuilder.GetFolderPath(field, primaryKeys);
-            var manager = FormFileManagerFactory.Create(field.Name + "-upload-view");
+            var manager = FormFileManagerFactory.Create($"{field.Name}-upload-view");
             manager.SaveMemoryFiles(folderPath);
         }
     }
@@ -35,7 +35,7 @@ public class FormFileService
         
         foreach (var field in uploadFields)
         {
-            var manager = FormFileManagerFactory.Create(field.Name + "-upload-view");
+            var manager = FormFileManagerFactory.Create($"{field.Name}-upload-view");
             manager.DeleteAll();
         }
     }

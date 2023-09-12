@@ -322,7 +322,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         {
             if (field.DataItem!.ReplaceTextOnGrid)
             {
-                value = " " + item.Description.Trim();
+                value = $" {item.Description.Trim()}";
             }
             if (field.DataItem.ShowImageLegend)
             {

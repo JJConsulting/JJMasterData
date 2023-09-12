@@ -43,7 +43,7 @@ public class FormElementMigrationService
         {
             var formElement = metadata.GetFormElement();
             DataDictionaryRepository.InsertOrReplaceAsync(formElement).GetAwaiter().GetResult();
-            Console.WriteLine(@"✅ " + formElement.Name);
+            Console.WriteLine($@"✅ {formElement.Name}");
         }
 
         DataAccess.SetCommand($"delete from {TableName} where type <> 'F'");

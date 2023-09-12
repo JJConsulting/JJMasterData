@@ -270,7 +270,7 @@ internal class GridTableBody
             if (onRender != null)
             {
                 var args = new ActionEventArgs(action, link, formStateData.FormValues);
-                onRender.Invoke(GridView, args);
+                onRender.Invoke(this, args);
                 if (args.HtmlResult != null)
                 {
                     td.AppendText(args.HtmlResult);
@@ -318,7 +318,7 @@ internal class GridTableBody
 
         var checkBox = new JJCheckBox(GridView.CurrentContext.Request)
         {
-            Name = "jjchk_" + index,
+            Name = $"jjchk_{index}",
             Value = GridView.EncryptionService.EncryptStringWithUrlEscape(pkValues),
             Text = string.Empty
         };

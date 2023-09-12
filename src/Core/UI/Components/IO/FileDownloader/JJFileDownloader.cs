@@ -95,7 +95,7 @@ public class JJFileDownloader : HtmlComponent
                         {
                             p.AppendText(StringLocalizer["You are downloading file {0}.", fileName]);
                             p.AppendText(" ");
-                            p.AppendText(StringLocalizer["If the download not start automatically"] + ", ");
+                            p.AppendText($"{StringLocalizer["If the download not start automatically"]}, ");
                             p.Append(HtmlTag.A, a =>
                             {
                                 a.WithAttribute("href", url);

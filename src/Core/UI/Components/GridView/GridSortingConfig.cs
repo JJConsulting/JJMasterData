@@ -37,14 +37,14 @@ internal class GridSortingConfig
     {
         var dialog = new JJModalDialog
         {
-            Name = "sort-modal-" + Name,
+            Name = $"sort-modal-{Name}",
             Title = "Sort Fields",
             Size = ModalSize.Small
         };
 
         var btnSort = new JJLinkButton
         {
-            Name = "btnsort_" + Name,
+            Name = $"btnsort_{Name}",
             IconClass = IconType.Check.GetCssClass(),
             ShowAsButton = true,
             Text = "Sort",
@@ -131,7 +131,7 @@ internal class GridSortingConfig
 
         foreach (var item in fieldsList.Where(item => !item.VisibleExpression.Equals("val:0")))
         {
-            ComboBox.Name = item.Name + "_order";
+            ComboBox.Name = $"{item.Name}_order";
             ComboBox.SelectedValue = "N";
 
             var sort = sortList.Find(x => x.FieldName.Equals(item.Name));

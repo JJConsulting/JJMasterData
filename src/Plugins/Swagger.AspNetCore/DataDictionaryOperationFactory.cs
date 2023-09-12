@@ -25,8 +25,8 @@ internal class DataDictionaryOperationFactory
         var operation = new OpenApiOperation
         {
             Summary = "Get a specific record",
-            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
-            OperationId = ModelName + "_Get",
+            Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = $"{ModelName}_Get",
             Tags = new List<OpenApiTag>
             {
                 new()
@@ -62,7 +62,7 @@ internal class DataDictionaryOperationFactory
                 new()
                 {
                     Name = Options.GetFieldNameParsed("id"),
-                    Description = "Primary Key Value.<br>" + nameFields,
+                    Description = $"Primary Key Value.<br>{nameFields}",
                     In = ParameterLocation.Path,
                     Required = true,
                     Schema = new OpenApiSchema
@@ -110,8 +110,8 @@ internal class DataDictionaryOperationFactory
                     }
                 },
             },
-            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
-            OperationId = ModelName + "_GetAll",
+            Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = $"{ModelName}_GetAll",
             Parameters = new List<OpenApiParameter>
         {
             new()
@@ -172,12 +172,12 @@ internal class DataDictionaryOperationFactory
         foreach (FormElementField field in fields)
         {
             string fieldName = Options.GetFieldNameParsed(field.Name);
-            string description = "Filter available. (" + field.Filter.Type.ToString().ToLower() + ")";
+            string description = $"Filter available. ({field.Filter.Type.ToString().ToLower()})";
             if (!string.IsNullOrEmpty(field.Label))
-                description += "<br>" + field.Label;
+                description += $"<br>{field.Label}";
 
             if (!string.IsNullOrEmpty(field.HelpDescription))
-                description += "<br>" + field.HelpDescription;
+                description += $"<br>{field.HelpDescription}";
 
             var schema = GetFieldSchema(field);
 
@@ -226,7 +226,7 @@ internal class DataDictionaryOperationFactory
 
                     foreach (DataItemValue dataItem in field.DataItem.Items)
                     {
-                        example.Append("<br>" + dataItem.Id + " = " + dataItem.Description);
+                        example.Append($"<br>{dataItem.Id} = {dataItem.Description}");
                     }
 
                     content.Add(field.FieldId.ToString(), new OpenApiMediaType
@@ -268,13 +268,13 @@ internal class DataDictionaryOperationFactory
         description.Append("if sending a list of records the return can be 201(all right) or 207(error in some record) ");
         description.Append("in this case you can check the status of each record in the response return.");
 
-        var id = ModelName + "List";
+        var id = $"{ModelName}List";
 
         var items = GetDictionarySchema(FormElement, Options, id, true);
 
         OpenApiSchema listSchema = new()
         {
-            Title = ModelName + "List",
+            Title = $"{ModelName}List",
             Type = "array",
             Items = items,
             Description = "List of records"
@@ -282,7 +282,7 @@ internal class DataDictionaryOperationFactory
 
         var responseSchema = new OpenApiSchema
         {
-            Title = ModelName + "Status",
+            Title = $"{ModelName}Status",
             Type = "array",
             Items = GetValidationLetterSchema(true),
             Description = "List with status and validations"
@@ -318,8 +318,8 @@ internal class DataDictionaryOperationFactory
                         }
                     }
                 },
-            Description = description + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
-            OperationId = ModelName + "_Post",
+            Description = $"{description}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = $"{ModelName}_Post",
             RequestBody = new OpenApiRequestBody
             {
 
@@ -364,7 +364,7 @@ internal class DataDictionaryOperationFactory
         description.Append("in this case you can check the status of each record in the response return.");
         description.Append("<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)");
 
-        var id = ModelName + "List";
+        var id = $"{ModelName}List";
         var items = GetDictionarySchema(FormElement, Options, id, true);
 
         OpenApiSchema listSchema = new()
@@ -377,7 +377,7 @@ internal class DataDictionaryOperationFactory
 
         OpenApiSchema responseSchema = new()
         {
-            Title = ModelName + "Status",
+            Title = $"{ModelName}Status",
             Type = "array",
             Items = GetValidationLetterSchema(true),
             Description = "List with status and validations"
@@ -413,7 +413,7 @@ internal class DataDictionaryOperationFactory
                 }
             },
             Description = description.ToString(),
-            OperationId = ModelName + "_Put",
+            OperationId = $"{ModelName}_Put",
             RequestBody = new OpenApiRequestBody
             {
                 Content =
@@ -444,7 +444,7 @@ internal class DataDictionaryOperationFactory
         description.Append("if sending a list of records the return can be 201(all right) or 207(error in some record) ");
         description.Append("in this case you can check the status of each record in the response return.");
 
-        string id = ModelName + "List";
+        string id = $"{ModelName}List";
 
         OpenApiSchema items = GetDictionarySchema(FormElement, Options, id, true);
 
@@ -458,7 +458,7 @@ internal class DataDictionaryOperationFactory
 
         OpenApiSchema responseSchema = new()
         {
-            Title = ModelName + "Status",
+            Title = $"{ModelName}Status",
             Type = "array",
             Items = GetValidationLetterSchema(true),
             Description = "List with status and validations"
@@ -494,8 +494,8 @@ internal class DataDictionaryOperationFactory
                     }
                 }
             },
-            Description = description + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
-            OperationId = ModelName + "_Patch",
+            Description = $"{description}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = $"{ModelName}_Patch",
             RequestBody = new OpenApiRequestBody
             {
                 Content =
@@ -533,7 +533,7 @@ internal class DataDictionaryOperationFactory
         {
             Summary = "Delete a specific record",
             Description = description.ToString(),
-            OperationId = ModelName + "_Del",
+            OperationId = $"{ModelName}_Del",
             Tags = new List<OpenApiTag>
             {
                 new()
@@ -565,7 +565,7 @@ internal class DataDictionaryOperationFactory
                 new()
                 {
                     Name = Options.GetFieldNameParsed("id"),
-                    Description = "Primary Key Value.<br>" + nameFields,
+                    Description = $"Primary Key Value.<br>{nameFields}",
                     In = ParameterLocation.Path,
                     Required = true,
                     Schema = new OpenApiSchema
@@ -589,8 +589,8 @@ internal class DataDictionaryOperationFactory
         var operation = new OpenApiOperation
         {
             Summary = $"Download specified file from the field {field.Name}",
-            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
-            OperationId = ModelName + "_GetFile",
+            Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = $"{ModelName}_GetFile",
             Tags = new List<OpenApiTag>(),
             Responses = new OpenApiResponses(),
             Parameters = new List<OpenApiParameter>()
@@ -598,7 +598,7 @@ internal class DataDictionaryOperationFactory
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = Options.GetFieldNameParsed("id"),
-            Description = "Primary Key Value.<br>" + nameFields,
+            Description = $"Primary Key Value.<br>{nameFields}",
             In = ParameterLocation.Path,
             Required = true,
             Schema = new OpenApiSchema
@@ -648,8 +648,8 @@ internal class DataDictionaryOperationFactory
         var operation = new OpenApiOperation
         {
             Summary = $"Post a file to the field {field.Name}",
-            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
-            OperationId = ModelName + "_PostFile",
+            Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = $"{ModelName}_PostFile",
             Tags = new List<OpenApiTag>(),
             Responses = new OpenApiResponses(),
             Parameters = new List<OpenApiParameter>()
@@ -657,7 +657,7 @@ internal class DataDictionaryOperationFactory
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = Options.GetFieldNameParsed("id"),
-            Description = "Primary Key Value.<br>" + nameFields,
+            Description = $"Primary Key Value.<br>{nameFields}",
             In = ParameterLocation.Path,
             Required = true,
             Schema = new OpenApiSchema
@@ -727,8 +727,8 @@ internal class DataDictionaryOperationFactory
         var operation = new OpenApiOperation
         {
             Summary = $"Deletes the specified file from the field {field.Name}",
-            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
-            OperationId = ModelName + "_DeleteFile",
+            Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = $"{ModelName}_DeleteFile",
             Tags = new List<OpenApiTag>(),
             Responses = new OpenApiResponses(),
             Parameters = new List<OpenApiParameter>()
@@ -736,7 +736,7 @@ internal class DataDictionaryOperationFactory
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = Options.GetFieldNameParsed("id"),
-            Description = "Primary Key Value.<br>" + nameFields,
+            Description = $"Primary Key Value.<br>{nameFields}",
             In = ParameterLocation.Path,
             Required = true,
             Schema = new OpenApiSchema
@@ -786,8 +786,8 @@ internal class DataDictionaryOperationFactory
         var operation = new OpenApiOperation
         {
             Summary = $"Rename the specified file from the field {field.Name}",
-            Description = FormElement.Title + "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
-            OperationId = ModelName + "_RenameFile",
+            Description = $"{FormElement.Title}<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)",
+            OperationId = $"{ModelName}_RenameFile",
             Tags = new List<OpenApiTag>(),
             Responses = new OpenApiResponses(),
             Parameters = new List<OpenApiParameter>()
@@ -795,7 +795,7 @@ internal class DataDictionaryOperationFactory
         operation.Parameters.Add(new OpenApiParameter
         {
             Name = Options.GetFieldNameParsed("id"),
-            Description = "Primary Key Value.<br>" + nameFields,
+            Description = $"Primary Key Value.<br>{nameFields}",
             In = ParameterLocation.Path,
             Required = true,
             Schema = new OpenApiSchema

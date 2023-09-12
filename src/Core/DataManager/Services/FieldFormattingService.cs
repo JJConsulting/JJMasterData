@@ -70,7 +70,7 @@ public class FieldFormattingService : IFieldFormattingService
         {
             if (double.TryParse(value.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture,
                     out double floatValue))
-                stringValue = floatValue.ToString("N" + field.NumberOfDecimalPlaces);
+                stringValue = floatValue.ToString($"N{field.NumberOfDecimalPlaces}");
         }
         
         else if (field.DataType == FieldType.Int)
@@ -111,7 +111,7 @@ public class FieldFormattingService : IFieldFormattingService
                     case FieldType.Float:
                         {
                             if (double.TryParse(stringValue, out double doubleValue))
-                                stringValue = doubleValue.ToString("N" + field.NumberOfDecimalPlaces);
+                                stringValue = doubleValue.ToString($"N{field.NumberOfDecimalPlaces}");
                             break;
                         }
                     case FieldType.Int when !field.IsPk:
@@ -127,7 +127,7 @@ public class FieldFormattingService : IFieldFormattingService
                 {
                     var cultureInfo = CultureInfo.CurrentCulture;
                     var numberFormatInfo = (NumberFormatInfo)cultureInfo.NumberFormat.Clone();
-                    stringValue = currencyValue.ToString("C" + field.NumberOfDecimalPlaces, numberFormatInfo);
+                    stringValue = currencyValue.ToString($"C{field.NumberOfDecimalPlaces}", numberFormatInfo);
                 }
 
                 break;
@@ -148,8 +148,7 @@ public class FieldFormattingService : IFieldFormattingService
                             stringValue = dateValue == DateTime.MinValue
                                 ? ""
                                 : dateValue.ToString(
-                                    $"{DateTimeFormatInfo.CurrentInfo.ShortDatePattern} " +
-                                    $"{DateTimeFormatInfo.CurrentInfo.ShortTimePattern}");
+                                    $"{DateTimeFormatInfo.CurrentInfo.ShortDatePattern} {DateTimeFormatInfo.CurrentInfo.ShortTimePattern}");
                             break;
                         }
                 }

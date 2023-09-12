@@ -128,7 +128,7 @@ public class JJDataPanel : AsyncComponent
     [Obsolete("This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use ComponentsFactory.")]
     public JJDataPanel(string elementName): this()
     {
-        Name = ComponentNameGenerator.Create(elementName) + "-data-panel";
+        Name = $"{ComponentNameGenerator.Create(elementName)}-data-panel";
         FormElement = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>()
             .GetMetadataAsync(elementName).GetAwaiter().GetResult();
         RenderPanelGroup = FormElement.Panels.Count > 0;
@@ -138,7 +138,7 @@ public class JJDataPanel : AsyncComponent
     public JJDataPanel(
         FormElement formElement) : this()
     {
-        Name = ComponentNameGenerator.Create(formElement.Name) + "-data-panel";
+        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-data-panel";
         FormElement = formElement;
         RenderPanelGroup = formElement.Panels.Count > 0;
     }
@@ -181,7 +181,7 @@ public class JJDataPanel : AsyncComponent
         IComponentFactory componentFactory
     ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
     {
-        Name = ComponentNameGenerator.Create(formElement.Name) + "-data-panel";
+        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-data-panel";
         FormElement = formElement;
         RenderPanelGroup = formElement.Panels.Count > 0;
     }

@@ -110,7 +110,7 @@ public class JJGridView : AsyncComponent
             _dataImportation = ComponentFactory.DataImportation.Create(FormElement);
             _dataImportation.UserValues = UserValues;
             _dataImportation.ProcessOptions = ImportAction.ProcessOptions;
-            _dataImportation.Name = Name + "_dataimp";
+            _dataImportation.Name = $"{Name}_dataimp";
 
             return _dataImportation;
         }
@@ -233,7 +233,7 @@ public class JJGridView : AsyncComponent
             }
             else
             {
-                _currentOrder = OrderByData.FromString(CurrentContext.Request["grid-view-order-" + Name]);
+                _currentOrder = OrderByData.FromString(CurrentContext.Request[$"grid-view-order-{Name}"]);
                 if (_currentOrder == null)
                 {
                     var tableOrder = CurrentContext.Session[$"jj-grid-view-order-{Name}"];
@@ -270,7 +270,7 @@ public class JJGridView : AsyncComponent
             if (CurrentContext.Request.IsPost)
             {
                 int currentPage = 1;
-                string tablePageId = "grid-view-page-" + Name;
+                string tablePageId = $"grid-view-page-{Name}";
                 if (!string.IsNullOrEmpty(CurrentContext.Request[tablePageId]))
                 {
                     if (int.TryParse(CurrentContext.Request[tablePageId], out var page))
@@ -487,7 +487,7 @@ public class JJGridView : AsyncComponent
         {
             if (_currentActionMap != null) 
                 return _currentActionMap;
-            var encryptedActionMap = CurrentContext.Request["grid-view-action-" + Name];
+            var encryptedActionMap = CurrentContext.Request[$"grid-view-action-{Name}"];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -498,7 +498,7 @@ public class JJGridView : AsyncComponent
 
     private string? SelectedRowsId
     {
-        get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated("grid-view-selected-rows-" + Name)?.ToString();
+        get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated($"grid-view-selected-rows-{Name}")?.ToString();
         set => _selectedRowsId = value ?? "";
     }
     
@@ -555,7 +555,7 @@ public class JJGridView : AsyncComponent
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
     {
-        Name = ComponentNameGenerator.Create(formElement.Name) + "-grid-view";
+        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-grid-view";
         ShowTitle = true;
         EnableFilter = true;
         EnableSorting = true;
@@ -663,7 +663,7 @@ public class JJGridView : AsyncComponent
     {
         AssertProperties();
 
-        string? currentAction = CurrentContext.Request["grid-view-action-" + Name];
+        string? currentAction = CurrentContext.Request[$"grid-view-action-{Name}"];
 
         var html = new HtmlBuilder(HtmlTag.Div);
 
@@ -828,7 +828,7 @@ public class JJGridView : AsyncComponent
         {
             script.AppendLine("\t$(document).ready(function () {");
             script.AppendLine("\t\t$(\".jjselect input\").change(function() {");
-            script.AppendLine("\t\t\tGridViewSelectionHelper.selectItem('" + Name + "', $(this)); ");
+            script.AppendLine($"\t\t\tGridViewSelectionHelper.selectItem('{Name}', $(this)); ");
             script.AppendLine("\t\t});");
             script.AppendLine("\t});");
         }
@@ -836,7 +836,7 @@ public class JJGridView : AsyncComponent
         if (EnableEditMode)
         {
             var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
-            string functionname = "do_rowreload_" + Name;
+            string functionname = $"do_rowreload_{Name}";
             if (listFieldsPost.Count > 0)
             {
                 script.AppendLine("");
@@ -965,7 +965,7 @@ public class JJGridView : AsyncComponent
 
         var modal = new JJModalDialog
         {
-            Name = "config-modal-" + Name,
+            Name = $"config-modal-{Name}",
             Title = "Configure View"
         };
 
@@ -1003,7 +1003,7 @@ public class JJGridView : AsyncComponent
 
         var modal = new JJModalDialog
         {
-            Name = "data-exportation-modal-" + Name,
+            Name = $"data-exportation-modal-{Name}",
             Title = "Export"
         };
 
@@ -1051,7 +1051,7 @@ public class JJGridView : AsyncComponent
     public IDictionary<string, object> GetSelectedRowId()
     {
         var values = new Dictionary<string, object>();
-        string currentRow = CurrentContext.Request["grid-view-row-" + Name];
+        string currentRow = CurrentContext.Request[$"grid-view-row-{Name}"];
 
         if (string.IsNullOrEmpty(currentRow))
             return values;

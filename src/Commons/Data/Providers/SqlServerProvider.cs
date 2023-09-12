@@ -287,7 +287,7 @@ public class SqlServerProvider : BaseProvider
         sql.Append(Tab);
         sql.AppendLine("BEGIN ");
         sql.Append(Tab).Append(Tab);
-        sql.AppendLine("SET @TYPEACTION = '" + InsertInitial + "' ");
+        sql.AppendLine($"SET @TYPEACTION = '{InsertInitial}' ");
 
         bool isFirst = true;
         if (pks.Count > 0)
@@ -328,7 +328,7 @@ public class SqlServerProvider : BaseProvider
             sql.Append(Tab).Append(Tab);
             sql.AppendLine("BEGIN ");
             sql.Append(Tab).Append(Tab).Append(Tab);
-            sql.AppendLine("SET @TYPEACTION = '" + UpdateInitial + "'");
+            sql.AppendLine($"SET @TYPEACTION = '{UpdateInitial}'");
             sql.Append(Tab).Append(Tab);
             sql.AppendLine("END ");
         }
@@ -339,7 +339,7 @@ public class SqlServerProvider : BaseProvider
 
         //Insert Script
         sql.Append(Tab);
-        sql.AppendLine("IF @TYPEACTION = '" + InsertInitial + "' ");
+        sql.AppendLine($"IF @TYPEACTION = '{InsertInitial}' ");
         sql.Append(Tab);
         sql.AppendLine("BEGIN ");
         sql.Append(Tab).Append(Tab);
@@ -396,7 +396,7 @@ public class SqlServerProvider : BaseProvider
         if (updateScript)
         {
             sql.Append(Tab);
-            sql.AppendLine("ELSE IF @TYPEACTION = '" + UpdateInitial + "' ");
+            sql.AppendLine($"ELSE IF @TYPEACTION = '{UpdateInitial}' ");
             sql.Append(Tab);
             sql.AppendLine("BEGIN ");
             sql.Append(Tab).Append(Tab);
@@ -447,7 +447,7 @@ public class SqlServerProvider : BaseProvider
         else
         {
             sql.Append(Tab);
-            sql.AppendLine("ELSE IF @TYPEACTION = '" + UpdateInitial + "' ");
+            sql.AppendLine($"ELSE IF @TYPEACTION = '{UpdateInitial}' ");
             sql.Append(Tab);
             sql.AppendLine("BEGIN ");
             sql.Append(Tab).Append(Tab);
@@ -460,7 +460,7 @@ public class SqlServerProvider : BaseProvider
 
         //Delete Script
         sql.Append(Tab);
-        sql.AppendLine("ELSE IF @TYPEACTION = '" + DeleteInitial + "' ");
+        sql.AppendLine($"ELSE IF @TYPEACTION = '{DeleteInitial}' ");
         sql.Append(Tab);
         sql.AppendLine("BEGIN ");
         sql.Append(Tab).Append(Tab);
@@ -973,10 +973,10 @@ public class SqlServerProvider : BaseProvider
             if (field.Filter.Type == FilterMode.Range)
             {
                 object? valueFrom = DBNull.Value;
-                if (parameters.Filters.ContainsKey(field.Name + "_from") &&
-                    parameters.Filters[field.Name + "_from"] != null)
+                if (parameters.Filters.ContainsKey($"{field.Name}_from") &&
+                    parameters.Filters[$"{field.Name}_from"] != null)
                 {
-                    valueFrom = parameters.Filters[field.Name + "_from"];
+                    valueFrom = parameters.Filters[$"{field.Name}_from"];
                     if (valueFrom != null)
                         valueFrom = StringManager.ClearText(valueFrom.ToString());
                 }
@@ -985,16 +985,16 @@ public class SqlServerProvider : BaseProvider
                     Direction = ParameterDirection.Input,
                     Type = GetDbType(field.DataType),
                     Size = field.Size,
-                    Name = field.Name + "_from",
+                    Name = $"{field.Name}_from",
                     Value = valueFrom
                 };
                 command.Parameters.Add(fromParameter);
 
                 object? valueTo = DBNull.Value;
-                if (parameters.Filters.ContainsKey(field.Name + "_to") &&
-                    parameters.Filters[field.Name + "_to"] != null)
+                if (parameters.Filters.ContainsKey($"{field.Name}_to") &&
+                    parameters.Filters[$"{field.Name}_to"] != null)
                 {
-                    valueTo = parameters.Filters[field.Name + "_to"];
+                    valueTo = parameters.Filters[$"{field.Name}_to"];
                     if (valueTo != null)
                         valueTo = StringManager.ClearText(valueTo.ToString());
                 }
@@ -1002,7 +1002,7 @@ public class SqlServerProvider : BaseProvider
                 pTo.Direction = ParameterDirection.Input;
                 pTo.Type = GetDbType(field.DataType);
                 pTo.Size = field.Size;
-                pTo.Name = field.Name + "_to";
+                pTo.Name = $"{field.Name}_to";
                 pTo.Value = valueTo;
                 command.Parameters.Add(pTo);
             }

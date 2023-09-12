@@ -108,7 +108,7 @@ public class JJLinkButton : HtmlComponent
         if (!string.IsNullOrEmpty(Text))
             html.Append(HtmlTag.Span, s =>
                 {
-                    s.AppendText("&nbsp;" + Text);
+                    s.AppendText($"&nbsp;{Text}");
                 });
 
         if (_spinner != null)

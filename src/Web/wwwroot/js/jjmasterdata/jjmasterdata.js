@@ -1899,7 +1899,10 @@ class TextFileHelper {
         const modalId = fieldName + "-upload-modal";
         const modal = new Modal();
         modal.modalId = modalId;
-        modal.showUrl({ url: url, requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) } }, title, ModalSize.ExtraLarge).then(_ => {
+        modal.showUrl({
+            url: url,
+            requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) }
+        }, title, ModalSize.ExtraLarge).then(_ => {
             listenAllEvents("#" + modalId);
         });
     }
@@ -1990,32 +1993,27 @@ class UploadViewHelper {
     static performFileAction(componentName, filename, action, promptMessage = null) {
         const uploadActionInput = document.getElementById("upload-action-" + componentName);
         const filenameInput = document.getElementById("filename-" + componentName);
-        const form = document.querySelector("form");
-        if (uploadActionInput && filenameInput && form) {
+        if (uploadActionInput && filenameInput) {
             uploadActionInput.value = action;
-            filenameInput.value = action === "RENAMEFILE" ? filename + ";" + prompt(promptMessage, filename) : filename;
-            if (action === "DOWNLOADFILE") {
-                setTimeout(() => {
-                    SpinnerOverlay.hide();
-                    uploadActionInput.value = "";
-                }, 1500);
-            }
+            filenameInput.value = action === "renameFile" ? filename + ";" + prompt(promptMessage, filename) : filename;
         }
     }
-    static deleteFile(componentName, filename, confirmationMessage) {
+    static deleteFile(componentName, fileName, confirmationMessage, jsCallback) {
         if (confirmationMessage) {
             const confirmed = confirm(confirmationMessage);
-            if (confirmed) {
+            if (!confirmed) {
                 return;
             }
         }
-        this.performFileAction(componentName, filename, "DELFILE");
+        this.performFileAction(componentName, fileName, "deleteFile");
+        eval(jsCallback);
     }
-    static downloadFile(componentName, filename) {
-        this.performFileAction(componentName, filename, "DOWNLOADFILE");
+    static downloadFile(componentName, fileName) {
+        this.performFileAction(componentName, fileName, "downloadFile");
     }
-    static renameFile(componentName, filename, promptMessage) {
-        this.performFileAction(componentName, filename, "RENAMEFILE", promptMessage);
+    static renameFile(componentName, fileName, promptMessage, jsCallback) {
+        this.performFileAction(componentName, fileName, "renameFile", promptMessage);
+        eval(jsCallback);
     }
 }
 class UrlBuilder {

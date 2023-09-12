@@ -12,7 +12,7 @@ internal static class DataDictionarySchema
         var modelSchema = new OpenApiSchema
         {
             Type = "array",
-            Title = modelName + "List",
+            Title = $"{modelName}List",
 
             Items = new OpenApiSchema()
         };
@@ -105,7 +105,7 @@ internal static class DataDictionarySchema
         {
             foreach (var dataItem in item.DataItem.Items)
             {
-                itemSchema.Description += "<br>" + dataItem.Id + " = " + dataItem.Description;
+                itemSchema.Description += $"<br>{dataItem.Id} = {dataItem.Description}";
             }
         }
 
@@ -114,7 +114,7 @@ internal static class DataDictionarySchema
             itemSchema.Description += " (<span class='propType'>PK<span>)";
 
         if (!string.IsNullOrEmpty(item.HelpDescription))
-            itemSchema.Description += "<br> " + item.HelpDescription;
+            itemSchema.Description += $"<br> {item.HelpDescription}";
 
         itemSchema.ReadOnly = item.DataBehavior == FieldBehavior.ViewOnly;
 
@@ -125,7 +125,7 @@ internal static class DataDictionarySchema
     {
         return new OpenApiSchema
         {
-            Title = modelName + "Status",
+            Title = $"{modelName}Status",
             Type = "array",
             Items = GetValidationLetterSchema(true),
             Description = "List with status and validations"

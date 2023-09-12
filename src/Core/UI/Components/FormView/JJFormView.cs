@@ -209,8 +209,8 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (CurrentContext.Request["form-view-page-state-" + Name] != null && _pageState is null)
-                _pageState = (PageState)int.Parse(CurrentContext.Request["form-view-page-state-" + Name]);
+            if (CurrentContext.Request[$"form-view-page-state-{Name}"] != null && _pageState is null)
+                _pageState = (PageState)int.Parse(CurrentContext.Request[$"form-view-page-state-{Name}"]);
 
             return _pageState ?? PageState.List;
         }
@@ -224,7 +224,7 @@ public class JJFormView : AsyncComponent
             if (_currentActionMap != null)
                 return _currentActionMap;
 
-            string encryptedActionMap = CurrentContext.Request["form-view-action-map-" + Name.ToLower()];
+            string encryptedActionMap = CurrentContext.Request[$"form-view-action-map-{Name.ToLower()}"];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -349,8 +349,8 @@ public class JJFormView : AsyncComponent
         var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
         formView.FormElement.ParentName = RouteContext.ParentElementName;
         formView.UserValues = UserValues;
-        formView.DataPanel.FieldNamePrefix = formView.DataPanel.Name + "_";
-        var encryptedFkValues = CurrentContext.Request.GetFormValue(formView.GridView.Name + "-fk-values");
+        formView.DataPanel.FieldNamePrefix = $"{formView.DataPanel.Name}_";
+        var encryptedFkValues = CurrentContext.Request.GetFormValue($"{formView.GridView.Name}-fk-values");
 
         if (encryptedFkValues is not null)
         {
@@ -649,7 +649,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
-        string encryptedActionMap = CurrentContext.Request.GetFormValue("form-view-select-action-values" + Name);
+        string encryptedActionMap = CurrentContext.Request.GetFormValue($"form-view-select-action-values{Name}");
         var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement =
@@ -1216,7 +1216,7 @@ public class JJFormView : AsyncComponent
             Type = LinkButtonType.Button,
             Text = "View Log",
             IconClass = IconType.Film.GetCssClass(),
-            CssClass = BootstrapHelper.DefaultButton + " btn-small",
+            CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
             OnClientClick = scriptAction
         };
         return btn;

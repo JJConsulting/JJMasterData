@@ -61,7 +61,7 @@ internal class GridFilter
             return _currentFilter;
 
         //Ação é capturada aqui, pois o usuário pode chamar o metodo as antes do GetHtml
-        string currentFilterAction = CurrentContext.Request.GetFormValue("grid-view-filter-action-" + GridView.Name);
+        string currentFilterAction = CurrentContext.Request.GetFormValue($"grid-view-filter-action-{GridView.Name}");
         switch (currentFilterAction)
         {
             case FilterActionName:
@@ -75,7 +75,8 @@ internal class GridFilter
                 return _currentFilter;
         }
 
-        var sessionFilter = CurrentContext.Session.GetSessionValue<Dictionary<string, object>>("jjcurrentfilter_" + GridView.Name);
+        var sessionFilter = CurrentContext.Session.GetSessionValue<Dictionary<string, object>>(
+            $"jjcurrentfilter_{GridView.Name}");
         if (sessionFilter != null && GridView.MaintainValuesOnLoad)
         {
             _currentFilter = sessionFilter;
@@ -145,7 +146,7 @@ internal class GridFilter
 
         _currentFilter = await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement,values, PageState.List);
 
-        CurrentContext.Session.SetSessionValue("jjcurrentfilter_" + GridView.Name, _currentFilter);
+        CurrentContext.Session.SetSessionValue($"jjcurrentfilter_{GridView.Name}", _currentFilter);
     }
 
     private async Task<HtmlBuilder> GetDefaultFilter()
@@ -201,7 +202,7 @@ internal class GridFilter
         {
             var panel = new JJCollapsePanel( GridView.CurrentContext)
             {
-                Name = "filter_collapse_" + GridView.Name,
+                Name = $"filter_collapse_{GridView.Name}",
                 HtmlBuilderContent = html,
                 Title = "Detailed Filters"
             };
@@ -215,7 +216,7 @@ internal class GridFilter
         {
             var modal = new JJModalDialog
             {
-                Name = "filter_modal_" + GridView.Name
+                Name = $"filter_modal_{GridView.Name}"
             };
             btnDoFilter.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss","modal");
             btnCancel.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss","modal");
@@ -241,7 +242,7 @@ internal class GridFilter
         
         var panel = new JJCollapsePanel( GridView.CurrentContext)
         {
-            Name = "filter_collapse_" + GridView.Name,
+            Name = $"filter_collapse_{GridView.Name}",
             HtmlBuilderContent = body,
             Title = "Filter",
             ExpandedByDefault = GridView.FilterAction.ExpandedByDefault
@@ -252,7 +253,7 @@ internal class GridFilter
 
     public async Task<HtmlBuilder> GetHtmlToolBarSearch(bool isToolBar = true)
     {
-        string searchId = "jjsearch_" + GridView.Name;
+        string searchId = $"jjsearch_{GridView.Name}";
 
         var textBox = new JJTextBox( GridView.CurrentContext.Request)
         {
@@ -315,25 +316,25 @@ internal class GridFilter
 
             if (f.Filter.Type == FilterMode.Range)
             {
-                string sfrom = CurrentContext.Request.GetFormValue(name + "_from");
+                string sfrom = CurrentContext.Request.GetFormValue($"{name}_from");
                 if (values == null && sfrom != null)
                     values = new Dictionary<string, object>();
 
                 if (!string.IsNullOrEmpty(sfrom))
                 {
-                    values.Add(f.Name + "_from", sfrom);
+                    values.Add($"{f.Name}_from", sfrom);
                 }
 
-                string sto = CurrentContext.Request.GetFormValue(name + "_to");
+                string sto = CurrentContext.Request.GetFormValue($"{name}_to");
                 if (!string.IsNullOrEmpty(sto))
                 {
                     if (f.DataType is FieldType.DateTime or FieldType.DateTime2 && f.Component == FormComponent.Date)
                     {
                         if (DateTime.TryParse(sto, out var dto))
-                            sto = dto.ToShortDateString() + " " + DateTime.MaxValue.ToLongTimeString();
+                            sto = $"{dto.ToShortDateString()} {DateTime.MaxValue.ToLongTimeString()}";
                     }
 
-                    values.Add(f.Name + "_to", sto);
+                    values.Add($"{f.Name}_to", sto);
                 }
 
             }
@@ -396,19 +397,19 @@ internal class GridFilter
 
             if (f.Filter.Type == FilterMode.Range)
             {
-                string sfrom = CurrentContext.Request.QueryString[name + "_from"];
+                string sfrom = CurrentContext.Request.QueryString[$"{name}_from"];
                 if (values == null && sfrom != null)
                     values = new Dictionary<string, object>();
 
                 if (!string.IsNullOrEmpty(sfrom))
                 {
-                    values.Add(f.Name + "_from", sfrom);
+                    values.Add($"{f.Name}_from", sfrom);
                 }
 
-                string sto = CurrentContext.Request.QueryString[name + "_to"];
+                string sto = CurrentContext.Request.QueryString[$"{name}_to"];
                 if (!string.IsNullOrEmpty(sto))
                 {
-                    values.Add(f.Name + "_to", sto);
+                    values.Add($"{f.Name}_to", sto);
                 }
             }
             else

@@ -72,7 +72,7 @@ public class ExpressionParser : IExpressionParser
             if (val == null) continue;
 
             if (addQuotationMarks)
-                val = "'" + val + "'";
+                val = $"'{val}'";
 
             if (interval is { Begin: '{', End: '}' })
             {

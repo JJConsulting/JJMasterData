@@ -25,7 +25,7 @@ public static class SqlCommandExtensions
             case SqlDbType.DateTime:
             case SqlDbType.DateTime2:
             case SqlDbType.DateTimeOffset:
-                result = "'" + sp.Value.ToString().Replace("'", "''") + "'";
+                result = $"'{sp.Value.ToString().Replace("'", "''")}'";
                 break;
             default:
                 result = sp.Value.ToString().Replace("'", "''");
@@ -45,7 +45,7 @@ public static class SqlCommandExtensions
         var sql = new StringBuilder();
         var firstParam = true;
 
-        sql.AppendLine("use " + dbCommand.Connection.Database + ";");
+        sql.AppendLine($"use {dbCommand.Connection.Database};");
         switch (dbCommand.CommandType)
         {
             case CommandType.StoredProcedure:
@@ -55,12 +55,13 @@ public static class SqlCommandExtensions
                 {
                     if (sp.Direction is not (ParameterDirection.InputOutput or ParameterDirection.Output)) continue;
 
-                    sql.Append("declare " + sp.ParameterName + "\t" + sp.SqlDbType + "\t= ");
+                    sql.Append($"declare {sp.ParameterName}\t{sp.SqlDbType}\t= ");
 
-                    sql.AppendLine((sp.Direction == ParameterDirection.Output ? "null" : sp.ParameterValueAsSql()) + ";");
+                    sql.AppendLine(
+                        $"{(sp.Direction == ParameterDirection.Output ? "null" : sp.ParameterValueAsSql())};");
                 }
 
-                sql.AppendLine("exec [" + dbCommand.CommandText + "]");
+                sql.AppendLine($"exec [{dbCommand.CommandText}]");
 
                 foreach (SqlParameter sp in dbCommand.Parameters)
                 {
@@ -71,10 +72,10 @@ public static class SqlCommandExtensions
                     if (firstParam) firstParam = false;
 
                     if (sp.Direction == ParameterDirection.Input)
-                        sql.AppendLine(sp.ParameterName + " = " + sp.ParameterValueAsSql());
+                        sql.AppendLine($"{sp.ParameterName} = {sp.ParameterValueAsSql()}");
                     else
 
-                        sql.AppendLine(sp.ParameterName + " = " + sp.ParameterName + " output");
+                        sql.AppendLine($"{sp.ParameterName} = {sp.ParameterName} output");
                 }
                 sql.AppendLine(";");
 
@@ -84,7 +85,7 @@ public static class SqlCommandExtensions
                 {
                     if (sp.Direction == ParameterDirection.InputOutput || sp.Direction == ParameterDirection.Output)
                     {
-                        sql.AppendLine("select '" + sp.ParameterName + "' = convert(varchar, " + sp.ParameterName + ");");
+                        sql.AppendLine($"select '{sp.ParameterName}' = convert(varchar, {sp.ParameterName});");
                     }
                 }
                 break;

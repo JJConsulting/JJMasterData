@@ -1,38 +1,33 @@
 class UploadViewHelper {
-    static performFileAction(componentName, filename, action, promptMessage = null) {
+    static performFileAction(componentName: string, filename: string, action: string, promptMessage: string = null ) {
         const uploadActionInput = document.getElementById("upload-action-" + componentName) as HTMLInputElement;
         const filenameInput = document.getElementById("filename-" + componentName) as HTMLInputElement;
-        const form = document.querySelector("form") as HTMLFormElement;
-
-        if (uploadActionInput && filenameInput && form) {
+        
+        if (uploadActionInput && filenameInput) {
             uploadActionInput.value = action;
-            filenameInput.value = action === "RENAMEFILE" ? filename + ";" + prompt(promptMessage, filename) : filename;
-            if (action === "DOWNLOADFILE") {
-                setTimeout(() => {
-                    SpinnerOverlay.hide();
-                    uploadActionInput.value = "";
-                }, 1500);
-            }
+            filenameInput.value = action === "renameFile" ? filename + ";" + prompt(promptMessage, filename) : filename;
         }
     }
 
-    static deleteFile(componentName, filename, confirmationMessage) {
+    static deleteFile(componentName: string, fileName: string, confirmationMessage: string, jsCallback: string) {
         if(confirmationMessage){
             const confirmed = confirm(confirmationMessage)
-            if(confirmed){
+            if(!confirmed){
                 return
             }
         }
         
-        this.performFileAction(componentName, filename, "DELFILE");
+        this.performFileAction(componentName, fileName, "deleteFile");
+        eval(jsCallback)
     }
 
-    static downloadFile(componentName, filename) {
-        this.performFileAction(componentName, filename, "DOWNLOADFILE");
+    static downloadFile(componentName: string, fileName: string) {
+        this.performFileAction(componentName, fileName, "downloadFile");
     }
 
-    static renameFile(componentName, filename, promptMessage) {
-        this.performFileAction(componentName, filename, "RENAMEFILE", promptMessage);
+    static renameFile(componentName: string, fileName: string, promptMessage: string, jsCallback: string) {
+        this.performFileAction(componentName, fileName, "renameFile", promptMessage);
+        eval(jsCallback)
     }
 
 }

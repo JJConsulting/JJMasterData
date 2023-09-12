@@ -203,8 +203,8 @@ public class AccountService
     private void NotifyPasswordRecovered(int userId, string email, string password)
     {
         ConfigSmtp config = GetConfigSmtp(userId);
-        string subject = StringLocalizer["Recover password"] + " " + StringLocalizer["WebSales"];
-        string body = StringLocalizer["Your current password is:"] + " " + password;
+        string subject = $"{StringLocalizer["Recover password"]} {StringLocalizer["WebSales"]}";
+        string body = $"{StringLocalizer["Your current password is:"]} {password}";
 
         Email.SendMailConfig(email, null, "", subject, body, false, null, config);
     }

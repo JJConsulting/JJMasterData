@@ -42,7 +42,7 @@ public class PlainTextReader
 
         try
         {
-            var totalParameter = new DataAccessParameter(_provider.VariablePrefix + "qtdtotal", 1, DbType.Int32, 0,
+            var totalParameter = new DataAccessParameter($"{_provider.VariablePrefix}qtdtotal", 1, DbType.Int32, 0,
                 ParameterDirection.InputOutput);
             var cmd = _provider.GetReadCommand(element, entityParameters, totalParameter);
             var providerFactory = SqlClientFactory.Instance;

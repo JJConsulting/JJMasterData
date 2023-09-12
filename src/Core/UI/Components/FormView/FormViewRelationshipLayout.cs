@@ -108,7 +108,7 @@ internal class FormViewRelationshipLayout
                 {
                     var collapse = new JJCollapsePanel(ParentFormView.CurrentContext)
                     {
-                        Name = "collapse_" + relationship.Id,
+                        Name = $"collapse_{relationship.Id}",
                         Title = relationship.Panel.Title,
                         HtmlBuilderContent = content,
                         Color = relationship.Panel.Color,
@@ -122,7 +122,7 @@ internal class FormViewRelationshipLayout
                 {
                     var panel = new JJCard
                     {
-                        Name = "card_" + relationship.Id,
+                        Name = $"card_{relationship.Id}",
                         Title = relationship.Panel.Title,
                         Color = relationship.Panel.Color,
                         Layout = relationship.Panel.Layout,
@@ -174,7 +174,7 @@ internal class FormViewRelationshipLayout
                 {
                     var childValues = await ParentFormView.EntityRepository.GetFieldsAsync(childElement, (IDictionary<string, object>)filter);
                     var childDataPanel = ParentFormView.ComponentFactory.DataPanel.Create(childElement);
-                    childDataPanel.FieldNamePrefix = childDataPanel.Name + "_";
+                    childDataPanel.FieldNamePrefix = $"{childDataPanel.Name}_";
                     childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
                     childDataPanel.UserValues = ParentFormView.UserValues;
                     childDataPanel.Values = childValues;
@@ -186,7 +186,7 @@ internal class FormViewRelationshipLayout
             case RelationshipViewType.List:
             {
                     var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
-                    childFormView.DataPanel.FieldNamePrefix = childFormView.DataPanel.Name + "_";
+                    childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
                     childFormView.UserValues = ParentFormView.UserValues;
                     childFormView.RelationValues = mappedForeignKeys;
                     await childFormView.GridView.Filter.ApplyCurrentFilter(filter);

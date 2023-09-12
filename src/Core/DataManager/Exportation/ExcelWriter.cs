@@ -140,7 +140,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                     tdStyle = " style=\"mso-number-format:'@';\" ";
                 }
 
-                await sw.WriteAsync("\t\t\t\t<td" + tdStyle + ">");
+                await sw.WriteAsync($"\t\t\t\t<td{tdStyle}>");
                 await sw.WriteAsync(value);
                 await sw.WriteLineAsync("</td>");
             }
@@ -209,7 +209,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                 thStyle = " style=\"text-align:right;\" ";
             }
 
-            await sw.WriteAsync("\t\t\t\t<td" + thStyle + ">");
+            await sw.WriteAsync($"\t\t\t\t<td{thStyle}>");
             await sw.WriteAsync(StringLocalizer[field.LabelOrName]);
             await sw.WriteLineAsync("</td>");
         }

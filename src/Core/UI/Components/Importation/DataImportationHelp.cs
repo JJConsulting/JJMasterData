@@ -285,7 +285,8 @@ internal class DataImportationHelp
 
             if (field.DataItem!.EnableMultiSelect)
             {
-                span.AppendText(" " + StringLocalizer["To select more than one item, enter the desired values separated by a comma."]);
+                span.AppendText(
+                    $" {StringLocalizer["To select more than one item, enter the desired values separated by a comma."]}");
             }
         });
 

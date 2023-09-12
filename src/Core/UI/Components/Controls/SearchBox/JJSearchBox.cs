@@ -247,8 +247,8 @@ public class JJSearchBox : ControlBase
         var div = new HtmlBuilder(HtmlTag.Div);
         await div.AppendAsync(HtmlTag.Input, async input =>
         {
-            input.WithAttribute("id", HtmlId + "_text");
-            input.WithAttribute("name", HtmlId + "_text");
+            input.WithAttribute("id", $"{HtmlId}_text");
+            input.WithAttribute("name", $"{HtmlId}_text");
             input.WithAttribute("hidden-input-id", HtmlId);
             input.WithAttribute("type", "text");
             input.WithAttribute("query-string", GetQueryString());

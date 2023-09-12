@@ -14,12 +14,12 @@
 
     IHtmlContent? GetIdBs3(string name)
     {
-        return BootstrapHelper.Version > 3 ? Html.Raw("id=\"" + name + "\"") : null;
+        return BootstrapHelper.Version > 3 ? Html.Raw($"id=\"{name}\"") : null;
     }
 
     IHtmlContent? GetIdBs4(string name)
     {
-        return BootstrapHelper.Version > 3 ? Html.Raw("id=\"" + name + "\"") : null;
+        return BootstrapHelper.Version > 3 ? Html.Raw($"id=\"{name}\"") : null;
     }
 }
 

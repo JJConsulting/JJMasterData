@@ -77,12 +77,13 @@ public class JJTextFile : ControlBase
                 return _uploadView;
             
             _uploadView = UploadViewFactory.Create();
-            _uploadView.Name = FormElementField.Name + "-upload-view";
+            _uploadView.Name = $"{FormElementField.Name}-upload-view";
             _uploadView.Title = string.Empty;
             _uploadView.AutoSave = false;
             _uploadView.ShowAddFiles = PageState is not PageState.View;
+            _uploadView.JsCallback = Scripts.GetShowScript();
             _uploadView.RenameAction.SetVisible(true);
-
+            
             _uploadView.GridView.FormElement.ParentName = FormElement.ParentName;
             _uploadView.GridView.ShowToolbar = false;
             
@@ -91,7 +92,6 @@ public class JJTextFile : ControlBase
             _uploadView.UploadArea.MaxFileSize = dataFile.MaxFileSize;
             _uploadView.UploadArea.ShowFileSize = dataFile.ExportAsLink;
             _uploadView.UploadArea.AllowedTypes = dataFile.AllowedTypes;
-            _uploadView.UploadArea.JsCallback = Scripts.GetShowScript();
             _uploadView.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
             _uploadView.UploadArea.QueryStringParams["fieldName"] = FieldName;
             

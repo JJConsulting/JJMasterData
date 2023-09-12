@@ -54,7 +54,7 @@ public class JJUploadArea : AsyncComponent
     
     public string SizeErrorLabel { get; set; } = "is not allowed. Allowed Max size: ";
     
-    public string DragDropLabel{ get; set; } = "Paste or Drag & Drop Files";
+    public string DragDropLabel { get; set; } = "Click here, paste, or drag & drop Files";
 
     public bool EnableDragDrop { get; set; } = true;
 

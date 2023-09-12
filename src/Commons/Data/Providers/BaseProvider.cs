@@ -81,7 +81,7 @@ public abstract class BaseProvider
             if (!int.TryParse(ret.Value.ToString(), out var nret))
             {
                 string err = "Element";
-                err += " " + element.Name;
+                err += $" {element.Name}";
                 err += ": " + "Invalid return of @RET variable in procedure";
                 throw new JJMasterDataException(err);
             }
@@ -127,7 +127,7 @@ public abstract class BaseProvider
         if (!ValidateOrderByClause(element, entityParameters.OrderBy.ToQueryParameter()))
             throw new ArgumentException("[order by] clause is not valid");
 
-        var totalParameter = new DataAccessParameter(VariablePrefix + "qtdtotal", recoverTotalOfRecords ? 0 : -1, DbType.Int32, 0, ParameterDirection.InputOutput);
+        var totalParameter = new DataAccessParameter($"{VariablePrefix}qtdtotal", recoverTotalOfRecords ? 0 : -1, DbType.Int32, 0, ParameterDirection.InputOutput);
         
         var cmd = GetReadCommand(element, entityParameters, totalParameter);
         
@@ -213,7 +213,7 @@ public abstract class BaseProvider
             if (!int.TryParse(oret.Value.ToString(), out var result))
             {
                 string err = "Element";
-                err += " " + element.Name;
+                err += $" {element.Name}";
                 err += ": " + "Invalid return of @RET variable in procedure";
                 throw new JJMasterDataException(err);
             }

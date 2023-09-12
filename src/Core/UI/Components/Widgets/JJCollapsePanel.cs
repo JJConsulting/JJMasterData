@@ -38,7 +38,7 @@ public class JJCollapsePanel : HtmlComponent
     {
         get
         {
-            var collapseMode = CurrentContext.Request["collapse_mode_" + Name];
+            var collapseMode = CurrentContext.Request[$"collapse_mode_{Name}"];
             return string.IsNullOrEmpty(collapseMode) ? ExpandedByDefault : "1".Equals(collapseMode);
         }
     }
@@ -144,7 +144,7 @@ public class JJCollapsePanel : HtmlComponent
             .WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToString().ToLower()))
             .WithAttribute("href", "#collapseOne")
             .WithDataAttribute("toggle", "collapse")
-            .WithDataAttribute("target", "#" + Name)
+            .WithDataAttribute("target", $"#{Name}")
             .WithAttribute("aria-expanded", IsCollapseOpen.ToString().ToLower())
             .Append(HtmlTag.Div, div =>
             {

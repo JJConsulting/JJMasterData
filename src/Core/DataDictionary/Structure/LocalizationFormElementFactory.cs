@@ -51,7 +51,7 @@ public class LocalizationFormElementFactory
             var item = new DataItemValue
             {
                 Id = cultureInfo.Name,
-                Description = cultureInfo.Name + " " + cultureInfo.DisplayName
+                Description = $"{cultureInfo.Name} {cultureInfo.DisplayName}"
             };
             cultureField.DataItem.Items.Add(item);
         }

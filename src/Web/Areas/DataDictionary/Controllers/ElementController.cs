@@ -70,7 +70,7 @@ public class ElementController : DataDictionaryController
         if(selectedRows.Count == 1)
         {
             var jsonBytes =await  _elementService.ExportSingleRowAsync(selectedRows[0]);
-            return File(jsonBytes, "application/json", selectedRows[0]["name"] + ".json");
+            return File(jsonBytes, "application/json", $"{selectedRows[0]["name"]}.json");
         }
 
         var zipBytes = await _elementService.ExportMultipleRowsAsync(selectedRows);
@@ -109,7 +109,7 @@ public class ElementController : DataDictionaryController
         {
             var jjSummary = _elementService.GetValidationSummary();
             foreach (var err in jjSummary.Errors)
-                e.ErrorMessage += "<br>" + err;
+                e.ErrorMessage += $"<br>{err}";
         }
     }
 

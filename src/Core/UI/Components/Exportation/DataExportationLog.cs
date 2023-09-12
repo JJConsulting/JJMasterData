@@ -55,7 +55,7 @@ internal class DataExportationLog
                 {
                     span.WithCssClass("fa fa-stop");
                 });
-                a.AppendText("&nbsp;" + StringLocalizer["Stop the exportation."]);
+                a.AppendText($"&nbsp;{StringLocalizer["Stop the exportation."]}");
             });
         });
         return div;

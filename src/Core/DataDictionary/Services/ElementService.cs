@@ -239,7 +239,7 @@ public class ElementService : BaseService
                     settings.Formatting = Formatting.Indented;
                 });
 
-                var jsonFile = archive.CreateEntry(dictionaryName + ".json");
+                var jsonFile = archive.CreateEntry($"{dictionaryName}.json");
 #if NET
                 await 
 #endif

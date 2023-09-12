@@ -579,7 +579,7 @@ public partial class DataAccess
         {
             var sqlList = new List<string>();
             string sqlBatch = string.Empty;
-            script += "\n" + markpar; // make sure last batch is executed. 
+            script += $"\n{markpar}"; // make sure last batch is executed. 
 
             foreach (string line in script.Split(new[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries))
             {
@@ -594,7 +594,7 @@ public partial class DataAccess
                 }
                 else
                 {
-                    sqlBatch += line + "\n";
+                    sqlBatch += $"{line}\n";
                 }
             }
 

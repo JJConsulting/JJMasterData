@@ -90,7 +90,7 @@ internal class DataPanelLayout
     {
         var navTab = new JJTabNav(CurrentContext)
         {
-            Name = "nav_" + Name
+            Name = $"nav_{Name}"
         };
         foreach (var panel in tabs)
         {
@@ -121,7 +121,7 @@ internal class DataPanelLayout
             {
                 Title = panel.Title,
                 SubTitle = panel.SubTitle,
-                Name = Name + "_panel" + panel.PanelId,
+                Name = $"{Name}_panel{panel.PanelId}",
                 CssClass = panel.CssClass,
                 HtmlBuilderContent = await GetHtmlForm(panel),
                 ExpandedByDefault = panel.ExpandedByDefault,

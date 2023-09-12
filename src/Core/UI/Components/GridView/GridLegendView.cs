@@ -95,7 +95,7 @@ internal class GridLegendView
         
         var dialog = new JJModalDialog
         {
-            Name = Name +"-legend-modal",
+            Name = $"{Name}-legend-modal",
             Title = StringLocalizer["Information"],
             HtmlBuilderContent = form
         };

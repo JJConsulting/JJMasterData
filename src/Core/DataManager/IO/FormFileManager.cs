@@ -98,7 +98,7 @@ public class FormFileManager
                 throw new JJMasterDataException(args.ErrorMessage);
         }
 
-        if (AutoSave & !string.IsNullOrEmpty(FolderPath))
+        if (AutoSave && !string.IsNullOrEmpty(FolderPath))
         {
             File.Move(Path.Combine(FolderPath,currentName), Path.Combine(FolderPath, newName));
         }
@@ -108,10 +108,13 @@ public class FormFileManager
             if (file == null)
                 throw new JJMasterDataException(StringLocalizer["file {0} not found!", currentName]);
 
+            files.Remove(file);
+            
             file.Content.FileName = newName;
-            if (file.Content.Bytes == null & string.IsNullOrEmpty(file.OriginName))
-                file.OriginName = currentName;
+            file.OldName = currentName;
 
+            files.Add(file);
+            
             MemoryFiles = files;
         }
     }
@@ -119,7 +122,9 @@ public class FormFileManager
     public FormFileInfo GetFile(string fileName)
     {
         var files = GetFiles();
-        return files.Find(x => x.Content.FileName.Equals(fileName));
+        var file = files.FirstOrDefault(x => x.Content.FileName.Equals(fileName) || x.OldName.Equals(fileName));
+        
+        return file;
     }
 
     public void CreateFile(FormFileContent fileContent, bool replaceIfExists)
@@ -248,12 +253,12 @@ public class FormFileManager
             string fileName = file.Content.FileName;
             if (file.Deleted)
             {
-                string filename = string.IsNullOrEmpty(file.OriginName) ? fileName : file.OriginName;
+                string filename = string.IsNullOrEmpty(file.OldName) ? fileName : file.OldName;
                 File.Delete(folderPath + filename);
             }
-            else if (!string.IsNullOrEmpty(file.OriginName))
+            else if (!string.IsNullOrEmpty(file.OldName))
             {
-                File.Move(folderPath + file.OriginName, folderPath + fileName);
+                File.Move(folderPath + file.OldName, folderPath + fileName);
             }
             else if (file.Content.Bytes != null && file.IsInMemory)
             {

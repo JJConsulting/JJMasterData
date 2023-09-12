@@ -20,7 +20,7 @@ public class JJImage : HtmlComponent
     {
         var appPath = httpContext.Request.ApplicationPath;
         var baseUrl = string.IsNullOrEmpty(appPath) ? "/" : appPath;
-        var logoSrc = baseUrl + "_content/JJMasterData.Web/images/JJMasterData.png";
+        var logoSrc = $"{baseUrl}_content/JJMasterData.Web/images/JJMasterData.png";
         var image = new JJImage(logoSrc);
         image.SetAttr("style","width:8%;height:8%;");
         image.Title = "JJMasterData";

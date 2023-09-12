@@ -153,7 +153,7 @@ public class JJComboBox : ControlBase
         var selectedText = GetSelectedText(values);
 
         var readonlyInput = new HtmlBuilder(HtmlTag.Input)
-            .WithNameAndId("cboview_" + Name)
+            .WithNameAndId($"cboview_{Name}")
             .WithCssClass("form-control form-select")
             .WithCssClass(CssClass)
             .WithValue(selectedText)

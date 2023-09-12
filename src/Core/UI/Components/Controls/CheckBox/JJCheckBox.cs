@@ -76,7 +76,7 @@ public class JJCheckBox : ControlBase
                 .WithAttributeIf(!Enabled, "disabled", "disabled");
         });
 
-        div.AppendHiddenInput(Name + "_hidden", IsChecked ? Value : "0");
+        div.AppendHiddenInput($"{Name}_hidden", IsChecked ? Value : "0");
 
         div.AppendIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
         {

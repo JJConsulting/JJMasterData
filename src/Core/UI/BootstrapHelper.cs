@@ -15,7 +15,7 @@ public static class BootstrapHelper
     #endregion
 
     #region Button
-    private static string Button(string className) => " btn btn-" + className;
+    private static string Button(string className) => $" btn btn-{className}";
     public static string DefaultButton => Version switch
     {
         >= 4 => Button("secondary"),
@@ -28,15 +28,15 @@ public static class BootstrapHelper
     {
         if (Version == 3)
         {
-            return "panel panel-" + className;
+            return $"panel panel-{className}";
         }
 
-        return "card border-" + className.Replace("default", "jjmasterdata");
+        return $"card border-{className.Replace("default", "jjmasterdata")}";
     }
 
     public static string GetPanelHeading(string className) => Version switch
     {
-        >= 4 => " card-header bg-" + className.Replace("default", "jjmasterdata"),
+        >= 4 => $" card-header bg-{className.Replace("default", "jjmasterdata")}",
         _ => " panel-heading"
     };
 
@@ -246,8 +246,8 @@ public static class BootstrapHelper
 
     public static string GetModalScript(string modalCssId) => Version switch
     {
-        5 => "new bootstrap.Modal(document.getElementById('" + modalCssId + "'),{}).show();",
-        _ => "$('#" + modalCssId + "').modal();"
+        5 => $"new bootstrap.Modal(document.getElementById('{modalCssId}'),{{}}).show();",
+        _ => $"$('#{modalCssId}').modal();"
     };
 
     #endregion
