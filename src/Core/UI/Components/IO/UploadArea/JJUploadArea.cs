@@ -23,6 +23,10 @@ public class JJUploadArea : AsyncComponent
     /// Event fired when the file is posted.
     /// </summary>  
     public event EventHandler<FormUploadFileEventArgs> OnFileUploaded;
+    
+    /// <summary>
+    /// Async event fired when the file is posted.
+    /// </summary>  
     public event AsyncEventHandler<FormUploadFileEventArgs> OnFileUploadedAsync;
     /// <summary>
     /// Allowed extension type, separated by comma.
@@ -39,50 +43,41 @@ public class JJUploadArea : AsyncComponent
     /// Default: True
     /// </summary>
     public bool Multiple { get; set; } = true;
-
-    /// <remarks>
-    /// Default = "Add"
-    /// </remarks>
+    
     public string AddLabel { get; set; } = "Add";
-
-    /// <remarks>
-    /// Default = "Cancel"
-    /// </remarks>
+    
     public string CancelLabel { get; set; } = "Cancel";
-
-    /// <remarks>
-    /// Default = "Stop"
-    /// </remarks>
+    
     public string AbortLabel { get; set; } = "Stop";
-
-    /// <remarks>
-    /// Default = "is not allowed. Allowed extensions: "
-    /// </remarks>
+    
     public string ExtensionNotAllowedLabel { get; set; } = "is not allowed. Allowed extensions: ";
-
-    /// <remarks>
-    /// Default = "is not allowed. Allowed Max size: "
-    /// </remarks>
+    
     public string SizeErrorLabel { get; set; } = "is not allowed. Allowed Max size: ";
-
-    /// <remarks>
-    /// Default = "Paste or Drag and Drop Files"
-    /// </remarks>
+    
     public string DragDropLabel{ get; set; } = "Paste or Drag & Drop Files";
 
     public bool EnableDragDrop { get; set; } = true;
 
     public bool EnableCopyPaste { get; set; } = true;
-
-    /// <remarks>
-    /// Default = True 
-    /// </remarks>
     public bool ShowFileSize { get; set; } = true;
-
-    /// <remarks>
-    /// Measured in bytes
-    /// </remarks>
     public int MaxFileSize { get; set; }
+    
+    private string AreFilesUploadedFieldName =>  $"{Name}-are-files-uploaded";
+
+    /// <summary>
+    /// JS code to be executed after all server side uploads are completed.
+    /// </summary>
+    public string JsCallback { get; set; } = @"document.forms[0].submit()";
+
+    /// <summary>
+    /// QueryString parameters to be sended at async POST requests.
+    /// </summary>
+    public Dictionary<string, string> QueryStringParams { get; } = new();
+    
+    /// <summary>
+    /// How many server-side uploads can happen at the same time.
+    /// </summary>
+    public int ParallelUploads { get; set; } = 1;
     
     internal IHttpContext CurrentContext { get; }
     private IUploadAreaService UploadAreaService { get; }
@@ -104,16 +99,6 @@ public class JJUploadArea : AsyncComponent
             return _routeContext;
         }
     }
-    
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
-    
-    private string AreFilesUploadedFieldName =>  $"{Name}-are-files-uploaded";
-
-    public string JsCallback { get; set; } = @"document.forms[0].submit()";
-
-    public Dictionary<string, string> QueryStringParams { get; } = new();
-    
-    public int ParallelUploads { get; set; } = 1;
     
     public JJUploadArea(
         IHttpContext currentContext,
