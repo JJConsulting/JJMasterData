@@ -79,9 +79,7 @@ public class ElementController : DataDictionaryController
 
     public async Task<IActionResult> Import()
     {
-
         var uploadArea = _uploadAreaFactory.Create();
-
         
         ConfigureUploadArea(uploadArea);
         
@@ -97,7 +95,6 @@ public class ElementController : DataDictionaryController
     {
         upload.AddLabel = _stringLocalizer["Select Dictionaries"];
         upload.AllowedTypes = "json";
-        upload.AutoSubmitAfterUploadAll = false;
         upload.OnFileUploadedAsync += FileUploaded;
     }
 
@@ -194,7 +191,7 @@ public class ElementController : DataDictionaryController
     
         var elementNamesToDelete = selectedGridValues
             .Where(value => value.TryGetValue("name", out var nameValue) && nameValue is string)
-            .Select(value => value["name"]?.ToString())
+            .Select(value => value["name"].ToString())
             .ToList();
 
         foreach (var elementName in elementNamesToDelete)

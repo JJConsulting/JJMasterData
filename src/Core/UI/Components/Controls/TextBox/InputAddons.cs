@@ -6,7 +6,7 @@ public class InputAddons
 
     public string Text { get; set; }
 
-    public string ToolTip { get; set; }
+    public string Tooltip { get; set; }
 
     public InputAddons()
     {

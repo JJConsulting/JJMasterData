@@ -32,65 +32,58 @@ public class JJUploadArea : AsyncComponent
     /// <remarks>
     /// On the systems file types are blocked like .exe .dll etc...
     /// </remarks>
-    public string AllowedTypes { get; set; }
+    public string AllowedTypes { get; set; } = "*";
 
     /// <summary>
     /// Allows simultaneous upload of files.
     /// Default: True
     /// </summary>
-    public bool Multiple { get; set; }
+    public bool Multiple { get; set; } = true;
 
     /// <remarks>
     /// Default = "Add"
     /// </remarks>
-    public string AddLabel { get; set; }
-
-    /// <remarks>
-    /// Default = "Done"
-    /// </remarks>
-    public string DoneLabel { get; set; }
+    public string AddLabel { get; set; } = "Add";
 
     /// <remarks>
     /// Default = "Cancel"
     /// </remarks>
-    public string CancelLabel { get; set; }
+    public string CancelLabel { get; set; } = "Cancel";
 
     /// <remarks>
     /// Default = "Stop"
     /// </remarks>
-    public string AbortLabel { get; set; }
+    public string AbortLabel { get; set; } = "Stop";
 
     /// <remarks>
     /// Default = "is not allowed. Allowed extensions: "
     /// </remarks>
-    public string ExtensionNotAllowedLabel { get; set; }
+    public string ExtensionNotAllowedLabel { get; set; } = "is not allowed. Allowed extensions: ";
 
     /// <remarks>
     /// Default = "is not allowed. Allowed Max size: "
     /// </remarks>
-    public string SizeErrorLabel { get; set; }
+    public string SizeErrorLabel { get; set; } = "is not allowed. Allowed Max size: ";
 
     /// <remarks>
     /// Default = "Paste or Drag and Drop Files"
     /// </remarks>
-    public string DragDropLabel{ get; set; }
-    
-    public bool EnableDragDrop { get; set; }
-    
-    public bool EnableCopyPaste { get; set; }
+    public string DragDropLabel{ get; set; } = "Paste or Drag & Drop Files";
+
+    public bool EnableDragDrop { get; set; } = true;
+
+    public bool EnableCopyPaste { get; set; } = true;
 
     /// <remarks>
     /// Default = True 
     /// </remarks>
-    public bool ShowFileSize { get; set; }
+    public bool ShowFileSize { get; set; } = true;
 
     /// <remarks>
     /// Measured in bytes
     /// </remarks>
     public int MaxFileSize { get; set; }
     
-    public bool AutoSubmitAfterUploadAll { get; set; }
-
     internal IHttpContext CurrentContext { get; }
     private IUploadAreaService UploadAreaService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -119,7 +112,9 @@ public class JJUploadArea : AsyncComponent
     public string JsCallback { get; set; } = @"document.forms[0].submit()";
 
     public Dictionary<string, string> QueryStringParams { get; } = new();
-
+    
+    public int ParallelUploads { get; set; } = 1;
+    
     public JJUploadArea(
         IHttpContext currentContext,
         IUploadAreaService uploadAreaService,
@@ -127,26 +122,12 @@ public class JJUploadArea : AsyncComponent
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
+        Name = "upload-area";
         CurrentContext = currentContext;
         UploadAreaService = uploadAreaService;
         UrlHelper = urlHelper;
         StringLocalizer = stringLocalizer;
-        AllowedTypes = "*";
-        Name = "uploadFile1";
-        Multiple = true;
-        EnableDragDrop = true;
-        EnableCopyPaste = true;
         EncryptionService = encryptionService;
-        ShowFileSize = true;
-        AutoSubmitAfterUploadAll = true;
-        AddLabel = "Add";
-        DoneLabel = "Done";
-        CancelLabel = "Cancel";
-        AbortLabel = "Stop";
-        ExtensionNotAllowedLabel = "is not allowed. Allowed extensions: ";
-        SizeErrorLabel = "is not allowed. Allowed Max size: ";
-        DragDropLabel = "Paste or Drag & Drop Files";
-
         MaxFileSize = GetMaxRequestLength();
     }
     
@@ -166,39 +147,40 @@ public class JJUploadArea : AsyncComponent
         if (OnFileUploadedAsync != null)
             UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
 
-        var result = await UploadAreaService.UploadFileAsync("uploadAreaFile", AllowedTypes);
+        var result = await UploadAreaService.UploadFileAsync("uploadAreaFile[0]", AllowedTypes);
         return new JsonComponentResult(result);
     }
 
     internal HtmlBuilder GetUploadAreaHtmlBuilder()
     {
         var div = new HtmlBuilder(HtmlTag.Div)
-            .WithAttribute("id", "upload-area-div")
+            .WithAttribute("id", $"{Name}-upload-area-div")
+            .WithCssClass("upload-area-div")
             .AppendHiddenInput(AreFilesUploadedFieldName)
             .Append(HtmlTag.Div,  div =>
-                {
-                    div.WithCssClass("fileUpload");
-                    div.WithAttributes(Attributes);
-                    div.WithAttribute("id", Name);
-                    div.WithAttribute("js-callback",JsCallback);
-                    div.WithAttribute("route-context", EncryptionService.EncryptRouteContext(RouteContext));
-                    div.WithAttribute("jjmultiple", Multiple.ToString().ToLower());
-                    div.WithAttribute("query-string-params", GetQueryStringParams());
-                    div.WithAttribute("maxFileSize", MaxFileSize.ToString().ToLower());
-                    div.WithAttribute("dragDrop", EnableDragDrop.ToString().ToLower());
-                    div.WithAttribute("copyPaste", EnableCopyPaste.ToString().ToLower());
-                    div.WithAttribute("showFileSize", ShowFileSize.ToString().ToLower());
-                    div.WithAttribute("autoSubmit", AutoSubmitAfterUploadAll.ToString().ToLower());
-                    div.WithAttribute("allowedTypes", AllowedTypes);
-                    div.WithAttribute("uploadStr", StringLocalizer[AddLabel]);
-                    div.WithAttribute("dragDropStr", StringLocalizer[DragDropLabel]);
-                    div.WithAttribute("doneStr", StringLocalizer[DoneLabel]);
-                    div.WithAttribute("cancelStr", StringLocalizer[CancelLabel]);
-                    div.WithAttribute("abortStr", StringLocalizer[AbortLabel]);
-                    div.WithAttribute("extErrorStr", StringLocalizer[ExtensionNotAllowedLabel]);
-                    div.WithAttribute("sizeErrorStr", StringLocalizer[SizeErrorLabel]);
-                });
-
+            {
+                div.WithAttributes(Attributes);
+                div.WithCssClass("dropzone");
+                div.WithAttribute("id", Name);
+            });
+        div.WithAttributes(Attributes);
+        div.WithAttribute("js-callback",JsCallback);
+        div.WithAttribute("route-context", EncryptionService.EncryptRouteContext(RouteContext));
+        div.WithAttribute("allow-multiple-files", Multiple.ToString().ToLower());
+        div.WithAttribute("query-string-params", GetQueryStringParams());
+        div.WithAttribute("max-file-size", MaxFileSize.ToString().ToLower());
+        div.WithAttribute("allow-drag-drop", EnableDragDrop.ToString().ToLower());
+        div.WithAttribute("allow-copy-paste", EnableCopyPaste.ToString().ToLower());
+        div.WithAttribute("show-file-size", ShowFileSize.ToString().ToLower());
+        div.WithAttribute("allowed-types", AllowedTypes);
+        div.WithAttribute("parallel-uploads", ParallelUploads);
+        div.WithAttribute("add-file-label", StringLocalizer[AddLabel]);
+        div.WithAttribute("drag-drop-label", StringLocalizer[DragDropLabel]);
+        div.WithAttribute("cancel-label", StringLocalizer[CancelLabel]);
+        div.WithAttribute("abort-label", StringLocalizer[AbortLabel]);
+        div.WithAttribute("extension-not-allowed-label", StringLocalizer[ExtensionNotAllowedLabel]);
+        div.WithAttribute("file-size-error-label", StringLocalizer[SizeErrorLabel]);
+        
         return div;
     }
 

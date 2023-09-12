@@ -11,7 +11,7 @@ public class EditAction : GridTableAction
     public EditAction()
     {
         Name = ActionName;
-        ToolTip = "Edit";
+        Tooltip = "Edit";
         ConfirmationMessage = "";
         Icon = IconType.Pencil;
         Order = 2;

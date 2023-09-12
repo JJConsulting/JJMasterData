@@ -339,19 +339,24 @@ public class JJFormView : AsyncComponent
     {
         if (!RouteContext.CanRender(FormElement.Name))
             return new EmptyComponentResult();
-
-        if (RouteContext.ElementName == Options.AuditLogTableName)
-            return await AuditLogView.GetResultAsync();
         
         if (RouteContext.IsCurrentFormElement(FormElement.Name))
             return await GetFormResultAsync();
+            
+        if (RouteContext.ElementName == Options.AuditLogTableName)
+            return await AuditLogView.GetResultAsync();
         
         var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
         formView.FormElement.ParentName = RouteContext.ParentElementName;
         formView.UserValues = UserValues;
-        formView.DataPanel.FieldNamePrefix = formView.DataPanel.Name + "_"; 
-        var fkValues = EncryptionService.DecryptDictionary(CurrentContext.Request.GetFormValue(formView.GridView.Name + "-fk-values"));
-        formView.RelationValues = fkValues;
+        formView.DataPanel.FieldNamePrefix = formView.DataPanel.Name + "_";
+        var encryptedFkValues = CurrentContext.Request.GetFormValue(formView.GridView.Name + "-fk-values");
+
+        if (encryptedFkValues is not null)
+        {
+            var fkValues = EncryptionService.DecryptDictionary(encryptedFkValues);
+            formView.RelationValues = fkValues;
+        }
 
         return await formView.GetFormResultAsync();
     }
@@ -623,7 +628,7 @@ public class JJFormView : AsyncComponent
         {
             Name = "_jjselaction",
             Icon = IconType.CaretRight,
-            ToolTip = "Select",
+            Tooltip = "Select",
             IsDefaultOption = true
         };
         selectedForm.GridView.AddGridAction(selAction);

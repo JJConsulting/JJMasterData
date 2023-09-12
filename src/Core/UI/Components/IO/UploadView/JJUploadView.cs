@@ -103,6 +103,7 @@ public class JJUploadView : AsyncComponent
 
             var dt = GetFilesDataTable();
             _gridView = ComponentFactory.GridView.Create(new FormElement(dt));
+            _gridView.FormElement.Name = Name;
             _gridView.DataSource = EnumerableHelper.ConvertToDictionaryList(dt);
             _gridView.TotalOfRecords = dt.Rows.Count;
             _gridView.FormElement.Title = Title;
@@ -114,7 +115,7 @@ public class JJUploadView : AsyncComponent
             if (_gridView.FormElement.Fields.Contains("LastWriteTime"))
                 _gridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";
             
-            _gridView.Name = Name + "_gridview";
+            _gridView.Name = Name + "-grid-view";
             _gridView.UserValues = UserValues;
             _gridView.ShowPagging = false;
             _gridView.ShowTitle = false;
@@ -141,6 +142,9 @@ public class JJUploadView : AsyncComponent
 
             _gridView.AddGridAction(RenameAction);
             _gridView.AddGridAction(DeleteAction);
+
+            _gridView.FormElement.Options.Grid.TotalPerPage = int.MaxValue;
+            _gridView.FormElement.Options.Grid.ShowPagging = false;
             return _gridView;
         }
     }
@@ -149,7 +153,7 @@ public class JJUploadView : AsyncComponent
         _downloadAction ??= new ScriptAction
         {
             Icon = IconType.CloudDownload,
-            ToolTip = "Download File",
+            Tooltip = "Download File",
             Name = "DOWNLOADFILE",
             OnClientClick = "UploadViewHelper.downloadFile('" + Name + "','{NameJS}');"
         };
@@ -165,7 +169,7 @@ public class JJUploadView : AsyncComponent
             _deleteAction = new ScriptAction
             {
                 Icon = IconType.Trash,
-                ToolTip = "Delete File",
+                Tooltip = "Delete File",
                 OnClientClick = "UploadViewHelper.deleteFile('" + Name + "','{NameJS}', '" + promptStr + "');",
                 Name = "DELFILE"
             };
@@ -184,7 +188,7 @@ public class JJUploadView : AsyncComponent
             _renameAction = new ScriptAction
             {
                 Icon = IconType.PencilSquareO,
-                ToolTip = "Rename File",
+                Tooltip = "Rename File",
                 OnClientClick = "UploadViewHelper.renameFile('" + Name + "','{NameJS}','" + promptStr + "');",
                 Name = "RENAMEFILE"
             };

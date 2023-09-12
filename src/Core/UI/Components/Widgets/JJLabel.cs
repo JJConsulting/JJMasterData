@@ -15,7 +15,7 @@ public class JJLabel : HtmlComponent
     /// Texto exibido quando o ponteiro do mouse passa sobre o controle
     /// </summary>
     /// 
-    public string ToolTip { get; set; }
+    public string Tooltip { get; set; }
 
     /// <summary>
     /// Nome do controle referente ao label
@@ -50,7 +50,7 @@ public class JJLabel : HtmlComponent
 
         LabelFor = field.Name;
         Text = field.LabelOrName;
-        ToolTip = field.HelpDescription;
+        Tooltip = field.HelpDescription;
         IsRequired = field.IsRequired;
     }
 
@@ -68,10 +68,10 @@ public class JJLabel : HtmlComponent
                 s.AppendText("*");
                 s.WithToolTip(RequiredText ?? "Required");
             })
-            .AppendIf(!string.IsNullOrEmpty(ToolTip), HtmlTag.Span, s =>
+            .AppendIf(!string.IsNullOrEmpty(Tooltip), HtmlTag.Span, s =>
             {
                 s.WithCssClass("fa fa-question-circle help-description");
-                s.WithToolTip(ToolTip);
+                s.WithToolTip(Tooltip);
             });
           
         return element;

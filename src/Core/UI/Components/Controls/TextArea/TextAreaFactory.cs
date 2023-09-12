@@ -34,7 +34,7 @@ internal class TextAreaFactory : IControlFactory<JJTextArea>
 
         var text = Create();
         text.SetAttr(field.Attributes);
-        text.ToolTip = field.HelpDescription;
+        text.Tooltip = field.HelpDescription;
         text.MaxLength = field.Size;
         text.Text = context.Value != null ? context.Value.ToString() : "";
         text.Name = field.Name;

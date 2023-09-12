@@ -1,33 +1,12 @@
 class UploadViewHelper {
-    static show(fieldName: string, title:string, routeContext: string){
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext",routeContext)
-        urlBuilder.addQueryParameter("fieldName",fieldName)
-        const url = urlBuilder.build();
-        
-        const modalId = fieldName + "-upload-modal";
-
-        const modal = new Modal();
-        modal.modalId =modalId;
-        
-        modal.showUrl({url:url, requestOptions: {method:"POST", body: new FormData(document.querySelector("form"))}},title, ModalSize.ExtraLarge).then(_=>{
-            listenAllEvents("#" + modalId)
-        })
-    }
-
-    static performFileAction(componentName, filename, action, promptStr = null) {
-        if (promptStr && !confirm(promptStr)) {
-            return false;
-        }
-
+    static performFileAction(componentName, filename, action, promptMessage = null) {
         const uploadActionInput = document.getElementById("upload-action-" + componentName) as HTMLInputElement;
         const filenameInput = document.getElementById("filename-" + componentName) as HTMLInputElement;
         const form = document.querySelector("form") as HTMLFormElement;
 
         if (uploadActionInput && filenameInput && form) {
             uploadActionInput.value = action;
-            filenameInput.value = action === "RENAMEFILE" ? filename + ";" + prompt(promptStr, filename) : filename;
-            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+            filenameInput.value = action === "RENAMEFILE" ? filename + ";" + prompt(promptMessage, filename) : filename;
             if (action === "DOWNLOADFILE") {
                 setTimeout(() => {
                     SpinnerOverlay.hide();
@@ -35,19 +14,25 @@ class UploadViewHelper {
                 }, 1500);
             }
         }
-        return true;
     }
 
-    static deleteFile(componentName, filename, promptStr) {
-        return this.performFileAction(componentName, filename, "DELFILE", promptStr);
+    static deleteFile(componentName, filename, confirmationMessage) {
+        if(confirmationMessage){
+            const confirmed = confirm(confirmationMessage)
+            if(confirmed){
+                return
+            }
+        }
+        
+        this.performFileAction(componentName, filename, "DELFILE");
     }
 
     static downloadFile(componentName, filename) {
         this.performFileAction(componentName, filename, "DOWNLOADFILE");
     }
 
-    static renameFile(componentName, filename, promptStr) {
-        this.performFileAction(componentName, filename, "RENAMEFILE", promptStr);
+    static renameFile(componentName, filename, promptMessage) {
+        this.performFileAction(componentName, filename, "RENAMEFILE", promptMessage);
     }
 
 }

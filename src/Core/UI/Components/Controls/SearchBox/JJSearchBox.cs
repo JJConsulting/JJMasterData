@@ -258,7 +258,7 @@ public class JJSearchBox : ControlBase
             input.WithAttributeIf(ReadOnly, "readonly", "readonly");
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
             input.WithAttributes(Attributes);
-            input.WithToolTip(ToolTip);
+            input.WithToolTip(Tooltip);
             input.WithCssClass("form-control jj-search-box");
             input.WithCssClassIf(string.IsNullOrEmpty(selectedValue), "jj-icon-search");
             input.WithCssClassIf(!string.IsNullOrEmpty(selectedValue), "jj-icon-success");

@@ -11,7 +11,7 @@ public class ImportAction : GridToolbarAction
     public ImportAction()
     {
         Name = ActionName;
-        ToolTip = "Upload";
+        Tooltip = "Upload";
         Icon = IconType.Upload;
         ShowAsButton = true;
         CssClass = "float-end";

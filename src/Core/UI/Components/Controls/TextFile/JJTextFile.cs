@@ -41,7 +41,7 @@ public class JJTextFile : ControlBase
 
     private TextFileScripts Scripts => _scripts ??= new TextFileScripts(this);
 
-    public override string ToolTip
+    public override string Tooltip
     {
         get => FormElementField.HelpDescription;
         set => FormElementField.HelpDescription = value;
@@ -69,7 +69,7 @@ public class JJTextFile : ControlBase
         }
     }
 
-    private JJUploadView UploadView
+    public JJUploadView UploadView
     {
         get
         {
@@ -81,17 +81,20 @@ public class JJTextFile : ControlBase
             _uploadView.Title = string.Empty;
             _uploadView.AutoSave = false;
             _uploadView.ShowAddFiles = PageState is not PageState.View;
-            _uploadView.UploadArea.JsCallback = Scripts.GetShowScript();
-            _uploadView.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
-            _uploadView.UploadArea.QueryStringParams["fieldName"] = FieldName;
-            _uploadView.GridView.ShowToolbar = false;
             _uploadView.RenameAction.SetVisible(true);
 
+            _uploadView.GridView.FormElement.ParentName = FormElement.ParentName;
+            _uploadView.GridView.ShowToolbar = false;
+            
             var dataFile = FormElementField.DataFile!;
             _uploadView.UploadArea.Multiple = dataFile.MultipleFile;
             _uploadView.UploadArea.MaxFileSize = dataFile.MaxFileSize;
             _uploadView.UploadArea.ShowFileSize = dataFile.ExportAsLink;
             _uploadView.UploadArea.AllowedTypes = dataFile.AllowedTypes;
+            _uploadView.UploadArea.JsCallback = Scripts.GetShowScript();
+            _uploadView.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
+            _uploadView.UploadArea.QueryStringParams["fieldName"] = FieldName;
+            
             _uploadView.ViewGallery = dataFile.ViewGallery;
 
             if (HasPk())
@@ -141,7 +144,7 @@ public class JJTextFile : ControlBase
         if (result is RenderedComponentResult uploadViewResult)
         {
             html.Append(uploadViewResult.HtmlBuilder);
-            html.AppendScript(Scripts.GetRefreshScript(UploadView));
+            html.AppendScript(Scripts.GetRefreshScript());
         }
         else 
         {
@@ -158,9 +161,9 @@ public class JJTextFile : ControlBase
 
         var textGroup = TextBoxFactory.Create();
         textGroup.CssClass = CssClass;
+        textGroup.Name = $"{Name}-presentation";
         textGroup.ReadOnly = true;
-        textGroup.Name = $"v_{Name}";
-        textGroup.ToolTip = ToolTip;
+        textGroup.Tooltip = Tooltip;
         textGroup.Attributes = Attributes;
         textGroup.Text = GetPresentationText();
 
@@ -168,9 +171,10 @@ public class JJTextFile : ControlBase
         {
             ShowAsButton = true,
             OnClientClick = Scripts.GetShowScript(),
-            ToolTip = "Manage Files",
+            Tooltip = FormElementField.DataFile!.MultipleFile ? StringLocalizer["Manage Files"] : StringLocalizer["Manage File"],
             IconClass = IconType.Paperclip.GetCssClass()
         };
+        
         textGroup.Actions.Add(btn);
 
         var textGroupHtml = await textGroup.GetHtmlBuilderAsync();

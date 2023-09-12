@@ -48,7 +48,7 @@ public class FilterAction : GridToolbarAction
     public FilterAction()
     {
         Name = ActionName;
-        ToolTip = "Filter";
+        Tooltip = "Filter";
         Icon = IconType.Binoculars;
         ShowAsButton = true;
         CssClass = "float-end";

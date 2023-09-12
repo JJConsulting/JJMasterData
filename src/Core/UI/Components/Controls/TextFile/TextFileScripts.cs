@@ -8,41 +8,27 @@ namespace JJMasterData.Core.UI.Components.Controls;
 
 internal class TextFileScripts
 {
-    private JJTextFile TextFile { get; }
+    private readonly JJTextFile _textFile;
 
     public TextFileScripts(JJTextFile textFile)
     {
-        TextFile = textFile;
+        _textFile = textFile;
     }
 
     public string GetShowScript()
     {
-        var title = TextFile.FormElementField.Label ?? "Manage Files";
+        var title = _textFile.FormElementField.Label ?? "Manage Files";
 
-        title = HttpUtility.JavaScriptStringEncode(TextFile.StringLocalizer[title]);
+        title = HttpUtility.JavaScriptStringEncode(_textFile.StringLocalizer[title]);
 
-        var routeContext = RouteContext.FromFormElement(TextFile.FormElement, ComponentContext.TextFileUploadView);
+        var routeContext = RouteContext.FromFormElement(_textFile.FormElement, ComponentContext.TextFileUploadView);
         
-        return $"UploadViewHelper.show('{TextFile.FieldName}','{title}','{TextFile.EncryptionService.EncryptRouteContext(routeContext)}');";
+        return $"TextFileHelper.showUploadView('{_textFile.FieldName}','{title}','{_textFile.EncryptionService.EncryptRouteContext(routeContext)}');";
     }
 
-    public string GetRefreshScript(JJUploadView uploadView)
+    public string GetRefreshScript()
     {
-        return $$"""
-                         document.addEventListener('DOMContentLoaded', function () {
-                             var parentElement = window.parent.document.getElementById('v_{{uploadView.Name}}');
-                             var nameElement = window.parent.document.getElementById(uploadView.Name);
-                             
-                             if (parentElement) {
-                                 parentElement.value = '{{TextFile.GetPresentationText()}}';
-                             }
-                             
-                             if (nameElement) {
-                                 nameElement.value = '{{TextFile.GetFileName()}}';
-                             }
-                         });
-                   
-                 """;
+        return $"TextFileHelper.refreshInputs('{_textFile.Name}','{_textFile.GetPresentationText()}','{_textFile.GetFileName()}')";
     }
     
 }

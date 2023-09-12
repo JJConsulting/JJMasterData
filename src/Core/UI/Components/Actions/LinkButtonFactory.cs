@@ -55,7 +55,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
     {
         return new JJLinkButton
         {
-            ToolTip = action.ToolTip,
+            Tooltip = action.Tooltip,
             Text = action.Text,
             IsGroup = action.IsGroup,
             IsDefaultOption = action.IsDefaultOption,

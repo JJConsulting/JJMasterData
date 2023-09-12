@@ -1,8 +1,5 @@
 ﻿using System.Linq.Expressions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions.Abstractions;
-using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
@@ -29,7 +26,7 @@ public class JJLinkButton : HtmlComponent
     
     public string Text { get; set; }
     
-    public string ToolTip { get; set; }
+    public string Tooltip { get; set; }
 
     /// <summary>
     /// Action will be fired clicking at any place at the row.
@@ -51,7 +48,7 @@ public class JJLinkButton : HtmlComponent
     /// </remarks>
     public bool DividerLine { get; set; }
     
-    public bool Enabled { get; set; }
+    public bool Enabled { get; set; } = true;
 
     /// <remarks>
     /// FontAwesome 2022 icon class.
@@ -64,37 +61,13 @@ public class JJLinkButton : HtmlComponent
     /// </summary>
     public bool ShowAsButton { get; set; }
 
-    public LinkButtonType Type { get; set; }
+    public LinkButtonType Type { get; set; } = LinkButtonType.Link;
 
     public string OnClientClick { get; set; }
     
     public string UrlAction { get; set; }
 
     internal bool ShowInFilter { get; set; }
-    
-    public JJLinkButton()
-    {
-        Enabled = true;
-        Type = LinkButtonType.Link;
-    }
-
-    internal JJLinkButton GetInstance(BasicAction action, bool enable, bool visible)
-    {
-        return new JJLinkButton
-        {
-            ToolTip = action.ToolTip,
-            Text = action.Text,
-            IsGroup = action.IsGroup,
-            IsDefaultOption = action.IsDefaultOption,
-            DividerLine = action.DividerLine,
-            ShowAsButton = !action.IsGroup && action.ShowAsButton,
-            Type = action is SubmitAction ? LinkButtonType.Submit : default,
-            CssClass = action.CssClass,
-            IconClass = action.Icon.GetCssClass() + " fa-fw",
-            Enabled = enable,
-            Visible = visible
-        };
-    }
 
     internal override HtmlBuilder BuildHtml()
     {
@@ -124,7 +97,7 @@ public class JJLinkButton : HtmlComponent
         html.WithNameAndId(Name);
         html.WithCssClass(GetCssClassWithCompatibility());
         html.WithAttributes(Attributes);
-        html.WithToolTip(ToolTip);
+        html.WithToolTip(Tooltip);
         html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick);
         html.WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton);
         html.WithCssClassIf(!Enabled, "disabled");

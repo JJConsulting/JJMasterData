@@ -697,10 +697,13 @@ public class JJGridView : AsyncComponent
             html.Append(await GetNoRecordsAlert());
         }
 
-        var gridPagination = new GridPagination(this);
+        if (FormElement.Options.Grid.ShowPagging)
+        {
+            var gridPagination = new GridPagination(this);
 
-        html.Append(gridPagination.GetHtmlElement());
-
+            html.Append(gridPagination.GetHtmlElement());
+        }
+        
         if (ShowToolbar)
         {
             html.Append(await GetSettingsHtml());

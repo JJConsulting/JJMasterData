@@ -222,8 +222,9 @@ public class JJDataPanel : AsyncComponent
             return new EmptyComponentResult();
         
         var control = ComponentFactory.Controls.Create<TControl>(FormElement, field, controlContext);
+        control.Name = FieldNamePrefix + fieldName;
+        
         return await control.GetResultAsync();
-
     }
 
     internal async Task<HtmlBuilder> GetPanelHtmlBuilderAsync()

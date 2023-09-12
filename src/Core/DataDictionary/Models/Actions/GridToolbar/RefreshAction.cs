@@ -6,7 +6,7 @@ public class RefreshAction : GridToolbarAction
     public RefreshAction()
     {
         Name = ActionName;
-        ToolTip = "Refresh";
+        Tooltip = "Refresh";
         Icon = IconType.Refresh;
         ShowAsButton = true;
         CssClass = "float-end";

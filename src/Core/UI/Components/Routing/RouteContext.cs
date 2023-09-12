@@ -10,8 +10,6 @@ public class RouteContext
     public string? ElementName { get; set; }
     public string? ParentElementName { get; set; }
     public ComponentContext ComponentContext { get; set; }
-
-    public Dictionary<string, string> AdditionalParameters { get; set; } = new();
     
     internal RouteContext()
     {
@@ -32,6 +30,11 @@ public class RouteContext
     
     public bool CanRender(string elementName)
     {
+        if (ElementName is null)
+        {
+            return true;
+        } 
+        
         if (ParentElementName is not null)
         {
             return ParentElementName == elementName || ParentElementName == elementName;
@@ -49,5 +52,10 @@ public class RouteContext
             return true;
 
         return false;
+    }
+
+    public bool IsUploadViewGridView()
+    {
+        return ElementName?.Contains("-upload-view") ?? false;
     }
 }

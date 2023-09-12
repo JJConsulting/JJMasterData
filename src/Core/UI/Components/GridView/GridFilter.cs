@@ -260,7 +260,7 @@ internal class GridFilter
             {
                 { "onkeyup", $"GridViewFilterHelper.searchOnDOM('{GridView.Name}', this);" }
             },
-            ToolTip = StringLocalizer["Filter by any field visible in the list"],
+            Tooltip = StringLocalizer["Filter by any field visible in the list"],
             PlaceHolder = StringLocalizer["Filter"],
             CssClass = "jj-icon-search",
             Name = searchId,

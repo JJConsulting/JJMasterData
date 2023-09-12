@@ -150,7 +150,7 @@ public class AuditLogService : IAuditLogService
         var btnViewLog = new ScriptAction
         {
             Icon = IconType.Eye,
-            ToolTip = "View"
+            Tooltip = "View"
         };
         btnViewLog.Name = nameof(btnViewLog);
         btnViewLog.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{formElement.Name}','{{{DicId}}}');";

@@ -2833,7 +2833,7 @@
     <value>工具栏</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="ToolTip" xml:space="preserve">
+  <data name="Tooltip" xml:space="preserve">
     <value>提示</value>
     <comment>JJMasterDataWeb</comment>
   </data>

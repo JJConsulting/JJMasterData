@@ -17,7 +17,7 @@ public class ExportAction : GridToolbarAction
     public ExportAction()
     {
         Name = ActionName;
-        ToolTip = "Export";
+        Tooltip = "Export";
         Icon = IconType.Download;
         ShowAsButton = true;
         CssClass = "float-end";

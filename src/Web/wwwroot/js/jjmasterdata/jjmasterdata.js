@@ -948,15 +948,25 @@ class GridViewHelper {
         if (currentFormAction)
             currentFormAction.value = "";
     }
+    static setCurrentGridPage(componentName, currentPage) {
+        const currentGridPage = document.querySelector("#grid-view-page-" + componentName);
+        if (currentGridPage)
+            currentGridPage.value = currentPage;
+    }
+    static clearCurrentGridAction(componentName) {
+        const currentGridAction = document.querySelector("#grid-view-action-" + componentName);
+        if (currentGridAction)
+            currentGridAction.value = "";
+    }
     static paginate(componentName, routeContext, currentPage) {
-        document.querySelector("#grid-view-page-" + componentName).value = currentPage;
-        document.querySelector("#grid-view-action-" + componentName).value = "";
+        this.setCurrentGridPage(componentName, currentPage);
+        this.clearCurrentGridAction(componentName);
         this.clearCurrentFormAction(componentName);
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static refresh(componentName, routeContext) {
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        document.querySelector("#grid-view-row-" + componentName).value = "";
+        this.setCurrentGridPage(componentName, String());
+        this.clearCurrentGridAction(componentName);
         this.clearCurrentFormAction(componentName);
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
@@ -1880,135 +1890,8 @@ class TextAreaListener {
         });
     }
 }
-class FileUploadOptions {
-    constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, jsCallback) {
-        this.componentName = componentName;
-        this.form = form;
-        this.allowMultiple = allowMultiple;
-        this.maxFileSize = maxFileSize;
-        this.url = url;
-        this.allowDragDrop = allowDragDrop;
-        this.showFileSize = showFileSize;
-        this.allowedTypes = allowedTypes;
-        this.dragDropLabel = dragDropLabel;
-        this.jsCallback = jsCallback;
-    }
-}
-class UploadAreaListener {
-    static configureFileUpload(options) {
-        const selector = "#" + options.componentName;
-        $(selector).uploadFile({
-            url: options.url,
-            formData: $(options.form).serializeArray(),
-            fileName: "uploadAreaFile",
-            multiple: options.allowMultiple,
-            maxFileSize: options.maxFileSize,
-            maxFileCount: 1000,
-            dragDrop: options.allowDragDrop,
-            showFileSize: options.showFileSize,
-            dragdropWidth: ($(selector).width() - 10),
-            statusBarWidth: ($(selector).width() - 10),
-            autoSubmit: true,
-            uploadButtonClass: "btn btn-primary",
-            allowedTypes: options.allowedTypes,
-            acceptFiles: options.allowedTypes !== "*" ? "." + options.allowedTypes.replace(" ", "").replace(",", ",.") : "*",
-            uploadStr: $(selector).attr("uploadStr"),
-            dragDropStr: "<span>&nbsp;<b>" + options.dragDropLabel + "</b></span>",
-            doneStr: $(selector).attr("doneStr"),
-            cancelStr: $(selector).attr("cancelStr"),
-            abortStr: $(selector).attr("abortStr"),
-            extErrorStr: $(selector).attr("extErrorStr"),
-            sizeErrorStr: $(selector).attr("sizeErrorStr"),
-            customErrorKeyStr: "jquery-upload-file-error",
-            returnType: "json",
-            onSubmit: function () {
-                showWaitOnPost = false;
-            },
-            onSuccess: function (files, data, xhr, pd) {
-                var message = data["jquery-upload-file-message"];
-                if (message && message != "") {
-                    var div = $("<div class='ajax-file-upload-filename'></div>");
-                    $("<span class='fa fa-check-circle text-success'></span>").appendTo(div);
-                    $("<span>&nbsp;" + message + "</span>").appendTo(div);
-                    div.appendTo(pd.statusbar[0]);
-                }
-            },
-            afterUploadAll: function (element) {
-                if (options.jsCallback && element.selectedFiles > 0) {
-                    document.querySelector(selector + "-are-files-uploaded").value = "1";
-                    eval(options.jsCallback);
-                }
-                listenAllEvents();
-            },
-        });
-    }
-    static handleCopyPaste(componentName) {
-        window.addEventListener("paste", (e) => {
-            var files = e.clipboardData.files;
-            if (files.length === 1) {
-                var file = files[0];
-                if (file.type.indexOf("image") !== -1) {
-                    document.querySelector("#btnDoUpload_" + componentName).addEventListener("click", () => {
-                        document.querySelector("#preview_modal_" + componentName).classList.add("hide");
-                        var filename = document.querySelector("#preview_filename-" + componentName).value || "image";
-                        filename += ".png";
-                        const dt = new DataTransfer();
-                        const myNewFile = new File([file], filename, { type: file.type });
-                        dt.items.add(myNewFile);
-                        document.querySelector("#" + componentName + " input[type='file']").files = dt.files;
-                        document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
-                        return;
-                    });
-                    var reader = new FileReader();
-                    reader.onload = function (event) {
-                        document.querySelector("#pastedimage_" + componentName).src = event.target.result.toString();
-                        var filename = file.name.replace(/\.[^/.]+$/, "");
-                        document.querySelector("#preview_filename-" + componentName).value = filename;
-                        document.querySelector("#preview_modal_" + componentName).classList.remove("hide");
-                    };
-                    reader.readAsDataURL(file);
-                    return;
-                }
-            }
-            document.querySelector("#" + componentName + " input[type='file']").files = files;
-            document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
-        });
-    }
-    static listenFileUpload(selectorPrefix = String()) {
-        document.querySelectorAll(selectorPrefix + "div.fileUpload").forEach((element) => {
-            let componentName = element.getAttribute("id");
-            let multiple = element.getAttribute("jjmultiple") === "true";
-            let jsCallback = element.getAttribute("js-callback");
-            let maxFileSize = element.getAttribute("maxFileSize");
-            let dragDrop = element.getAttribute("dragDrop");
-            let copyPaste = element.getAttribute("copyPaste");
-            let routeContext = element.getAttribute("route-context");
-            let queryStringParams = element.getAttribute("query-string-params");
-            let showFileSize = element.getAttribute("showFileSize");
-            let allowedTypes = element.getAttribute("allowedTypes");
-            let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
-            let frm = document.querySelector("form");
-            let url;
-            let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("routeContext", routeContext);
-            const params = queryStringParams.split('&');
-            for (let i = 0; i < params.length; i++) {
-                const param = params[i].split('=');
-                const key = decodeURIComponent(param[0]);
-                const value = decodeURIComponent(param[1]);
-                urlBuilder.addQueryParameter(key, value);
-            }
-            url = urlBuilder.build();
-            const fileUploadOptions = new FileUploadOptions(componentName, url, frm, multiple, maxFileSize, dragDrop, showFileSize, allowedTypes, dragDropStr, jsCallback);
-            this.configureFileUpload(fileUploadOptions);
-            if (copyPaste === "true") {
-                this.handleCopyPaste(componentName);
-            }
-        });
-    }
-}
-class UploadViewHelper {
-    static show(fieldName, title, routeContext) {
+class TextFileHelper {
+    static showUploadView(fieldName, title, routeContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("fieldName", fieldName);
@@ -2020,17 +1903,96 @@ class UploadViewHelper {
             listenAllEvents("#" + modalId);
         });
     }
-    static performFileAction(componentName, filename, action, promptStr = null) {
-        if (promptStr && !confirm(promptStr)) {
-            return false;
+    static refreshInputs(id, presentationText, valueText) {
+        const presentationElement = window.parent.document.getElementById(`${id}-presentation`);
+        const valueElement = window.parent.document.getElementById(id);
+        if (presentationElement) {
+            presentationElement.value = presentationText;
         }
+        if (valueElement) {
+            valueElement.value = valueText;
+        }
+    }
+}
+class UploadAreaListener {
+    static configureFileUpload(options) {
+        const selector = "div#" + options.componentName;
+        let dropzone = new window.Dropzone(selector, {
+            paramName: "uploadAreaFile",
+            maxFilesize: options.maxFileSize,
+            uploadMultiple: options.allowMultipleFiles,
+            method: "POST",
+            dictDefaultMessage: options.dragDropLabel,
+            dictFileTooBig: options.fileSizeErrorLabel,
+            dictUploadCanceled: options.abortLabel,
+            dictInvalidFileType: options.extensionNotAllowedLabel,
+            clickable: true,
+            parallelUploads: options.parallelUploads,
+            url: options.url
+        });
+        dropzone.on("successmultiple", () => {
+            if (options.jsCallback) {
+                if (dropzone.getQueuedFiles().length === 0) {
+                    eval(options.jsCallback);
+                }
+            }
+        });
+        if (options.allowCopyPaste) {
+            document.onpaste = function (event) {
+                const items = Array.from(event.clipboardData.items);
+                items.forEach((item) => {
+                    if (item.kind === 'file') {
+                        dropzone.addFile(item.getAsFile());
+                    }
+                });
+            };
+        }
+    }
+    static listenFileUpload(selectorPrefix = String()) {
+        document.querySelectorAll(selectorPrefix + "div.upload-area-div").forEach((element) => {
+            const uploadAreaOptions = new UploadAreaOptions(element);
+            this.configureFileUpload(uploadAreaOptions);
+        });
+    }
+}
+class UploadAreaOptions {
+    constructor(element) {
+        let dropzone = element.lastChild;
+        this.componentName = dropzone.getAttribute("id");
+        this.allowMultipleFiles = element.getAttribute("allow-multiple-files") === "true";
+        this.jsCallback = element.getAttribute("js-callback");
+        this.allowCopyPaste = Boolean(element.getAttribute("allow-copy-paste"));
+        this.maxFileSize = Number(element.getAttribute("max-file-size"));
+        this.allowDragDrop = Boolean(element.getAttribute("allow-drag-drop"));
+        this.showFileSize = Boolean(element.getAttribute("show-file-size"));
+        this.allowedTypes = element.getAttribute("allowed-types");
+        this.fileSizeErrorLabel = element.getAttribute("file-size-error-label");
+        this.dragDropLabel = element.getAttribute("drag-drop-label");
+        this.abortLabel = element.getAttribute("abort-label");
+        this.parallelUploads = Number(element.getAttribute("parallel-uploads"));
+        this.extensionNotAllowedLabel = element.getAttribute("extension-not-allowed-label");
+        let routeContext = element.getAttribute("route-context");
+        let queryStringParams = element.getAttribute("query-string-params");
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        const params = queryStringParams.split('&');
+        for (let i = 0; i < params.length; i++) {
+            const param = params[i].split('=');
+            const key = decodeURIComponent(param[0]);
+            const value = decodeURIComponent(param[1]);
+            urlBuilder.addQueryParameter(key, value);
+        }
+        this.url = urlBuilder.build();
+    }
+}
+class UploadViewHelper {
+    static performFileAction(componentName, filename, action, promptMessage = null) {
         const uploadActionInput = document.getElementById("upload-action-" + componentName);
         const filenameInput = document.getElementById("filename-" + componentName);
         const form = document.querySelector("form");
         if (uploadActionInput && filenameInput && form) {
             uploadActionInput.value = action;
-            filenameInput.value = action === "RENAMEFILE" ? filename + ";" + prompt(promptStr, filename) : filename;
-            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+            filenameInput.value = action === "RENAMEFILE" ? filename + ";" + prompt(promptMessage, filename) : filename;
             if (action === "DOWNLOADFILE") {
                 setTimeout(() => {
                     SpinnerOverlay.hide();
@@ -2038,16 +2000,21 @@ class UploadViewHelper {
                 }, 1500);
             }
         }
-        return true;
     }
-    static deleteFile(componentName, filename, promptStr) {
-        return this.performFileAction(componentName, filename, "DELFILE", promptStr);
+    static deleteFile(componentName, filename, confirmationMessage) {
+        if (confirmationMessage) {
+            const confirmed = confirm(confirmationMessage);
+            if (confirmed) {
+                return;
+            }
+        }
+        this.performFileAction(componentName, filename, "DELFILE");
     }
     static downloadFile(componentName, filename) {
         this.performFileAction(componentName, filename, "DOWNLOADFILE");
     }
-    static renameFile(componentName, filename, promptStr) {
-        this.performFileAction(componentName, filename, "RENAMEFILE", promptStr);
+    static renameFile(componentName, filename, promptMessage) {
+        this.performFileAction(componentName, filename, "RENAMEFILE", promptMessage);
     }
 }
 class UrlBuilder {

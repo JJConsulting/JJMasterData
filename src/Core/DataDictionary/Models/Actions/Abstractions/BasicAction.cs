@@ -29,7 +29,7 @@ public abstract class BasicAction
     /// Control mouse tooltip
     /// </summary>
     [JsonProperty("tooltip")]
-    public string ToolTip { get; set; }
+    public string Tooltip { get; set; }
 
     /// <summary>
     /// Execute this action as default
@@ -154,7 +154,7 @@ public abstract class BasicAction
     public void SetOptions(BasicAction action)
     {
         Text = action.Text;
-        ToolTip = action.ToolTip;
+        Tooltip = action.Tooltip;
         IsDefaultOption = action.IsDefaultOption;
         IsGroup = action.IsGroup;
         DividerLine = action.DividerLine;

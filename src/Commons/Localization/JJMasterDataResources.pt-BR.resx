@@ -2833,7 +2833,7 @@
     <value>Barra de Ferramentas</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="ToolTip" xml:space="preserve">
+  <data name="Tooltip" xml:space="preserve">
     <value>Dica de ferramenta</value>
     <comment>JJMasterDataWeb</comment>
   </data>

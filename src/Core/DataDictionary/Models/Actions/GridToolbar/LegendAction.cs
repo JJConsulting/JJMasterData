@@ -6,7 +6,7 @@ public class LegendAction : GridToolbarAction
     public LegendAction()
     {
         Name = ActionName;
-        ToolTip = "Information";
+        Tooltip = "Information";
         Icon = IconType.Info;
         ShowAsButton = true;
         CssClass = "float-end";

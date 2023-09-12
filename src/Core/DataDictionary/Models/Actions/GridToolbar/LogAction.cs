@@ -6,7 +6,7 @@ public class LogAction : GridToolbarAction
     public LogAction()
     {
         Name = ActionName;
-        ToolTip = "Audit Log";
+        Tooltip = "Audit Log";
         Icon = IconType.Film;
         ShowAsButton = true;
         CssClass = "float-end";

@@ -31,7 +31,7 @@ public abstract class ControlBase : AsyncComponent
     /// <summary>
     /// Texto exibido quando o ponteiro do mouse passa sobre o controle
     /// </summary>
-    public virtual string ToolTip { get; set; }
+    public virtual string Tooltip { get; set; }
     
     public int MaxLength { get; set; }
 

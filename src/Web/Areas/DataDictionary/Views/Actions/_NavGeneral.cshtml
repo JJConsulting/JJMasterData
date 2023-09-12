@@ -36,7 +36,7 @@
         <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName" />
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
-        <label class="@BootstrapHelper.Label " for="txtName">@StringLocalizer["ToolTip"]</label>
-        @Html.TextBoxFor(model => model.ToolTip, new { @class = "form-control" })
+        <label class="@BootstrapHelper.Label " for="txtName">@StringLocalizer["Tooltip"]</label>
+        @Html.TextBoxFor(model => model.Tooltip, new { @class = "form-control" })
     </div>
 </div>

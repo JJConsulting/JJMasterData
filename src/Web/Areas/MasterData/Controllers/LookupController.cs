@@ -93,7 +93,7 @@ public class LookupController : MasterDataController
         {
             Name = "jjselLookup",
             Icon = IconType.ChevronRight,
-            ToolTip = StringLocalizer["Select"],
+            Tooltip = StringLocalizer["Select"],
             OnClientClick = script,
             IsDefaultOption = true,
             Order = 100
