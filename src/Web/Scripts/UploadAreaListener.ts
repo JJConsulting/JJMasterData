@@ -1,5 +1,4 @@
-﻿
-class UploadAreaListener {
+﻿class UploadAreaListener {
     static configureFileUpload(options: UploadAreaOptions) {
         
         const selector = "div#" + options.componentName;
@@ -9,6 +8,7 @@ class UploadAreaListener {
             maxFilesize: options.maxFileSize,
             uploadMultiple: options.allowMultipleFiles,
             method: "POST",
+            maxFiles: options.maxFiles,
             dictDefaultMessage :options.dragDropLabel,
             dictFileTooBig: options.fileSizeErrorLabel,
             dictUploadCanceled: options.abortLabel,
@@ -31,7 +31,6 @@ class UploadAreaListener {
                 }
             }
         }
-
         dropzone.on("success",onSuccess)
         dropzone.on("successmultiple",onSuccess)
 

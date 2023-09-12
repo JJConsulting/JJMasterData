@@ -78,7 +78,7 @@ public class JJUploadArea : AsyncComponent
     /// How many server-side uploads can happen at the same time.
     /// </summary>
     public int ParallelUploads { get; set; } = 1;
-
+    public int MaxFiles { get; set; } = 1;
     private IHttpContext CurrentContext { get; }
     private IUploadAreaService UploadAreaService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -132,8 +132,14 @@ public class JJUploadArea : AsyncComponent
         if (OnFileUploadedAsync != null)
             UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
 
-        var result = await UploadAreaService.UploadFileAsync(Multiple ? "uploadAreaFile[0]" : "uploadAreaFile", AllowedTypes);
-        return new JsonComponentResult(result);
+        var dto = await UploadAreaService.UploadFileAsync(Multiple ? "uploadAreaFile[0]" : "uploadAreaFile", AllowedTypes);
+        
+        var result = new JsonComponentResult(dto)
+        {
+            StatusCode = !string.IsNullOrEmpty(dto.ErrorMessage) ? 400 : 200
+        };
+        
+        return result;
     }
 
     internal HtmlBuilder GetUploadAreaHtmlBuilder()
@@ -157,7 +163,8 @@ public class JJUploadArea : AsyncComponent
         div.WithAttribute("allow-drag-drop", EnableDragDrop.ToString().ToLower());
         div.WithAttribute("allow-copy-paste", EnableCopyPaste.ToString().ToLower());
         div.WithAttribute("show-file-size", ShowFileSize.ToString().ToLower());
-        div.WithAttribute("allowed-types", AllowedTypes);
+        div.WithAttribute("allowed-types", AllowedTypes);     
+        div.WithAttribute("max-files", MaxFiles);
         div.WithAttribute("parallel-uploads", ParallelUploads);
         div.WithAttribute("add-file-label", StringLocalizer[AddLabel]);
         div.WithAttribute("drag-drop-label", StringLocalizer[DragDropLabel]);

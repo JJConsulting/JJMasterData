@@ -23,6 +23,7 @@ public static class ComponentResultExtensions
         var content = new ContentResult
         {
             Content = componentResult.Content,
+            StatusCode = componentResult.StatusCode,
             ContentType = componentResult is HtmlComponentResult ? "text/plain" : "application/json"
         };
         

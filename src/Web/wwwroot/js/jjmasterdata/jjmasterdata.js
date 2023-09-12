@@ -1929,6 +1929,7 @@ class UploadAreaListener {
             maxFilesize: options.maxFileSize,
             uploadMultiple: options.allowMultipleFiles,
             method: "POST",
+            maxFiles: options.maxFiles,
             dictDefaultMessage: options.dragDropLabel,
             dictFileTooBig: options.fileSizeErrorLabel,
             dictUploadCanceled: options.abortLabel,
@@ -1974,14 +1975,15 @@ class UploadAreaOptions {
         this.componentName = dropzone.getAttribute("id");
         this.allowMultipleFiles = element.getAttribute("allow-multiple-files") === "true";
         this.jsCallback = element.getAttribute("js-callback");
-        this.allowCopyPaste = Boolean(element.getAttribute("allow-copy-paste"));
+        this.allowCopyPaste = element.getAttribute("allow-copy-paste") === "true";
         this.maxFileSize = Number(element.getAttribute("max-file-size"));
-        this.allowDragDrop = Boolean(element.getAttribute("allow-drag-drop"));
-        this.showFileSize = Boolean(element.getAttribute("show-file-size"));
+        this.allowDragDrop = element.getAttribute("allow-drag-drop") === "true";
+        this.showFileSize = element.getAttribute("show-file-size") === "true";
         this.allowedTypes = element.getAttribute("allowed-types");
         this.fileSizeErrorLabel = element.getAttribute("file-size-error-label");
         this.dragDropLabel = element.getAttribute("drag-drop-label");
         this.abortLabel = element.getAttribute("abort-label");
+        this.maxFiles = Number(element.getAttribute("max-files"));
         this.parallelUploads = Number(element.getAttribute("parallel-uploads"));
         this.extensionNotAllowedLabel = element.getAttribute("extension-not-allowed-label");
         let routeContext = element.getAttribute("route-context");
@@ -2007,6 +2009,14 @@ class UploadViewHelper {
             filenameInput.value = action === "renameFile" ? filename + ";" + prompt(promptMessage, filename) : filename;
         }
     }
+    static clearFileAction(componentName, fileName) {
+        const uploadActionInput = document.getElementById("upload-view-action-" + componentName);
+        const filenameInput = document.getElementById("upload-view-file-name-" + componentName);
+        if (uploadActionInput && filenameInput) {
+            uploadActionInput.value = String();
+            filenameInput.value = String();
+        }
+    }
     static deleteFile(componentName, fileName, confirmationMessage, jsCallback) {
         if (confirmationMessage) {
             const confirmed = confirm(confirmationMessage);
@@ -2016,14 +2026,17 @@ class UploadViewHelper {
         }
         this.performFileAction(componentName, fileName, "deleteFile");
         eval(jsCallback);
+        this.clearFileAction(componentName, fileName);
     }
     static downloadFile(componentName, fileName, jsCallback) {
         this.performFileAction(componentName, fileName, "downloadFile");
         eval(jsCallback);
+        this.clearFileAction(componentName, fileName);
     }
     static renameFile(componentName, fileName, promptMessage, jsCallback) {
         this.performFileAction(componentName, fileName, "renameFile", promptMessage);
         eval(jsCallback);
+        this.clearFileAction(componentName, fileName);
     }
 }
 class UrlBuilder {

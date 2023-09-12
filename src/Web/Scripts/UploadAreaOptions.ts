@@ -11,22 +11,23 @@ class UploadAreaOptions {
     public allowCopyPaste: boolean;
     public extensionNotAllowedLabel: string;
     public fileSizeErrorLabel: string;
-    public abortLabel?: string;
-    public parallelUploads?: number;
-
+    public abortLabel: string;
+    public parallelUploads: number;
+    public maxFiles: number;
     constructor(element: Element) {
         let dropzone = element.lastChild as Element;
         this.componentName = dropzone.getAttribute("id");
         this.allowMultipleFiles = element.getAttribute("allow-multiple-files") === "true";
         this.jsCallback = element.getAttribute("js-callback");
-        this.allowCopyPaste = Boolean(element.getAttribute("allow-copy-paste"));
+        this.allowCopyPaste = element.getAttribute("allow-copy-paste") === "true";
         this.maxFileSize = Number(element.getAttribute("max-file-size"));
-        this.allowDragDrop = Boolean(element.getAttribute("allow-drag-drop"));
-        this.showFileSize = Boolean(element.getAttribute("show-file-size"));
+        this.allowDragDrop = element.getAttribute("allow-drag-drop") === "true";
+        this.showFileSize =element.getAttribute("show-file-size") === "true";
         this.allowedTypes = element.getAttribute("allowed-types");
         this.fileSizeErrorLabel = element.getAttribute("file-size-error-label");
         this.dragDropLabel = element.getAttribute("drag-drop-label");
         this.abortLabel = element.getAttribute("abort-label")
+        this.maxFiles = Number(element.getAttribute("max-files"))
         this.parallelUploads = Number(element.getAttribute("parallel-uploads"))
         this.extensionNotAllowedLabel = element.getAttribute("extension-not-allowed-label");
 
