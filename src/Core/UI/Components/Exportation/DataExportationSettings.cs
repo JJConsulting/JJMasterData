@@ -4,8 +4,8 @@ using System.Linq;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.UI.Components.Exportation;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.Localization;
 
@@ -30,9 +30,9 @@ internal class DataExportationSettings
     internal HtmlBuilder GetHtmlBuilder()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
+        string folderPath = DataExportationHelper.GetFolderPath(DataExportation);
         
-        html.Append(GetFormHtmlElement(DataExportation.MasterDataOptions.ExportationFolderPath));
-
+        html.Append(GetFormHtmlElement(folderPath));
         html.Append(HtmlTag.Hr);
         html.Append(HtmlTag.Div, div =>
         {
