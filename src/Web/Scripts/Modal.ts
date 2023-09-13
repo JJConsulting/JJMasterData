@@ -107,7 +107,7 @@ class _Modal extends ModalBase {
 
     override showIframe(url: string, title: string, size: ModalSize = null) {
         this.modalTitle = title;
-        this.modalSize = size || this.modalSize;
+        this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
         
@@ -340,11 +340,19 @@ class Modal {
         this.instance.onModalHidden = value;
     }
 }
-var defaultModal = function () {
-    if (!(this instanceof Modal)) {
-        return new Modal();
+
+class DefaultModal {
+
+    static instance : Modal
+    static getInstance() {
+        if(this.instance === undefined){
+            this.instance = new Modal();
+        }
+        return this.instance;
     }
-}();
+}
+
+var defaultModal = DefaultModal.getInstance();
 
 // Compatibility with legacy systems.
 class popup{

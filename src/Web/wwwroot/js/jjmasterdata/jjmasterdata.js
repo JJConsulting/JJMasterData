@@ -290,7 +290,7 @@ class DataDictionaryUtils {
             window.parent.document.forms[0].submit();
         }
         else {
-            defaultModal.hide();
+            window.parent.defaultModal.hide();
             document.forms[0].submit();
         }
     }
@@ -1437,7 +1437,7 @@ class _Modal extends ModalBase {
     }
     showIframe(url, title, size = null) {
         this.modalTitle = title;
-        this.modalSize = size || this.modalSize;
+        this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
         let style = "width: 100vw; height: 100vh;";
@@ -1631,11 +1631,15 @@ class Modal {
         this.instance.onModalHidden = value;
     }
 }
-var defaultModal = function () {
-    if (!(this instanceof Modal)) {
-        return new Modal();
+class DefaultModal {
+    static getInstance() {
+        if (this.instance === undefined) {
+            this.instance = new Modal();
+        }
+        return this.instance;
     }
-}();
+}
+var defaultModal = DefaultModal.getInstance();
 class popup {
     static show(title, url, size = null) {
         defaultModal.showIframe(url, title, size);

@@ -82,12 +82,11 @@
 
     static refreshAction(isPopup = false): void {
         SpinnerOverlay.show();
-
+        
+        window.parent.defaultModal.hide();
         if (isPopup) {
-            window.parent.defaultModal.hide();
             window.parent.document.forms[0].submit();
         } else {
-            defaultModal.hide();
             document.forms[0].submit();
         }
     }
