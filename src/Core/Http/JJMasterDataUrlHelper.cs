@@ -53,7 +53,7 @@ public class JJMasterDataUrlHelper
         
         var url = baseUrl;
 
-        url += CultureInfo.CurrentUICulture + "/";
+        url += $"{CultureInfo.CurrentUICulture}/";
         
         if (!string.IsNullOrEmpty(area))
         {
@@ -77,7 +77,7 @@ public class JJMasterDataUrlHelper
         
         if (valuesDictionary.Count > 0)
         {
-            url += "?" + string.Join("&", valuesDictionary.Select(kv => $"{kv.Key}={kv.Value}"));
+            url += $"?{string.Join("&", valuesDictionary.Select(kv => $"{kv.Key}={kv.Value}"))}";
         }
         
 

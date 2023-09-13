@@ -11,7 +11,7 @@ public class ViewAction : GridTableAction
     public ViewAction()
     {
         Name = ActionName;
-        ToolTip = "View";
+        Tooltip = "View";
         ConfirmationMessage = "";
         IsDefaultOption = true;
         Icon = IconType.Eye;

@@ -19,7 +19,7 @@ internal class DataExportationSettings
     private readonly string _colSm = BootstrapHelper.Version > 3 ? "col-sm-2" : "col-sm-4";
     private readonly string _bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
 
-    private readonly string _bsLabel = BootstrapHelper.Version > 3 ? BootstrapHelper.Label + "  form-label" : string.Empty;
+    private readonly string _bsLabel = BootstrapHelper.Version > 3 ? $"{BootstrapHelper.Label}  form-label" : string.Empty;
 
     public DataExportationSettings(JJDataExportation dataExportation)
     {
@@ -100,7 +100,7 @@ internal class DataExportationSettings
                         IconClass = "text-info fa fa-info-circle"
                     });
                     label.AppendText(
-                        "&nbsp;" + StringLocalizer["Filters performed in the previous screen will be considered in the export"]);
+                        $"&nbsp;{StringLocalizer["Filters performed in the previous screen will be considered in the export"]}");
                 });
             });
 
@@ -126,7 +126,7 @@ internal class DataExportationSettings
                 div.Append(HtmlTag.Select, select =>
                 {
                     select.WithNameAndId($"{DataExportation.Name}{ExportOptions.FileName}");
-                    select.WithAttribute("onchange", $"JJViewHelper.showExportOptions('{DataExportation.Name}',this.value);");
+                    //select.WithAttribute("onchange", $"DataExportationHelper.showExportOptions('{DataExportation.Name}',this.value);");
                     select.WithCssClass("form-control form-select");
                     select.Append(HtmlTag.Option, option =>
                     {
@@ -322,7 +322,7 @@ internal class DataExportationSettings
             Name = "exportCollapse",
             ExpandedByDefault = false,
             TitleIcon = new JJIcon(IconType.FolderOpenO),
-            Title = StringLocalizer["Recently generated files"] + $" ({files.Count})",
+            Title = $"{StringLocalizer["Recently generated files"]} ({files.Count})",
             HtmlBuilderContent = GetLastFilesHtmlElement(files)
         };
 

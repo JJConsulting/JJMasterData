@@ -38,9 +38,9 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
     {
         var values = context.FormStateData.FormValues;
         string valueFrom = "";
-        if (values != null && values.ContainsKey(field.Name + "_from"))
+        if (values != null && values.ContainsKey($"{field.Name}_from"))
         {
-            valueFrom = values[field.Name + "_from"].ToString();
+            valueFrom = values[$"{field.Name}_from"].ToString();
         }
 
         var range = Create();
@@ -48,18 +48,18 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
         //todo gustavo: analisar
         range.FromField = TextBoxFactory.Create();
         range.FromField.Text = valueFrom;
-        range.FromField.Name = field.Name + "_from";
+        range.FromField.Name = $"{field.Name}_from";
         range.FromField.PlaceHolder = StringLocalizer["From"];
 
         string valueTo = "";
-        if (values != null && values.ContainsKey(field.Name + "_to"))
+        if (values != null && values.ContainsKey($"{field.Name}_to"))
         {
-            valueTo = values[field.Name + "_to"].ToString();
+            valueTo = values[$"{field.Name}_to"].ToString();
         }
         //todo gustavo: analisar
         range.ToField = TextBoxFactory.Create();
         range.ToField.Text = valueTo;
-        range.ToField.Name = field.Name + "_to";
+        range.ToField.Name = $"{field.Name}_to";
         range.ToField.PlaceHolder = StringLocalizer["To"];
 
         return range;

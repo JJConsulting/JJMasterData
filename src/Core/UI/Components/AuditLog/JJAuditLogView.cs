@@ -69,7 +69,7 @@ public class JJAuditLogView : AsyncComponent
         get
         {
             var panel = _componentFactory.DataPanel.Create(FormElement);
-            panel.Name = "auditlogview-panel-" + Name;
+            panel.Name = $"auditlogview-panel-{Name}";
             return _dataPainel ??= panel;
         }
         set => _dataPainel = value;
@@ -90,7 +90,7 @@ public class JJAuditLogView : AsyncComponent
         JJMasterDataUrlHelper urlHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        Name = ComponentNameGenerator.Create(formElement.Name) + "-audit-log-view";
+        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-audit-log-view";
         _componentFactory = componentFactory;
         FormElement = formElement;
         CurrentContext = currentContext;
@@ -103,7 +103,7 @@ public class JJAuditLogView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string logId = CurrentContext.Request.GetFormValue("audit-log-id-" + Name);
+        string logId = CurrentContext.Request.GetFormValue($"audit-log-id-{Name}");
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(logId))
@@ -204,7 +204,7 @@ public class JJAuditLogView : AsyncComponent
         var panel = DataPanel;
         panel.PageState = PageState.View;
         panel.Values = fields;
-        panel.Name = "auditlogview-panel-" + Name;
+        panel.Name = $"auditlogview-panel-{Name}";
 
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
@@ -268,7 +268,7 @@ public class JJAuditLogView : AsyncComponent
         var panel = DataPanel;
         panel.PageState = PageState.View;
         panel.Values = fields;
-        panel.Name = "jjpainellog_" + Name;
+        panel.Name = $"jjpainellog_{Name}";
 
         return panel;
     }
@@ -307,7 +307,7 @@ public class JJAuditLogView : AsyncComponent
         {
             Type = LinkButtonType.Button,
             CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = $"JJViewHelper.viewLog('{Name}','');",
+            OnClientClick = $"AuditLogViewHelper.viewLog('{Name}','');",
             IconClass = IconType.ArrowLeft.GetCssClass(),
             Text = "Back"
         };
@@ -409,7 +409,7 @@ public class JJAuditLogView : AsyncComponent
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.B, b => { b.AppendText(row["modified"]!.ToString()); });
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b => { b.AppendText("IP: " + row["ip"]); });
+                    div.Append(HtmlTag.B, b => { b.AppendText($"IP: {row["ip"]}"); });
                 });
             });
         }

@@ -38,7 +38,7 @@ public class JJTextRange : ControlBase
         {
             div.WithCssClass("col-sm-3");
 
-            FromField.Name = Name + "_from";
+            FromField.Name = $"{Name}_from";
             FromField.Enabled = Enabled;
 
             await div.AppendControlAsync(FromField);
@@ -47,7 +47,7 @@ public class JJTextRange : ControlBase
         {
             div.WithCssClass("col-sm-3");
 
-            ToField.Name = Name + "_to";
+            ToField.Name = $"{Name}_to";
             ToField.Enabled = Enabled;
 
             await div.AppendControlAsync(ToField);
@@ -90,11 +90,11 @@ public class JJTextRange : ControlBase
         return new HtmlBuilder(HtmlTag.Button)
             .WithAttribute("type", "button")
             .WithAttribute("id", $"dropdown_{Name}")
-            .WithCssClass("dropdown-toggle" + BootstrapHelper.DefaultButton)
+            .WithCssClass($"dropdown-toggle{BootstrapHelper.DefaultButton}")
             .WithAttribute("aria-haspopup", "true")
             .WithAttribute("aria-expanded", "true")
             .WithAttribute(BootstrapHelper.DataToggle, "dropdown")
-            .AppendText(StringLocalizer["Periods"] + "&nbsp;")
+            .AppendText($"{StringLocalizer["Periods"]}&nbsp;")
             .Append(HtmlTag.Span, span => { span.WithCssClass("caret"); });
     }
 

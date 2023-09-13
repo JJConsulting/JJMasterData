@@ -16,15 +16,15 @@ public static class IconTypeExtensions
 
         if (iconString.StartsWith("Solid"))
         {
-            return "fa-solid fa-" + PascalToParamCase(icon.ToString().Replace("Solid", string.Empty));
+            return $"fa-solid fa-{PascalToParamCase(icon.ToString().Replace("Solid", string.Empty))}";
         }
         if (iconString.StartsWith("Regular"))
         {
-            return "fa-regular fa-" + PascalToParamCase(icon.ToString().Replace("Regular", string.Empty));
+            return $"fa-regular fa-{PascalToParamCase(icon.ToString().Replace("Regular", string.Empty))}";
         }
         if (iconString.StartsWith("Brands"))
         {
-            return "fa-brands fa-" + PascalToParamCase(icon.ToString().Replace("Brands", string.Empty));
+            return $"fa-brands fa-{PascalToParamCase(icon.ToString().Replace("Brands", string.Empty))}";
         }
 
         throw new JJMasterDataException("Invalid IconType");

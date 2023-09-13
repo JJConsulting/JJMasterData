@@ -52,7 +52,7 @@ namespace JJMasterData.Core.Test.Web.Components
             return new JJTextBox(new Mock<IHttpRequest>().Object)
             {
                 Name = "id1",
-                ToolTip = "teste",
+                Tooltip = "teste",
                 Text = "1188880000",
                 CssClass = "class1 class2",
                 PlaceHolder = "00",

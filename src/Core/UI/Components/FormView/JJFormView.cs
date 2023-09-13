@@ -209,8 +209,8 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (CurrentContext.Request["form-view-page-state-" + Name] != null && _pageState is null)
-                _pageState = (PageState)int.Parse(CurrentContext.Request["form-view-page-state-" + Name]);
+            if (CurrentContext.Request[$"form-view-page-state-{Name}"] != null && _pageState is null)
+                _pageState = (PageState)int.Parse(CurrentContext.Request[$"form-view-page-state-{Name}"]);
 
             return _pageState ?? PageState.List;
         }
@@ -224,7 +224,7 @@ public class JJFormView : AsyncComponent
             if (_currentActionMap != null)
                 return _currentActionMap;
 
-            string encryptedActionMap = CurrentContext.Request["form-view-action-map-" + Name.ToLower()];
+            string encryptedActionMap = CurrentContext.Request[$"form-view-action-map-{Name.ToLower()}"];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -339,19 +339,24 @@ public class JJFormView : AsyncComponent
     {
         if (!RouteContext.CanRender(FormElement.Name))
             return new EmptyComponentResult();
-
-        if (RouteContext.ElementName == Options.AuditLogTableName)
-            return await AuditLogView.GetResultAsync();
         
         if (RouteContext.IsCurrentFormElement(FormElement.Name))
             return await GetFormResultAsync();
+            
+        if (RouteContext.ElementName == Options.AuditLogTableName)
+            return await AuditLogView.GetResultAsync();
         
         var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
         formView.FormElement.ParentName = RouteContext.ParentElementName;
         formView.UserValues = UserValues;
-        formView.DataPanel.FieldNamePrefix = formView.DataPanel.Name + "_"; 
-        var fkValues = EncryptionService.DecryptDictionary(CurrentContext.Request.GetFormValue(formView.GridView.Name + "-fk-values"));
-        formView.RelationValues = fkValues;
+        formView.DataPanel.FieldNamePrefix = $"{formView.DataPanel.Name}_";
+        var encryptedFkValues = CurrentContext.Request.GetFormValue($"{formView.GridView.Name}-fk-values");
+
+        if (encryptedFkValues is not null)
+        {
+            var fkValues = EncryptionService.DecryptDictionary(encryptedFkValues);
+            formView.RelationValues = fkValues;
+        }
 
         return await formView.GetFormResultAsync();
     }
@@ -359,34 +364,30 @@ public class JJFormView : AsyncComponent
     
     internal async Task<ComponentResult> GetFormResultAsync()
     {
-        if (ComponentContext is ComponentContext.GridViewReload)  
-            return await GridView.GetResultAsync();
         
-        if (ComponentContext is ComponentContext.FileUpload)
-            return await DataPanel.GetResultAsync();
-
-        if (ComponentContext is ComponentContext.DownloadFile)
-            return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
-
-        if (ComponentContext is ComponentContext.SearchBox)
-            return await DataPanel.GetResultAsync();
-
-        if (ComponentContext is ComponentContext.GridViewFilterSearchBox)
-            return await GridView.GetResultAsync();
-        
-        if (ComponentContext is ComponentContext.AuditLogView)
-            return await AuditLogView.GetResultAsync();
-        
-        if (ComponentContext is ComponentContext.PanelReload)
-            return await GetReloadPanelResultAsync();
-        
-        if (ComponentContext is ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload)
-            return await GetImportationResult();
-
-        if (ComponentContext is ComponentContext.UrlRedirect)
-            return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
-        
-        return await GetFormActionResult();
+        switch (ComponentContext)
+        {
+            case ComponentContext.TextFileUploadView:
+            case ComponentContext.TextFileFileUpload:
+            case ComponentContext.SearchBox:
+                return await DataPanel.GetResultAsync();
+            case ComponentContext.UrlRedirect:
+                return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
+            case ComponentContext.PanelReload:
+                return await GetReloadPanelResultAsync();
+            case ComponentContext.GridViewReload:
+                return await GridView.GetResultAsync();
+            case ComponentContext.GridViewFilterSearchBox:
+                return await GridView.GetResultAsync();
+            case ComponentContext.DownloadFile:
+                return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
+            case ComponentContext.AuditLogView:
+                return await AuditLogView.GetResultAsync();
+            case ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload:
+                return await GetImportationResult();
+            default:
+                return await GetFormActionResult();
+        }
     }
     
     internal async Task<ComponentResult> GetReloadPanelResultAsync()
@@ -442,7 +443,7 @@ public class JJFormView : AsyncComponent
                             .WithAttribute("style", "display:none")
                             .Append(alertHtml);
                     });
-                    htmlResult.AppendScript($"JJViewHelper.showInsertSucess('{Name}');");
+                    htmlResult.AppendScript($"FormViewHelper.showInsertSucess('{Name}');");
 
                     return new RenderedComponentResult(htmlResult);
                 }
@@ -627,7 +628,7 @@ public class JJFormView : AsyncComponent
         {
             Name = "_jjselaction",
             Icon = IconType.CaretRight,
-            ToolTip = "Select",
+            Tooltip = "Select",
             IsDefaultOption = true
         };
         selectedForm.GridView.AddGridAction(selAction);
@@ -648,7 +649,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
-        string encryptedActionMap = CurrentContext.Request.GetFormValue("form-view-select-action-values" + Name);
+        string encryptedActionMap = CurrentContext.Request.GetFormValue($"form-view-select-action-values{Name}");
         var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement =
@@ -1085,7 +1086,7 @@ public class JJFormView : AsyncComponent
 
         var map = new ActionMap(ActionSource.GridTable, grid.FormElement, e.FieldValues, e.Action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(map);
-        e.LinkButton.OnClientClick = $"JJViewHelper.openSelectElementInsert('{Name}','{encryptedActionMap}');";
+        e.LinkButton.OnClientClick = $"FormViewHelper.openSelectElementInsert('{Name}','{encryptedActionMap}');";
     }
 
     /// <summary>
@@ -1151,7 +1152,7 @@ public class JJFormView : AsyncComponent
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
         foreach (var field in uploadFields)
         {
-            string sessionName = $"{field.Name}_uploadview_jjfiles";
+            string sessionName = $"{field.Name}-upload-view_jjfiles";
             if (CurrentContext?.Session[sessionName] != null)
                 CurrentContext.Session[sessionName] = null;
         }
@@ -1215,7 +1216,7 @@ public class JJFormView : AsyncComponent
             Type = LinkButtonType.Button,
             Text = "View Log",
             IconClass = IconType.Film.GetCssClass(),
-            CssClass = BootstrapHelper.DefaultButton + " btn-small",
+            CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
             OnClientClick = scriptAction
         };
         return btn;

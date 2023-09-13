@@ -8,7 +8,7 @@ public class SortAction : GridToolbarAction
     public SortAction()
     {
         Name = ActionName;
-        ToolTip = "Sort";
+        Tooltip = "Sort";
         Icon = IconType.SortAlphaAsc;
         ShowAsButton = true;
         CssClass = "float-end";

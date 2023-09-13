@@ -129,7 +129,7 @@ public class DictionariesService
                 if (!fields.Contains(osFilter.Key.ToString()))
                     continue;
 
-                filters.Add(fields[osFilter.Key.ToString()].Name, osFilter.Value);
+                filters.Add(fields[osFilter.Key.ToString()!].Name, osFilter.Value);
             }
         }
 

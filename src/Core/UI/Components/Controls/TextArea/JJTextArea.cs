@@ -27,7 +27,7 @@ public class JJTextArea : ControlBase
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
             .WithCssClass(CssClass)
-            .WithToolTip(ToolTip)
+            .WithToolTip(Tooltip)
             .WithAttributeIf(!string.IsNullOrWhiteSpace(PlaceHolder), "placeholder", PlaceHolder)
             .WithAttribute("cols", "20")
             .WithAttribute("rows", Rows)

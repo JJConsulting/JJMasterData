@@ -226,11 +226,11 @@ public class Param
     private void CreateDbStructureParam()
     {
         StringBuilder script = new StringBuilder();
-        script.AppendLine("CREATE TABLE [" + TableName + "]( ");
+        script.AppendLine($"CREATE TABLE [{TableName}]( ");
         script.AppendLine("	[cfg_txt_key] [varchar](30) NOT NULL, ");
         script.AppendLine("	[cfg_txt_value] [nvarchar](200) NOT NULL, ");
         script.AppendLine("	[cfg_txt_desc] [varchar](400) NULL, ");
-        script.AppendLine(" CONSTRAINT [PK_" + TableName + "] PRIMARY KEY NONCLUSTERED  ");
+        script.AppendLine($" CONSTRAINT [PK_{TableName}] PRIMARY KEY NONCLUSTERED  ");
         script.AppendLine("	( ");
         script.AppendLine("		[cfg_txt_key] ASC ");
         script.AppendLine("	) ON [PRIMARY] ");

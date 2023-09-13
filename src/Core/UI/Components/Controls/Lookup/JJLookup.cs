@@ -154,7 +154,7 @@ public class JJLookup : ControlBase
         idTextBox.MaxLength = MaxLength;
         idTextBox.Text = SelectedValue?.ToString();
         idTextBox.Attributes = Attributes.DeepCopy();
-        idTextBox.ToolTip = ToolTip;
+        idTextBox.Tooltip = Tooltip;
         idTextBox.ReadOnly = ReadOnly;
         idTextBox.Enabled = Enabled;
 
@@ -172,7 +172,7 @@ public class JJLookup : ControlBase
             descriptionTextBox.MaxLength = MaxLength;
             descriptionTextBox.Text = description;
             descriptionTextBox.Attributes = Attributes.DeepCopy();
-            descriptionTextBox.ToolTip = ToolTip;
+            descriptionTextBox.Tooltip = Tooltip;
             descriptionTextBox.Enabled = false;
 
             descriptionTextBox.Attributes["style"] = "flex:10";

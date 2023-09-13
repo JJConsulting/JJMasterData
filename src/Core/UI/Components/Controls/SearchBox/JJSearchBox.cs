@@ -247,8 +247,8 @@ public class JJSearchBox : ControlBase
         var div = new HtmlBuilder(HtmlTag.Div);
         await div.AppendAsync(HtmlTag.Input, async input =>
         {
-            input.WithAttribute("id", HtmlId + "_text");
-            input.WithAttribute("name", HtmlId + "_text");
+            input.WithAttribute("id", $"{HtmlId}_text");
+            input.WithAttribute("name", $"{HtmlId}_text");
             input.WithAttribute("hidden-input-id", HtmlId);
             input.WithAttribute("type", "text");
             input.WithAttribute("query-string", GetQueryString());
@@ -258,7 +258,7 @@ public class JJSearchBox : ControlBase
             input.WithAttributeIf(ReadOnly, "readonly", "readonly");
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
             input.WithAttributes(Attributes);
-            input.WithToolTip(ToolTip);
+            input.WithToolTip(Tooltip);
             input.WithCssClass("form-control jj-search-box");
             input.WithCssClassIf(string.IsNullOrEmpty(selectedValue), "jj-icon-search");
             input.WithCssClassIf(!string.IsNullOrEmpty(selectedValue), "jj-icon-success");

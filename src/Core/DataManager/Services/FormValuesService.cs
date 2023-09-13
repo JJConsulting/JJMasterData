@@ -88,7 +88,7 @@ public class FormValuesService : IFormValuesService
 
                     break;
                 case FormComponent.CheckBox:
-                    value ??= CurrentContext.Request.GetFormValue(fieldName + "_hidden");
+                    value ??= CurrentContext.Request.GetFormValue($"{fieldName}_hidden");
                     break;
             }
 
@@ -137,7 +137,8 @@ public class FormValuesService : IFormValuesService
 
     private async Task<IDictionary<string, object?>?> GetDbValues(Element element)
     {
-        string encryptedPkValues = CurrentContext.Request["data-panel-pk-values-" + ComponentNameGenerator.Create(element.Name)];
+        string encryptedPkValues = CurrentContext.Request[
+            $"data-panel-pk-values-{ComponentNameGenerator.Create(element.Name)}"];
         if (string.IsNullOrEmpty(encryptedPkValues))
             return null;
 

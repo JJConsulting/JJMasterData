@@ -16,6 +16,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     private IHttpRequest HttpRequest { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
+    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
@@ -23,12 +24,14 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         IHttpRequest httpRequest,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup>  textBoxFactory,
+        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpRequest = httpRequest;
         UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
+        FileDownloaderFactory = fileDownloaderFactory;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
     }
@@ -36,7 +39,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     
     public JJTextFile Create()
     {
-        return new JJTextFile(HttpRequest,UploadViewFactory, TextBoxFactory, StringLocalizer, EncryptionService);
+        return new JJTextFile(HttpRequest,UploadViewFactory, TextBoxFactory, StringLocalizer, FileDownloaderFactory,EncryptionService);
     }
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)
@@ -49,19 +52,19 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         if (field.DataFile == null)
             throw new ArgumentException("DataFile cannot be null");
 
-        var text = Create();
-        text.FormElementField = field;
-        text.PageState = formStateData.PageState;
-        text.Text = value != null ? value.ToString() : "";
-        text.FormValues = formStateData.FormValues;
-        text.Name = field.Name;
+        var textFile = Create();
+        textFile.FormElementField = field;
+        textFile.PageState = formStateData.PageState;
+        textFile.Text = value != null ? value.ToString() : "";
+        textFile.FormValues = formStateData.FormValues;
+        textFile.Name = field.Name;
+        textFile.FieldName = field.Name;
+        textFile.Enabled = true;
+        textFile.UserValues = formStateData.UserValues;
+        textFile.FormElement = formElement;
 
-        text.Attributes.Add("parentElementName", formElement.ParentName);
-        text.UserValues = formStateData.UserValues;
-        text.FormElement = formElement;
+        textFile.SetAttr(field.Attributes);
 
-        text.SetAttr(field.Attributes);
-
-        return text;
+        return textFile;
     }
 }

@@ -82,7 +82,7 @@ public class DataDictionaryFormElementFactory
         {
             Icon = IconType.Pencil,
             Name = "tools",
-            ToolTip = StringLocalizer["Field Maintenance"],
+            Tooltip = StringLocalizer["Field Maintenance"],
             EnableExpression = "exp:'T' <> {type}",
             IsDefaultOption = true
         };
@@ -124,7 +124,7 @@ public class DataDictionaryFormElementFactory
         var btnImport = new UrlRedirectAction
         {
             Name = "btnImport",
-            ToolTip = StringLocalizer["Import"],
+            Tooltip = StringLocalizer["Import"],
             Icon = IconType.Upload,
             ShowAsButton = true,
             UrlAsPopUp = true,
@@ -138,7 +138,7 @@ public class DataDictionaryFormElementFactory
         var btnExport = new ScriptAction
         {
             Name = "btnExport",
-            ToolTip = StringLocalizer["Export Selected"],
+            Tooltip = StringLocalizer["Export Selected"],
             Icon = IconType.Download,
             ShowAsButton = true,
             Order = 10,
@@ -151,7 +151,7 @@ public class DataDictionaryFormElementFactory
         var btnAbout = new UrlRedirectAction
         {
             Name = "btnAbout",
-            ToolTip = StringLocalizer["About"],
+            Tooltip = StringLocalizer["About"],
             Icon = IconType.InfoCircle,
             ShowAsButton = true,
             UrlAsPopUp = true,
@@ -166,7 +166,7 @@ public class DataDictionaryFormElementFactory
         var btnLog = new UrlRedirectAction
         {
             Name = "btnLog",
-            ToolTip = StringLocalizer["Log"],
+            Tooltip = StringLocalizer["Log"],
             Icon = IconType.FileTextO,
             ShowAsButton = true,
             UrlAsPopUp = true,
@@ -181,7 +181,7 @@ public class DataDictionaryFormElementFactory
         var btnSettings = new UrlRedirectAction
         {
             Name = "btnAppSettings",
-            ToolTip = StringLocalizer["Application Options"],
+            Tooltip = StringLocalizer["Application Options"],
             Icon = IconType.Code,
             ShowAsButton = true,
             UrlAsPopUp = true,
@@ -196,7 +196,7 @@ public class DataDictionaryFormElementFactory
         var btnResources = new UrlRedirectAction
         {
             Name = "btnI18n",
-            ToolTip = StringLocalizer["Internationalization"],
+            Tooltip = StringLocalizer["Internationalization"],
             Icon = IconType.Globe,
             ShowAsButton = true,
             UrlAsPopUp = true,

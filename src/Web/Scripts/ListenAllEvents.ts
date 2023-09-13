@@ -1,4 +1,6 @@
 ﻿const listenAllEvents = (selectorPrefix: string = String()) => {
+    selectorPrefix += " "
+    
     $(selectorPrefix + ".selectpicker").selectpicker({
         iconBase: 'fa'
     });

@@ -31,17 +31,14 @@ public abstract class ControlBase : AsyncComponent
     /// <summary>
     /// Texto exibido quando o ponteiro do mouse passa sobre o controle
     /// </summary>
-    public string ToolTip { get; set; }
-
-    /// <summary>
-    /// Tamanho máximo de caracteres permitido
-    /// </summary>
+    public virtual string Tooltip { get; set; }
+    
     public int MaxLength { get; set; }
 
     internal IHttpRequest Request { get; }
     
     /// <summary>
-    /// Conteudo da caixa de texto 
+    /// Text content inside the input
     /// </summary>
     public string Text
     {

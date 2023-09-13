@@ -13,7 +13,7 @@ public class DeleteAction : GridTableAction
     public DeleteAction()
     {
         Name = ActionName;
-        ToolTip = "Delete";
+        Tooltip = "Delete";
         ConfirmationMessage = "Would you like to delete this record?";
         Icon = IconType.Trash;
         Order = 3;

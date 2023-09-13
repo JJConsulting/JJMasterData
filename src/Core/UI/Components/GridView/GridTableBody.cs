@@ -69,11 +69,11 @@ internal class GridTableBody
     internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(IDictionary<string,object> row, int index)
     {
         var values = await GetValues(row);
-        var formData = new FormStateData(values, GridView.UserValues, PageState.List);
+        var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
-        string onClickScript = await GetOnClickScript(formData, defaultAction);
+        string onClickScript = await GetOnClickScript(formStateData, defaultAction);
 
         if (GridView.EnableMultiSelect)
         {
@@ -96,7 +96,7 @@ internal class GridTableBody
             yield return visibleFieldHtml;
         }
 
-        await foreach (var actionHtml in GetActionsHtmlListAsync(formData))
+        await foreach (var actionHtml in GetActionsHtmlListAsync(formStateData))
         {
             yield return actionHtml;
         }
@@ -270,7 +270,7 @@ internal class GridTableBody
             if (onRender != null)
             {
                 var args = new ActionEventArgs(action, link, formStateData.FormValues);
-                onRender.Invoke(GridView, args);
+                onRender.Invoke(this, args);
                 if (args.HtmlResult != null)
                 {
                     td.AppendText(args.HtmlResult);
@@ -318,7 +318,7 @@ internal class GridTableBody
 
         var checkBox = new JJCheckBox(GridView.CurrentContext.Request)
         {
-            Name = "jjchk_" + index,
+            Name = $"jjchk_{index}",
             Value = GridView.EncryptionService.EncryptStringWithUrlEscape(pkValues),
             Text = string.Empty
         };

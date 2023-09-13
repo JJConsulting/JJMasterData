@@ -128,7 +128,7 @@ public class JJDataPanel : AsyncComponent
     [Obsolete("This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use ComponentsFactory.")]
     public JJDataPanel(string elementName): this()
     {
-        Name = ComponentNameGenerator.Create(elementName) + "-data-panel";
+        Name = $"{ComponentNameGenerator.Create(elementName)}-data-panel";
         FormElement = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>()
             .GetMetadataAsync(elementName).GetAwaiter().GetResult();
         RenderPanelGroup = FormElement.Panels.Count > 0;
@@ -138,7 +138,7 @@ public class JJDataPanel : AsyncComponent
     public JJDataPanel(
         FormElement formElement) : this()
     {
-        Name = ComponentNameGenerator.Create(formElement.Name) + "-data-panel";
+        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-data-panel";
         FormElement = formElement;
         RenderPanelGroup = formElement.Panels.Count > 0;
     }
@@ -181,7 +181,7 @@ public class JJDataPanel : AsyncComponent
         IComponentFactory componentFactory
     ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
     {
-        Name = ComponentNameGenerator.Create(formElement.Name) + "-data-panel";
+        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-data-panel";
         FormElement = formElement;
         RenderPanelGroup = formElement.Panels.Count > 0;
     }
@@ -191,31 +191,40 @@ public class JJDataPanel : AsyncComponent
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         Values ??= await GetFormValuesAsync();
-        
-        if (ComponentContext is ComponentContext.FileUpload)
-            return await JJTextFile.GetResultFromPanel(this);
-        
-        if (ComponentContext is ComponentContext.DownloadFile)
-            return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
 
-        if (ComponentContext is ComponentContext.SearchBox)
+        switch (ComponentContext)
         {
-            var formStateData = new FormStateData(Values, UserValues, PageState);
-            var controlContext = new ControlContext(formStateData);
-            var fieldName = CurrentContext.Request.QueryString["fieldName"];
-            var field = FormElement.Fields[fieldName];
-            var searchBox = ComponentFactory.Controls.Create<JJSearchBox>(FormElement, field, controlContext);
-            return await searchBox.GetResultAsync();
+            case ComponentContext.TextFileUploadView:
+            case ComponentContext.TextFileFileUpload:
+                return await GetFieldResultAsync<JJTextFile>();
+            case ComponentContext.SearchBox:
+                return await GetFieldResultAsync<JJSearchBox>();
+            case ComponentContext.DownloadFile:
+                return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
+            case ComponentContext.PanelReload:
+            {
+                var html = await GetPanelHtmlBuilderAsync();
+                var panelHtml = html.ToString();
+                return new HtmlComponentResult(panelHtml);
+            }
+            default:
+                return new RenderedComponentResult(await GetPanelHtmlBuilderAsync());
         }
+    }
 
-        if (ComponentContext is ComponentContext.PanelReload)
-        {
-            var html = await GetPanelHtmlBuilderAsync();
-            var panelHtml = html.ToString();
-            return new HtmlComponentResult(panelHtml);
-        }
+    private async Task<ComponentResult> GetFieldResultAsync<TControl>() where TControl : ControlBase
+    {
+        var fieldName = CurrentContext.Request.QueryString["fieldName"];
+        var formStateData = new FormStateData(await GetFormValuesAsync(), UserValues, PageState);
+        var controlContext = new ControlContext(formStateData);
 
-        return new RenderedComponentResult(await GetPanelHtmlBuilderAsync());
+        if (!FormElement.Fields.TryGetField(fieldName, out var field))
+            return new EmptyComponentResult();
+        
+        var control = ComponentFactory.Controls.Create<TControl>(FormElement, field, controlContext);
+        control.Name = FieldNamePrefix + fieldName;
+        
+        return await control.GetResultAsync();
     }
 
     internal async Task<HtmlBuilder> GetPanelHtmlBuilderAsync()

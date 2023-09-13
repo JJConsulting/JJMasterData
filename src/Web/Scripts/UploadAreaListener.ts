@@ -1,156 +1,56 @@
-﻿class FileUploadOptions {
-    private componentName: string;
-    private url: string;
-    private form: string;
-    private allowMultiple: boolean;
-    private maxFileSize: Number;
-    private allowDragDrop: boolean;
-    private showFileSize: boolean;
-    private allowedTypes: string;
-    private dragDropLabel: string;
-    private autoSubmit: boolean;
-    constructor(componentName, url, form, allowMultiple, maxFileSize, allowDragDrop, showFileSize, allowedTypes, dragDropLabel, autoSubmit) {
-        this.componentName = componentName;
-        this.form = form;
-        this.allowMultiple = allowMultiple;
-        this.maxFileSize = maxFileSize;
-        this.url = url;
-        this.allowDragDrop = allowDragDrop;
-        this.showFileSize = showFileSize;
-        this.allowedTypes = allowedTypes;
-        this.dragDropLabel = dragDropLabel;
-        this.autoSubmit = autoSubmit;
-    }
-}
-
-class UploadAreaListener {
-    static configureFileUpload(options) {
+﻿class UploadAreaListener {
+    static configureFileUpload(options: UploadAreaOptions) {
         
-        const selector = "#" + options.componentName;
-        // @ts-ignore
-        $(selector).uploadFile({
-            url: options.url,
-            formData: $(options.form).serializeArray(),
-            fileName: "uploadAreaFile",
-            multiple: options.allowMultiple,
-            maxFileSize: options.maxFileSize,
-            maxFileCount: 1000,
-            dragDrop: options.allowDragDrop,
-            showFileSize: options.showFileSize,
-            dragdropWidth: ($(selector).width() - 10),
-            statusBarWidth: ($(selector).width() - 10),
-            autoSubmit: true,
-            uploadButtonClass: "btn btn-primary",
-            allowedTypes: options.allowedTypes,
-            acceptFiles: options.allowedTypes !== "*" ? "." + options.allowedTypes.replace(" ", "").replace(",", ",.") : "*",
-            uploadStr: $(selector).attr("uploadStr"),
-            dragDropStr: "<span>&nbsp;<b>" + options.dragDropLabel + "</b></span>",
-            doneStr: $(selector).attr("doneStr"),
-            cancelStr: $(selector).attr("cancelStr"),
-            abortStr: $(selector).attr("abortStr"),
-            extErrorStr: $(selector).attr("extErrorStr"),
-            sizeErrorStr: $(selector).attr("sizeErrorStr"),
-            customErrorKeyStr: "jquery-upload-file-error",
-            returnType: "json",
-            onSubmit: function () {
-                showWaitOnPost = false;
-            },
-            onSuccess: function (files, data, xhr, pd) {
-                var message = data["jquery-upload-file-message"];
-                if (message && message != "") {
-                    var div = $("<div class='ajax-file-upload-filename'></div>");
-                    $("<span class='fa fa-check-circle text-success'></span>").appendTo(div);
-                    $("<span>&nbsp;" + message + "</span>").appendTo(div);
-                    div.appendTo(pd.statusbar[0]);
-                }
-            },
-            afterUploadAll: function (element) {
-                if (options.autoSubmit && element.selectedFiles > 0) {
-                    $("#upload-action-" + options.componentName).val("afteruploadall");
-                }
-                listenAllEvents()
-            },
+        const selector = "div#" + options.componentName;
+        
+        let dropzone = new window.Dropzone(selector, {
+            paramName: "uploadAreaFile",
+            maxFilesize: options.maxFileSize,
+            uploadMultiple: options.allowMultipleFiles,
+            method: "POST",
+            maxFiles: options.maxFiles,
+            dictDefaultMessage :options.dragDropLabel,
+            dictFileTooBig: options.fileSizeErrorLabel,
+            dictUploadCanceled: options.abortLabel,
+            dictInvalidFileType: options.extensionNotAllowedLabel,
+            clickable:true,
+            parallelUploads: options.parallelUploads,
+            url: options.url
         });
-    }
+        
+        const onSuccess = (file = null)=>{
+            if(dropzone.getQueuedFiles().length === 0){
+                const areFilesUploadedInput = document.querySelector<HTMLInputElement>("#" + options.componentName + "-are-files-uploaded");
 
-    private static handleCopyPaste(componentName: string) {
-        window.addEventListener("paste", (e) => {
-            var files = e.clipboardData.files;
-            if (files.length === 1) {
-                var file = files[0];
-                if (file.type.indexOf("image") !== -1) {
-                    document.querySelector("#btnDoUpload_" + componentName).addEventListener("click", () => {
-                        document.querySelector("#preview_modal_" + componentName).classList.add("hide");
-
-                        var filename = document.querySelector<HTMLInputElement>("#preview_filename-" + componentName).value || "image";
-                        filename += ".png";
-
-                        const dt = new DataTransfer();
-                        const myNewFile = new File([file], filename, { type: file.type });
-                        dt.items.add(myNewFile);
-
-                        document.querySelector<HTMLInputElement>("#" + componentName + " input[type='file']").files = dt.files;
-                        document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
-                        return;
-                    });
-
-                    var reader = new FileReader();
-                    reader.onload = function (event) {
-                        document.querySelector<HTMLImageElement>("#pastedimage_" + componentName).src = event.target.result.toString();
-
-                        var filename = file.name.replace(/\.[^/.]+$/, "");
-                        document.querySelector<HTMLInputElement>("#preview_filename-" + componentName).value = filename;
-                        document.querySelector("#preview_modal_" + componentName).classList.remove("hide");
-                    };
-                    reader.readAsDataURL(file);
-                    return;
+                if(areFilesUploadedInput){
+                    areFilesUploadedInput.value = "1";
+                }
+                
+                if(options.jsCallback){
+                    eval(options.jsCallback)
                 }
             }
+        }
+        dropzone.on("success",onSuccess)
+        dropzone.on("successmultiple",onSuccess)
 
-            document.querySelector<HTMLInputElement>("#" + componentName + " input[type='file']").files = files;
-            document.querySelector("#" + componentName + " input[type='file']").dispatchEvent(new Event("change"));
-        });
+        if (options.allowCopyPaste) {
+            document.onpaste = function (event) {
+                const items = Array.from(event.clipboardData.items);
+                items.forEach((item) => {
+                    if (item.kind === 'file') {
+                        //@ts-ignore
+                        dropzone.addFile(item.getAsFile());
+                    }
+                });
+            };
+        }
     }
 
-    static listenFileUpload(selectorPrefix = String()) {
-        document.querySelectorAll(selectorPrefix + "div.fileUpload").forEach((element) => {
-            let componentName = element.getAttribute("id");
-            let multiple = element.getAttribute("jjmultiple") === "true";
-            let autoSubmit = element.getAttribute("autoSubmit") === "true";
-            let maxFileSize = element.getAttribute("maxFileSize");
-            let dragDrop = element.getAttribute("dragDrop");
-            let copyPaste = element.getAttribute("copyPaste");
-            let routeContext = element.getAttribute("routecontext");
-            let showFileSize = element.getAttribute("showFileSize");
-            let allowedTypes = element.getAttribute("allowedTypes");
-            let dragDropStr = "<span>&nbsp;<b>" + element.getAttribute("dragDropStr") + "</b></span>";
-
-            let frm = document.querySelector("form");
-            
-            let url : string;
-            
-            let urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("routeContext",routeContext)
-            url = urlBuilder.build();
-
-            const fileUploadOptions = new FileUploadOptions(
-                componentName,
-                url,
-                frm,
-                multiple,
-                maxFileSize,
-                dragDrop,
-                showFileSize,
-                allowedTypes,
-                dragDropStr,
-                autoSubmit
-            );
-
-            this.configureFileUpload(fileUploadOptions);
-
-            if (copyPaste === "true") {
-                this.handleCopyPaste(componentName)
-            }
+    static listenFileUpload(selectorPrefix = String()){
+        document.querySelectorAll(selectorPrefix + "div.upload-area-div").forEach((element) => {
+            const uploadAreaOptions = new UploadAreaOptions(element)
+            this.configureFileUpload(uploadAreaOptions);
         });
     }
 }

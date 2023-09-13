@@ -50,7 +50,7 @@ public class EntityRepository : IEntityRepository
             DataAccessProvider.Oracle => new OracleProvider(DataAccess, Options,LoggerFactory),
             DataAccessProvider.OracleNetCore => new OracleProvider(DataAccess, Options,LoggerFactory),
             DataAccessProvider.SqLite => new ProviderSQLite(DataAccess, Options,LoggerFactory),
-            _ => throw new InvalidOperationException("Invalid data provider." + " [" + DataAccess.ConnectionProvider + "]")
+            _ => throw new InvalidOperationException($"Invalid data provider. [{DataAccess.ConnectionProvider}]")
         };
     }
 

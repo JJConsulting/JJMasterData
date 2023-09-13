@@ -67,7 +67,7 @@ public class JJTextBox : ControlBase
             .WithAttribute("type", inputType)
             .WithCssClass("form-control")
             .WithCssClass(CssClass)
-            .WithToolTip(ToolTip)
+            .WithToolTip(Tooltip)
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
             .WithAttributeIf(NumberOfDecimalPlaces == 0 && InputType == InputType.Number, "onkeypress",
                 "return jjutil.justNumber(event);")

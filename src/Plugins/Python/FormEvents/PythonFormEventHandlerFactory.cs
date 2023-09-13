@@ -22,7 +22,7 @@ public class PythonFormEventHandlerFactory : IFormEventHandlerFactory
         var engine = new PythonEngine().GetScriptEngine();
 
         var file = Directory
-            .GetFiles(ScriptsPath, elementName + ".py", SearchOption.AllDirectories)
+            .GetFiles(ScriptsPath, $"{elementName}.py", SearchOption.AllDirectories)
             .FirstOrDefault();
 
         var source = engine.CreateScriptSourceFromFile(file);

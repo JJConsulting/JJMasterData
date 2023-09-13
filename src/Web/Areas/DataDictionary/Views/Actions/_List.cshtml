@@ -90,7 +90,7 @@
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Edit", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
-        script.Append("','"+Model.Context.ToString().FirstCharToUpper());
+        script.Append($"','{Model.Context.ToString().FirstCharToUpper()}");
         script.Append(" Action");
         script.Append("');");
 
@@ -103,7 +103,7 @@
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Add", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
-        script.Append("','"+Model.Context.ToString().FirstCharToUpper());
+        script.Append($"','{Model.Context.ToString().FirstCharToUpper()}");
         script.Append(" Action");
         script.Append("');");
 

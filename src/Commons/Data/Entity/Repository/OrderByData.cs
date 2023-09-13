@@ -26,7 +26,7 @@ public class OrderByData
                 queryParameter += ",";
             }
 
-            queryParameter += field.Key + " " + field.Value.ToString().ToUpper();
+            queryParameter += $"{field.Key} {field.Value.ToString().ToUpper()}";
 
         }
 

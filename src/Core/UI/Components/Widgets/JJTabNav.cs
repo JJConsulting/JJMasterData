@@ -98,7 +98,7 @@ public class JJTabNav : HtmlComponent
                 .WithAttribute("id", $"{Name}_nav_{i}")
                 .WithAttribute("role", "tabpanel")
                 .WithCssClass("tab-pane fade")
-                .WithCssClassIf(SelectedTabIndex == i, "active" + BootstrapHelper.Show)
+                .WithCssClassIf(SelectedTabIndex == i, $"active{BootstrapHelper.Show}")
                 .Append(nav.HtmlContent);
 
             tabContent.Append(divContent);

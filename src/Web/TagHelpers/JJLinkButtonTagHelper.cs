@@ -39,7 +39,7 @@ public class JJLinkButtonTagHelper : TagHelper
             OnClientClick = OnClientClick,
             Enabled = Enabled ?? true,
             Type = Type ?? LinkButtonType.Button,
-            ToolTip = Tooltip,
+            Tooltip = Tooltip,
             CssClass = CssClass
         };
 

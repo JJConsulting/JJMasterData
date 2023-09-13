@@ -55,7 +55,7 @@ public class JJDataImportation : ProcessComponent
 
     public JJLinkButton LogButton => _logButton ??= GetLogButton();
 
-    public JJUploadArea Upload => _upload ??= GetUploadArea();
+    public JJUploadArea UploadArea => _upload ??= GetUploadArea();
     
     public bool EnableAuditLog { get; set; }
 
@@ -123,8 +123,8 @@ public class JJDataImportation : ProcessComponent
 
         if (ComponentContext is ComponentContext.DataImportationFileUpload)
         {
-            Upload.OnFileUploaded += FileUploaded;
-            return await Upload.GetFileUploadResultAsync();
+            UploadArea.OnFileUploaded += FileUploaded;
+            return await UploadArea.GetFileUploadResultAsync();
         }
         
         string action = CurrentContext.Request.QueryString["dataImportationOperation"];
@@ -159,7 +159,7 @@ public class JJDataImportation : ProcessComponent
             }
             default:
             {
-                if (Upload.IsPostAfterUploadAllFiles() || IsRunning())
+                if (UploadArea.IsPostAfterUploadAllFiles() || IsRunning())
                     htmlBuilder = GetHtmlWaitProcess();
                 else
                     htmlBuilder = GetUploadAreaCollapse(ProcessKey);
@@ -262,9 +262,9 @@ public class JJDataImportation : ProcessComponent
             HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
                 .Append(HtmlTag.Label, label =>
                 {
-                    label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes]);
+                    label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", UploadArea.AllowedTypes]);
                 })
-                .Append( Upload.GetUploadAreaHtmlBuilder())
+                .Append( UploadArea.GetUploadAreaHtmlBuilder())
         };
 
         html.AppendComponent(collapsePanel);
@@ -405,7 +405,8 @@ public class JJDataImportation : ProcessComponent
         area.RouteContext.ComponentContext = ComponentContext.DataImportationFileUpload;
         area.Multiple = false;
         area.EnableCopyPaste = false;
-        area.Name += "-upload-area";
+        area.JsCallback = DataImportationScripts.GetLogScript();
+        area.Name += "-import";
         area.AllowedTypes = "txt,csv,log";
         return area;
     }

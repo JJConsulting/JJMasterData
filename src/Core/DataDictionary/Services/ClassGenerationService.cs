@@ -30,14 +30,14 @@ public class ClassGenerationService
             var property = propertyTemplate.Replace("@PropertyName", ToCamelCase(propertyName)).Replace("@PropertyType", propertyType);
 
             properties.AppendLine($"\t[JsonProperty( \"{item.Name}\")] ");
-            properties.AppendLine("\t"+property);
+            properties.AppendLine($"\t{property}");
             properties.AppendLine("");
 
         }
 
         var classResult = new StringBuilder();
 
-        classResult.AppendLine($"public class {formElement.Name}" + "\r\n{");
+        classResult.AppendLine($"public class {formElement.Name}\r\n{{");
         classResult.AppendLine(properties.ToString());
         classResult.AppendLine("\r\n}");
 

@@ -87,9 +87,23 @@
             currentFormAction.value = "";
     }
 
+    static setCurrentGridPage(componentName, currentPage){
+        const currentGridPage = document.querySelector<HTMLInputElement>("#grid-view-page-" + componentName);
+
+        if(currentGridPage)
+            currentGridPage.value = currentPage;
+    }
+
+    static clearCurrentGridAction(componentName){
+        const currentGridAction = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
+
+        if(currentGridAction)
+            currentGridAction.value = "";
+    }
+    
     static paginate(componentName, routeContext, currentPage) {
-        document.querySelector<HTMLInputElement>("#grid-view-page-" + componentName).value = currentPage;
-        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
+        this.setCurrentGridPage(componentName,currentPage);
+        this.clearCurrentGridAction(componentName)
         this.clearCurrentFormAction(componentName)
 
         GridViewHelper.refreshGrid(componentName, routeContext);
@@ -97,8 +111,8 @@
 
 
     static refresh(componentName: string, routeContext: string) {
-        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#grid-view-row-" + componentName).value = "";
+        this.setCurrentGridPage(componentName,String());
+        this.clearCurrentGridAction(componentName)
         this.clearCurrentFormAction(componentName)
         GridViewHelper.refreshGrid(componentName, routeContext);
     }

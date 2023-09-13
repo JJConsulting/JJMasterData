@@ -53,12 +53,12 @@ public class UploadAreaService : IUploadAreaService
             if (!string.IsNullOrEmpty(errorMessage))
                 throw new JJMasterDataException(errorMessage);
             
-            dto.Message = message;
+            dto.SuccessMessage = message;
 
         }
         catch (Exception ex)
         {
-            dto.Error = ex.Message;
+            dto.ErrorMessage = ex.Message;
         }
 
         return dto;

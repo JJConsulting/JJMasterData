@@ -27,42 +27,42 @@ namespace JJMasterData.Swagger
                 //Get All
                 if (formElement.ApiOptions.EnableGetAll)
                 {
-                    key = "/MasterApi/" + formElement.Name + "/";
+                    key = $"/MasterApi/{formElement.Name}/";
                     swaggerDoc.paths.Add(key, GetAllPathItem(formElement, apiOptions));
                 }
 
                 //Get Detail
                 if (formElement.ApiOptions.EnableGetDetail)
                 {
-                    key = "/MasterApi/" + formElement.Name + "/{id}";
+                    key = $"/MasterApi/{formElement.Name}/{{id}}";
                     swaggerDoc.paths.Add(key, GetDetailPathItem(formElement, apiOptions));
                 }
 
                 //Add 
                 if (formElement.ApiOptions.EnableAdd)
                 {
-                    key = "/MasterApi/" + formElement.Name;
+                    key = $"/MasterApi/{formElement.Name}";
                     swaggerDoc.paths.Add(key, GetPostPathItem(formElement, apiOptions));
                 }
 
                 //Update 
                 if (formElement.ApiOptions.EnableUpdate)
                 {
-                    key = "/MasterApi/" + formElement.Name + "/ ";
+                    key = $"/MasterApi/{formElement.Name}/ ";
                     swaggerDoc.paths.Add(key, GetPutPathItem(formElement, apiOptions));
                 }
 
                 //Parcial Update
                 if (formElement.ApiOptions.EnableUpdatePart)
                 {
-                    key = "/MasterApi/" + formElement.Name + " ";
+                    key = $"/MasterApi/{formElement.Name} ";
                     swaggerDoc.paths.Add(key, GetPatchPathItem(formElement, apiOptions));
                 }
 
                 //Del
                 if (formElement.ApiOptions.EnableDel)
                 {
-                    key = "/MasterApi/" + formElement.Name + "/{id} ";
+                    key = $"/MasterApi/{formElement.Name}/{{id}} ";
                     swaggerDoc.paths.Add(key, GetDelPathItem(formElement, apiOptions));
                 }
             }
@@ -85,9 +85,9 @@ namespace JJMasterData.Swagger
 
             var filterSchema = new Schema
             {
-                title = modelName + "List",
+                title = $"{modelName}List",
                 type = "array",
-                items = GetDictionarySchema(formElement, apiOptions, modelName + "List"),
+                items = GetDictionarySchema(formElement, apiOptions, $"{modelName}List"),
                 description = "List of records"
             };
 
@@ -96,7 +96,7 @@ namespace JJMasterData.Swagger
             oper.description = description.ToString();
             oper.description += "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)";
             oper.tags = new[] { formElement.Name };
-            oper.operationId = modelName + "_Patch";
+            oper.operationId = $"{modelName}_Patch";
             oper.consumes = new[] { "application/json" };
             oper.produces = new[] { "application/json", "application/xml" };
             oper.parameters = new List<Parameter>
@@ -114,7 +114,7 @@ namespace JJMasterData.Swagger
 
             var baseSchema = new Schema
             {
-                title = modelName + "Status",
+                title = $"{modelName}Status",
                 type = "array",
                 items = GetValidationLetterSchema(true),
                 description = "List with status and validations"
@@ -147,9 +147,9 @@ namespace JJMasterData.Swagger
 
             var filterSchema = new Schema
             {
-                title = modelName + "List",
+                title = $"{modelName}List",
                 type = "array",
-                items = GetDictionarySchema(f, metadataApiOptions, modelName + "List", true),
+                items = GetDictionarySchema(f, metadataApiOptions, $"{modelName}List", true),
                 description = "List of records"
             };
 
@@ -158,7 +158,7 @@ namespace JJMasterData.Swagger
             oper.description = sDescription.ToString();
             oper.description += "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)";
             oper.tags = new[] { f.Name };
-            oper.operationId = modelName + "_Post";
+            oper.operationId = $"{modelName}_Post";
             oper.consumes = new[] { "application/json" };
             oper.produces = new[] { "application/json", "application/xml" };
             oper.parameters = new List<Parameter>
@@ -185,7 +185,7 @@ namespace JJMasterData.Swagger
 
             var baseSchema = new Schema
             {
-                title = modelName + "Status",
+                title = $"{modelName}Status",
                 type = "array",
                 items = GetValidationLetterSchema(true),
                 description = "List with status and validations"
@@ -219,9 +219,9 @@ namespace JJMasterData.Swagger
 
             var filterSchema = new Schema
             {
-                title = modelName + "List",
+                title = $"{modelName}List",
                 type = "array",
-                items = GetDictionarySchema(f, metadataApiOptions, modelName + "List"),
+                items = GetDictionarySchema(f, metadataApiOptions, $"{modelName}List"),
                 description = "List of records"
             };
 
@@ -230,7 +230,7 @@ namespace JJMasterData.Swagger
             oper.description = sDescription.ToString();
             oper.description += "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)";
             oper.tags = new[] { f.Name };
-            oper.operationId = modelName + "_Put";
+            oper.operationId = $"{modelName}_Put";
             oper.consumes = new[] { "application/json" };
             oper.produces = new[] { "application/json", "application/xml" };
             oper.parameters = new List<Parameter>
@@ -248,7 +248,7 @@ namespace JJMasterData.Swagger
 
             var baseSchema = new Schema
             {
-                title = modelName + "Status",
+                title = $"{modelName}Status",
                 type = "array",
                 items = GetValidationLetterSchema(true),
                 description = "List with status and validations"
@@ -295,7 +295,7 @@ namespace JJMasterData.Swagger
             oper.summary = "Delete a record";
             oper.description = sDescription.ToString();
             oper.tags = new[] { f.Name };
-            oper.operationId = modelName + "_Del";
+            oper.operationId = $"{modelName}_Del";
             oper.consumes = null;
             oper.produces = new[] { "application/json", "application/xml" };
             oper.parameters = new List<Parameter>
@@ -303,7 +303,7 @@ namespace JJMasterData.Swagger
                 new Parameter
                 {
                     name = metadataApiOptions.GetFieldNameParsed("id"),
-                    description = "Primary Key Value.<br>" + nameFields,
+                    description = $"Primary Key Value.<br>{nameFields}",
                     @in = "path",
                     required = true,
                     type = "string"
@@ -352,7 +352,7 @@ namespace JJMasterData.Swagger
             oper.summary = "Get a record detail";
             oper.description = sDescription.ToString();
             oper.tags = new[] { f.Name };
-            oper.operationId = modelName + "_Get";
+            oper.operationId = $"{modelName}_Get";
             oper.consumes = null;
             oper.produces = new[] { "application/json", "application/xml" };
             oper.parameters = new List<Parameter>
@@ -360,7 +360,7 @@ namespace JJMasterData.Swagger
                 new Parameter
                 {
                     name = metadataApiOptions.GetFieldNameParsed("id"),
-                    description = "Primary Key Value.<br>" + nameFields,
+                    description = $"Primary Key Value.<br>{nameFields}",
                     @in = "path",
                     required = true,
                     type = "string"
@@ -391,7 +391,7 @@ namespace JJMasterData.Swagger
             oper.description = f.Title;
             oper.description += "<br><b>Accept-Encoding</b>: gzip, deflate ou utf8 (opcional)";
             oper.tags = new[] { f.Name };
-            oper.operationId = modelName + "_GetAll";
+            oper.operationId = $"{modelName}_GetAll";
             oper.consumes = null;
             oper.produces = new[] { "application/json", "application/xml", "text/csv" };
             oper.parameters = new List<Parameter>();
@@ -439,19 +439,19 @@ namespace JJMasterData.Swagger
             foreach (FormElementField item in fields)
             {
                 string fieldName = metadataApiOptions.GetFieldNameParsed(item.Name);
-                string description = "Filter available. (" + item.Filter.Type.ToString().ToLower() + ")";
+                string description = $"Filter available. ({item.Filter.Type.ToString().ToLower()})";
                 if (!string.IsNullOrEmpty(item.Label))
-                    description += "<br>" + item.Label;
+                    description += $"<br>{item.Label}";
 
                 if (!string.IsNullOrEmpty(item.HelpDescription))
-                    description += "<br>" + item.HelpDescription;
+                    description += $"<br>{item.HelpDescription}";
 
                 var schema = GetFieldSchema(item);
                 if (item.Filter.Type == FilterMode.Range)
                 {
                     oper.parameters.Add(new Parameter
                     {
-                        name = fieldName + "_from",
+                        name = $"{fieldName}_from",
                         description = description,
                         @in = "query",
                         required = false,
@@ -461,7 +461,7 @@ namespace JJMasterData.Swagger
 
                     oper.parameters.Add(new Parameter
                     {
-                        name = fieldName + "_to",
+                        name = $"{fieldName}_to",
                         description = description,
                         @in = "query",
                         required = false,
@@ -489,7 +489,7 @@ namespace JJMasterData.Swagger
                         foreach (DataItemValue dataItem in item.DataItem.Items)
                         {
                             p.@enum.Add(dataItem.Id);
-                            description += "<br>" + dataItem.Id + " = " + dataItem.Description;
+                            description += $"<br>{dataItem.Id} = {dataItem.Description}";
                         }
                     }
 
@@ -506,7 +506,7 @@ namespace JJMasterData.Swagger
             string fieldsVarName = metadataApiOptions.GetFieldNameParsed("fields");
 
             var baseSchema = new Schema();
-            baseSchema.title = modelName + "Response";
+            baseSchema.title = $"{modelName}Response";
             baseSchema.type = "object";
             baseSchema.properties = new Dictionary<string, Schema>();
             baseSchema.properties.Add(totVarName, new Schema
@@ -623,7 +623,7 @@ namespace JJMasterData.Swagger
                 itemSchema.description += " (<span class='propType'>PK<span>)";
 
             if (!string.IsNullOrEmpty(item.HelpDescription))
-                itemSchema.description += "<br> " + item.HelpDescription;
+                itemSchema.description += $"<br> {item.HelpDescription}";
 
             switch (item.DataType)
             {
@@ -659,7 +659,7 @@ namespace JJMasterData.Swagger
             {
                 foreach (DataItemValue dataItem in item.DataItem.Items)
                 {
-                    itemSchema.description += "<br>" + dataItem.Id + " = " + dataItem.Description;
+                    itemSchema.description += $"<br>{dataItem.Id} = {dataItem.Description}";
                 }
             }
 

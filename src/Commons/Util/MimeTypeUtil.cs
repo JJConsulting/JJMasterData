@@ -593,11 +593,11 @@ public static class MimeTypeUtil
         {
             string[] aux = extension.Split('.');
             if (aux.Length > 1)
-                extension = "." + aux[aux.Length - 1];
+                extension = $".{aux[aux.Length - 1]}";
         }
         else
         {
-            extension = "." + extension;
+            extension = $".{extension}";
         }
 
         string mime;

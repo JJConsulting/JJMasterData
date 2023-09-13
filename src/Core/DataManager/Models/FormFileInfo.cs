@@ -10,11 +10,16 @@ public class FormFileInfo
         set => _content = value;
     }
 
+    public FormFileInfo()
+    {
+        
+    }
+
     public bool Deleted { get; set; }
 
-    public string OriginName { get; set; }
+    public string OldName { get; set; }
 
-    public string FileName => OriginName ?? Content.FileName;
+    public string FileName => OldName ?? Content.FileName;
     
     public bool IsInMemory => Content.Bytes != null;
 }

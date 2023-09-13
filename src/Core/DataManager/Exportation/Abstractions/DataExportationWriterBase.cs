@@ -208,7 +208,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
                         ProcessReporter.Message = ex.Message;
                         break;
                     default:
-                        ProcessReporter.Message = StringLocalizer["Unexpected error"] + "\n";
+                        ProcessReporter.Message = $"{StringLocalizer["Unexpected error"]}\n";
                         ProcessReporter.Message += ExceptionManager.GetMessage(ex);
                         Logger.LogError(ex, "Error at data exportation");
                         break;

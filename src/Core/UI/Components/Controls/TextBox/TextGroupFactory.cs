@@ -178,7 +178,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
             case FormComponent.Tel:
                 textGroup.Addons = new InputAddons
                 {
-                    ToolTip = "Brasil",
+                    Tooltip = "Brasil",
                     Text = "+55"
                 };
                 textGroup.MaxLength = 15;
@@ -223,7 +223,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
         var btn = new JJLinkButton
         {
             IconClass = $"fa fa-{BootstrapHelper.DateIcon}",
-            ToolTip = StringLocalizer["Calendar"],
+            Tooltip = StringLocalizer["Calendar"],
             ShowInFilter = true
         };
 

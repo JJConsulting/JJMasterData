@@ -23,7 +23,7 @@ internal class CheckBoxFactory : IControlFactory<JJCheckBox>
         var checkBox = Create();
         checkBox.Name = field.Name;
         checkBox.IsChecked = StringManager.ParseBool(context.Value);
-        checkBox.ToolTip = field.HelpDescription;
+        checkBox.Tooltip = field.HelpDescription;
         return checkBox;
     }
 }

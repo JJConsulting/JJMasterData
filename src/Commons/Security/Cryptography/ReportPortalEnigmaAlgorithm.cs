@@ -47,7 +47,7 @@ public class ReportPortalEnigmaAlgorithm : IEncryptionAlgorithm
 
         while (pos <= tam)
         {
-            int numM = Convert.ToInt32("0x" + cipherText.Substring((pos - 1) * 2, 2), 16);
+            int numM = Convert.ToInt32($"0x{cipherText.Substring((pos - 1) * 2, 2)}", 16);
             short numP = (short)Convert.ToChar(secretKey.Substring(pos % secretKey.Length, 1));
             int charCode = (short)(numM - numP);
 

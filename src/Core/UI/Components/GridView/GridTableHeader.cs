@@ -96,9 +96,9 @@ internal class GridTableHeader
                         order = order.Replace("]", "");
                     }
 
-                    if (order.Equals(field.Name + " DESC"))
+                    if (order.Equals($"{field.Name} DESC"))
                         th.Append(GetDescendingIcon());
-                    else if (order.Equals(field.Name + " ASC") || order.Equals(field.Name))
+                    else if (order.Equals($"{field.Name} ASC") || order.Equals(field.Name))
                         th.Append(GetAscendingIcon());
                 }
             }
@@ -127,7 +127,7 @@ internal class GridTableHeader
     {
         var hasFilterType = field.Filter.Type != FilterMode.None;
         var hasRelationValue = !GridView.RelationValues.Any() || (GridView.RelationValues.Any() && GridView.RelationValues.ContainsKey(field.Name));
-        var hasFieldOrFromKey = currentFilter.ContainsKey(field.Name) || currentFilter.ContainsKey(field.Name + "_from");
+        var hasFieldOrFromKey = currentFilter.ContainsKey(field.Name) || currentFilter.ContainsKey($"{field.Name}_from");
 
         return hasFilterType && hasRelationValue && hasFieldOrFromKey;
     }
@@ -227,7 +227,7 @@ internal class GridTableHeader
                     {
                         a.WithCssClass("dropdown-item");
                         a.WithAttribute("href", "javascript:void(0);");
-                        a.WithAttribute("onclick", $"JJViewHelper.unSelectAll('{GridView.Name}')");
+                        a.WithAttribute("onclick", $"GridViewHelper.unSelectAll('{GridView.Name}')");
                         a.AppendText(StringLocalizer["Unmark all selected records"]);
                     });
                 });

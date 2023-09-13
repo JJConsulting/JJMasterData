@@ -1,56 +1,47 @@
 class UploadViewHelper {
-    static open(componentName: string, title:string, values: string, url: string = null){
-
-        const panelName = $("#v_" + componentName).attr("panelName");
+    static performFileAction(componentName: string, filename: string, action: string, promptMessage: string = null ) {
+        const uploadActionInput = document.getElementById("upload-view-action-" + componentName) as HTMLInputElement;
+        const filenameInput = document.getElementById("upload-view-file-name-" + componentName) as HTMLInputElement;
         
-        if(url == null || url.length == 0){
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("uploadView-" + panelName, componentName)
-            urlBuilder.addQueryParameter("uploadViewParams",values)
-            url = urlBuilder.build();
+        if (uploadActionInput && filenameInput) {
+            uploadActionInput.value = action;
+            filenameInput.value = action === "renameFile" ? filename + ";" + prompt(promptMessage, filename) : filename;
         }
-        
-        const modal = new Modal();
-        modal.modalId =componentName + "-upload-modal"
-        
-        modal.showUrl({url:url},null, 1).then(_=>{
-            listenAllEvents()
-        })
     }
 
-    static performFileAction(componentName, filename, action, promptStr = null) {
-        if (promptStr && !confirm(promptStr)) {
-            return false;
+    static clearFileAction(componentName: string, fileName: string){
+        const uploadActionInput = document.getElementById("upload-view-action-" + componentName) as HTMLInputElement;
+        const filenameInput = document.getElementById("upload-view-file-name-" + componentName) as HTMLInputElement;
+
+        if (uploadActionInput && filenameInput) {
+            uploadActionInput.value = String();
+            filenameInput.value = String();
         }
-
-        const uploadActionInput = document.getElementById("upload-action-" + componentName) as HTMLInputElement;
-        const filenameInput = document.getElementById("filename-" + componentName) as HTMLInputElement;
-        const form = document.querySelector("form") as HTMLFormElement;
-
-        if (uploadActionInput && filenameInput && form) {
-            uploadActionInput.value = action;
-            filenameInput.value = action === "RENAMEFILE" ? filename + ";" + prompt(promptStr, filename) : filename;
-            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
-            if (action === "DOWNLOADFILE") {
-                setTimeout(() => {
-                    SpinnerOverlay.hide();
-                    uploadActionInput.value = "";
-                }, 1500);
+    }
+    
+    static deleteFile(componentName: string, fileName: string, confirmationMessage: string, jsCallback: string) {
+        if(confirmationMessage){
+            const confirmed = confirm(confirmationMessage)
+            if(!confirmed){
+                return
             }
         }
-        return true;
+        
+        this.performFileAction(componentName, fileName, "deleteFile");
+        eval(jsCallback);
+        this.clearFileAction(componentName,fileName);
     }
 
-    static deleteFile(componentName, filename, promptStr) {
-        return this.performFileAction(componentName, filename, "DELFILE", promptStr);
+    static downloadFile(componentName: string, fileName: string, jsCallback: string) {
+        this.performFileAction(componentName, fileName, "downloadFile");
+        eval(jsCallback)
+        this.clearFileAction(componentName,fileName);
     }
 
-    static downloadFile(componentName, filename) {
-        this.performFileAction(componentName, filename, "DOWNLOADFILE");
-    }
-
-    static renameFile(componentName, filename, promptStr) {
-        this.performFileAction(componentName, filename, "RENAMEFILE", promptStr);
+    static renameFile(componentName: string, fileName: string, promptMessage: string, jsCallback: string) {
+        this.performFileAction(componentName, fileName, "renameFile", promptMessage);
+        eval(jsCallback)
+        this.clearFileAction(componentName,fileName);
     }
 
 }

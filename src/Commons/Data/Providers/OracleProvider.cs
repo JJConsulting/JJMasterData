@@ -284,7 +284,7 @@ public class OracleProvider : BaseProvider
         sql.Append(Tab);
         sql.AppendLine("IF v_TYPEACTION = ' ' THEN");
         sql.Append(Tab).Append(Tab);
-        sql.AppendLine("v_TYPEACTION := '" + Insert + "'; ");
+        sql.AppendLine($"v_TYPEACTION := '{Insert}'; ");
 
         if (hasPk)
         {
@@ -321,7 +321,7 @@ public class OracleProvider : BaseProvider
             sql.Append(Tab).Append(Tab);
             sql.AppendLine("IF v_NCOUNT > 0 THEN ");
             sql.Append(Tab).Append(Tab).Append(Tab);
-            sql.AppendLine("v_TYPEACTION := '" + Update + "';");
+            sql.AppendLine($"v_TYPEACTION := '{Update}';");
             sql.Append(Tab).Append(Tab);
             sql.AppendLine("END IF;");
         }
@@ -332,7 +332,7 @@ public class OracleProvider : BaseProvider
 
         //SCRIPT INSERT
         sql.Append(Tab);
-        sql.AppendLine("IF v_TYPEACTION = '" + Insert + "' THEN");
+        sql.AppendLine($"IF v_TYPEACTION = '{Insert}' THEN");
         sql.Append(Tab).Append(Tab);
         sql.Append("INSERT INTO ");
         sql.Append(element.TableName);
@@ -379,7 +379,7 @@ public class OracleProvider : BaseProvider
         if (hasUpd)
         {
             sql.Append(Tab);
-            sql.AppendLine("ELSIF v_TYPEACTION = '" + Update + "' THEN ");
+            sql.AppendLine($"ELSIF v_TYPEACTION = '{Update}' THEN ");
             sql.Append(Tab).Append(Tab);
             sql.Append("UPDATE ");
             sql.Append(element.TableName);
@@ -433,7 +433,7 @@ public class OracleProvider : BaseProvider
         else
         {
             sql.Append(Tab);
-            sql.AppendLine("ELSIF v_TYPEACTION = '" + Update + "' THEN ");
+            sql.AppendLine($"ELSIF v_TYPEACTION = '{Update}' THEN ");
             sql.Append(Tab).Append(Tab);
             sql.AppendLine("--NO UPDATABLED");
             sql.Append(Tab).Append(Tab);
@@ -443,7 +443,7 @@ public class OracleProvider : BaseProvider
 
         //SCRIPT DELETE
         sql.Append(Tab);
-        sql.AppendLine("ELSIF v_TYPEACTION = '" + Delete + "' THEN ");
+        sql.AppendLine($"ELSIF v_TYPEACTION = '{Delete}' THEN ");
         sql.Append(Tab).Append(Tab);
         sql.Append("DELETE FROM ");
         sql.Append(element.TableName);
@@ -826,7 +826,7 @@ public class OracleProvider : BaseProvider
         cmd.CmdType = CommandType.StoredProcedure;
         cmd.Sql = Options.GetWriteProcedureName(element);
         cmd.Parameters = new List<DataAccessParameter>();
-        cmd.Parameters.Add(new DataAccessParameter(VariablePrefix + "action", action, DbType.String, 1));
+        cmd.Parameters.Add(new DataAccessParameter($"{VariablePrefix}action", action, DbType.String, 1));
 
         var fields = element.Fields
             .ToList()
@@ -847,7 +847,7 @@ public class OracleProvider : BaseProvider
         var pRet = new DataAccessParameter
         {
             Direction = ParameterDirection.Output,
-            Name = VariablePrefix + "RET",
+            Name = $"{VariablePrefix}RET",
             Type = DbType.Int32
         };
         cmd.Parameters.Add(pRet);
@@ -866,9 +866,9 @@ public class OracleProvider : BaseProvider
             Sql = Options.GetReadProcedureName(element),
             Parameters = new List<DataAccessParameter>
             {
-                new(VariablePrefix + "orderby", orderBy.ToQueryParameter()),
-                new(VariablePrefix + "regporpag", recordsPerPage),
-                new(VariablePrefix + "pag", currentPage)
+                new($"{VariablePrefix}orderby", orderBy.ToQueryParameter()),
+                new($"{VariablePrefix}regporpag", recordsPerPage),
+                new($"{VariablePrefix}pag", currentPage)
             }
         };
 
@@ -878,34 +878,34 @@ public class OracleProvider : BaseProvider
             {
                 object? valueFrom = DBNull.Value;
                 if (filters != null &&
-                    filters.ContainsKey(field.Name + "_from") &&
-                    filters[field.Name + "_from"] != null)
+                    filters.ContainsKey($"{field.Name}_from") &&
+                    filters[$"{field.Name}_from"] != null)
                 {
-                    valueFrom = filters[field.Name + "_from"];
+                    valueFrom = filters[$"{field.Name}_from"];
                 }
                 var fromParameter = new DataAccessParameter
                 {
                     Direction = ParameterDirection.Input,
                     Type = GetDbType(field.DataType),
                     Size = field.Size,
-                    Name = VariablePrefix + field.Name + "_from",
+                    Name = $"{VariablePrefix}{field.Name}_from",
                     Value = valueFrom
                 };
                 cmd.Parameters.Add(fromParameter);
 
                 object? valueTo = DBNull.Value;
                 if (filters != null &&
-                    filters.ContainsKey(field.Name + "_to") &&
-                    filters[field.Name + "_to"] != null)
+                    filters.ContainsKey($"{field.Name}_to") &&
+                    filters[$"{field.Name}_to"] != null)
                 {
-                    valueTo = filters[field.Name + "_to"];
+                    valueTo = filters[$"{field.Name}_to"];
                 }
                 var toParameter = new DataAccessParameter
                 {
                     Direction = ParameterDirection.Input,
                     Type = GetDbType(field.DataType),
                     Size = field.Size,
-                    Name = VariablePrefix + field.Name + "_to",
+                    Name = $"{VariablePrefix}{field.Name}_to",
                     Value = valueTo
                 };
                 cmd.Parameters.Add(toParameter);
@@ -936,7 +936,7 @@ public class OracleProvider : BaseProvider
 
         var pCur = new DataAccessParameter
         {
-            Name = VariablePrefix + "cur_OUT",
+            Name = $"{VariablePrefix}cur_OUT",
             Direction = ParameterDirection.Output,
             Type = DbType.Object
         };
@@ -957,7 +957,7 @@ public class OracleProvider : BaseProvider
                 break;
             case FieldType.Varchar:
             case FieldType.NVarchar:
-                sType = dataType + "2";
+                sType = $"{dataType}2";
                 break;
             case FieldType.DateTime:
                 sType = "DATE";

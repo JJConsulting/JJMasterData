@@ -1,5 +1,6 @@
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.Web.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Extensions;
@@ -8,12 +9,12 @@ public static class ComponentResultExtensions
 {
     public static bool IsActionResult(this ComponentResult componentResult)
     {
-        return componentResult is HtmlComponentResult or JsonComponentResult or RedirectComponentResult;
+        return AsyncComponent.CanSendResult(componentResult);
     }   
     
     public static IActionResult ToActionResult(this ComponentResult componentResult)
     {
-        if (componentResult is not (HtmlComponentResult or JsonComponentResult))
+        if (componentResult is not (HtmlComponentResult or JsonComponentResult or RedirectComponentResult))
             throw new JJMasterDataException("ComponentResults of ContentType.RenderedComponent must be rendered at your View.");
 
         if (componentResult is RedirectComponentResult redirectComponentResult)
@@ -22,6 +23,7 @@ public static class ComponentResultExtensions
         var content = new ContentResult
         {
             Content = componentResult.Content,
+            StatusCode = componentResult.StatusCode,
             ContentType = componentResult is HtmlComponentResult ? "text/plain" : "application/json"
         };
         

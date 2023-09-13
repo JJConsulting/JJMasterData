@@ -95,7 +95,7 @@ public class JJFileDownloader : HtmlComponent
                         {
                             p.AppendText(StringLocalizer["You are downloading file {0}.", fileName]);
                             p.AppendText(" ");
-                            p.AppendText(StringLocalizer["If the download not start automatically"] + ", ");
+                            p.AppendText($"{StringLocalizer["If the download not start automatically"]}, ");
                             p.Append(HtmlTag.A, a =>
                             {
                                 a.WithAttribute("href", url);
@@ -134,9 +134,7 @@ public class JJFileDownloader : HtmlComponent
 
         return UrlHelper.GetUrl("Download", "File", "MasterData", new {filePath = encryptedFilePath});
     }
-
-
-
+    
     public RedirectComponentResult GetDirectDownloadFromUrl()
     {
         bool isExternalLink = false;
@@ -151,10 +149,8 @@ public class JJFileDownloader : HtmlComponent
             throw new JJMasterDataException("Invalid file path or badly formatted URL");
 
         string filePath = EncryptionService.DecryptStringWithUrlUnescape(criptFilePath);
-        if (filePath == null)
-            throw new JJMasterDataException("Invalid file path or badly formatted URL");
 
-        FilePath = filePath;
+        FilePath = filePath ?? throw new JJMasterDataException("Invalid file path or badly formatted URL");
         IsExternalLink = isExternalLink;
 
         return GetDirectDownloadRedirect();

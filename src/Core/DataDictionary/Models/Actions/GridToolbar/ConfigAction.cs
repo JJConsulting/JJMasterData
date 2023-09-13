@@ -10,7 +10,7 @@ public class ConfigAction : GridToolbarAction
     public ConfigAction()
     {
         Name = ActionName;
-        ToolTip = "Options";
+        Tooltip = "Options";
         Icon = IconType.Cog;
         ShowAsButton = true;
         CssClass = "float-end";

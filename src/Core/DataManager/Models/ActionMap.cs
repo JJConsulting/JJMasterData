@@ -56,7 +56,7 @@ public class ActionMap
             ActionSource.GridTable => formElement.Options.GridTableActions.First(a => a.Name.Equals(ActionName)),
             ActionSource.GridToolbar =>  formElement.Options.GridToolbarActions.First(a => a.Name.Equals(ActionName)),
             ActionSource.FormToolbar =>  formElement.Options.FormToolbarActions.First(a => a.Name.Equals(ActionName)),
-            ActionSource.Field => formElement.Fields[FieldName].Actions.Get(ActionName),
+            ActionSource.Field => formElement.Fields[FieldName!].Actions.Get(ActionName),
             _ => throw new JJMasterDataException("Invalid ActionSource"),
         };
     }
