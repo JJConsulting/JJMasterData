@@ -10,52 +10,17 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.FormEvents;
 
-
-//TODO; I think IServiceScopeFactory is bad and we should inject IEnumerable<IFormEventHandler>
-public class EventHandlerFactoryBase<T> where T : IEventHandler
+public class EventHandlerFactoryBase<TEventHandler> where TEventHandler : IEventHandler
 {
-    private IServiceScopeFactory ServiceScopeFactory { get; }
-    private IEnumerable<Assembly?>? Assemblies { get; }
+    private IEnumerable<TEventHandler> EventHandlers { get; }
 
-    public EventHandlerFactoryBase(IOptions<EventHandlerFactoryOptions> options, IServiceScopeFactory serviceScopeFactory)
+    protected EventHandlerFactoryBase(IEnumerable<TEventHandler> eventHandlers)
     {
-        ServiceScopeFactory = serviceScopeFactory;
-        Assemblies = options.Value.Assemblies;
+        EventHandlers = eventHandlers;
     }
 
-    protected T? GetEventHandler(string elementName) 
+    protected TEventHandler? GetEventHandler(string elementName)
     {
-        var assemblies = new List<Assembly?>
-        {
-#if NET
-            Assembly.GetEntryAssembly(),
-            typeof(EventHandlerServiceExtensions).Assembly
-#endif
-        };
-
-        if (Assemblies?.Any() ?? false)
-            assemblies.AddRange(Assemblies);
-
-        var types = ReflectionUtils.GetDefinedTypes<T>(assemblies);
-
-        foreach (var formEventHandlerType in types.Where(t=>!t.IsAbstract))
-        {
-            using var scope = ServiceScopeFactory.CreateScope();
-            var instance = (T)ActivatorUtilities.CreateInstance(scope.ServiceProvider, formEventHandlerType);
-
-            if (instance.ElementName == elementName)
-                return instance;
-        }
-
-        return default;
+        return EventHandlers.FirstOrDefault(e => e.ElementName == elementName);
     }
-}
-
-public class EventHandlerFactoryOptions
-{
-    /// <summary>
-    /// Default value: null <br></br>
-    /// </summary>
-    public IEnumerable<Assembly>? Assemblies { get; set; }
-
 }
