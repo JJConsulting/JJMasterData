@@ -37,7 +37,7 @@ internal class GridSortingConfig
     {
         var dialog = new JJModalDialog
         {
-            Name = $"sort-modal-{Name}",
+            Name = $"{Name}-sort-modal",
             Title = "Sort Fields",
             Size = ModalSize.Small
         };
@@ -57,7 +57,7 @@ internal class GridSortingConfig
             Text = "Cancel",
             IconClass = IconType.Times.GetCssClass(),
             ShowAsButton = true,
-            OnClientClick = $"$('#sort-modal-{Name}').modal('hide');"
+            OnClientClick = $"$('#{Name}-sort-modal').modal('hide');"
         };
 
         dialog.Buttons.Add(btnCancel);

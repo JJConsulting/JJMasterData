@@ -148,7 +148,6 @@ public class JJDataImportation : ProcessComponent
                 break;
             case "processPastedText":
             {
-                //Process de text from clipboard
                 if (!IsRunning())
                 {
                     string pasteValue = CurrentContext.Request.GetFormValue("pasteValue");

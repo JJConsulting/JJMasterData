@@ -216,7 +216,7 @@ internal class GridFilter
         {
             var modal = new JJModalDialog
             {
-                Name = $"filter_modal_{GridView.Name}"
+                Name = $"{GridView.Name}-filter-modal"
             };
             btnDoFilter.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss","modal");
             btnCancel.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss","modal");

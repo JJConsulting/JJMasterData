@@ -246,7 +246,7 @@ public static class BootstrapHelper
 
     public static string GetModalScript(string modalCssId) => Version switch
     {
-        5 => $"new bootstrap.Modal(document.getElementById('{modalCssId}'),{{}}).show();",
+        5 => $"bootstrap.Modal.getOrCreateInstance(document.getElementById('{modalCssId}'),{{}}).show();",
         _ => $"$('#{modalCssId}').modal();"
     };
 

@@ -444,7 +444,6 @@ class DataExportationHelper {
     static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
-        listenAllEvents();
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
@@ -456,9 +455,10 @@ class DataExportationHelper {
             $("#data-exportation-modal-" + componentName).modal();
         }
         else {
-            const modal = new bootstrap.Modal(document.querySelector("#data-exportation-modal-" + componentName), {});
+            const modal = bootstrap.Modal.getOrCreateInstance(document.querySelector("#data-exportation-modal-" + componentName), {});
             modal.show();
         }
+        listenAllEvents("#data-exportation-modal-" + componentName);
     }
     static stopProcess(url, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -957,7 +957,7 @@ class GridViewHelper {
         }
         descCommand = descCommand.substring(0, descCommand.length - 1);
         document.querySelector("#grid-view-order-" + componentName).value = descCommand;
-        $("#sort-modal-" + componentName).modal('hide');
+        $("#" + componentName + "-sort-modal").modal('hide');
         this.clearCurrentFormAction(componentName);
     }
     static clearCurrentFormAction(componentName) {

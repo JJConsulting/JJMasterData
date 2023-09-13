@@ -144,7 +144,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                     button.Visible = false;
 
                 button.OnClientClick =
-                    BootstrapHelper.GetModalScript($"filter_modal_{actionContext.ParentComponentName}");
+                    BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-filter-modal");
                 break;
             case InsertAction insertAction:
                 if (insertAction.ShowAsPopup)
@@ -156,14 +156,14 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                 break;
             case LegendAction:
                 button.OnClientClick =
-                    BootstrapHelper.GetModalScript($"iconlegend_modal_{actionContext.ParentComponentName}");
+                    BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-legend-modal");
                 break;
             case RefreshAction:
                 button.OnClientClick = gridView.Scripts.GetRefreshScript();
                 break;
             case SortAction:
                 button.OnClientClick =
-                    BootstrapHelper.GetModalScript($"sort-modal-{actionContext.ParentComponentName}");
+                    BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-sort-modal");
                 break;
         }
 

@@ -74,7 +74,7 @@
         
         document.querySelector<HTMLInputElement>("#grid-view-order-" + componentName).value = descCommand;
         
-        $("#sort-modal-" + componentName).modal('hide');
+        $("#" + componentName + "-sort-modal").modal('hide');
         
         this.clearCurrentFormAction(componentName);
     }

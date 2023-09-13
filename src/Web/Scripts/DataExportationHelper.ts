@@ -149,8 +149,7 @@ class DataExportationHelper {
     private static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
         modalBody.innerHTML = html;
-        listenAllEvents();
-
+        
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
@@ -158,13 +157,15 @@ class DataExportationHelper {
                 document.querySelector<HTMLElement>("#data-exportation-warning" + componentName).style.display = "block";
             }
         }
-
+        
         if (bootstrapVersion < 5) {
             $("#data-exportation-modal-" + componentName).modal();
         } else {
-            const modal = new bootstrap.Modal(document.querySelector("#data-exportation-modal-" + componentName), {});
+            const modal = bootstrap.Modal.getOrCreateInstance(document.querySelector("#data-exportation-modal-" + componentName), {});
             modal.show();
         }
+
+        listenAllEvents("#data-exportation-modal-" + componentName);
     }
     
     static async stopProcess(url: string, stopMessage: string) {
