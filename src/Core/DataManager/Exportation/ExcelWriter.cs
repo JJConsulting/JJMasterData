@@ -93,6 +93,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
             };
             var result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
             DataSource = result.Data;
+            TotalOfRecords = result.TotalOfRecords;
             ProcessReporter.TotalOfRecords = result.TotalOfRecords;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...", TotalOfRecords.ToString("N0")];
             Reporter(ProcessReporter);

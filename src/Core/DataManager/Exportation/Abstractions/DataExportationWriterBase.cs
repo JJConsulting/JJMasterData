@@ -128,7 +128,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
         {
             var path = Options.Value.ExportationFolderPath;
             string folderPath = DataExportationHelper.GetFolderPath(FormElement, path, UserId);
-            
+
             if (!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
 
@@ -156,66 +156,64 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     public async Task RunWorkerAsync(CancellationToken token)
     {
         if (FormElement == null) throw new ArgumentNullException(nameof(FormElement));
-        await Task.Run(async () =>
+
+        try
         {
-            try
+            _processReporter = new DataExportationReporter();
+            ProcessReporter.UserId = UserId;
+            ProcessReporter.StartDate = DateTime.Now;
+            ProcessReporter.Message = StringLocalizer["Retrieving records..."];
+
+            Reporter(ProcessReporter);
+
+            var filePath = Path.Combine(FolderPath, GetFilePath());
+
+            using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
             {
-                _processReporter = new DataExportationReporter();
-                ProcessReporter.UserId = UserId;
-                ProcessReporter.StartDate = DateTime.Now;
-                ProcessReporter.Message = StringLocalizer["Retrieving records..."];
-
-                Reporter(ProcessReporter);
-
-                var filePath = Path.Combine(FolderPath, GetFilePath());
-
-                using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
-                {
-                    await GenerateDocument(fs, token);
-                }
-
-                ProcessReporter.FilePath = filePath;
-
-                ProcessReporter.EndDate = DateTime.Now;
-                ProcessReporter.Message = StringLocalizer["File generated successfully!"];
+                await GenerateDocument(fs, token);
             }
-            catch (Exception ex)
+
+            ProcessReporter.FilePath = filePath;
+
+            ProcessReporter.EndDate = DateTime.Now;
+            ProcessReporter.Message = StringLocalizer["File generated successfully!"];
+        }
+        catch (Exception ex)
+        {
+            ProcessReporter.HasError = true;
+
+            if (File.Exists(FolderPath) && !FileIO.IsFileLocked(FolderPath))
+                File.Delete(FolderPath);
+
+            switch (ex)
             {
-                ProcessReporter.HasError = true;
-
-                if (File.Exists(FolderPath) && !FileIO.IsFileLocked(FolderPath))
-                    File.Delete(FolderPath);
-
-                switch (ex)
-                {
-                    case OperationCanceledException:
-                    case ThreadAbortException:
-                        ProcessReporter.Message = StringLocalizer["Process aborted by the user."];
-                        break;
-                    case IOException:
-                        if (FileIO.IsFileLocked(FolderPath))
-                            ProcessReporter.Message =
-                                StringLocalizer[
-                                    "File is already being used by another process. Try downloading it from \"Recently generated files\"."];
-                        else
-                            goto default;
-                        break;
-                    case JJMasterDataException:
-                        ProcessReporter.Message = ex.Message;
-                        break;
-                    default:
-                        ProcessReporter.Message = $"{StringLocalizer["Unexpected error"]}\n";
-                        ProcessReporter.Message += ExceptionManager.GetMessage(ex);
-                        Logger.LogError(ex, "Error at data exportation");
-                        break;
-                }
+                case OperationCanceledException:
+                case ThreadAbortException:
+                    ProcessReporter.Message = StringLocalizer["Process aborted by the user."];
+                    break;
+                case IOException:
+                    if (FileIO.IsFileLocked(FolderPath))
+                        ProcessReporter.Message =
+                            StringLocalizer[
+                                "File is already being used by another process. Try downloading it from \"Recently generated files\"."];
+                    else
+                        goto default;
+                    break;
+                case JJMasterDataException:
+                    ProcessReporter.Message = ex.Message;
+                    break;
+                default:
+                    ProcessReporter.Message = $"{StringLocalizer["Unexpected error"]}\n";
+                    ProcessReporter.Message += ExceptionManager.GetMessage(ex);
+                    Logger.LogError(ex, "Error at data exportation");
+                    break;
             }
-            finally
-            {
-                ProcessReporter.EndDate = DateTime.Now;
-                Reporter(ProcessReporter);
-            }
-        }, token);
+        }
+        finally
+        {
+            ProcessReporter.EndDate = DateTime.Now;
+            Reporter(ProcessReporter);
+        }
     }
 
     public void Reporter(DataExportationReporter processReporter)
