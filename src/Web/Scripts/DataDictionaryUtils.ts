@@ -80,15 +80,9 @@
         });
     }
 
-    static refreshAction(isPopup = false): void {
+    static refreshActionList(): void {
         SpinnerOverlay.show();
-        
-        window.parent.defaultModal.hide();
-        if (isPopup) {
-            window.parent.document.forms[0].submit();
-        } else {
-            document.forms[0].submit();
-        }
+        window.parent.document.forms[0].requestSubmit();
     }
 
     static postAction(url: string): void {

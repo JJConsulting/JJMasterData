@@ -11,8 +11,13 @@
         ActionSource.GridToolbar => "#divGridToolbar",
         ActionSource.FormToolbar => "#divFormToolbar",
         _ => "#divGrid"
-        };
+    };
 }
+
+<script>
+    const iconsModal = new Modal();
+    iconsModal.modalId = "action-icon-modal";
+</script>
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
@@ -24,7 +29,7 @@
         <label for="icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
         <a href="javascript: void(0);" 
            @BootstrapHelper.GetDataToggle("tooltip")
-           title="Search Icon" onclick="defaultModal.showUrl('Icons','@Url.Action("Index", "Icons", new {inputId = "icon"})');" 
+           title="Search Icon" onclick="iconsModal.showUrl({url:'@Url.Action("Index", "Icons", new {inputId = "icon"})'},'@StringLocalizer["Icons"]');" 
            style="text-decoration:none">
             <span class="fa fa-search "></span>
         </a>

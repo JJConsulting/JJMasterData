@@ -283,16 +283,9 @@ class DataDictionaryUtils {
             }
         });
     }
-    static refreshAction(isPopup = false) {
+    static refreshActionList() {
         SpinnerOverlay.show();
-        if (isPopup) {
-            window.parent.defaultModal.hide();
-            window.parent.document.forms[0].submit();
-        }
-        else {
-            window.parent.defaultModal.hide();
-            document.forms[0].submit();
-        }
+        window.parent.document.forms[0].requestSubmit();
     }
     static postAction(url) {
         SpinnerOverlay.show();

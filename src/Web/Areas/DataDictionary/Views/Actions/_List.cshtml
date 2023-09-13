@@ -4,6 +4,7 @@
 @using JJMasterData.Core.DataDictionary.Actions.UserCreated
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using JJMasterData.Core.Web
+@using System.Reflection
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @model ActionsListDetailsViewModel
@@ -28,10 +29,10 @@
                 <span class="fa fa-plus-circle"></span>&nbsp;@StringLocalizer["New Action"]&nbsp; <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(UrlRedirectAction))">@StringLocalizer["Url Redirect"]</a></li>
-                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(InternalAction))">@StringLocalizer["Internal Redirect"]</a></li>
-                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(SqlCommandAction))">@StringLocalizer["Sql Command"]</a></li>
-                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetCmdAdd(typeof(ScriptAction))">@StringLocalizer["JavaScript Script"]</a></li>
+                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetAddScript(typeof(UrlRedirectAction))">@StringLocalizer["Url Redirect"]</a></li>
+                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetAddScript(typeof(InternalAction))">@StringLocalizer["Internal Redirect"]</a></li>
+                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetAddScript(typeof(SqlCommandAction))">@StringLocalizer["Sql Command"]</a></li>
+                <li class="dropdown-item"><a class="dropdown-link" href="javascript: void(0);" onclick="@GetAddScript(typeof(ScriptAction))">@StringLocalizer["JavaScript Script"]</a></li>
             </ul>
         </div>
     </div>
@@ -49,7 +50,7 @@
                             &nbsp;
                         </div>
                         <div class=@BootstrapHelper.PullRight>
-                            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="@GetCmdEdit(action)">
+                            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="@GetEditScript(action)">
                                 <span class="fa fa-pencil"></span>
                             </button>
                             &nbsp;
@@ -57,7 +58,7 @@
                             @if (action.IsUserCreated)
                             {
                                 <button class="@BootstrapHelper.DefaultButton btn-small" style="margin-left:14px;" type="button"
-                                        onclick="@GetCmdDelete(action)">
+                                        onclick="@GetDeleteScript(action)">
                                     <span class="fa fa-trash"></span>
                                 </button>
                             }
@@ -84,33 +85,33 @@
 
 @functions {
 
-    public string GetCmdEdit(BasicAction action)
+    private string GetEditScript(BasicAction action)
     {
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Edit", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
         script.Append($"','{Model.Context.ToString().FirstCharToUpper()}");
-        script.Append(" Action");
-        script.Append("');");
+        script.Append($" Action', {(int)ModalSize.ExtraLarge}");
+        script.Append(");");
 
         return script.ToString();
     }
 
-    public string GetCmdAdd(Type actionType)
+    private string GetAddScript(MemberInfo actionType)
     {
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Add", "Actions",
             new { dictionaryName = Model.DictionaryName, actionName = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
         script.Append($"','{Model.Context.ToString().FirstCharToUpper()}");
-        script.Append(" Action");
-        script.Append("');");
+        script.Append($" Action',{(int)ModalSize.ExtraLarge}");
+        script.Append(");");
 
         return script.ToString();
     }
 
-    public string GetCmdDelete(BasicAction action)
+    private string GetDeleteScript(BasicAction action)
     {
         var script = new StringBuilder();
         script.Append("DataDictionaryUtils.deleteAction('");
