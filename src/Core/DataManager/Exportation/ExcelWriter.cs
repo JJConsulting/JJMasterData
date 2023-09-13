@@ -40,10 +40,15 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
     private IEntityRepository EntityRepository { get; }
     private IFieldFormattingService FieldFormattingService { get; }
 
-    public ExcelWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory,
-        ILoggerFactory loggerFactory, IEntityRepository entityRepository,
-        IFieldFormattingService fieldFormattingService) : base(expressionsService, stringLocalizer, options,
+    public ExcelWriter(
+        IExpressionsService expressionsService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IOptions<JJMasterDataCoreOptions> options, 
+        IControlFactory<JJTextFile> textFileFactory,
+        ILoggerFactory loggerFactory, 
+        IEntityRepository entityRepository,
+        IFieldFormattingService fieldFormattingService) : base(
+        expressionsService,stringLocalizer, options,
         textFileFactory, loggerFactory.CreateLogger<DataExportationWriterBase>())
     {
         EntityRepository = entityRepository;
@@ -177,7 +182,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                     value = value.Replace(",", "<br style=\"mso-data-placement:same-cell;\"/>");
             }
         }
-        
+
         if (OnRenderCell != null || OnRenderCellAsync != null)
         {
             var args = new GridCellEventArgs
@@ -192,7 +197,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
             {
                 await OnRenderCellAsync(this, args);
             }
-            
+
             value = args.HtmlResult;
         }
 

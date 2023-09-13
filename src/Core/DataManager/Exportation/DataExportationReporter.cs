@@ -32,6 +32,6 @@ public class DataExportationReporter : ProgressReporter
     private void UpdatePercentage()
     {
         if (TotalOfRecords > 0 && TotalProcessed > 0)
-            Percentage = (int)Math.Round((TotalProcessed / (double)TotalOfRecords) * 100);
+            Percentage = (int)Math.Round(TotalProcessed / (double)TotalOfRecords * 100);
     }
 }

@@ -30,12 +30,12 @@
 
     <br/>
     
-    <jj-collapse-panel  name="dataDictionary" icon="Book" title="@StringLocalizer["Data Dictionary"]" expanded-by-default="true">
-        <partial name="_DataDictionaryPanel" model="Model"/>
+    <jj-collapse-panel icon="Book" title="@StringLocalizer["Element"]" expanded-by-default="true">
+        <partial name="_ElementPanel" model="Model"/>
     </jj-collapse-panel>
 
-    <jj-collapse-panel  name="formPanel" icon="AlignLeft" title="@StringLocalizer["Form"]" expanded-by-default="true">
-        <partial name="_FormPanel" model="Model"/>
+    <jj-collapse-panel  icon="SolidTableList" title="@StringLocalizer["FormElement"]" expanded-by-default="true">
+        <partial name="_FormElementPanel" model="Model"/>
     </jj-collapse-panel>
 
     if (Model.FormEvent != null)
