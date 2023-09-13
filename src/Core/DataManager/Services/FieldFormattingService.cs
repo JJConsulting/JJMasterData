@@ -38,8 +38,9 @@ public class FieldFormattingService : IFieldFormattingService
         string stringValue = null;
         switch (field.Component)
         {
+            case FormComponent.Number:
             case FormComponent.Slider:
-                stringValue = GetSliderValue(field, value);
+                stringValue = GetNumericValueAsString(field, value);
                 break;
             case FormComponent.Lookup
                  when field.DataItem is { ReplaceTextOnGrid: true }:
@@ -63,24 +64,24 @@ public class FieldFormattingService : IFieldFormattingService
         return stringValue ?? string.Empty;
     }
 
-    private static string GetSliderValue(FormElementField field, dynamic value)
+    private static string GetNumericValueAsString(FormElementField field, object value)
     {
         string stringValue = null;
         if (field.DataType == FieldType.Float)
         {
             if (double.TryParse(value.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture,
-                    out double floatValue))
+                    out var floatValue))
                 stringValue = floatValue.ToString($"N{field.NumberOfDecimalPlaces}");
         }
         
         else if (field.DataType == FieldType.Int)
         {
-            if (int.TryParse(value.ToString(), out int intVal))
-                stringValue = intVal.ToString("N0");
+            if (int.TryParse(value.ToString(), out var intVal))
+                stringValue = intVal.ToString("0");
         }
         else
         {
-            throw new JJMasterDataException("Invalid FieldType for Slider component");
+            throw new JJMasterDataException("Invalid FieldType for numeric component");
         }
 
         return stringValue;
@@ -117,7 +118,7 @@ public class FieldFormattingService : IFieldFormattingService
                     case FieldType.Int when !field.IsPk:
                         {
                             if (int.TryParse(stringValue, out int intVal))
-                                stringValue = intVal.ToString("N0");
+                                stringValue = intVal.ToString();
                             break;
                         }
                 }
@@ -146,7 +147,7 @@ public class FieldFormattingService : IFieldFormattingService
                         {
                             var dateValue = DateTime.Parse(stringValue);
                             stringValue = dateValue == DateTime.MinValue
-                                ? ""
+                                ? string.Empty
                                 : dateValue.ToString(
                                     $"{DateTimeFormatInfo.CurrentInfo.ShortDatePattern} {DateTimeFormatInfo.CurrentInfo.ShortTimePattern}");
                             break;

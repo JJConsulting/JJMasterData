@@ -75,17 +75,11 @@ public class FormValuesService : IFormValuesService
                     break;
                 case FormComponent.Currency:
                 case FormComponent.Number:
-                    string context = CurrentContext.Request.QueryString["context"];
-                    if (value != null && ("panelReload".Equals(context) || "gridViewRow".Equals(context) ||
-                                          "htmlContent".Equals(context)))
-                    {
-                        if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
-                                out var numericValue))
-                            value = numericValue;
-                        else
-                            value = 0;
-                    }
-
+                    if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
+                            out var numericValue))
+                        value = numericValue;
+                    else
+                        value = 0;
                     break;
                 case FormComponent.CheckBox:
                     value ??= CurrentContext.Request.GetFormValue($"{fieldName}_hidden");
