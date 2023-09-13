@@ -173,7 +173,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
 
         if (field.Component == FormComponent.File)
         {
-            string link = GetLinkFile(field, row, value);
+            string link = GetFileLink(field, row, value);
             if (link != null)
                 value = $"<a href=\"{link}\">{value}</a>";
             else

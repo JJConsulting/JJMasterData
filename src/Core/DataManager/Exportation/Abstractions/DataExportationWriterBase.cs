@@ -24,6 +24,7 @@ using JJMasterData.Core.UI.Components.Exportation;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -223,7 +224,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
     public abstract Task GenerateDocument(Stream ms, CancellationToken token);
 
-    public string GetLinkFile(FormElementField field, Dictionary<string, object> row, string value)
+    public string GetFileLink(FormElementField field, Dictionary<string, object> row, string value)
     {
         if (!field.DataFile.ExportAsLink)
             return null;

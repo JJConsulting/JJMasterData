@@ -10,20 +10,29 @@ namespace JJMasterData.Core.Http.AspNetCore;
 public class HttpRequestWrapper : IHttpRequest
 {
     public IQueryString QueryString { get; }
-    private ConnectionInfo Connection { get; }
+    public string UserHostAddress { get; }
+    public string HttpMethod { get; }
+    public string UserAgent { get; }
+    public string AbsoluteUri { get; }
+    public string ApplicationPath { get; }
+    public bool IsPost { get; }
+    
     private HttpRequest Request { get; }
-    public string UserHostAddress => Connection.RemoteIpAddress?.ToString();
-    public string HttpMethod => Request.Method;
-    public string UserAgent => Request.Headers["User-Agent"];
-    public string AbsoluteUri => Request.GetDisplayUrl();
-    public string ApplicationPath => Request.PathBase;
 
     public HttpRequestWrapper(IHttpContextAccessor httpContextAccessor, IQueryString queryString)
     {
-        QueryString = queryString;
         var httpContext = httpContextAccessor.HttpContext;
+        var request = httpContext.Request;
+        var connection = httpContext.Connection;
+        
         Request = httpContext.Request;
-        Connection = httpContext.Connection;
+        QueryString = queryString;
+        UserHostAddress = connection.RemoteIpAddress?.ToString();
+        HttpMethod = request.Method;
+        UserAgent = request.Headers["User-Agent"];
+        AbsoluteUri = request.GetDisplayUrl();
+        ApplicationPath = request.PathBase;
+        IsPost = HttpMethod.Equals("POST");
     }
 
     public IFormFile GetFile(string file) => Request.Form.Files[file];
@@ -40,11 +49,8 @@ public class HttpRequestWrapper : IHttpRequest
         return null;
     }
 
-    public bool IsPost => HttpMethod.Equals("POST");
-
     private string GetValue(string key)
     {
-
         if (Request.Query.ContainsKey(key))
         {
             return Request.Query[key];
@@ -58,5 +64,6 @@ public class HttpRequestWrapper : IHttpRequest
         return null;
     }
 }
+
 
 #endif  

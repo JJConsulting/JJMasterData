@@ -39,15 +39,15 @@ public class DataExportationWriterFactory
         return ServiceProvider.GetRequiredService<ITextWriter>();
     }
 
-    public DataExportationWriterBase GetInstance(JJDataExportation exporter)
+    public DataExportationWriterBase GetInstance(JJDataExportation dataExportation)
     {
         DataExportationWriterBase writer;
-        switch (exporter.ExportOptions.FileExtension)
+        switch (dataExportation.ExportOptions.FileExtension)
         {
             case ExportFileExtension.CSV:
             case ExportFileExtension.TXT:
                 var textWriter = GetTextWriter();
-                textWriter.Delimiter = exporter.ExportOptions.Delimiter;
+                textWriter.Delimiter = dataExportation.ExportOptions.Delimiter;
                 textWriter.OnRenderCell += OnRenderCell;
                 textWriter.OnRenderCellAsync += OnRenderCellAsync;
                 
@@ -56,8 +56,8 @@ public class DataExportationWriterFactory
 
             case ExportFileExtension.XLS:
                 var excelWriter = GetExcelWriter();
-                excelWriter.ShowRowStriped = exporter.ShowRowStriped;
-                excelWriter.ShowBorder = exporter.ShowBorder;
+                excelWriter.ShowRowStriped = dataExportation.ShowRowStriped;
+                excelWriter.ShowBorder = dataExportation.ShowBorder;
                 excelWriter.OnRenderCell += OnRenderCell;
                 excelWriter.OnRenderCellAsync += OnRenderCellAsync;
                 
@@ -70,8 +70,8 @@ public class DataExportationWriterFactory
                 if (pdfWriter == null)
                     throw new NotImplementedException("Please implement IPdfWriter in your application services.");
 
-                pdfWriter.ShowRowStriped = exporter.ShowRowStriped;
-                pdfWriter.ShowBorder = exporter.ShowBorder;
+                pdfWriter.ShowRowStriped = dataExportation.ShowRowStriped;
+                pdfWriter.ShowBorder = dataExportation.ShowBorder;
                 pdfWriter.OnRenderCell += OnRenderCell;
                 pdfWriter.OnRenderCellAsync += OnRenderCellAsync;
                 
@@ -85,17 +85,17 @@ public class DataExportationWriterFactory
                 throw new NotImplementedException();
         }
 
-        ConfigureWriter(exporter, writer);
+        ConfigureWriter(dataExportation, writer);
 
         return writer;
     }
 
-    private static void ConfigureWriter(JJDataExportation exporter, DataExportationWriterBase writer)
+    private static void ConfigureWriter(JJDataExportation dataExportation, DataExportationWriterBase writer)
     {
-        writer.FormElement = exporter.FormElement;
-        writer.Configuration = exporter.ExportOptions;
-        writer.UserId = exporter.UserId;
-        writer.ProcessOptions = exporter.ProcessOptions;
+        writer.FormElement = dataExportation.FormElement;
+        writer.Configuration = dataExportation.ExportOptions;
+        writer.UserId = dataExportation.UserId;
+        writer.ProcessOptions = dataExportation.ProcessOptions;
     }
 
 

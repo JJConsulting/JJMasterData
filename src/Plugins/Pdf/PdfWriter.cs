@@ -244,7 +244,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
 
         if (field.Component == FormComponent.File)
         {
-            string url = GetLinkFile(field, row, value);
+            string url = GetFileLink(field, row, value);
 
             if (url != null)
             {

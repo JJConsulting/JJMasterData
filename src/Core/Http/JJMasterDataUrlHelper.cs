@@ -13,12 +13,12 @@ namespace JJMasterData.Core.Web;
 
 public class JJMasterDataUrlHelper 
 {
-    private IHttpContext HttpContext { get; }
+    private IHttpRequest HttpRequest { get; }
     public string? JJMasterDataUrl { get; }
-    public JJMasterDataUrlHelper(IHttpContext httpContext,IOptions<JJMasterDataCoreOptions> options)
+    public JJMasterDataUrlHelper(IHttpRequest httpRequest,IOptions<JJMasterDataCoreOptions> options)
     {
         JJMasterDataUrl = options.Value.JJMasterDataUrl;
-        HttpContext = httpContext;
+        HttpRequest = httpRequest;
     }
 
     public string GetUrl([AspMvcAction]string? action = null, [AspMvcController] string? controller = null,string? area = null, object? values = null)
@@ -28,7 +28,7 @@ public class JJMasterDataUrlHelper
         
         if (JJMasterDataUrl is null)
         {
-            var appPath = HttpContext.Request.ApplicationPath;
+            var appPath = HttpRequest.ApplicationPath;
 
             baseUrl = appPath.IsNullOrEmpty() ? "/" : appPath;
         }

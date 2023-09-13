@@ -135,6 +135,13 @@ public class JJFileDownloader : HtmlComponent
         return UrlHelper.GetUrl("Download", "File", "MasterData", new {filePath = encryptedFilePath});
     }
     
+    internal string GetDownloadUrl(JJMasterDataUrlHelper urlHelper,string filePath)
+    {
+        var encryptedFilePath = EncryptionService.EncryptStringWithUrlEscape(filePath);
+
+        return urlHelper.GetUrl("Download", "File", "MasterData", new {filePath = encryptedFilePath});
+    }
+    
     public RedirectComponentResult GetDirectDownloadFromUrl()
     {
         bool isExternalLink = false;
