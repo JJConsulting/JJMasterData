@@ -65,7 +65,7 @@ public class FormValuesService : IFormValuesService
                     }
                 case FormComponent.Lookup:
                     {
-                        value = LookupService.GetSelectedValue(field.Name);
+                        value = LookupService.GetSelectedValue(fieldName);
                         break;
                     }
                 case FormComponent.Slider:
