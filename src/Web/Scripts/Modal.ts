@@ -282,6 +282,12 @@ class Modal {
     async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null): Promise<any> {
         return await this.instance.showUrl(options,title,size);
     }
+
+    remove() {
+        this.instance.hide();
+        document.getElementById(this.instance.modalId).remove();
+    }
+    
     hide() {
         this.instance.hide();
     }

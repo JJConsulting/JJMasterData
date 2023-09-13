@@ -83,7 +83,6 @@ public static class ServiceCollectionExtensions
         {
             var wrapperOptions = wrapper.JJMasterDataCore;
             options.ExportationFolderPath = wrapperOptions.ExportationFolderPath;
-            options.BootstrapVersion = wrapperOptions.BootstrapVersion;
             options.AuditLogTableName = wrapperOptions.AuditLogTableName;
             options.DataDictionaryTableName = wrapperOptions.DataDictionaryTableName;
             options.JJMasterDataUrl = wrapperOptions.JJMasterDataUrl;

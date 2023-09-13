@@ -14,12 +14,6 @@ public class JJMasterDataCoreOptions : JJMasterDataCommonsOptions
     /// Default value: tb_masterdata
     /// </summary>
     public string DataDictionaryTableName { get; set; } = "tb_masterdata";
-    
-    /// <summary>
-    /// Default value: 5 <br></br>
-    /// </summary>
-    [Range(3, 5)]
-    public int BootstrapVersion { get; set; } = 5;
 
     /// <summary>
     /// Default value: tb_masterdata_auditlog

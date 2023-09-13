@@ -87,7 +87,7 @@ class ActionManager {
                 listenAllEvents("#" + modal.modalId + " ");
                 if (typeof data === "object") {
                     if (data.closeModal) {
-                        modal.hide();
+                        modal.remove();
                         GridViewHelper.refresh(componentName, gridRouteContext);
                     }
                 }
@@ -1568,6 +1568,10 @@ class Modal {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.instance.showUrl(options, title, size);
         });
+    }
+    remove() {
+        this.instance.hide();
+        document.getElementById(this.instance.modalId).remove();
     }
     hide() {
         this.instance.hide();

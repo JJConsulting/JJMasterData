@@ -105,7 +105,7 @@ class ActionManager {
                 
                 if (typeof data === "object") {
                     if (data.closeModal) {
-                        modal.hide();
+                        modal.remove();
                         GridViewHelper.refresh(componentName,gridRouteContext)
                     }
                 }
