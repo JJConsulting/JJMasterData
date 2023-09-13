@@ -6,11 +6,12 @@ class DataExportationHelper {
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","checkProgress")
+        const url = urlBuilder.build();
         
         var isCompleted : boolean = false;
 
         while(!isCompleted){
-            isCompleted = await DataExportationHelper.checkProgress(urlBuilder.build(), componentName);
+            isCompleted = await DataExportationHelper.checkProgress(url, componentName);
             await sleep(3000);
         }
     }
@@ -86,7 +87,12 @@ class DataExportationHelper {
             }
         } catch (e) {
             showSpinnerOnPost = true;
-            document.querySelector<HTMLElement>("#data-exportation-spinner" + componentName).style.display = "none";
+            const spinnerElement = document.querySelector<HTMLElement>("#data-exportation-spinner-" + componentName);
+            
+            if(spinnerElement){
+                spinnerElement.style.display = "none";
+            }
+            
             document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = e.message;
 
             return false;
@@ -119,7 +125,7 @@ class DataExportationHelper {
             , position: "absolute" // Element positioning
 
         }
-        const target = document.getElementById('data-exportation-spinner');
+        const target = document.getElementById('data-exportation-spinner-');
         // @ts-ignore
         var spinner = new Spinner(options).spin(target);
     }

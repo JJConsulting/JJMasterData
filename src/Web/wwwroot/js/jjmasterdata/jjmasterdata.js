@@ -323,9 +323,10 @@ class DataExportationHelper {
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
+            const url = urlBuilder.build();
             var isCompleted = false;
             while (!isCompleted) {
-                isCompleted = yield DataExportationHelper.checkProgress(urlBuilder.build(), componentName);
+                isCompleted = yield DataExportationHelper.checkProgress(url, componentName);
                 yield sleep(3000);
             }
         });
@@ -393,7 +394,10 @@ class DataExportationHelper {
             }
             catch (e) {
                 showSpinnerOnPost = true;
-                document.querySelector("#data-exportation-spinner" + componentName).style.display = "none";
+                const spinnerElement = document.querySelector("#data-exportation-spinner-" + componentName);
+                if (spinnerElement) {
+                    spinnerElement.style.display = "none";
+                }
                 document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = e.message;
                 return false;
             }
@@ -422,7 +426,7 @@ class DataExportationHelper {
             hwaccel: false,
             position: "absolute"
         };
-        const target = document.getElementById('data-exportation-spinner');
+        const target = document.getElementById('data-exportation-spinner-');
         var spinner = new Spinner(options).spin(target);
     }
     static setSettingsHTML(componentName, html) {
@@ -1108,7 +1112,6 @@ const listenAllEvents = (selectorPrefix = String()) => {
         ajaxStop: function () { SpinnerOverlay.hide(); }
     });
     document.querySelector("form").addEventListener("submit", function (event) {
-        console.info("<h1>bubbles</h1>");
         let isValid;
         if (typeof this.reportValidity === "function") {
             isValid = this.reportValidity();

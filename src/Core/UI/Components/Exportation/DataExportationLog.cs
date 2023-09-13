@@ -68,7 +68,7 @@ internal class DataExportationLog
             .WithAttribute("style", "text-align:center;")
             .Append(HtmlTag.Div, div =>
             {
-                div.WithAttribute("id", "data-exportation-spinner");
+                div.WithAttribute("id", "data-exportation-spinner-");
                 div.WithAttribute("style", "position: relative; height: 80px");
             });
     }
