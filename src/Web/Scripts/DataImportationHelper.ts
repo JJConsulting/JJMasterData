@@ -38,7 +38,7 @@
     }
 
     private static checkProgress(componentName, importationRouteContext, gridRouteContext) {
-        showWaitOnPost = false;
+        showSpinnerOnPost = false;
 
 
         let urlBuilder = new UrlBuilder()
@@ -186,7 +186,7 @@
     }
 
     static stop(componentName, routeContext, stopLabel) {
-        showWaitOnPost = false;
+        showSpinnerOnPost = false;
 
         let urlBuilder = new UrlBuilder()
         urlBuilder.addQueryParameter("routeContext", routeContext)

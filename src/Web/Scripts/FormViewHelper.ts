@@ -22,7 +22,7 @@ class FormViewHelper {
         if (currentActionInput && selectActionValuesInput && form) {
             currentActionInput.value = 'ELEMENTSEL';
             selectActionValuesInput.value = encryptedActionMap;
-            form.dispatchEvent(new Event('submit'));
+            form.requestSubmit();
         }
     }
 }

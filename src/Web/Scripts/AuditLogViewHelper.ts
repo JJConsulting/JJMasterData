@@ -9,7 +9,7 @@ class AuditLogViewHelper {
         }
 
         if (form) {
-            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: false    }));
+            form.requestSubmit();
         }
     }
 

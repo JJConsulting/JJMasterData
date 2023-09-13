@@ -116,7 +116,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["List Type"]">@StringLocalizer["ListType"]</label>
-        <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
+        <select asp-for="DataItem!.DataItemType" onchange="this.form.requestSubmit();" class="form-control form-select">
             @if (Model.DataItem.DataItemType == DataItemType.Manual)
             {
                 <option selected="selected" value="@((int)DataItemType.Manual)">@DataItemType.Manual.ToString()</option>
@@ -161,7 +161,7 @@
             new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
             new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
         },
-            new { @class = "form-control form-select", onchange = "this.form.submit();" })
+            new { @class = "form-control form-select", onchange = "this.form.requestSubmit();" })
     </div>
     
     @if (Model.Component is FormComponent.ComboBox)

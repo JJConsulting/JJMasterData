@@ -77,7 +77,7 @@
                     {
                         @Html.DropDownListFor(model => model.ElementRedirect.ElementNameRedirect,
                             new SelectList(ViewBag.ElementNameList, "Key", "Value"),
-                            new { @class = "form-control form-select", onchange = "this.form.submit();" })
+                            new { @class = "form-control form-select", onchange = "this.form.requestSubmit();" })
                     }
                     else
                     {

@@ -24,26 +24,26 @@
                 return null;
             }
 
-            if (showWaitOnPost) {
+            if (showSpinnerOnPost) {
                 SpinnerOverlay.show();
             }
         },
         ajaxStop: function () { SpinnerOverlay.hide(); }
     });
+    
+    document.querySelector("form").addEventListener("submit", function (event) {
+        let isValid: boolean;
 
-    $("form").on("submit",function () {
-
-        let isValid : boolean;
-
-        try {
-            isValid = $("form").valid();
-        }
-        catch {
+        if (typeof this.reportValidity === "function") {
+            isValid = this.reportValidity();
+        } else {
             isValid = true;
         }
 
-        if (isValid && showWaitOnPost) {
-            setTimeout(function () { SpinnerOverlay.show(); }, 1);
+        if (isValid && showSpinnerOnPost) {
+            setTimeout(function () {
+                SpinnerOverlay.show();
+            }, 1);
         }
     });
 };   

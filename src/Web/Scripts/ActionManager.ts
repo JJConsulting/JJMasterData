@@ -111,7 +111,7 @@ class ActionManager {
                 }
             })
         } else {
-            form.submit();
+            form.requestSubmit();
         }
     }
     

@@ -13,7 +13,7 @@
             
             this.clearCurrentFormAction(componentName);
             
-            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+            form.requestSubmit();
         }
     }
 

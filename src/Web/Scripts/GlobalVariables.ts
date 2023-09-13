@@ -1,4 +1,4 @@
-﻿var showWaitOnPost = true;
+﻿var showSpinnerOnPost = true;
 
 var bootstrapVersion = (() => {
     const htmlElement = document.querySelector('html');

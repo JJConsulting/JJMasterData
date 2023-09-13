@@ -121,7 +121,7 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label " for="Component" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Component Type"]">@StringLocalizer["Component"]</label>
-                    <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="Html.GetEnumSelectList<FormComponent>()"></select>
+                    <select asp-for="Component" class="form-control form-select" onchange="this.form.requestSubmit();" asp-items="Html.GetEnumSelectList<FormComponent>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " for="AutoPostBack" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["When changing the content, it reloads all form fields"]">@StringLocalizer["AutoPostBack"]</label>

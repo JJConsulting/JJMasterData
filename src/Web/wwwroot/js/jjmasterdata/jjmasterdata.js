@@ -94,7 +94,7 @@ class ActionManager {
             });
         }
         else {
-            form.submit();
+            form.requestSubmit();
         }
     }
     static executeAction(actionDataJson) {
@@ -115,7 +115,7 @@ class AuditLogViewHelper {
             auditLogIdInput.value = id;
         }
         if (form) {
-            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: false }));
+            form.requestSubmit();
         }
     }
     static loadAuditLog(componentName, logId, routeContext) {
@@ -370,12 +370,12 @@ class DataExportationHelper {
     }
     static checkProgress(url, componentName) {
         return __awaiter(this, void 0, void 0, function* () {
-            showWaitOnPost = false;
+            showSpinnerOnPost = false;
             try {
                 const response = yield fetch(url);
                 const data = yield response.json();
                 if (data.FinishedMessage) {
-                    showWaitOnPost = true;
+                    showSpinnerOnPost = true;
                     document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
                     const linkFile = document.querySelector("#export_link_" + componentName);
                     if (linkFile)
@@ -392,7 +392,7 @@ class DataExportationHelper {
                 }
             }
             catch (e) {
-                showWaitOnPost = true;
+                showSpinnerOnPost = true;
                 document.querySelector("#data-exportation-spinner" + componentName).style.display = "none";
                 document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = e.message;
                 return false;
@@ -447,7 +447,7 @@ class DataExportationHelper {
     static stopProcess(url, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
             document.querySelector("#divMsgProcess").innerHTML = stopMessage;
-            showWaitOnPost = false;
+            showSpinnerOnPost = false;
             yield fetch(url);
         });
     }
@@ -516,7 +516,7 @@ class DataImportationHelper {
         new Spinner(options).spin(target);
     }
     static checkProgress(componentName, importationRouteContext, gridRouteContext) {
-        showWaitOnPost = false;
+        showSpinnerOnPost = false;
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", importationRouteContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
@@ -646,7 +646,7 @@ class DataImportationHelper {
         });
     }
     static stop(componentName, routeContext, stopLabel) {
-        showWaitOnPost = false;
+        showSpinnerOnPost = false;
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
@@ -780,12 +780,12 @@ class FormViewHelper {
         if (currentActionInput && selectActionValuesInput && form) {
             currentActionInput.value = 'ELEMENTSEL';
             selectActionValuesInput.value = encryptedActionMap;
-            form.dispatchEvent(new Event('submit'));
+            form.requestSubmit();
         }
     }
 }
 var _a, _b;
-var showWaitOnPost = true;
+var showSpinnerOnPost = true;
 var bootstrapVersion = (() => {
     const htmlElement = document.querySelector('html');
     const versionAttribute = htmlElement === null || htmlElement === void 0 ? void 0 : htmlElement.getAttribute('data-bs-version');
@@ -893,7 +893,7 @@ class GridViewHelper {
             gridViewPageInput.value = "1";
             gridViewRowInput.value = "";
             this.clearCurrentFormAction(componentName);
-            form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+            form.requestSubmit();
         }
     }
     static closeSettingsModal(componentName) {
@@ -1101,22 +1101,25 @@ const listenAllEvents = (selectorPrefix = String()) => {
                 settings.url.indexOf("context=searchBox") !== -1) {
                 return null;
             }
-            if (showWaitOnPost) {
+            if (showSpinnerOnPost) {
                 SpinnerOverlay.show();
             }
         },
         ajaxStop: function () { SpinnerOverlay.hide(); }
     });
-    $("form").on("submit", function () {
+    document.querySelector("form").addEventListener("submit", function (event) {
+        console.info("<h1>bubbles</h1>");
         let isValid;
-        try {
-            isValid = $("form").valid();
+        if (typeof this.reportValidity === "function") {
+            isValid = this.reportValidity();
         }
-        catch (_a) {
+        else {
             isValid = true;
         }
-        if (isValid && showWaitOnPost) {
-            setTimeout(function () { SpinnerOverlay.show(); }, 1);
+        if (isValid && showSpinnerOnPost) {
+            setTimeout(function () {
+                SpinnerOverlay.show();
+            }, 1);
         }
     });
 };

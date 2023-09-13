@@ -62,14 +62,14 @@ class DataExportationHelper {
     }
     
     static async checkProgress(url, componentName) {
-        showWaitOnPost = false;
+        showSpinnerOnPost = false;
 
         try {
             const response = await fetch(url);
             const data = await response.json();
 
             if (data.FinishedMessage) {
-                showWaitOnPost = true;
+                showSpinnerOnPost = true;
                 document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = data.FinishedMessage;
                 const linkFile = document.querySelector<HTMLLinkElement>("#export_link_" + componentName);
                 if (linkFile)
@@ -85,7 +85,7 @@ class DataExportationHelper {
                 return false;
             }
         } catch (e) {
-            showWaitOnPost = true;
+            showSpinnerOnPost = true;
             document.querySelector<HTMLElement>("#data-exportation-spinner" + componentName).style.display = "none";
             document.querySelector("#data-exportation-modal-" + componentName + " .modal-body").innerHTML = e.message;
 
@@ -147,7 +147,7 @@ class DataExportationHelper {
     
     static async stopProcess(url: string, stopMessage: string) {
         document.querySelector<HTMLElement>("#divMsgProcess").innerHTML = stopMessage;
-        showWaitOnPost = false;
+        showSpinnerOnPost = false;
         await fetch(url);
     }
 
