@@ -352,3 +352,6 @@ appsettings.json
 *_applog.txt
 *.DS_Store
 jjmasterdata.js.map
+
+# Ignore the default exportation path
+JJExportationFiles/
