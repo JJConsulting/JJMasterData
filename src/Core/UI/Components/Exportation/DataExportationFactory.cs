@@ -29,7 +29,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
     private IExpressionsService ExpressionsService { get; }
     private IFieldsService FieldsService { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
-    private IBackgroundTask BackgroundTask { get; }
+    private IBackgroundTaskManager BackgroundTaskManager { get; }
     private IHttpContext HttpContext { get; }
     private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
     private DataExportationWriterFactory DataExportationWriterFactory { get; }
@@ -42,7 +42,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         IExpressionsService expressionsService,
         IFieldsService fieldsService,
         IOptions<JJMasterDataCoreOptions> options,
-        IBackgroundTask backgroundTask,
+        IBackgroundTaskManager backgroundTaskManager,
         IHttpContext httpContext,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory,
@@ -59,7 +59,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         ExpressionsService = expressionsService;
         FieldsService = fieldsService;
         Options = options;
-        BackgroundTask = backgroundTask;
+        BackgroundTaskManager = backgroundTaskManager;
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
@@ -75,8 +75,19 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
 
     public JJDataExportation Create(FormElement formElement)
     {
-        return new JJDataExportation(formElement, EntityRepository, ExpressionsService, FieldsService, 
-            Options, BackgroundTask, StringLocalizer, FileDownloaderFactory,LoggerFactory, HttpContext, 
-            UrlHelper, EncryptionService,DataExportationWriterFactory);
+        return new JJDataExportation(
+            formElement,
+            EntityRepository, 
+            ExpressionsService,
+            FieldsService, 
+            Options, 
+            BackgroundTaskManager,
+            StringLocalizer, 
+            FileDownloaderFactory,
+            LoggerFactory, 
+            HttpContext, 
+            UrlHelper,
+            EncryptionService,
+            DataExportationWriterFactory);
     }
 }

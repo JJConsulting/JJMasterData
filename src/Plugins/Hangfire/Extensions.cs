@@ -5,7 +5,7 @@ public static class Extensions
 {
     public static JJMasterDataServiceBuilder WithHangfire(this JJMasterDataServiceBuilder builder)
     {
-        builder.WithBackgroundTask<BackgroundTask>();
+        builder.WithBackgroundTask<BackgroundTaskManager>();
         return builder;
     }
 }

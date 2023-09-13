@@ -54,14 +54,14 @@ public class JJMasterDataServiceBuilder
         Services.AddTransient<IEncryptionAlgorithm, AesEncryptionAlgorithm>();
         Services.AddTransient<IEncryptionService,EncryptionService>();
 
-        Services.AddSingleton<IBackgroundTask, BackgroundTask>();
+        Services.AddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
 
         return this;
     }
 
-    public JJMasterDataServiceBuilder WithBackgroundTask<T>() where T : class, IBackgroundTask
+    public JJMasterDataServiceBuilder WithBackgroundTask<T>() where T : class, IBackgroundTaskManager
     {
-        Services.Replace(ServiceDescriptor.Transient<IBackgroundTask, T>());
+        Services.Replace(ServiceDescriptor.Transient<IBackgroundTaskManager, T>());
         return this;
     }
 

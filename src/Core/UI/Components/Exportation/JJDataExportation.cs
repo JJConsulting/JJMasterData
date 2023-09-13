@@ -87,7 +87,7 @@ public class JJDataExportation : ProcessComponent
         IExpressionsService expressionsService,
         IFieldsService fieldsService,
         IOptions<JJMasterDataCoreOptions> masterDataOptions,
-        IBackgroundTask backgroundTask, 
+        IBackgroundTaskManager backgroundTaskManager, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory<JJFileDownloader> fileDownloaderFactory,
         ILoggerFactory loggerFactory,
@@ -95,7 +95,7 @@ public class JJDataExportation : ProcessComponent
         JJMasterDataUrlHelper urlHelper, 
         IEncryptionService encryptionService, 
         DataExportationWriterFactory dataExportationWriterFactory) : 
-        base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
+        base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
         _urlHelper = urlHelper;
         _encryptionService = encryptionService;
@@ -250,7 +250,7 @@ public class JJDataExportation : ProcessComponent
 
         exporter.DataSource = result.Data;
         exporter.TotalOfRecords = result.TotalOfRecords;
-        BackgroundTask.Run(ProcessKey, exporter);
+        BackgroundTaskManager.Run(ProcessKey, exporter);
     }
 
     internal void ExportFileInBackground(IDictionary<string, object> filter, OrderByData orderByData)
@@ -260,13 +260,13 @@ public class JJDataExportation : ProcessComponent
         exporter.CurrentFilter = filter;
         exporter.CurrentOrder = orderByData;
 
-        BackgroundTask.Run(ProcessKey, exporter);
+        BackgroundTaskManager.Run(ProcessKey, exporter);
     }
 
     internal DataExportationProgressDto GetCurrentProgress()
     {
-        bool isRunning = BackgroundTask.IsRunning(ProcessKey);
-        var reporter = BackgroundTask.GetProgress<DataExportationReporter>(ProcessKey);
+        bool isRunning = BackgroundTaskManager.IsRunning(ProcessKey);
+        var reporter = BackgroundTaskManager.GetProgress<DataExportationReporter>(ProcessKey);
         var dto = new DataExportationProgressDto();
         if (reporter != null)
         {

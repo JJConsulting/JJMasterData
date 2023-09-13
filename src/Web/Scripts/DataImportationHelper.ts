@@ -57,9 +57,9 @@
         })
             .then(response => response.json())
             .then(result => {
-                const divMsgProcess = document.querySelector<HTMLElement>("#divMsgProcess");
-                if (divMsgProcess) {
-                    divMsgProcess.style.display = "";
+                const processMessageDiv = document.querySelector<HTMLElement>("#process-status");
+                if (processMessageDiv) {
+                    processMessageDiv.style.display = "";
                 }
 
                 const progressBar = document.querySelector<HTMLElement>(".progress-bar");
@@ -68,14 +68,14 @@
                     progressBar.textContent = result.PercentProcess + "%";
                 }
 
-                const lblResumeLog = document.querySelector<HTMLElement>("#lblResumeLog");
-                if (lblResumeLog) {
-                    lblResumeLog.textContent = result.Message;
+                const processMessage = document.querySelector<HTMLElement>("#process-message");
+                if (processMessage) {
+                    processMessage.textContent = result.Message;
                 }
 
-                const lblStartDate = document.querySelector<HTMLElement>("#start-date-label");
-                if (lblStartDate) {
-                    lblStartDate.textContent = result.StartDate;
+                const startDateLabel = document.querySelector<HTMLElement>("#start-date-label");
+                if (startDateLabel) {
+                    startDateLabel.textContent = result.StartDate;
                 }
                 if (result.Insert > 0) {
                     document.querySelector<HTMLElement>("#lblInsert").style.display = "";

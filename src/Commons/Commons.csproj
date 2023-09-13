@@ -42,6 +42,8 @@
 	  <Compile Update="Data\DataAccessGenerics.cs">
 	    <DependentUpon>DataAccess.cs</DependentUpon>
 	  </Compile>
+	  <Compile Remove="Tasks\BackgroundTaskScheduler.cs" />
+	  <Compile Remove="Tasks\BackgroundTaskList.cs" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Security\" />

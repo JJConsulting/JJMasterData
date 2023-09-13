@@ -77,11 +77,27 @@ class DataExportationHelper {
                     linkFile.click();
                 return true;
             } else {
-                document.querySelector<HTMLElement>("#divMsgProcess").style.display = "";
-                document.querySelector<HTMLElement>(".progress-bar").style.width = data.PercentProcess + "%";
-                document.querySelector(".progress-bar").textContent = data.PercentProcess + "%";
-                document.querySelector("#start-date-label").textContent = data.StartDate;
-                document.querySelector("#lblResumeLog").textContent = data.Message;
+                const processStatusElement = document.querySelector<HTMLElement>("#process-status");
+                const progressBarElement = document.querySelector<HTMLElement>(".progress-bar");
+                const startDateLabelElement = document.querySelector("#start-date-label");
+                const processMessageElement = document.querySelector("#process-message");
+
+                if (processStatusElement) {
+                    processStatusElement.style.display = "";
+                }
+
+                if (progressBarElement) {
+                    progressBarElement.style.width = data.PercentProcess + "%";
+                    progressBarElement.textContent = data.PercentProcess + "%";
+                }
+
+                if (startDateLabelElement) {
+                    startDateLabelElement.textContent = data.StartDate;
+                }
+
+                if (processMessageElement) {
+                    processMessageElement.textContent = data.Message;
+                }
 
                 return false;
             }
@@ -152,7 +168,7 @@ class DataExportationHelper {
     }
     
     static async stopProcess(url: string, stopMessage: string) {
-        document.querySelector<HTMLElement>("#divMsgProcess").innerHTML = stopMessage;
+        document.querySelector<HTMLElement>("#process-status").innerHTML = stopMessage;
         showSpinnerOnPost = false;
         await fetch(url);
     }

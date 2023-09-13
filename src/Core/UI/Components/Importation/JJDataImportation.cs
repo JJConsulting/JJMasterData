@@ -94,14 +94,14 @@ public class JJDataImportation : ProcessComponent
         IExpressionsService expressionsService,
         IFormService formService,
         IFieldsService fieldsService,
-        IBackgroundTask backgroundTask,
+        IBackgroundTaskManager backgroundTaskManager,
         IHttpContext currentContext,
         IComponentFactory componentFactory,
         DataImportationWorkerFactory dataImportationWorkerFactory,
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer) 
-        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTask, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService, stringLocalizer)
+        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService, stringLocalizer)
     {
         CurrentContext = currentContext;
         DataImportationWorkerFactory = dataImportationWorkerFactory;
@@ -198,7 +198,7 @@ public class JJDataImportation : ProcessComponent
             .Append(HtmlTag.Br).Append(HtmlTag.Br)
             .Append(HtmlTag.Div, msg =>
             {
-                msg.WithAttribute("id", "divMsgProcess")
+                msg.WithAttribute("id", "process-status")
                    .WithAttribute("style", "display:none")
                    .Append(HtmlTag.Div, status =>
                    {
@@ -206,7 +206,7 @@ public class JJDataImportation : ProcessComponent
                    })
                    .Append(HtmlTag.Span, resume =>
                    {
-                       resume.WithAttribute("id", "lblResumeLog");
+                       resume.WithAttribute("id", "process-message");
                    });
             })
             .Append(HtmlTag.Div, div =>
@@ -277,7 +277,7 @@ public class JJDataImportation : ProcessComponent
                 col.AppendComponent(BackButton);
                 col.AppendComponent(HelpButton);
 
-                var pipeline = BackgroundTask.GetProgress<IProgressReporter>(keyprocess);
+                var pipeline = BackgroundTaskManager.GetProgress<IProgressReporter>(keyprocess);
                 if (pipeline != null)
                 {
                     col.AppendComponent(LogButton);
@@ -300,10 +300,10 @@ public class JJDataImportation : ProcessComponent
             }
         }
 
-        if (!BackgroundTask.IsRunning(ProcessKey))
+        if (!BackgroundTaskManager.IsRunning(ProcessKey))
         {
             var worker = CreateImportationTextWorker(sb.ToString(), ';');
-            BackgroundTask.Run(ProcessKey, worker);
+            BackgroundTaskManager.Run(ProcessKey, worker);
             e.SuccessMessage = StringLocalizer["File successfuly imported."];
         }
     }
@@ -328,7 +328,7 @@ public class JJDataImportation : ProcessComponent
 
     internal DataImportationReporter GetCurrentReporter()
     {
-        var progress = BackgroundTask.GetProgress<DataImportationReporter>(ProcessKey);
+        var progress = BackgroundTaskManager.GetProgress<DataImportationReporter>(ProcessKey);
         if (progress != null)
             return progress;
         return new DataImportationReporter();
@@ -337,13 +337,13 @@ public class JJDataImportation : ProcessComponent
     internal void ImportInBackground(string pasteValue)
     {
         var worker = CreateImportationTextWorker(pasteValue, '\t');
-        BackgroundTask.Run(ProcessKey, worker);
+        BackgroundTaskManager.Run(ProcessKey, worker);
     }
 
     internal DataImportationDto GetCurrentProgress()
     {
-        bool isRunning = BackgroundTask.IsRunning(ProcessKey);
-        var reporter = BackgroundTask.GetProgress<DataImportationReporter>(ProcessKey);
+        bool isRunning = BackgroundTaskManager.IsRunning(ProcessKey);
+        var reporter = BackgroundTaskManager.GetProgress<DataImportationReporter>(ProcessKey);
         var dto = new DataImportationDto();
         if (reporter != null)
         {

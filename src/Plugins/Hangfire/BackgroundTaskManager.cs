@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Hangfire;
 using Hangfire.States;
-using Hangfire.Storage;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
@@ -11,30 +9,22 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Hangfire;
 
-public sealed class BackgroundTask : IBackgroundTask
+public sealed class BackgroundTaskManager : IBackgroundTaskManager
 {
+    private readonly List<TaskWrapper> _tasks = new();
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    
 
-    private static Lazy<List<TaskWrapper>> _taskList;
-    internal static List<TaskWrapper> TaskList
-    {
-        get
-        {
-            _taskList ??= new Lazy<List<TaskWrapper>>();
-
-            return _taskList.Value;
-        }
-    }
-
-    internal TaskWrapper GetTask(string key)
-    {
-        return TaskList.Find(x => x.Key.Equals(key));
-    }
-
-    public BackgroundTask(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public BackgroundTaskManager(IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
     }
+    
+    internal TaskWrapper GetTask(string key)
+    {
+        return _tasks.Find(x => x.Key.Equals(key));
+    }
+
     
     public void Run(string key, IBackgroundTaskWorker worker)
     {
@@ -49,13 +39,13 @@ public sealed class BackgroundTask : IBackgroundTask
 
         var olderPipeline = GetTask(key);
         if (olderPipeline != null)
-            TaskList.Remove(olderPipeline);
+            _tasks.Remove(olderPipeline);
 
         //Workaround: Interfaces are not a good idea with Hangfire.
         var taskTrigger = new TaskTrigger(this, StringLocalizer);
         taskWrapper.JobId = taskTrigger.RunInBackground(key, worker);
 
-        TaskList.Add(taskWrapper);
+        _tasks.Add(taskWrapper);
     }
 
     public bool IsRunning(string key)
@@ -82,7 +72,7 @@ public sealed class BackgroundTask : IBackgroundTask
 
     public T GetProgress<T>(string key) where T : IProgressReporter
     {
-        TaskWrapper task = GetTask(key);
+        var task = GetTask(key);
         if (task != null)
             return (T)task.ProgressResult;
 
@@ -91,7 +81,7 @@ public sealed class BackgroundTask : IBackgroundTask
 
     internal void SetProgress(string key, IProgressReporter progress)
     {
-        var task = TaskList.Find(x => x.Key.Equals(key));
+        var task = _tasks.Find(x => x.Key.Equals(key));
         if (task != null)
             task.ProgressResult = progress;
     }

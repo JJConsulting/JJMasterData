@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
@@ -7,22 +6,13 @@ using JJMasterData.Commons.Tasks.Progress;
 
 namespace JJMasterData.Commons.Tasks;
 
-internal sealed class BackgroundTask : IBackgroundTask
+internal sealed class BackgroundTaskManager : IBackgroundTaskManager
 {
-    private static Lazy<List<TaskWrapper>> _taskList;
-    internal static List<TaskWrapper> TaskList
-    {
-        get
-        {
-            _taskList ??= new Lazy<List<TaskWrapper>>();
-
-            return _taskList.Value;
-        }
-    }
+    private readonly List<TaskWrapper> _tasks = new();
 
     private TaskWrapper GetTask(string key)
     {
-        return TaskList.Find(x => x.Key.Equals(key));
+        return _tasks.Find(x => x.Key.Equals(key));
     }
 
     public void Run(string key, IBackgroundTaskWorker worker)
@@ -37,24 +27,23 @@ internal sealed class BackgroundTask : IBackgroundTask
             Key = key,
             CancellationSource = cancellationSource
         };
+        
+        worker.OnProgressChanged += (_, e) => taskWrapper.ProgressResult = e;
 
-        taskWrapper.Task = new Task(() => {
-            worker.OnProgressChanged += (_, e) => { taskWrapper.ProgressResult = e; };
-            worker.RunWorkerAsync(cancellationSource.Token).Wait(cancellationSource.Token);
-        });
+        taskWrapper.Task = new Task(() => worker.RunWorkerAsync(cancellationSource.Token));
 
-        var olderPipeline = GetTask(key);
-        if (olderPipeline != null)
-            TaskList.Remove(olderPipeline);
+        var olderTask = GetTask(key);
+        if (olderTask != null)
+            _tasks.Remove(olderTask);
 
-        TaskList.Add(taskWrapper);
+        _tasks.Add(taskWrapper);
 
         taskWrapper.Task.Start();
     }
 
     public bool IsRunning(string key)
     {
-        TaskWrapper taskWrapper = GetTask(key);
+        var taskWrapper = GetTask(key);
         if (taskWrapper == null)
             return false;
 
@@ -64,7 +53,7 @@ internal sealed class BackgroundTask : IBackgroundTask
 
     public void Abort(string key)
     {
-        TaskWrapper taskWrapper = GetTask(key);
+        var taskWrapper = GetTask(key);
         
         taskWrapper?.CancellationSource.Cancel();
     }

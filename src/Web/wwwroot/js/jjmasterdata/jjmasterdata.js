@@ -384,11 +384,23 @@ class DataExportationHelper {
                     return true;
                 }
                 else {
-                    document.querySelector("#divMsgProcess").style.display = "";
-                    document.querySelector(".progress-bar").style.width = data.PercentProcess + "%";
-                    document.querySelector(".progress-bar").textContent = data.PercentProcess + "%";
-                    document.querySelector("#start-date-label").textContent = data.StartDate;
-                    document.querySelector("#lblResumeLog").textContent = data.Message;
+                    const processStatusElement = document.querySelector("#process-status");
+                    const progressBarElement = document.querySelector(".progress-bar");
+                    const startDateLabelElement = document.querySelector("#start-date-label");
+                    const processMessageElement = document.querySelector("#process-message");
+                    if (processStatusElement) {
+                        processStatusElement.style.display = "";
+                    }
+                    if (progressBarElement) {
+                        progressBarElement.style.width = data.PercentProcess + "%";
+                        progressBarElement.textContent = data.PercentProcess + "%";
+                    }
+                    if (startDateLabelElement) {
+                        startDateLabelElement.textContent = data.StartDate;
+                    }
+                    if (processMessageElement) {
+                        processMessageElement.textContent = data.Message;
+                    }
                     return false;
                 }
             }
@@ -450,7 +462,7 @@ class DataExportationHelper {
     }
     static stopProcess(url, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
-            document.querySelector("#divMsgProcess").innerHTML = stopMessage;
+            document.querySelector("#process-status").innerHTML = stopMessage;
             showSpinnerOnPost = false;
             yield fetch(url);
         });
@@ -535,22 +547,22 @@ class DataImportationHelper {
         })
             .then(response => response.json())
             .then(result => {
-            const divMsgProcess = document.querySelector("#divMsgProcess");
-            if (divMsgProcess) {
-                divMsgProcess.style.display = "";
+            const processMessageDiv = document.querySelector("#process-status");
+            if (processMessageDiv) {
+                processMessageDiv.style.display = "";
             }
             const progressBar = document.querySelector(".progress-bar");
             if (progressBar) {
                 progressBar.style.width = result.PercentProcess + "%";
                 progressBar.textContent = result.PercentProcess + "%";
             }
-            const lblResumeLog = document.querySelector("#lblResumeLog");
-            if (lblResumeLog) {
-                lblResumeLog.textContent = result.Message;
+            const processMessage = document.querySelector("#process-message");
+            if (processMessage) {
+                processMessage.textContent = result.Message;
             }
-            const lblStartDate = document.querySelector("#start-date-label");
-            if (lblStartDate) {
-                lblStartDate.textContent = result.StartDate;
+            const startDateLabel = document.querySelector("#start-date-label");
+            if (startDateLabel) {
+                startDateLabel.textContent = result.StartDate;
             }
             if (result.Insert > 0) {
                 document.querySelector("#lblInsert").style.display = "";

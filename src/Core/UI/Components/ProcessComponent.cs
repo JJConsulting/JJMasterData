@@ -58,7 +58,7 @@ public abstract class ProcessComponent : AsyncComponent
     public FormElement FormElement { get; set; }
     
     internal IFieldsService FieldsService { get; } 
-    internal IBackgroundTask BackgroundTask { get; }
+    internal IBackgroundTaskManager BackgroundTaskManager { get; }
     private ILogger<ProcessComponent> Logger { get; }
     internal IEncryptionService EncryptionService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -68,7 +68,7 @@ public abstract class ProcessComponent : AsyncComponent
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
         IFieldsService fieldsService,
-        IBackgroundTask backgroundTask,
+        IBackgroundTaskManager backgroundTaskManager,
         ILogger<ProcessComponent> logger,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
@@ -76,16 +76,16 @@ public abstract class ProcessComponent : AsyncComponent
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
         FieldsService = fieldsService;
-        BackgroundTask = backgroundTask;
+        BackgroundTaskManager = backgroundTaskManager;
         Logger = logger;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         CurrentContext = currentContext;
     }
     
-    internal bool IsRunning() => BackgroundTask.IsRunning(ProcessKey);
+    internal bool IsRunning() => BackgroundTaskManager.IsRunning(ProcessKey);
 
-    internal void StopExportation() => BackgroundTask.Abort(ProcessKey);
+    internal void StopExportation() => BackgroundTaskManager.Abort(ProcessKey);
     
     private string BuildProcessKey()
     {

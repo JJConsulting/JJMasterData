@@ -16,12 +16,12 @@ namespace JJMasterData.Hangfire;
 
 internal class TaskTrigger
 {
-    private BackgroundTask BackgroundTask { get; }
+    private BackgroundTaskManager BackgroundTaskManager { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public TaskTrigger(BackgroundTask backgroundTask, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public TaskTrigger(BackgroundTaskManager backgroundTaskManager, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        BackgroundTask = backgroundTask;
+        BackgroundTaskManager = backgroundTaskManager;
         StringLocalizer = stringLocalizer;
     }
 
@@ -80,7 +80,7 @@ internal class TaskTrigger
 
     public Task DoProcess(string key, CancellationToken token, PerformContext context)
     {
-        var taskWrapper = BackgroundTask.GetTask(key);
+        var taskWrapper = BackgroundTaskManager.GetTask(key);
         if (taskWrapper?.TaskWorker == null)
             throw new JJMasterDataException("This task has expired and can no longer run");
 
@@ -90,7 +90,7 @@ internal class TaskTrigger
             
         worker.OnProgressChanged += (_, e) =>
         {
-            BackgroundTask.SetProgress(key, e);
+            BackgroundTaskManager.SetProgress(key, e);
             if (context == null) return;
             if (string.IsNullOrEmpty(e.Message)) return;
 

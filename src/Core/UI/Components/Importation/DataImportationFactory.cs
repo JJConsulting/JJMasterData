@@ -27,7 +27,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
     private IFieldsService FieldsService { get; }
-    private IBackgroundTask BackgroundTask { get; }
+    private IBackgroundTaskManager BackgroundTaskManager { get; }
     private IFormService FormService { get; }
     private IFormEventHandlerFactory FormEventHandlerFactory { get; }
     private IHttpContext HttpContext { get; }
@@ -45,7 +45,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
-        IBackgroundTask backgroundTask,
+        IBackgroundTaskManager backgroundTaskManager,
         IFormService formService,
         IFieldsService fieldsService,
         IFormEventHandlerFactory formEventHandlerFactory,
@@ -60,7 +60,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
         FieldsService = fieldsService;
-        BackgroundTask = backgroundTask;
+        BackgroundTaskManager = backgroundTaskManager;
         FormService = formService;
         FormEventHandlerFactory = formEventHandlerFactory;
         HttpContext = httpContext;
@@ -74,7 +74,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     public JJDataImportation Create(FormElement formElement)
     {
         return new JJDataImportation(formElement, EntityRepository, ExpressionsService, FormService,
-            FieldsService, BackgroundTask, HttpContext, ComponentFactory,
+            FieldsService, BackgroundTaskManager, HttpContext, ComponentFactory,
             DataImportationWorkerFactory, EncryptionService, LoggerFactory,
             StringLocalizer);
     }

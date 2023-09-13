@@ -26,36 +26,36 @@ public class TaskWorkerTest : IBackgroundTaskWorker
 }
 
  
-public class BackgroundTaskTest
+public class BackgroundTaskManagerTest
 {
 
     public static IBackgroundTaskWorker Worker => new TaskWorkerTest();
 
     //Implement your own IBackgroundTaskManager here if you want a specific test.
-    public static IBackgroundTask BackgroundTask => new BackgroundTask();
+    public static IBackgroundTaskManager BackgroundTaskManager => new BackgroundTaskManager();
 
     [Fact]
     public void RunTaskTest()
     {
-        var exception = Record.Exception(() => BackgroundTask.Run("RunTaskTest", Worker));
+        var exception = Record.Exception(() => BackgroundTaskManager.Run("RunTaskTest", Worker));
         Assert.Null(exception);
     }
 
     [Fact]
     public void TaskIsNotRunningTest()
     {
-        Assert.False(BackgroundTask.IsRunning("NonExistentTask"));
+        Assert.False(BackgroundTaskManager.IsRunning("NonExistentTask"));
     }
         
     [Fact(Timeout=3000)]
     public void GetProgressTest()
     {
         const string key = "TestProgressTask";
-        BackgroundTask.Run(key, Worker);
+        BackgroundTaskManager.Run(key, Worker);
         ProgressReporter progress;
         do
         {
-            progress = BackgroundTask.GetProgress<ProgressReporter>(key);
+            progress = BackgroundTaskManager.GetProgress<ProgressReporter>(key);
                 
         } while (progress == null);
             
@@ -68,11 +68,11 @@ public class BackgroundTaskTest
     public async void AbortTest()
     {
         const string key = "TaskToBeAborted";
-        BackgroundTask.Run(key, Worker);
-        BackgroundTask.Abort(key);
+        BackgroundTaskManager.Run(key, Worker);
+        BackgroundTaskManager.Abort(key);
 
         //Task needs a delay to cancel itself.
         await Task.Delay(3000);
-        Assert.False(BackgroundTask.IsRunning(key));
+        Assert.False(BackgroundTaskManager.IsRunning(key));
     }
 }

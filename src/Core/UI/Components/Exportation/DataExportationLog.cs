@@ -26,7 +26,7 @@ internal class DataExportationLog
 
         div.Append(HtmlTag.Div, div =>
         {
-            div.WithAttribute("id", "divMsgProcess")
+            div.WithAttribute("id", "process-status")
                 .WithCssClass("text-center")
                 .WithAttribute("style", "display:none;");
             
@@ -80,7 +80,7 @@ internal class DataExportationLog
             {
                 div.WithAttribute("id", "divStatus");
                 div.WithCssClass("text-center");
-                div.Append(HtmlTag.Span, span => { span.WithAttribute("id", "lblResumeLog"); });
+                div.Append(HtmlTag.Span, span => { span.WithAttribute("id", "process-message"); });
             })
             .Append(HtmlTag.Div, div =>
             {
