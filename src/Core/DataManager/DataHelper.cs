@@ -14,14 +14,14 @@ namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string? GetCurrentUserId(IHttpContext currentContext, IDictionary<string, object>? userValues)
+    public static string? GetCurrentUserId(IHttpSession session, IDictionary<string, object>? userValues)
     {
         if (userValues != null && userValues.TryGetValue("USERID", out var value))
         {
             return value.ToString();
         }
 
-        return currentContext.Session?["USERID"];
+        return session["USERID"];
     }
 
     public static IDictionary<string, object?> GetElementValues(Element element, IDictionary<string, object?> values)

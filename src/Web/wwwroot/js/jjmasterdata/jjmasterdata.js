@@ -757,14 +757,14 @@ function applyDecimalPlaces() {
 }
 class FeedbackIcon {
     static removeAllIcons(selector) {
-        const elements = document.querySelectorAll(selector);
+        const elements = window.parent.document.querySelectorAll(selector);
         elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
             element.classList.remove(FeedbackIcon.successClass, FeedbackIcon.warningClass, FeedbackIcon.searchClass, FeedbackIcon.errorClass);
         });
     }
     static setIcon(selector, iconClass) {
         this.removeAllIcons(selector);
-        const elements = document.querySelectorAll(selector);
+        const elements = window.parent.document.querySelectorAll(selector);
         elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
             element.classList.add(iconClass);
         });
@@ -1141,14 +1141,14 @@ const listenAllEvents = (selectorPrefix = String()) => {
 };
 class LookupHelper {
     static setLookupValues(fieldName, id, description) {
-        defaultModal.remove();
-        const idInput = document.querySelector("#" + fieldName);
+        const idInput = window.parent.document.querySelector("#" + fieldName);
         idInput.value = id;
-        const descriptionInput = document.querySelector("#" + fieldName + "-description");
+        const descriptionInput = window.parent.document.querySelector("#" + fieldName + "-description");
         if (descriptionInput) {
             descriptionInput.value = description;
         }
-        FeedbackIcon.setIcon(id, FeedbackIcon.successClass);
+        FeedbackIcon.setIcon(fieldName, FeedbackIcon.successClass);
+        window.parent.defaultModal.remove();
     }
 }
 class LookupListener {
@@ -1444,8 +1444,7 @@ class _Modal extends ModalBase {
         this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
-        let style = "width: 100vw; height: 100vh;";
-        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
+        modalBody.innerHTML = `<iframe src="${url}" class="modal-iframe"></iframe>`;
         this.showModal();
     }
     showUrl(modalOptions, title, size = null) {

@@ -51,7 +51,7 @@ public class LookupService : ILookupService
         var encryptedLookupParameters =
             EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString(ExpressionsService, formStateData));
         
-        return UrlHelper.GetUrl("GetFormView", "Lookup", "MasterData",new { lookupParameters = encryptedLookupParameters });
+        return UrlHelper.GetUrl("Index", "Lookup", "MasterData",new { lookupParameters = encryptedLookupParameters });
     }
 
     public string GetDescriptionUrl(string elementName, string fieldName, string componentName, PageState pageState)

@@ -111,9 +111,7 @@ class _Modal extends ModalBase {
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
         
-        let style = "width: 100vw; height: 100vh;";
-        
-        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
+        modalBody.innerHTML = `<iframe src="${url}" class="modal-iframe"></iframe>`;
 
         this.showModal();
     }

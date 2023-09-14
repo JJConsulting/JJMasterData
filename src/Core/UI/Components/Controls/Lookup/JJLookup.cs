@@ -188,7 +188,7 @@ public class JJLookup : ControlBase
             Name = $"btn_{Name}",
             Enabled = Enabled,
             ShowAsButton = true,
-            OnClientClick = $$"""defaultModal.showUrl({ url: '{{formViewUrl}}' }, '{{ModalTitle}}', '{{(int)ModalSize}}')""",
+            OnClientClick = $"""defaultModal.showIframe('{formViewUrl}', '{ModalTitle}', '{(int)ModalSize}')""",
             IconClass = "fa fa-search"
         });
         return div;

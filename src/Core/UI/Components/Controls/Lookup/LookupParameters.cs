@@ -41,6 +41,35 @@ public class LookupParameters
         
     }
     
+    public string ToQueryString()
+    {
+        var queryString = new StringBuilder();
+
+        queryString.Append("elementName=");
+        queryString.Append(ElementName);
+        queryString.Append("&fieldKeyName=");
+        queryString.Append(FieldKeyName);
+        queryString.Append("&fieldValueName=");
+        queryString.Append(FieldValueName);
+        queryString.Append("&componentName=");
+        queryString.Append(ComponentName);
+        queryString.Append("&enableAction=");
+        queryString.Append(EnableElementActions ? "1" : "0");
+
+        if (Filters is not { Count: > 0 })
+            return queryString.ToString();
+        
+        foreach (var filter in Filters)
+        {
+            queryString.Append('&');
+            queryString.Append(filter.Key);
+            queryString.Append('=');
+            queryString.Append(filter.Value);
+        }
+
+        return queryString.ToString();
+    }
+    
     public string ToQueryString(IExpressionsService expressionsService, FormStateData formStateData)
     {
         var queryString = new StringBuilder();

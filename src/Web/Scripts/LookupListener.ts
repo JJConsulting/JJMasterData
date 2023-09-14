@@ -13,8 +13,6 @@ class LookupListener {
             lookupInput.addEventListener("blur", function () {
                 FeedbackIcon.removeAllIcons(lookupDescriptionSelector);
                 
- 
-                
                 postFormValues({
                     url: lookupDescriptionUrl,
                     success: (data) => {

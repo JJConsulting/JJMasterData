@@ -1,0 +1,15 @@
+@model JJMasterData.Web.Areas.MasterData.Models.LookupViewModel
+
+@inject IOptions<JJMasterDataWebOptions> Options
+
+@{
+    Layout = Options.Value.PopUpLayoutPath;
+}
+
+
+<form asp-action="Index">
+    <input name="lookupParameters" value="@Model.EncryptedLookupParameters" hidden/>
+    @Html.Raw(Model.LookupFormViewHtml)
+</form>
+
+

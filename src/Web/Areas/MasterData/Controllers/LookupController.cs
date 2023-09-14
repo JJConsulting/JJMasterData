@@ -1,10 +1,13 @@
-﻿using JJMasterData.Commons.Localization;
+﻿using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
@@ -19,24 +22,28 @@ public class LookupController : MasterDataController
 {
     private ILookupService LookupService { get; }
     private IFormValuesService FormValuesService { get; }
+    private IEncryptionService EncryptionService { get; }
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public LookupController(
         ILookupService lookupService,
         IFormValuesService formValuesService,
+        IEncryptionService encryptionService,
+        IExpressionsService expressionsService,
         IFormElementComponentFactory<JJFormView> formViewFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer
         )
     {
         LookupService = lookupService;
         FormValuesService = formValuesService;
+        EncryptionService = encryptionService;
         FormViewFactory = formViewFactory;
         StringLocalizer = stringLocalizer;
     }
 
     [ServiceFilter<LookupParametersDecryptionFilter>]
-    public async Task<IActionResult> GetFormView(LookupParameters lookupParameters)
+    public async Task<IActionResult> Index(LookupParameters lookupParameters)
     {
         var formView = await FormViewFactory.CreateAsync(lookupParameters.ElementName);
 
@@ -47,7 +54,15 @@ public class LookupController : MasterDataController
         if (result.IsActionResult())
             return result.ToActionResult();
 
-        return Content(result.Content);
+        ViewBag.FormViewHtml = result.Content;
+
+        var model = new LookupViewModel()
+        {
+            LookupFormViewHtml = result.Content,
+            EncryptedLookupParameters = EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString())
+        };
+        
+        return View(model);
     }
 
     [ServiceFilter<FormElementDecryptionFilter>]
