@@ -171,7 +171,7 @@
                     <span class="fa-regular fa-file-code fa-fw fa-lg"></span> @StringLocalizer["Get C# Class"]
                 </a>
             </li>
-            <li class="dropdown-item" onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", dictionaryName = EncryptionService.EncryptStringWithUrlEscape(Model.DictionaryName) })', '_blank').focus();">
+            <li class="dropdown-item" onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", dictionaryName = Model.DictionaryName })', '_blank').focus();">
                 <a href="#">
                     <span class="fa fa-eye fa-fw fa-lg"></span> @StringLocalizer["Preview"]
                 </a>

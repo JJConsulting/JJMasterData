@@ -35,7 +35,12 @@ public class HttpRequestWrapper : IHttpRequest
         IsPost = HttpMethod.Equals("POST");
     }
 
-    public IFormFile GetFile(string file) => Request.Form.Files[file];
+    public IFormFile GetFile(string file)
+    {
+        if (Request.HasFormContentType)
+            return Request.Form.Files[file];
+        return null;
+    }
 
     public object GetUnvalidated(string key) => GetFormValue(key);
 
@@ -45,7 +50,6 @@ public class HttpRequestWrapper : IHttpRequest
     {
         if (Request.HasFormContentType)
             return Request.Form[key];
-
         return null;
     }
 

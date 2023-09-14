@@ -20,12 +20,6 @@
         
         const onSuccess = (file = null)=>{
             if(dropzone.getQueuedFiles().length === 0){
-                const areFilesUploadedInput = document.querySelector<HTMLInputElement>("#" + options.componentName + "-are-files-uploaded");
-
-                if(areFilesUploadedInput){
-                    areFilesUploadedInput.value = "1";
-                }
-                
                 if(options.jsCallback){
                     eval(options.jsCallback)
                 }
@@ -51,7 +45,7 @@
             };
         }
     }
-
+    
     static listenFileUpload(selectorPrefix = String()){
         document.querySelectorAll(selectorPrefix + "div.upload-area-div").forEach((element) => {
             const uploadAreaOptions = new UploadAreaOptions(element)

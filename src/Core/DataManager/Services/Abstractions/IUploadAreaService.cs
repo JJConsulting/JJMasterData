@@ -12,5 +12,6 @@ public interface IUploadAreaService
 {
     event EventHandler<FormUploadFileEventArgs> OnFileUploaded;
     event AsyncEventHandler<FormUploadFileEventArgs> OnFileUploadedAsync;
-    Task<UploadAreaResultDto> UploadFileAsync(string fileName = "file", string? allowedTypes = null);
+    public bool TryGetFile(string fileName, out FormFileContent? formFile);
+    Task<UploadAreaResultDto> UploadFileAsync(FormFileContent formFile, string? allowedTypes = null);
 }

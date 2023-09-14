@@ -183,14 +183,12 @@ public class ElementService : BaseService
         formView.GridView.OnRenderAction += (sender, args) =>
         {
             var elementName = args.FieldValues["name"]?.ToString();
-
-            var encryptedElementName = EncryptionService.EncryptStringWithUrlEscape(elementName);
             
             switch (args.Action.Name)
             {
                 case "preview":
                     args.LinkButton.OnClientClick =
-                        $"window.open('{UrlHelper.GetUrl("Render", "Form", "MasterData", new { dictionaryName = encryptedElementName })}', '_blank').focus();";
+                        $"window.open('{UrlHelper.GetUrl("Render", "Form", "MasterData", new { dictionaryName = elementName })}', '_blank').focus();";
                     break;
                 case "tools":
                     args.LinkButton.UrlAction = UrlHelper.GetUrl("Index", "Entity", "DataDictionary",

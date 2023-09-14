@@ -94,7 +94,8 @@ public class ElementController : DataDictionaryController
     private void ConfigureUploadArea(JJUploadArea upload)
     {
         upload.AllowedTypes = "json";
-        upload.JsCallback = "importFormElement()";
+        upload.JsCallback = "importationCallback()";
+        upload.Url = Url.Action("Import", "Element");
         upload.OnFileUploadedAsync += FileUploaded;
     }
 
@@ -139,7 +140,7 @@ public class ElementController : DataDictionaryController
             AlterTableScript = scripts[3]
         };
 
-        return PartialView(model);
+        return View(model);
     }
 
     [HttpPost]

@@ -118,20 +118,20 @@ class _Modal extends ModalBase {
         this.showModal();
     }
 
-    override async showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize = null) {
+    override async showUrl(modalOptions: ModalUrlOptions | string, title: string, size: ModalSize = null) {
         this.modalTitle = title;
         this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
         
         let fetchUrl : string;
         let fetchOptions : RequestInit;
-        
-        if(options instanceof ModalUrlOptions){
-            fetchUrl = options.url;
-            fetchOptions = options.requestOptions;
+
+        if (typeof modalOptions === 'object' && 'url' in modalOptions) {
+            fetchUrl = modalOptions.url;
+            fetchOptions = modalOptions.requestOptions;
         }
         else{
-            fetchUrl = options;
+            fetchUrl = modalOptions;
         }
         
         return await fetch(fetchUrl, fetchOptions)

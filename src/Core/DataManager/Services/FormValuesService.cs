@@ -75,7 +75,7 @@ public class FormValuesService : IFormValuesService
                     break;
                 case FormComponent.Currency:
                 case FormComponent.Number:
-                    if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
+                    if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
                             out var numericValue))
                         value = numericValue;
                     else

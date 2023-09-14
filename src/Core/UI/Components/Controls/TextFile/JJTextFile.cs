@@ -131,7 +131,7 @@ public class JJTextFile : ControlBase
             case ComponentContext.TextFileUploadView:
                 return await GetUploadViewResultAsync();
             case ComponentContext.TextFileFileUpload:
-                return await UploadView.UploadArea.GetFileUploadResultAsync();
+                return await UploadView.UploadArea.GetResultAsync();
             default:
                 return new RenderedComponentResult(await GetHtmlTextGroup());
         }

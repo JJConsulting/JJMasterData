@@ -1445,19 +1445,19 @@ class _Modal extends ModalBase {
         modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
         this.showModal();
     }
-    showUrl(options, title, size = null) {
+    showUrl(modalOptions, title, size = null) {
         return __awaiter(this, void 0, void 0, function* () {
             this.modalTitle = title;
             this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
             this.createModalElement();
             let fetchUrl;
             let fetchOptions;
-            if (options instanceof ModalUrlOptions) {
-                fetchUrl = options.url;
-                fetchOptions = options.requestOptions;
+            if (typeof modalOptions === 'object' && 'url' in modalOptions) {
+                fetchUrl = modalOptions.url;
+                fetchOptions = modalOptions.requestOptions;
             }
             else {
-                fetchUrl = options;
+                fetchUrl = modalOptions;
             }
             return yield fetch(fetchUrl, fetchOptions)
                 .then((response) => __awaiter(this, void 0, void 0, function* () {
@@ -1985,10 +1985,6 @@ class UploadAreaListener {
         });
         const onSuccess = (file = null) => {
             if (dropzone.getQueuedFiles().length === 0) {
-                const areFilesUploadedInput = document.querySelector("#" + options.componentName + "-are-files-uploaded");
-                if (areFilesUploadedInput) {
-                    areFilesUploadedInput.value = "1";
-                }
                 if (options.jsCallback) {
                     eval(options.jsCallback);
                 }
@@ -2020,7 +2016,7 @@ class UploadAreaListener {
 }
 class UploadAreaOptions {
     constructor(element) {
-        let dropzone = element.lastChild;
+        let dropzone = element.querySelector(".dropzone");
         this.componentName = dropzone.getAttribute("id");
         this.allowMultipleFiles = element.getAttribute("allow-multiple-files") === "true";
         this.jsCallback = element.getAttribute("js-callback");
@@ -2035,18 +2031,21 @@ class UploadAreaOptions {
         this.maxFiles = Number(element.getAttribute("max-files"));
         this.parallelUploads = Number(element.getAttribute("parallel-uploads"));
         this.extensionNotAllowedLabel = element.getAttribute("extension-not-allowed-label");
-        let routeContext = element.getAttribute("route-context");
-        let queryStringParams = element.getAttribute("query-string-params");
-        let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", routeContext);
-        const params = queryStringParams.split('&');
-        for (let i = 0; i < params.length; i++) {
-            const param = params[i].split('=');
-            const key = decodeURIComponent(param[0]);
-            const value = decodeURIComponent(param[1]);
-            urlBuilder.addQueryParameter(key, value);
+        this.url = element.getAttribute("upload-url");
+        if (!this.url) {
+            let routeContext = element.getAttribute("route-context");
+            let queryStringParams = element.getAttribute("query-string-params");
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", routeContext);
+            const params = queryStringParams.split('&');
+            for (let i = 0; i < params.length; i++) {
+                const param = params[i].split('=');
+                const key = decodeURIComponent(param[0]);
+                const value = decodeURIComponent(param[1]);
+                urlBuilder.addQueryParameter(key, value);
+            }
+            this.url = urlBuilder.build();
         }
-        this.url = urlBuilder.build();
     }
 }
 class UploadViewHelper {
