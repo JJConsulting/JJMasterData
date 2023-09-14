@@ -1141,13 +1141,14 @@ const listenAllEvents = (selectorPrefix = String()) => {
 };
 class LookupHelper {
     static setLookupValues(fieldName, id, description) {
-        defaultModal.hide();
+        defaultModal.remove();
         const idInput = document.querySelector("#" + fieldName);
         idInput.value = id;
         const descriptionInput = document.querySelector("#" + fieldName + "-description");
         if (descriptionInput) {
             descriptionInput.value = description;
         }
+        FeedbackIcon.setIcon(id, FeedbackIcon.successClass);
     }
 }
 class LookupListener {
@@ -1158,17 +1159,18 @@ class LookupListener {
             let lookupDescriptionUrl = lookupInput.getAttribute("lookup-description-url");
             const lookupIdSelector = "#" + lookupId;
             const lookupDescriptionSelector = lookupIdSelector + "-description";
+            const lookupIdInput = document.querySelector(lookupIdSelector);
+            const lookupDescriptionInput = document.querySelector(lookupDescriptionSelector);
             lookupInput.addEventListener("blur", function () {
                 FeedbackIcon.removeAllIcons(lookupDescriptionSelector);
                 postFormValues({
                     url: lookupDescriptionUrl,
                     success: (data) => {
-                        if (data.description === "") {
+                        if (!data.description) {
                             FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.warningClass);
+                            lookupDescriptionInput.value = String();
                         }
                         else {
-                            const lookupIdInput = document.querySelector(lookupIdSelector);
-                            const lookupDescriptionInput = document.querySelector(lookupDescriptionSelector);
                             FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.successClass);
                             lookupIdInput.value = data.id;
                             if (lookupDescriptionInput) {
@@ -1178,6 +1180,7 @@ class LookupListener {
                     },
                     error: (_) => {
                         FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.errorClass);
+                        lookupDescriptionInput.value = String();
                     }
                 });
             });

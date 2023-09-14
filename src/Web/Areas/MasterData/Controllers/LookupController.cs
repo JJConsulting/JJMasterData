@@ -60,7 +60,7 @@ public class LookupController : MasterDataController
         var elementMap = formElement.Fields[fieldName].DataItem!.ElementMap;
         var formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, pageState, true);
         var formStateData = new FormStateData(formValues, pageState);
-        var selectedValue = LookupService.GetSelectedValue(componentName).ToString();
+        var selectedValue = LookupService.GetSelectedValue(componentName);
         
         var description = await LookupService.GetDescriptionAsync(elementMap, formStateData, selectedValue, false);
         return Json(new LookupResultDto(selectedValue, description));

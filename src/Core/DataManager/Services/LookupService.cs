@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -101,7 +102,7 @@ public class LookupService : ILookupService
         if (string.IsNullOrEmpty(elementMap.FieldDescription))
             return fields[elementMap.FieldKey]?.ToString();
 
-        return fields[elementMap.FieldDescription]?.ToString();
+        return fields.Any() ? fields[elementMap.FieldDescription]?.ToString() : null;
     }
 
     private IDictionary<string, object> GetFilters(DataElementMap elementMap, object? value, FormStateData formStateData)

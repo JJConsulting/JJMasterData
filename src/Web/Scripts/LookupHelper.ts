@@ -1,6 +1,6 @@
 class LookupHelper {
     static setLookupValues(fieldName: string, id: string, description: string) {
-        defaultModal.hide();
+        defaultModal.remove();
 
         const idInput = document.querySelector<HTMLInputElement>("#" + fieldName );
         idInput.value = id;
@@ -10,5 +10,7 @@ class LookupHelper {
         if(descriptionInput){
             descriptionInput.value = description;
         }
+
+        FeedbackIcon.setIcon(id, FeedbackIcon.successClass);
     }
 }
