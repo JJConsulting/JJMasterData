@@ -242,7 +242,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
         textFile.FormElementField = field;
         textFile.PageState = PageState.List;
         textFile.Text = value;
-        textFile.FormValues = row;
+        textFile.FortStateValues = row;
         textFile.Name = field.Name;
 
         return textFile.GetDownloadLink(fileName, true);

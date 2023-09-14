@@ -9,6 +9,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 
@@ -18,24 +19,21 @@ public class DataItemService : IDataItemService
 {
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
-    private IHttpContext HttpContext { get; }
+    private IFormValues FormValues { get; }
 
-    public DataItemService(IEntityRepository entityRepository, IExpressionsService expressionsService, IHttpContext httpContext)
+    public DataItemService(IEntityRepository entityRepository, IExpressionsService expressionsService, IFormValues formValues)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
-        HttpContext = httpContext;
+        FormValues = formValues;
     }
     
     public async Task<string?> GetSelectedValueAsync(FormElementField field, FormStateData formStateData, string? searchText = null, string? searchId = null)
     {
-        if (HttpContext.Request.IsPost)
-        {
-            string? value = HttpContext.Request.GetFormValue(field.Name);
-            if (value is not null)
-                return value;
-        }
-
+        var value = FormValues[field.Name];
+        if (value is not null)
+            return value;
+        
         var first = await GetValuesAsync(field.DataItem!, formStateData, searchText, searchId).FirstOrDefaultAsync();
         
         return first?.Id;

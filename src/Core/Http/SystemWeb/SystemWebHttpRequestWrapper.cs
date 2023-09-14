@@ -1,6 +1,7 @@
 #if NETFRAMEWORK
 
 using System.Web;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Http.SystemWeb;
@@ -13,13 +14,15 @@ public class SystemWebHttpRequestWrapper : IHttpRequest
     public string UserAgent { get; }
     public string AbsoluteUri { get; }
     public string ApplicationPath { get; }
+    public IFormValues Form { get; }
     public bool IsPost { get; }
     public IQueryString QueryString { get; }
 
-    public SystemWebHttpRequestWrapper(HttpRequest request, IQueryString queryString)
+    public SystemWebHttpRequestWrapper(HttpRequest request, IQueryString queryString, IFormValues form)
     {
         Request = request;
         QueryString = queryString;
+        Form = form;
         UserHostAddress = Request.UserHostAddress;
         HttpMethod = Request.HttpMethod;
         UserAgent = Request.UserAgent;

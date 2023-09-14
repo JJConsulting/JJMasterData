@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http;
@@ -35,7 +36,7 @@ public abstract class ControlBase : AsyncComponent
     
     public int MaxLength { get; set; }
 
-    internal IHttpRequest Request { get; }
+    internal IFormValues FormValues { get; }
     
     /// <summary>
     /// Text content inside the input
@@ -44,18 +45,18 @@ public abstract class ControlBase : AsyncComponent
     {
         get
         {
-            if (_text == null && Request.IsPost)
+            if (_text == null && FormValues.ContainsFormValues())
             {
-                _text = Request.GetFormValue(Name);
+                _text = FormValues[Name];
             }
             return _text;
         }
         set => _text = value;
     }
 
-    protected ControlBase(IHttpRequest request) 
+    protected ControlBase(IFormValues formValues) 
     {
-        Request = request;
+        FormValues = formValues;
     }
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()

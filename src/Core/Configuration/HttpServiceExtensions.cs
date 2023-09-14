@@ -1,5 +1,5 @@
 using JJMasterData.Core.Http;
-
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +16,7 @@ public static class HttpServiceExtensions
         services.AddScoped<IHttpSession, Http.AspNetCore.HttpSessionWrapper>();
         services.AddScoped<IHttpRequest, Http.AspNetCore.HttpRequestWrapper>();
         services.AddScoped<IQueryString, Http.AspNetCore.QueryStringWrapper>();  
+        services.AddScoped<IFormValues, Http.AspNetCore.FormValuesWrapper>();  
 #endif
         services.AddScoped<JJMasterDataUrlHelper>();
 
@@ -23,6 +24,7 @@ public static class HttpServiceExtensions
         services.AddScoped<IHttpSession, Http.SystemWeb.SystemWebHttpSessionWrapper>();
         services.AddScoped<IHttpRequest, Http.SystemWeb.SystemWebHttpRequestWrapper>();
         services.AddScoped<IQueryString, Http.SystemWeb.SystemWebQueryStringWrapper>();
+        services.AddScoped<IFormValues, Http.SystemWeb.SystemWebFormValuesWrapper>();
 #endif
 
 

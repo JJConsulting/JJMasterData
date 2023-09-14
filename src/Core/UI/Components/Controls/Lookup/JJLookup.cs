@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 
@@ -58,9 +59,9 @@ public class JJLookup : ControlBase
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && Request.IsPost)
+            if (AutoReloadFormFields && _text == null && FormValues.ContainsFormValues())
             {
-                _text = Request[Name];
+                _text = FormValues[Name];
             }
 
             return _text;
@@ -94,9 +95,9 @@ public class JJLookup : ControlBase
         FormElement formElement,
         FormElementField field,
         ControlContext controlContext,
-        IHttpRequest httpRequest,
+        IFormValues formValues,
         ILookupService lookupService,
-        IComponentFactory<JJTextBox> textBoxFactory) : base(httpRequest)
+        IComponentFactory<JJTextBox> textBoxFactory) : base(formValues)
     {
         FormElement = formElement;
         ElementMap = field.DataItem?.ElementMap ?? throw new ArgumentException("ElementMap cannot be null.");

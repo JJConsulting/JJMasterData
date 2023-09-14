@@ -61,7 +61,7 @@ internal class GridFilter
             return _currentFilter;
 
         //Ação é capturada aqui, pois o usuário pode chamar o metodo as antes do GetHtml
-        string currentFilterAction = CurrentContext.Request.GetFormValue($"grid-view-filter-action-{GridView.Name}");
+        string currentFilterAction = CurrentContext.Request.Form[$"grid-view-filter-action-{GridView.Name}"];
         switch (currentFilterAction)
         {
             case FilterActionName:
@@ -83,7 +83,7 @@ internal class GridFilter
             return _currentFilter;
         }
         
-        var filters = CurrentContext.Request.GetFormValue($"{GridView.Name}-filters");
+        var filters = CurrentContext.Request.Form[$"{GridView.Name}-filters"];
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
@@ -91,7 +91,7 @@ internal class GridFilter
             return _currentFilter;
         }
 
-        if (sessionFilter != null && (CurrentContext.Request.IsPost || IsDynamicPost()))
+        if (sessionFilter != null && (CurrentContext.Request.Form.ContainsFormValues() || IsDynamicPost()))
         {
             _currentFilter = sessionFilter;
             return _currentFilter;
@@ -257,7 +257,7 @@ internal class GridFilter
     {
         string searchId = $"jjsearch_{GridView.Name}";
 
-        var textBox = new JJTextBox( GridView.CurrentContext.Request)
+        var textBox = new JJTextBox( GridView.CurrentContext.Request.Form)
         {
             Attributes =
             {
@@ -267,7 +267,7 @@ internal class GridFilter
             PlaceHolder = StringLocalizer["Filter"],
             CssClass = "jj-icon-search",
             Name = searchId,
-            Text = CurrentContext.Request.GetFormValue(searchId)
+            Text = CurrentContext.Request.Form[searchId]
         };
         
         var html = new HtmlBuilder();
@@ -304,7 +304,7 @@ internal class GridFilter
 
         //Relation Filters
         var values = new Dictionary<string, object>();
-        var filters = CurrentContext.Request.GetFormValue($"{GridView.Name}-filters");
+        var filters = CurrentContext.Request.Form[$"{GridView.Name}-filters"];
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
@@ -318,7 +318,7 @@ internal class GridFilter
 
             if (f.Filter.Type == FilterMode.Range)
             {
-                string sfrom = CurrentContext.Request.GetFormValue($"{name}_from");
+                string sfrom = CurrentContext.Request.Form[$"{name}_from"];
                 if (values == null && sfrom != null)
                     values = new Dictionary<string, object>();
 
@@ -327,7 +327,7 @@ internal class GridFilter
                     values.Add($"{f.Name}_from", sfrom);
                 }
 
-                string sto = CurrentContext.Request.GetFormValue($"{name}_to");
+                string sto = CurrentContext.Request.Form[$"{name}_to"];
                 if (!string.IsNullOrEmpty(sto))
                 {
                     if (f.DataType is FieldType.DateTime or FieldType.DateTime2 && f.Component == FormComponent.Date)
@@ -342,9 +342,9 @@ internal class GridFilter
             }
             else
             {
-                object value = CurrentContext.Request.GetFormValue(name);
+                object value = CurrentContext.Request.Form[name];
 
-                if (values == null && CurrentContext.Request.GetFormValue(name) != null)
+                if (values == null && CurrentContext.Request.Form[name] != null)
                     values = new Dictionary<string, object>();
 
                 switch (f.Component)

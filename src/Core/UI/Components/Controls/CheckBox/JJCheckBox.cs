@@ -5,6 +5,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
@@ -27,15 +28,15 @@ public class JJCheckBox : ControlBase
     {
         get
         {
-            if (_isChecked == null && Request.IsPost)
-                _isChecked = Value.Equals(Request[Name]);
+            if (_isChecked == null && FormValues.ContainsFormValues())
+                _isChecked = Value.Equals(FormValues[Name]);
 
             return _isChecked ?? false;
         }
         set => _isChecked = value;
     }
 
-    public JJCheckBox(IHttpRequest httpRequest) : base(httpRequest)
+    public JJCheckBox(IFormValues formValues) : base(formValues)
     {
         Visible = true;
         Enabled = true;

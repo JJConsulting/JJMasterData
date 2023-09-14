@@ -1,5 +1,6 @@
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -8,19 +9,19 @@ namespace JJMasterData.Core.Web.Factories;
 
 internal class SliderFactory : IControlFactory<JJSlider>
 {
-    private IHttpRequest HttpRequest { get; }
+    private IFormValues FormValues { get; }
     private IComponentFactory<JJTextBox> TextBoxFactory { get; }
 
 
-    public SliderFactory(IHttpRequest httpRequest, IComponentFactory<JJTextBox> textBoxFactory)
+    public SliderFactory(IFormValues formValues, IComponentFactory<JJTextBox> textBoxFactory)
     {
-        HttpRequest = httpRequest;
+        FormValues = formValues;
         TextBoxFactory = textBoxFactory;
     }
     
     public JJSlider Create()
     {
-        return new JJSlider(HttpRequest,TextBoxFactory);
+        return new JJSlider(FormValues,TextBoxFactory);
     }
 
     public JJSlider Create(FormElement formElement, FormElementField field, ControlContext context)

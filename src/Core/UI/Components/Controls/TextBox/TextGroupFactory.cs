@@ -11,24 +11,25 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Factories;
 
 internal class TextGroupFactory : IControlFactory<JJTextGroup>
 {
-    private IHttpContext HttpContext { get; }
+    private IFormValues FormValues { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private LinkButtonFactory LinkButtonFactory { get; }
 
     public TextGroupFactory(
-        IHttpContext httpContext, 
+        IFormValues formValues, 
                           IEncryptionService encryptionService,
                           IStringLocalizer<JJMasterDataResources> stringLocalizer, 
                           LinkButtonFactory linkButtonFactory)
     {
-        HttpContext = httpContext;
+        FormValues = formValues;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         LinkButtonFactory = linkButtonFactory;
@@ -36,7 +37,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
     
     public JJTextGroup Create()
     {
-        return new JJTextGroup(HttpContext);
+        return new JJTextGroup(FormValues);
     }
     
     public JJTextGroup Create(FormElementField field, object value)
@@ -113,7 +114,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
 
     public JJTextGroup CreateTextDate()
     {
-        var textGroup = new JJTextGroup(HttpContext);
+        var textGroup = new JJTextGroup(FormValues);
         SetDefaultAttrs(textGroup, FormComponent.Date);
         return textGroup;
     }

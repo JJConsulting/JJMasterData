@@ -150,7 +150,7 @@ public class JJDataImportation : ProcessComponent
             {
                 if (!IsRunning())
                 {
-                    string pasteValue = CurrentContext.Request.GetFormValue("pasteValue");
+                    string pasteValue = CurrentContext.Request.Form["pasteValue"];
                     ImportInBackground(pasteValue);
                 }
                 htmlBuilder = GetHtmlWaitProcess();

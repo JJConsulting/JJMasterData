@@ -8,12 +8,13 @@ using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System;
 using System.Threading.Tasks;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
 internal class TextFileFactory : IControlFactory<JJTextFile>
 {
-    private IHttpRequest HttpRequest { get; }
+    private IHttpRequest Request { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
@@ -21,14 +22,14 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public TextFileFactory(
-        IHttpRequest httpRequest,
+        IHttpRequest request,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup>  textBoxFactory,
         IComponentFactory<JJFileDownloader> fileDownloaderFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        HttpRequest = httpRequest;
+        Request = request;
         UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
         FileDownloaderFactory = fileDownloaderFactory;
@@ -39,7 +40,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     
     public JJTextFile Create()
     {
-        return new JJTextFile(HttpRequest,UploadViewFactory, TextBoxFactory, StringLocalizer, FileDownloaderFactory,EncryptionService);
+        return new JJTextFile(Request,UploadViewFactory, TextBoxFactory, StringLocalizer, FileDownloaderFactory,EncryptionService);
     }
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)
@@ -56,7 +57,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         textFile.FormElementField = field;
         textFile.PageState = formStateData.PageState;
         textFile.Text = value != null ? value.ToString() : "";
-        textFile.FormValues = formStateData.FormValues;
+        textFile.FortStateValues = formStateData.FormValues;
         textFile.Name = field.Name;
         textFile.FieldName = field.Name;
         textFile.Enabled = true;

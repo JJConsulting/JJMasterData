@@ -274,7 +274,7 @@ public class JJUploadView : AsyncComponent
 
         var html = new HtmlBuilder();
 
-        var uploadAction = CurrentContext.Request.GetFormValue($"upload-view-action-{Name}");
+        var uploadAction = CurrentContext.Request.Form[$"upload-view-action-{Name}"];
         if (!string.IsNullOrEmpty(uploadAction))
         {
             var result = GetUploadActionResult(uploadAction);
@@ -385,7 +385,7 @@ public class JJUploadView : AsyncComponent
 
     private ComponentResult GetUploadActionResult(string uploadViewAction)
     {
-        var fileName = CurrentContext.Request.GetFormValue($"upload-view-file-name-{Name}");
+        var fileName = CurrentContext.Request.Form[$"upload-view-file-name-{Name}"];
         try
         {
             switch (uploadViewAction)
@@ -661,7 +661,7 @@ public class JJUploadView : AsyncComponent
                        LabelFor = $"preview_filename-{UploadArea.Name}",
                        Text = "File name"
                    });
-                   await col.AppendControlAsync(new JJTextGroup(CurrentContext)
+                   await col.AppendControlAsync(new JJTextGroup(CurrentContext.Request.Form)
                    {
                        Name = $"preview_filename-{UploadArea.Name}",
                        Addons = new InputAddons(".png"),

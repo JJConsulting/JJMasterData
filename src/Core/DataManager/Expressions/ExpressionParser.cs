@@ -8,12 +8,15 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class ExpressionParser : IExpressionParser
 {
-    private IHttpContext HttpContext { get; }
-
-    public ExpressionParser(IHttpContext httpContext)
+    private IHttpRequest Request { get; }
+    private IHttpSession Session { get; }
+    
+    public ExpressionParser(IHttpRequest request, IHttpSession session)
     {
-        HttpContext = httpContext;
+        Request = request;
+        Session = session;
     }
+    
     public string? ParseExpression(
         string? expression,
         FormStateData formStateData,
@@ -54,15 +57,15 @@ public class ExpressionParser : IExpressionParser
             }
             else if ("objname".Equals(field.ToLower()))
             {
-                val = $"{HttpContext.Request["componentName"]}";
+                val = $"{Request["componentName"]}";
             }
             else if ("componentName".Equals(field.ToLower()))
             {
-                val = $"{HttpContext.Request["componentName"]}";
+                val = $"{Request["componentName"]}";
             }
-            else if (HttpContext.Session?[field] != null)
+            else if (Session?[field] != null)
             {
-                val = HttpContext.Session[field];
+                val = Session[field];
             }
             else
             {

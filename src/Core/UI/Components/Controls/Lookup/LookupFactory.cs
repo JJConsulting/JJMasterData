@@ -2,6 +2,7 @@ using System;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -11,7 +12,7 @@ namespace JJMasterData.Core.Web.Factories;
 
 internal class LookupFactory : IControlFactory<JJLookup>
 {
-    private IHttpRequest HttpRequest { get; }
+    private IFormValues FormValues { get; }
     private ILookupService LookupService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory<JJTextBox> TextBoxFactory { get; }
@@ -19,13 +20,13 @@ internal class LookupFactory : IControlFactory<JJLookup>
     private ILoggerFactory LoggerFactory { get; }
 
     public LookupFactory(       
-        IHttpRequest httpRequest,
+        IFormValues formValues,
         ILookupService lookupService,
         JJMasterDataUrlHelper urlHelper,
         IComponentFactory<JJTextBox> textBoxFactory,
         ILoggerFactory loggerFactory)
     {
-        HttpRequest = httpRequest;
+        FormValues = formValues;
         LookupService = lookupService;
         UrlHelper = urlHelper;
         TextBoxFactory = textBoxFactory;
@@ -43,7 +44,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
             formElement,
             field,
             controlContext,
-            HttpRequest,
+            FormValues,
             LookupService,
             TextBoxFactory);
        

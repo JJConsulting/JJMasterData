@@ -12,8 +12,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Azure.Core;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
@@ -39,9 +41,9 @@ public class JJComboBox : ControlBase
     {
         get
         {
-            if (_selectedValue == null && Request.IsPost)
+            if (_selectedValue == null && FormValues.ContainsFormValues())
             {
-                _selectedValue = Request[Name];
+                _selectedValue = FormValues[Name];
             }
 
             return _selectedValue;
@@ -50,11 +52,11 @@ public class JJComboBox : ControlBase
     }
 
     public JJComboBox(
-        IHttpRequest httpRequest,
+        IFormValues formValues,
         IDataItemService dataItemService,
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        ILogger<JJComboBox> logger) : base(httpRequest)
+        ILogger<JJComboBox> logger) : base(formValues)
     {
         DataItemService = dataItemService;
         Logger = logger;

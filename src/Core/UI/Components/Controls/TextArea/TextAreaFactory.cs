@@ -7,24 +7,25 @@ using Microsoft.Extensions.Localization;
 using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Factories;
 
 internal class TextAreaFactory : IControlFactory<JJTextArea>
 {
-    private IHttpRequest HttpRequest { get; }
+    private IFormValues FormValues { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public TextAreaFactory(IHttpRequest httpRequest, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public TextAreaFactory(IFormValues formValues, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
-        HttpRequest = httpRequest;
+        FormValues = formValues;
 
         StringLocalizer = stringLocalizer;
     }
     public JJTextArea Create()
     {
-        return new JJTextArea(HttpRequest,StringLocalizer);
+        return new JJTextArea(FormValues,StringLocalizer);
     }
 
     public JJTextArea Create(FormElement formElement, FormElementField field, ControlContext context)

@@ -67,7 +67,7 @@ public class UploadAreaService : IUploadAreaService
     /// </summary>
     private FormFileContent? GetFile(string fileName)
     {
-        var fileData = CurrentContext.Request.GetFile(fileName);
+        var fileData = CurrentContext.Request.Form.GetFile(fileName);
 
         if (fileData is null)
             return null;
