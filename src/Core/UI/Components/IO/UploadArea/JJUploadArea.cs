@@ -44,7 +44,6 @@ public class JJUploadArea : AsyncComponent
     /// </summary>
     public bool Multiple { get; set; } = true;
     
-    public string AddLabel { get; set; } = "Add";
     
     public string CancelLabel { get; set; } = "Cancel";
     
@@ -54,7 +53,7 @@ public class JJUploadArea : AsyncComponent
     
     public string SizeErrorLabel { get; set; } = "is not allowed. Allowed Max size: ";
     
-    public string DragDropLabel { get; set; } = "Click here, paste, or drag & drop Files";
+    public string ImportLabel { get; set; } = "Click here, paste, or drag & drop Files";
 
     public bool EnableDragDrop { get; set; } = true;
 
@@ -78,7 +77,11 @@ public class JJUploadArea : AsyncComponent
     /// How many server-side uploads can happen at the same time.
     /// </summary>
     public int ParallelUploads { get; set; } = 1;
-    public int MaxFiles { get; set; } = 1;
+    
+    /// <summary>
+    /// This property will be used only if Multiple is true.
+    /// </summary>
+    public int MaxFiles { get; set; } = int.MaxValue;
     private IHttpContext CurrentContext { get; }
     private IUploadAreaService UploadAreaService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -164,10 +167,9 @@ public class JJUploadArea : AsyncComponent
         div.WithAttribute("allow-copy-paste", EnableCopyPaste.ToString().ToLower());
         div.WithAttribute("show-file-size", ShowFileSize.ToString().ToLower());
         div.WithAttribute("allowed-types", AllowedTypes);     
-        div.WithAttribute("max-files", MaxFiles);
+        div.WithAttribute("max-files", Multiple ? MaxFiles : 1);
         div.WithAttribute("parallel-uploads", ParallelUploads);
-        div.WithAttribute("add-file-label", StringLocalizer[AddLabel]);
-        div.WithAttribute("drag-drop-label", StringLocalizer[DragDropLabel]);
+        div.WithAttribute("drag-drop-label", StringLocalizer[ImportLabel]);
         div.WithAttribute("cancel-label", StringLocalizer[CancelLabel]);
         div.WithAttribute("abort-label", StringLocalizer[AbortLabel]);
         div.WithAttribute("extension-not-allowed-label", StringLocalizer[ExtensionNotAllowedLabel]);

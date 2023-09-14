@@ -74,7 +74,7 @@ public class ElementController : DataDictionaryController
         }
 
         var zipBytes = await _elementService.ExportMultipleRowsAsync(selectedRows);
-        return File(zipBytes, "application/zip", "Dictionaries.zip");
+        return File(zipBytes, "application/zip", $"FormElements-{DateTime.Now}.zip");
     }
 
     public async Task<IActionResult> Import()
@@ -88,13 +88,13 @@ public class ElementController : DataDictionaryController
         if (result.IsActionResult())
             return result.ToActionResult();
         
-        return View(new ImportViewModel(result.Content));
+        return PartialView(new ImportViewModel(result.Content));
     }
 
     private void ConfigureUploadArea(JJUploadArea upload)
     {
-        upload.AddLabel = _stringLocalizer["Select Dictionaries"];
         upload.AllowedTypes = "json";
+        upload.JsCallback = "importFormElement()";
         upload.OnFileUploadedAsync += FileUploaded;
     }
 
@@ -123,7 +123,7 @@ public class ElementController : DataDictionaryController
         ViewBag.ClassSourceCode = await _classGenerationService.GetClassSourceCode(dictionaryName);
         ViewBag.DictionaryName = dictionaryName;
 
-        return View("ClassSourceCode", "_MasterDataLayout.Popup");
+        return PartialView("ClassSourceCode");
     }
 
     public async Task<IActionResult> Scripts(string dictionaryName)
@@ -139,7 +139,7 @@ public class ElementController : DataDictionaryController
             AlterTableScript = scripts[3]
         };
 
-        return View(model);
+        return PartialView(model);
     }
 
     [HttpPost]

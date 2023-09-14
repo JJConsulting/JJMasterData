@@ -46,7 +46,12 @@ class ActionManager {
             url: url,
             success: (data) => {
                 if (data.urlAsPopUp) {
-                    defaultModal.showIframe(data.urlRedirect, data.popUpTitle);
+                    if (data.isIframe) {
+                        defaultModal.showIframe(data.urlRedirect, data.popUpTitle);
+                    }
+                    else {
+                        defaultModal.showUrl(data.urlRedirect, data.popUpTitle);
+                    }
                 }
                 else {
                     window.location.href = data.urlRedirect;
@@ -1442,7 +1447,16 @@ class _Modal extends ModalBase {
             this.modalTitle = title;
             this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
             this.createModalElement();
-            return yield fetch(options.url, options.requestOptions)
+            let fetchUrl;
+            let fetchOptions;
+            if (options instanceof ModalUrlOptions) {
+                fetchUrl = options.url;
+                fetchOptions = options.requestOptions;
+            }
+            else {
+                fetchUrl = options;
+            }
+            return yield fetch(fetchUrl, fetchOptions)
                 .then((response) => __awaiter(this, void 0, void 0, function* () {
                 var _a;
                 if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
@@ -1539,8 +1553,17 @@ class _LegacyModal extends ModalBase {
     showUrl(options, title, size = null) {
         return __awaiter(this, void 0, void 0, function* () {
             this.modalSize = size || this.modalSize;
+            let fetchUrl;
+            let fetchOptions;
+            if (options instanceof ModalUrlOptions) {
+                fetchUrl = options.url;
+                fetchOptions = options.requestOptions;
+            }
+            else {
+                fetchUrl = options;
+            }
             try {
-                const response = yield fetch(options.url, options.requestOptions);
+                const response = yield fetch(fetchUrl, fetchOptions);
                 if (response.ok) {
                     const content = yield response.text();
                     const modalHtml = this.createModalHtml(content, false);
@@ -1549,7 +1572,7 @@ class _LegacyModal extends ModalBase {
                     this.showModal();
                 }
                 else {
-                    console.error(`Failed to fetch content from URL: ${options.url}`);
+                    console.error(`Failed to fetch content from URL: ${fetchUrl}`);
                 }
             }
             catch (error) {
@@ -1968,8 +1991,12 @@ class UploadAreaListener {
                 }
             }
         };
-        dropzone.on("success", onSuccess);
-        dropzone.on("successmultiple", onSuccess);
+        if (options.allowMultipleFiles) {
+            dropzone.on("successmultiple", onSuccess);
+        }
+        else {
+            dropzone.on("success", onSuccess);
+        }
         if (options.allowCopyPaste) {
             document.onpaste = function (event) {
                 const items = Array.from(event.clipboardData.items);

@@ -7,20 +7,24 @@ public class UrlRedirectAction : UserCreatedAction
     [JsonProperty("urlRedirect")]
     public string UrlRedirect { get; set; }
 
+    
     [JsonProperty("urlAsPopUp")]
-    public bool UrlAsPopUp { get; set; }
+    public bool IsModal { get; set; }
+
+    /// <summary>
+    /// If the action is inside a modal, render as iFrame. If this is false, it will only add the resulting HTML inside the modal (recommended).
+    /// </summary>
+    [JsonProperty("isIframe")]
+    public bool IsIframe { get; set; } = true;
+    
+    [JsonProperty("popupSize")]
+    public ModalSize ModalSize { get; set; } = ModalSize.Default;
 
     [JsonProperty("titlePopUp")]
-    public string PopUpTitle { get; set; }
+    public string ModalTitle { get; set; } = "Title";
 
-    [JsonProperty("popupSize")]
-    public ModalSize ModalSize { get; set; }
-    
     public UrlRedirectAction()
     {
-        UrlAsPopUp = false;
-        PopUpTitle = "Title";
-        ModalSize = ModalSize.Default;
         Icon = IconType.ExternalLink;
     }
 }

@@ -13,14 +13,11 @@
     <pre><code>@ViewBag.ClassSourceCode</code></pre>
 </div>
 
-@section Scripts
-{
-<script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/highlight.min.js"></script>
-<script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/languages/tsql.min.js"></script>
+
 <script type="text/javascript">
 
     function copyContent(obj) {
-        let textVal =  $("pre").text().trim();
+        let textVal = $("pre").text().trim();
         copyText(textVal);
         displayAsCopied(obj);
     }
@@ -40,8 +37,6 @@
         navigator.clipboard.writeText(value);
     }
 
-
-
     hljs.highlightAll();
 </script>
-}
+

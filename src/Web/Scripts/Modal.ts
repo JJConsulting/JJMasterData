@@ -26,7 +26,7 @@ abstract class ModalBase{
     }
     abstract showIframe(url: string, title: string, size: ModalSize);
 
-    abstract showUrl(options: ModalUrlOptions, title: string, size: ModalSize) : Promise<any>;
+    abstract showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize) : Promise<any>;
     abstract hide();
 }
 
@@ -118,12 +118,23 @@ class _Modal extends ModalBase {
         this.showModal();
     }
 
-    override async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null) {
+    override async showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize = null) {
         this.modalTitle = title;
         this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
-
-        return await fetch(options.url, options.requestOptions)
+        
+        let fetchUrl : string;
+        let fetchOptions : RequestInit;
+        
+        if(options instanceof ModalUrlOptions){
+            fetchUrl = options.url;
+            fetchOptions = options.requestOptions;
+        }
+        else{
+            fetchUrl = options;
+        }
+        
+        return await fetch(fetchUrl, fetchOptions)
             .then( async response => {
                 if (response.headers.get("content-type")?.includes("application/json")) {
                     return response.json();
@@ -235,11 +246,22 @@ class _LegacyModal extends ModalBase {
         this.showModal();
     }
 
-    override async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null) {
+    override async showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize = null) {
         this.modalSize = size || this.modalSize;
 
+        let fetchUrl : string;
+        let fetchOptions : RequestInit;
+
+        if(options instanceof ModalUrlOptions){
+            fetchUrl = options.url;
+            fetchOptions = options.requestOptions;
+        }
+        else{
+            fetchUrl = options;
+        }
+        
         try {
-            const response = await fetch(options.url, options.requestOptions);
+            const response = await fetch(fetchUrl, fetchOptions);
             if (response.ok) {
                 const content = await response.text();
                 const modalHtml = this.createModalHtml(content, false); // Not using iframe
@@ -247,7 +269,7 @@ class _LegacyModal extends ModalBase {
                 this.setTitle(title);
                 this.showModal();
             } else {
-                console.error(`Failed to fetch content from URL: ${options.url}`);
+                console.error(`Failed to fetch content from URL: ${fetchUrl}`);
             }
         } catch (error) {
             console.error("An error occurred while fetching content:", error);
@@ -279,7 +301,7 @@ class Modal {
     showIframe(url: string, title: string, size: ModalSize = null) {
         this.instance.showIframe(url,title,size);
     }
-    async showUrl(options: ModalUrlOptions, title: string, size: ModalSize = null): Promise<any> {
+    async showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize = null): Promise<any> {
         return await this.instance.showUrl(options,title,size);
     }
 

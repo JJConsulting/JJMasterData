@@ -826,11 +826,18 @@ public class JJGridView : AsyncComponent
 
         if (EnableMultiSelect)
         {
-            script.AppendLine("\t$(document).ready(function () {");
-            script.AppendLine("\t\t$(\".jjselect input\").change(function() {");
-            script.AppendLine($"\t\t\tGridViewSelectionHelper.selectItem('{Name}', $(this)); ");
-            script.AppendLine("\t\t});");
-            script.AppendLine("\t});");
+            var multiSelectScript = $$"""
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        const inputElements = document.querySelectorAll('.jjselect input');
+                                        
+                                        inputElements.forEach(function(input) {
+                                            input.addEventListener('change', function() {
+                                                GridViewSelectionHelper.selectItem('{{Name}}', input);
+                                            });
+                                        });
+                                    });
+                                    """;
+            script.AppendLine(multiSelectScript);
         }
 
         if (EnableEditMode)

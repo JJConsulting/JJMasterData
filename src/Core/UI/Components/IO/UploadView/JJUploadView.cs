@@ -435,10 +435,7 @@ public class JJUploadView : AsyncComponent
                 Text = $"{StringLocalizer["File Type:"]}&nbsp;<b>{UploadArea.AllowedTypes}</b>"
             });
         }
-
-        if (!UploadArea.Multiple && FormFileManager.CountFiles() > 0)
-            UploadArea.AddLabel = StringLocalizer["Update"];
-
+        
         panelContent.Append(UploadArea.GetUploadAreaHtmlBuilder());
         return panelContent;
     }

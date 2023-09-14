@@ -47,6 +47,9 @@
     }
 }
 
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/highlight.min.js"></script>
+<script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/languages/tsql.min.js"></script>
+
 <div class="@BootstrapHelper.PageHeader">
     <h1>
         @Html.Raw(JJImage.GetMasterDataLogo(HttpContext).GetHtml())
@@ -163,9 +166,9 @@
                     <span class="fa fa-play-circle fa-fw fa-lg"></span> @StringLocalizer["Get Script"]
                 </a>
             </li>
-            <li class="dropdown-item" onclick="defaultModal.showIframe('@Url.Action("ClassSourceCode", "Element", new { dictionaryName = Model.DictionaryName })','@StringLocalizer["Class Source Code"]',1);">
+            <li class="dropdown-item" onclick="defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { dictionaryName = Model.DictionaryName })','@StringLocalizer["Class Source Code"]',1);">
                 <a href="#">
-                    <span class="fa-regular fa-file-code fa-fw fa-lg"></span> @StringLocalizer["Get Class"]
+                    <span class="fa-regular fa-file-code fa-fw fa-lg"></span> @StringLocalizer["Get C# Class"]
                 </a>
             </li>
             <li class="dropdown-item" onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", dictionaryName = EncryptionService.EncryptStringWithUrlEscape(Model.DictionaryName) })', '_blank').focus();">

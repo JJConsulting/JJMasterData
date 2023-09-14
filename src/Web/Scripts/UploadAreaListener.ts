@@ -31,8 +31,13 @@
                 }
             }
         }
-        dropzone.on("success",onSuccess)
-        dropzone.on("successmultiple",onSuccess)
+        
+        if(options.allowMultipleFiles){
+            dropzone.on("successmultiple",onSuccess)
+        }
+        else{
+            dropzone.on("success",onSuccess)
+        }
 
         if (options.allowCopyPaste) {
             document.onpaste = function (event) {

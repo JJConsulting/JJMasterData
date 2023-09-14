@@ -3390,8 +3390,8 @@
   <data name="All changes will be saved in the file located at the path:" xml:space="preserve">
     <value>Todas as alterações serão salvas no arquivo localizado no caminho:</value>
   </data>
-  <data name="Get Class" xml:space="preserve">
-    <value>Obter Classe</value>
+  <data name="Get C# Class" xml:space="preserve">
+    <value>Obter Classe C#</value>
   </data>
   <data name="Do you want to clear ALL logs?" xml:space="preserve">
     <value>Você deseja limpar TODOS os logs?</value>

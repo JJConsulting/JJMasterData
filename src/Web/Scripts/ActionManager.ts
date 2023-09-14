@@ -47,7 +47,12 @@ class ActionManager {
             url: url,
             success: (data) => {
                 if (data.urlAsPopUp) {
-                    defaultModal.showIframe(data.urlRedirect, data.popUpTitle);
+                    if(data.isIframe){
+                        defaultModal.showIframe(data.urlRedirect, data.popUpTitle);
+                    } 
+                    else{
+                        defaultModal.showUrl(data.urlRedirect, data.popUpTitle);
+                    }
                 } else {
                     window.location.href = data.urlRedirect;
                 }

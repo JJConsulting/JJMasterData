@@ -1,10 +1,18 @@
 ﻿@inject IOptions<JJMasterDataWebOptions> Options
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ImportViewModel
 
-@{
-    Layout = Options.Value.PopUpLayoutPath;
-}
 
-<form asp-action="Import" method="post">
-    @Html.Raw(Model.UploadAreaHtml)
-</form>
+@Html.Raw(Model.UploadAreaHtml)
+
+<script type="text/javascript">
+    
+    console.log("modal");
+    UploadAreaListener.listenFileUpload("#jjmasterdata-modal ");
+  
+    function importFormElement(){
+        console.log("importando");
+        postFormValues({url:'@Url.Action("Import","Element")', success:()=>{
+            console.log("success");
+        }});
+    }
+</script>

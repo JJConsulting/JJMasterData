@@ -37,7 +37,7 @@ public class UrlRedirectService : IUrlRedirectService
         var formData = new FormStateData(values, pageState);
         var parsedUrl = ExpressionsService.ParseExpression(urlAction.UrlRedirect, formData, false);
         
-        var model = new UrlRedirectModel(urlAction.UrlAsPopUp, urlAction.PopUpTitle, parsedUrl);
+        var model = new UrlRedirectModel(urlAction.IsModal, urlAction.ModalTitle, parsedUrl);
         return model;
     }
 }
