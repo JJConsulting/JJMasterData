@@ -1,4 +1,6 @@
-﻿class GridViewHelper {
+﻿
+
+class GridViewHelper {
 
     static openSettingsModal(componentName: string, encryptedActionMap: string) {
         const gridViewActionInput = document.getElementById("grid-view-action-" + componentName) as HTMLInputElement;
@@ -53,7 +55,7 @@
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
-    static sortItems(componentName) {
+    static sortMultItems(componentName, routeContext) {
         var descCommand = "";
 
         // @ts-ignore
@@ -74,9 +76,12 @@
         
         document.querySelector<HTMLInputElement>("#grid-view-order-" + componentName).value = descCommand;
         
-        $("#" + componentName + "-sort-modal").modal('hide');
+        let modal = new Modal();
+        modal.modalId = componentName + "-sort-modal";
+        modal.hide();
         
         this.clearCurrentFormAction(componentName);
+        GridViewHelper.refreshGrid(componentName, routeContext, true);
     }
 
 

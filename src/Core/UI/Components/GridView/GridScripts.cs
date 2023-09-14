@@ -24,15 +24,19 @@ public class GridScripts
     {
         _gridView = gridView;
     }
-    
 
     public string GetSortingScript(string fieldName)
     {
         var encryptedRouteContext = GetEncryptedRouteContext();
-        
         return $"GridViewHelper.sortGridValues('{_gridView.Name}','{encryptedRouteContext}','{fieldName}')";
     }
-
+    
+    public string GetSortMultItemsScript()
+    {
+        var encryptedRouteContext = GetEncryptedRouteContext();
+        return $"GridViewHelper.sortMultItems('{_gridView.Name}','{encryptedRouteContext}')";
+    }
+    
     public string GetPaginationScript(int page)
     {
         var encryptedRouteContext = GetEncryptedRouteContext();
