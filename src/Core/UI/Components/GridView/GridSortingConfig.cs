@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.Localization;
@@ -19,6 +20,8 @@ internal class GridSortingConfig
     public JJComboBox ComboBox { get; set; }
     public string Name { get; set; }
     
+    private GridScripts GridScripts { get; }
+    
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     
     public GridSortingConfig(JJGridView grid)
@@ -31,6 +34,7 @@ internal class GridSortingConfig
         StringLocalizer = grid.StringLocalizer;
         FormElement = grid.FormElement;
         Name = grid.Name;
+        GridScripts = grid.Scripts;
     }
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
@@ -48,7 +52,7 @@ internal class GridSortingConfig
             IconClass = IconType.Check.GetCssClass(),
             ShowAsButton = true,
             Text = "Sort",
-            OnClientClick = $"GridViewHelper.sortItems('{Name}');"
+            OnClientClick = GridScripts.GetSortMultItemsScript()
         };
         dialog.Buttons.Add(btnSort);
 
@@ -57,7 +61,7 @@ internal class GridSortingConfig
             Text = "Cancel",
             IconClass = IconType.Times.GetCssClass(),
             ShowAsButton = true,
-            OnClientClick = $"$('#{Name}-sort-modal').modal('hide');"
+            OnClientClick = BootstrapHelper.GetCloseModalScript($"{Name}-sort-modal")
         };
 
         dialog.Buttons.Add(btnCancel);

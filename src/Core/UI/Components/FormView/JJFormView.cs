@@ -290,6 +290,7 @@ public class JJFormView : AsyncComponent
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
         StringLocalizer = StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
         DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        FormService.EnableErrorLinks = true;
     }
 
     public JJFormView(string elementName) : this()
@@ -331,6 +332,7 @@ public class JJFormView : AsyncComponent
         StringLocalizer = stringLocalizer;
         DataDictionaryRepository = dataDictionaryRepository;
         ComponentFactory = componentFactory;
+        formService.EnableErrorLinks = true;
     }
 
     #endregion
@@ -1093,12 +1095,12 @@ public class JJFormView : AsyncComponent
     /// Insert the records in the database.
     /// </summary>
     /// <returns>The list of errors.</returns>
-    public async Task<IDictionary<string, string>> InsertFormValuesAsync(IDictionary<string, object?> values,
+    public async Task<IDictionary<string, string>> InsertFormValuesAsync(
+        IDictionary<string, object?> values,
         bool validateFields = true)
     {
-        var result = await FormService.InsertAsync(FormElement, values,
-            new DataContext(CurrentContext.Request, DataContextSource.Form, UserId),
-            validateFields);
+        var dataContext = new DataContext(CurrentContext.Request, DataContextSource.Form, UserId);
+        var result = await FormService.InsertAsync(FormElement, values, dataContext, validateFields);
         UrlRedirect = result.UrlRedirect;
         return result.Errors;
     }

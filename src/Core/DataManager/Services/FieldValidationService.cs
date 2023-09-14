@@ -23,7 +23,11 @@ public class FieldValidationService : IFieldValidationService
         Localizer = localizer;
     }
 
-    public async Task<IDictionary<string, string>> ValidateFieldsAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool enableErrorLink)
+    public async Task<IDictionary<string, string>> ValidateFieldsAsync(
+        FormElement formElement, 
+        IDictionary<string, object> formValues, 
+        PageState pageState, 
+        bool enableErrorLink)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
@@ -208,7 +212,7 @@ public class FieldValidationService : IFieldValidationService
     {
         var link = new HtmlBuilder(HtmlTag.A);
         link.WithAttribute("href", "#void");
-        link.WithAttribute("onclick", "javascript:$('#{fieldName}').focus();");
+        link.WithAttribute("onclick", $"javascript:$('#{fieldName}').focus();");
         link.WithCssClass("alert-link");
         link.AppendText(label ?? fieldName);
 

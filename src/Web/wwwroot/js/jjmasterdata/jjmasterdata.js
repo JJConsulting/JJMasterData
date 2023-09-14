@@ -939,7 +939,7 @@ class GridViewHelper {
         this.clearCurrentFormAction(componentName);
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
-    static sortItems(componentName) {
+    static sortMultItems(componentName, routeContext) {
         var descCommand = "";
         var order = $("#sortable-" + componentName).sortable("toArray");
         for (var i = 0; i < order.length; i++) {
@@ -955,8 +955,11 @@ class GridViewHelper {
         }
         descCommand = descCommand.substring(0, descCommand.length - 1);
         document.querySelector("#grid-view-order-" + componentName).value = descCommand;
-        $("#" + componentName + "-sort-modal").modal('hide');
+        let modal = new Modal();
+        modal.modalId = componentName + "-sort-modal";
+        modal.hide();
         this.clearCurrentFormAction(componentName);
+        GridViewHelper.refreshGrid(componentName, routeContext, true);
     }
     static clearCurrentFormAction(componentName) {
         const currentFormAction = document.querySelector("#form-view-action-map-" + componentName);

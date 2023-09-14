@@ -250,6 +250,13 @@ public static class BootstrapHelper
         _ => $"$('#{modalCssId}').modal();"
     };
 
+    public static string GetCloseModalScript(string modalCssId) => Version switch
+    {
+        5 => $"bootstrap.Modal.getOrCreateInstance(document.getElementById('{modalCssId}'),{{}}).hide();",
+        _ => $"$('#{modalCssId}').modal('hide');"
+    };
+    
+    
     #endregion
     public static string ApplyCompatibility(string cssClass)
     {

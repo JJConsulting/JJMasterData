@@ -151,14 +151,16 @@ internal class GridFilter
 
     private async Task<HtmlBuilder> GetDefaultFilter()
     {
-        
         var action = GridView.FilterAction;
         var fields = GridView.FormElement.Fields.ToList().FindAll(
             field => field.Filter.Type != FilterMode.None && !field.VisibleExpression.Equals("val:0"));
 
-        foreach (var field in fields.Where(field => !GridView.EnableFilter || GridView.RelationValues.ContainsKey(field.Name)))
+        foreach (var field in fields)
         {
-            field.EnableExpression = "val:0";
+            if (GridView.RelationValues.ContainsKey(field.Name))
+                field.EnableExpression = "val:0";
+
+            field.IsRequired = false;
         }
 
         if (fields.Count == 0)
