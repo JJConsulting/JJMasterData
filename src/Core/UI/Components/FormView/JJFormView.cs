@@ -663,16 +663,7 @@ public class JJFormView : AsyncComponent
 
         if (erros.Count > 0)
         {
-            var message = new StringBuilder();
-            foreach (string err in erros.Values)
-            {
-                message.Append(" - ");
-                message.Append(err);
-                message.Append("<br>");
-            }
-
-            html.AppendComponent(ComponentFactory.Html.MessageBox.Create(message.ToString(), MessageIcon.Warning));
-
+            html.AppendComponent(ComponentFactory.Html.MessageBox.Create(erros, MessageIcon.Warning));
             var insertSelectionResult = await GetInsertSelectionResult(GridView.ToolBarActions.InsertAction);
 
             if (insertSelectionResult is RenderedComponentResult renderedComponentResult)
@@ -684,13 +675,11 @@ public class JJFormView : AsyncComponent
                 return insertSelectionResult;
             }
 
-
             PageState = PageState.Insert;
         }
         else
         {
             PageState = PageState.Update;
-
             var result = await GetFormResult(new FormContext(values, PageState), false);
 
             if (result is RenderedComponentResult renderedComponentResult)
@@ -727,20 +716,10 @@ public class JJFormView : AsyncComponent
         try
         {
             var filter = CurrentActionMap?.PkFieldValues;
-
             var errors = await DeleteFormValuesAsync(filter);
-
-            if (errors is { Count: > 0 })
+            if (errors.Count > 0)
             {
-                var errorMessage = new StringBuilder();
-                foreach (var err in errors)
-                {
-                    errorMessage.Append("- ");
-                    errorMessage.Append(err.Value);
-                    errorMessage.AppendLine("<br>");
-                }
-
-                html.AppendComponent(messageFactory.Create(errorMessage.ToString(), MessageIcon.Warning));
+                html.AppendComponent(messageFactory.Create(errors, MessageIcon.Warning));
             }
             else
             {

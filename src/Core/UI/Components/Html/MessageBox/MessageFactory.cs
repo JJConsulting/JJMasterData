@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Text;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
@@ -33,6 +35,19 @@ public class MessageFactory : IComponentFactory<JJMessageBox>
         };
 
         return messageBox;
+    }
+
+    public JJMessageBox Create(IDictionary<string, string> errors, MessageIcon icon)
+    {
+        var errorMessage = new StringBuilder();
+        foreach (var err in errors.Values)
+        {
+            errorMessage.Append("- ");
+            errorMessage.Append(err);
+            errorMessage.AppendLine("<br>");
+        }
+
+        return Create(errorMessage.ToString(), icon);
     }
 
     public JJMessageBox Create(string text, string title, MessageIcon icon, MessageSize size)
