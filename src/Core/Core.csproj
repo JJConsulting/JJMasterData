@@ -79,11 +79,11 @@
       <Compile Update="UI\Components\RedirectComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
-      <Compile Update="UI\Components\Controls\IControlFactoryOfT.cs">
-        <DependentUpon>IControlFactory.cs</DependentUpon>
-      </Compile>
       <Compile Update="UI\Scripts\ActionData.cs">
         <DependentUpon>ActionsScripts.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\IComponentFactoryOfT.cs">
+        <DependentUpon>IComponentFactory.cs</DependentUpon>
       </Compile>
     </ItemGroup>
     

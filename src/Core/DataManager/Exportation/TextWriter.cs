@@ -12,8 +12,8 @@ using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -147,7 +147,16 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
         await sw.FlushAsync();
     }
 
-    public TextWriter(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJTextFile> textFileFactory, ILoggerFactory logger, IEntityRepository entityRepository) : base(expressionsService, stringLocalizer, options, textFileFactory, logger.CreateLogger<DataExportationWriterBase>())
+    public TextWriter(IExpressionsService expressionsService, 
+        IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+        IOptions<JJMasterDataCoreOptions> options, 
+        ControlFactory controlFactory, 
+        ILoggerFactory logger, 
+        IEntityRepository entityRepository) : base(expressionsService, 
+                stringLocalizer, 
+                options, 
+                controlFactory, 
+                logger.CreateLogger<DataExportationWriterBase>())
     {
         EntityRepository = entityRepository;
     }

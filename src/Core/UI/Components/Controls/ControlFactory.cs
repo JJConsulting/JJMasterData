@@ -12,7 +12,7 @@ using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Factories;
 
-internal class ControlFactory : IControlFactory
+public class ControlFactory 
 {
     private IServiceScopeFactory ServiceScopeFactory { get; }
     private IExpressionsService ExpressionsService { get; }
@@ -44,12 +44,12 @@ internal class ControlFactory : IControlFactory
         }
     }
 
-    public IControlFactory<TControl> GetControlFactory<TControl>() where TControl : ControlBase
+    private IControlFactory<TControl> GetControlFactory<TControl>() where TControl : ControlBase
     {
         return ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
     }
 
-    public TControl Create<TControl>(FormElement formElement, FormElementField field, ControlContext controlContext)
+    internal TControl Create<TControl>(FormElement formElement, FormElementField field, ControlContext controlContext)
         where TControl : ControlBase
     {
         var factory = ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
@@ -80,7 +80,7 @@ internal class ControlFactory : IControlFactory
     }
 
 
-    public ControlBase Create(
+    internal ControlBase Create(
         FormElement formElement,
         FormElementField field,
         ControlContext context)

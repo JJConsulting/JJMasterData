@@ -40,8 +40,8 @@ internal class ComponentFactory : IComponentFactory
     public IComponentFactory<JJUploadArea> UploadArea =>
         GetFactory<IComponentFactory<JJUploadArea>>();
 
-    public IControlFactory Controls =>
-        GetFactory<IControlFactory>();
+    public ControlFactory Controls =>
+        GetFactory<ControlFactory>();
 
     public HtmlComponentFactory Html  =>
         _htmlComponentFactory ??= ServiceProvider.GetRequiredService<HtmlComponentFactory>();

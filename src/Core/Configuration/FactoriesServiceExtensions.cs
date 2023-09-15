@@ -79,6 +79,6 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IControlFactory<JJTextFile>, TextFileFactory>();
         services.AddTransient<IControlFactory<JJTextBox>, TextBoxFactory>();
         services.AddTransient<IControlFactory<JJCheckBox>, CheckBoxFactory>();
-        services.AddTransient<IControlFactory, ControlFactory>();
+        services.AddTransient<ControlFactory>();
     }
 }

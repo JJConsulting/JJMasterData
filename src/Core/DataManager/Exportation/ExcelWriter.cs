@@ -17,6 +17,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -43,12 +44,15 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         IExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IOptions<JJMasterDataCoreOptions> options, 
-        IControlFactory<JJTextFile> textFileFactory,
+        ControlFactory controlFactory,
         ILoggerFactory loggerFactory, 
         IEntityRepository entityRepository,
         IFieldFormattingService fieldFormattingService) : base(
-        expressionsService,stringLocalizer, options,
-        textFileFactory, loggerFactory.CreateLogger<DataExportationWriterBase>())
+            expressionsService,
+            stringLocalizer, 
+            options,
+            controlFactory, 
+            loggerFactory.CreateLogger<DataExportationWriterBase>())
     {
         EntityRepository = entityRepository;
         FieldFormattingService = fieldFormattingService;

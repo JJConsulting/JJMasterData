@@ -25,17 +25,6 @@
             <p class="lead">
                 @Model.Exception
             </p>
-            @if (Model is { IsProduction: false, StackTrace: not null })
-            {
-                <div class="container">
-                    <div class="col-sm-12">
-                        <jj-collapse-panel name="stacktrace" title="Stacktrace" expanded-by-default="true">
-                            <pre>@Model.StackTrace</pre>
-                        </jj-collapse-panel>
-                    </div>
-                </div>
-                <br/>
-            }
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-sm-12">
