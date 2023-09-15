@@ -1,5 +1,5 @@
 class FormViewHelper {
-    static showInsertSuccess(componentName: string) {
+    static showInsertSuccess(componentName: string, gridViewRouteContext: string) {
         const insertAlertDiv = document.getElementById("insert-alert-div-item");
         
         setTimeout(function () {
@@ -8,7 +8,9 @@ class FormViewHelper {
         
         setTimeout(function () {
             insertAlertDiv.style.display = "none";
-        }, 3000); 
+        }, 3000);
+
+        GridViewHelper.refresh(componentName,gridViewRouteContext)
     }
 
     static openSelectElementInsert(componentName: string, encryptedActionMap: string) {

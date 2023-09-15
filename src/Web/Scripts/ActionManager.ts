@@ -66,6 +66,7 @@ class ActionManager {
             actionMap,
             modalTitle,
             modalRouteContext,
+            gridViewRouteContext,
             formViewRouteContext,
             confirmationMessage
         } = actionData;
@@ -110,8 +111,8 @@ class ActionManager {
                 
                 if (typeof data === "object") {
                     if (data.closeModal) {
+                        GridViewHelper.refresh(componentName,gridViewRouteContext)
                         modal.remove();
-                        GridViewHelper.refresh(componentName,formViewRouteContext)
                     }
                 }
             })

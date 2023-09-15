@@ -21,9 +21,12 @@ internal record ActionData
     [JsonProperty("formViewRouteContext")]
     public string? EncryptedFormViewRouteContext { get; set; }
     
+    [JsonProperty("gridViewRouteContext")]
+    public string? EncryptedGridViewRouteContext { get; set; }
+    
     [JsonProperty("confirmationMessage")]
     public string? ConfirmationMessage { get; set; }
-
+    
     public string ToJson()
     {
         return JsonConvert.SerializeObject(this, new JsonSerializerSettings()

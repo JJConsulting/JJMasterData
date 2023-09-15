@@ -117,8 +117,10 @@ internal class ActionsScripts
         if (actionContext.IsModal)
         {
             var modalRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);
+            var gridViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
             
             actionData.ModalTitle = actionContext.FormElement.Title;
+            actionData.EncryptedGridViewRouteContext = EncryptionService.EncryptRouteContext(gridViewRouteContext);
             actionData.EncryptedModalRouteContext = EncryptionService.EncryptRouteContext(modalRouteContext);
         }
 

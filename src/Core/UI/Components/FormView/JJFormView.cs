@@ -33,6 +33,7 @@ using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.FormView;
 using Microsoft.Extensions.Options;
 
 
@@ -75,6 +76,7 @@ public class JJFormView : AsyncComponent
 
     private JJDataPanel? _dataPanel;
     private JJGridView? _gridView;
+    private FormViewScripts? _formViewScripts;
     private ActionMap? _currentActionMap;
     private JJAuditLogView? _auditLogView;
     private JJDataImportation? _dataImportation;
@@ -261,6 +263,8 @@ public class JJFormView : AsyncComponent
             return default;
         }
     }
+    
+    private FormViewScripts FormViewScripts => _formViewScripts ??= new(this);
 
     public bool ShowTitle
     {
@@ -486,7 +490,7 @@ public class JJFormView : AsyncComponent
                 .WithCssClass("fade-out")
                 .AppendComponent(alert);
         });
-        htmlBuilder.AppendScript($"FormViewHelper.showInsertSuccess('{Name}');");
+        htmlBuilder.AppendScript(FormViewScripts.GetShowInsertSuccessScript());
     }
 
     private async Task<ComponentResult> GetCancelActionResult()

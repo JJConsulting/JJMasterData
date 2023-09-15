@@ -60,7 +60,7 @@ class ActionManager {
         });
     }
     static executeActionData(actionData) {
-        const { componentName, actionMap, modalTitle, modalRouteContext, formViewRouteContext, confirmationMessage } = actionData;
+        const { componentName, actionMap, modalTitle, modalRouteContext, gridViewRouteContext, formViewRouteContext, confirmationMessage } = actionData;
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -92,8 +92,8 @@ class ActionManager {
                 listenAllEvents("#" + modal.modalId + " ");
                 if (typeof data === "object") {
                     if (data.closeModal) {
+                        GridViewHelper.refresh(componentName, gridViewRouteContext);
                         modal.remove();
-                        GridViewHelper.refresh(componentName, formViewRouteContext);
                     }
                 }
             });
@@ -779,7 +779,7 @@ FeedbackIcon.successClass = "jj-icon-success";
 FeedbackIcon.warningClass = "jj-icon-warning";
 FeedbackIcon.errorClass = "jj-icon-error";
 class FormViewHelper {
-    static showInsertSuccess(componentName) {
+    static showInsertSuccess(componentName, gridViewRouteContext) {
         const insertAlertDiv = document.getElementById("insert-alert-div-item");
         setTimeout(function () {
             insertAlertDiv.style.opacity = "0";
@@ -787,6 +787,7 @@ class FormViewHelper {
         setTimeout(function () {
             insertAlertDiv.style.display = "none";
         }, 3000);
+        GridViewHelper.refresh(componentName, gridViewRouteContext);
     }
     static openSelectElementInsert(componentName, encryptedActionMap) {
         const currentActionInput = document.querySelector(`#form-view-current-action-${componentName}`);
