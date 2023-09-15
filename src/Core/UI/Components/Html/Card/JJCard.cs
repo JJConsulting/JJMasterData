@@ -28,18 +28,16 @@ public class JJCard : HtmlComponent
     
     internal override HtmlBuilder BuildHtml()
     {
-        HtmlBuilder html;
-        if (Layout == PanelLayout.Well)
-            html = GetHtmlWell();
-        else if (Layout == PanelLayout.NoDecoration)
-            html = GetHtmlNoDecoration();
-        else
-            html = GetHtmlPanel();
+        var html = Layout switch
+        {
+            PanelLayout.Well => GetHtmlWell(),
+            PanelLayout.NoDecoration => GetHtmlNoDecoration(),
+            _ => GetHtmlPanel()
+        };
 
         if (BootstrapHelper.Version > 3)
         {
             return new HtmlBuilder(HtmlTag.Div)
-                .WithCssClass("mb-3")
                 .Append(html);
         }
 
@@ -84,9 +82,11 @@ public class JJCard : HtmlComponent
 
         if (HasTitle)
         {
-            var title = new JJTitle();
-            title.Title = Title;
-            title.SubTitle = SubTitle;
+            var title = new JJTitle
+            {
+                Title = Title,
+                SubTitle = SubTitle
+            };
             html.Append(title.GetHtmlBlockquote());
         }
 
@@ -103,16 +103,15 @@ public class JJCard : HtmlComponent
             .WithCssClass(CssClass);
 
 
-        if (BootstrapHelper.Version == 3)
-            html.WithCssClass("well");
-        else
-            html.WithCssClass("card card-body bg-light");
+        html.WithCssClass(BootstrapHelper.Version == 3 ? "well" : "card card-body bg-light");
 
         if (HasTitle)
         {
-            var title = new JJTitle();
-            title.Title = Title;
-            title.SubTitle = SubTitle;
+            var title = new JJTitle
+            {
+                Title = Title,
+                SubTitle = SubTitle
+            };
             html.Append(title.GetHtmlBlockquote());
         }
 

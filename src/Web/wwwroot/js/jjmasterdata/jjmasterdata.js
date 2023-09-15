@@ -776,20 +776,17 @@ FeedbackIcon.warningClass = "jj-icon-warning";
 FeedbackIcon.errorClass = "jj-icon-error";
 class FormViewHelper {
     static showInsertSuccess(componentName) {
-        const insertMessagePanel = document.getElementById("insert-message-panel" + componentName);
-        const insertPanel = document.getElementById("insert-panel" + componentName);
-        if (insertMessagePanel && insertPanel) {
-            insertMessagePanel.style.transition = "opacity 2s ease";
-            insertMessagePanel.style.opacity = "0";
-            setTimeout(() => {
-                insertMessagePanel.style.display = "none";
-                insertPanel.style.display = "block";
-            }, 2000);
-        }
+        const insertAlertDiv = document.getElementById("insert-alert-div-item");
+        setTimeout(function () {
+            insertAlertDiv.style.opacity = "0";
+        }, 1000);
+        setTimeout(function () {
+            insertAlertDiv.style.display = "none";
+        }, 3000);
     }
     static openSelectElementInsert(componentName, encryptedActionMap) {
         const currentActionInput = document.querySelector(`#form-view-current-action-${componentName}`);
-        const selectActionValuesInput = document.querySelector(`#form-view-select-action-values${componentName}`);
+        const selectActionValuesInput = document.querySelector(`#form-view-select-action-values-${componentName}`);
         const form = document.querySelector('form');
         if (currentActionInput && selectActionValuesInput && form) {
             currentActionInput.value = 'ELEMENTSEL';

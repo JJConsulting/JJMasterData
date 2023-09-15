@@ -423,31 +423,22 @@ public class JJFormView : AsyncComponent
             if (GridView.ToolBarActions.InsertAction.ReopenForm)
             {
                 PageState = PageState.Insert;
-
-                var alert = new JJAlert
-                {
-                    Name = $"insert-message-panel{Name}",
-                    Color = PanelColor.Success,
-                    ShowIcon = true,
-                    Icon = IconType.CheckCircleO
-                };
-                alert.Messages.Add(StringLocalizer["Record added successfully"]);
-                var alertHtml = alert.GetHtmlBuilder();
+                
 
                 var formResult = await GetFormResult(new FormContext(RelationValues!, PageState.Insert), false);
 
                 if (formResult is RenderedComponentResult renderedComponentResult)
                 {
-                    var htmlResult = renderedComponentResult.HtmlBuilder;
-                    htmlResult.Append(HtmlTag.Div, div =>
-                    {
-                        div.WithAttribute("id", $"insert-panel{Name}")
-                            .WithAttribute("style", "display:none")
-                            .Append(alertHtml);
-                    });
-                    htmlResult.AppendScript($"FormViewHelper.showInsertSucess('{Name}');");
+                    AppendInsertSuccessAlert(renderedComponentResult.HtmlBuilder);
 
-                    return new RenderedComponentResult(htmlResult);
+                    return renderedComponentResult;
+                }
+                else if (formResult is HtmlComponentResult htmlComponentResult)
+                {
+                    var htmlBuilder = new HtmlBuilder(htmlComponentResult.Content);
+                    AppendInsertSuccessAlert(htmlBuilder);
+
+                    return HtmlComponentResult.FromHtmlBuilder(htmlBuilder);
                 }
 
                 return formResult;
@@ -464,6 +455,26 @@ public class JJFormView : AsyncComponent
         }
 
         return await GetFormResult(new FormContext(values, errors, PageState), true);
+    }
+
+    private void AppendInsertSuccessAlert(HtmlBuilder htmlBuilder)
+    {
+        var alert = new JJAlert
+        {
+            Name = $"insert-alert-{Name}",
+            Color = PanelColor.Success,
+            ShowIcon = true,
+            Icon = IconType.CheckCircleO
+        };
+        alert.Messages.Add(StringLocalizer["Record added successfully"]);
+        htmlBuilder.Append(HtmlTag.Div, div =>
+        {
+            div.WithCssClass("mt-3");
+            div.WithAttribute("id", $"insert-alert-div-{Name}")
+                .WithCssClass("fade-out")
+                .AppendComponent(alert);
+        });
+        htmlBuilder.AppendScript($"FormViewHelper.showInsertSuccess('{Name}');");
     }
 
     private async Task<ComponentResult> GetCancelActionResult()
@@ -927,11 +938,9 @@ public class JJFormView : AsyncComponent
                 panelHtml.AppendScript($"document.getElementById('form-view-page-state-{Name}').value={(int)PageState}");
                 return HtmlComponentResult.FromHtmlBuilder(panelHtml);
             }
-             
-
+            
             if (ShowTitle)
                 panelHtml.Prepend(GridView.GetTitle(values).GetHtmlBuilder());
-
 
             return new RenderedComponentResult(panelHtml);
         }
@@ -972,16 +981,16 @@ public class JJFormView : AsyncComponent
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
 
-        if (panel.Errors.Any())
-            formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(panel.Errors));
-
         var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
 
         var panelActions = panel.FormElement.Options.FormToolbarActions
             .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel || isParent).ToList();
 
         var toolbar = await GetFormToolbarAsync(panelActions);
-
+        
+        if (panel.Errors.Any())
+            formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(panel.Errors));
+        
         formHtml.Append(parentPanelHtml);
         formHtml.AppendComponent(toolbar);
         formHtml.AppendHiddenInput($"form-view-current-action-{Name}");
@@ -1012,7 +1021,7 @@ public class JJFormView : AsyncComponent
     {
         var toolbar = new JJToolbar
         {
-            CssClass = "pb-3 mt-3"
+            CssClass = "mt-3"
         };
 
         foreach (var action in actions.Where(a => !a.IsGroup))
@@ -1033,7 +1042,7 @@ public class JJFormView : AsyncComponent
         {
             var btnGroup = new JJLinkButtonGroup
             {
-                CaretText = "More"
+                CaretText = StringLocalizer["More"]
             };
 
             foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())

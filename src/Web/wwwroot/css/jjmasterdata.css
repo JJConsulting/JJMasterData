@@ -633,3 +633,8 @@ button.dropdown-toggle.form-control {
     height: 100vh;
     border: 0
 }
+
+.fade-out {
+    opacity: 1;
+    transition: opacity 3s ease-in-out;
+}

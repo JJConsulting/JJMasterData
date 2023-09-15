@@ -38,7 +38,12 @@ public class JJAlert : HtmlComponent
             html.Append(GetCloseButton("alert"));
 
         if (ShowIcon && Icon is not null)
-            html.AppendComponent(new JJIcon(Icon.Value));
+        {
+            var icon = new JJIcon(Icon.Value);
+            icon.CssClass += $"{BootstrapHelper.MarginRight}-{1}";
+            html.AppendComponent(icon);
+        }
+     
 
         if (!string.IsNullOrEmpty(Title))
             html.Append(HtmlTag.B, b => b.AppendText($"&nbsp;&nbsp;{Title}"));

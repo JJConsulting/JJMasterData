@@ -63,7 +63,7 @@ internal class FormViewRelationshipLayout
     {
         var tabNav = new JJTabNav(ParentFormView.CurrentContext)
         {
-            Name = $"nav_relationships_{ParentFormView.DataPanel.Name}"
+            Name = $"relationships-tab-nav-{ParentFormView.DataPanel.Name}"
         };
 
         foreach (var relationship in relationships.Where(r => r.Panel.Layout is PanelLayout.Tab))
@@ -94,7 +94,7 @@ internal class FormViewRelationshipLayout
             case PanelLayout.Collapse or PanelLayout.Panel:
                 var collapse = new JJCollapsePanel(ParentFormView.CurrentContext)
                 {
-                    Name = $"collapse_{relationship.Id}",
+                    Name = $"{relationship.Id}-collapse",
                     Title = relationship.Panel.Title,
                     HtmlBuilderContent = content,
                     Color = relationship.Panel.Color,
@@ -106,7 +106,7 @@ internal class FormViewRelationshipLayout
             case PanelLayout.Panel or PanelLayout.Well:
                 var panel = new JJCard
                 {
-                    Name = $"card_{relationship.Id}",
+                    Name = $"{relationship.Id}-card",
                     Title = relationship.Panel.Title,
                     Color = relationship.Panel.Color,
                     Layout = relationship.Panel.Layout,
@@ -116,9 +116,11 @@ internal class FormViewRelationshipLayout
 
                 return panel.GetHtmlBuilder();
             case PanelLayout.NoDecoration:
-                var htmlTitle = new JJTitle();
-                htmlTitle.Title = relationship.Panel.Title;
-                htmlTitle.Size = HeadingSize.H3;
+                var htmlTitle = new JJTitle
+                {
+                    Title = relationship.Panel.Title,
+                    Size = HeadingSize.H3
+                };
 
                 var div = new HtmlBuilder(HtmlTag.Div);
                 div.WithCssClass(relationship.Panel.CssClass);

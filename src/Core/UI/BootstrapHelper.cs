@@ -165,6 +165,7 @@ public static class BootstrapHelper
         _ => " mr"
     };
 
+
     public static string FormGroup => Version switch
     {
         5 => " mb-3",
@@ -238,6 +239,7 @@ public static class BootstrapHelper
         >= 4 => "badge bg-danger",
         _ => "label label-danger"
     };
+
 
     public static string GetDataToggle(string value)
     {

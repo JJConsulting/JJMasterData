@@ -7,7 +7,6 @@ namespace JJMasterData.Core.Web.Components;
 public class JJToolbar : HtmlComponent
 {
     public List<HtmlBuilder> Items { get; set; }
-
     internal JJToolbar()
     {
         Items = new List<HtmlBuilder>();
@@ -18,7 +17,6 @@ public class JJToolbar : HtmlComponent
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
-            .WithCssClass(BootstrapHelper.FormGroup)
             .WithCssClass(CssClass)
             .Append(HtmlTag.Div, row =>
             {
