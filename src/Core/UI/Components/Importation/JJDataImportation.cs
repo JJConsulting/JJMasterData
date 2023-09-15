@@ -124,7 +124,7 @@ public class JJDataImportation : ProcessComponent
         if (ComponentContext is ComponentContext.DataImportationFileUpload)
         {
             UploadArea.OnFileUploaded += FileUploaded;
-            return await UploadArea.GetFileUploadResultAsync();
+            return await UploadArea.GetResultAsync();
         }
         
         string action = CurrentContext.Request.QueryString["dataImportationOperation"];
@@ -150,7 +150,7 @@ public class JJDataImportation : ProcessComponent
             {
                 if (!IsRunning())
                 {
-                    string pasteValue = CurrentContext.Request.GetFormValue("pasteValue");
+                    string pasteValue = CurrentContext.Request.Form["pasteValue"];
                     ImportInBackground(pasteValue);
                 }
                 htmlBuilder = GetHtmlWaitProcess();
@@ -158,7 +158,7 @@ public class JJDataImportation : ProcessComponent
             }
             default:
             {
-                if (UploadArea.IsPostAfterUploadAllFiles() || IsRunning())
+                if (IsRunning())
                     htmlBuilder = GetHtmlWaitProcess();
                 else
                     htmlBuilder = GetUploadAreaCollapse(ProcessKey);

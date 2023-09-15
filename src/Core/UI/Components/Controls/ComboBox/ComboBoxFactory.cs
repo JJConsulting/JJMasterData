@@ -9,26 +9,27 @@ using Microsoft.Extensions.Logging;
 using System;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Factories;
 
 internal class ComboBoxFactory : IControlFactory<JJComboBox>
 {
-    private IHttpRequest HttpRequest { get; }
+    private IFormValues FormValues { get; }
     private IDataItemService DataItemService { get; }
     private IExpressionsService ExpressionsService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
     public ComboBoxFactory(
-        IHttpRequest httpRequest, 
+        IFormValues formValues, 
         IDataItemService dataItemService,
         IExpressionsService expressionsService, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {
-        HttpRequest = httpRequest;
+        FormValues = formValues;
         DataItemService = dataItemService;
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
@@ -38,7 +39,7 @@ internal class ComboBoxFactory : IControlFactory<JJComboBox>
     public JJComboBox Create()
     {
         return new JJComboBox(
-            HttpRequest,
+            FormValues,
             DataItemService,
             ExpressionsService,
             StringLocalizer,

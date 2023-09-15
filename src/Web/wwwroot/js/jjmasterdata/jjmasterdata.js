@@ -757,14 +757,14 @@ function applyDecimalPlaces() {
 }
 class FeedbackIcon {
     static removeAllIcons(selector) {
-        const elements = document.querySelectorAll(selector);
+        const elements = window.parent.document.querySelectorAll(selector);
         elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
             element.classList.remove(FeedbackIcon.successClass, FeedbackIcon.warningClass, FeedbackIcon.searchClass, FeedbackIcon.errorClass);
         });
     }
     static setIcon(selector, iconClass) {
         this.removeAllIcons(selector);
-        const elements = document.querySelectorAll(selector);
+        const elements = window.parent.document.querySelectorAll(selector);
         elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
             element.classList.add(iconClass);
         });
@@ -1141,13 +1141,14 @@ const listenAllEvents = (selectorPrefix = String()) => {
 };
 class LookupHelper {
     static setLookupValues(fieldName, id, description) {
-        defaultModal.hide();
-        const idInput = document.querySelector("#" + fieldName);
+        const idInput = window.parent.document.querySelector("#" + fieldName);
         idInput.value = id;
-        const descriptionInput = document.querySelector("#" + fieldName + "-description");
+        const descriptionInput = window.parent.document.querySelector("#" + fieldName + "-description");
         if (descriptionInput) {
             descriptionInput.value = description;
         }
+        FeedbackIcon.setIcon(fieldName, FeedbackIcon.successClass);
+        window.parent.defaultModal.remove();
     }
 }
 class LookupListener {
@@ -1158,17 +1159,18 @@ class LookupListener {
             let lookupDescriptionUrl = lookupInput.getAttribute("lookup-description-url");
             const lookupIdSelector = "#" + lookupId;
             const lookupDescriptionSelector = lookupIdSelector + "-description";
+            const lookupIdInput = document.querySelector(lookupIdSelector);
+            const lookupDescriptionInput = document.querySelector(lookupDescriptionSelector);
             lookupInput.addEventListener("blur", function () {
                 FeedbackIcon.removeAllIcons(lookupDescriptionSelector);
                 postFormValues({
                     url: lookupDescriptionUrl,
                     success: (data) => {
-                        if (data.description === "") {
+                        if (!data.description) {
                             FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.warningClass);
+                            lookupDescriptionInput.value = String();
                         }
                         else {
-                            const lookupIdInput = document.querySelector(lookupIdSelector);
-                            const lookupDescriptionInput = document.querySelector(lookupDescriptionSelector);
                             FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.successClass);
                             lookupIdInput.value = data.id;
                             if (lookupDescriptionInput) {
@@ -1178,6 +1180,7 @@ class LookupListener {
                     },
                     error: (_) => {
                         FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.errorClass);
+                        lookupDescriptionInput.value = String();
                     }
                 });
             });
@@ -1441,23 +1444,22 @@ class _Modal extends ModalBase {
         this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
-        let style = "width: 100vw; height: 100vh;";
-        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
+        modalBody.innerHTML = `<iframe src="${url}" class="modal-iframe"></iframe>`;
         this.showModal();
     }
-    showUrl(options, title, size = null) {
+    showUrl(modalOptions, title, size = null) {
         return __awaiter(this, void 0, void 0, function* () {
             this.modalTitle = title;
             this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
             this.createModalElement();
             let fetchUrl;
             let fetchOptions;
-            if (options instanceof ModalUrlOptions) {
-                fetchUrl = options.url;
-                fetchOptions = options.requestOptions;
+            if (typeof modalOptions === 'object' && 'url' in modalOptions) {
+                fetchUrl = modalOptions.url;
+                fetchOptions = modalOptions.requestOptions;
             }
             else {
-                fetchUrl = options;
+                fetchUrl = modalOptions;
             }
             return yield fetch(fetchUrl, fetchOptions)
                 .then((response) => __awaiter(this, void 0, void 0, function* () {
@@ -1985,10 +1987,6 @@ class UploadAreaListener {
         });
         const onSuccess = (file = null) => {
             if (dropzone.getQueuedFiles().length === 0) {
-                const areFilesUploadedInput = document.querySelector("#" + options.componentName + "-are-files-uploaded");
-                if (areFilesUploadedInput) {
-                    areFilesUploadedInput.value = "1";
-                }
                 if (options.jsCallback) {
                     eval(options.jsCallback);
                 }
@@ -2020,7 +2018,7 @@ class UploadAreaListener {
 }
 class UploadAreaOptions {
     constructor(element) {
-        let dropzone = element.lastChild;
+        let dropzone = element.querySelector(".dropzone");
         this.componentName = dropzone.getAttribute("id");
         this.allowMultipleFiles = element.getAttribute("allow-multiple-files") === "true";
         this.jsCallback = element.getAttribute("js-callback");
@@ -2035,18 +2033,21 @@ class UploadAreaOptions {
         this.maxFiles = Number(element.getAttribute("max-files"));
         this.parallelUploads = Number(element.getAttribute("parallel-uploads"));
         this.extensionNotAllowedLabel = element.getAttribute("extension-not-allowed-label");
-        let routeContext = element.getAttribute("route-context");
-        let queryStringParams = element.getAttribute("query-string-params");
-        let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", routeContext);
-        const params = queryStringParams.split('&');
-        for (let i = 0; i < params.length; i++) {
-            const param = params[i].split('=');
-            const key = decodeURIComponent(param[0]);
-            const value = decodeURIComponent(param[1]);
-            urlBuilder.addQueryParameter(key, value);
+        this.url = element.getAttribute("upload-url");
+        if (!this.url) {
+            let routeContext = element.getAttribute("route-context");
+            let queryStringParams = element.getAttribute("query-string-params");
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", routeContext);
+            const params = queryStringParams.split('&');
+            for (let i = 0; i < params.length; i++) {
+                const param = params[i].split('=');
+                const key = decodeURIComponent(param[0]);
+                const value = decodeURIComponent(param[1]);
+                urlBuilder.addQueryParameter(key, value);
+            }
+            this.url = urlBuilder.build();
         }
-        this.url = urlBuilder.build();
     }
 }
 class UploadViewHelper {

@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
@@ -21,8 +20,7 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
 
     public TextRangeFactory(IHttpContext httpContext,
                             IStringLocalizer<JJMasterDataResources> stringLocalizer,
-                            IControlFactory<JJTextGroup> textBoxFactory,
-                            IEncryptionService encryptionService)
+                            IControlFactory<JJTextGroup> textBoxFactory)
     {
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
@@ -31,7 +29,7 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
 
     public JJTextRange Create()
     {
-        return new JJTextRange(HttpContext.Request, TextBoxFactory,StringLocalizer);
+        return new JJTextRange(HttpContext.Request.Form, TextBoxFactory,StringLocalizer);
     }
 
     public JJTextRange Create(FormElement formElement, FormElementField field, ControlContext context)

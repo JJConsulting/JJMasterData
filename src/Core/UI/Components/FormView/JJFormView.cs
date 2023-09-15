@@ -114,7 +114,7 @@ public class JJFormView : AsyncComponent
     /// Se a variavel não for atribuida diretamente,
     /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
-    private string? UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
+    private string? UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext.Session, UserValues);
 
     /// <summary>
     /// Configurações de importação
@@ -165,7 +165,7 @@ public class JJFormView : AsyncComponent
         {
             if (!_relationValues.Any())
             {
-                var encryptedRelationValues = CurrentContext.Request.GetFormValue($"form-view-relation-values-{Name}");
+                var encryptedRelationValues = CurrentContext.Request.Form[$"form-view-relation-values-{Name}"];
 
                 if (encryptedRelationValues is null)
                     return _relationValues;
@@ -352,7 +352,7 @@ public class JJFormView : AsyncComponent
         formView.FormElement.ParentName = RouteContext.ParentElementName;
         formView.UserValues = UserValues;
         formView.DataPanel.FieldNamePrefix = $"{formView.DataPanel.Name}_";
-        var encryptedFkValues = CurrentContext.Request.GetFormValue($"{formView.GridView.Name}-fk-values");
+        var encryptedFkValues = CurrentContext.Request.Form[$"{formView.GridView.Name}-fk-values"];
 
         if (encryptedFkValues is not null)
         {
@@ -651,7 +651,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
-        string encryptedActionMap = CurrentContext.Request.GetFormValue($"form-view-select-action-values{Name}");
+        string encryptedActionMap = CurrentContext.Request.Form[$"form-view-select-action-values{Name}"];
         var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement =
@@ -1230,7 +1230,7 @@ public class JJFormView : AsyncComponent
     {
         var values =
             await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState,
-                CurrentContext.Request.IsPost);
+                CurrentContext.Request.Form.ContainsFormValues());
 
         return new FormStateData(values, UserValues, PageState);
     }

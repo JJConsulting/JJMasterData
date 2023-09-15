@@ -111,27 +111,25 @@ class _Modal extends ModalBase {
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
         
-        let style = "width: 100vw; height: 100vh;";
-        
-        modalBody.innerHTML = `<iframe src="${url}" frameborder="0" style="${style}"></iframe>`;
+        modalBody.innerHTML = `<iframe src="${url}" class="modal-iframe"></iframe>`;
 
         this.showModal();
     }
 
-    override async showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize = null) {
+    override async showUrl(modalOptions: ModalUrlOptions | string, title: string, size: ModalSize = null) {
         this.modalTitle = title;
         this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
         
         let fetchUrl : string;
         let fetchOptions : RequestInit;
-        
-        if(options instanceof ModalUrlOptions){
-            fetchUrl = options.url;
-            fetchOptions = options.requestOptions;
+
+        if (typeof modalOptions === 'object' && 'url' in modalOptions) {
+            fetchUrl = modalOptions.url;
+            fetchOptions = modalOptions.requestOptions;
         }
         else{
-            fetchUrl = options;
+            fetchUrl = modalOptions;
         }
         
         return await fetch(fetchUrl, fetchOptions)

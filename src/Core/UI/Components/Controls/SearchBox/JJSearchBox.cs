@@ -73,9 +73,9 @@ public class JJSearchBox : ControlBase
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && Request.IsPost)
+            if (AutoReloadFormFields && _text == null && Request.Form.ContainsFormValues())
             {
-                _text = Request[Name];
+                _text = Request.Form[Name];
             }
 
             return _text;
@@ -141,9 +141,9 @@ public class JJSearchBox : ControlBase
     /// </summary>
     public async Task<string?> GetSelectedValueAsync()
     {
-        if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && Request.IsPost)
+        if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && Request.Form.ContainsFormValues())
         {
-            _selectedValue = Request[Name];
+            _selectedValue = Request.Form[Name];
         }
 
         if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
@@ -169,6 +169,7 @@ public class JJSearchBox : ControlBase
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
 
+    private IHttpRequest Request { get; }
     private IEncryptionService EncryptionService { get; }
     public IDataItemService DataItemService { get; }
     public FormStateData FormStateData { get; internal set; }
@@ -202,11 +203,12 @@ public class JJSearchBox : ControlBase
     #region "Constructors"
 
     public JJSearchBox(
-        IHttpContext httpContext,
+        IHttpRequest request,
         IEncryptionService encryptionService,
-        IDataItemService dataItemService) : base(httpContext.Request)
+        IDataItemService dataItemService) : base(request.Form)
     {
         HtmlId = Name;
+        Request = request;
         EncryptionService = encryptionService;
         DataItemService = dataItemService;
         Enabled = true;
@@ -356,7 +358,7 @@ public class JJSearchBox : ControlBase
     public async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
         string componentName = Request.QueryString["fieldName"];
-        string textSearch = Request.GetFormValue(componentName);
+        string textSearch = Request.Form[componentName];
 
         var values = await GetValuesAsync(textSearch);
         var items = DataItemService.GetItems(DataItem, values);

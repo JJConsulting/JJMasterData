@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -31,7 +32,7 @@ public class JJTextGroup : JJTextBox
 
     public string GroupCssClass { get; set; }
 
-    public JJTextGroup(IHttpContext httpContext) :  base(httpContext.Request)
+    public JJTextGroup(IFormValues formValues) :  base(formValues)
     {
     }
 

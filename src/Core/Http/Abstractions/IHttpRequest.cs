@@ -1,4 +1,5 @@
 using System.Web;
+using JJMasterData.Core.Http.Abstractions;
 
 
 #if NET || NETSTANDARD
@@ -14,17 +15,7 @@ public interface IHttpRequest
     string UserAgent { get; }
     string AbsoluteUri { get; }
     string ApplicationPath { get; }
-#if NETFRAMEWORK
-    HttpPostedFile GetFile(string file);
-#else
-    IFormFile GetFile(string file);
-#endif
-    object GetUnvalidated(string key);
     string this[string key] { get; }
-    
     public IQueryString QueryString { get; }
-    
-    string GetFormValue(string key);
-    
-    bool IsPost { get; }
+    IFormValues Form { get; }
 }

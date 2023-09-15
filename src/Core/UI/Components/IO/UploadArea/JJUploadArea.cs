@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Localization;
+﻿#nullable enable
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 
@@ -22,12 +24,12 @@ public class JJUploadArea : AsyncComponent
     /// <summary>
     /// Event fired when the file is posted.
     /// </summary>  
-    public event EventHandler<FormUploadFileEventArgs> OnFileUploaded;
+    public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
     
     /// <summary>
     /// Async event fired when the file is posted.
     /// </summary>  
-    public event AsyncEventHandler<FormUploadFileEventArgs> OnFileUploadedAsync;
+    public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
     /// <summary>
     /// Allowed extension type, separated by comma.
     /// Default: *
@@ -60,8 +62,6 @@ public class JJUploadArea : AsyncComponent
     public bool EnableCopyPaste { get; set; } = true;
     public bool ShowFileSize { get; set; } = true;
     public int MaxFileSize { get; set; }
-    
-    private string AreFilesUploadedFieldName =>  $"{Name}-are-files-uploaded";
 
     /// <summary>
     /// JS code to be executed after all server side uploads are completed.
@@ -88,7 +88,7 @@ public class JJUploadArea : AsyncComponent
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IEncryptionService EncryptionService { get; }
     
-    private RouteContext _routeContext;
+    private RouteContext? _routeContext;
     internal RouteContext RouteContext
     {
         get
@@ -121,13 +121,13 @@ public class JJUploadArea : AsyncComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (IsPostAfterUploadAllFiles())
-            return await GetFileUploadResultAsync();
+        if (UploadAreaService.TryGetFile(Multiple ? "uploadAreaFile[0]" : "uploadAreaFile", out var formFile))
+            return await GetFileUploadResultAsync(formFile!);
         
         return new RenderedComponentResult(GetUploadAreaHtmlBuilder());
     }
 
-    public async Task<ComponentResult> GetFileUploadResultAsync()
+    public async Task<ComponentResult> GetFileUploadResultAsync(FormFileContent formFile)
     {
         if (OnFileUploaded != null)
             UploadAreaService.OnFileUploaded += OnFileUploaded;
@@ -135,7 +135,7 @@ public class JJUploadArea : AsyncComponent
         if (OnFileUploadedAsync != null)
             UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
 
-        var dto = await UploadAreaService.UploadFileAsync(Multiple ? "uploadAreaFile[0]" : "uploadAreaFile", AllowedTypes);
+        var dto = await UploadAreaService.UploadFileAsync(formFile, AllowedTypes);
         
         var result = new JsonComponentResult(dto)
         {
@@ -150,7 +150,6 @@ public class JJUploadArea : AsyncComponent
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", $"{Name}-upload-area-div")
             .WithCssClass("upload-area-div")
-            .AppendHiddenInput(AreFilesUploadedFieldName)
             .Append(HtmlTag.Div,  div =>
             {
                 div.WithAttributes(Attributes);
@@ -158,6 +157,7 @@ public class JJUploadArea : AsyncComponent
                 div.WithAttribute("id", Name);
             });
         div.WithAttributes(Attributes);
+        div.WithAttributeIf(Url is not null,"upload-url", Url!);
         div.WithAttribute("js-callback",JsCallback);
         div.WithAttribute("route-context", EncryptionService.EncryptRouteContext(RouteContext));
         div.WithAttribute("allow-multiple-files", Multiple.ToString().ToLower());
@@ -177,6 +177,11 @@ public class JJUploadArea : AsyncComponent
         
         return div;
     }
+
+    /// <summary>
+    /// URL where the files are uploaded. If none is provided, they will be sended to the same page with a RouteContext.
+    /// </summary>
+    public string? Url { get; set; }
 
     /// <remarks>
     /// To change this in .NET Framework, change web.config in system.web/httpRuntime
@@ -201,11 +206,6 @@ public class JJUploadArea : AsyncComponent
         return maxRequestLength;
     }
     
-    public bool IsPostAfterUploadAllFiles()
-    {
-        string action = CurrentContext.Request.GetFormValue(AreFilesUploadedFieldName);
-        return "1".Equals(action);
-    }
     
     public string GetQueryStringParams()
     {

@@ -52,7 +52,7 @@ public class JJAuditLogView : AsyncComponent
     /// Se a variavel não for atribuida diretamente,
     /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
-    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
+    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext.Session, UserValues);
 
     private IHttpContext CurrentContext { get; }
 
@@ -101,7 +101,7 @@ public class JJAuditLogView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string logId = CurrentContext.Request.GetFormValue($"audit-log-id-{Name}");
+        string logId = CurrentContext.Request.Form[$"audit-log-id-{Name}"];
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(logId))

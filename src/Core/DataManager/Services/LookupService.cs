@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -9,6 +10,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -17,7 +19,7 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class LookupService : ILookupService
 {
-    private IHttpContext HttpContext { get; }
+    private IFormValues FormValues { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
@@ -25,14 +27,14 @@ public class LookupService : ILookupService
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public LookupService(
-        IHttpContext httpContext,
+        IFormValues formValues,
         IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper)
     {
-        HttpContext = httpContext;
+        FormValues = formValues;
         DataDictionaryRepository = dataDictionaryRepository;
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
@@ -49,7 +51,7 @@ public class LookupService : ILookupService
         var encryptedLookupParameters =
             EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString(ExpressionsService, formStateData));
         
-        return UrlHelper.GetUrl("GetFormView", "Lookup", "MasterData",new { lookupParameters = encryptedLookupParameters });
+        return UrlHelper.GetUrl("Index", "Lookup", "MasterData",new { lookupParameters = encryptedLookupParameters });
     }
 
     public string GetDescriptionUrl(string elementName, string fieldName, string componentName, PageState pageState)
@@ -100,7 +102,7 @@ public class LookupService : ILookupService
         if (string.IsNullOrEmpty(elementMap.FieldDescription))
             return fields[elementMap.FieldKey]?.ToString();
 
-        return fields[elementMap.FieldDescription]?.ToString();
+        return fields.Any() ? fields[elementMap.FieldDescription]?.ToString() : null;
     }
 
     private IDictionary<string, object> GetFilters(DataElementMap elementMap, object? value, FormStateData formStateData)
@@ -126,14 +128,9 @@ public class LookupService : ILookupService
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
         return await EntityRepository.GetFieldsAsync(formElement, filters);
     }
-
-
     
-
-    public object? GetSelectedValue(string componentName)
+    public string? GetSelectedValue(string componentName)
     {
-        return HttpContext.Request.IsPost ? HttpContext.Request.GetFormValue(componentName) : null;
+        return FormValues[componentName];
     }
-
-    
 }

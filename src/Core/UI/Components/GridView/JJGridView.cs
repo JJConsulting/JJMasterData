@@ -220,7 +220,7 @@ public class JJGridView : AsyncComponent
             if (_currentOrder != null)
                 return _currentOrder;
             
-            if (!CurrentContext.Request.IsPost)
+            if (!CurrentContext.Request.Form.ContainsFormValues())
             {
                 if (MaintainValuesOnLoad)
                 {
@@ -267,7 +267,7 @@ public class JJGridView : AsyncComponent
                 return _currentPage;
             }
 
-            if (CurrentContext.Request.IsPost)
+            if (CurrentContext.Request.Form.ContainsFormValues())
             {
                 int currentPage = 1;
                 string tablePageId = $"grid-view-page-{Name}";
@@ -383,7 +383,7 @@ public class JJGridView : AsyncComponent
                 return _currentExportConfig;
 
             _currentExportConfig = new ExportOptions();
-            if (CurrentContext.Request.IsPost)
+            if (CurrentContext.Request.Form.ContainsFormValues())
             {
                 _currentExportConfig = ExportOptions.LoadFromForm(CurrentContext, Name);
             }
@@ -487,7 +487,7 @@ public class JJGridView : AsyncComponent
         {
             if (_currentActionMap != null) 
                 return _currentActionMap;
-            var encryptedActionMap = CurrentContext.Request[$"grid-view-action-{Name}"];
+            var encryptedActionMap = CurrentContext.Request.Form[$"grid-view-action-{Name}"];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -498,7 +498,7 @@ public class JJGridView : AsyncComponent
 
     private string? SelectedRowsId
     {
-        get => _selectedRowsId ??= CurrentContext.Request.GetUnvalidated($"grid-view-selected-rows-{Name}")?.ToString();
+        get => _selectedRowsId ??= CurrentContext.Request.Form[$"grid-view-selected-rows-{Name}"];
         set => _selectedRowsId = value ?? "";
     }
     

@@ -21,10 +21,9 @@ public class FormController : MasterDataController
         _formViewFactory = formViewFactory;
     }
     
-    [ServiceFilter<FormElementDecryptionFilter>]
-    public async Task<IActionResult> Render(FormElement formElement)
+    public async Task<IActionResult> Render(string elementName)
     {
-        var formView = _formViewFactory.Create(formElement);
+        var formView = await _formViewFactory.CreateAsync(elementName);
         
         ConfigureFormView(formView);
 

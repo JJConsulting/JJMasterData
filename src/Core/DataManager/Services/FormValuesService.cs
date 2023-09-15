@@ -12,6 +12,7 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager;
@@ -23,21 +24,21 @@ public class FormValuesService : IFormValuesService
     private IDataItemService DataItemService { get; }
     private ILookupService LookupService { get; }
     private IEncryptionService EncryptionService { get; }
-    private IHttpContext CurrentContext { get; }
+    private IFormValues FormValues { get; }
     public FormValuesService(
         IEntityRepository entityRepository,
         IFieldValuesService fieldValuesService,
         IDataItemService dataItemService,
         ILookupService lookupService,
         IEncryptionService encryptionService,
-        IHttpContext currentContext)
+        IFormValues formValues)
     {
         EntityRepository = entityRepository;
         FieldValuesService = fieldValuesService;
         DataItemService = dataItemService;
         LookupService = lookupService;
         EncryptionService = encryptionService;
-        CurrentContext = currentContext;
+        FormValues = formValues;
     }
 
     public async Task<IDictionary<string, object?>> GetFormValuesAsync(FormElement formElement, PageState pageState,
@@ -50,11 +51,14 @@ public class FormValuesService : IFormValuesService
         foreach (var field in formElement.Fields)
         {
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
-            var value = field.ValidateRequest
-                ? CurrentContext.Request.GetFormValue(fieldName)
-                : CurrentContext.Request.GetUnvalidated(fieldName);
-
-
+            
+#if NET48
+            object? value = field.ValidateRequest
+                ? FormValues[fieldName]
+                : FormValues.GetUnvalidated(fieldName);
+#else
+            object? value = FormValues[fieldName];
+#endif
             switch (field.Component)
             {
                 case FormComponent.Search:
@@ -75,14 +79,14 @@ public class FormValuesService : IFormValuesService
                     break;
                 case FormComponent.Currency:
                 case FormComponent.Number:
-                    if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
+                    if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
                             out var numericValue))
                         value = numericValue;
                     else
                         value = 0;
                     break;
                 case FormComponent.CheckBox:
-                    value ??= CurrentContext.Request.GetFormValue($"{fieldName}_hidden");
+                    value ??= FormValues[$"{fieldName}_hidden"];
                     break;
             }
 
@@ -118,20 +122,20 @@ public class FormValuesService : IFormValuesService
         var valuesToBeReceived = new Dictionary<string, object?>();
         DataHelper.CopyIntoDictionary(valuesToBeReceived, values, true);
 
-        if (CurrentContext.Request.IsPost && autoReloadFormFields)
+        if (FormValues.ContainsFormValues() && autoReloadFormFields)
         {
             var requestedValues = await GetFormValuesAsync(formElement, pageState, prefix);
             DataHelper.CopyIntoDictionary(valuesToBeReceived, requestedValues, true);
         }
 
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !CurrentContext.Request.IsPost);
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !FormValues.ContainsFormValues());
     }
 
 
 
     private async Task<IDictionary<string, object?>?> GetDbValues(Element element)
     {
-        string encryptedPkValues = CurrentContext.Request[
+        string encryptedPkValues = FormValues[
             $"data-panel-pk-values-{ComponentNameGenerator.Create(element.Name)}"];
         if (string.IsNullOrEmpty(encryptedPkValues))
             return null;

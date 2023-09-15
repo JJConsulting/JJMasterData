@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
@@ -43,7 +44,7 @@ public class JJTextBox : ControlBase
         }
     }
 
-    public JJTextBox(IHttpRequest request) : base(request)
+    public JJTextBox(IFormValues formValues) : base(formValues)
     {
         InputType = InputType.Text;
         Visible = true;

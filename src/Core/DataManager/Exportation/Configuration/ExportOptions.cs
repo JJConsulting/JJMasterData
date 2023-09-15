@@ -32,13 +32,13 @@ public class ExportOptions
     internal static ExportOptions LoadFromForm(IHttpContext currentContext, string componentName)
     {
         var expConfig = new ExportOptions();
-        if (currentContext.Request[componentName + FileName] != null)
+        if (currentContext.Request.Form[componentName + FileName] != null)
         {
-            expConfig.FileExtension = (ExportFileExtension)int.Parse(currentContext.Request[componentName + FileName]);
-            expConfig.IsLandScape = "1".Equals(currentContext.Request[componentName + TableOrientation]);
-            expConfig.ExportFirstLine = "1".Equals(currentContext.Request[componentName + ExportTableFirstLine]);
-            expConfig.ExportAllFields = "1".Equals(currentContext.Request[componentName + ExportAll]);
-            expConfig.Delimiter = currentContext.Request[componentName + ExportDelimiter];
+            expConfig.FileExtension = (ExportFileExtension)int.Parse(currentContext.Request.Form[componentName + FileName]);
+            expConfig.IsLandScape = "1".Equals(currentContext.Request.Form[componentName + TableOrientation]);
+            expConfig.ExportFirstLine = "1".Equals(currentContext.Request.Form[componentName + ExportTableFirstLine]);
+            expConfig.ExportAllFields = "1".Equals(currentContext.Request.Form[componentName + ExportAll]);
+            expConfig.Delimiter = currentContext.Request.Form[componentName + ExportDelimiter];
         }
 
         return expConfig;

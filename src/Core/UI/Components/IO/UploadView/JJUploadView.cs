@@ -59,7 +59,6 @@ public class JJUploadView : AsyncComponent
     public bool IsCollapseExpandedByDefault { get; set; }
     
     public string Title { get; set; }
-    
     public string SubTitle { get; set; }
     
     public bool ViewGallery { get; set; }
@@ -273,7 +272,7 @@ public class JJUploadView : AsyncComponent
 
         var html = new HtmlBuilder();
 
-        var uploadAction = CurrentContext.Request.GetFormValue($"upload-view-action-{Name}");
+        var uploadAction = CurrentContext.Request.Form[$"upload-view-action-{Name}"];
         if (!string.IsNullOrEmpty(uploadAction))
         {
             var result = GetUploadActionResult(uploadAction);
@@ -310,8 +309,8 @@ public class JJUploadView : AsyncComponent
     {
         var fileName = EncryptionService.DecryptStringWithUrlUnescape(previewVideo);
         var fileContent = FormFileManager.GetFile(fileName).Content;
-        var fileArray = fileContent.Bytes.ToArray();
-        var srcVideo = $"data:video/mp4;base64,{Convert.ToBase64String(fileArray, 0, fileArray.Length)}";
+        var fileBytes = fileContent.Bytes.ToArray();
+        var srcVideo = $"data:video/mp4;base64,{Convert.ToBase64String(fileBytes, 0, fileBytes.Length)}";
         
         var script = new StringBuilder();
         script.AppendLine("	$(document).ready(function () { ");
@@ -383,7 +382,7 @@ public class JJUploadView : AsyncComponent
 
     private ComponentResult GetUploadActionResult(string uploadViewAction)
     {
-        var fileName = CurrentContext.Request.GetFormValue($"upload-view-file-name-{Name}");
+        var fileName = CurrentContext.Request.Form[$"upload-view-file-name-{Name}"];
         try
         {
             switch (uploadViewAction)
@@ -648,23 +647,23 @@ public class JJUploadView : AsyncComponent
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         
-        var htmlLabel = ComponentFactory.Html.Label.Create();
-        htmlLabel.Text = "File name";
-        htmlLabel.LabelFor = $"preview_filename-{UploadArea.Name}";
+        var label = ComponentFactory.Html.Label.Create();
+        label.Text = "File name";
+        label.LabelFor = $"preview_filename-{UploadArea.Name}";
 
+        var group = ComponentFactory.Controls.Create<JJTextGroup>();
+        group.Name = $"preview_filename-{UploadArea.Name}";
+        group.Addons = new InputAddons(".png");
+        group.Text = "image";
+        
         await html.AppendAsync(HtmlTag.Div, async row =>
         {
             row.WithCssClass("row");
             await row.AppendAsync(HtmlTag.Div, async col =>
             {
-                col.WithCssClass("col-sm-12")
-                   .AppendComponent(htmlLabel);
-                   await col.AppendControlAsync(new JJTextGroup(CurrentContext)
-                   {
-                       Name = $"preview_filename-{UploadArea.Name}",
-                       Addons = new InputAddons(".png"),
-                       Text = "image"
-                   });
+                col.WithCssClass("col-sm-12");
+                col.AppendComponent(label);
+                await col.AppendControlAsync(group);
             });
         });
 

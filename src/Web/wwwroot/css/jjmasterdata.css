@@ -627,3 +627,9 @@ button.dropdown-toggle.form-control {
 .jj-modal-xl{
     --bs-modal-width: 95% !important;
 }
+
+.modal-iframe{
+    width: 100%; 
+    height: 100vh;
+    border: 0
+}

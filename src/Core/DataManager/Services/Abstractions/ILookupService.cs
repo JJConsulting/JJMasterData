@@ -9,7 +9,7 @@ public interface ILookupService
 
     string GetDescriptionUrl(string elementName, string fieldName, string componentName, PageState pageState);
     
-    object GetSelectedValue(string componentName);
+    string GetSelectedValue(string componentName);
 
     Task<string> GetDescriptionAsync(
         DataElementMap elementMap,

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Azure.Core;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.UI.Components.Importation;
@@ -25,6 +27,7 @@ public class JJTextFile : ControlBase
     private RouteContext _routeContext;
     private TextFileScripts _scripts;
     private JJUploadView _uploadView;
+    private IHttpRequest Request { get; }
     private IComponentFactory<JJUploadView> UploadViewFactory { get; }
     private IControlFactory<JJTextGroup> TextBoxFactory { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -34,7 +37,7 @@ public class JJTextFile : ControlBase
 
     public string FieldName { get; set; }
     
-    public IDictionary<string, object> FormValues
+    public IDictionary<string, object> FortStateValues
     {
         get => _formValues ??= new Dictionary<string, object>();
         set => _formValues = value;
@@ -110,13 +113,14 @@ public class JJTextFile : ControlBase
     
 
     public JJTextFile(
-        IHttpRequest httpRequest,
+        IHttpRequest request,
         IComponentFactory<JJUploadView> uploadViewFactory,
         IControlFactory<JJTextGroup> textBoxFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer, 
         IComponentFactory<JJFileDownloader> fileDownloaderFactory,
-        IEncryptionService encryptionService) : base(httpRequest)
+        IEncryptionService encryptionService) : base(request.Form)
     {
+        Request = request;
         UploadViewFactory = uploadViewFactory;
         TextBoxFactory = textBoxFactory;
         StringLocalizer = stringLocalizer;
@@ -131,7 +135,7 @@ public class JJTextFile : ControlBase
             case ComponentContext.TextFileUploadView:
                 return await GetUploadViewResultAsync();
             case ComponentContext.TextFileFileUpload:
-                return await UploadView.UploadArea.GetFileUploadResultAsync();
+                return await UploadView.UploadArea.GetResultAsync();
             default:
                 return new RenderedComponentResult(await GetHtmlTextGroup());
         }
@@ -213,12 +217,12 @@ public class JJTextFile : ControlBase
         if (pkFields.Count == 0)
             return false;
 
-        return pkFields.All(pkField => FormValues.ContainsKey(pkField.Name) && !string.IsNullOrEmpty(FormValues[pkField.Name]?.ToString()));
+        return pkFields.All(pkField => FortStateValues.ContainsKey(pkField.Name) && !string.IsNullOrEmpty(FortStateValues[pkField.Name]?.ToString()));
     }
 
     public string GetFolderPath()
     {
-        return PathBuilder.GetFolderPath(FormElementField, FormValues);
+        return PathBuilder.GetFolderPath(FormElementField, FortStateValues);
     }
 
     internal string GetFileName()

@@ -15,7 +15,7 @@ class UploadAreaOptions {
     public parallelUploads: number;
     public maxFiles: number;
     constructor(element: Element) {
-        let dropzone = element.lastChild as Element;
+        let dropzone =  element.querySelector<HTMLElement>(".dropzone") ;
         this.componentName = dropzone.getAttribute("id");
         this.allowMultipleFiles = element.getAttribute("allow-multiple-files") === "true";
         this.jsCallback = element.getAttribute("js-callback");
@@ -30,20 +30,23 @@ class UploadAreaOptions {
         this.maxFiles = Number(element.getAttribute("max-files"))
         this.parallelUploads = Number(element.getAttribute("parallel-uploads"))
         this.extensionNotAllowedLabel = element.getAttribute("extension-not-allowed-label");
+        this.url = element.getAttribute("upload-url");
+        
+        if(!this.url){
+            let routeContext = element.getAttribute("route-context");
+            let queryStringParams = element.getAttribute("query-string-params");
+            let urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", routeContext)
 
-        let routeContext = element.getAttribute("route-context");
-        let queryStringParams = element.getAttribute("query-string-params");
-        let urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", routeContext)
+            const params = queryStringParams.split('&');
 
-        const params = queryStringParams.split('&');
-
-        for (let i = 0; i < params.length; i++) {
-            const param = params[i].split('=');
-            const key = decodeURIComponent(param[0]);
-            const value = decodeURIComponent(param[1]);
-            urlBuilder.addQueryParameter(key, value);
+            for (let i = 0; i < params.length; i++) {
+                const param = params[i].split('=');
+                const key = decodeURIComponent(param[0]);
+                const value = decodeURIComponent(param[1]);
+                urlBuilder.addQueryParameter(key, value);
+            }
+            this.url = urlBuilder.build();
         }
-        this.url = urlBuilder.build();
     }
 }

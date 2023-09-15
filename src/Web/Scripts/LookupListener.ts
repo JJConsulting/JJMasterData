@@ -8,18 +8,19 @@ class LookupListener {
             
             const lookupIdSelector = "#" + lookupId;
             const lookupDescriptionSelector = lookupIdSelector + "-description";
-            
+            const lookupIdInput = document.querySelector<HTMLInputElement>(lookupIdSelector);
+            const lookupDescriptionInput = document.querySelector<HTMLInputElement>(lookupDescriptionSelector);
             lookupInput.addEventListener("blur", function () {
                 FeedbackIcon.removeAllIcons(lookupDescriptionSelector);
                 
                 postFormValues({
                     url: lookupDescriptionUrl,
                     success: (data) => {
-                        if (data.description === "") {
+                       
+                        if (!data.description) {
                             FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.warningClass);
+                            lookupDescriptionInput.value = String();
                         } else {
-                            const lookupIdInput = document.querySelector<HTMLInputElement>(lookupIdSelector);
-                            const lookupDescriptionInput = document.querySelector<HTMLInputElement>(lookupDescriptionSelector);
                             FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.successClass);
                             lookupIdInput.value = data.id;
                             
@@ -30,6 +31,7 @@ class LookupListener {
                     },
                     error: (_) => {
                         FeedbackIcon.setIcon(lookupIdSelector, FeedbackIcon.errorClass);
+                        lookupDescriptionInput.value = String();
                     }
                 });
             });

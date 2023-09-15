@@ -16,26 +16,26 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
     private IDataItemService DataItemService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IFormValuesService FormValuesService { get; }
-    private IHttpContext HttpContext { get; }
+    private IHttpRequest HttpRequest { get; }
     private IEncryptionService EncryptionService { get; }
 
     public SearchBoxFactory(
         IDataItemService dataItemService,
         IDataDictionaryRepository dataDictionaryRepository,
         IFormValuesService formValuesService,
-        IHttpContext httpContext,
+        IHttpRequest httpRequest,
         IEncryptionService encryptionService)
     {
         DataItemService = dataItemService;
         DataDictionaryRepository = dataDictionaryRepository;
         FormValuesService = formValuesService;
-        HttpContext = httpContext;
+        HttpRequest = httpRequest;
         EncryptionService = encryptionService;
     }
 
     public JJSearchBox Create()
     {
-        return new JJSearchBox(HttpContext, EncryptionService, DataItemService);
+        return new JJSearchBox(HttpRequest, EncryptionService, DataItemService);
     }
 
     public JJSearchBox Create(FormElement formElement, FormElementField field, ControlContext controlContext)
@@ -43,7 +43,7 @@ internal class SearchBoxFactory : IControlFactory<JJSearchBox>
         if (field.DataItem == null)
             throw new ArgumentNullException(nameof(field.DataItem));
 
-        var search = new JJSearchBox(HttpContext, EncryptionService, DataItemService)
+        var search = new JJSearchBox(HttpRequest, EncryptionService, DataItemService)
         {
             DataItem = field.DataItem,
             Name = field.Name,

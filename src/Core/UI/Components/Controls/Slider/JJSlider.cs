@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
@@ -19,7 +20,7 @@ public class JJSlider : ControlBase
     public bool ShowInput { get; set; } = true;
     public int NumberOfDecimalPlaces { get; set; }
     
-    public JJSlider(IHttpRequest httpRequest, IComponentFactory<JJTextBox> textBoxFactory) : base(httpRequest)
+    public JJSlider(IFormValues formValues, IComponentFactory<JJTextBox> textBoxFactory) : base(formValues)
     {
         TextBoxFactory = textBoxFactory;
     }

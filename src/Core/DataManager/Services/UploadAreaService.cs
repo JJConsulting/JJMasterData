@@ -24,7 +24,7 @@ public class UploadAreaService : IUploadAreaService
         CurrentContext = currentContext;
     }
     
-    public async Task<UploadAreaResultDto> UploadFileAsync(string fileName = "file", string? allowedTypes = null)
+    public async Task<UploadAreaResultDto> UploadFileAsync(FormFileContent formFile, string? allowedTypes = null)
     {
         UploadAreaResultDto dto = new();
         
@@ -32,11 +32,9 @@ public class UploadAreaService : IUploadAreaService
         {
             string message = string.Empty;
             
-            var file = GetFile(fileName);
+            ValidateAllowedExtensions(formFile.FileName, allowedTypes);
             
-            ValidateAllowedExtensions(file.FileName, allowedTypes);
-            
-            var args = new FormUploadFileEventArgs(file);
+            var args = new FormUploadFileEventArgs(formFile);
             OnFileUploaded?.Invoke(this, args);
 
             if (OnFileUploadedAsync != null)
@@ -67,9 +65,13 @@ public class UploadAreaService : IUploadAreaService
     /// <summary>
     /// Recovers the file after the POST
     /// </summary>
-    private FormFileContent GetFile(string fileName)
+    private FormFileContent? GetFile(string fileName)
     {
-        var fileData = CurrentContext.Request.GetFile(fileName);
+        var fileData = CurrentContext.Request.Form.GetFile(fileName);
+
+        if (fileData is null)
+            return null;
+        
         using var stream = new MemoryStream();
         string filename = fileData.FileName;
         
@@ -88,6 +90,13 @@ public class UploadAreaService : IUploadAreaService
         };
 
         return content;
+    }
+    
+    public bool TryGetFile(string fileName, out FormFileContent? formFile)
+    {
+        formFile = GetFile(fileName);
+
+        return formFile != null;
     }
 
     private static void ValidateAllowedExtensions(string filename, string? allowedTypes)
