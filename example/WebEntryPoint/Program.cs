@@ -21,11 +21,19 @@ builder.Services.AddAuthorization(options =>
 });
         
 var app = builder.Build();
-if (app.Environment.IsProduction())
-    app.UseHsts();
 
-app.UseExceptionHandler("/Error");
-app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
+if (app.Environment.IsProduction())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
+    app.UseHsts();
+}
+else
+{
+    app.UseDeveloperExceptionPage();
+}
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

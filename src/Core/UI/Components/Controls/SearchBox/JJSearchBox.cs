@@ -146,7 +146,7 @@ public class JJSearchBox : ControlBase
             _selectedValue = Request.Form[Name];
         }
 
-        if (string.IsNullOrEmpty(_selectedValue) && !string.IsNullOrEmpty(Text))
+        if (!string.IsNullOrEmpty(Text))
         {
             var values = await GetValuesAsync(Text);
             var item = values.FirstOrDefault();

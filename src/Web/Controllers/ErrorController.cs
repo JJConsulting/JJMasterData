@@ -21,8 +21,7 @@ public class ErrorController : Controller
         {
             Message = ReasonPhrases.GetReasonPhrase(statusCode ?? 500),
             StatusCode = statusCode ?? 500,
-            Exception = exceptionHandler?.Error.Message ?? stringLocalizer["Page not found"],
-            StackTrace = exceptionHandler?.Error.StackTrace
+            Exception = exceptionHandler?.Error.Message ?? stringLocalizer["Page not found"]
         };
         
         logger?.LogCritical(exceptionHandler?.Error, "Unhandled exception captured by ErrorController");
