@@ -2,7 +2,6 @@ using JJMasterData.Core.DataDictionary.Factories;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.UI.Components.Controls.TextBox;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.UI.Components.Importation;
@@ -54,7 +53,7 @@ public static class FactoriesServiceExtensions
         services.AddTransient<ValidationSummaryFactory>();
         services.AddTransient<HtmlComponentFactory>();
         services.AddTransient<IComponentFactory, ComponentFactory>();
-        
+
         return services;
     }
 

@@ -1,6 +1,5 @@
 using System.Data;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;

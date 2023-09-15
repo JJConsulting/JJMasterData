@@ -1,6 +1,5 @@
 #nullable enable
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Widgets;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.Factories;

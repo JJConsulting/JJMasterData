@@ -1,8 +1,6 @@
 #nullable enable
 
-using System.ComponentModel.DataAnnotations;
 using System.IO;
-using JetBrains.Annotations;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Util;
 

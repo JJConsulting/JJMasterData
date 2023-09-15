@@ -651,7 +651,7 @@ public class JJUploadView : AsyncComponent
         label.Text = "File name";
         label.LabelFor = $"preview_filename-{UploadArea.Name}";
 
-        var group = ComponentFactory.Controls.Create<JJTextGroup>();
+        var group = ComponentFactory.Controls.TextGroup.Create();
         group.Name = $"preview_filename-{UploadArea.Name}";
         group.Addons = new InputAddons(".png");
         group.Text = "image";

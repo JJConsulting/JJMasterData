@@ -40,6 +40,7 @@ public class JJTextFile : ControlBase
 
     public override string Tooltip
     {
+        
         get => FormElementField.HelpDescription;
         set => FormElementField.HelpDescription = value;
     }
@@ -153,7 +154,7 @@ public class JJTextFile : ControlBase
         if (!Enabled)
             UploadView.ClearMemoryFiles();
 
-        var textGroup = ComponentFactory.Controls.Create<JJTextGroup>();
+        var textGroup = ComponentFactory.Controls.TextGroup.Create();
         textGroup.CssClass = CssClass;
         textGroup.Name = $"{Name}-presentation";
         textGroup.ReadOnly = true;

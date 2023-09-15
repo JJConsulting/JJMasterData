@@ -1,9 +1,7 @@
 #nullable enable
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 

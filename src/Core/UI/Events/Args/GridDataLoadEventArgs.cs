@@ -1,10 +1,7 @@
 ﻿#nullable enable
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Repository;
 
 namespace JJMasterData.Core.FormEvents.Args;
 

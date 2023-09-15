@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.UI.Components;

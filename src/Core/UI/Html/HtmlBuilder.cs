@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Html;
 
@@ -53,14 +52,16 @@ public partial class HtmlBuilder
         Tag = new HtmlBuilderTag(tag);
     }
 
+    
     /// <summary>
     /// Renders the instance to a String
     /// </summary>
     public override string ToString()
     {
-        return GetHtml(0);
+        return ParseHtmlAsString(0);
     }
 
+    
     /// <summary>
     /// Gets current builder HTML.
     /// </summary>
@@ -68,10 +69,10 @@ public partial class HtmlBuilder
     public string ToString(bool indentHtml)
     {
         int tabCount = indentHtml ? 1 : 0;
-        return GetHtml(tabCount);
+        return ParseHtmlAsString(tabCount);
     }
 
-    private string GetHtml(int tabCount)
+    private string ParseHtmlAsString(int tabCount)
     {
         var html = new StringBuilder();
 
@@ -127,7 +128,7 @@ public partial class HtmlBuilder
         var content = new StringBuilder();
         foreach (var child in _children)
         {
-            content.Append(child.GetHtml(tabCount));
+            content.Append(child.ParseHtmlAsString(tabCount));
         }
         return content.ToString();
     }

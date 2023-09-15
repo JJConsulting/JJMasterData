@@ -34,7 +34,7 @@ internal class GridSortingConfig
         _stringLocalizer = grid.StringLocalizer;
         
         CurrentOrder = grid.CurrentOrder.ToQueryParameter();
-        ComboBox = grid.ComponentFactory.Controls.Create<JJComboBox>();
+        ComboBox = grid.ComponentFactory.Controls.ComboBox.Create();
         FormElement = grid.FormElement;
         Name = grid.Name;
     }

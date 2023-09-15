@@ -1,5 +1,4 @@
-﻿using JJMasterData.Core.Web.Http;
-using JJMasterData.Core.Web.Http.Abstractions;
+﻿using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Exports.Configuration;
 
