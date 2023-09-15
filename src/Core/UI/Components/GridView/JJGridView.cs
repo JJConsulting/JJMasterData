@@ -122,12 +122,12 @@ public class JJGridView : AsyncComponent
         {
             if (_dataExportation != null)
                 return _dataExportation;
-
+            
             _dataExportation = ComponentFactory.DataExportation.Create(FormElement);
             _dataExportation.Name = Name;
             _dataExportation.ExportOptions = CurrentExportConfig;
-            _dataExportation.ShowBorder = CurrentSettings?.ShowBorder ?? false;
-            _dataExportation.ShowRowStriped = CurrentSettings?.ShowRowStriped ?? false;
+            _dataExportation.ShowBorder = CurrentSettings.ShowBorder;
+            _dataExportation.ShowRowStriped = CurrentSettings.ShowRowStriped;
             _dataExportation.UserValues = UserValues;
             _dataExportation.ProcessOptions = ExportAction.ProcessOptions;
 
@@ -253,7 +253,7 @@ public class JJGridView : AsyncComponent
         }
         set
         {
-            CurrentContext.Session[$"jj-grid-view-order-{Name}"] = value?.ToQueryParameter();
+            CurrentContext.Session[$"jj-grid-view-order-{Name}"] = value.ToQueryParameter();
             _currentOrder = value;
         }
     }
@@ -675,10 +675,10 @@ public class JJGridView : AsyncComponent
 
         if (SortAction.IsVisible)
         {
-            html.Append(await GetSortingConfig());
+            html.Append(await GetSortingConfigAsync());
         }
         
-        await html.AppendIfAsync(SortAction.IsVisible, GetSortingConfig);
+        await html.AppendIfAsync(SortAction.IsVisible, GetSortingConfigAsync);
 
         html.AppendText(GetScriptHtml());
         html.AppendRange(GetHiddenInputs(currentAction));
@@ -756,11 +756,11 @@ public class JJGridView : AsyncComponent
 
     internal async Task<HtmlBuilder> GetToolbarHtmlBuilder() => await new GridToolbar(this).GetHtmlBuilderAsync();
 
-    public string GetFilterHtml() => Filter.GetFilterHtml().ToString()!;
+    public async Task<HtmlBuilder> GetFilterHtmlAsync() => await Filter.GetFilterHtml();
 
-    public async Task<string> GetToolbarHtml() => (await GetToolbarHtmlBuilder()).ToString();
+    public async Task<HtmlBuilder> GetToolbarHtmlAsync() => await GetToolbarHtmlBuilder();
 
-    private async Task<HtmlBuilder> GetSortingConfig() => await new GridSortingConfig(this).GetHtmlBuilderAsync();
+    private async Task<HtmlBuilder> GetSortingConfigAsync() => await new GridSortingConfig(this).GetHtmlBuilderAsync();
 
     public string GetTitleHtml() => GetTitle(_defaultValues).GetHtml();
 
@@ -1009,10 +1009,11 @@ public class JJGridView : AsyncComponent
         var action = LegendAction;
         var formData = await GetFormDataAsync();
         bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
+
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var legend = new GridLegendView(ComponentFactory.Controls.GetControlFactory<JJComboBox>(), StringLocalizer)
+        var legend = new GridLegendView(ComponentFactory.Controls.ComboBox, StringLocalizer)
         {
             Name = Name,
             ShowAsModal = true,

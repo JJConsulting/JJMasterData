@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.FormEvents.Args;

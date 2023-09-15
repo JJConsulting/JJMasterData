@@ -1,4 +1,6 @@
-﻿using JJMasterData.Commons.Data.Entity;
+﻿#nullable enable
+
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Components;
@@ -14,7 +16,18 @@ internal class ControlFactory : IControlFactory
 {
     private IServiceScopeFactory ServiceScopeFactory { get; }
     private IExpressionsService ExpressionsService { get; }
-    
+
+    public IControlFactory<JJCheckBox> CheckBox => GetControlFactory<JJCheckBox>();
+    public IControlFactory<JJComboBox> ComboBox => GetControlFactory<JJComboBox>();
+    public IControlFactory<JJLookup> Lookup => GetControlFactory<JJLookup>();
+    public IControlFactory<JJSearchBox> SearchBox => GetControlFactory<JJSearchBox>();
+    public IControlFactory<JJSlider> Slider => GetControlFactory<JJSlider>();
+    public IControlFactory<JJTextArea> TextArea => GetControlFactory<JJTextArea>();
+    public IControlFactory<JJTextBox> TextBox => GetControlFactory<JJTextBox>();
+    public IControlFactory<JJTextGroup> TextGroup => GetControlFactory<JJTextGroup>();
+    public IControlFactory<JJTextFile> TextFile => GetControlFactory<JJTextFile>();
+    public IControlFactory<JJTextRange> TextRange => GetControlFactory<JJTextRange>();
+
     public ControlFactory(IServiceScopeFactory serviceScopeFactory,
         IExpressionsService expressionsService)
     {
@@ -30,21 +43,14 @@ internal class ControlFactory : IControlFactory
             return scope.ServiceProvider;
         }
     }
-    
+
     public IControlFactory<TControl> GetControlFactory<TControl>() where TControl : ControlBase
     {
         return ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
     }
 
-
-    public TControl Create<TControl>() where TControl : ControlBase
-    {
-        var factory = ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
-
-        return factory.Create();
-    }
-
-    public TControl Create<TControl>(FormElement formElement,FormElementField field, ControlContext controlContext) where TControl : ControlBase
+    public TControl Create<TControl>(FormElement formElement, FormElementField field, ControlContext controlContext)
+        where TControl : ControlBase
     {
         var factory = ServiceProvider.GetRequiredService<IControlFactory<TControl>>();
 
@@ -58,7 +64,7 @@ internal class ControlFactory : IControlFactory
         FormElement formElement,
         FormElementField field,
         FormStateData formStateData,
-        object value = null)
+        object? value = null)
     {
         var context = new ControlContext(formStateData, value);
         if (formStateData.PageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
@@ -66,13 +72,13 @@ internal class ControlFactory : IControlFactory
             var factory = GetControlFactory<JJTextRange>();
             return factory.Create(formElement, field, context);
         }
-        
+
         var control = Create(formElement, field, context);
         control.Enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formStateData);
 
         return control;
     }
-    
+
 
     public ControlBase Create(
         FormElement formElement,
@@ -83,45 +89,45 @@ internal class ControlFactory : IControlFactory
             throw new ArgumentNullException(nameof(field));
 
         var formStateData = context.FormStateData;
-        
+
         ControlBase control;
         switch (field.Component)
         {
             case FormComponent.ComboBox:
-                control = Create<JJComboBox>(formElement, field,context);
+                control = Create<JJComboBox>(formElement, field, context);
                 break;
             case FormComponent.Search:
-                control = Create<JJSearchBox>(formElement, field,context);
+                control = Create<JJSearchBox>(formElement, field, context);
                 break;
             case FormComponent.Lookup:
-                control = Create<JJLookup>(formElement, field,context);
+                control = Create<JJLookup>(formElement, field, context);
                 break;
             case FormComponent.CheckBox:
-                control = Create<JJCheckBox>(formElement, field,context);
+                control = Create<JJCheckBox>(formElement, field, context);
 
                 if (formStateData.PageState != PageState.List)
                     ((JJCheckBox)control).Text = field.LabelOrName;
 
                 break;
             case FormComponent.TextArea:
-                control = Create<JJTextArea>(formElement, field,context);
+                control = Create<JJTextArea>(formElement, field, context);
                 break;
             case FormComponent.Slider:
-                control = Create<JJSlider>(formElement, field,context);
+                control = Create<JJSlider>(formElement, field, context);
                 break;
             case FormComponent.File:
                 if (formStateData.PageState == PageState.Filter)
                 {
-                    control = Create<JJTextBox>(formElement, field,context);
+                    control = Create<JJTextBox>(formElement, field, context);
                 }
                 else
                 {
-                    control = Create<JJTextFile>(formElement, field,context);
+                    control = Create<JJTextFile>(formElement, field, context);
                 }
 
                 break;
             default:
-                control = Create<JJTextGroup>(formElement, field,context);
+                control = Create<JJTextGroup>(formElement, field, context);
                 break;
         }
 

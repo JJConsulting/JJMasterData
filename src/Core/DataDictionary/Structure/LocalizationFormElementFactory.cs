@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Repository;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;

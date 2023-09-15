@@ -23,7 +23,10 @@ public abstract class HtmlComponent : ComponentBase
     /// </returns>
     public string GetHtml()
     {
-        return Visible ? BuildHtml()?.ToString(true) : string.Empty;
+        if (Visible)
+            return BuildHtml()?.ToString(true);
+        
+        return string.Empty;
     }
 
     public static explicit operator RenderedComponentResult(HtmlComponent component) => new(component.GetHtmlBuilder());

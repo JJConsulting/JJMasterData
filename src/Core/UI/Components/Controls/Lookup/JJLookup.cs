@@ -2,16 +2,10 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
@@ -148,7 +142,7 @@ public class JJLookup : ControlBase
         
         Attributes["lookup-description-url"] = LookupService.GetDescriptionUrl(FormElement.Name,FieldName,Name,FormStateData.PageState);
 
-        var idTextBox = ComponentFactory.Controls.Create<JJTextBox>();
+        var idTextBox = ComponentFactory.Controls.TextBox.Create();
         idTextBox.Name = Name;
         idTextBox.CssClass = $"form-control jj-lookup {GetFeedbackIcon(inputValue?.ToString(), description)} {CssClass}";
         idTextBox.InputType = OnlyNumbers ? InputType.Number : InputType.Text;
@@ -161,12 +155,12 @@ public class JJLookup : ControlBase
 
 
         await div.AppendControlAsync(idTextBox);
-        
-        if (!string.IsNullOrEmpty(FormElement.Fields[FieldName].DataItem!.ElementMap!.FieldDescription))
+        var dataItem = FormElement.Fields[FieldName].DataItem!;
+        if (!string.IsNullOrEmpty(dataItem.ElementMap!.FieldDescription))
         {
             idTextBox.Attributes["style"] = "flex:2";
 
-            var descriptionTextBox = ComponentFactory.Controls.Create<JJTextBox>();
+            var descriptionTextBox = ComponentFactory.Controls.TextBox.Create();
             descriptionTextBox.Name = $"{Name}-description";
             descriptionTextBox.CssClass = $"form-control jj-lookup {CssClass}";
             descriptionTextBox.InputType = InputType.Text;

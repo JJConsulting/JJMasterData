@@ -1,11 +1,8 @@
 ﻿using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;

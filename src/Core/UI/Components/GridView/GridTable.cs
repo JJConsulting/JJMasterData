@@ -1,8 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;

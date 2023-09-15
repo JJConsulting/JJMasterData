@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.Web.Components;

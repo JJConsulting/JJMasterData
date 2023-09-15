@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Http.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
