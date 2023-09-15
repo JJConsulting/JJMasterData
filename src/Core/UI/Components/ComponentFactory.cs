@@ -41,9 +41,6 @@ internal class ComponentFactory : IComponentFactory
     public IComponentFactory<JJUploadArea> UploadArea =>
         GetFactory<IComponentFactory<JJUploadArea>>();
 
-    public LinkButtonFactory LinkButton =>
-        GetFactory<LinkButtonFactory>();
-
     public IControlFactory Controls =>
         GetFactory<IControlFactory>();
 

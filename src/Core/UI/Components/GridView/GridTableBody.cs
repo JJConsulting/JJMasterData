@@ -231,7 +231,7 @@ internal class GridTableBody
 
         var btnGroup = new JJLinkButtonGroup();
         
-        var factory = GridView.ComponentFactory.LinkButton;
+        var factory = GridView.ComponentFactory.Html.LinkButton;
         
         foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
         {
@@ -260,7 +260,7 @@ internal class GridTableBody
 
     private async IAsyncEnumerable<HtmlBuilder> GetActionsWithoutGroupHtmlAsync(IEnumerable<BasicAction> actionsWithoutGroup, FormStateData formStateData)
     {
-        var factory = GridView.ComponentFactory.LinkButton;
+        var factory = GridView.ComponentFactory.Html.LinkButton;
         foreach (var action in actionsWithoutGroup)
         {
             var td = new HtmlBuilder(HtmlTag.Td);
@@ -353,7 +353,7 @@ internal class GridTableBody
         if (GridView.EnableEditMode || defaultAction == null)
             return string.Empty;
 
-        var factory = GridView.ComponentFactory.LinkButton;
+        var factory = GridView.ComponentFactory.Html.LinkButton;
         
         var actionButton =  await factory.CreateGridTableButtonAsync(defaultAction, GridView, formStateData);
 

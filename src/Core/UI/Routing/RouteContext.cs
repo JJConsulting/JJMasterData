@@ -1,6 +1,5 @@
 #nullable enable
 
-using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.UI.Components;
