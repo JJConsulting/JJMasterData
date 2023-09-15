@@ -50,7 +50,6 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IComponentFactory<JJUploadView>, UploadViewFactory>();
         services.AddTransient<IComponentFactory<JJFileDownloader>, FileDownloaderFactory>();
         services.AddTransient<IComponentFactory<JJUploadArea>, UploadAreaFactory>();
-        services.AddTransient<IComponentFactory<JJTextBox>, TextBoxFactory>();
         services.AddScoped<RouteContextFactory>();
         services.AddTransient<ValidationSummaryFactory>();
         services.AddTransient<HtmlComponentFactory>();
@@ -79,6 +78,7 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IControlFactory<JJTextGroup>, TextGroupFactory>();
         services.AddTransient<IControlFactory<JJTextRange>, TextRangeFactory>();
         services.AddTransient<IControlFactory<JJTextFile>, TextFileFactory>();
+        services.AddTransient<IControlFactory<JJTextBox>, TextBoxFactory>();
         services.AddTransient<IControlFactory<JJCheckBox>, CheckBoxFactory>();
         services.AddTransient<IControlFactory, ControlFactory>();
     }

@@ -12,7 +12,7 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJSlider : ControlBase
 {
-    private IComponentFactory<JJTextBox> TextBoxFactory { get; }
+    private IControlFactory<JJTextBox> TextBoxFactory { get; }
     public double MinValue { get; set; }
     public double MaxValue { get; set; }
     public double? Value { get; set; }
@@ -20,7 +20,7 @@ public class JJSlider : ControlBase
     public bool ShowInput { get; set; } = true;
     public int NumberOfDecimalPlaces { get; set; }
     
-    public JJSlider(IFormValues formValues, IComponentFactory<JJTextBox> textBoxFactory) : base(formValues)
+    public JJSlider(IFormValues formValues, IControlFactory<JJTextBox> textBoxFactory) : base(formValues)
     {
         TextBoxFactory = textBoxFactory;
     }

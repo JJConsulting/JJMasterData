@@ -8,7 +8,7 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components.Controls.TextBox;
 
-public class TextBoxFactory : IComponentFactory<JJTextBox>
+internal class TextBoxFactory : IControlFactory<JJTextBox>
 {
     private IFormValues FormValues { get; }
     private IEncryptionService EncryptionService { get; }
@@ -21,5 +21,14 @@ public class TextBoxFactory : IComponentFactory<JJTextBox>
     public JJTextBox Create()
     {
         return new JJTextBox(FormValues);
+    }
+
+    public JJTextBox Create(FormElement formElement, FormElementField field, ControlContext context)
+    {
+        return new JJTextBox(FormValues)
+        {
+            Name = field.Name,
+            Text = context.Value?.ToString()
+        };
     }
 }

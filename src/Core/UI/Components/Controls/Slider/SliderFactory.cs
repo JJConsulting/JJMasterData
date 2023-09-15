@@ -10,10 +10,10 @@ namespace JJMasterData.Core.Web.Factories;
 internal class SliderFactory : IControlFactory<JJSlider>
 {
     private IFormValues FormValues { get; }
-    private IComponentFactory<JJTextBox> TextBoxFactory { get; }
+    private IControlFactory<JJTextBox> TextBoxFactory { get; }
 
 
-    public SliderFactory(IFormValues formValues, IComponentFactory<JJTextBox> textBoxFactory)
+    public SliderFactory(IFormValues formValues, IControlFactory<JJTextBox> textBoxFactory)
     {
         FormValues = formValues;
         TextBoxFactory = textBoxFactory;
