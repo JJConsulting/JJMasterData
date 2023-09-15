@@ -75,7 +75,7 @@ public class JJDataExportation : ProcessComponent
     internal JJMasterDataCoreOptions MasterDataOptions { get; }
 
     internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(this);
-    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
+    private IComponentFactory ComponentFactory { get; }
     public DataExportationWriterFactory DataExportationWriterFactory { get; }
 
     #endregion
@@ -89,7 +89,7 @@ public class JJDataExportation : ProcessComponent
         IOptions<JJMasterDataCoreOptions> masterDataOptions,
         IBackgroundTaskManager backgroundTaskManager, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
+        IComponentFactory componentFactory,
         ILoggerFactory loggerFactory,
         IHttpContext currentContext,
         JJMasterDataUrlHelper urlHelper, 
@@ -100,8 +100,7 @@ public class JJDataExportation : ProcessComponent
         _urlHelper = urlHelper;
         _encryptionService = encryptionService;
         DataExportationWriterFactory = dataExportationWriterFactory;
-
-        FileDownloaderFactory = fileDownloaderFactory;
+        ComponentFactory = componentFactory;
         CurrentContext = currentContext;
         MasterDataOptions = masterDataOptions.Value;
         FormElement = formElement;
@@ -131,7 +130,7 @@ public class JJDataExportation : ProcessComponent
 
     internal string GetDownloadUrl(string filePath)
     {
-        var downloader = FileDownloaderFactory.Create();
+        var downloader = ComponentFactory.Downloader.Create();
         downloader.FilePath = filePath;
         return downloader.GetDownloadUrl(filePath);
     }
@@ -145,11 +144,9 @@ public class JJDataExportation : ProcessComponent
 
             if (reporter.HasError)
             {
-                var panel = new JJValidationSummary
-                {
-                    ShowCloseButton = false,
-                    MessageTitle = reporter.Message
-                };
+                var panel = ComponentFactory.Html.ValidationSummary.Create();
+                panel.ShowCloseButton = false;
+                panel.MessageTitle = reporter.Message;
                 html.AppendComponent(panel);
             }
             else

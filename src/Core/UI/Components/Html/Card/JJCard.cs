@@ -1,7 +1,5 @@
-﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Html;
-using System;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Components;
@@ -23,6 +21,11 @@ public class JJCard : HtmlComponent
 
     private bool HasTitle => !string.IsNullOrEmpty(Title) | !string.IsNullOrEmpty(SubTitle);
 
+    internal JJCard()
+    {
+        
+    }
+    
     internal override HtmlBuilder BuildHtml()
     {
         HtmlBuilder html;
@@ -43,8 +46,6 @@ public class JJCard : HtmlComponent
         return html;
     }
 
-
-
     private HtmlBuilder GetHtmlPanel()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
@@ -64,7 +65,8 @@ public class JJCard : HtmlComponent
             d.WithCssClass(BootstrapHelper.PanelBody);
             if (!string.IsNullOrEmpty(SubTitle))
             {
-                var title = new JJTitle(null, SubTitle);
+                var title = new JJTitle();
+                title.SubTitle = SubTitle;
                 d.Append(title.GetHtmlBlockquote());
             }
             d.Append(HtmlBuilderContent);
@@ -82,7 +84,9 @@ public class JJCard : HtmlComponent
 
         if (HasTitle)
         {
-            var title = new JJTitle(Title, SubTitle);
+            var title = new JJTitle();
+            title.Title = Title;
+            title.SubTitle = SubTitle;
             html.Append(title.GetHtmlBlockquote());
         }
 
@@ -106,7 +110,9 @@ public class JJCard : HtmlComponent
 
         if (HasTitle)
         {
-            var title = new JJTitle(Title, SubTitle);
+            var title = new JJTitle();
+            title.Title = Title;
+            title.SubTitle = SubTitle;
             html.Append(title.GetHtmlBlockquote());
         }
 

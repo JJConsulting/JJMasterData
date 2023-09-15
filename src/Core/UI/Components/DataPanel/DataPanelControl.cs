@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
@@ -28,7 +29,7 @@ internal class DataPanelControl
 
     public FormUI FormUI { get; }
 
-    public IControlFactory ControlFactory { get; }
+    public IComponentFactory ComponentFactory { get; }
     
     public IDictionary<string, string> Errors { get; }
 
@@ -42,7 +43,6 @@ internal class DataPanelControl
 
     public string? FieldNamePrefix { get; init; }
 
-    public bool IsExternalRoute { get; }
 
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
     internal IExpressionsService ExpressionsService { get; }
@@ -55,7 +55,7 @@ internal class DataPanelControl
     {
         FormElement = dataPanel.FormElement;
         FormUI = dataPanel.FormUI;
-        ControlFactory = dataPanel.ComponentFactory.Controls;
+        ComponentFactory = dataPanel.ComponentFactory;
         Errors = dataPanel.Errors;
         EncryptionService = dataPanel.EncryptionService;
         UrlHelper = dataPanel.UrlHelper;
@@ -77,7 +77,7 @@ internal class DataPanelControl
         UrlHelper = gridView.UrlHelper;
         Errors = new Dictionary<string, string>();
         Name = gridView.Name;
-        ControlFactory = gridView.ComponentFactory.Controls;
+        ComponentFactory = gridView.ComponentFactory;
         ExpressionsService = gridView.ExpressionsService;
         FieldsService = gridView.FieldsService;
         FormState = new FormStateData(values, gridView.UserValues, PageState.Filter);
@@ -163,7 +163,7 @@ internal class DataPanelControl
                 htmlField.WithCssClass("jjborder-static");
 
             if (field.Component != FormComponent.CheckBox)
-                htmlField.AppendComponent(new JJLabel(field));
+                htmlField.AppendComponent(ComponentFactory.Html.Label.Create(field));
 
             if (IsViewModeAsStatic)
                 htmlField.Append(await GetStaticField(field));
@@ -240,10 +240,8 @@ internal class DataPanelControl
             if (Values != null && Values.TryGetValue(f.Name, out var nonFormattedValue))
                 value = FieldsService.FormatValue(f, nonFormattedValue);
 
-            var label = new JJLabel(f)
-            {
-                CssClass = labelClass
-            };
+            var label = ComponentFactory.Html.Label.Create(f);
+            label.CssClass = labelClass;
 
             var cssClass = string.Empty;
             if (BootstrapHelper.Version == 3 && Errors != null && Errors.ContainsKey(f.Name))
@@ -310,7 +308,8 @@ internal class DataPanelControl
 
     private async Task<HtmlBuilder> GetControlField(FormElementField field, object? value)
     {
-        var control = await ControlFactory.CreateAsync(FormElement, field, new(Values, UserValues, PageState), value);
+        var formStateData = new FormStateData(Values, UserValues, PageState);
+        var control = await ComponentFactory.Controls.CreateAsync(FormElement, field, formStateData, value);
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             control.Name = FieldNamePrefix + field.Name;

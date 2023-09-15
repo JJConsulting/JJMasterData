@@ -85,6 +85,11 @@
       <Compile Update="UI\Components\IComponentFactoryOfT.cs">
         <DependentUpon>IComponentFactory.cs</DependentUpon>
       </Compile>
+      <Compile Remove="UI\Components\Html\IHtmlComponentFactory.cs" />
+      <Compile Remove="UI\Components\Html\ValidationSummaryFactory2.cs" />
+      <Compile Update="UI\Scripts\ActionData.cs">
+        <DependentUpon>ActionsScripts.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
     
     

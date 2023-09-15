@@ -6,6 +6,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -38,10 +39,10 @@ public abstract class BaseService
         _validationDictionary?.RemoveError(field);
     }
     
-
     public JJValidationSummary GetValidationSummary()
     {
-        return new JJValidationSummary(_validationDictionary.Errors.ToList());
+        var factory = new ValidationSummaryFactory(StringLocalizer);
+        return factory.Create(_validationDictionary.Errors.ToList());
     }
 
     public bool IsValid => _validationDictionary.IsValid;

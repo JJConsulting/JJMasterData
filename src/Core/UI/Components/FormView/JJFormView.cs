@@ -671,7 +671,7 @@ public class JJFormView : AsyncComponent
                 message.Append("<br>");
             }
 
-            html.AppendComponent(new JJMessageBox(message.ToString(), MessageIcon.Warning));
+            html.AppendComponent(ComponentFactory.Html.MessageBox.Create(message.ToString(), MessageIcon.Warning));
 
             var insertSelectionResult = await GetInsertSelectionResult(GridView.ToolBarActions.InsertAction);
 
@@ -723,6 +723,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetDeleteResult()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
+        var messageFactory = ComponentFactory.Html.MessageBox;
         try
         {
             var filter = CurrentActionMap?.PkFieldValues;
@@ -739,7 +740,7 @@ public class JJFormView : AsyncComponent
                     errorMessage.AppendLine("<br>");
                 }
 
-                html.AppendComponent(new JJMessageBox(errorMessage.ToString(), MessageIcon.Warning));
+                html.AppendComponent(messageFactory.Create(errorMessage.ToString(), MessageIcon.Warning));
             }
             else
             {
@@ -749,7 +750,7 @@ public class JJFormView : AsyncComponent
         }
         catch (Exception ex)
         {
-            html.AppendComponent(new JJMessageBox(ex.Message, MessageIcon.Error));
+            html.AppendComponent(messageFactory.Create(ex.Message, MessageIcon.Error));
         }
 
         if (!string.IsNullOrEmpty(UrlRedirect))
@@ -767,6 +768,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetDeleteSelectedRowsResult()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
+        var messageFactory = ComponentFactory.Html.MessageBox;
         var errorMessage = new StringBuilder();
         int errorCount = 0;
         int successCount = 0;
@@ -817,14 +819,14 @@ public class JJFormView : AsyncComponent
                     icon = MessageIcon.Warning;
                 }
 
-                html.AppendComponent(new JJMessageBox(message.ToString(), icon));
+                html.AppendComponent(messageFactory.Create(message.ToString(), icon));
 
                 GridView.ClearSelectedGridValues();
             }
         }
         catch (Exception ex)
         {
-            html.AppendComponent(new JJMessageBox(ex.Message, MessageIcon.Error));
+            html.AppendComponent(messageFactory.Create(ex.Message, MessageIcon.Error));
         }
 
         var gridViewResult = await GetGridViewResult();
@@ -992,7 +994,7 @@ public class JJFormView : AsyncComponent
         var formHtml = new HtmlBuilder(HtmlTag.Div);
 
         if (panel.Errors.Any())
-            formHtml.AppendComponent(new JJValidationSummary(panel.Errors));
+            formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(panel.Errors));
 
         var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
 

@@ -130,7 +130,7 @@ public class InternalRedirectController : MasterDataController
 
         if (errors.Count > 0)
         {
-            ViewBag.Error = new JJValidationSummary(errors).GetHtml();
+            ViewBag.Error = ComponentFactory.Html.ValidationSummary.Create(errors).GetHtml();
             ViewBag.Success = false;
         }
         else

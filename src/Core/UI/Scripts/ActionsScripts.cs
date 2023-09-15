@@ -2,13 +2,9 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
-using JJMasterData.Core.DataDictionary.Actions.GridTable;
-using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web;
 using Microsoft.Extensions.Localization;
@@ -19,7 +15,6 @@ using System.Web;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Components.Actions;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Core.UI.Components.FormView;
 
@@ -72,13 +67,15 @@ internal class ActionsScripts
                 @params.Append(value);
             }
         }
-        string url = UrlHelper.GetUrl("Index", "InternalRedirect","MasterData",
+
+        string url = UrlHelper.GetUrl("Index", "InternalRedirect", "MasterData",
             new
             {
                 parameters = EncryptionService.EncryptStringWithUrlEscape(@params.ToString())
             });
 
-        return $"ActionManager.executeRedirectAction('{url}',{popup},'{popUpTitle}','{confirmationMessage}','{popupSize}');";
+        return
+            $"ActionManager.executeRedirectAction('{url}',{popup},'{popUpTitle}','{confirmationMessage}','{popupSize}');";
     }
 
 
@@ -95,7 +92,7 @@ internal class ActionsScripts
         var routeContext = RouteContext.FromFormElement(actionContext.FormElement, ComponentContext.UrlRedirect);
 
         var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
-        
+
         return
             $"ActionManager.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
@@ -106,40 +103,37 @@ internal class ActionsScripts
         var actionMap = actionContext.ToActionMap(action.Name, actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
-        
+
         var actionData = new ActionData
         {
             ComponentName = actionContext.ParentComponentName,
             EncryptedActionMap = encryptedActionMap,
             ConfirmationMessage = confirmationMessage.IsNullOrEmpty() ? null : confirmationMessage
         };
-        
+
         if (actionContext.IsModal)
         {
             var modalRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);
             var gridViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
 
             actionData.ModalTitle = actionContext.FormElement.Title;
-            actionData.EncryptedModalRouteContext =
-                EncryptionService.EncryptRouteContext(modalRouteContext);
-            actionData.EncryptedGridRouteContext =
-                EncryptionService.EncryptRouteContext(gridViewRouteContext);
+            actionData.EncryptedModalRouteContext = EncryptionService.EncryptRouteContext(modalRouteContext);
+            actionData.EncryptedGridRouteContext = EncryptionService.EncryptRouteContext(gridViewRouteContext);
         }
 
         var actionDataJson = actionData.ToJson();
 
-        var encodedFunction= HttpUtility.HtmlAttributeEncode($"ActionManager.executeAction('{actionDataJson}')");
-        
+        var encodedFunction = HttpUtility.HtmlAttributeEncode($"ActionManager.executeAction('{actionDataJson}')");
+
         return encodedFunction;
     }
-    
+
 
     internal async Task<string> GetUserActionScriptAsync(
         UserCreatedAction userCreatedAction,
         ActionContext actionContext,
         ActionSource actionSource)
     {
-
         var formStateData = actionContext.FormStateData;
 
         switch (userCreatedAction)

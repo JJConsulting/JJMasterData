@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
@@ -13,12 +12,17 @@ public class JJAlert : HtmlComponent
     public string Title { get; set; }
     public IList<string> Messages { get; set; } = new List<string>();
     public bool ShowCloseButton { get; set; }
-
+    
     /// <remarks>
     /// Default = true
     /// </remarks>
     public bool ShowIcon { get; set; } = true;
 
+    internal JJAlert()
+    {
+        
+    }
+    
     internal override HtmlBuilder BuildHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
@@ -44,13 +48,12 @@ public class JJAlert : HtmlComponent
 
         for (var index = 0; index < Messages.Count; index++)
         {
+            if(index > 0 || !string.IsNullOrEmpty(Title)) 
+                html.Append(HtmlTag.Br);
+            
             var message = Messages[index];
             html.AppendText(message);
-            
-            if(index > 0) 
-                html.Append(HtmlTag.Br);
         }
-
 
         return html;
     }

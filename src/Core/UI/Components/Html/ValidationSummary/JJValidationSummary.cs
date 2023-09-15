@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
+
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -24,38 +25,27 @@ public class JJValidationSummary : HtmlComponent
     public string MessageTitle { get; set; }
     
     /// <summary>
-    /// Permitir fechar o panel.
+    /// Enable close panel
     /// (Default = True)
     /// </summary>
     public bool ShowCloseButton { get; set; }
 
-    public JJValidationSummary() 
+    internal JJValidationSummary() 
     {
         Visible = true;
-        MessageTitle = "Invalid data";
         Errors = new List<string>();
         ShowCloseButton = true;
     }
 
-    public JJValidationSummary(IDictionary<string, string>errors) : this()
+    public void SetErrors(IDictionary<string, string>errors)
     {
-        if (errors != null)
+        if (errors == null) 
+            return;
+            
+        foreach (var err in errors)
         {
-            foreach (var err in errors)
-            {
-                Errors.Add(err.Value);
-            }
+            Errors.Add(err.Value);
         }
-    }
-
-    public JJValidationSummary(IEnumerable<string> errors) : this()
-    {
-        Errors = errors.ToList();
-    }
-
-    public JJValidationSummary(string error) : this()
-    {
-        Errors.Add(error);
     }
 
     internal override HtmlBuilder BuildHtml()

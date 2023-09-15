@@ -7,7 +7,6 @@ using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
-using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 
@@ -21,7 +20,6 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IComponentFactory ComponentFactory { get; }
     private IEncryptionService EncryptionService { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public AuditLogViewFactory(
@@ -31,7 +29,6 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
         IDataDictionaryRepository dataDictionaryRepository,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
-        JJMasterDataUrlHelper urlHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         HttpContext = httpContext;
@@ -40,14 +37,13 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
         DataDictionaryRepository = dataDictionaryRepository;
         ComponentFactory = componentFactory;
         EncryptionService = encryptionService;
-        UrlHelper = urlHelper;
         StringLocalizer = stringLocalizer;
     }
 
     public JJAuditLogView Create(FormElement formElement)
     {
         return new JJAuditLogView(formElement, HttpContext, EntityRepository, AuditLogService, ComponentFactory,
-            EncryptionService, UrlHelper, StringLocalizer);
+            EncryptionService, StringLocalizer);
     }
     
     public async Task<JJAuditLogView> CreateAsync(string elementName)

@@ -58,7 +58,7 @@ public class JJAuditLogView : AsyncComponent
 
     public IAuditLogService AuditLogService { get; }
     private IEncryptionService EncryptionService { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
 
     /// <summary>
@@ -87,7 +87,6 @@ public class JJAuditLogView : AsyncComponent
         IAuditLogService auditLogService,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
-        JJMasterDataUrlHelper urlHelper,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         Name = $"{ComponentNameGenerator.Create(formElement.Name)}-audit-log-view";
@@ -97,7 +96,6 @@ public class JJAuditLogView : AsyncComponent
         EntityRepository = entityRepository;
         AuditLogService = auditLogService;
         EncryptionService = encryptionService;
-        UrlHelper = urlHelper;
         StringLocalizer = stringLocalizer;
     }
 
@@ -400,11 +398,9 @@ public class JJAuditLogView : AsyncComponent
                         span.AppendText(StringLocalizer["Browser info."]);
                         span.WithToolTip(row["browser"]?.ToString());
 
-                        var icon = new JJIcon(IconType.InfoCircle)
-                        {
-                            CssClass = "help-description"
-                        };
-                        span.AppendComponent(icon);
+                        var infoIcon = _componentFactory.Html.Icon.Create(IconType.InfoCircle);
+                        infoIcon.CssClass = "help-description";
+                        span.AppendComponent(infoIcon);
                     });
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.B, b => { b.AppendText(row["modified"]!.ToString()); });

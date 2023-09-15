@@ -1,15 +1,12 @@
 ﻿using System.Text;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-/// <summary>
-/// Exibe uma caixa de mensagem (dialog)
-/// </summary>
 public class JJMessageBox : HtmlComponent
 {
+    
     private string _text;
     public string Text
     {
@@ -22,30 +19,9 @@ public class JJMessageBox : HtmlComponent
     public MessageIcon Icon { get; set; }
     public MessageSize Size { get; set; }
 
-    public JJMessageBox(string text, MessageIcon icon)
+    internal JJMessageBox()
     {
-        Text = text;
-        Icon = icon;
-        Size = MessageSize.Default;
-        Title = Icon switch
-        {
-            MessageIcon.Error => "Erro",
-            MessageIcon.Warning => "Aviso",
-            MessageIcon.Info => "Info",
-            _ => "Mensagem",
-        };
-    }
 
-    public JJMessageBox(string text, string title, MessageIcon icon, MessageSize size)
-    {
-        Title = title;
-        Text = text;
-        Icon = icon;
-        Size = size;
-    }
-
-    public JJMessageBox()
-    {
     }
 
     internal override HtmlBuilder BuildHtml()

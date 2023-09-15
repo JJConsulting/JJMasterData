@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -18,18 +19,8 @@ using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
-using Microsoft.Extensions.Localization;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Hashing;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Actions;
@@ -37,6 +28,15 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.FormView;
+using Microsoft.Extensions.Localization;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web;
+
 // ReSharper disable UnusedMember.Local
 
 namespace JJMasterData.Core.Web.Components;
@@ -755,17 +755,15 @@ public class JJGridView : AsyncComponent
             }
         }
 
-        var titleComponent = new JJTitle(title, subTitle)
-        {
-            Size = TitleSize
-        };
+        var titleComponent = ComponentFactory.Html.Title.Create(title, subTitle);
+        titleComponent.Size = TitleSize;
 
         return titleComponent;
     }
 
     internal async Task<HtmlBuilder> GetToolbarHtmlBuilder() => await new GridToolbar(this).GetHtmlBuilderAsync();
 
-    public string? GetFilterHtml() => Filter.GetFilterHtml().ToString();
+    public string GetFilterHtml() => Filter.GetFilterHtml().ToString()!;
 
     public async Task<string> GetToolbarHtml() => (await GetToolbarHtmlBuilder()).ToString();
 
@@ -1102,18 +1100,13 @@ public class JJGridView : AsyncComponent
                         }
                         catch (Exception ex)
                         {
-                            var err = new JJValidationSummary(ExceptionManager.GetMessage(ex))
-                            {
-                                MessageTitle = "Error"
-                            };
-
-                            return HtmlComponentResult.FromHtmlBuilder(err.GetHtmlBuilder());
+                            var validationSummary = ComponentFactory.Html.ValidationSummary.Create(ExceptionManager.GetMessage(ex));
+                            validationSummary.MessageTitle = StringLocalizer["Error"];
+                            return HtmlComponentResult.FromHtmlBuilder(validationSummary.GetHtmlBuilder());
                         }
                     }
 
                     var html = new DataExportationLog(DataExportation).GetHtmlProcess();
-
-
                     return HtmlComponentResult.FromHtmlBuilder(html);
                 }
             case "checkProgress":
@@ -1264,10 +1257,10 @@ public class JJGridView : AsyncComponent
             return listValues;
 
         var inputHidden = SelectedRowsId;
-        if (string.IsNullOrEmpty(inputHidden))
+        if (inputHidden == null || string.IsNullOrEmpty(inputHidden))
             return listValues;
 
-        var pkList = inputHidden!.Split(',');
+        var pkList = inputHidden.Split(',');
 
         var pkFields = PrimaryKeyFields;
         foreach (var pk in pkList)

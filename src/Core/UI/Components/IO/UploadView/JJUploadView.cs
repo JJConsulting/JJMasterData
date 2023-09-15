@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
@@ -18,7 +17,6 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.UI.Components.IO.UploadView;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -61,6 +59,7 @@ public class JJUploadView : AsyncComponent
     public bool IsCollapseExpandedByDefault { get; set; }
     
     public string Title { get; set; }
+    
     public string SubTitle { get; set; }
     
     public bool ViewGallery { get; set; }
@@ -289,7 +288,7 @@ public class JJUploadView : AsyncComponent
             }
         }
         if (!string.IsNullOrEmpty(Title))
-            html.AppendComponent(new JJTitle(Title, SubTitle));
+            html.AppendComponent(ComponentFactory.Html.Title.Create(Title, SubTitle));
 
         html.Append(GetUploadAreaHtml());
 
@@ -310,10 +309,9 @@ public class JJUploadView : AsyncComponent
     private HtmlBuilder GetHtmlPreviewVideo(string previewVideo)
     {
         var fileName = EncryptionService.DecryptStringWithUrlUnescape(previewVideo);
-        var video = FormFileManager.GetFile(fileName).Content;
-
-        var srcVideo =
-            $"data:video/mp4;base64,{Convert.ToBase64String(video.Bytes.ToArray(), 0, video.Bytes.ToArray().Length)}";
+        var fileContent = FormFileManager.GetFile(fileName).Content;
+        var fileArray = fileContent.Bytes.ToArray();
+        var srcVideo = $"data:video/mp4;base64,{Convert.ToBase64String(fileArray, 0, fileArray.Length)}";
         
         var script = new StringBuilder();
         script.AppendLine("	$(document).ready(function () { ");
@@ -379,7 +377,7 @@ public class JJUploadView : AsyncComponent
                    .WithCssClass("img-responsive");
             });
         });
-        html.AppendScript(script.ToString());
+        html.AppendScript(script);
         return html;
     }
 
@@ -400,7 +398,8 @@ public class JJUploadView : AsyncComponent
         }
         catch (Exception ex)
         {
-            return (RenderedComponentResult)new JJMessageBox(ex.Message, MessageIcon.Warning);
+            var messageBox = ComponentFactory.Html.MessageBox.Create(ex.Message, MessageIcon.Warning);
+            return (RenderedComponentResult) messageBox;
         }
 
         throw new InvalidOperationException("Invalid JJUploadView action.");
@@ -430,10 +429,9 @@ public class JJUploadView : AsyncComponent
         var panelContent = new HtmlBuilder();
         if (!UploadArea.AllowedTypes.Equals("*"))
         {
-            panelContent.AppendComponent(new JJLabel
-            {
-                Text = $"{StringLocalizer["File Type:"]}&nbsp;<b>{UploadArea.AllowedTypes}</b>"
-            });
+            var label = ComponentFactory.Html.Label.Create();
+            label.Text = $"{StringLocalizer["File Type:"]}&nbsp;<b>{UploadArea.AllowedTypes}</b>";
+            panelContent.AppendComponent(label);
         }
         
         panelContent.Append(UploadArea.GetUploadAreaHtmlBuilder());
@@ -649,6 +647,10 @@ public class JJUploadView : AsyncComponent
     private async Task<JJModalDialog> GetPreviewModalHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
+        
+        var htmlLabel = ComponentFactory.Html.Label.Create();
+        htmlLabel.Text = "File name";
+        htmlLabel.LabelFor = $"preview_filename-{UploadArea.Name}";
 
         await html.AppendAsync(HtmlTag.Div, async row =>
         {
@@ -656,11 +658,7 @@ public class JJUploadView : AsyncComponent
             await row.AppendAsync(HtmlTag.Div, async col =>
             {
                 col.WithCssClass("col-sm-12")
-                   .AppendComponent(new JJLabel
-                   {
-                       LabelFor = $"preview_filename-{UploadArea.Name}",
-                       Text = "File name"
-                   });
+                   .AppendComponent(htmlLabel);
                    await col.AppendControlAsync(new JJTextGroup(CurrentContext)
                    {
                        Name = $"preview_filename-{UploadArea.Name}",
@@ -761,8 +759,10 @@ public class JJUploadView : AsyncComponent
         var newName = names[1];
         RenameFile(currentName, newName);
 
-        return (RenderedComponentResult)new JJMessageBox(StringLocalizer["File successfully renamed."],
-            MessageIcon.Info);
+        var text = StringLocalizer["File successfully renamed."];
+        var messageBox = ComponentFactory.Html.MessageBox.Create(text, MessageIcon.Info);
+        
+        return (RenderedComponentResult)messageBox;
     }
 
     public void RenameFile(string currentName, string newName) =>
@@ -774,10 +774,11 @@ public class JJUploadView : AsyncComponent
     public ComponentResult GetDeleteFileResult(string fileName)
     {
         FormFileManager.DeleteFile(fileName);
-        return (RenderedComponentResult)new JJMessageBox(StringLocalizer["File successfully deleted."],
-            MessageIcon.Info);
+        var text = StringLocalizer["File successfully deleted."];
+        var htmlTitle = ComponentFactory.Html.MessageBox.Create(text, MessageIcon.Info);
+        return (RenderedComponentResult)htmlTitle;
     }
-
+    
     internal void DeleteAll() => 
         FormFileManager.DeleteAll();
 

@@ -5,15 +5,21 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class JJValidationSummaryTagHelper : TagHelper
 {
+    private readonly ValidationSummaryFactory _validationSummaryFactory;
+
     [HtmlAttributeName("errors")] 
     public IEnumerable<string>? Errors { get; set; }
 
+    public JJValidationSummaryTagHelper(ValidationSummaryFactory validationSummaryFactory)
+    {
+        _validationSummaryFactory = validationSummaryFactory;
+    }
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var validationSummary = new JJValidationSummary
-        {
-            Errors = Errors?.ToList()
-        };
+        var validationSummary = _validationSummaryFactory.Create();
+        if (Errors != null)
+            validationSummary.Errors = Errors.ToList();
+        
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(validationSummary.GetHtml());
         return Task.CompletedTask;

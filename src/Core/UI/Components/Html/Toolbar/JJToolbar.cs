@@ -4,11 +4,11 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
 
-internal class JJToolbar : HtmlComponent
+public class JJToolbar : HtmlComponent
 {
     public List<HtmlBuilder> Items { get; set; }
 
-    public JJToolbar()
+    internal JJToolbar()
     {
         Items = new List<HtmlBuilder>();
     }
