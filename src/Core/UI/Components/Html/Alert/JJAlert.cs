@@ -29,6 +29,7 @@ public class JJAlert : HtmlComponent
             .WithNameAndId(Name)
             .WithAttributes(Attributes)
             .WithCssClass(CssClass)
+            .WithCssClass("mt-3")
             .WithCssClass("alert")
             .WithCssClassIf(BootstrapHelper.Version > 3, "alert-dismissible")
             .WithCssClass(GetClassType())
@@ -46,7 +47,7 @@ public class JJAlert : HtmlComponent
      
 
         if (!string.IsNullOrEmpty(Title))
-            html.Append(HtmlTag.B, b => b.AppendText($"&nbsp;&nbsp;{Title}"));
+            html.Append(HtmlTag.B, b => b.AppendText(Title));
 
         if (Messages == null) 
             return html;

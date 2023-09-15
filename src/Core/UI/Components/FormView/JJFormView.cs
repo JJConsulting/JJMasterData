@@ -463,13 +463,13 @@ public class JJFormView : AsyncComponent
         {
             Name = $"insert-alert-{Name}",
             Color = PanelColor.Success,
+            Title = StringLocalizer["Success"],
             ShowIcon = true,
             Icon = IconType.CheckCircleO
         };
         alert.Messages.Add(StringLocalizer["Record added successfully"]);
         htmlBuilder.Append(HtmlTag.Div, div =>
         {
-            div.WithCssClass("mt-3");
             div.WithAttribute("id", $"insert-alert-div-{Name}")
                 .WithCssClass("fade-out")
                 .AppendComponent(alert);
@@ -614,7 +614,7 @@ public class JJFormView : AsyncComponent
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         html.AppendHiddenInput($"form-view-current-action-{Name}", "ELEMENTLIST");
-        html.AppendHiddenInput($"form-view-select-action-values{Name}", "");
+        html.AppendHiddenInput($"form-view-select-action-values-{Name}", "");
 
         var formElement = await DataDictionaryRepository.GetMetadataAsync(action.ElementNameToSelect);
         var selectedForm = ComponentFactory.FormView.Create(formElement);
@@ -662,7 +662,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertSelectionResult()
     {
-        string encryptedActionMap = CurrentContext.Request.Form[$"form-view-select-action-values{Name}"];
+        string encryptedActionMap = CurrentContext.Request.Form[$"form-view-select-action-values-{Name}"];
         var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement =
@@ -988,11 +988,13 @@ public class JJFormView : AsyncComponent
 
         var toolbar = await GetFormToolbarAsync(panelActions);
         
+        formHtml.Append(parentPanelHtml);
+        
+        formHtml.AppendComponent(toolbar);
+        
         if (panel.Errors.Any())
             formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(panel.Errors));
         
-        formHtml.Append(parentPanelHtml);
-        formHtml.AppendComponent(toolbar);
         formHtml.AppendHiddenInput($"form-view-current-action-{Name}");
         return formHtml;
     }
