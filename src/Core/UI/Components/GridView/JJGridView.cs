@@ -611,19 +611,12 @@ public class JJGridView : AsyncComponent
 
         if (ComponentContext is ComponentContext.GridViewFilterSearchBox)
         {
-            var objName = CurrentContext.Request.QueryString["componentName"];
-            if (objName == null || !objName.StartsWith(GridFilter.FilterFieldPrefix))
-                return new EmptyComponentResult();
-
-            string filterName = Name[GridFilter.FilterFieldPrefix.Length..];
-            if (!FormElement.Fields.Contains(filterName))
-                return new EmptyComponentResult();
-
-            var field = FormElement.Fields[filterName];
+            var fieldName = CurrentContext.Request.QueryString["fieldName"];
+            var field = FormElement.Fields[fieldName];
             var formStateData = new FormStateData(await GetCurrentFilterAsync(), UserValues, PageState.Filter);
             var jjSearchBox = await ComponentFactory.Controls.CreateAsync(FormElement,field, formStateData, Name) as JJSearchBox;
-            jjSearchBox!.Name = objName;
-            return await jjSearchBox.GetResultAsync();
+            jjSearchBox!.Name = fieldName;
+            return await jjSearchBox.GetItemsResult();
         }
         
         return new RenderedComponentResult(await GetHtmlBuilderAsync());
@@ -649,7 +642,10 @@ public class JJGridView : AsyncComponent
         return html;
     }
 
-    public async Task<IDictionary<string, object?>> GetCurrentFilterAsync() => await Filter.GetCurrentFilter();
+    public async Task<IDictionary<string, object?>> GetCurrentFilterAsync()
+    {
+        return await Filter.GetCurrentFilter();
+    }
 
 
     public void SetCurrentFilter(string key, object value)
@@ -1135,9 +1131,10 @@ public class JJGridView : AsyncComponent
     {
         if (DataSource == null && !IsUserSetDataSource)
         {
+            var filters = await GetCurrentFilterAsync();
             var result = await GetDataSourceAsync(new EntityParameters
             {
-                Filters = await GetCurrentFilterAsync(),
+                Filters = filters,
                 OrderBy = CurrentOrder,
                 RecordsPerPage = CurrentSettings.RecordsPerPage,
                 CurrentPage = CurrentPage

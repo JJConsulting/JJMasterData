@@ -124,11 +124,11 @@ internal class GridTableHeader
 
     private bool IsAppliedFilter(ElementField field, IDictionary<string, object> currentFilter)
     {
-        var hasFilterType = field.Filter.Type != FilterMode.None;
-        var hasRelationValue = !GridView.RelationValues.Any() || (GridView.RelationValues.Any() && GridView.RelationValues.ContainsKey(field.Name));
+        var hasFilterType = field.Filter.Type is not FilterMode.None;
+        var hasRelationValue = GridView.RelationValues.ContainsKey(field.Name);
         var hasFieldOrFromKey = currentFilter.ContainsKey(field.Name) || currentFilter.ContainsKey($"{field.Name}_from");
 
-        return hasFilterType && hasRelationValue && hasFieldOrFromKey;
+        return hasRelationValue || (hasFilterType && hasFieldOrFromKey);
     }
 
     private void SetSortAttributes(HtmlBuilder span, ElementField field)

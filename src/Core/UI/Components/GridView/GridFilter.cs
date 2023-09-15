@@ -75,6 +75,7 @@ internal class GridFilter
 
         var sessionFilter = CurrentContext.Session.GetSessionValue<Dictionary<string, object>>(
             $"jjcurrentfilter_{GridView.Name}");
+        
         if (sessionFilter != null && GridView.MaintainValuesOnLoad)
         {
             _currentFilter = sessionFilter;
@@ -353,13 +354,13 @@ internal class GridFilter
                             value = "0";
                         break;
                     case FormComponent.Search:
-                        var search = (JJSearchBox)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement,f, new(values,GridView.UserValues, PageState.Filter), GridView.Name);
+                        var search = (JJSearchBox)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement,f, new(values,GridView.UserValues, PageState.Filter),value);
                         search.Name = name;
                         search.AutoReloadFormFields = true;
                         value = await search.GetSelectedValueAsync();
                         break;
                     case FormComponent.Lookup:
-                        var lookup = (JJLookup)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement,f, new(values,GridView.UserValues, PageState.Filter), GridView.Name);
+                        var lookup = (JJLookup)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement,f, new(values,GridView.UserValues, PageState.Filter), value);
                         lookup.Name = name;
                         lookup.AutoReloadFormFields = true;
                         value = lookup.SelectedValue;
