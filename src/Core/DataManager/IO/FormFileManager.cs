@@ -122,7 +122,7 @@ public class FormFileManager
     public FormFileInfo GetFile(string fileName)
     {
         var files = GetFiles();
-        var file = files.FirstOrDefault(x => x.Content.FileName.Equals(fileName) || x.OldName.Equals(fileName));
+        var file = files.FirstOrDefault(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
         
         return file;
     }

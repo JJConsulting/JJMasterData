@@ -1,4 +1,3 @@
-using JJMasterData.Core.Web;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Pdf;
 using JJMasterData.WebExample.Authorization;
@@ -21,27 +20,22 @@ builder.Services.AddAuthorization(options =>
 });
         
 var app = builder.Build();
-
 if (app.Environment.IsProduction())
 {
+    app.UseHsts();
     app.UseExceptionHandler("/Error");
     app.UseStatusCodePagesWithReExecute("/Error", "?statusCode={0}");
-    app.UseHsts();
 }
 else
 {
     app.UseDeveloperExceptionPage();
 }
 
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-app.MapJJMasterData()
-    .RequireAuthorization("MasterDataPolicy");
 app.UseAuthorization();
 app.UseJJMasterDataWeb();
-
-        
+app.MapJJMasterData()
+    .RequireAuthorization("MasterDataPolicy");
 app.Run();

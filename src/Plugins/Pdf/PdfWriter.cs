@@ -56,20 +56,20 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
     
     public IFieldFormattingService FieldFormattingService { get; }
     
-    public IControlFactory ControlFactory { get; }
+    
     public PdfWriter(IExpressionsService expressionsService, 
                      IStringLocalizer<JJMasterDataResources> stringLocalizer, 
                      IOptions<JJMasterDataCoreOptions> options, 
                      IDataItemService dataItemService,
-                     IControlFactory<JJTextFile> textFileFactory, 
                      ILogger<PdfWriter> logger, 
                      IEntityRepository entityRepository, 
-                     IFieldFormattingService fieldFormattingService, IControlFactory controlFactory) : base(expressionsService, stringLocalizer, options, textFileFactory, logger)
+                     IFieldFormattingService fieldFormattingService, 
+                     ControlFactory controlFactory) : base(expressionsService, stringLocalizer, options, controlFactory, logger)
     {
         DataItemService = dataItemService;
         EntityRepository = entityRepository;
         FieldFormattingService = fieldFormattingService;
-        ControlFactory = controlFactory;
+        
     }
     
     public override async Task GenerateDocument(Stream ms, CancellationToken token)

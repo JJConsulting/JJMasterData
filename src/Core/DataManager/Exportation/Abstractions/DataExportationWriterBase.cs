@@ -16,9 +16,8 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Exportation;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -39,7 +38,8 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     private IExpressionsService ExpressionsService { get; }
     protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
-    private IControlFactory<JJTextFile> TextFileFactory { get; }
+    
+    public ControlFactory ControlFactory { get; }
 
     private ILogger<DataExportationWriterBase> Logger { get; }
 
@@ -136,14 +136,17 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     #endregion
 
 
-    protected DataExportationWriterBase(IExpressionsService expressionsService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<JJMasterDataCoreOptions> options,
-        IControlFactory<JJTextFile> textFileFactory, ILogger<DataExportationWriterBase> logger)
+    protected DataExportationWriterBase(
+        IExpressionsService expressionsService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+        IOptions<JJMasterDataCoreOptions> options,
+        ControlFactory controlFactory, 
+        ILogger<DataExportationWriterBase> logger)
     {
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
         Options = options;
-        TextFileFactory = textFileFactory;
+        ControlFactory = controlFactory;
         Logger = logger;
         CurrentFilter = new Dictionary<string, object>();
     }
@@ -220,7 +223,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
     public string GetFileLink(FormElementField field, Dictionary<string, object> row, string value)
     {
-        if (!field.DataFile.ExportAsLink)
+        if (!field.DataFile!.ExportAsLink)
             return null;
 
         if (string.IsNullOrEmpty(value))
@@ -231,7 +234,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
             return null;
 
         string fileName = value;
-        var textFile = TextFileFactory.Create();
+        var textFile = ControlFactory.TextFile.Create();
         textFile.FormElement = FormElement;
         textFile.FormElementField = field;
         textFile.PageState = PageState.List;
