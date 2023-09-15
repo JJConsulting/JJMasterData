@@ -22,7 +22,7 @@ internal class DataPanelScripts
     {
         var componentName = _dataPanelControl.Name;
         
-        var routeContext = EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(_dataPanelControl.FormElement,ComponentContext.PanelReload));
+        var routeContext = EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(_dataPanelControl.FormElement,ComponentContext.DataPanelReload));
         
         return $"DataPanelHelper.reload('{componentName}','{fieldName}','{routeContext}');";
     }

@@ -201,7 +201,7 @@ public class JJDataPanel : AsyncComponent
                 return await GetFieldResultAsync<JJSearchBox>();
             case ComponentContext.DownloadFile:
                 return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
-            case ComponentContext.PanelReload:
+            case ComponentContext.DataPanelReload:
             {
                 var html = await GetPanelHtmlBuilderAsync();
                 var panelHtml = html.ToString();

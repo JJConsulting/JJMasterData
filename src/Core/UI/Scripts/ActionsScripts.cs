@@ -110,15 +110,16 @@ internal class ActionsScripts
             EncryptedActionMap = encryptedActionMap,
             ConfirmationMessage = confirmationMessage.IsNullOrEmpty() ? null : confirmationMessage
         };
-
+        
+        var formViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.FormViewReload);
+        actionData.EncryptedFormViewRouteContext = EncryptionService.EncryptRouteContext(formViewRouteContext);
+        
         if (actionContext.IsModal)
         {
             var modalRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);
-            var gridViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
-
+            
             actionData.ModalTitle = actionContext.FormElement.Title;
             actionData.EncryptedModalRouteContext = EncryptionService.EncryptRouteContext(modalRouteContext);
-            actionData.EncryptedGridRouteContext = EncryptionService.EncryptRouteContext(gridViewRouteContext);
         }
 
         var actionDataJson = actionData.ToJson();

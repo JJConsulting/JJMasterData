@@ -66,7 +66,7 @@ class ActionManager {
             actionMap,
             modalTitle,
             modalRouteContext,
-            gridRouteContext,
+            formViewRouteContext,
             confirmationMessage
         } = actionData;
         
@@ -111,12 +111,17 @@ class ActionManager {
                 if (typeof data === "object") {
                     if (data.closeModal) {
                         modal.remove();
-                        GridViewHelper.refresh(componentName,gridRouteContext)
+                        GridViewHelper.refresh(componentName,formViewRouteContext)
                     }
                 }
             })
         } else {
-            form.requestSubmit();
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
+            
+            postFormValues({url:urlBuilder.build(), success:(data)=>{
+                document.getElementById(componentName).innerHTML =data;
+            }});
         }
     }
     

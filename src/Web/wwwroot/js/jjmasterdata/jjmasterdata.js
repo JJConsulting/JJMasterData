@@ -60,7 +60,7 @@ class ActionManager {
         });
     }
     static executeActionData(actionData) {
-        const { componentName, actionMap, modalTitle, modalRouteContext, gridRouteContext, confirmationMessage } = actionData;
+        const { componentName, actionMap, modalTitle, modalRouteContext, formViewRouteContext, confirmationMessage } = actionData;
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -93,13 +93,17 @@ class ActionManager {
                 if (typeof data === "object") {
                     if (data.closeModal) {
                         modal.remove();
-                        GridViewHelper.refresh(componentName, gridRouteContext);
+                        GridViewHelper.refresh(componentName, formViewRouteContext);
                     }
                 }
             });
         }
         else {
-            form.requestSubmit();
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
+            postFormValues({ url: urlBuilder.build(), success: (data) => {
+                    document.getElementById(componentName).innerHTML = data;
+                } });
         }
     }
     static executeAction(actionDataJson) {

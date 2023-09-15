@@ -3,6 +3,6 @@ class ActionData{
     actionMap: string
     modalTitle?: string
     modalRouteContext?: string
-    gridRouteContext?: string
+    formViewRouteContext?: string
     confirmationMessage?: string
 }

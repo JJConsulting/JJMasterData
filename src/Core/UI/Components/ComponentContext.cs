@@ -7,6 +7,8 @@ public enum ComponentContext
     /// </summary>
     RenderComponent,
         
+    FormViewReload,
+    
     /// <summary>
     /// The component is requesting a JJSearchBox result from a GridView filter
     /// </summary>
@@ -18,7 +20,7 @@ public enum ComponentContext
     /// <summary>
     /// Reloads the current JJDataPanel
     /// </summary>
-    PanelReload,
+    DataPanelReload,
     
     /// <summary>
     /// The component is inside a modal

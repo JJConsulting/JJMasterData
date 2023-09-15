@@ -18,8 +18,8 @@ internal record ActionData
     [JsonProperty("modalRouteContext")]
     public string? EncryptedModalRouteContext { get; set; }
     
-    [JsonProperty("gridRouteContext")]
-    public string? EncryptedGridRouteContext { get; set; }
+    [JsonProperty("formViewRouteContext")]
+    public string? EncryptedFormViewRouteContext { get; set; }
     
     [JsonProperty("confirmationMessage")]
     public string? ConfirmationMessage { get; set; }

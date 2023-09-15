@@ -249,8 +249,19 @@ public class JJFormView : AsyncComponent
         }
     }
     
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
-    
+    internal ComponentContext ComponentContext
+    {
+        get
+        {
+            if (RouteContext.IsCurrentFormElement(FormElement.Name))
+            {
+                return RouteContext.ComponentContext;
+            }
+
+            return default;
+        }
+    }
+
     public bool ShowTitle
     {
         get
@@ -369,13 +380,14 @@ public class JJFormView : AsyncComponent
         
         switch (ComponentContext)
         {
+                
             case ComponentContext.TextFileUploadView:
             case ComponentContext.TextFileFileUpload:
             case ComponentContext.SearchBox:
                 return await DataPanel.GetResultAsync();
             case ComponentContext.UrlRedirect:
                 return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
-            case ComponentContext.PanelReload:
+            case ComponentContext.DataPanelReload:
                 return await GetReloadPanelResultAsync();
             case ComponentContext.GridViewReload:
                 return await GridView.GetResultAsync();
@@ -511,9 +523,14 @@ public class JJFormView : AsyncComponent
             html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
             html.AppendHiddenInput($"form-view-action-map-{Name}", EncryptionService.EncryptActionMap(CurrentActionMap));
 
-            return new RenderedComponentResult(html);
-        }
 
+            if (ComponentContext is ComponentContext.FormViewReload)
+            {
+                return HtmlComponentResult.FromHtmlBuilder(html);
+            }
+            
+        }
+        
         return result;
     }
 
@@ -962,10 +979,6 @@ public class JJFormView : AsyncComponent
         if (relationshipsResult is RenderedComponentResult renderedComponentResult)
         {
             html.Append(renderedComponentResult.HtmlBuilder);
-        }
-        else
-        {
-            return relationshipsResult;
         }
 
         var bottomActions = FormElement.Options.FormToolbarActions

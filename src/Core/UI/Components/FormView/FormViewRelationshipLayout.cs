@@ -187,7 +187,7 @@ internal class FormViewRelationshipLayout
                 childFormView.SetOptions(childElement.Options);
                 childFormView.GridView.ShowTitle = false;
 
-                var result = await childFormView.GetResultAsync();
+                var result = await childFormView.GetFormResultAsync();
                 if (result is RenderedComponentResult renderedComponentResult)
                 {
                     var filters =
