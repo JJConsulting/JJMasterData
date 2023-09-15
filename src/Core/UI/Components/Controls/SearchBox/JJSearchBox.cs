@@ -231,12 +231,22 @@ public class JJSearchBox : ControlBase
         
         if (ComponentContext is ComponentContext.SearchBox && FieldName == fieldName)
         {
-            return new JsonComponentResult(await GetSearchBoxItemsAsync());
+            return await GetItemsResult();
         }
 
+        return await GetRenderedComponentResult();
+    }
+
+    internal async Task<ComponentResult> GetRenderedComponentResult()
+    {
         var html = await GetSearchBoxHtml();
 
         return new RenderedComponentResult(html);
+    }
+
+    internal async Task<ComponentResult> GetItemsResult()
+    {
+        return new JsonComponentResult(await GetSearchBoxItemsAsync());
     }
 
     private async Task<HtmlBuilder> GetSearchBoxHtml()
@@ -355,7 +365,7 @@ public class JJSearchBox : ControlBase
     }
 
 
-    public async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
+    private async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
         string componentName = Request.QueryString["fieldName"];
         string textSearch = Request.Form[componentName];
