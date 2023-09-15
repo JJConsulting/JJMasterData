@@ -974,22 +974,18 @@ public class JJGridView : AsyncComponent
             Title = "Configure View"
         };
 
-        var btnOk = new JJLinkButton
-        {
-            Text = "Ok",
-            IconClass = "fa fa-check",
-            ShowAsButton = true,
-            OnClientClick = Scripts.GetConfigUIScript(ConfigAction, RelationValues)
-        };
+        var btnOk = ComponentFactory.Html.LinkButton.Create();
+        btnOk.Text = "Ok";
+        btnOk.IconClass = "fa fa-check";
+        btnOk.ShowAsButton = true;
+        btnOk.OnClientClick = Scripts.GetConfigUIScript(ConfigAction, RelationValues);
         modal.Buttons.Add(btnOk);
 
-        var btnCancel = new JJLinkButton
-        {
-            Text = "Cancel",
-            IconClass = "fa fa-times",
-            ShowAsButton = true,
-            OnClientClick = Scripts.GetCloseConfigUIScript()
-        };
+        var btnCancel = ComponentFactory.Html.LinkButton.Create();
+        btnCancel.Text = "Cancel";
+        btnCancel.IconClass = "fa fa-times";
+        btnCancel.ShowAsButton = true;
+        btnCancel.OnClientClick = Scripts.GetCloseConfigUIScript();
         modal.Buttons.Add(btnCancel);
 
         var form = new GridFormSettings(CurrentContext, StringLocalizer);

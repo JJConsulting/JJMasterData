@@ -221,12 +221,10 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
 
     private JJLinkButton GetDateAction()
     {
-        var btn = new JJLinkButton
-        {
-            IconClass = $"fa fa-{BootstrapHelper.DateIcon}",
-            Tooltip = StringLocalizer["Calendar"],
-            ShowInFilter = true
-        };
+        var btn = LinkButtonFactory.Create();
+        btn.IconClass = $"fa fa-{BootstrapHelper.DateIcon}";
+        btn.Tooltip = StringLocalizer["Calendar"];
+        btn.ShowInFilter = true;
 
         btn.SetAttr("data-toggle", "date");
         btn.SetAttr("tabindex", "-1");

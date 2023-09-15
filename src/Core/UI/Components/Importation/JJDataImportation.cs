@@ -12,9 +12,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Imports;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.DataManager.Services.Abstractions;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Importation;
@@ -23,7 +21,6 @@ using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -229,12 +226,10 @@ public class JJDataImportation : ProcessComponent
             .Append(new DataImportationLog(this).GetHtmlResume())
             .Append(HtmlTag.Br).Append(HtmlTag.Br);
 
-        var btnStop = new JJLinkButton
-        {
-            OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]),
-            IconClass = IconType.Stop.GetCssClass(),
-            Text = StringLocalizer["Stop the import."]
-        };
+        var btnStop = ComponentFactory.Html.LinkButton.Create();
+        btnStop.OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]);
+        btnStop.IconClass = IconType.Stop.GetCssClass();
+        btnStop.Text = StringLocalizer["Stop the import."];
         html.AppendComponent(btnStop);
 
         return html;
@@ -365,37 +360,34 @@ public class JJDataImportation : ProcessComponent
         return dto;
     }
 
-    private static JJLinkButton GetBackButton()
+    private JJLinkButton GetBackButton()
     {
-        return new JJLinkButton
-        {
-            IconClass = "fa fa-arrow-left",
-            Text = "Back",
-            ShowAsButton = true,
-            OnClientClick = "uploadFile1Obj.remove();"
-        };
+        var button = ComponentFactory.Html.LinkButton.Create();
+        button.IconClass = "fa fa-arrow-left";
+        button.Text = "Back";
+        button.ShowAsButton = true;
+        button.OnClientClick = "uploadFile1Obj.remove();";
+        return button;
     }
 
     private JJLinkButton GetHelpButton()
     {
-        return new JJLinkButton
-        {
-            IconClass = "fa fa-question-circle",
-            Text = "Help",
-            ShowAsButton = true,
-            OnClientClick = DataImportationScripts.GetHelpScript()
-        };
+        var button = ComponentFactory.Html.LinkButton.Create();;
+        button.IconClass = "fa fa-question-circle";
+        button.Text = "Help";
+        button.ShowAsButton = true;
+        button.OnClientClick = DataImportationScripts.GetHelpScript();
+        return button;
     }
 
     private JJLinkButton GetLogButton()
     {
-        return new JJLinkButton
-        {
-            IconClass = "fa fa-film",
-            Text = "Last Importation",
-            ShowAsButton = true,
-            OnClientClick = DataImportationScripts.GetLogScript()
-        };
+        var button = ComponentFactory.Html.LinkButton.Create();
+        button.IconClass = "fa fa-film";
+        button.Text = "Last Importation";
+        button.ShowAsButton = true;
+        button.OnClientClick = DataImportationScripts.GetLogScript();
+        return button;
     }
 
     private JJUploadArea GetUploadArea()

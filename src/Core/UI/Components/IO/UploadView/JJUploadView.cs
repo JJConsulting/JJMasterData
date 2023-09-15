@@ -688,27 +688,21 @@ public class JJUploadView : AsyncComponent
             });
         });
 
-        var btnOk = new JJLinkButton
-        {
-            Type = LinkButtonType.Button,
-            Name = $"btnDoUpload_{UploadArea.Name}",
-            CssClass = "btn btn-primary",
-            Text = "Save"
-        };
+        var btnOk = ComponentFactory.Html.LinkButton.Create();
+        btnOk.Type = LinkButtonType.Button;
+        btnOk.Name = $"btnDoUpload_{UploadArea.Name}";
+        btnOk.CssClass = "btn btn-primary";
+        btnOk.Text = "Save";
 
-        var btnCancel = new JJLinkButton
-        {
-            Type = LinkButtonType.Button,
-            Text = "Cancel"
-        };
+        var btnCancel = ComponentFactory.Html.LinkButton.Create();
+        btnCancel.Type = LinkButtonType.Button;
+        btnCancel.Text = "Cancel";
         btnCancel.SetAttr(BootstrapHelper.DataDismiss, "modal");
 
-        var modal = new JJModalDialog
-        {
-            Name = $"preview_modal_{UploadArea.Name}",
-            Title = "Would you like to save the image below?",
-            HtmlBuilderContent = html
-        };
+        var modal = ComponentFactory.Html.ModalDialog.Create();
+        modal.Name = $"preview_modal_{UploadArea.Name}";
+        modal.Title = "Would you like to save the image below?";
+        modal.HtmlBuilderContent = html;
         modal.Buttons.Add(btnOk);
         modal.Buttons.Add(btnCancel);
 

@@ -1148,14 +1148,12 @@ public class JJFormView : AsyncComponent
 
     private JJLinkButton GetBackButton()
     {
-        var btn = new JJLinkButton
-        {
-            Type = LinkButtonType.Button,
-            CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = $"JJViewHelper.doPainelAction('{Name}','CANCEL');",
-            IconClass = IconType.Times.GetCssClass(),
-            Text = "Cancel"
-        };
+        var btn = ComponentFactory.Html.LinkButton.Create();
+        btn.Type = LinkButtonType.Button;
+        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
+        btn.OnClientClick = $"JJViewHelper.doPainelAction('{Name}','CANCEL');";
+        btn.IconClass = IconType.Times.GetCssClass();
+        btn.Text = "Cancel";
         btn.IconClass = IconType.ArrowLeft.GetCssClass();
         btn.Text = "Back";
         return btn;
@@ -1169,17 +1167,17 @@ public class JJFormView : AsyncComponent
             FormStateData = new FormStateData(values, UserValues, PageState),
             ParentComponentName = Name
         };
-        string scriptAction =
-            GridView.ActionsScripts.GetFormActionScript(GridView.GridActions.ViewAction, context,
+        string scriptAction = GridView.ActionsScripts.GetFormActionScript(
+                GridView.GridActions.ViewAction, 
+                context,
                 ActionSource.GridTable);
-        var btn = new JJLinkButton
-        {
-            Type = LinkButtonType.Button,
-            Text = "Hide Log",
-            IconClass = IconType.Film.GetCssClass(),
-            CssClass = "btn btn-primary btn-small",
-            OnClientClick = $"$('#form-view-page-state-{Name}').val('{(int)PageState.List}');{scriptAction}"
-        };
+        
+        var btn = ComponentFactory.Html.LinkButton.Create();
+        btn.Type = LinkButtonType.Button;
+        btn.Text = "Hide Log";
+        btn.IconClass = IconType.Film.GetCssClass();
+        btn.CssClass = "btn btn-primary btn-small";
+        btn.OnClientClick = $"$('#form-view-page-state-{Name}').val('{(int)PageState.List}');{scriptAction}";
         return btn;
     }
 
@@ -1191,17 +1189,17 @@ public class JJFormView : AsyncComponent
             FormStateData = new FormStateData(values, UserValues, PageState),
             ParentComponentName = Name
         };
-        string scriptAction =
-            GridView.ActionsScripts.GetFormActionScript(GridView.ToolBarActions.LogAction, context,
-                ActionSource.GridToolbar);
-        var btn = new JJLinkButton
-        {
-            Type = LinkButtonType.Button,
-            Text = "View Log",
-            IconClass = IconType.Film.GetCssClass(),
-            CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = scriptAction
-        };
+        string scriptAction = GridView.ActionsScripts.GetFormActionScript(
+            GridView.ToolBarActions.LogAction, 
+            context,
+            ActionSource.GridToolbar);
+        
+        var btn = ComponentFactory.Html.LinkButton.Create();
+        btn.Type = LinkButtonType.Button;
+        btn.Text = "View Log";
+        btn.IconClass = IconType.Film.GetCssClass();
+        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
+        btn.OnClientClick = scriptAction;
         return btn;
     }
 

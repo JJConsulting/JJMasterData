@@ -24,7 +24,7 @@ public class JJLookup : ControlBase
 {
     private FormElement FormElement { get; set; }
     private ILookupService LookupService { get; }
-    private IComponentFactory<JJTextBox> TextBoxFactory { get; }
+    private IComponentFactory ComponentFactory { get; }
 
     #region "Properties"
 
@@ -97,13 +97,13 @@ public class JJLookup : ControlBase
         ControlContext controlContext,
         IFormValues formValues,
         ILookupService lookupService,
-        IComponentFactory<JJTextBox> textBoxFactory) : base(formValues)
+        IComponentFactory componentFactory) : base(formValues)
     {
         FormElement = formElement;
         ElementMap = field.DataItem?.ElementMap ?? throw new ArgumentException("ElementMap cannot be null.");
         FieldName = field.Name;
         LookupService = lookupService;
-        TextBoxFactory = textBoxFactory;
+        ComponentFactory = componentFactory;
         Enabled = true;
         AutoReloadFormFields = true;
         Name = field.Name;
@@ -148,7 +148,7 @@ public class JJLookup : ControlBase
         
         Attributes["lookup-description-url"] = LookupService.GetDescriptionUrl(FormElement.Name,FieldName,Name,FormStateData.PageState);
 
-        var idTextBox = TextBoxFactory.Create();
+        var idTextBox = ComponentFactory.Controls.Create<JJTextBox>();
         idTextBox.Name = Name;
         idTextBox.CssClass = $"form-control jj-lookup {GetFeedbackIcon(inputValue?.ToString(), description)} {CssClass}";
         idTextBox.InputType = OnlyNumbers ? InputType.Number : InputType.Text;
@@ -165,8 +165,8 @@ public class JJLookup : ControlBase
         if (!string.IsNullOrEmpty(FormElement.Fields[FieldName].DataItem!.ElementMap!.FieldDescription))
         {
             idTextBox.Attributes["style"] = "flex:2";
-            
-            var descriptionTextBox = TextBoxFactory.Create();
+
+            var descriptionTextBox = ComponentFactory.Controls.Create<JJTextBox>();
             descriptionTextBox.Name = $"{Name}-description";
             descriptionTextBox.CssClass = $"form-control jj-lookup {CssClass}";
             descriptionTextBox.InputType = InputType.Text;
@@ -182,15 +182,15 @@ public class JJLookup : ControlBase
         }
 
         var formViewUrl = LookupService.GetFormViewUrl(ElementMap, FormStateData, Name);
+
+        var button = ComponentFactory.Html.LinkButton.Create();
+        button.Name = $"btn_{Name}";
+        button.Enabled = Enabled;
+        button.ShowAsButton = true;
+        button.OnClientClick = $"""defaultModal.showIframe('{formViewUrl}', '{ModalTitle}', '{(int)ModalSize}')""";
+        button.IconClass = "fa fa-search";
         
-        div.AppendComponent(new JJLinkButton
-        {
-            Name = $"btn_{Name}",
-            Enabled = Enabled,
-            ShowAsButton = true,
-            OnClientClick = $"""defaultModal.showIframe('{formViewUrl}', '{ModalTitle}', '{(int)ModalSize}')""",
-            IconClass = "fa fa-search"
-        });
+        div.AppendComponent(button);
         return div;
     }
 

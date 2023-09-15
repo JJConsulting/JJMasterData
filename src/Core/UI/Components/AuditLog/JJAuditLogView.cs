@@ -301,14 +301,12 @@ public class JJAuditLogView : AsyncComponent
 
     private JJToolbar GetFormBottombar()
     {
-        var btn = new JJLinkButton
-        {
-            Type = LinkButtonType.Button,
-            CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = $"AuditLogViewHelper.viewLog('{Name}','');",
-            IconClass = IconType.ArrowLeft.GetCssClass(),
-            Text = "Back"
-        };
+        var btn = _componentFactory.Html.LinkButton.Create();
+        btn.Type = LinkButtonType.Button;
+        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
+        btn.OnClientClick = $"AuditLogViewHelper.viewLog('{Name}','');";
+        btn.IconClass = IconType.ArrowLeft.GetCssClass();
+        btn.Text = "Back";
 
         var toolbar = new JJToolbar();
         toolbar.Items.Add(btn.GetHtmlBuilder());

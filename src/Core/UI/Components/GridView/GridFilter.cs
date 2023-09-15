@@ -181,25 +181,20 @@ internal class GridFilter
             .AppendHiddenInput($"grid-view-filter-action-{GridView.Name}")
             .Append(htmlPanel);
 
-        var btnDoFilter = new JJLinkButton
-        {
-            Enabled = GridView.EnableFilter,
-            Text = "Filter",
-            IconClass = "fa fa-search",
-            Type = LinkButtonType.Submit,
-            OnClientClick = $"{GridView.Scripts.GetFilterScript()};return false;"
-        };
+        var btnDoFilter = GridView.ComponentFactory.Html.LinkButton.Create();
+        btnDoFilter.Enabled = GridView.EnableFilter;
+        btnDoFilter.Text = "Filter";
+        btnDoFilter.IconClass = "fa fa-search";
+        btnDoFilter.Type = LinkButtonType.Submit;
+        btnDoFilter.OnClientClick = $"{GridView.Scripts.GetFilterScript()};return false;";
 
-        var btnCancel = new JJLinkButton
-        {
-            Enabled = GridView.EnableFilter,
-            Text = "Clear Filter",
-            IconClass = "fa fa-trash",
-            ShowAsButton = true,
-            OnClientClick = $"{GridView.Scripts.GetClearFilterScript()};return false;"
-        };
+        var btnCancel = GridView.ComponentFactory.Html.LinkButton.Create();
+        btnCancel.Enabled = GridView.EnableFilter;
+        btnCancel.Text = "Clear Filter";
+        btnCancel.IconClass = "fa fa-trash";
+        btnCancel.ShowAsButton = true;
+        btnCancel.OnClientClick = $"{GridView.Scripts.GetClearFilterScript()};return false;";
 
-        
         if (action.ShowAsCollapse)
         {
             var panel = new JJCollapsePanel( GridView.CurrentContext)
