@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
@@ -15,7 +14,7 @@ public class JJIcon : HtmlComponent
     public string Color { get; set; }
     public string Title { get; set; }
 
-    public JJIcon() { }
+    internal JJIcon() { }
 
     public JJIcon(IconType icon)
     {

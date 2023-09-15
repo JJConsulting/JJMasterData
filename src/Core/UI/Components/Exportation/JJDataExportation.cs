@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Threading.Tasks;
-using System.Web;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
@@ -14,7 +11,6 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
@@ -56,26 +52,19 @@ public class JJDataExportation : ProcessComponent
 
     private ExportOptions _exportOptions;
 
-    /// <summary>
-    /// Recupera as configurações de exportação 
-    /// </summary>
     public ExportOptions ExportOptions
     {
         get => _exportOptions ??= new ExportOptions();
         internal set => _exportOptions = value;
     }
     
-    /// <summary>
-    /// Exibi borda na grid 
-    /// (Default = false)
-    /// </summary>
     public bool ShowBorder { get; set; }
 
     public bool ShowRowStriped { get; set; }
     internal JJMasterDataCoreOptions MasterDataOptions { get; }
 
     internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(this);
-    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
+    internal IComponentFactory ComponentFactory { get; }
     public DataExportationWriterFactory DataExportationWriterFactory { get; }
 
     #endregion
@@ -89,7 +78,7 @@ public class JJDataExportation : ProcessComponent
         IOptions<JJMasterDataCoreOptions> masterDataOptions,
         IBackgroundTaskManager backgroundTaskManager, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
+        IComponentFactory componentFactory,
         ILoggerFactory loggerFactory,
         IHttpContext currentContext,
         JJMasterDataUrlHelper urlHelper, 
@@ -100,8 +89,7 @@ public class JJDataExportation : ProcessComponent
         _urlHelper = urlHelper;
         _encryptionService = encryptionService;
         DataExportationWriterFactory = dataExportationWriterFactory;
-
-        FileDownloaderFactory = fileDownloaderFactory;
+        ComponentFactory = componentFactory;
         CurrentContext = currentContext;
         MasterDataOptions = masterDataOptions.Value;
         FormElement = formElement;
@@ -131,7 +119,7 @@ public class JJDataExportation : ProcessComponent
 
     internal string GetDownloadUrl(string filePath)
     {
-        var downloader = FileDownloaderFactory.Create();
+        var downloader = ComponentFactory.Downloader.Create();
         downloader.FilePath = filePath;
         return downloader.GetDownloadUrl(filePath);
     }
@@ -145,11 +133,9 @@ public class JJDataExportation : ProcessComponent
 
             if (reporter.HasError)
             {
-                var panel = new JJValidationSummary
-                {
-                    ShowCloseButton = false,
-                    MessageTitle = reporter.Message
-                };
+                var panel = ComponentFactory.Html.ValidationSummary.Create();
+                panel.ShowCloseButton = false;
+                panel.MessageTitle = reporter.Message;
                 html.AppendComponent(panel);
             }
             else
@@ -204,12 +190,10 @@ public class JJDataExportation : ProcessComponent
                 });
             }
 
-            var btnCancel = new JJLinkButton
-            {
-                Text = "Close",
-                IconClass = "fa fa-times",
-                ShowAsButton = true
-            };
+            var btnCancel = ComponentFactory.Html.LinkButton.Create();
+            btnCancel.Text = "Close";
+            btnCancel.IconClass = "fa fa-times";
+            btnCancel.ShowAsButton = true;
             btnCancel.Attributes.Add(BootstrapHelper.DataDismiss, "modal");
 
             html.Append(HtmlTag.Hr);

@@ -26,7 +26,7 @@ public class JJTabNav : HtmlComponent
 
     public List<NavContent> ListTab { get; set; }
 
-    public JJTabNav(IHttpContext httpContext)
+    internal JJTabNav(IHttpContext httpContext)
     {
         Name = "nav1";
         ListTab = new List<NavContent>();

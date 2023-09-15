@@ -11,6 +11,7 @@ namespace JJMasterData.Core.Web.Factories;
 internal class ComponentFactory : IComponentFactory
 {
     private RouteContext? _routeContext;
+    private HtmlComponentFactory? _htmlComponentFactory;
     private IServiceProvider ServiceProvider { get; }
 
     public IFormElementComponentFactory<JJAuditLogView> AuditLog =>
@@ -40,11 +41,11 @@ internal class ComponentFactory : IComponentFactory
     public IComponentFactory<JJUploadArea> UploadArea =>
         GetFactory<IComponentFactory<JJUploadArea>>();
 
-    public LinkButtonFactory LinkButton =>
-        GetFactory<LinkButtonFactory>();
-
     public IControlFactory Controls =>
         GetFactory<IControlFactory>();
+
+    public HtmlComponentFactory Html  =>
+        _htmlComponentFactory ??= ServiceProvider.GetRequiredService<HtmlComponentFactory>();
 
     public RouteContext RouteContext =>
         _routeContext ??= ServiceProvider.GetRequiredService<RouteContextFactory>().Create();

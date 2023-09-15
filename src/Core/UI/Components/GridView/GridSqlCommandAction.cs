@@ -21,6 +21,7 @@ internal class GridSqlCommandAction
 
     public async Task<JJMessageBox> ExecuteSqlCommand(ActionMap map, SqlCommandAction cmdAction)
     {
+        var messageFactory = _gridView.ComponentFactory.Html.MessageBox;
         try
         {
             if (IsApplyOnList(map, cmdAction))
@@ -29,7 +30,7 @@ internal class GridSqlCommandAction
                 if (selectedRows.Count == 0)
                 {
                     string msg = _gridView.StringLocalizer["No lines selected."];
-                    return new JJMessageBox(msg, MessageIcon.Warning);
+                    return  messageFactory.Create(msg, MessageIcon.Warning);
                 }
 
                 await ExecuteOnList(cmdAction, selectedRows);
@@ -43,7 +44,7 @@ internal class GridSqlCommandAction
         catch (Exception ex)
         {
             string msg = ExceptionManager.GetMessage(ex);
-            return new JJMessageBox(msg, MessageIcon.Error);
+            return messageFactory.Create(msg, MessageIcon.Error);
         }
 
         return null;

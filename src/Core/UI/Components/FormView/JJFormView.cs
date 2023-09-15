@@ -663,16 +663,7 @@ public class JJFormView : AsyncComponent
 
         if (erros.Count > 0)
         {
-            var message = new StringBuilder();
-            foreach (string err in erros.Values)
-            {
-                message.Append(" - ");
-                message.Append(err);
-                message.Append("<br>");
-            }
-
-            html.AppendComponent(new JJMessageBox(message.ToString(), MessageIcon.Warning));
-
+            html.AppendComponent(ComponentFactory.Html.MessageBox.Create(erros, MessageIcon.Warning));
             var insertSelectionResult = await GetInsertSelectionResult(GridView.ToolBarActions.InsertAction);
 
             if (insertSelectionResult is RenderedComponentResult renderedComponentResult)
@@ -684,13 +675,11 @@ public class JJFormView : AsyncComponent
                 return insertSelectionResult;
             }
 
-
             PageState = PageState.Insert;
         }
         else
         {
             PageState = PageState.Update;
-
             var result = await GetFormResult(new FormContext(values, PageState), false);
 
             if (result is RenderedComponentResult renderedComponentResult)
@@ -723,23 +712,14 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetDeleteResult()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
+        var messageFactory = ComponentFactory.Html.MessageBox;
         try
         {
             var filter = CurrentActionMap?.PkFieldValues;
-
             var errors = await DeleteFormValuesAsync(filter);
-
-            if (errors is { Count: > 0 })
+            if (errors.Count > 0)
             {
-                var errorMessage = new StringBuilder();
-                foreach (var err in errors)
-                {
-                    errorMessage.Append("- ");
-                    errorMessage.Append(err.Value);
-                    errorMessage.AppendLine("<br>");
-                }
-
-                html.AppendComponent(new JJMessageBox(errorMessage.ToString(), MessageIcon.Warning));
+                html.AppendComponent(messageFactory.Create(errors, MessageIcon.Warning));
             }
             else
             {
@@ -749,7 +729,7 @@ public class JJFormView : AsyncComponent
         }
         catch (Exception ex)
         {
-            html.AppendComponent(new JJMessageBox(ex.Message, MessageIcon.Error));
+            html.AppendComponent(messageFactory.Create(ex.Message, MessageIcon.Error));
         }
 
         if (!string.IsNullOrEmpty(UrlRedirect))
@@ -767,6 +747,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetDeleteSelectedRowsResult()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
+        var messageFactory = ComponentFactory.Html.MessageBox;
         var errorMessage = new StringBuilder();
         int errorCount = 0;
         int successCount = 0;
@@ -817,14 +798,14 @@ public class JJFormView : AsyncComponent
                     icon = MessageIcon.Warning;
                 }
 
-                html.AppendComponent(new JJMessageBox(message.ToString(), icon));
+                html.AppendComponent(messageFactory.Create(message.ToString(), icon));
 
                 GridView.ClearSelectedGridValues();
             }
         }
         catch (Exception ex)
         {
-            html.AppendComponent(new JJMessageBox(ex.Message, MessageIcon.Error));
+            html.AppendComponent(messageFactory.Create(ex.Message, MessageIcon.Error));
         }
 
         var gridViewResult = await GetGridViewResult();
@@ -992,7 +973,7 @@ public class JJFormView : AsyncComponent
         var formHtml = new HtmlBuilder(HtmlTag.Div);
 
         if (panel.Errors.Any())
-            formHtml.AppendComponent(new JJValidationSummary(panel.Errors));
+            formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(panel.Errors));
 
         var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
 
@@ -1041,7 +1022,7 @@ public class JJFormView : AsyncComponent
                 saveAction.EnterKeyBehavior = DataPanel.FormUI.EnterKey;
             }
 
-            var factory = ComponentFactory.LinkButton;
+            var factory = ComponentFactory.Html.LinkButton;
 
 
             var linkButton = await factory.CreateFormToolbarButtonAsync(action, this);
@@ -1058,7 +1039,7 @@ public class JJFormView : AsyncComponent
             foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
             {
                 btnGroup.ShowAsButton = groupedAction.ShowAsButton;
-                var factory = ComponentFactory.LinkButton;
+                var factory = ComponentFactory.Html.LinkButton;
                 var linkButton = await factory.CreateFormToolbarButtonAsync(groupedAction, this);
                 btnGroup.Actions.Add(linkButton);
             }
@@ -1167,14 +1148,12 @@ public class JJFormView : AsyncComponent
 
     private JJLinkButton GetBackButton()
     {
-        var btn = new JJLinkButton
-        {
-            Type = LinkButtonType.Button,
-            CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = $"JJViewHelper.doPainelAction('{Name}','CANCEL');",
-            IconClass = IconType.Times.GetCssClass(),
-            Text = "Cancel"
-        };
+        var btn = ComponentFactory.Html.LinkButton.Create();
+        btn.Type = LinkButtonType.Button;
+        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
+        btn.OnClientClick = $"JJViewHelper.doPainelAction('{Name}','CANCEL');";
+        btn.IconClass = IconType.Times.GetCssClass();
+        btn.Text = "Cancel";
         btn.IconClass = IconType.ArrowLeft.GetCssClass();
         btn.Text = "Back";
         return btn;
@@ -1188,17 +1167,17 @@ public class JJFormView : AsyncComponent
             FormStateData = new FormStateData(values, UserValues, PageState),
             ParentComponentName = Name
         };
-        string scriptAction =
-            GridView.ActionsScripts.GetFormActionScript(GridView.GridActions.ViewAction, context,
+        string scriptAction = GridView.ActionsScripts.GetFormActionScript(
+                GridView.GridActions.ViewAction, 
+                context,
                 ActionSource.GridTable);
-        var btn = new JJLinkButton
-        {
-            Type = LinkButtonType.Button,
-            Text = "Hide Log",
-            IconClass = IconType.Film.GetCssClass(),
-            CssClass = "btn btn-primary btn-small",
-            OnClientClick = $"$('#form-view-page-state-{Name}').val('{(int)PageState.List}');{scriptAction}"
-        };
+        
+        var btn = ComponentFactory.Html.LinkButton.Create();
+        btn.Type = LinkButtonType.Button;
+        btn.Text = "Hide Log";
+        btn.IconClass = IconType.Film.GetCssClass();
+        btn.CssClass = "btn btn-primary btn-small";
+        btn.OnClientClick = $"$('#form-view-page-state-{Name}').val('{(int)PageState.List}');{scriptAction}";
         return btn;
     }
 
@@ -1210,17 +1189,17 @@ public class JJFormView : AsyncComponent
             FormStateData = new FormStateData(values, UserValues, PageState),
             ParentComponentName = Name
         };
-        string scriptAction =
-            GridView.ActionsScripts.GetFormActionScript(GridView.ToolBarActions.LogAction, context,
-                ActionSource.GridToolbar);
-        var btn = new JJLinkButton
-        {
-            Type = LinkButtonType.Button,
-            Text = "View Log",
-            IconClass = IconType.Film.GetCssClass(),
-            CssClass = $"{BootstrapHelper.DefaultButton} btn-small",
-            OnClientClick = scriptAction
-        };
+        string scriptAction = GridView.ActionsScripts.GetFormActionScript(
+            GridView.ToolBarActions.LogAction, 
+            context,
+            ActionSource.GridToolbar);
+        
+        var btn = ComponentFactory.Html.LinkButton.Create();
+        btn.Type = LinkButtonType.Button;
+        btn.Text = "View Log";
+        btn.IconClass = IconType.Film.GetCssClass();
+        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
+        btn.OnClientClick = scriptAction;
         return btn;
     }
 

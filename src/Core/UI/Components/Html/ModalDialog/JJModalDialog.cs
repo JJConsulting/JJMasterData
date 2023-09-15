@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Web.Components;
+
 public class JJModalDialog : HtmlComponent
 {
     public string Title { get; set; }

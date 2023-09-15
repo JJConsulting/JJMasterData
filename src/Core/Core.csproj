@@ -85,11 +85,9 @@
       <Compile Update="UI\Components\IComponentFactoryOfT.cs">
         <DependentUpon>IComponentFactory.cs</DependentUpon>
       </Compile>
+      <Compile Update="UI\Scripts\ActionData.cs">
+        <DependentUpon>ActionsScripts.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
-    
-    
-    
-    
-    
     
 </Project>

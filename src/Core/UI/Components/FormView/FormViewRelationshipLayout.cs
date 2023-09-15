@@ -1,11 +1,11 @@
 #nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
@@ -22,10 +22,10 @@ internal class FormViewRelationshipLayout
         ParentFormView = parentFormView;
     }
 
-    public async Task<ComponentResult> GetRelationshipsResult( List<FormElementRelationship> relationships)
+    public async Task<ComponentResult> GetRelationshipsResult(List<FormElementRelationship> relationships)
     {
         var relationshipsDiv = new HtmlBuilder(HtmlTag.Div);
-        
+
         if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
         {
             var tabNavResult = await GetTabRelationshipsResult(relationships);
@@ -53,24 +53,11 @@ internal class FormViewRelationshipLayout
             {
                 return relationshipResult;
             }
-          
         }
 
         return new RenderedComponentResult(relationshipsDiv);
     }
-    
-    
-    private async IAsyncEnumerable<FormElementRelationship> GetVisibleRelationships(IEnumerable<FormElementRelationship> relationships)
-    {
-        var formStateData = await ParentFormView.GetFormStateDataAsync();
-        foreach (var relationship in relationships)
-        {
-            var isVisible = await ParentFormView.ExpressionsService.GetBoolValueAsync(relationship.Panel.VisibleExpression, formStateData);
 
-            if (isVisible)
-                yield return relationship;
-        }
-    }
 
     private async Task<ComponentResult> GetTabRelationshipsResult(List<FormElementRelationship> relationships)
     {
@@ -105,41 +92,39 @@ internal class FormViewRelationshipLayout
         switch (relationship.Panel.Layout)
         {
             case PanelLayout.Collapse or PanelLayout.Panel:
+                var collapse = new JJCollapsePanel(ParentFormView.CurrentContext)
                 {
-                    var collapse = new JJCollapsePanel(ParentFormView.CurrentContext)
-                    {
-                        Name = $"collapse_{relationship.Id}",
-                        Title = relationship.Panel.Title,
-                        HtmlBuilderContent = content,
-                        Color = relationship.Panel.Color,
-                        ExpandedByDefault = relationship.Panel.ExpandedByDefault,
-                        CssClass = relationship.Panel.CssClass
-                    };
+                    Name = $"collapse_{relationship.Id}",
+                    Title = relationship.Panel.Title,
+                    HtmlBuilderContent = content,
+                    Color = relationship.Panel.Color,
+                    ExpandedByDefault = relationship.Panel.ExpandedByDefault,
+                    CssClass = relationship.Panel.CssClass
+                };
 
-                    return collapse.GetHtmlBuilder();
-                }
+                return collapse.GetHtmlBuilder();
             case PanelLayout.Panel or PanelLayout.Well:
+                var panel = new JJCard
                 {
-                    var panel = new JJCard
-                    {
-                        Name = $"card_{relationship.Id}",
-                        Title = relationship.Panel.Title,
-                        Color = relationship.Panel.Color,
-                        Layout = relationship.Panel.Layout,
-                        HtmlBuilderContent = content,
-                        CssClass = relationship.Panel.CssClass
-                    };
+                    Name = $"card_{relationship.Id}",
+                    Title = relationship.Panel.Title,
+                    Color = relationship.Panel.Color,
+                    Layout = relationship.Panel.Layout,
+                    HtmlBuilderContent = content,
+                    CssClass = relationship.Panel.CssClass
+                };
 
-                    return panel.GetHtmlBuilder();
-                }
+                return panel.GetHtmlBuilder();
             case PanelLayout.NoDecoration:
+                var htmlTitle = new JJTitle();
+                htmlTitle.Title = relationship.Panel.Title;
+                htmlTitle.Size = HeadingSize.H3;
+
                 var div = new HtmlBuilder(HtmlTag.Div);
                 div.WithCssClass(relationship.Panel.CssClass);
-                div.AppendComponent(new JJTitle(relationship.Panel.Title, string.Empty)
-                {
-                    Size = HeadingSize.H3
-                });
+                div.AppendComponent(htmlTitle);
                 div.Append(content);
+
                 return div;
             default:
                 return null;
@@ -149,61 +134,72 @@ internal class FormViewRelationshipLayout
     private async Task<ComponentResult> GetRelationshipResult(FormElementRelationship relationship)
     {
         var parentPanel = ParentFormView.DataPanel;
-        
+
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
         {
             return new RenderedComponentResult(await ParentFormView.GetHtmlFromPanel(parentPanel));
         }
 
-        var childElement = await ParentFormView.DataDictionaryRepository.GetMetadataAsync(relationship.ElementRelationship!.ChildElement);
+        var childElement =
+            await ParentFormView.DataDictionaryRepository.GetMetadataAsync(relationship.ElementRelationship!
+                .ChildElement);
         childElement.ParentName = ParentFormView.FormElement.ParentName ?? ParentFormView.FormElement.Name;
 
         var filter = new Dictionary<string, object?>();
-        foreach (var col in relationship.ElementRelationship.Columns.Where(col => formContext.Values.ContainsKey(col.PkColumn)))
+        foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
+                     formContext.Values.ContainsKey(col.PkColumn)))
         {
             var value = formContext.Values[col.PkColumn];
             filter[col.FkColumn] = value;
             ParentFormView.UserValues[col.FkColumn] = value;
         }
 
-        var mappedForeignKeys = DataHelper.GetFkValues(ParentFormView.FormElement,filter);
+        var mappedForeignKeys = DataHelper.GetFkValues(ParentFormView.FormElement, filter);
         switch (relationship.ViewType)
         {
             case RelationshipViewType.View or RelationshipViewType.Update:
-                {
-                    var childValues = await ParentFormView.EntityRepository.GetFieldsAsync(childElement, (IDictionary<string, object>)filter);
-                    var childDataPanel = ParentFormView.ComponentFactory.DataPanel.Create(childElement);
-                    childDataPanel.FieldNamePrefix = $"{childDataPanel.Name}_";
-                    childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
-                    childDataPanel.UserValues = ParentFormView.UserValues;
-                    childDataPanel.Values = childValues;
-                    childDataPanel.RenderPanelGroup = false;
-                    childDataPanel.FormUI = childElement.Options.Form;
+            {
+                var childValues =
+                    await ParentFormView.EntityRepository.GetFieldsAsync(childElement,
+                        (IDictionary<string, object>)filter);
+                var childDataPanel = ParentFormView.ComponentFactory.DataPanel.Create(childElement);
+                childDataPanel.FieldNamePrefix = $"{childDataPanel.Name}_";
+                childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View
+                    ? PageState.View
+                    : PageState.Update;
+                childDataPanel.UserValues = ParentFormView.UserValues;
+                childDataPanel.Values = childValues;
+                childDataPanel.RenderPanelGroup = false;
+                childDataPanel.FormUI = childElement.Options.Form;
 
-                    return await childDataPanel.GetResultAsync();
-                }
+                return await childDataPanel.GetResultAsync();
+            }
             case RelationshipViewType.List:
             {
-                    var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
-                    childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
-                    childFormView.UserValues = ParentFormView.UserValues;
-                    childFormView.RelationValues = mappedForeignKeys;
-                    await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
-                    childFormView.SetOptions(childElement.Options);
-                    childFormView.GridView.ShowTitle = false;
+                var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
+                childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
+                childFormView.UserValues = ParentFormView.UserValues;
+                childFormView.RelationValues = mappedForeignKeys;
+                await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
+                childFormView.SetOptions(childElement.Options);
+                childFormView.GridView.ShowTitle = false;
 
-                    var result = await childFormView.GetResultAsync();
-                    if (result is RenderedComponentResult renderedComponentResult)
-                    {
-                        var filters = ParentFormView.EncryptionService.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(filter));
-                        renderedComponentResult.HtmlBuilder.AppendHiddenInput($"{childFormView.GridView.Name}-fk-values", ParentFormView.EncryptionService.EncryptDictionary(mappedForeignKeys));
-                        renderedComponentResult.HtmlBuilder.AppendHiddenInput($"{childFormView.GridView.Name}-filters", filters);
-                    
-                        return renderedComponentResult;
-                    }
+                var result = await childFormView.GetResultAsync();
+                if (result is RenderedComponentResult renderedComponentResult)
+                {
+                    var filters =
+                        ParentFormView.EncryptionService.EncryptStringWithUrlEscape(
+                            JsonConvert.SerializeObject(filter));
+                    renderedComponentResult.HtmlBuilder.AppendHiddenInput($"{childFormView.GridView.Name}-fk-values",
+                        ParentFormView.EncryptionService.EncryptDictionary(mappedForeignKeys));
+                    renderedComponentResult.HtmlBuilder.AppendHiddenInput($"{childFormView.GridView.Name}-filters",
+                        filters);
 
-                    return result;
+                    return renderedComponentResult;
+                }
+
+                return result;
             }
             default:
                 return new EmptyComponentResult();

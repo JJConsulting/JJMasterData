@@ -39,22 +39,19 @@ internal class DataExportationSettings
             div.WithCssClass("row");
             div.Append(HtmlTag.Div, div =>
             {
+                var linkFactory = DataExportation.ComponentFactory.Html.LinkButton;
                 string onClientClick = DataExportation.Scripts.GetStartExportationScript();
                 
-                var btnOk = new JJLinkButton
-                {
-                    Text = StringLocalizer["Export"],
-                    IconClass = "fa fa-check",
-                    ShowAsButton = true,
-                    OnClientClick = onClientClick
-                };
+                var btnOk = linkFactory.Create();
+                btnOk.Text = StringLocalizer["Export"];
+                btnOk.IconClass = "fa fa-check";
+                btnOk.ShowAsButton = true;
+                btnOk.OnClientClick = onClientClick;
 
-                var btnCancel = new JJLinkButton
-                {
-                    Text = "Cancel",
-                    IconClass = "fa fa-times",
-                    ShowAsButton = true
-                };
+                var btnCancel = linkFactory.Create();
+                btnCancel.Text = "Cancel";
+                btnCancel.IconClass = "fa fa-times";
+                btnCancel.ShowAsButton = true;
 
                 btnCancel.Attributes.Add(BootstrapHelper.DataDismiss, "modal");
 

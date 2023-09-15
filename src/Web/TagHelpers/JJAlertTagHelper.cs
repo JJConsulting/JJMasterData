@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 public class JJAlertTagHelper : TagHelper
 {
+    private readonly HtmlComponentFactory _htmlComponentFactory;
 
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
@@ -30,16 +31,18 @@ public class JJAlertTagHelper : TagHelper
 
     [HtmlAttributeName("css-class")]
     public string? CssClass { get; set; }
-    
+
+    public JJAlertTagHelper(HtmlComponentFactory htmlComponentFactory)
+    {
+        _htmlComponentFactory = htmlComponentFactory;
+    }
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var alert = new JJAlert
-        {
-            Color = Color,
-            CssClass = CssClass,
-            Title = Title,
-            ShowCloseButton = ShowCloseButton
-        };
+        var alert = _htmlComponentFactory.Alert.Create();
+        alert.Color = Color;
+        alert.CssClass = CssClass;
+        alert.Title = Title;
+        alert.ShowCloseButton = ShowCloseButton;
 
         if (Icon is not null)
             alert.Icon = Icon.Value;
@@ -55,9 +58,7 @@ public class JJAlertTagHelper : TagHelper
         if (!string.IsNullOrEmpty(content))
             alert.Messages.Add(content);
 
-       
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(alert.GetHtml());
-        
     }
 }

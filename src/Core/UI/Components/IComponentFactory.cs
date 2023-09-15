@@ -16,7 +16,7 @@ public interface IComponentFactory
     IComponentFactory<JJUploadView> FormUpload { get; }
     IComponentFactory<JJFileDownloader> Downloader { get; }
     IComponentFactory<JJUploadArea> UploadArea { get; }
-    LinkButtonFactory LinkButton { get; }
     IControlFactory Controls { get; }
+    HtmlComponentFactory Html { get; }
     RouteContext RouteContext { get; }
 }

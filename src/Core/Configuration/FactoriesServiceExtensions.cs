@@ -19,8 +19,8 @@ public static class FactoriesServiceExtensions
     public static IServiceCollection AddFactories(this IServiceCollection services)
     {
         return services.AddFormElementFactories()
-        .AddComponentsFactories()
-        .AddDataFactories();
+            .AddComponentsFactories()
+            .AddDataFactories();
     }
 
     private static IServiceCollection AddDataFactories(this IServiceCollection services)
@@ -38,11 +38,11 @@ public static class FactoriesServiceExtensions
         services.AddTransient<LoggerFormElementFactory>();
         return services;
     }
-    
+
     private static IServiceCollection AddComponentsFactories(this IServiceCollection services)
     {
         services.AddTransient<LinkButtonFactory>();
-        
+
         services.AddControlsFactories();
 
         services.AddFormElementComponentsFactories();
@@ -50,12 +50,12 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IComponentFactory<JJUploadView>, UploadViewFactory>();
         services.AddTransient<IComponentFactory<JJFileDownloader>, FileDownloaderFactory>();
         services.AddTransient<IComponentFactory<JJUploadArea>, UploadAreaFactory>();
-        services.AddTransient<IComponentFactory<JJTextBox>,TextBoxFactory>();
-        
+        services.AddTransient<IComponentFactory<JJTextBox>, TextBoxFactory>();
         services.AddScoped<RouteContextFactory>();
+        services.AddTransient<ValidationSummaryFactory>();
+        services.AddTransient<HtmlComponentFactory>();
+        services.AddTransient<IComponentFactory, ComponentFactory>();
         
-        services.AddTransient<IComponentFactory,ComponentFactory>();
-
         return services;
     }
 

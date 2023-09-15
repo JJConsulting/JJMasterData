@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Azure.Core;
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
-using JJMasterData.Core.UI.Components.Importation;
+using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -28,11 +22,10 @@ public class JJTextFile : ControlBase
     private TextFileScripts _scripts;
     private JJUploadView _uploadView;
     private IHttpRequest Request { get; }
-    private IComponentFactory<JJUploadView> UploadViewFactory { get; }
-    private IControlFactory<JJTextGroup> TextBoxFactory { get; }
+    private IComponentFactory ComponentFactory { get; }
     internal IEncryptionService EncryptionService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
+    
 
 
     public string FieldName { get; set; }
@@ -80,7 +73,7 @@ public class JJTextFile : ControlBase
             if (_uploadView is not null) 
                 return _uploadView;
             
-            _uploadView = UploadViewFactory.Create();
+            _uploadView = ComponentFactory.FormUpload.Create();
             _uploadView.Name = $"{FormElementField.Name}-upload-view";
             _uploadView.Title = string.Empty;
             _uploadView.AutoSave = false;
@@ -110,21 +103,15 @@ public class JJTextFile : ControlBase
         }
     }
 
-    
-
     public JJTextFile(
         IHttpRequest request,
-        IComponentFactory<JJUploadView> uploadViewFactory,
-        IControlFactory<JJTextGroup> textBoxFactory,
+        IComponentFactory componentFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer, 
-        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
         IEncryptionService encryptionService) : base(request.Form)
     {
         Request = request;
-        UploadViewFactory = uploadViewFactory;
-        TextBoxFactory = textBoxFactory;
+        ComponentFactory = componentFactory;
         StringLocalizer = stringLocalizer;
-        FileDownloaderFactory = fileDownloaderFactory;
         EncryptionService = encryptionService;
     }
 
@@ -166,7 +153,7 @@ public class JJTextFile : ControlBase
         if (!Enabled)
             UploadView.ClearMemoryFiles();
 
-        var textGroup = TextBoxFactory.Create();
+        var textGroup = ComponentFactory.Controls.Create<JJTextGroup>();
         textGroup.CssClass = CssClass;
         textGroup.Name = $"{Name}-presentation";
         textGroup.ReadOnly = true;
@@ -174,15 +161,13 @@ public class JJTextFile : ControlBase
         textGroup.Attributes = Attributes;
         textGroup.Text = GetPresentationText();
 
-        var btn = new JJLinkButton
-        {
-            ShowAsButton = true,
-            OnClientClick = Scripts.GetShowScript(),
-            Tooltip = FormElementField.DataFile!.MultipleFile ? StringLocalizer["Manage Files"] : StringLocalizer["Manage File"],
-            IconClass = IconType.Paperclip.GetCssClass()
-        };
-        
-        textGroup.Actions.Add(btn);
+        var button = ComponentFactory.Html.LinkButton.Create();
+        button.ShowAsButton = true;
+        button.OnClientClick = Scripts.GetShowScript();
+        button.Tooltip = FormElementField.DataFile!.MultipleFile ? StringLocalizer["Manage Files"] : StringLocalizer["Manage File"];
+        button.IconClass = IconType.Paperclip.GetCssClass();
+
+        textGroup.Actions.Add(button);
 
         var textGroupHtml = await textGroup.GetHtmlBuilderAsync();
         
@@ -281,11 +266,9 @@ public class JJTextFile : ControlBase
 
     private JJLinkButton GetLinkButton(string filename)
     {
-        var btn = new JJLinkButton
-        {
-            IconClass = IconType.CloudDownload.GetCssClass(),
-            Text = filename
-        };
+        var btn = ComponentFactory.Html.LinkButton.Create();
+        btn.IconClass = IconType.CloudDownload.GetCssClass();
+        btn.Text = filename;
         btn.Attributes.Add("onclick", "event.stopPropagation()");
         btn.UrlAction = GetDownloadLink(filename);
         btn.IsGroup = true;
@@ -295,9 +278,7 @@ public class JJTextFile : ControlBase
     public string GetDownloadLink(string fileName, bool isExternalLink = false)
     {
         var filePath = GetFolderPath() + fileName;
-
-        var fileDownloader = FileDownloaderFactory.Create();
-        
+        var fileDownloader = ComponentFactory.Downloader.Create();
         return fileDownloader.GetDownloadUrl(filePath);
     }
 }

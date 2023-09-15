@@ -15,7 +15,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
     private IFormValues FormValues { get; }
     private ILookupService LookupService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private IComponentFactory<JJTextBox> TextBoxFactory { get; }
+    private IComponentFactory ComponentFactory { get; }
 
     private ILoggerFactory LoggerFactory { get; }
 
@@ -23,13 +23,13 @@ internal class LookupFactory : IControlFactory<JJLookup>
         IFormValues formValues,
         ILookupService lookupService,
         JJMasterDataUrlHelper urlHelper,
-        IComponentFactory<JJTextBox> textBoxFactory,
+        IComponentFactory componentFactory,
         ILoggerFactory loggerFactory)
     {
         FormValues = formValues;
         LookupService = lookupService;
         UrlHelper = urlHelper;
-        TextBoxFactory = textBoxFactory;
+        ComponentFactory = componentFactory;
         LoggerFactory = loggerFactory;
     }
 
@@ -46,7 +46,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
             controlContext,
             FormValues,
             LookupService,
-            TextBoxFactory);
+            ComponentFactory);
        
         return lookup;
     }

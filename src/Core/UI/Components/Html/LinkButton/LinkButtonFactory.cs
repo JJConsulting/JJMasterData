@@ -9,7 +9,6 @@ using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.UI.Components.FormView;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
@@ -48,26 +47,25 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 
     public JJLinkButton Create()
     {
-        return new JJLinkButton();
+        return new JJLinkButton(StringLocalizer);
     }
 
-    private static JJLinkButton Create(BasicAction action, bool enabled, bool visible)
+    private JJLinkButton Create(BasicAction action, bool enabled, bool visible)
     {
-        return new JJLinkButton
-        {
-            Tooltip = action.Tooltip,
-            Text = action.Text,
-            IsGroup = action.IsGroup,
-            IsDefaultOption = action.IsDefaultOption,
-            DividerLine = action.DividerLine,
-            ShowAsButton = !action.IsGroup && action.ShowAsButton,
-            Type = action is SubmitAction ? LinkButtonType.Submit : default,
-            CssClass = action.CssClass,
-            UrlAction = action is SubmitAction submitAction ? submitAction.FormAction : null,
-            IconClass = $"{action.Icon.GetCssClass()} fa-fw",
-            Enabled = enabled,
-            Visible = visible
-        };
+        var button = Create();
+        button.Tooltip = action.Tooltip;
+        button.Text = action.Text;
+        button.IsGroup = action.IsGroup;
+        button.IsDefaultOption = action.IsDefaultOption;
+        button.DividerLine = action.DividerLine;
+        button.ShowAsButton = !action.IsGroup && action.ShowAsButton;
+        button.Type = action is SubmitAction ? LinkButtonType.Submit : default;
+        button.CssClass = action.CssClass;
+        button.UrlAction = action is SubmitAction submitAction ? submitAction.FormAction : null;
+        button.IconClass = $"{action.Icon.GetCssClass()} fa-fw";
+        button.Enabled = enabled;
+        button.Visible = visible;
+        return button;
     }
 
     private async Task<JJLinkButton> CreateAsync(BasicAction action, FormStateData formStateData)

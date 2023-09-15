@@ -296,13 +296,11 @@ internal class DataImportationHelp
 
     private JJLinkButton GetBackButton()
     {
-        var btnBack = new JJLinkButton
-        {
-            IconClass = "fa fa-arrow-left",
-            Text = "Back",
-            ShowAsButton = true,
-            OnClientClick = DataImportation.DataImportationScripts.GetShowScript()
-        };
+        var btnBack = DataImportation.ComponentFactory.Html.LinkButton.Create();
+        btnBack.IconClass = "fa fa-arrow-left";
+        btnBack.Text = "Back";
+        btnBack.ShowAsButton = true;
+        btnBack.OnClientClick = DataImportation.DataImportationScripts.GetShowScript();
 
         return btnBack;
     }

@@ -1,8 +1,12 @@
 ﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using JJMasterData.Core.Web
 @using JJMasterData.Core.Web.Components
+@using JJMasterData.Core.Web.Factories
 @using JJMasterData.Core.Web.Http.Abstractions
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@inject IComponentFactory ComponentFactory 
+
 @model FormElementField
 
 @functions {
@@ -13,11 +17,11 @@
         fieldSearchBox.Tooltip = StringLocalizer["Filter by any field visible in the list"];
 
         fieldSearchBox.Attributes.Add("onkeyup", "searchFields(this);");
-        fieldSearchBox.Actions.Add(new JJLinkButton
-        {
-            IconClass = "fa fa-plus",
-            OnClientClick = $"loadIframe('{Url.Action("Add", new { dictionaryName = ViewBag.DictionaryName })}', '');"
-        });
+        
+        var item = ComponentFactory.Html.LinkButton.Create();
+        item.IconClass = "fa fa-plus";
+        item.OnClientClick = $"loadIframe('{Url.Action("Add", new { dictionaryName = ViewBag.DictionaryName })}', '');";
+        fieldSearchBox.Actions.Add(item);
     }
 }
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer

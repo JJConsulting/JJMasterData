@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
@@ -7,7 +6,7 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJSpinner : HtmlComponent
 {
-    public JJSpinner()
+    internal JJSpinner()
     {
         CssClass += "spinner-grow spinner-grow-sm text-info";
 

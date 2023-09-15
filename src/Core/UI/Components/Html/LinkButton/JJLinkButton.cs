@@ -1,7 +1,7 @@
-﻿using System.Linq.Expressions;
-using JJMasterData.Commons.Localization;
+﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -11,6 +11,7 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJLinkButton : HtmlComponent
 {
+    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
 
     private JJSpinner _spinner;
 
@@ -69,6 +70,11 @@ public class JJLinkButton : HtmlComponent
 
     internal bool ShowInFilter { get; set; }
 
+    internal JJLinkButton(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    {
+        _stringLocalizer = stringLocalizer;
+    }
+    
     internal override HtmlBuilder BuildHtml()
     {
         var icon = GetIcon();
@@ -76,14 +82,14 @@ public class JJLinkButton : HtmlComponent
 
         if (Type == LinkButtonType.Submit)
         {
-            html.Tag.TagName = HtmlTag.Button;
+            html.Tag!.TagName = HtmlTag.Button;
             html.WithAttribute("type", "submit");
             html.WithAttribute("formaction", UrlAction);
             html.WithAttributeIf(ShowAsButton, "role", "button");
         }
         else if (Type == LinkButtonType.Button)
         {
-            html.Tag.TagName = HtmlTag.Button;
+            html.Tag!.TagName = HtmlTag.Button;
             html.WithAttribute("type", "button");
         }
         else
@@ -97,7 +103,7 @@ public class JJLinkButton : HtmlComponent
         html.WithNameAndId(Name);
         html.WithCssClass(GetCssClassWithCompatibility());
         html.WithAttributes(Attributes);
-        html.WithToolTip(Tooltip);
+        html.WithToolTip(_stringLocalizer[Tooltip]);
         html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick);
         html.WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton);
         html.WithCssClassIf(!Enabled, "disabled");
@@ -108,7 +114,7 @@ public class JJLinkButton : HtmlComponent
         if (!string.IsNullOrEmpty(Text))
             html.Append(HtmlTag.Span, s =>
                 {
-                    s.AppendText($"&nbsp;{Text}");
+                    s.AppendText($"&nbsp;{_stringLocalizer[Text]}");
                 });
 
         if (_spinner != null)
@@ -160,11 +166,4 @@ public class JJLinkButton : HtmlComponent
         return icon;
     }
 
-}
-
-public enum LinkButtonType
-{
-    Link = 0,
-    Button = 1,
-    Submit = 2
 }

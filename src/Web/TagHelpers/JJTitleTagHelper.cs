@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 public class JJTitleTagHelper : TagHelper
 {
+    private readonly HtmlComponentFactory _htmlComponentFactory;
+
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
 
@@ -15,9 +17,14 @@ public class JJTitleTagHelper : TagHelper
     [HtmlAttributeName("size")]
     public HeadingSize? Size { get; set; }
 
+    public JJTitleTagHelper(HtmlComponentFactory htmlComponentFactory)
+    {
+        _htmlComponentFactory = htmlComponentFactory;
+    }
+    
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var title = new JJTitle(Title ?? string.Empty, SubTitle ?? string.Empty);
+        var title = _htmlComponentFactory.Title.Create(Title ?? string.Empty, SubTitle ?? string.Empty);
 
         if (Size is not null)
         {

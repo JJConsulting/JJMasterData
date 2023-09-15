@@ -22,20 +22,8 @@ public class JJTitle : HtmlComponent
         _ => throw new ArgumentOutOfRangeException()
     };
 
-    public JJTitle(string title, string subtitle)
+    internal JJTitle()
     {
-        Title = title;
-        SubTitle = subtitle;
-        Size = HeadingSize.H1;
-    }
-
-    public JJTitle(FormElement form)
-    {
-        if (form == null)
-            throw new ArgumentNullException(nameof(form));
-
-        Title = form.Title;
-        SubTitle = form.SubTitle;
         Size = HeadingSize.H1;
     }
 

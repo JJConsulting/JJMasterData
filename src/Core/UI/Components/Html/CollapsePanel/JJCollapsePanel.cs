@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
@@ -167,7 +166,8 @@ public class JJCollapsePanel : HtmlComponent
 
         if (!string.IsNullOrEmpty(SubTitle))
         {
-            var title = new JJTitle(null, SubTitle);
+            var title = new JJTitle();
+            title.SubTitle = SubTitle;
             panelBody.Append(title.GetHtmlBlockquote());
         }
 

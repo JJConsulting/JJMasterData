@@ -19,50 +19,46 @@ internal class GridSortingConfig
     public FormElement FormElement { get; set; }
     public JJComboBox ComboBox { get; set; }
     public string Name { get; set; }
-    
-    private GridScripts GridScripts { get; }
-    
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+
+    private readonly GridScripts _gridScripts;
+    private readonly IComponentFactory _componentFactory;
+    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
     
     public GridSortingConfig(JJGridView grid)
     {
         if (grid == null)
             throw new ArgumentNullException(nameof(grid));
 
+        _componentFactory = grid.ComponentFactory;
+        _gridScripts = grid.Scripts;
+        _stringLocalizer = grid.StringLocalizer;
+        
         CurrentOrder = grid.CurrentOrder.ToQueryParameter();
         ComboBox = grid.ComponentFactory.Controls.Create<JJComboBox>();
-        StringLocalizer = grid.StringLocalizer;
         FormElement = grid.FormElement;
         Name = grid.Name;
-        GridScripts = grid.Scripts;
     }
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
-        var dialog = new JJModalDialog
-        {
-            Name = $"{Name}-sort-modal",
-            Title = "Sort Fields",
-            Size = ModalSize.Small
-        };
+        var dialog = _componentFactory.Html.ModalDialog.Create();
+        dialog.Name = $"{Name}-sort-modal";
+        dialog.Title = "Sort Fields";
+        dialog.Size = ModalSize.Small;
 
-        var btnSort = new JJLinkButton
-        {
-            Name = $"btnsort_{Name}",
-            IconClass = IconType.Check.GetCssClass(),
-            ShowAsButton = true,
-            Text = "Sort",
-            OnClientClick = GridScripts.GetSortMultItemsScript()
-        };
+        var btnSort = _componentFactory.Html.LinkButton.Create();
+        btnSort.Name = $"btnsort_{Name}";
+        btnSort.IconClass = IconType.Check.GetCssClass();
+        btnSort.ShowAsButton = true;
+        btnSort.Text = "Sort";
+        btnSort.OnClientClick = _gridScripts.GetSortMultItemsScript();
         dialog.Buttons.Add(btnSort);
 
-        var btnCancel = new JJLinkButton
-        {
-            Text = "Cancel",
-            IconClass = IconType.Times.GetCssClass(),
-            ShowAsButton = true,
-            OnClientClick = BootstrapHelper.GetCloseModalScript($"{Name}-sort-modal")
-        };
+        var btnCancel = _componentFactory.Html.LinkButton.Create();
+        btnCancel.Text = "Cancel";
+        btnCancel.IconClass = IconType.Times.GetCssClass();
+        btnCancel.ShowAsButton = true;
+        btnCancel.OnClientClick = BootstrapHelper.GetCloseModalScript($"{Name}-sort-modal");
 
         dialog.Buttons.Add(btnCancel);
 
@@ -71,7 +67,7 @@ internal class GridSortingConfig
             {
                 div.AppendComponent(new JJIcon("text-info fa fa-triangle-exclamation"));
                 div.AppendText("&nbsp;");
-                div.AppendText(StringLocalizer["Drag and drop to change order."]);
+                div.AppendText(_stringLocalizer["Drag and drop to change order."]);
             });
         await htmlContent.AppendAsync(HtmlTag.Table, async table =>
             {
@@ -97,12 +93,12 @@ internal class GridSortingConfig
             });
             tr.Append(HtmlTag.Th, th =>
             {
-                th.AppendText(StringLocalizer["Column"]);
+                th.AppendText(_stringLocalizer["Column"]);
             });
             tr.Append(HtmlTag.Th, th =>
             {
                 th.WithAttribute("style", "width:220px");
-                th.AppendText(StringLocalizer["Order"]);
+                th.AppendText(_stringLocalizer["Order"]);
             });
         });
 
@@ -118,9 +114,9 @@ internal class GridSortingConfig
         ComboBox.DataItem.ShowImageLegend = true;
         ComboBox.DataItem.Items = new List<DataItemValue>
         {
-            new("A", StringLocalizer["Ascendant"], IconType.SortAmountAsc, null),
-            new("D", StringLocalizer["Descendant"], IconType.SortAmountDesc, null),
-            new("N", StringLocalizer["No Order"], IconType.Genderless, null)
+            new("A", _stringLocalizer["Ascendant"], IconType.SortAmountAsc, null),
+            new("D", _stringLocalizer["Descendant"], IconType.SortAmountDesc, null),
+            new("N", _stringLocalizer["No Order"], IconType.Genderless, null)
         };
 
         var sortList = GetSortList();
@@ -154,7 +150,7 @@ internal class GridSortingConfig
                 });
                 tr.Append(HtmlTag.Td, td =>
                 {
-                    td.AppendText(StringLocalizer[item.LabelOrName]);
+                    td.AppendText(_stringLocalizer[item.LabelOrName]);
                 });
                 await tr.AppendAsync(HtmlTag.Td, async td =>
                 {

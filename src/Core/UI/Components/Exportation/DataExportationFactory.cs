@@ -31,7 +31,8 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IBackgroundTaskManager BackgroundTaskManager { get; }
     private IHttpContext HttpContext { get; }
-    private IComponentFactory<JJFileDownloader> FileDownloaderFactory { get; }
+    
+    private IComponentFactory ComponentFactory { get; }
     private DataExportationWriterFactory DataExportationWriterFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
@@ -46,7 +47,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         IHttpContext httpContext,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory,
-        IComponentFactory<JJFileDownloader> fileDownloaderFactory,
+        IComponentFactory componentFactory,
         JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
         DataExportationWriterFactory dataExportationWriterFactory
@@ -63,7 +64,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;
         LoggerFactory = loggerFactory;
-        FileDownloaderFactory = fileDownloaderFactory;
+        ComponentFactory = componentFactory;
         DataExportationWriterFactory = dataExportationWriterFactory;
     }
 
@@ -83,7 +84,7 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
             Options, 
             BackgroundTaskManager,
             StringLocalizer, 
-            FileDownloaderFactory,
+            ComponentFactory,
             LoggerFactory, 
             HttpContext, 
             UrlHelper,

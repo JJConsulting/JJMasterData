@@ -45,7 +45,7 @@ public class DataDictionaryFormElementFactory
     private FormElement GetFormElement(Element element)
     {
         var formElement = new FormElement(element);
-        formElement.Title =  JJImage.GetMasterDataLogo(HttpContext).GetHtml();
+        formElement.Title = new ImageFactory(HttpContext).CreateMasterDataLogo().GetHtml();
         ConfigureFields(formElement);
         
         return formElement;

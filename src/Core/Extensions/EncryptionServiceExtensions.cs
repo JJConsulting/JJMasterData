@@ -28,7 +28,6 @@ public static class EncryptionServiceExtensions
     /// <param name="service"></param>
     /// <param name="cipherText"></param>
     /// <returns></returns>
-    [CanBeNull]
     public static string DecryptStringWithUrlUnescape(this IEncryptionService service, string cipherText)
     {
         return service.DecryptString(Uri.UnescapeDataString(cipherText));

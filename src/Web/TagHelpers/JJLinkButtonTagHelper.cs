@@ -6,6 +6,8 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class JJLinkButtonTagHelper : TagHelper
 {
+    private readonly HtmlComponentFactory _htmlComponentFactory;
+
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
     
@@ -29,19 +31,23 @@ public class JJLinkButtonTagHelper : TagHelper
 
     [HtmlAttributeName("css-class")]
     public string? CssClass { get; set; }
+
+    public JJLinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory)
+    {
+        _htmlComponentFactory = htmlComponentFactory;
+    }
+    
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var link = new JJLinkButton
-        {
-            Text = Text,
-            IconClass = Icon.GetCssClass(),
-            UrlAction = UrlAction,
-            OnClientClick = OnClientClick,
-            Enabled = Enabled ?? true,
-            Type = Type ?? LinkButtonType.Button,
-            Tooltip = Tooltip,
-            CssClass = CssClass
-        };
+        var link = _htmlComponentFactory.LinkButton.Create();
+        link.Text = Text;
+        link.IconClass = Icon.GetCssClass();
+        link.UrlAction = UrlAction;
+        link.OnClientClick = OnClientClick;
+        link.Enabled = Enabled ?? true;
+        link.Type = Type ?? LinkButtonType.Button;
+        link.Tooltip = Tooltip;
+        link.CssClass = CssClass;
 
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(link.GetHtml());
