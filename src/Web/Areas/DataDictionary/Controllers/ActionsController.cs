@@ -13,6 +13,7 @@ using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.Web.Html;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -24,12 +25,14 @@ public class ActionsController : DataDictionaryController
 {
     private readonly ActionsService _actionsService;
     private readonly IControlFactory<JJSearchBox> _searchBoxFactory;
+    private readonly IControlFactory<JJComboBox> _comboBoxFactory;
     private readonly JJMasterDataCoreOptions _options;
 
-    public ActionsController(ActionsService actionsService, IControlFactory<JJSearchBox> searchBoxFactory, IOptions<JJMasterDataCoreOptions> options)
+    public ActionsController(ActionsService actionsService, IControlFactory<JJSearchBox> searchBoxFactory, IOptions<JJMasterDataCoreOptions> options, IControlFactory<JJComboBox> comboBoxFactory)
     {
         _actionsService = actionsService;
         _searchBoxFactory = searchBoxFactory;
+        _comboBoxFactory = comboBoxFactory;
         _options = options.Value;
     }
 
@@ -72,14 +75,9 @@ public class ActionsController : DataDictionaryController
         if (iconSearchBoxResult.IsActionResult())
             return iconSearchBoxResult.ToActionResult();
 
-        ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content; 
+        ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
+        ViewBag.FormElement = formElement;
         
-        if (action is InsertAction insertAction)
-        {
-            var insertSearchBoxResult = await GetInsertSearchBoxResult(insertAction);
-            ViewBag.InsertSearchBoxHtml = insertSearchBoxResult.Content!;
-        }
-
         await PopulateViewBag(elementName, action!, context, fieldName);
 
         return View(action!.GetType().Name, action);
@@ -97,18 +95,6 @@ public class ActionsController : DataDictionaryController
 
         var iconSearchBoxResult = await iconSearchBox.GetResultAsync();
         return iconSearchBoxResult;
-    }
-
-    private async Task<ComponentResult> GetInsertSearchBoxResult(InsertAction insertAction)
-    {
-        var searchBox = _searchBoxFactory.Create();
-        searchBox.Name = "ElementNameToSelect";
-        searchBox.DataItem.Command!.Sql =
-            $"select name as cod, name from {_options.DataDictionaryTableName} where type = 'F' order by name";
-        searchBox.SelectedValue = insertAction.ElementNameToSelect;
-
-        var result = await searchBox.GetResultAsync();
-        return result;
     }
 
     public async Task<IActionResult> Add(string elementName, string actionType, ActionSource context, string? fieldName)
@@ -144,14 +130,6 @@ public class ActionsController : DataDictionaryController
 
         if (iconSearchBoxResult.IsActionResult())
             return iconSearchBoxResult.ToActionResult();
-
-        if (action is InsertAction insertAction)
-        {
-            var insertActionSearchBoxResult = await GetInsertSearchBoxResult(insertAction);
-
-            if (insertActionSearchBoxResult.IsActionResult())
-                return insertActionSearchBoxResult.ToActionResult();
-        }
 
         await PopulateViewBag(elementName, action, context);
         return View(action);

@@ -1,10 +1,33 @@
 ﻿@using JJMasterData.Core.Web
+@using JJMasterData.Core.UI.Components
+@using JJMasterData.Core.Web.Components
 @inject IOptions<JJMasterDataWebOptions> Options
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IControlFactory<JJComboBox> ComboBoxFactory
 @model  JJMasterData.Core.DataDictionary.Actions.GridToolbar.InsertAction
 
 @{
     Layout = Options.Value.PopUpLayoutPath;
+}
+
+@{
+    async Task<string> GetInsertSelectionComboBoxHtml()
+    {
+        var comboBox = ComboBoxFactory.Create();
+        comboBox.Name = "ElementNameToSelect";
+
+        FormElement formElement = ViewBag.FormElement;
+        
+        foreach (var relationship in formElement.Relationships.GetElementRelationships())
+        {
+            comboBox.DataItem.Items!.Add(new DataItemValue(relationship.ChildElement,relationship.ChildElement));
+        }
+        
+        comboBox.SelectedValue = formElement.Options.GridToolbarActions.InsertAction.ElementNameToSelect;
+
+        var result = await comboBox.GetHtmlBuilderAsync();
+        return result.ToString();
+    }
 }
 
 @using (Html.BeginForm("InsertAction", "Actions",
@@ -32,16 +55,16 @@
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label>@StringLocalizer["Element Name To Select"]</label>
-                    @Html.Raw(ViewBag.InsertSearchBoxHtml)
+                    @Html.Raw(await GetInsertSelectionComboBoxHtml())
                 </div>
 
                 <div class="col-sm-6">
                     <span class="text-info fa fa-info-circle"></span>
                     <span class="small">
-                        <b>@StringLocalizer["Dictionary name used to display the preselection of a record."]</b><br/>
+                        <b>@StringLocalizer["Element name used to display the preselection of a record."]</b><br/>
                         @StringLocalizer["When this property is set, the system will display a list of records for selection."]<br/>
-                        @StringLocalizer["When selecting a record, the insert method is triggered sending the values ​​of the current selection."]<br/>
-                        @StringLocalizer["If the insert method is executed successfully the user will be redirected to editing the context dictionary."]<br/>
+                        @StringLocalizer["When selecting a record, the insert method is triggered sending the values of the current selection."]<br/>
+                        @StringLocalizer["If the insert method is executed successfully the user will be redirected to editing the parent element."]<br/>
                         <br/>
                     </span>
                 </div>
