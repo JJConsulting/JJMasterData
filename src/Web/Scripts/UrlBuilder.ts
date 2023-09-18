@@ -9,6 +9,7 @@ class UrlBuilder {
     
     addQueryParameter(key: string, value: string) {
         this.queryParameters.set(key, value);
+        return this;
     }
 
     build() {

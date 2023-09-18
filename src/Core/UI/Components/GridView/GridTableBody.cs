@@ -242,11 +242,11 @@ internal class GridTableBody
             {
                 var args = new ActionEventArgs(groupedAction, linkButton, formStateData.FormValues);
                 
-                OnRenderAction?.Invoke(this,args);
+                OnRenderAction?.Invoke(GridView,args);
 
                 if (OnRenderActionAsync is not null)
                 {
-                    await OnRenderActionAsync(this, args);
+                    await OnRenderActionAsync(GridView, args);
                 }
             }
             
@@ -266,11 +266,16 @@ internal class GridTableBody
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("table-action");
             var link =  await factory.CreateGridTableButtonAsync(action, GridView, formStateData);
-            var onRender = OnRenderAction;
-            if (onRender != null)
+            if (OnRenderAction is not null || OnRenderActionAsync is not null)
             {
                 var args = new ActionEventArgs(action, link, formStateData.FormValues);
-                onRender.Invoke(this, args);
+                OnRenderAction?.Invoke(GridView, args);
+
+                if (OnRenderActionAsync != null)
+                {
+                    await OnRenderActionAsync(GridView, args);
+                }
+                
                 if (args.HtmlResult != null)
                 {
                     td.AppendText(args.HtmlResult);
@@ -338,7 +343,7 @@ internal class GridTableBody
 
             if (OnRenderSelectedCellAsync is not null)
             {
-                await OnRenderSelectedCellAsync(this, args);
+                await OnRenderSelectedCellAsync(GridView, args);
             }
             
             if (args.CheckBox != null)

@@ -105,20 +105,14 @@ public class FieldService : BaseService
         }
 
         ValidateExpressions(field);
-
-        if (field.DataType is FieldType.Varchar or FieldType.NVarchar)
+        
+       
+        if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
         {
-            if (field.Size <= 0)
-                AddError(nameof(field.Size), StringLocalizer["Invalid [Size] field"]);
+            AddError(nameof(field.Filter.Type),
+                StringLocalizer["MULTVALUES filters are only allowed for text type fields"]);
         }
-        else
-        {
-            if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
-            {
-                AddError(nameof(field.Filter.Type),
-                    StringLocalizer["MULTVALUES filters are only allowed for text type fields"]);
-            }
-        }
+        
 
         if (field.AutoNum && field.DataType != FieldType.Int)
             AddError(nameof(field.AutoNum),

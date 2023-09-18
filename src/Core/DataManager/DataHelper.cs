@@ -104,8 +104,9 @@ public static class DataHelper
     {
         return element.Fields.Where(x => x.IsPk).ToList();
     }
-
-    public static IDictionary<string, object> GetFkValues(FormElement formElement, IDictionary<string, object?> values)
+    
+    
+    public static IDictionary<string, object> GetFkValues(FormElement formElement, IDictionary<string, object?> values, bool usePkColumnName = false)
     {
         var foreignKeys = new Dictionary<string, object>();
         var relationships = formElement.Relationships.GetElementRelationships();
@@ -120,7 +121,7 @@ public static class DataHelper
 
                 if (entry.Value is not null)
                 {
-                    foreignKeys[matchingColumn.FkColumn] = entry.Value;
+                    foreignKeys[usePkColumnName ? matchingColumn.PkColumn: matchingColumn.FkColumn] = entry.Value;
                 }
             }
         }

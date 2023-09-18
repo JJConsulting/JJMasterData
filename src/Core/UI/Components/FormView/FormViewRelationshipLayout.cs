@@ -184,7 +184,6 @@ internal class FormViewRelationshipLayout
                 childFormView.UserValues = ParentFormView.UserValues;
                 childFormView.RelationValues = mappedForeignKeys;
                 await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
-                childFormView.SetOptions(childElement.Options);
                 childFormView.GridView.ShowTitle = false;
 
                 var result = await childFormView.GetFormResultAsync();

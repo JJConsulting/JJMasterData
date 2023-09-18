@@ -13,15 +13,14 @@ class FormViewHelper {
         GridViewHelper.refresh(componentName,gridViewRouteContext)
     }
 
-    static openSelectElementInsert(componentName: string, encryptedActionMap: string) {
-        const currentActionInput = document.querySelector(`#form-view-current-action-${componentName}`) as HTMLInputElement;
-        const selectActionValuesInput = document.querySelector(`#form-view-select-action-values-${componentName}`) as HTMLInputElement;
-        const form = document.querySelector('form') as HTMLFormElement;
-
-        if (currentActionInput && selectActionValuesInput && form) {
-            currentActionInput.value = 'ELEMENTSEL';
-            selectActionValuesInput.value = encryptedActionMap;
-            form.requestSubmit();
-        }
+    static insertSelection(componentName: string, insertValues: string, routeContext: string) {
+        const selectActionValuesInput = document.querySelector(`#form-view-insert-selection-values-${componentName}`) as HTMLInputElement;
+        selectActionValuesInput.value = insertValues;
+        
+        const url = new UrlBuilder().addQueryParameter("routeContext",routeContext).build();
+        
+        postFormValues({url:url, success:(data)=>{
+            document.getElementById(componentName).innerHTML = data;
+        }})
     }
 }

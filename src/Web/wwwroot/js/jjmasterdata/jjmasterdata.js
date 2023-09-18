@@ -790,15 +790,13 @@ class FormViewHelper {
         }, 3000);
         GridViewHelper.refresh(componentName, gridViewRouteContext);
     }
-    static openSelectElementInsert(componentName, encryptedActionMap) {
-        const currentActionInput = document.querySelector(`#form-view-current-action-${componentName}`);
-        const selectActionValuesInput = document.querySelector(`#form-view-select-action-values-${componentName}`);
-        const form = document.querySelector('form');
-        if (currentActionInput && selectActionValuesInput && form) {
-            currentActionInput.value = 'ELEMENTSEL';
-            selectActionValuesInput.value = encryptedActionMap;
-            form.requestSubmit();
-        }
+    static insertSelection(componentName, insertValues, routeContext) {
+        const selectActionValuesInput = document.querySelector(`#form-view-insert-selection-values-${componentName}`);
+        selectActionValuesInput.value = insertValues;
+        const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
+        postFormValues({ url: url, success: (data) => {
+                document.getElementById(componentName).innerHTML = data;
+            } });
     }
 }
 var _a, _b;
@@ -2103,6 +2101,7 @@ class UrlBuilder {
     }
     addQueryParameter(key, value) {
         this.queryParameters.set(key, value);
+        return this;
     }
     build() {
         const form = document.querySelector("form");
