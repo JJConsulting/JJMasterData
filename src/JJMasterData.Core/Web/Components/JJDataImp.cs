@@ -30,7 +30,7 @@ public class JJDataImp : JJBaseProcess
     #region "Properties"
 
     private JJUploadArea _upload;
-    
+
     private JJLinkButton _backButton;
     private JJLinkButton _helpButton;
     private JJLinkButton _logButton;
@@ -60,7 +60,7 @@ public class JJDataImp : JJBaseProcess
         Name = "jjdataimp1";
     }
 
-    public JJDataImp(string elementName) 
+    public JJDataImp(string elementName)
     {
         WebComponentFactory.SetDataImpParams(this, elementName);
     }
@@ -82,12 +82,12 @@ public class JJDataImp : JJBaseProcess
         switch (action)
         {
             case "process_check":
-            {
-                var reporterProgress = GetCurrentProcess();
-                string json = JsonConvert.SerializeObject(reporterProgress);
-                CurrentContext.Response.SendResponse(json, "text/json");
-                break;
-            }
+                {
+                    var reporterProgress = GetCurrentProcess();
+                    string json = JsonConvert.SerializeObject(reporterProgress);
+                    CurrentContext.Response.SendResponse(json, "text/json");
+                    break;
+                }
             case "process_stop":
                 AbortProcess();
                 CurrentContext.Response.SendResponse("{\"isProcessing\": \"false\"}", "text/json");
@@ -99,24 +99,35 @@ public class JJDataImp : JJBaseProcess
                 html = new DataImpHelp(this).GetHtmlHelp();
                 break;
             case "posted_past_text":
-            {
-                //Process de text from clipboard
-                if (!IsRunning())
                 {
-                    string pasteValue = CurrentContext.Request.Form("pasteValue");
-                    ImportInBackground(pasteValue);
-                }
-                html = GetHtmlWaitProcess();
-                break;
-            }
-            default:
-            {
-                if (Upload.IsPostAfterUploadAllFiles() || IsRunning())
+                    //Process de text from clipboard
+                    if (!IsRunning())
+                    {
+                        string pasteValue = CurrentContext.Request.Form("pasteValue");
+                        ImportInBackground(pasteValue);
+                    }
                     html = GetHtmlWaitProcess();
-                else
-                    html = GetHtmlForm(ProcessKey);
-                break;
-            }
+                    break;
+                }
+            default:
+                {
+                    string requestType = CurrentContext.Request["t"];
+
+                    if ("jjupload".Equals(requestType))
+                    {
+                        Upload.UploadFile();
+                    }
+                    if(IsRunning())
+                    {
+                        html = GetHtmlWaitProcess();
+                    }
+                    else
+                    {
+                        html = GetHtmlForm(ProcessKey);
+                    }
+
+                    break;
+                }
         }
 
         return html;
@@ -208,7 +219,7 @@ public class JJDataImp : JJBaseProcess
                 area.WithNameAndId("pasteValue");
                 area.WithAttribute("style", "display:none");
             });
-            
+
 
         var collapsePanel = new JJCollapsePanel();
         collapsePanel.TitleIcon = new JJIcon(IconType.FolderOpenO);
@@ -219,7 +230,7 @@ public class JJDataImp : JJBaseProcess
             {
                 label.AppendText(Translate.Key("Paste Excel rows or drag and drop files of type: {0}", Upload.AllowedTypes));
             })
-            .AppendElement(Upload);
+            .AppendElement(Upload.GetFieldHtmlElement());
 
         html.AppendElement(collapsePanel);
         html.AppendElement(HtmlTag.Div, row =>
@@ -241,7 +252,7 @@ public class JJDataImp : JJBaseProcess
 
         return html;
     }
-    
+
     private void OnPostFile(object sender, FormUploadFileEventArgs e)
     {
         var sb = new StringBuilder();
@@ -254,9 +265,10 @@ public class JJDataImp : JJBaseProcess
             }
         }
 
-        if (!BackgroundTask.IsRunning(ProcessKey))
+        var importationText = sb.ToString();
+        if (!BackgroundTask.IsRunning(ProcessKey) && !string.IsNullOrEmpty(importationText))
         {
-            var worker = CreateImpTextWorker(sb.ToString(), ';');
+            var worker = CreateImpTextWorker(importationText, ';');
             BackgroundTask.Run(ProcessKey, worker);
         }
     }

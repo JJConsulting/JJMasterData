@@ -104,12 +104,9 @@ public class JJFormUpload : JJBaseView
     {
         get
         {
-            if (_gridView != null)
-            {
-                _gridView.DataSource = GetDataTableFiles();
+            if (_gridView != null)   
                 return _gridView;
-            }
-
+         
 
             var dt = GetDataTableFiles();
             _gridView = new JJGridView(dt);
@@ -127,7 +124,7 @@ public class JJFormUpload : JJBaseView
             _gridView.UserValues = UserValues;
             _gridView.ShowPagging = false;
             _gridView.ShowTitle = false;
-
+            _gridView.ShowToolbar = false;
             _gridView.FilterAction.SetVisible(false);
             _gridView.EmptyDataText = "There is no file to display";
             _gridView.ShowHeaderWhenEmpty = false;
@@ -706,17 +703,29 @@ public class JJFormUpload : JJBaseView
         RenameFile(currentName, newName);
     }
 
-    public void RenameFile(string currentName, string newName) =>
-      Service.RenameFile(currentName, newName);
+    public void RenameFile(string currentName, string newName)
+    {
+        Service.RenameFile(currentName, newName);
+        GridView.DataSource = GetDataTableFiles();
+    }
 
-    public void CreateFile(FormFileContent file) =>
+    public void CreateFile(FormFileContent file)
+    {
         Service.CreateFile(file, !Upload.Multiple);
+        GridView.DataSource = GetDataTableFiles();
+    }
 
-    public void DeleteFile(string fileName) =>
+    public void DeleteFile(string fileName)
+    {
         Service.DeleteFile(fileName);
+        GridView.DataSource = GetDataTableFiles();
+    }
 
-    internal void DeleteAll() =>
+    internal void DeleteAll()
+    {
         Service.DeleteAll();
+        GridView.DataSource = GetDataTableFiles();
+    }
 
     public List<FormFileInfo> GetFiles() =>
         Service.GetFiles();

@@ -211,7 +211,6 @@ public class JJTextFile : JJBaseControl
         form.Name = ElementField.Name + "_formupload"; //this is important
         form.Title = "";
         form.AutoSave = false;
-        form.GridView.ShowToolbar = false;
         form.RenameAction.SetVisible(true);
         form.Upload.Multiple = dataFile.MultipleFile;
         form.Upload.MaxFileSize = dataFile.MaxFileSize;

@@ -121,7 +121,7 @@ public class JJUploadArea : JJBaseView
         return GetFieldHtmlElement();
     }
 
-    private HtmlBuilder GetFieldHtmlElement()
+    internal HtmlBuilder GetFieldHtmlElement()
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", "divupload")
@@ -206,7 +206,7 @@ public class JJUploadArea : JJBaseView
         public string Error { get; set; }
         public string ToJson() => JsonConvert.SerializeObject(this);
     }
-    private void UploadFile()
+    internal void UploadFile()
     {
         UploadAreaDto dto = new();
         
