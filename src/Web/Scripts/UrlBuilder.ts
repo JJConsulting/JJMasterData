@@ -20,16 +20,17 @@ class UrlBuilder {
         
         if (!this.url.includes("?")) {
             this.url += "?";
+        } else{
+            this.url += "&";
         }
-
-        let isFirst = true;
-
-        for (const [key, value] of this.queryParameters.entries()) {
-            if (!isFirst) {
+        
+        const queryParameters = [...this.queryParameters.entries()];
+        for (let i = 0; i < queryParameters.length; i++) {
+            const [key, value] = queryParameters[i];
+            this.url += `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+            if (i < queryParameters.length - 1) {
                 this.url += "&";
             }
-            this.url += `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-            isFirst = false;
         }
 
         return this.url;

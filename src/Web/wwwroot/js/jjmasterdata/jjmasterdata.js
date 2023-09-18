@@ -1724,10 +1724,14 @@ class SearchBoxListener {
             if (showImageLegend == null)
                 showImageLegend = false;
             const form = $("form");
-            let url = new UrlBuilder().build();
-            if (!url.endsWith("?"))
-                url += "?";
-            url += queryString;
+            let urlBuilder = new UrlBuilder();
+            for (const pair of queryString.split("&")) {
+                const [key, value] = pair.split("=");
+                if (key && value) {
+                    urlBuilder.addQueryParameter(key, value);
+                }
+            }
+            const url = urlBuilder.build();
             const jjSearchBoxSelector = "#" + hiddenInputId + "_text";
             const jjSearchBoxHiddenSelector = "#" + hiddenInputId;
             $(this).blur(function () {
@@ -2108,13 +2112,16 @@ class UrlBuilder {
         if (!this.url.includes("?")) {
             this.url += "?";
         }
-        let isFirst = true;
-        for (const [key, value] of this.queryParameters.entries()) {
-            if (!isFirst) {
+        else {
+            this.url += "&";
+        }
+        const queryParameters = [...this.queryParameters.entries()];
+        for (let i = 0; i < queryParameters.length; i++) {
+            const [key, value] = queryParameters[i];
+            this.url += `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+            if (i < queryParameters.length - 1) {
                 this.url += "&";
             }
-            this.url += `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-            isFirst = false;
         }
         return this.url;
     }

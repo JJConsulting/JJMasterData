@@ -22,12 +22,15 @@
 
             const form = $("form");
             
-            let url = new UrlBuilder().build();
+            let urlBuilder = new UrlBuilder();
+            for (const pair of queryString.split("&")) {
+                const [key, value] = pair.split("=");
+                if (key && value) {
+                    urlBuilder.addQueryParameter(key, value);
+                }
+            }
             
-            if(!url.endsWith("?"))
-                url += "?";
-            
-            url += queryString;
+            const url = urlBuilder.build();
             
             const jjSearchBoxSelector = "#" + hiddenInputId + "_text";
             const jjSearchBoxHiddenSelector = "#" + hiddenInputId;

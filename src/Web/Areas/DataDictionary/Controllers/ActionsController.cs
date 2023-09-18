@@ -145,6 +145,14 @@ public class ActionsController : DataDictionaryController
         if (iconSearchBoxResult.IsActionResult())
             return iconSearchBoxResult.ToActionResult();
 
+        if (action is InsertAction insertAction)
+        {
+            var insertActionSearchBoxResult = await GetInsertSearchBoxResult(insertAction);
+
+            if (insertActionSearchBoxResult.IsActionResult())
+                return insertActionSearchBoxResult.ToActionResult();
+        }
+
         await PopulateViewBag(elementName, action, context);
         return View(action);
     }
