@@ -103,6 +103,7 @@ class ActionManager {
             urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
             postFormValues({ url: urlBuilder.build(), success: (data) => {
                     document.getElementById(componentName).innerHTML = data;
+                    listenAllEvents("#" + componentName);
                 } });
         }
     }
