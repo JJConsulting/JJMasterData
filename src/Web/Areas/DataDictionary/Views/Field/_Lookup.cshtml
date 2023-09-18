@@ -10,7 +10,7 @@
 
     function addElementMapFilter() {
         SpinnerOverlay.show();
-        var url = "@Url.Action("AddElementMapFilter", new { dictionaryName = ViewBag.DictionaryName })";
+        var url = "@Url.Action("AddElementMapFilter", new { elementName = ViewBag.ElementName })";
         $("form:first").attr("action", url).submit();
     }
 
@@ -22,7 +22,7 @@
             name: "elementMapFieldName",
             value: elementMapFieldName
         }).appendTo("form");
-        var url = "@Url.Action("RemoveElementMapFilter", new { dictionaryName = ViewBag.DictionaryName })";
+        var url = "@Url.Action("RemoveElementMapFilter", new { elementName = ViewBag.ElementName })";
         $("form:first").attr("action", url).submit();
     }
 

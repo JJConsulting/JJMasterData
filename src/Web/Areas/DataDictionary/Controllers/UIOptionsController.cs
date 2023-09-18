@@ -13,36 +13,36 @@ public class UIOptionsController : DataDictionaryController
         _optionsService = optionsService;
     }
 
-    public async Task<ActionResult> Index(string dictionaryName)
+    public async Task<ActionResult> Index(string elementName)
     {
-        return View(await Populate(dictionaryName));
+        return View(await Populate(elementName));
     }
 
-    public async Task<ActionResult> Edit(string dictionaryName)
+    public async Task<ActionResult> Edit(string elementName)
     {
-        return View(await Populate(dictionaryName));
+        return View(await Populate(elementName));
     }
 
     [HttpPost]
-    public async Task<ActionResult> Edit(FormElementOptions uIMetadataOptions, string dictionaryName)
+    public async Task<ActionResult> Edit(FormElementOptions uIMetadataOptions, string elementName)
     {
-        if (await _optionsService!.EditOptionsAsync(uIMetadataOptions, dictionaryName))
-            return RedirectToAction("Index", new { dictionaryName });
+        if (await _optionsService!.EditOptionsAsync(uIMetadataOptions, elementName))
+            return RedirectToAction("Index", new { elementName });
 
         var jjValidationSummary = _optionsService.GetValidationSummary();
         ViewBag.Error = jjValidationSummary.GetHtml();
-        ViewBag.DictionaryName = dictionaryName;
+        ViewBag.ElementName = elementName;
         ViewBag.MenuId = "Options";
 
         return View(uIMetadataOptions);
     }
 
-    private async Task<FormElementOptions> Populate(string dictionaryName)
+    private async Task<FormElementOptions> Populate(string elementName)
     {
-        var dicParser = await _optionsService!.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var dicParser = await _optionsService!.DataDictionaryRepository.GetMetadataAsync(elementName);
         var uIOptions = dicParser.Options;
         ViewBag.MenuId = "Options";
-        ViewBag.DictionaryName = dictionaryName;
+        ViewBag.ElementName = elementName;
 
         return uIOptions;
     }

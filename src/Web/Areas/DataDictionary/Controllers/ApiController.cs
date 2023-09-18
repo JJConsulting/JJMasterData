@@ -15,17 +15,17 @@ public class ApiController : DataDictionaryController
         _apiService = apiService;
     }
 
-    public async Task<ActionResult> Index(string dictionaryName)
+    public async Task<ActionResult> Index(string elementName)
     {
-        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync(elementName);
         var model = PopulateViewModel(dic);
 
         return View(model);
     }
 
-    public async Task<ActionResult> Edit(string dictionaryName)
+    public async Task<ActionResult> Edit(string elementName)
     {
-        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync(elementName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -34,13 +34,13 @@ public class ApiController : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> Edit(ApiViewModel apiViewModel)
     {
-        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync( apiViewModel.DictionaryName);
+        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync( apiViewModel.ElementName);
         dic.ApiOptions = apiViewModel.MetadataApiOptions;
         dic.EnableApi = apiViewModel.IsSync;
         dic.SyncMode = apiViewModel.Mode;
 
         if (await _apiService.SetFormElementWithApiValidation(dic))
-            return RedirectToAction("Index", new { dictionaryName =  apiViewModel.DictionaryName });
+            return RedirectToAction("Index", new { elementName =  apiViewModel.ElementName });
         var model = PopulateViewModel(dic);
         model.ValidationSummary = _apiService.GetValidationSummary();
         return View(model);
@@ -48,7 +48,7 @@ public class ApiController : DataDictionaryController
     }
     private ApiViewModel PopulateViewModel(FormElement metadata)
     {
-        var model = new ApiViewModel(dictionaryName:metadata.Name, menuId:"Api")
+        var model = new ApiViewModel(elementName:metadata.Name, menuId:"Api")
         {
             MetadataApiOptions = metadata.ApiOptions,
             Mode = metadata.SyncMode,

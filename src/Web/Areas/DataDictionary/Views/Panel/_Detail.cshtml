@@ -12,13 +12,13 @@
 
     function save() {
         SpinnerOverlay.show();
-        var url = "@Url.Action("Save", new { dictionaryName = ViewBag.DictionaryName })";
+        var url = "@Url.Action("Save", new { elementName = ViewBag.ElementName })";
         $("form:first").attr("action", url).submit();
     }
 
     function copy() {
         SpinnerOverlay.show();
-        var url = "@Url.Action("Copy", new { dictionaryName = ViewBag.DictionaryName })";
+        var url = "@Url.Action("Copy", new { elementName = ViewBag.ElementName })";
         $("form:first").attr("action", url).submit();
     }
 
@@ -127,12 +127,12 @@
                 <span>&nbsp;@StringLocalizer["Save"]</span>
             </button>
 
-            <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { dictionaryName = ViewBag.DictionaryName, panelId = Model.PanelId })">
+            <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })">
                 <span class="fa fa-refresh fa-fw fa-fw"></span>
                 <span>&nbsp;@StringLocalizer["Refresh"]</span>
             </a>
 
-            <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { dictionaryName = ViewBag.DictionaryName, panelId = Model.PanelId })">
+            <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })">
                 <span class="fa fa-trash"></span>
                 <span>&nbsp;@StringLocalizer["Delete"]</span>
             </a>

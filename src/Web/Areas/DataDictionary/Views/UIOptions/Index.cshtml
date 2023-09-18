@@ -7,7 +7,7 @@
 @model FormElementOptions
 
 @{
-    ViewData["Title"] = $"{ViewBag.DictionaryName} - {StringLocalizer["Options"]}";
+    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Options"]}";
 }
 
 <style>
@@ -16,11 +16,11 @@
     }
 </style>
 
-<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
+<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
 <div class="row">
     <div class="col-sm-12">
-        <button name="action" type="button" onclick="location.href='@Url.Action("Edit", new { dictionaryName = ViewBag.DictionaryName })'" class="@BootstrapHelper.DefaultButton btn-small">
+        <button name="action" type="button" onclick="location.href='@Url.Action("Edit", new { elementName = ViewBag.ElementName })'" class="@BootstrapHelper.DefaultButton btn-small">
             <span class="fa fa-pencil"></span>
             <span>&nbsp;@StringLocalizer["Edit"]</span>
         </button>

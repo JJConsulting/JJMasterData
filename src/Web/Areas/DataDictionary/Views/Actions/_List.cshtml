@@ -90,7 +90,7 @@
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Edit", "Actions",
-            new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
+            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
         script.Append($"','{Model.Context.ToString().FirstCharToUpper()}");
         script.Append($" Action', {(int)ModalSize.ExtraLarge}");
         script.Append(");");
@@ -103,7 +103,7 @@
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Add", "Actions",
-            new { dictionaryName = Model.DictionaryName, actionName = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
+            new { elementName = Model.ElementName, actionName = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
         script.Append($"','{Model.Context.ToString().FirstCharToUpper()}");
         script.Append($" Action',{(int)ModalSize.ExtraLarge}");
         script.Append(");");
@@ -118,7 +118,7 @@
         script.Append(action.Name);
         script.Append("', '");
         script.Append(Url.Action("Remove", "Actions",
-            new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
+            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
         script.Append("', '");
         script.Append(StringLocalizer["Are you sure you want to delete [{0}] action?", action.Name]);
         script.Append("');");
@@ -129,12 +129,12 @@
     public string? GetUrlDisable(BasicAction action)
     {
         return Url.Action("EnableDisable", "Actions",
-            new { dictionaryName = Model.DictionaryName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName });
+            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName });
     }
 
     public string? GetUrlSort()
     {
         return Url.Action("Sort", "Actions",
-            new { dictionaryName = Model.DictionaryName, fieldName = Model.FieldName });
+            new { elementName = Model.ElementName, fieldName = Model.FieldName });
     }
 }

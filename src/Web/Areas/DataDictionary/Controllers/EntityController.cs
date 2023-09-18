@@ -15,25 +15,25 @@ public class EntityController : DataDictionaryController
         _resolver = resolver;
     }
 
-    public async Task<IActionResult> Index(string dictionaryName)
+    public async Task<IActionResult> Index(string elementName)
     {
-        return View(await Populate(dictionaryName, true));
+        return View(await Populate(elementName, true));
     }
 
-    public async Task<IActionResult> Edit(string dictionaryName)
+    public async Task<IActionResult> Edit(string elementName)
     {
-        return View(await Populate(dictionaryName, false));
+        return View(await Populate(elementName, false));
     }
 
     [HttpPost]        
     public async Task<ActionResult> Edit(
         EntityViewModel model)
     {
-        var entity = await _entityService.EditEntityAsync(model.FormElement, model.DictionaryName);
+        var entity = await _entityService.EditEntityAsync(model.FormElement, model.ElementName);
 
         if (entity != null)
         {
-            return RedirectToAction("Index", new { dictionaryName = entity.Name });
+            return RedirectToAction("Index", new { elementName = entity.Name });
         }
 
         model.MenuId = "Entity";
@@ -43,12 +43,12 @@ public class EntityController : DataDictionaryController
 
     }
 
-    private async Task<EntityViewModel> Populate(string dictionaryName, bool readOnly)
+    private async Task<EntityViewModel> Populate(string elementName, bool readOnly)
     {
-        var viewModel = new EntityViewModel(menuId:"Entity", dictionaryName:dictionaryName)
+        var viewModel = new EntityViewModel(menuId:"Entity", elementName:elementName)
         {
-            FormElement = await _entityService.GetFormElementAsync(dictionaryName),
-            FormEvent = _resolver?.GetFormEvent(dictionaryName),
+            FormElement = await _entityService.GetFormElementAsync(elementName),
+            FormEvent = _resolver?.GetFormEvent(elementName),
             ReadOnly = readOnly
         };
 

@@ -27,7 +27,7 @@
         $("#sortable").sortable({
                update: function () {
                  const relationships = $(this).sortable('toArray');
-                 fetch('@Url.Action("Sort", new { dictionaryName = Model.DictionaryName })', {
+                 fetch('@Url.Action("Sort", new { elementName = Model.ElementName })', {
                      method: 'POST',
                      headers: {
                          'Content-Type': 'application/json'
@@ -52,7 +52,7 @@
                 {
                     var relationship = Model.Relationships[index];
                     var id = Model.Relationships[index].ElementRelationship?.ChildElement ?? "parent";
-                    var title = relationship.ElementRelationship?.ChildElement ?? Model.DictionaryName;
+                    var title = relationship.ElementRelationship?.ChildElement ?? Model.ElementName;
                     <li class="list-group-item" id="@id">
                         <div style="height: 33px;">
                             <div style="float: left; margin-top: 10px;">
@@ -60,7 +60,7 @@
                                 @title
                             </div>
                             <div class=@BootstrapHelper.PullRight>
-                                <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="defaultModal.showIframe('@Url.Action("LayoutDetails", "Relationships", new { dictionaryName = Model.DictionaryName, relationship.Id })','Layout - @title')">
+                                <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="defaultModal.showIframe('@Url.Action("LayoutDetails", "Relationships", new { elementName = Model.ElementName, relationship.Id })','Layout - @title')">
                                     <span class="fa fa-pencil"></span>
                                 </button>
                             </div>

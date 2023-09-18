@@ -114,26 +114,26 @@ public class ElementController : DataDictionaryController
         }
     }
 
-    public IActionResult Duplicate(string dictionaryName)
+    public IActionResult Duplicate(string elementName)
     {
-        return View(new { originName = dictionaryName });
+        return View(new { originName = elementName });
     }
 
-    public async Task<IActionResult> ClassSourceCode(string dictionaryName)
+    public async Task<IActionResult> ClassSourceCode(string elementName)
     {
-        ViewBag.ClassSourceCode = await _classGenerationService.GetClassSourceCode(dictionaryName);
-        ViewBag.DictionaryName = dictionaryName;
+        ViewBag.ClassSourceCode = await _classGenerationService.GetClassSourceCode(elementName);
+        ViewBag.ElementName = elementName;
 
         return PartialView("ClassSourceCode");
     }
 
-    public async Task<IActionResult> Scripts(string dictionaryName)
+    public async Task<IActionResult> Scripts(string elementName)
     {
-        var scripts = await _scriptsService.GetScriptsListAsync(dictionaryName);
+        var scripts = await _scriptsService.GetScriptsListAsync(elementName);
 
         var model = new ElementScriptsViewModel
         {
-            DictionaryName = dictionaryName,
+            ElementName = elementName,
             CreateTableScript = scripts[0]!,
             WriteProcedureScript = scripts[1]!,
             ReadProcedureScript = scripts[2]!,
@@ -149,7 +149,7 @@ public class ElementController : DataDictionaryController
         var element = await _elementService.CreateEntityAsync(tableName, importFields);
         if (element != null)
         {
-            return RedirectToAction("Index", "Entity", new { dictionaryName = element.Name });
+            return RedirectToAction("Index", "Entity", new { elementName = element.Name });
         }
 
         var jjValidationSummary = _elementService.GetValidationSummary();
@@ -162,7 +162,7 @@ public class ElementController : DataDictionaryController
     {
         if (await _elementService.DuplicateEntityAsync(originName, newName))
         {
-            return RedirectToAction("Index", new { dictionaryName = newName });
+            return RedirectToAction("Index", new { elementName = newName });
         }
 
         var jjValidationSummary = _elementService.GetValidationSummary();
@@ -171,11 +171,11 @@ public class ElementController : DataDictionaryController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Scripts(string dictionaryName, string scriptOption)
+    public async Task<IActionResult> Scripts(string elementName, string scriptOption)
     {
         try
         {
-            await _scriptsService.ExecuteScriptsAsync(dictionaryName, scriptOption);
+            await _scriptsService.ExecuteScriptsAsync(elementName, scriptOption);
             return new JsonResult(new { success = true });
         }
         catch (Exception ex)

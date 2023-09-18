@@ -21,13 +21,13 @@
 <script lang="javascript" type="text/javascript">
     function save() {
         SpinnerOverlay.show();
-        const url = "@Url.Action("Save", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("Save", new { elementName = ViewBag.ElementName })";
         $("form:first").attr("action", url).submit();
     }
 
     function copy() {
         SpinnerOverlay.show();
-        const url = "@Url.Action("Copy", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("Copy", new { elementName = ViewBag.ElementName })";
         $("form:first").attr("action", url).submit();
     }
 
@@ -170,7 +170,7 @@
                     @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new ActionsListDetailsViewModel
                     {
                         Context = ActionSource.Field,
-                        DictionaryName = ViewBag.DictionaryName,
+                        ElementName = ViewBag.ElementName,
                         Actions = Model.Actions.GetAllSorted(),
                         FieldName = ViewBag.OriginalName
                     })
@@ -282,7 +282,7 @@
 
     void Refresh()
     {
-        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { dictionaryName = ViewBag.DictionaryName, fieldName = Model.Name })">
+        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
             <span class="fa fa-refresh fa-fw fa-fw"></span>
             <span>@StringLocalizer["Refresh"]</span>
         </a>
@@ -290,7 +290,7 @@
 
     void Delete()
     {
-        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { dictionaryName = ViewBag.DictionaryName, fieldName = Model.Name })">
+        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
             <span class="fa fa-trash"></span>
             <span>&nbsp;@StringLocalizer["Delete"]</span>
         </a>

@@ -14,9 +14,9 @@ public class PanelController : DataDictionaryController
         _panelService = panelService;
     }
 
-    public async Task<ActionResult> Index(string dictionaryName, int? panelId = null)
+    public async Task<ActionResult> Index(string elementName, int? panelId = null)
     {
-        var formElement = await _panelService.GetFormElementAsync(dictionaryName);
+        var formElement = await _panelService.GetFormElementAsync(elementName);
         FormElementPanel panel;
         if (panelId == null)
         {
@@ -37,72 +37,72 @@ public class PanelController : DataDictionaryController
     }
 
     //Partial View
-    public async Task<IActionResult> Detail(string dictionaryName, int panelId)
+    public async Task<IActionResult> Detail(string elementName, int panelId)
     {
-        var formElement = await _panelService.GetFormElementAsync(dictionaryName);
+        var formElement = await _panelService.GetFormElementAsync(elementName);
         var panel = formElement.GetPanelById(panelId);
         PopulateViewBag(formElement, panel);
         return PartialView("_Detail", panel);
     }
 
     //Partial View
-    public async Task<IActionResult> Add(string dictionaryName)
+    public async Task<IActionResult> Add(string elementName)
     {
-        var formElement =await  _panelService.GetFormElementAsync(dictionaryName);
+        var formElement =await  _panelService.GetFormElementAsync(elementName);
         var panel = new FormElementPanel();
         PopulateViewBag(formElement, panel);
         return PartialView("_Detail", panel);
     }
 
-    public async Task<IActionResult> Delete(string dictionaryName, int panelId)
+    public async Task<IActionResult> Delete(string elementName, int panelId)
     {
-        await _panelService.DeleteFieldAsync(dictionaryName, panelId);
-        return RedirectToAction("Index", new { dictionaryName });
+        await _panelService.DeleteFieldAsync(elementName, panelId);
+        return RedirectToAction("Index", new { elementName });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Save(string dictionaryName, FormElementPanel panel, [FromForm] string? selectedFields)
+    public async Task<IActionResult> Save(string elementName, FormElementPanel panel, [FromForm] string? selectedFields)
     {
         string[]? splittedFields = selectedFields?.Split(',');
-        await _panelService.SavePanelAsync(dictionaryName, panel, splittedFields);
+        await _panelService.SavePanelAsync(elementName, panel, splittedFields);
         if (ModelState.IsValid)
         {
-            return RedirectToAction("Index", new { dictionaryName, panelId = panel.PanelId });
+            return RedirectToAction("Index", new { elementName, panelId = panel.PanelId });
         }
 
         ViewBag.Error = _panelService.GetValidationSummary().GetHtml();
-        return RedirectToIndex(dictionaryName, panel);
+        return RedirectToIndex(elementName, panel);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index(string dictionaryName, FormElementPanel panel)
+    public async Task<IActionResult> Index(string elementName, FormElementPanel panel)
     {
-        var formElement = await _panelService.GetFormElementAsync(dictionaryName);
+        var formElement = await _panelService.GetFormElementAsync(elementName);
         PopulateViewBag(formElement, panel);
         return View("Index", panel);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Sort(string dictionaryName, string[] orderFields)
+    public async Task<IActionResult> Sort(string elementName, string[] orderFields)
     {
-        await _panelService.SortPanelsAsync(dictionaryName, orderFields);
+        await _panelService.SortPanelsAsync(elementName, orderFields);
         return Json(new { success = true });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Copy(string dictionaryName, FormElementPanel panel)
+    public async Task<IActionResult> Copy(string elementName, FormElementPanel panel)
     {
-        var newPanel = await _panelService.CopyPanel(dictionaryName, panel);
-        return RedirectToIndex(dictionaryName, newPanel);
+        var newPanel = await _panelService.CopyPanel(elementName, panel);
+        return RedirectToIndex(elementName, newPanel);
     }
 
-    private IActionResult RedirectToIndex(string dictionaryName, FormElementPanel panel)
+    private IActionResult RedirectToIndex(string elementName, FormElementPanel panel)
     {
         TempData.Put("panel",panel);
         TempData["error"] = ViewBag.Error;
         TempData["selected_tab"] = Request.Form["selected_tab"];
 
-        return RedirectToAction("Index", new { dictionaryName });
+        return RedirectToAction("Index", new { elementName });
     }
 
     private void PopulateViewBag(FormElement formElement, FormElementPanel panel)
@@ -116,7 +116,7 @@ public class PanelController : DataDictionaryController
             ViewBag.Error = TempData["error"]!;
 
         ViewBag.MenuId = "Panel";
-        ViewBag.DictionaryName = formElement.Name;
+        ViewBag.ElementName = formElement.Name;
         ViewBag.PanelId = panel.PanelId;
         ViewBag.Panels = formElement.Panels;
         ViewBag.AvailableFields = GetAvailableFields(formElement, panel);

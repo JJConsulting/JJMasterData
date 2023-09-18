@@ -5,7 +5,7 @@
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @{
-    ViewData["Title"] = $"{ViewBag.DictionaryName} - {StringLocalizer["Panels"]}";
+    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Panels"]}";
 }
 
 <script type="text/javascript">
@@ -60,7 +60,7 @@
     }
 
     function cmdMoveAction(order) {
-        var url = "@Url.Action("Sort", new { dictionaryName = ViewBag.DictionaryName })";
+        var url = "@Url.Action("Sort", new { elementName = ViewBag.ElementName })";
         $.ajax({
             type: "POST",
             url: url,
@@ -115,7 +115,7 @@
     }
 </script>
 
-<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
+<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
 @using (Html.BeginForm())
 {
@@ -127,7 +127,7 @@
         <div class="col-sm-3">
             <div class="input-group jjsearch" style="margin-bottom: 15px;margin-top: 1px;">
                 <span class="input-group-btn">
-                    <button type="button" class="@BootstrapHelper.DefaultButton" onclick="loadIframe('@Url.Action("Add", new { dictionaryName = ViewBag.DictionaryName })', '');">
+                    <button type="button" class="@BootstrapHelper.DefaultButton" onclick="loadIframe('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
                         <span class="fa fa-plus"></span>
                     </button>
                 </span>
@@ -151,7 +151,7 @@
                         @foreach (FormElementPanel panel in ViewBag.Panels)
                         {
                             nLine++;
-                            <a href="javascript:loadIframe('@Url.Action("Detail", new { dictionaryName = ViewBag.DictionaryName, panelId = panel.PanelId })', '@panel.PanelId' );"
+                            <a href="javascript:loadIframe('@Url.Action("Detail", new { elementName = ViewBag.ElementName, panelId = panel.PanelId })', '@panel.PanelId' );"
                                class="list-group-item @(panel.PanelId.Equals(Model.PanelId) ? "active" : "")"
                                id="@panel.PanelId">
                                 <div style="height: 33px;">

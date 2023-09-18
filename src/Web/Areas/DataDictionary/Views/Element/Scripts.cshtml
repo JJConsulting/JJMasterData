@@ -177,7 +177,7 @@
              const formData = new FormData();
              formData.append('scriptOption', value);
          
-             fetch('@Url.Action("Scripts", "Element", new { dictionaryName = Model.DictionaryName })', {
+             fetch('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })', {
                  method: 'POST',
                  body: formData
              })

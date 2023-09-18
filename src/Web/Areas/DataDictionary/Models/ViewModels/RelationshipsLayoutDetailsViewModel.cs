@@ -15,7 +15,7 @@ public class RelationshipsLayoutDetailsViewModel : DataDictionaryViewModel
     public RelationshipsLayoutDetailsViewModel()
     {
     }
-    public RelationshipsLayoutDetailsViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
+    public RelationshipsLayoutDetailsViewModel(string elementName, string menuId) : base(elementName, menuId)
     {
     }
 }

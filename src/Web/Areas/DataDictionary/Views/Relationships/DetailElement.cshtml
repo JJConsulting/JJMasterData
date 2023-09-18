@@ -5,7 +5,7 @@
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.RelationshipsElementDetailsViewModel
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @{
-    ViewData["Title"] = $"{Model.DictionaryName} - {StringLocalizer["Relationships"]}";
+    ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Relationships"]}";
 }
 
 @section Scripts{
@@ -44,7 +44,7 @@
 
 @using (Html.BeginForm())
 {
-    @Html.HiddenFor(m => m.DictionaryName)
+    @Html.HiddenFor(m => m.ElementName)
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.MenuId)
 

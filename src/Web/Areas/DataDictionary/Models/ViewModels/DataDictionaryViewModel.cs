@@ -6,7 +6,7 @@ public class DataDictionaryViewModel
 {
     public string MenuId { get; set; }
 
-    public string DictionaryName { get; set; }
+    public string ElementName { get; set; }
     
     public JJValidationSummary? ValidationSummary { get; set; }
 
@@ -19,9 +19,9 @@ public class DataDictionaryViewModel
         
     }
     
-    public DataDictionaryViewModel(string dictionaryName, string menuId)
+    public DataDictionaryViewModel(string elementName, string menuId)
     {
-        DictionaryName = dictionaryName;
+        ElementName = elementName;
         MenuId = menuId;
     }
 }

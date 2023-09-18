@@ -4,7 +4,7 @@
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ApiViewModel
 
 @{
-    ViewData["Title"] = $"{Model.DictionaryName} - {StringLocalizer["API"]}";
+    ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["API"]}";
 }
 
 <partial name="_Menu"/>
@@ -17,7 +17,7 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <button type="button" onclick="location.href='@Url.Action("Edit",new {dictionaryName = Model.DictionaryName})'" class="@BootstrapHelper.DefaultButton btn-small">
+        <button type="button" onclick="location.href='@Url.Action("Edit",new {elementName = Model.ElementName})'" class="@BootstrapHelper.DefaultButton btn-small">
             <span class="fa fa-pencil"></span>
             <span>&nbsp;@StringLocalizer["Edit"]</span>
         </button>

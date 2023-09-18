@@ -6,7 +6,7 @@
 @model ActionsListViewModel
 
 @{
-    ViewData["Title"] = $"{Model.DictionaryName} - {StringLocalizer["Actions"]}";
+    ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Actions"]}";
 }
 
 <script lang="javascript" type="text/javascript">
@@ -29,7 +29,7 @@
 
 </script>
 
-<partial name="_Menu" model="@(new DataDictionaryViewModel(Model.DictionaryName, Model.MenuId))"/>
+<partial name="_Menu" model="@(new DataDictionaryViewModel(Model.ElementName, Model.MenuId))"/>
 
 @using (Html.BeginForm())
 {
@@ -52,7 +52,7 @@
             @await Html.PartialAsync("_List", new ActionsListDetailsViewModel
                    {
                        Context = ActionSource.GridTable,
-                       DictionaryName = Model.DictionaryName,
+                       ElementName = Model.ElementName,
                        Actions = Model.GridTableActions,
                        MenuId = Model.MenuId
                    })
@@ -62,7 +62,7 @@
             @await Html.PartialAsync("_List", new ActionsListDetailsViewModel
                    {
                        Context = ActionSource.GridToolbar,
-                       DictionaryName = Model.DictionaryName,
+                       ElementName = Model.ElementName,
                        MenuId = Model.MenuId,
                        Actions = Model.GridToolbarActions,
                        
@@ -73,7 +73,7 @@
             @await Html.PartialAsync("_List", new ActionsListDetailsViewModel
                    {
                        Context = ActionSource.FormToolbar,
-                       DictionaryName = Model.DictionaryName,
+                       ElementName = Model.ElementName,
                        Actions = Model.FormToolbarActions
                    })
         </div>

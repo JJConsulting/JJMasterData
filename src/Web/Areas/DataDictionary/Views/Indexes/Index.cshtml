@@ -25,7 +25,7 @@
 
 @inject IHttpContext HttpContext
 @{
-    ViewData["Title"] = $"{ViewBag.DictionaryName} - {StringLocalizer["Indexes"]}";
+    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Indexes"]}";
 }
 
 @section Scripts
@@ -61,14 +61,14 @@
 }
 
 
-<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
+<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
 
 @using (Html.BeginForm())
 {
     <div class="row">
         <div class="col-sm-8">
-            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="defaultModal.showIframe('@Url.Action("Detail", "Indexes", new { dictionaryName = ViewBag.DictionaryName })','ElementIndex');">
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="defaultModal.showIframe('@Url.Action("Detail", "Indexes", new { elementName = ViewBag.ElementName })','ElementIndex');">
                 <span class="fa fa-plus-circle"></span>
                 <span>&nbsp;@StringLocalizer["New Index"]</span>
             </button>
@@ -120,16 +120,16 @@
                         @Html.HiddenFor(model => model[index].IsClustered)
                     </td>
                     <td align="center" valign="middle" width="180px">
-                        <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" formaction="@Url.Action("MoveUp", "Indexes", new { dictionaryName = ViewBag.DictionaryName, index })" data-original-title="@StringLocalizer["Move Up"]">
+                        <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" formaction="@Url.Action("MoveUp", "Indexes", new { elementName = ViewBag.ElementName, index })" data-original-title="@StringLocalizer["Move Up"]">
                             <span class="fa fa-arrow-up"></span>
                         </button>
-                        <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" formaction="@Url.Action("MoveDown", "Indexes", new { dictionaryName = ViewBag.DictionaryName, index })" data-original-title="@StringLocalizer["Move Down"]">
+                        <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" formaction="@Url.Action("MoveDown", "Indexes", new { elementName = ViewBag.ElementName, index })" data-original-title="@StringLocalizer["Move Down"]">
                             <span class="fa fa-arrow-down"></span>
                         </button>
-                        <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="defaultModal.showIframe( '@Url.Action("Detail", "Indexes", new { dictionaryName = ViewBag.DictionaryName, index })','ElementIndex');" data-original-title="@StringLocalizer["Edit"]">
+                        <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="defaultModal.showIframe( '@Url.Action("Detail", "Indexes", new { elementName = ViewBag.ElementName, index })','ElementIndex');" data-original-title="@StringLocalizer["Edit"]">
                             <span class="fa fa-pencil"></span>
                         </button>
-                        <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="deleteIndex('@Url.Action("Delete", "Indexes", new { dictionaryName = ViewBag.DictionaryName, index })')" data-original-title="@StringLocalizer["Delete"]">
+                        <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link" onclick="deleteIndex('@Url.Action("Delete", "Indexes", new { elementName = ViewBag.ElementName, index })')" data-original-title="@StringLocalizer["Delete"]">
                             <span class="fa fa-trash"></span>
                         </button>
                     </td>

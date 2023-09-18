@@ -21,9 +21,9 @@ public class FieldController : DataDictionaryController
         _searchBoxFactory = searchBoxFactory;
     }
 
-    public async Task<IActionResult> Index(string dictionaryName, string? fieldName)
+    public async Task<IActionResult> Index(string elementName, string? fieldName)
     {
-        var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
+        var formElement = await _fieldService.GetFormElementAsync(elementName);
         FormElementField? field;
         if (string.IsNullOrEmpty(fieldName))
         {
@@ -43,31 +43,31 @@ public class FieldController : DataDictionaryController
         return View(nameof(Index), field);
     }
     
-    public async Task<IActionResult> Detail(string dictionaryName, string fieldName)
+    public async Task<IActionResult> Detail(string elementName, string fieldName)
     {
-        var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
+        var formElement = await _fieldService.GetFormElementAsync(elementName);
         var field = formElement.Fields[fieldName];
         await PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
     }
 
-    public async Task<IActionResult> Add(string dictionaryName)
+    public async Task<IActionResult> Add(string elementName)
     {
-        var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
+        var formElement = await _fieldService.GetFormElementAsync(elementName);
         var field = new FormElementField();
         await PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
     }
     
-    public async Task<IActionResult> Delete(string dictionaryName, string fieldName)
+    public async Task<IActionResult> Delete(string elementName, string fieldName)
     {
-        await _fieldService.DeleteField(dictionaryName, fieldName);
-        var nextField = _fieldService.GetNextFieldNameAsync(dictionaryName, fieldName);
-        return RedirectToAction("Index", new { dictionaryName, fieldName = nextField });
+        await _fieldService.DeleteField(elementName, fieldName);
+        var nextField = _fieldService.GetNextFieldNameAsync(elementName, fieldName);
+        return RedirectToAction("Index", new { elementName, fieldName = nextField });
     }
     
     [HttpPost]
-    public async Task<IActionResult> Index(string dictionaryName, string? fieldName, FormElementField? field)
+    public async Task<IActionResult> Index(string elementName, string? fieldName, FormElementField? field)
     {
         
         var iconSearchBox = _searchBoxFactory.Create();
@@ -81,38 +81,38 @@ public class FieldController : DataDictionaryController
         if (iconSearchBoxResult.IsActionResult())
             return iconSearchBoxResult.ToActionResult();
         
-        var formElement = await _fieldService.GetFormElementAsync(dictionaryName);
+        var formElement = await _fieldService.GetFormElementAsync(elementName);
         await PopulateViewBag(formElement, field);
         return View("Index", field);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Save(string dictionaryName, FormElementField field, string? originalName)
+    public async Task<IActionResult> Save(string elementName, FormElementField field, string? originalName)
     {
         RecoverCustomAttibutes(ref field);
         
-        await _fieldService.SaveFieldAsync(dictionaryName, field, originalName);
+        await _fieldService.SaveFieldAsync(elementName, field, originalName);
         if (ModelState.IsValid)
         {
-            return RedirectToIndex(dictionaryName, field);
+            return RedirectToIndex(elementName, field);
         }
 
         ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
-        return RedirectToIndex(dictionaryName, field);
+        return RedirectToIndex(elementName, field);
     }
 
 
     [HttpPost]
-    public async Task<IActionResult> Sort(string dictionaryName, string[] orderFields)
+    public async Task<IActionResult> Sort(string elementName, string[] orderFields)
     {
-        await _fieldService.SortFieldsAsync(dictionaryName, orderFields);
+        await _fieldService.SortFieldsAsync(elementName, orderFields);
         return Json(new { success = true });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Copy(string dictionaryName, FormElementField? field)
+    public async Task<IActionResult> Copy(string elementName, FormElementField? field)
     {
-        var dictionary = await  _fieldService.DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var dictionary = await  _fieldService.DataDictionaryRepository.GetMetadataAsync(elementName);
         await _fieldService.CopyFieldAsync(dictionary, field);
         if (!ModelState.IsValid)
             ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
@@ -122,7 +122,7 @@ public class FieldController : DataDictionaryController
     }
 
     [HttpPost]
-    public IActionResult AddDataItem(string dictionaryName, FormElementField field, int qtdRowsToAdd)
+    public IActionResult AddDataItem(string elementName, FormElementField field, int qtdRowsToAdd)
     {
         field.DataItem ??= new FormElementDataItem();
         field.DataItem.Items ??= new List<DataItemValue>();
@@ -137,25 +137,25 @@ public class FieldController : DataDictionaryController
             };
             field.DataItem.Items.Add(item);
         }
-        return RedirectToIndex(dictionaryName, field);
+        return RedirectToIndex(elementName, field);
     }
 
     [HttpPost]
-    public IActionResult RemoveDataItem(string dictionaryName, FormElementField field, int dataItemIndex)
+    public IActionResult RemoveDataItem(string elementName, FormElementField field, int dataItemIndex)
     {
         field.DataItem?.Items?.RemoveAt(dataItemIndex);
-        return RedirectToIndex(dictionaryName, field);
+        return RedirectToIndex(elementName, field);
     }
 
     [HttpPost]
-    public IActionResult RemoveAllDataItem(string dictionaryName, FormElementField field)
+    public IActionResult RemoveAllDataItem(string elementName, FormElementField field)
     {
         field.DataItem!.Items = new List<DataItemValue>();
-        return RedirectToIndex(dictionaryName, field);
+        return RedirectToIndex(elementName, field);
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddElementMapFilter(string dictionaryName, FormElementField field, string mapField, string mapExpressionValue)
+    public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field, string mapField, string mapExpressionValue)
     {
         var mapFilter = new DataElementMapFilter
         {
@@ -169,24 +169,24 @@ public class FieldController : DataDictionaryController
             ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
         }
 
-        return RedirectToIndex(dictionaryName, field);
+        return RedirectToIndex(elementName, field);
     }
 
     [HttpPost]
-    public IActionResult RemoveElementMapFilter(string dictionaryName, FormElementField field, string elementMapFieldName)
+    public IActionResult RemoveElementMapFilter(string elementName, FormElementField field, string elementMapFieldName)
     {
         field.DataItem!.ElementMap!.MapFilters.RemoveAll(x => x.FieldName.Equals(elementMapFieldName));
-        return RedirectToIndex(dictionaryName, field);
+        return RedirectToIndex(elementName, field);
     }
 
-    private IActionResult RedirectToIndex(string dictionaryName, FormElementField field)
+    private IActionResult RedirectToIndex(string elementName, FormElementField field)
     {
         TempData.Put("field", field);
         TempData["error"] = ViewBag.Error;
         TempData["selected_tab"] = Request.Form["selected_tab"].ToString();
         TempData["originalName"] = Request.Form["originalName"].ToString();
 
-        return RedirectToAction("Index", new { dictionaryName });
+        return RedirectToAction("Index", new { elementName });
     }
 
     private async Task PopulateViewBag(FormElement formElement, FormElementField? field)
@@ -226,7 +226,7 @@ public class FieldController : DataDictionaryController
             ViewBag.OriginalName = field.Name;
 
         ViewBag.MenuId = "Field";
-        ViewBag.DictionaryName = formElement.Name;
+        ViewBag.ElementName = formElement.Name;
         ViewBag.HintDictionary = _fieldService.GetHintDictionary(formElement);
         ViewBag.MaxRequestLength = GetMaxRequestLength();
         ViewBag.FieldName = field.Name;

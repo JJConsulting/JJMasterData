@@ -6,7 +6,7 @@ public class RelationshipsListViewModel : DataDictionaryViewModel
 {
     public required FormElementRelationshipList Relationships { get; init; }
 
-    public RelationshipsListViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
+    public RelationshipsListViewModel(string elementName, string menuId) : base(elementName, menuId)
     {
     }
 }

@@ -8,7 +8,7 @@
 }
 
 @using (Html.BeginForm("ScriptAction", "Actions",
-    new { dictionaryName = ViewBag.DictionaryName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
     <ul class="nav nav-tabs">
         <li id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a></li>

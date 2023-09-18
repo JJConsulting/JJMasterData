@@ -84,7 +84,7 @@
             value: qtd
         }).appendTo("form");
 
-        const url = "@Url.Action("AddDataItem", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("AddDataItem", new { elementName = ViewBag.ElementName })";
         $("form:first").attr("action", url).submit();
     }
 
@@ -97,13 +97,13 @@
             value: dataItemIndex
         }).appendTo("form");
 
-        const url = "@Url.Action("RemoveDataItem", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("RemoveDataItem", new { elementName = ViewBag.ElementName })";
         $("form:first").attr("action", url).submit();
     }
 
     function removeAllDataItem() {
         SpinnerOverlay.show();
-        const url = "@Url.Action("RemoveAllDataItem", new { dictionaryName = ViewBag.DictionaryName })";
+        const url = "@Url.Action("RemoveAllDataItem", new { elementName = ViewBag.ElementName })";
         $("form:first").attr("action", url).submit();
     }
 

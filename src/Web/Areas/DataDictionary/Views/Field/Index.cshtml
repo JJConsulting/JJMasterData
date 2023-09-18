@@ -20,7 +20,7 @@
         
         var item = ComponentFactory.Html.LinkButton.Create();
         item.IconClass = "fa fa-plus";
-        item.OnClientClick = $"loadIframe('{Url.Action("Add", new { dictionaryName = ViewBag.DictionaryName })}', '');";
+        item.OnClientClick = $"loadIframe('{Url.Action("Add", new { elementName = ViewBag.ElementName })}', '');";
         fieldSearchBox.Actions.Add(item);
     }
 }
@@ -28,7 +28,7 @@
 @inject IHttpContext HttpContext
 
 @{
-    ViewData["Title"] = $"{ViewBag.DictionaryName} - {StringLocalizer["Fields"]}";
+    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Fields"]}";
 }
 
 
@@ -94,7 +94,7 @@
         }
     
         function cmdMoveAction(order) {
-            var url = "@Url.Action("Sort", new { dictionaryName = ViewBag.DictionaryName })";
+            var url = "@Url.Action("Sort", new { elementName = ViewBag.ElementName })";
             $.ajax({
                 type: "POST",
                 url: url,
@@ -151,7 +151,7 @@
 
 }
 
-<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.DictionaryName, ViewBag.MenuId))"/>
+<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
 @using (Html.BeginForm("Index", "Field", FormMethod.Post))
 {
@@ -172,7 +172,7 @@
                             FormElementField field = ViewBag.Fields[i];
                             var fieldName = field.Name;
                             
-                            <a href="javascript:loadIframe('@Url.Action("Detail", new { dictionaryName = ViewBag.DictionaryName, fieldName })', '@fieldName' );"
+                            <a href="javascript:loadIframe('@Url.Action("Detail", new { elementName = ViewBag.ElementName, fieldName })', '@fieldName' );"
                                class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
                                id="@fieldName">
                                 <div style="height: 33px;">

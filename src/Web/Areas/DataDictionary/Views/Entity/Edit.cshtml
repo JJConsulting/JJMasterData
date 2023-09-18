@@ -5,7 +5,7 @@
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel;
 
 @{
-    ViewData["Title"] = $"{Model.DictionaryName} - {StringLocalizer["Entity"]}";
+    ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Entity"]}";
 }
 
 <partial name="_Menu"></partial>
@@ -19,7 +19,7 @@
                 <span class="fa fa-check"></span>
                 <span>&nbsp;@StringLocalizer["Save"]</span>
             </button>
-            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="location.href='@Url.Action("Index" ,new {dictionaryName = Model.DictionaryName})'">
+            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="location.href='@Url.Action("Index" ,new {elementName = Model.ElementName})'">
                 <span class="fa fa-times">
                 </span>
                 <span>&nbsp;@StringLocalizer["Cancel"]</span>
@@ -42,7 +42,7 @@
             <partial name="_EventsPanel" model="Model"/>
         </jj-collapse-panel>
     }
-    <input asp-for="DictionaryName" hidden="hidden"/>
+    <input asp-for="ElementName" hidden="hidden"/>
 
     <br />
 

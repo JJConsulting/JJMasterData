@@ -15,17 +15,17 @@ public class IndexesController : DataDictionaryController
         _indexesService = indexesService;
     }
 
-    public async Task<ActionResult> Index(string dictionaryName)
+    public async Task<ActionResult> Index(string elementName)
     {
-        List<ElementIndex> listIndexes = (await _indexesService.GetFormElementAsync(dictionaryName)).Indexes;
-        PopulateViewBag(dictionaryName);
+        List<ElementIndex> listIndexes = (await _indexesService.GetFormElementAsync(elementName)).Indexes;
+        PopulateViewBag(elementName);
 
         return View(listIndexes);
     }
 
-    public async Task<ActionResult> Detail(string dictionaryName, string index)
+    public async Task<ActionResult> Detail(string elementName, string index)
     {
-        FormElement formElement = await _indexesService.GetFormElementAsync(dictionaryName);
+        FormElement formElement = await _indexesService.GetFormElementAsync(elementName);
 
         ElementIndex elementIndex;
         if (!string.IsNullOrEmpty(index))
@@ -39,20 +39,20 @@ public class IndexesController : DataDictionaryController
             ViewBag.IndexName = $"IX_{formElement.Name}_{formElement.Indexes.Count}";
         }
 
-        await PopulateCheckBoxAsync(dictionaryName, index);
-        PopulateViewBag(dictionaryName);
+        await PopulateCheckBoxAsync(elementName, index);
+        PopulateViewBag(elementName);
         return View("Detail",  elementIndex);
 
     }
 
     [HttpPost]
-    public async Task<ActionResult> Detail(string dictionaryName, string? index, List<SelectListItem> checkBoxList, ElementIndex elementIndex)
+    public async Task<ActionResult> Detail(string elementName, string? index, List<SelectListItem> checkBoxList, ElementIndex elementIndex)
     {
         List<string> indexColumns = (from item in checkBoxList where item.Selected select item.Value).ToList();
 
         elementIndex.Columns = indexColumns;
 
-        if (await _indexesService.SaveAsync(dictionaryName, index, elementIndex))
+        if (await _indexesService.SaveAsync(elementName, index, elementIndex))
         {
             return Json(new { success = true });
         }
@@ -62,50 +62,50 @@ public class IndexesController : DataDictionaryController
     }
 
     [HttpPost]
-    public async Task<ActionResult> Index(string dictionaryName, string filter)
+    public async Task<ActionResult> Index(string elementName, string filter)
     {
-        List<ElementIndex> indexes = (await _indexesService.GetFormElementAsync(dictionaryName)).Indexes;
+        List<ElementIndex> indexes = (await _indexesService.GetFormElementAsync(elementName)).Indexes;
 
         if (!string.IsNullOrEmpty(filter))
             indexes = indexes.FindAll(l => l.Columns.Contains(filter));
 
 
-        PopulateViewBag(dictionaryName);
+        PopulateViewBag(elementName);
         return View(indexes);
     }
 
     [HttpPost]
-    public ActionResult Delete(string dictionaryName, string index)
+    public ActionResult Delete(string elementName, string index)
     {
-        _indexesService.DeleteAsync(dictionaryName, index);
-        return RedirectToAction("Index", new { dictionaryName });
+        _indexesService.DeleteAsync(elementName, index);
+        return RedirectToAction("Index", new { elementName });
     }
 
     [HttpPost]
-    public ActionResult MoveDown(string dictionaryName, string index)
+    public ActionResult MoveDown(string elementName, string index)
     {
-        _indexesService.MoveDownAsync(dictionaryName, index);
-        return RedirectToAction("Index", new { dictionaryName });
+        _indexesService.MoveDownAsync(elementName, index);
+        return RedirectToAction("Index", new { elementName });
 
     }
 
     [HttpPost]
-    public ActionResult MoveUp(string dictionaryName, string index)
+    public ActionResult MoveUp(string elementName, string index)
     {
-        _indexesService.MoveUpAsync(dictionaryName, index);
-        return RedirectToAction("Index", new { dictionaryName });
+        _indexesService.MoveUpAsync(elementName, index);
+        return RedirectToAction("Index", new { elementName });
 
     }
 
-    public void PopulateViewBag(string dictionaryName)
+    public void PopulateViewBag(string elementName)
     {
-        ViewBag.DictionaryName = dictionaryName;
+        ViewBag.ElementName = elementName;
         ViewBag.MenuId = "Indexes";
     }
 
-    private async Task PopulateCheckBoxAsync(string dictionaryName, string index)
+    private async Task PopulateCheckBoxAsync(string elementName, string index)
     {
-        var formElement = await _indexesService.GetFormElementAsync(dictionaryName);
+        var formElement = await _indexesService.GetFormElementAsync(elementName);
         var listItems = new List<SelectListItem>();
 
         foreach (var field in formElement.Fields)

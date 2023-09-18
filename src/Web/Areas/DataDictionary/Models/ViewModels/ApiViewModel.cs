@@ -16,7 +16,7 @@ public class ApiViewModel : DataDictionaryViewModel
     {
         
     }
-    public ApiViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
+    public ApiViewModel(string elementName, string menuId) : base(elementName, menuId)
     {
     }
 }

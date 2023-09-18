@@ -7,7 +7,7 @@ public class ActionsListViewModel : DataDictionaryViewModel
     public required List<BasicAction> GridTableActions { get; init; }
     public required List<BasicAction> GridToolbarActions { get;  init; }
     public required List<BasicAction> FormToolbarActions { get;  init; }
-    public ActionsListViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
+    public ActionsListViewModel(string elementName, string menuId) : base(elementName, menuId)
     {
     }
     

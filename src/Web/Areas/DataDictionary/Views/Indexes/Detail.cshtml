@@ -7,7 +7,7 @@
     function cmdSave() {
         var frm = $('form');
         $.ajax({
-            url: '@Url.Action("Detail", "Indexes", new { dictionaryName = ViewBag.DictionaryName })',
+            url: '@Url.Action("Detail", "Indexes", new { elementName = ViewBag.ElementName })',
             data: frm.serialize(),
             type: "POST",
             dataType: "json",

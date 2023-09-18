@@ -16,7 +16,7 @@
     <div class="col-sm-8">
         @{
             var newRelationLabel = @StringLocalizer["New Relation"];
-            var url = @Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName });
+            var url = @Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName });
         }
         <jj-link-button icon="PlusCircle"
                         text="@StringLocalizer["New"]"
@@ -44,7 +44,7 @@
         {
             <tr>
                 <td>
-                    <a href="@Url.Action("Index", "Entity", new { dictionaryName = relationship.ElementRelationship!.ChildElement })" target="_blank">@relationship.ElementRelationship!.ChildElement</a>
+                    <a href="@Url.Action("Index", "Entity", new { elementName = relationship.ElementRelationship!.ChildElement })" target="_blank">@relationship.ElementRelationship!.ChildElement</a>
                 </td>
                 <td>
                     @foreach (var t in relationship.ElementRelationship!.Columns)
@@ -64,7 +64,7 @@
                 </td>
                 <td style="text-align: center;">
                     <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
-                            onclick="defaultModal.showIframe('@Url.Action("ElementDetails", "Relationships", new { dictionaryName = Model.DictionaryName, id = relationship.Id })','@StringLocalizer["Edit Relation"]');"
+                            onclick="defaultModal.showIframe('@Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName, id = relationship.Id })','@StringLocalizer["Edit Relation"]');"
                             data-original-title="@StringLocalizer["Edit"]">
                         <span class="fa fa-pencil"></span>
                     </button>
@@ -72,7 +72,7 @@
                             onclick="return deleteRelationship();"
                             asp-controller="Relationships"
                             asp-action="Delete"
-                            asp-route-dictionaryName="@Model.DictionaryName"
+                            asp-route-elementName="@Model.ElementName"
                             asp-route-id="@relationship.Id"
                             data-original-title="@StringLocalizer["Delete"]">
                         <span class="fa fa-trash"></span>

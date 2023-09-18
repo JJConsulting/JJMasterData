@@ -20,7 +20,7 @@ public class EntityViewModel : DataDictionaryViewModel
         
     }
     
-    public EntityViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
+    public EntityViewModel(string elementName, string menuId) : base(elementName, menuId)
     {
     }
 }

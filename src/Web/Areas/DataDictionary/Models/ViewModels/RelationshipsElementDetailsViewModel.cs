@@ -24,7 +24,7 @@ public class RelationshipsElementDetailsViewModel : DataDictionaryViewModel
         
     }
     
-    public RelationshipsElementDetailsViewModel(string dictionaryName, string menuId) : base(dictionaryName, menuId)
+    public RelationshipsElementDetailsViewModel(string elementName, string menuId) : base(elementName, menuId)
     {
     }
 }
