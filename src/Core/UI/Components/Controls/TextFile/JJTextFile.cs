@@ -85,8 +85,6 @@ public class JJTextFile : ControlBase
             if (HasPk())
                 _uploadView.FolderPath = GetFolderPath();
             
-            _uploadView.GridView.ShowToolbar = false;
-            
             var dataFile = FormElementField.DataFile!;
             _uploadView.UploadArea.Multiple = dataFile.MultipleFile;
             _uploadView.UploadArea.MaxFileSize = dataFile.MaxFileSize;

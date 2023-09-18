@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
@@ -103,18 +104,17 @@ public class JJUploadView : AsyncComponent
         {
             var files = GetFilesDataTable();
             if (_gridView != null)
-            {
- 
-                _gridView.DataSource = EnumerableHelper.ConvertToDictionaryList(files);
-                _gridView.TotalOfRecords = files.Rows.Count;
                 return _gridView;
-            }
             
+
             _gridView = ComponentFactory.GridView.Create(new FormElement(files));
             _gridView.FormElement.Name = Name;
             _gridView.FormElement.Title = Title;
             _gridView.FormElement.SubTitle = SubTitle;
             
+            _gridView.DataSource = EnumerableHelper.ConvertToDictionaryList(files);
+            _gridView.TotalOfRecords = files.Rows.Count;
+
             if(_gridView.FormElement.Fields.Contains("NameJS"))
                 _gridView.FormElement.Fields["NameJS"].VisibleExpression = "val:0";
 
@@ -129,10 +129,10 @@ public class JJUploadView : AsyncComponent
             _gridView.FilterAction.SetVisible(false);
             _gridView.EmptyDataText = "There is no file to display";
             _gridView.ShowHeaderWhenEmpty = false;
-
+        
             _gridView.GridActions.Clear();
             _gridView.AddGridAction(DownloadAction);
-
+            
             _gridView.OnRenderAction += (_, args) =>
             {
                 if(args.Action.Name.Equals(_downloadAction.Name))
@@ -148,13 +148,16 @@ public class JJUploadView : AsyncComponent
 
             _gridView.AddGridAction(RenameAction);
             _gridView.AddGridAction(DeleteAction);
-
+        
+            
             _gridView.FormElement.Options.Grid.TotalPerPage = int.MaxValue;
             _gridView.FormElement.Options.Grid.ShowPagging = false;
+            _gridView.FormElement.Options.Grid.ShowToolBar = false;
+            
             return _gridView;
         }
     }
-    
+
     public ScriptAction DownloadAction =>
         _downloadAction ??= new ScriptAction
         {
