@@ -103,9 +103,9 @@ public class FieldController : DataDictionaryController
 
 
     [HttpPost]
-    public async Task<IActionResult> Sort(string elementName, string[] orderFields)
+    public async Task<IActionResult> Sort(string elementName, string fieldsOrder)
     {
-        await _fieldService.SortFieldsAsync(elementName, orderFields);
+        await _fieldService.SortFieldsAsync(elementName, fieldsOrder.Split(","));
         return Json(new { success = true });
     }
 
@@ -183,7 +183,7 @@ public class FieldController : DataDictionaryController
     {
         TempData.Put("field", field);
         TempData["error"] = ViewBag.Error;
-        TempData["selected_tab"] = Request.Form["selected_tab"].ToString();
+        TempData["selected-tab"] = Request.Form["selected-tab"].ToString();
         TempData["originalName"] = Request.Form["originalName"].ToString();
 
         return RedirectToAction("Index", new { elementName });
@@ -210,10 +210,10 @@ public class FieldController : DataDictionaryController
         if (formElement.Fields.Contains(field.Name))
             field.Actions = formElement.Fields[field.Name].Actions;
 
-        if (!string.IsNullOrEmpty(Request.Query["selected_tab"]))
-            ViewBag.Tab = Request.Form["selected_tab"].ToString();
-        else if (TempData["selected_tab"] != null)
-            ViewBag.Tab = TempData["selected_tab"]!;
+        if (!string.IsNullOrEmpty(Request.Query["selected-tab"]))
+            ViewBag.Tab = Request.Form["selected-tab"].ToString();
+        else if (TempData["selected-tab"] != null)
+            ViewBag.Tab = TempData["selected-tab"]!;
 
         if (TempData.TryGetValue("error", out var value))
             ViewBag.Error = value!;
@@ -226,6 +226,7 @@ public class FieldController : DataDictionaryController
             ViewBag.OriginalName = field.Name;
 
         ViewBag.MenuId = "Field";
+        ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;
         ViewBag.HintDictionary = _fieldService.GetHintDictionary(formElement);
         ViewBag.MaxRequestLength = GetMaxRequestLength();

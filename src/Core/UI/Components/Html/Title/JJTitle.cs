@@ -36,9 +36,10 @@ public class JJTitle : HtmlComponent
             .Append(Tag, e =>
             {
                 e.AppendText(Title);
-                e.Append(HtmlTag.Small, e =>
+                e.Append(HtmlTag.Small, small =>
                 {
-                    e.AppendText($" {SubTitle}");
+                    small.WithCssClass("sub-title");
+                    small.AppendText($" {SubTitle}");
                 });
             });
     }

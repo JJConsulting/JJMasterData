@@ -16,7 +16,7 @@
 
 
     function savePanelState() {
-        var currentTab = $("#selected_tab").val();
+        var currentTab = $("#selected-tab").val();
         if (!currentTab) {
             currentTab = "#divGeneral";
         }
@@ -24,7 +24,7 @@
 
         $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function(e) {
             var target = $(e.target).attr("href");
-            $("#selected_tab").val(target);
+            $("#selected-tab").val(target);
             resizeContainer();
         });
     }
@@ -55,7 +55,7 @@
 @using (Html.BeginForm("InternalAction", "Actions",
    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
-    <input type="hidden" name="selected_tab" id="selected_tab" value="@ViewBag.Tab" />
+    <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab" />
 
     <ul class="nav nav-tabs">
         <li id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a></li>

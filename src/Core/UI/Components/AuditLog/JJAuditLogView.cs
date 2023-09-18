@@ -238,7 +238,7 @@ public class JJAuditLogView : AsyncComponent
                 div.WithCssClass("jjrelative");
                 await div.AppendAsync(HtmlTag.Div, async divDetail =>
                 {
-                    divDetail.WithCssClass("fieldDetail")
+                    divDetail.WithCssClass("field-details")
                         .Append(HtmlTag.P,
                             p =>
                             {

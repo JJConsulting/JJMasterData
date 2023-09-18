@@ -46,8 +46,8 @@ public class ActionsController : DataDictionaryController
             FormToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted()
         };
         
-        if ((string?)Request.Query["selected_tab"] == null)
-            ViewBag.Tab = Request.Query["selected_tab"];
+        if ((string?)Request.Query["selected-tab"] == null)
+            ViewBag.Tab = Request.Query["selected-tab"];
 
         return View(model);
     }

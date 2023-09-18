@@ -100,17 +100,17 @@ public class PanelController : DataDictionaryController
     {
         TempData.Put("panel",panel);
         TempData["error"] = ViewBag.Error;
-        TempData["selected_tab"] = Request.Form["selected_tab"];
+        TempData["selected-tab"] = Request.Form["selected-tab"];
 
         return RedirectToAction("Index", new { elementName });
     }
 
     private void PopulateViewBag(FormElement formElement, FormElementPanel panel)
     {
-        if (!string.IsNullOrEmpty(Request.Query["selected_tab"]))
-            ViewBag.Tab = Request.Form["selected_tab"];
-        else if (TempData["selected_tab"] != null)
-            ViewBag.Tab = TempData["selected_tab"]!;
+        if (!string.IsNullOrEmpty(Request.Query["selected-tab"]))
+            ViewBag.Tab = Request.Form["selected-tab"];
+        else if (TempData["selected-tab"] != null)
+            ViewBag.Tab = TempData["selected-tab"]!;
 
         if (TempData.ContainsKey("error"))
             ViewBag.Error = TempData["error"]!;

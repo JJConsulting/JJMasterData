@@ -37,7 +37,7 @@
     }
 
     function savePanelState() {
-        var currentTab = $("#selected_tab").val();
+        var currentTab = $("#selected-tab").val();
         if (!currentTab) {
             currentTab = "#divGeneral";
         }
@@ -45,13 +45,13 @@
 
         $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
             var target = $(e.target).attr("href");
-            $("#selected_tab").val(target);
+            $("#selected-tab").val(target);
             resizeContainer();
         });
     }
 
     function sortableGrid() {
-        $("#sortable_grid").sortable({
+        $("#sortable-grid").sortable({
             update: function () {
                 var order = $(this).sortable('toArray');
                 cmdMoveAction(order);
@@ -90,14 +90,14 @@
     }
 
     function loadIframe(url, panelId) {
-        $("#sortable_grid a").removeClass("active");
+        $("#sortable-grid a").removeClass("active");
 
         if (panelId != "")
             $("#" + panelId).addClass("active");
 
         $.get(url, function (data) {
-            $("#fieldDetail").html(data);
-            listenAllEvents("#fieldDetail ");
+            $("#field-details").html(data);
+            listenAllEvents("#field-details ");
             savePanelState();
             resizeContainer();
         });
@@ -105,7 +105,7 @@
 
     function searchFields(oDom) {
         var value = $(oDom).val().toLowerCase();
-        $("#sortable_grid a").filter(function () {
+        $("#sortable-grid a").filter(function () {
             //procura por textos
             var textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
             var isSearch = textValues.toLowerCase().indexOf(value) > -1;
@@ -119,7 +119,7 @@
 
 @using (Html.BeginForm())
 {
-    <input type="hidden" name="selected_tab" id="selected_tab" value="@ViewBag.Tab"/>
+    <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
     <input type="hidden" name="selectedFields" id="selectedFields" value="@Context.Request.Query["selectedFields"]"/>
     <input type="hidden" name="enabled_fields" id="enabled_fields" value="@Context.Request.Query["enabled_fields"]"/>
 
@@ -142,7 +142,7 @@
             </div>
             <div class="jjrelative">
                 <div id="listField">
-                    <div class="list-group jjsortable" id="sortable_grid">
+                    <div class="list-group jjsortable" id="sortable-grid">
                         @{int nLine = 0;}
                         @if (ViewBag.Panels.Count == 0)
                         {
@@ -173,7 +173,7 @@
             </div>
         </div>
         <div class="col-sm-9" style="padding-left:0px">
-            <div class="jjrelative" id="fieldDetail">
+            <div class="jjrelative" id="field-details">
                 @await Html.PartialAsync("_Detail", Model)
             </div>
         </div>

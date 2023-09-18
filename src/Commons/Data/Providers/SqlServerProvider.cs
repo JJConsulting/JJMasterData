@@ -122,25 +122,33 @@ public class SqlServerProvider : BaseProvider
         return sql.ToString();
     }
 
-    private static string GetFieldDefinition(ElementField f)
+    private static string GetFieldDefinition(ElementField field)
     {
         var sql = new StringBuilder();
         sql.Append("[");
-        sql.Append(f.Name);
+        sql.Append(field.Name);
         sql.Append("] ");
-        sql.Append(f.DataType.ToString());
 
-        if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+        sql.Append(GetFieldDataTypeScript(field));
+
+        return sql.ToString();
+    }
+
+    public static string GetFieldDataTypeScript(ElementField field)
+    {
+        var sql = new StringBuilder();
+        sql.Append(field.DataType.ToString());
+        if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
         {
             sql.Append(" (");
-            sql.Append(f.Size == -1 ? "MAX" : f.Size);
+            sql.Append(field.Size == -1 ? "MAX" : field.Size);
             sql.Append(")");
         }
 
-        if (f.IsRequired)
+        if (field.IsRequired)
             sql.Append(" NOT NULL");
 
-        if (f.AutoNum)
+        if (field.AutoNum)
             sql.Append(" IDENTITY ");
 
         return sql.ToString();
@@ -156,7 +164,7 @@ public class SqlServerProvider : BaseProvider
             var listContraint = new List<string>();
             foreach (var r in element.Relationships)
             {
-                string contraintName = string.Format("FK_{0}_{1}", r.ChildElement, element.TableName);
+                string contraintName = $"FK_{r.ChildElement}_{element.TableName}";
 
                 //Prevents repeated name.
                 if (!listContraint.Contains(contraintName))

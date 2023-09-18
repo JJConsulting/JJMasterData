@@ -313,19 +313,19 @@ public class FieldService : BaseService
                 StringLocalizer["The [ExportAsLink] field cannot be enabled with [MultipleFile]"]);
     }
 
-    public async Task<bool> SortFieldsAsync(string elementName, IEnumerable<string> orderFields)
+    public async Task<bool> SortFieldsAsync(string elementName, IEnumerable<string> fieldsOrder)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         
-        SortFields(orderFields, formElement);
+        SortFields(fieldsOrder, formElement);
 
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
         return true;
     }
 
-    private static void SortFields(IEnumerable<string> orderFields, FormElement formElement)
+    private static void SortFields(IEnumerable<string> fieldsOrder, FormElement formElement)
     {
-        var newList = orderFields.Select(fieldName => formElement.Fields[fieldName]).ToList();
+        var newList = fieldsOrder.Select(fieldName => formElement.Fields[fieldName]).ToList();
 
         for (int i = 0; i < formElement.Fields.Count; i++)
         {

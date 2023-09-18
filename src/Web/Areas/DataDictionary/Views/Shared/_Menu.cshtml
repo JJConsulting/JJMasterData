@@ -1,12 +1,10 @@
 ﻿@using Microsoft.AspNetCore.Html
 @using JJMasterData.Core.Web
-@using JJMasterData.Commons.Cryptography
 @using JJMasterData.Core.Extensions
 @using JJMasterData.Core.Web.Factories
 
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IComponentFactory ComponentFactory
-@inject IEncryptionService EncryptionService
 
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.DataDictionaryViewModel;
 
@@ -54,7 +52,7 @@
 <div class="@BootstrapHelper.PageHeader">
     <h1>
         @Html.Raw(ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml())
-        <small>@Model.ElementName</small>
+        <small class="sub-title">@Model.ElementName</small>
     </h1>
 </div>
 

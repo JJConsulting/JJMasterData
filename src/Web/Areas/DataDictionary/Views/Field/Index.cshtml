@@ -2,8 +2,7 @@
 @using JJMasterData.Core.Web
 @using JJMasterData.Core.Web.Components
 @using JJMasterData.Core.Web.Factories
-@using JJMasterData.Core.Web.Http.Abstractions
-@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using JJMasterData.Commons.Data.Providers
 
 @inject IComponentFactory ComponentFactory 
 
@@ -20,15 +19,48 @@
         
         var item = ComponentFactory.Html.LinkButton.Create();
         item.IconClass = "fa fa-plus";
-        item.OnClientClick = $"loadIframe('{Url.Action("Add", new { elementName = ViewBag.ElementName })}', '');";
+        item.OnClientClick = $"loadFieldDetails('{Url.Action("Add", new { elementName = ViewBag.ElementName })}', '');";
         fieldSearchBox.Actions.Add(item);
     }
 }
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
-@inject IHttpContext HttpContext
 
 @{
     ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Fields"]}";
+}
+
+@{
+    static IconType GetFontAwesomeIconClass(FormComponent component)
+    {
+        return component switch
+        {
+            FormComponent.Text => IconType.KeyboardO,
+            FormComponent.TextArea => IconType.AlignLeft,
+            FormComponent.Hour => IconType.ClockO,
+            FormComponent.Date => IconType.Calendar,
+            FormComponent.DateTime => IconType.Calendar,
+            FormComponent.Password => IconType.Lock,
+            FormComponent.Email => IconType.Envelope, 
+            FormComponent.Number => IconType.Calculator, 
+            FormComponent.ComboBox => IconType.CaretDown, 
+            FormComponent.Search => IconType.Search, 
+            FormComponent.RadioButton => IconType.RegularCircleDot, 
+            FormComponent.CheckBox => IconType.CheckSquare, 
+            FormComponent.Cnpj => IconType.RegularIdCard, 
+            FormComponent.Cpf => IconType.RegularIdCard, 
+            FormComponent.CnpjCpf => IconType.RegularIdCard, 
+            FormComponent.Currency => IconType.Dollar, 
+            FormComponent.Tel => IconType.Phone, 
+            FormComponent.Cep => IconType.MapMarker, 
+            FormComponent.QrCode => IconType.Qrcode, 
+            FormComponent.Location => IconType.MapMarker, 
+            FormComponent.Lookup => IconType.Binoculars, 
+            FormComponent.File => IconType.File, 
+            FormComponent.Slider => IconType.Sliders, 
+            _ => IconType.Question 
+            };
+    }
+
 }
 
 
@@ -52,7 +84,7 @@
     
         function resizeContainer() {
     
-            var buttonBar = document.getElementsByClassName("jjtoolbar");
+            const buttonBar = document.getElementsByClassName("jjtoolbar");
             let container = document.getElementsByClassName("jjcontainer");
             let containerHeight = 0;
             let windowHeight = 0;
@@ -70,79 +102,65 @@
         }
     
         function savePanelState() {
-            var currentTab = $("#selected_tab").val();
+            let currentTab = $("#selected-tab").val();
             if (!currentTab) {
                 currentTab = "#divGeneral";
             }
             $(".nav a[href='" + currentTab + "']").tab("show");
     
             $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
-                var target = $(e.target).attr("href");
-                $("#selected_tab").val(target);
+                const target = $(e.target).attr("href");
+                $("#selected-tab").val(target);
   
                 resizeContainer();
             });
         }
     
         function sortableGrid() {
-            $("#sortable_grid").sortable({
+            $("#sortable-grid").sortable({
                 update: function () {
-                    var order = $(this).sortable('toArray');
-                    cmdMoveAction(order);
+                    const order = $(this).sortable('toArray');
+                    moveFields(order);
                 }
             }).disableSelection();
         }
     
-        function cmdMoveAction(order) {
-            var url = "@Url.Action("Sort", new { elementName = ViewBag.ElementName })";
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: { orderFields: order },
-                success: function (response) {
-                    if (!response.success) {
-                        messageBox.show("Erro", "Ocorreu um erro inesperado ao ordenar os campos", 4);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    SpinnerOverlay.hide();
-                    if (xhr.responseText != "") {
-                        var err = JSON.parse(xhr.responseText);
-                        //Session expired
-                        if (err.status == 401) {
-                            document.forms[0].submit();
-                        }
-                        else {
-                            messageBox.show("Atenção", err.message, 4);
-                        }
-                    }
-                    else {
-                        messageBox.show("Erro", "Ocorreu um erro inesperado ao ordenar os campos", 4);
-                    }
+        function moveFields(order) {
+            const formData = new FormData();
+            formData.append('fieldsOrder', order);
+            fetch('@Url.Action("Sort", new { elementName = ViewBag.ElementName })', {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('@StringLocalizer["Error while ordering fields."]');
                 }
+            })
+            .catch(error => {
+               messageBox.show('@StringLocalizer["Error"]', error.message, 4);
             });
         }
     
-        function loadIframe(url, fieldName) {
-            $("#sortable_grid a").removeClass("active");
+        function loadFieldDetails(url, fieldName) {
+            $("#sortable-grid a").removeClass("active");
     
-            if (fieldName != "")
+            if (fieldName !== "")
                 $("#" + fieldName).addClass("active");
-    
-            $.get(url, function (data) {
-                $("#fieldDetail").html(data);
-                listenAllEvents("#fieldDetail ");
+            
+            fetch(url).then((response)=>response.text()).then((html)=>{
+                document.querySelector("#field-details").innerHTML = html;
+                listenAllEvents("#field-details");
                 savePanelState();
                 resizeContainer();
-            });
+            })
         }
     
         function searchFields(oDom) {
-            var value = $(oDom).val().toLowerCase();
-            $("#sortable_grid a").filter(function () {
-                //procura por textos
-                var textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
-                var isSearch = textValues.toLowerCase().indexOf(value) > -1;
+            const value = $(oDom).val().toLowerCase();
+            $("#sortable-grid a").filter(function () {
+                const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+                const isSearch = textValues.toLowerCase().indexOf(value) > -1;
     
                 $(this).toggle(isSearch);
             });
@@ -155,14 +173,14 @@
 
 @using (Html.BeginForm("Index", "Field", FormMethod.Post))
 {
-    <input type="hidden" name="selected_tab" id="selected_tab" value="@ViewBag.Tab" />
+    <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab" />
     <div class="row">
         <div class="col-sm-3">
             <jj-text-group configure="ConfigureFieldSearchBox"/>
             <br/>
             <div class="jjrelative">
                 <div id="listField">
-                    <div class="list-group jjsortable" id="sortable_grid">
+                    <div class="list-group jjsortable" id="sortable-grid">
                         @if (ViewBag.Fields.Count == 0)
                         {
                             <div>@StringLocalizer["No record found"]</div>
@@ -172,7 +190,7 @@
                             FormElementField field = ViewBag.Fields[i];
                             var fieldName = field.Name;
                             
-                            <a href="javascript:loadIframe('@Url.Action("Detail", new { elementName = ViewBag.ElementName, fieldName })', '@fieldName' );"
+                            <a href="javascript:loadFieldDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, fieldName })', '@fieldName' );"
                                class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
                                id="@fieldName">
                                 <div style="height: 33px;">
@@ -180,19 +198,24 @@
                                         <b>@fieldName</b>
                                         @if (field.IsPk)
                                         {
-                                            <span class="fa fa-star" style="color:#efd829;" title="@StringLocalizer["Primary key"]"></span>
+                                            <span class="fa fa-star" style="color:#efd829;" data-bs-toggle="tooltip" data-bs-original-title="@StringLocalizer["Primary key"]"></span>
+                                        }
+                                        @if (field.Component is not FormComponent.Text)
+                                        {
+                                            <span class="@GetFontAwesomeIconClass(field.Component).GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Component.ToString()"></span>
                                         }
                                         <br>
-                                        @{string label = string.Empty;}
                                         @if (field.Label != null)
                                         {
-                                            label = field.Label.Replace("<br>", " ").Replace("<BR>", " ").Replace("<br />", " ");
+                                            var label = field.Label.Replace("<br>", " ").Replace("<BR>", " ").Replace("<br />", " ");
                                             if (label.Length > 35)
                                             {
                                                 label = $"{label[..30]}...";
                                             }
+                                            <span>@label</span>
+                                            <span> - </span>
                                         }
-                                        @label
+                                        <small>@SqlServerProvider.GetFieldDataTypeScript(field)</small>
                                     </div>
                                     <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
                                     </div>
@@ -207,7 +230,7 @@
             </div>
         </div>
         <div class="col-sm-9" style="padding-left:0px">
-            <div class="jjrelative" id="fieldDetail">
+            <div class="jjrelative" id="field-details">
                 <partial name="_Detail" model="Model"/>
             </div>
         </div>
