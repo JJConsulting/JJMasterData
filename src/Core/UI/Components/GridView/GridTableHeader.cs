@@ -198,11 +198,11 @@ internal class GridTableHeader
             .Append(HtmlTag.Input, input =>
             {
                 input.WithAttribute("type", "checkbox")
-                    .WithNameAndId("jj-checkbox-select-all-rows")
+                    .WithNameAndId($"{GridView.Name}-checkbox-select-all-rows")
                     .WithCssClass("form-check-input")
                     .WithToolTip(StringLocalizer["Mark|Unmark all from page"])
                     .WithAttribute("onclick",
-                        "$('td.jj-checkbox input').not(':disabled').prop('checked',$('#jj-checkbox-select-all-rows').is(':checked')).change();");
+                        $"GridViewSelectionHelper.selectAllAtSamePage('{GridView.Name}')");
             });
 
         th.AppendIf(hasPages, HtmlTag.Span, span =>

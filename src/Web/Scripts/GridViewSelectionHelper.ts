@@ -1,12 +1,10 @@
 class GridViewSelectionHelper{
-    static selectItem(componentName: string, obj: HTMLInputElement) {
-        console.log(componentName)
+    static selectItem(componentName: string, inputElement: HTMLInputElement) {
         const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName) as HTMLInputElement;
-        console.log(valuesInput)
         const values = valuesInput.value.toString();
         let valuesList: string[] = [];
 
-        if (obj.id === "jj-checkbox-select-all-rows") {
+        if (inputElement.id === `${componentName}-checkbox-select-all-rows`) {
             return;
         }
 
@@ -14,12 +12,12 @@ class GridViewSelectionHelper{
             valuesList = values.split(",");
         }
 
-        if (obj.checked) {
-            if (valuesList.indexOf(obj.value) < 0) {
-                valuesList.push(obj.value);
+        if (inputElement.checked) {
+            if (valuesList.indexOf(inputElement.value) < 0) {
+                valuesList.push(inputElement.value);
             }
         } else {
-            valuesList = valuesList.filter((item) => item !== obj.value);
+            valuesList = valuesList.filter((item) => item !== inputElement.value);
         }
 
         valuesInput.value = valuesList.join(",");
@@ -39,6 +37,22 @@ class GridViewSelectionHelper{
             selectedText.textContent = textInfo;
         }
     }
+    
+    static selectAllAtSamePage(componentName: string){
+        const checkboxes = document.querySelectorAll(`#${componentName} td.jj-checkbox input`);
+
+        const selectAllCheckbox = document.querySelector<HTMLInputElement>(`#${componentName}-checkbox-select-all-rows`);
+        const isSelectAllChecked = selectAllCheckbox.checked;
+        
+        checkboxes.forEach(function(checkbox: HTMLInputElement) {
+            if (!checkbox.disabled) {
+                checkbox.checked = isSelectAllChecked;
+                const event = new Event('change');
+                checkbox.dispatchEvent(event);
+            }
+        });
+
+    }
 
     static selectAll(componentName, routeContext) {
         const urlBuilder = new UrlBuilder()
@@ -50,7 +64,6 @@ class GridViewSelectionHelper{
             }
         })
     }
-
 
     static selectAllRowsElements(componentName, rows) {
         const values = rows.split(",");

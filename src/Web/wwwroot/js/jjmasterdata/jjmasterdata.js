@@ -194,6 +194,14 @@ class CalendarListener {
         });
     }
 }
+class CheckboxHelper {
+    static check(name, value) {
+        const checkbox = document.querySelector(`#${name}`);
+        if (checkbox === null || checkbox === void 0 ? void 0 : checkbox.checked) {
+            document.querySelector(`#${name}-hidden`).value = value;
+        }
+    }
+}
 class CollapsePanelListener {
     static listen(name) {
         let nameSelector = "#" + name;
@@ -855,11 +863,11 @@ class GridViewFilterHelper {
         this.clearFilterInputs(componentName);
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
-    static searchOnDOM(objid, oDom) {
-        var value = $(oDom).val().toString().toLowerCase();
-        $("#table_" + objid + " tr").filter(function () {
-            var textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
-            var isSearch = textValues.toLowerCase().indexOf(value) > -1;
+    static searchOnDOM(componentName, oDom) {
+        const value = $(oDom).val().toString().toLowerCase();
+        $("#" + componentName + "-table" + " tr").filter(function () {
+            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            let isSearch = textValues.toLowerCase().indexOf(value) > -1;
             if (!isSearch) {
                 var valueNew = value.replace(",", "").replace(".", "").replace("-", "");
                 $(this).find("input").each(function () {
@@ -888,11 +896,11 @@ class GridViewFilterHelper {
             $(this).toggle(isSearch);
         });
         if (value.length > 0) {
-            $("#infotext_" + objid).css("display", "none");
+            $("#infotext_" + componentName).css("display", "none");
             $("ul.pagination").css("display", "none");
         }
         else {
-            $("#infotext_" + objid).css("display", "");
+            $("#infotext_" + componentName).css("display", "");
             $("ul.pagination").css("display", "");
         }
     }
@@ -1026,25 +1034,23 @@ class GridViewHelper {
     }
 }
 class GridViewSelectionHelper {
-    static selectItem(componentName, obj) {
-        console.log(componentName);
+    static selectItem(componentName, inputElement) {
         const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName);
-        console.log(valuesInput);
         const values = valuesInput.value.toString();
         let valuesList = [];
-        if (obj.id === "jj-checkbox-select-all-rows") {
+        if (inputElement.id === `${componentName}-checkbox-select-all-rows`) {
             return;
         }
         if (values.length > 0) {
             valuesList = values.split(",");
         }
-        if (obj.checked) {
-            if (valuesList.indexOf(obj.value) < 0) {
-                valuesList.push(obj.value);
+        if (inputElement.checked) {
+            if (valuesList.indexOf(inputElement.value) < 0) {
+                valuesList.push(inputElement.value);
             }
         }
         else {
-            valuesList = valuesList.filter((item) => item !== obj.value);
+            valuesList = valuesList.filter((item) => item !== inputElement.value);
         }
         valuesInput.value = valuesList.join(",");
         let textInfo;
@@ -1062,6 +1068,18 @@ class GridViewSelectionHelper {
         if (selectedText) {
             selectedText.textContent = textInfo;
         }
+    }
+    static selectAllAtSamePage(componentName) {
+        const checkboxes = document.querySelectorAll(`#${componentName} td.jj-checkbox input`);
+        const selectAllCheckbox = document.querySelector(`#${componentName}-checkbox-select-all-rows`);
+        const isSelectAllChecked = selectAllCheckbox.checked;
+        checkboxes.forEach(function (checkbox) {
+            if (!checkbox.disabled) {
+                checkbox.checked = isSelectAllChecked;
+                const event = new Event('change');
+                checkbox.dispatchEvent(event);
+            }
+        });
     }
     static selectAll(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -1097,28 +1115,6 @@ class GridViewSelectionHelper {
         if (selectedText) {
             selectedText.textContent = selectedText.getAttribute("no-record-selected-label") || "";
         }
-    }
-}
-class GridViewSelectionListener {
-    static listenGridViewCheckboxes(componentName) {
-        document.querySelectorAll(`#${componentName} .jj-checkbox input`)
-            .forEach((input) => this.listenCheckboxChange(componentName, input));
-    }
-    static listenCheckboxChange(componentName, input) {
-        input.addEventListener('change', function () {
-            GridViewSelectionHelper.selectItem(componentName, input);
-        }, { once: true });
-    }
-    static listen(componentName) {
-        document.addEventListener('DOMContentLoaded', function () {
-            GridViewSelectionListener.listenGridViewCheckboxes(componentName);
-            const observer = new MutationObserver(() => GridViewSelectionListener.listenGridViewCheckboxes(componentName));
-            observer.observe(document.getElementById("grid-view-" + componentName), {
-                attributes: false,
-                childList: true,
-                subtree: true
-            });
-        });
     }
 }
 document.addEventListener("DOMContentLoaded", function () {

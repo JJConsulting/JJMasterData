@@ -824,11 +824,6 @@ public class JJGridView : AsyncComponent
         //Scripts
         script.AppendLine("\t<script type=\"text/javascript\"> ");
 
-        if (EnableMultiSelect)
-        {
-            script.AppendLine($"GridViewSelectionListener.listen('{Name}')");
-        }
-
         if (EnableEditMode)
         {
             var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);

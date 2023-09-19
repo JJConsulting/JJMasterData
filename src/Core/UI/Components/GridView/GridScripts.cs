@@ -58,7 +58,7 @@ public class GridScripts
     public string GetSelectAllScript()
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.GridViewSelectAllRows);
-        return $"GridViewHelper.selectAll('{_gridView.Name}','{encryptedRouteContext}')";
+        return $"GridViewSelectionHelper.selectAll('{_gridView.Name}','{encryptedRouteContext}')";
     }
     
     public string GetConfigUIScript(ConfigAction action, IDictionary<string, object> formValues)

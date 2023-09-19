@@ -47,12 +47,12 @@ class GridViewFilterHelper{
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
-    static searchOnDOM(objid, oDom) {
-        var value = $(oDom).val().toString().toLowerCase();
-        $("#table_" + objid + " tr").filter(<any>function () {
+    static searchOnDOM(componentName, oDom) {
+        const value = $(oDom).val().toString().toLowerCase();
+        $("#" + componentName + "-table" + " tr").filter(<any>function () {
             //procura por textos
-            var textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
-            var isSearch = textValues.toLowerCase().indexOf(value) > -1;
+            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            let isSearch = textValues.toLowerCase().indexOf(value) > -1;
 
             //se não achou procura nos inputs
             if (!isSearch) {
@@ -87,10 +87,10 @@ class GridViewFilterHelper{
         });
 
         if (value.length > 0) {
-            $("#infotext_" + objid).css("display", "none");
+            $("#infotext_" + componentName).css("display", "none");
             $("ul.pagination").css("display", "none");
         } else {
-            $("#infotext_" + objid).css("display", "");
+            $("#infotext_" + componentName).css("display", "");
             $("ul.pagination").css("display", "");
         }
     }
