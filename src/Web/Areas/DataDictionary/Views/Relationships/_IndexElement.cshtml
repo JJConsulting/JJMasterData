@@ -18,7 +18,7 @@
             var newRelationLabel = @StringLocalizer["New Relation"];
             var url = @Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName });
         }
-        <jj-link-button icon="PlusCircle"
+        <link-button icon="PlusCircle"
                         text="@StringLocalizer["New"]"
                         type="LinkButtonType.Button"
                         on-client-click="defaultModal.showIframe('@url','@newRelationLabel');"/>
@@ -87,7 +87,7 @@
 
 @if (!Model.Relationships.Any())
 {
-    <jj-alert color="Default" show-close-button="false">
+    <alert color="Default" show-close-button="false">
         @StringLocalizer["No relationships found."]
-    </jj-alert>
+    </alert>
 }

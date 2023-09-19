@@ -6,7 +6,7 @@ using Moq;
 
 namespace JJMasterData.Core.Test.Web.Components
 {
-    public class JJTextBoxTest
+    public class JJTextBoxTests
     {
         [Fact]
         public async Task RenderTest()

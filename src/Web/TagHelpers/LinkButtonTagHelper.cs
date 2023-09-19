@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class JJLinkButtonTagHelper : TagHelper
+public class LinkButtonTagHelper : TagHelper
 {
     private readonly HtmlComponentFactory _htmlComponentFactory;
 
@@ -32,7 +32,7 @@ public class JJLinkButtonTagHelper : TagHelper
     [HtmlAttributeName("css-class")]
     public string? CssClass { get; set; }
 
-    public JJLinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory)
+    public LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory)
     {
         _htmlComponentFactory = htmlComponentFactory;
     }

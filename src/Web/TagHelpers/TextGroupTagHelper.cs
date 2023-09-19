@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class JJTextGroupTagHelper : TagHelper
+public class TextGroupTagHelper : TagHelper
 {
     private IControlFactory<JJTextGroup> TextGroupFactory { get; set; }
 
     [HtmlAttributeName("configure")] 
     public Action<JJTextGroup>? Configure { get; set; }
     
-    public JJTextGroupTagHelper(IControlFactory<JJTextGroup> textGroupFactory)
+    public TextGroupTagHelper(IControlFactory<JJTextGroup> textGroupFactory)
     {
         TextGroupFactory = textGroupFactory;
     }

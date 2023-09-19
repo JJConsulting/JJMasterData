@@ -4,7 +4,8 @@ namespace JJMasterData.Web.TagHelpers;
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-public class JJTitleTagHelper : TagHelper
+[HtmlTargetElement("jj-title")]
+public class TitleTagHelper : TagHelper
 {
     private readonly HtmlComponentFactory _htmlComponentFactory;
 
@@ -17,7 +18,7 @@ public class JJTitleTagHelper : TagHelper
     [HtmlAttributeName("size")]
     public HeadingSize? Size { get; set; }
 
-    public JJTitleTagHelper(HtmlComponentFactory htmlComponentFactory)
+    public TitleTagHelper(HtmlComponentFactory htmlComponentFactory)
     {
         _htmlComponentFactory = htmlComponentFactory;
     }

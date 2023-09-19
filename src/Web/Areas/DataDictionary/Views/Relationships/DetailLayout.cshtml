@@ -74,14 +74,14 @@
                         <select class="form-control form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
                     </div>
                     <div style="margin-top: 5px"  class="col-sm-12">
-                        <jj-alert color="Info" title="@StringLocalizer["Help"]" icon="IconType.InfoCircle">
+                        <alert color="Info" title="@StringLocalizer["Help"]" icon="IconType.InfoCircle">
                             <ul>
                                 <li>@StringLocalizer["None - The relationship is hidden and not rendered in any component."]</li>
                                 <li>@StringLocalizer["List - The relationship is shown in a list with the actions controlled by the respective Data Dictionary (1xn)."]</li>
                                 <li>@StringLocalizer["View - The relationship is shown in a read-only form (1x1)."]</li>
                                 <li>@StringLocalizer["Update - The relationship is shown in an updatable form (1x1)."]</li>
                             </ul>
-                        </jj-alert>
+                        </alert>
                     </div>
                 </div>
             </div>

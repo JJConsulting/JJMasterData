@@ -22,7 +22,7 @@ public static class DataManagerServiceExtensions
         services.AddScoped<IFormValuesService,FormValuesService>();
         
         services.AddTransient<FormFileManagerFactory>();
-        services.AddTransient<FormFileService>();
+        services.AddTransient<IFormFileService,FormFileService>();
         
         return services;
     }

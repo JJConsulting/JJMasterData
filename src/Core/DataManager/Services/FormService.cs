@@ -18,7 +18,7 @@ public class FormService : IFormService
     #region Properties
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
-    private FormFileService FormFileService { get; }
+    private IFormFileService FormFileService { get; }
 
     private IFieldValidationService FieldValidationService { get; }
 
@@ -52,7 +52,7 @@ public class FormService : IFormService
     public FormService(
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
-        FormFileService formFileService,
+        IFormFileService formFileService,
         IFieldValidationService fieldValidationService,
         IAuditLogService auditLogService)
     {
@@ -277,7 +277,7 @@ public class FormService : IFormService
     /// >
     public async Task<FormLetter> DeleteAsync(FormElement formElement, IDictionary<string, object> primaryKeys, DataContext dataContext)
     {
-        IDictionary<string, string> errors = new Dictionary<string, string>();
+        var errors = await FieldValidationService.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, EnableErrorLinks);
         var result = new FormLetter(errors);
 
         if (OnBeforeDelete != null || OnBeforeDeleteAsync != null)

@@ -29,6 +29,9 @@ public class FieldValidationService : IFieldValidationService
         PageState pageState, 
         bool enableErrorLink)
     {
+        if (formElement == null)
+            throw new ArgumentNullException(nameof(formElement));
+        
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 

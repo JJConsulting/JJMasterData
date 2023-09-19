@@ -28,19 +28,19 @@
     </div>
     <br>
 
-    <jj-collapse-panel icon="Book" title="@StringLocalizer["Element"]" expanded-by-default="true">
+    <collapse-panel icon="Book" title="@StringLocalizer["Element"]" expanded-by-default="true">
         <partial name="_ElementPanel" model="Model"/>
-    </jj-collapse-panel>
+    </collapse-panel>
 
-    <jj-collapse-panel icon="SolidTableList" title="@StringLocalizer["FormElement"]" expanded-by-default="true">
+    <collapse-panel icon="SolidTableList" title="@StringLocalizer["FormElement"]" expanded-by-default="true">
         <partial name="_FormElementPanel" model="Model"/>
-    </jj-collapse-panel>
+    </collapse-panel>
 
     if (Model.FormEvent != null)
     {
-        <jj-collapse-panel name="eventsPanel" icon="Bolt" title="@StringLocalizer["Events"]" expanded-by-default="true">
+        <collapse-panel name="eventsPanel" icon="Bolt" title="@StringLocalizer["Events"]" expanded-by-default="true">
             <partial name="_EventsPanel" model="Model"/>
-        </jj-collapse-panel>
+        </collapse-panel>
     }
     <input asp-for="ElementName" hidden="hidden"/>
 

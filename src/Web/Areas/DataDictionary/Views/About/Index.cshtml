@@ -9,7 +9,7 @@
     <img class="mb-5" src="~/_content/JJMasterData.Web/images/JJMasterDataLogoVertical.png" alt="JJMasterData"/>
 </div>
 <div class="col-xs-12">
-    <jj-collapse-panel title="@Localizer["Executing Assembly"]" icon="SolidCircleInfo" expanded-by-default="true">
+    <collapse-panel title="@Localizer["Executing Assembly"]" icon="SolidCircleInfo" expanded-by-default="true">
         <div class="col-xs-12">
             <b>@Model.ExecutingAssemblyProduct</b>
             <br/>
@@ -19,8 +19,8 @@
             <br/>
             @Model.ExecutingAssemblyCopyright
         </div>
-    </jj-collapse-panel>
-    <jj-collapse-panel icon="PuzzlePiece" title="@Localizer["Dependencies"]" expanded-by-default="false">
+    </collapse-panel>
+    <collapse-panel icon="PuzzlePiece" title="@Localizer["Dependencies"]" expanded-by-default="false">
         <ul class="list-group">
             @foreach (var assembly in Model.Dependencies!)
             {
@@ -32,7 +32,7 @@
                 </li>
             }
         </ul>
-    </jj-collapse-panel>
+    </collapse-panel>
 </div>
 
 <div class="col-xs-12">

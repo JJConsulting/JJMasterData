@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class JJSliderTagHelper : TagHelper
+public class SliderTagHelper : TagHelper
 {
     private IControlFactory<JJSlider> SliderFactory { get; set; }
 
     [HtmlAttributeName("configure")] 
     public Action<JJSlider>? Configure { get; set; }
     
-    public JJSliderTagHelper(IControlFactory<JJSlider> sliderFactory)
+    public SliderTagHelper(IControlFactory<JJSlider> sliderFactory)
     {
         SliderFactory = sliderFactory;
     }

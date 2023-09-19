@@ -24,7 +24,7 @@ public class ElementField
     /// in the column name to indicate the data order.
     /// </remarks>
     [JsonProperty("fieldname")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// Description on the form
@@ -40,13 +40,13 @@ public class ElementField
     /// Default NVARCHAR
     /// </summary>
     [JsonProperty("datatype")]
-    public FieldType DataType { get; set; }
+    public FieldType DataType { get; set; } = FieldType.Varchar;
 
     /// <summary>
     /// Filter Parameters
     /// </summary>
     [JsonProperty("filter")]
-    public ElementFilter Filter { get; set; }
+    public ElementFilter Filter { get; set; } = new();
 
     /// <summary>
     /// Filed Size
@@ -96,19 +96,11 @@ public class ElementField
     /// <para/>VIRTUAL  = Ignored in database operations
     /// </remarks>
     [JsonProperty("databehavior")]
-    public FieldBehavior DataBehavior { get; set; }
+    public FieldBehavior DataBehavior { get; set; } = FieldBehavior.Real;
 
     /// <summary>
     /// Apply this field on delete filter on procedure
     /// </summary>
     [JsonIgnore]
     public bool EnableOnDelete { get; set; } = true;
-
-    public ElementField()
-    {
-        Filter = new ElementFilter();
-        DataType = FieldType.Varchar;
-        DataBehavior = FieldBehavior.Real;
-        Name = string.Empty;
-    }
 }

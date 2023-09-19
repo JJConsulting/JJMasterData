@@ -5,7 +5,7 @@ namespace JJMasterData.Web.TagHelpers;
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-public class JJIconTagHelper : TagHelper
+public class IconTagHelper : TagHelper
 {
     [HtmlAttributeName("tooltip")]
     public string? Tooltip { get; set; }

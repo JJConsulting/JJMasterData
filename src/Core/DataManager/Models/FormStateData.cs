@@ -14,6 +14,11 @@ public class FormStateData
     public required IDictionary<string, object?> FormValues { get; init; }
     
     public required PageState PageState { get; init; }
+
+    public FormStateData()
+    {
+        
+    }
     
     [SetsRequiredMembers]
     public FormStateData(

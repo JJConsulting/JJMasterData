@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -26,66 +27,59 @@ public class ExpressionParser : IExpressionParser
         if (expression is null)
             return null;
 
-        var parsedExpression = expression
-            .Replace("val:", "")
-            .Replace("exp:", "")
-            .Replace("sql:", "")
-            .Replace("protheus:", "")
-            .Trim();
+        var parsedExpression = expression;
+        
+        if (expression.Contains(":"))
+        {
+            parsedExpression = expression.Split(':')[1];
+        }
 
-        interval ??= new ExpressionParserInterval('{', '}');
+        interval ??= new ExpressionParserInterval();
 
-        var list = StringManager.FindValuesByInterval(expression, interval.Begin, interval.End);
+        var valueList = StringManager.FindValuesByInterval(expression, interval.Begin, interval.End);
         var userValues = formStateData.UserValues;
         var state = formStateData.PageState;
         var values = formStateData.FormValues;
 
-        foreach (var field in list)
+        foreach (var field in valueList)
         {
-            string? val;
+            string? parsedValue;
             if (userValues != null && userValues.TryGetValue(field, out var value))
             {
-                val = $"{value}";
+                parsedValue = $"{value}";
             }
             else if ("pagestate".Equals(field.ToLower()))
             {
-                val = $"{state}";
+                parsedValue = $"{state}";
             }
             else if (values != null && values.TryGetValue(field, out var objVal))
             {
-                val = objVal != null ? $"{objVal}" : "";
+                parsedValue = objVal != null ? $"{objVal}" : "";
             }
             else if ("objname".Equals(field.ToLower()))
             {
-                val = $"{Request["componentName"]}";
+                parsedValue = $"{Request["componentName"]}";
             }
             else if ("componentName".Equals(field.ToLower()))
             {
-                val = $"{Request["componentName"]}";
+                parsedValue = $"{Request["componentName"]}";
             }
             else if (Session?[field] != null)
             {
-                val = Session[field];
+                parsedValue = Session[field];
             }
             else
             {
-                val = "";
+                parsedValue = string.Empty;
             }
 
-            if (val == null) continue;
+            if (parsedValue == null) 
+                continue;
 
             if (addQuotationMarks)
-                val = $"'{val}'";
-
-            if (interval is { Begin: '{', End: '}' })
-            {
-                parsedExpression = parsedExpression.Replace($"{{{field}}}", val);
-            }
-            else
-            {
-                parsedExpression =
-                    parsedExpression.Replace(string.Format($"{interval.Begin}{{0}}{interval.End}", field), val);
-            }
+                parsedValue = $"'{parsedValue}'";
+            
+            parsedExpression = parsedExpression.Replace($"{interval.Begin}{field}{interval.End}", parsedValue);
         }
 
         return parsedExpression;

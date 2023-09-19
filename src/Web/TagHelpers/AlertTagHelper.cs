@@ -7,7 +7,7 @@ namespace JJMasterData.Web.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 
-public class JJAlertTagHelper : TagHelper
+public class AlertTagHelper : TagHelper
 {
     private readonly HtmlComponentFactory _htmlComponentFactory;
 
@@ -32,7 +32,7 @@ public class JJAlertTagHelper : TagHelper
     [HtmlAttributeName("css-class")]
     public string? CssClass { get; set; }
 
-    public JJAlertTagHelper(HtmlComponentFactory htmlComponentFactory)
+    public AlertTagHelper(HtmlComponentFactory htmlComponentFactory)
     {
         _htmlComponentFactory = htmlComponentFactory;
     }

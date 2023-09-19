@@ -14,6 +14,11 @@ public class DataContext
     
     public string? BrowserInfo { get; internal set; }
 
+    public DataContext()
+    {
+        
+    }
+    
     public DataContext(IHttpRequest request, DataContextSource source, string? userId)
     {
         Source = source;

@@ -68,7 +68,7 @@
             new { @class = "form-control form-select" })
     </div>
     
-    <jj-collapse-panel title="@StringLocalizer["Element Map"]" expanded-by-default="true" icon="Map">
+    <collapse-panel title="@StringLocalizer["Element Map"]" expanded-by-default="true" icon="Map">
         <div class="row">
             <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                 <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field"]">@StringLocalizer["Field Key"]</label>
@@ -83,10 +83,10 @@
                     new { @class = "form-control form-select" })
             </div>
         </div>
-    </jj-collapse-panel>
+    </collapse-panel>
 
     
-    <jj-collapse-panel title="@StringLocalizer["Filters"]" expanded-by-default="false" icon="Filter">
+    <collapse-panel title="@StringLocalizer["Filters"]" expanded-by-default="false" icon="Filter">
                 <div class="row">
                     <div class="@BootstrapHelper.FormGroup col-sm-4">
                         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Field"]">@StringLocalizer["Field Lookup"]</label>
@@ -132,6 +132,6 @@
         
                     </div>
                 </div>
-    </jj-collapse-panel>
+    </collapse-panel>
     
 </div>

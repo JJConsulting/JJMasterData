@@ -9,7 +9,7 @@ namespace JJMasterData.Web.TagHelpers;
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-public class JJCollapsePanelTagHelper : TagHelper
+public class CollapsePanelTagHelper : TagHelper
 {
     
     [HtmlAttributeName("title")]
@@ -36,7 +36,7 @@ public class JJCollapsePanelTagHelper : TagHelper
     private RazorPartialRendererService RendererService { get; }
     private IHttpContext HttpContext { get; }
 
-    public JJCollapsePanelTagHelper(RazorPartialRendererService rendererService, IHttpContext httpContext)
+    public CollapsePanelTagHelper(RazorPartialRendererService rendererService, IHttpContext httpContext)
     {
         RendererService = rendererService;
         HttpContext = httpContext;

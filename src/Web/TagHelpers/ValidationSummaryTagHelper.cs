@@ -3,14 +3,14 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class JJValidationSummaryTagHelper : TagHelper
+public class ValidationSummaryTagHelper : TagHelper
 {
     private readonly ValidationSummaryFactory _validationSummaryFactory;
 
     [HtmlAttributeName("errors")] 
     public IEnumerable<string>? Errors { get; set; }
 
-    public JJValidationSummaryTagHelper(ValidationSummaryFactory validationSummaryFactory)
+    public ValidationSummaryTagHelper(ValidationSummaryFactory validationSummaryFactory)
     {
         _validationSummaryFactory = validationSummaryFactory;
     }

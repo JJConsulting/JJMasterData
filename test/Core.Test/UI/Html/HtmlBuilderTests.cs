@@ -3,7 +3,7 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.Test.Web.Html;
 
-public class HtmlElementTest
+public class HtmlBuilderTests
 {
     [Theory]
     [InlineData(HtmlTag.Div)]

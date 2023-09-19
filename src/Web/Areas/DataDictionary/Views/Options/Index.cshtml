@@ -26,7 +26,7 @@
 
     @if (Model.PathExists)
     {
-        <jj-alert icon="IconType.InfoCircle"
+        <alert icon="IconType.InfoCircle"
                   color="Info"
                   message="@Model.FilePath"
                   title="All changes will be saved in the file located at the path:"/>
@@ -34,7 +34,7 @@
     
     @if (Model is { IsConnectionSuccessful:true })
     {
-        <jj-alert
+        <alert
             title="Success"
             message="Connection successfully estabilished."
             icon="@IconType.CheckCircle"
@@ -46,7 +46,7 @@
         @Html.Raw(Model.ValidationSummary.GetHtml())
     }
 
-    <jj-collapse-panel
+    <collapse-panel
         title="Connection String"
         partial="_ConnectionString"
         model="Model"
@@ -56,12 +56,12 @@
         <div class="col-sm-12">
             @if (Model.IsFullscreen)
             {
-                <jj-link-button 
+                <link-button 
                     url-action="/en-us/DataDictionary/" 
                     icon="Home" 
                     text="Home"/>
             }
-            <jj-link-button type="LinkButtonType.Submit" 
+            <link-button type="LinkButtonType.Submit" 
                             url-action="@Url.Action("Save", "Options")" 
                             icon="Save" 
                             text="Save"/>
