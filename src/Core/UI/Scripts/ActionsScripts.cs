@@ -139,19 +139,14 @@ internal class ActionsScripts
     {
         var formStateData = actionContext.FormStateData;
 
-        switch (userCreatedAction)
+        return userCreatedAction switch
         {
-            case UrlRedirectAction urlRedirectAction:
-                return GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource);
-            case SqlCommandAction:
-                return GetCommandScript(userCreatedAction, actionContext, actionSource);
-            case ScriptAction jsAction:
-                return ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData, false);
-            case InternalAction internalAction:
-                return await GetInternalUrlScriptAsync(internalAction, formStateData.FormValues);
-            default:
-                return string.Empty;
-        }
+            UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
+            SqlCommandAction => GetCommandScript(userCreatedAction, actionContext, actionSource),
+            ScriptAction jsAction => ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData, false),
+            InternalAction internalAction => await GetInternalUrlScriptAsync(internalAction, formStateData.FormValues),
+            _ => string.Empty
+        };
     }
 
     public string GetCommandScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)

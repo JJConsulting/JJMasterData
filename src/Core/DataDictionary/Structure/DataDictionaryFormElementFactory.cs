@@ -44,8 +44,10 @@ public class DataDictionaryFormElementFactory
 
     private FormElement GetFormElement(Element element)
     {
-        var formElement = new FormElement(element);
-        formElement.Title = new ImageFactory(HttpContext).CreateMasterDataLogo().GetHtml();
+        var formElement = new FormElement(element)
+        {
+            Title = new ImageFactory(HttpContext).CreateMasterDataLogo().GetHtml()
+        };
         ConfigureFields(formElement);
         
         return formElement;
