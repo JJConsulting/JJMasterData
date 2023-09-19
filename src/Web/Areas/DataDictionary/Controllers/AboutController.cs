@@ -10,13 +10,6 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class AboutController : DataDictionaryController
 {
-
-    
-    public AboutController()
-    {
-
-    }
-
     public IActionResult Index()
     {
         var executingAssembly = Assembly.GetExecutingAssembly();

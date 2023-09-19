@@ -31,7 +31,11 @@ public class FormElementRelationship
     public FormElementRelationship(bool isParent = false)
     {
         IsParent = isParent;
-        Panel = new FormElementPanel();
+        Panel = new FormElementPanel
+        {
+            Title = ElementRelationship?.ChildElement,
+            Layout = PanelLayout.Collapse
+        };
         if (!isParent)
             Panel.VisibleExpression = "exp:{PageState}<>'INSERT'";
     }

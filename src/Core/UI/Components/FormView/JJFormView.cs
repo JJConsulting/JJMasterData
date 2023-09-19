@@ -273,8 +273,13 @@ public class JJFormView : AsyncComponent
             _showTitle ??= FormElement.Options.Grid.ShowTitle;
             return _showTitle.Value;
         }
-        set => _showTitle = value;
+        set
+        {
+            GridView.ShowTitle = value;
+            _showTitle = value;
+        }
     }
+
     internal IHttpContext CurrentContext { get; }
     internal IFormValues FormValues => CurrentContext.Request.Form;
     internal IEntityRepository EntityRepository { get; }
@@ -366,7 +371,7 @@ public class JJFormView : AsyncComponent
         var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
         formView.FormElement.ParentName = RouteContext.ParentElementName;
         formView.UserValues = UserValues;
-        
+        formView.ShowTitle = false;
         formView.DataPanel.FieldNamePrefix = $"{formView.DataPanel.Name}_";
         var encryptedFkValues = CurrentContext.Request.Form[$"{formView.GridView.Name}-fk-values"];
 
