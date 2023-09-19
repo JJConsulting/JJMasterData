@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -22,15 +23,15 @@ public class JJTabNav : HtmlComponent
     internal string InputHiddenSelectedTabName => $"selected_tab_{Name}";
 
     
-    internal IHttpContext CurrentContext { get; }
+    internal IFormValues FormValues { get; }
 
     public List<NavContent> ListTab { get; set; }
 
-    internal JJTabNav(IHttpContext httpContext)
+    internal JJTabNav(IFormValues formValues)
     {
         Name = "nav1";
         ListTab = new List<NavContent>();
-        CurrentContext = httpContext;
+        FormValues = formValues;
     }
 
     internal override HtmlBuilder BuildHtml()
@@ -109,7 +110,7 @@ public class JJTabNav : HtmlComponent
 
     private int RequestSelectedTabIndex()
     {
-        string tabIndex = CurrentContext.Request[InputHiddenSelectedTabName];
+        string tabIndex = FormValues[InputHiddenSelectedTabName];
         return int.TryParse(tabIndex, out var nIndex) ? nIndex : 0;
     }
 

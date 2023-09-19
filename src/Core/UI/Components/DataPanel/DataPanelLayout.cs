@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
 
@@ -20,13 +21,17 @@ internal class DataPanelLayout
     public FormElement FormElement { private get; set; }
 
     public DataPanelControl DataPanelControl { get; set; }
-    public IHttpContext CurrentContext { get; set; }
+    public IFormValues FormValues { get; set; }
+    
+    public PageState PageState { get; set; }
     public DataPanelLayout(JJDataPanel dataPanel)
     {
         DataPanelControl = new DataPanelControl(dataPanel);
         RenderPanelGroup = dataPanel.RenderPanelGroup;
         FormElement = dataPanel.FormElement;
         Name = dataPanel.Name;
+        PageState = dataPanel.PageState;
+        FormValues = dataPanel.CurrentContext.Request.Form;
     }
 
     public async IAsyncEnumerable<HtmlBuilder> GetHtmlPanelList()
@@ -88,7 +93,7 @@ internal class DataPanelLayout
 
     private async Task<JJTabNav> GetTabNav(List<FormElementPanel> tabs)
     {
-        var navTab = new JJTabNav(CurrentContext)
+        var navTab = new JJTabNav(FormValues)
         {
             Name = $"nav_{Name}"
         };
@@ -117,7 +122,7 @@ internal class DataPanelLayout
 
         if (panel.Layout == PanelLayout.Collapse)
         {
-            var collapse = new JJCollapsePanel(CurrentContext)
+            var collapse = new JJCollapsePanel(FormValues)
             {
                 Title = panel.Title,
                 SubTitle = panel.SubTitle,
@@ -153,7 +158,7 @@ internal class DataPanelLayout
             return null;
         
         
-        if (panel != null && !await IsEnabled(panel))
+        if (panel != null && !await IsEnabled(panel) || PageState is PageState.View)
         {
             foreach (var field in fields)
                 field.EnableExpression = "val:0";

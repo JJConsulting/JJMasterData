@@ -61,7 +61,7 @@ internal class FormViewRelationshipLayout
 
     private async Task<ComponentResult> GetTabRelationshipsResult(List<FormElementRelationship> relationships)
     {
-        var tabNav = new JJTabNav(ParentFormView.CurrentContext)
+        var tabNav = new JJTabNav(ParentFormView.CurrentContext.Request.Form)
         {
             Name = $"relationships-tab-nav-{ParentFormView.DataPanel.Name}"
         };
@@ -92,7 +92,7 @@ internal class FormViewRelationshipLayout
         switch (relationship.Panel.Layout)
         {
             case PanelLayout.Collapse or PanelLayout.Panel:
-                var collapse = new JJCollapsePanel(ParentFormView.CurrentContext)
+                var collapse = new JJCollapsePanel(ParentFormView.CurrentContext.Request.Form)
                 {
                     Name = $"{relationship.Id}-collapse",
                     Title = relationship.Panel.Title,
@@ -160,16 +160,14 @@ internal class FormViewRelationshipLayout
         var mappedForeignKeys = DataHelper.GetRelationValues(ParentFormView.FormElement, filter);
         switch (relationship.ViewType)
         {
-            case RelationshipViewType.View or RelationshipViewType.Update:
+            case RelationshipViewType.View:
             {
                 var childValues =
                     await ParentFormView.EntityRepository.GetFieldsAsync(childElement,
                         (IDictionary<string, object>)filter);
                 var childDataPanel = ParentFormView.ComponentFactory.DataPanel.Create(childElement);
                 childDataPanel.FieldNamePrefix = $"{childDataPanel.Name}_";
-                childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View
-                    ? PageState.View
-                    : PageState.Update;
+                childDataPanel.PageState = PageState.View;
                 childDataPanel.UserValues = ParentFormView.UserValues;
                 childDataPanel.Values = childValues;
                 childDataPanel.RenderPanelGroup = false;
@@ -177,11 +175,15 @@ internal class FormViewRelationshipLayout
 
                 return await childDataPanel.GetResultAsync();
             }
+            case RelationshipViewType.Update:
             case RelationshipViewType.List:
             {
                 var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
                 childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
                 childFormView.UserValues = ParentFormView.UserValues;
+                childFormView.PageState = relationship.ViewType is RelationshipViewType.List
+                    ? PageState.List
+                    : PageState.Update;
                 childFormView.RelationValues = mappedForeignKeys;
                 await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
                 childFormView.GridView.ShowTitle = false;

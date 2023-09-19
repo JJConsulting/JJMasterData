@@ -314,7 +314,7 @@ internal class DataExportationSettings
     private  JJCollapsePanel GetFilesPanelHtmlElement(string exportationFolderPath)
     {
         var files = GetGeneratedFiles(exportationFolderPath);
-        var panel = new JJCollapsePanel(DataExportation.CurrentContext)
+        var panel = new JJCollapsePanel(DataExportation.CurrentContext.Request.Form)
         {
             Name = "exportCollapse",
             ExpandedByDefault = false,

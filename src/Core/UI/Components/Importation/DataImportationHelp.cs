@@ -25,7 +25,7 @@ internal class DataImportationHelp
 
     public async Task<HtmlBuilder> GetHtmlHelpAsync()
     {
-        var panel = new JJCollapsePanel(DataImportation.CurrentContext)
+        var panel = new JJCollapsePanel(DataImportation.CurrentContext.Request.Form)
         {
             Title = "Import File - Help",
             TitleIcon = new JJIcon(IconType.QuestionCircle),

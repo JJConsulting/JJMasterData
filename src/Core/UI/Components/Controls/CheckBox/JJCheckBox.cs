@@ -57,19 +57,29 @@ public class JJCheckBox : ControlBase
         
         div.Append(HtmlTag.Input, input =>
         {
+            var checkboxHelperScript = $"CheckboxHelper.check('{Name}', '{Value}')";
+            
+            if (Attributes.ContainsKey("onchange"))
+            {
+                Attributes["onchange"] += checkboxHelperScript;
+            }
+            else
+            {
+                Attributes["onchange"] = checkboxHelperScript;
+            }
+            
             input.WithAttributes(Attributes)
                 .WithAttribute("type", "checkbox")
                 .WithNameAndId(Name)
                 .WithAttribute("value", Value)
                 .WithCssClass("form-check-input")
                 .WithCssClass(CssClass)
-                .WithAttribute("onchange",$"$('#{Name}_hidden').val($(this).is(':checked') ? '{Value}' : '0');")
                 .WithToolTip(Tooltip)
                 .WithAttributeIf(IsChecked, "checked", "checked")
                 .WithAttributeIf(!Enabled, "disabled", "disabled");
         });
 
-        div.AppendHiddenInput($"{Name}_hidden", IsChecked ? Value : "0");
+        div.AppendHiddenInput($"{Name}-hidden", IsChecked ? Value : "0");
 
         div.AppendIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
         {

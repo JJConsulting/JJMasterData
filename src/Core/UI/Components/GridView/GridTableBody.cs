@@ -15,7 +15,7 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class GridTableBody
 {
-    private string Name => $"table_{GridView.Name}";
+    private string Name => $"{GridView.Name}-table";
     private JJGridView GridView { get; }
     public event EventHandler<ActionEventArgs> OnRenderAction;
     public event EventHandler<GridCellEventArgs> OnRenderCell;
@@ -45,7 +45,7 @@ internal class GridTableBody
     {
         var rows = GridView.DataSource;
 
-        for (int i = 0; i < rows?.Count; i++)
+        for (var i = 0; i < rows?.Count; i++)
         {
             yield return await GetRowHtml(rows[i], i);
         }
@@ -72,12 +72,11 @@ internal class GridTableBody
         var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
-
-        string onClickScript = await GetOnClickScript(formStateData, defaultAction);
+        var onClickScript = await GetOnClickScript(formStateData, defaultAction);
 
         if (GridView.EnableMultiSelect)
         {
-            var checkBox = await GetMultiSelect(row, index, values);
+            var checkBox = await GetMultiSelectCheckbox(row, index, values);
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("jj-checkbox");
             
@@ -316,7 +315,7 @@ internal class GridTableBody
         return string.Empty;
     }
 
-    private async Task<JJCheckBox> GetMultiSelect(IDictionary<string,object> row, int index, IDictionary<string, object> values)
+    private async Task<JJCheckBox> GetMultiSelectCheckbox(IDictionary<string,object> row, int index, IDictionary<string, object> values)
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -326,14 +325,18 @@ internal class GridTableBody
         {
             Name = $"jjchk_{index}",
             Value = GridView.EncryptionService.EncryptStringWithUrlEscape(pkValues),
-            Text = string.Empty
+            Text = string.Empty,
+            Attributes =
+            {
+                ["onchange"] = $"GridViewSelectionHelper.selectItem('{GridView.Name}', this);"
+            }
         };
 
         var selectedGridValues = GridView.GetSelectedGridValues();
         
         checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => kvp.Value.Equals(pkValues)));
 
-        if (OnRenderSelectedCell is not null || OnRenderSelectedCellAsync is not  null)
+        if (OnRenderSelectedCell is not null || OnRenderSelectedCellAsync is not null)
         {
             var args = new GridSelectedCellEventArgs
             {
