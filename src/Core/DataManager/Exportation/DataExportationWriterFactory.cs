@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
@@ -12,16 +13,16 @@ public class DataExportationWriterFactory
 {
     private IServiceProvider ServiceProvider { get; }
 
-    public event EventHandler<GridCellEventArgs> OnRenderCell;
-    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
+    public event EventHandler<GridCellEventArgs>? OnRenderCell;
+    public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
     public DataExportationWriterFactory(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
     }
     
-    private IPdfWriter GetPdfWriter()
+    private IPdfWriter? GetPdfWriter()
     {
-        return ServiceProvider.GetRequiredService<IPdfWriter>();
+        return ServiceProvider.GetService<IPdfWriter>();
     }
     
     public bool PdfWriterExists()
@@ -39,7 +40,7 @@ public class DataExportationWriterFactory
         return ServiceProvider.GetRequiredService<ITextWriter>();
     }
 
-    public DataExportationWriterBase GetInstance(JJDataExportation dataExportation)
+    public DataExportationWriterBase? GetInstance(JJDataExportation dataExportation)
     {
         DataExportationWriterBase writer;
         switch (dataExportation.ExportOptions.FileExtension)
@@ -78,7 +79,7 @@ public class DataExportationWriterFactory
                 // ReSharper disable once SuspiciousTypeConversion.Global;
                 // PdfWriter is dynamic loaded by plugin.
                 //TODO: I think this is bad, things from DataExportationWriterBase should be a parameter at IExportationWriter
-                writer = pdfWriter as DataExportationWriterBase;
+                writer = (pdfWriter as DataExportationWriterBase)!;
 
                 break;
             default:
