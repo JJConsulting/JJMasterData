@@ -182,14 +182,14 @@ internal class GridFilter
 
         var btnDoFilter = GridView.ComponentFactory.Html.LinkButton.Create();
         btnDoFilter.Enabled = GridView.EnableFilter;
-        btnDoFilter.Text = "Filter";
+        btnDoFilter.Text = GridView.StringLocalizer["Filter"];
         btnDoFilter.IconClass = "fa fa-search";
         btnDoFilter.Type = LinkButtonType.Submit;
         btnDoFilter.OnClientClick = $"{GridView.Scripts.GetFilterScript()};return false;";
 
         var btnCancel = GridView.ComponentFactory.Html.LinkButton.Create();
         btnCancel.Enabled = GridView.EnableFilter;
-        btnCancel.Text = "Clear Filter";
+        btnCancel.Text = GridView.StringLocalizer["Clear Filter"];
         btnCancel.IconClass = "fa fa-trash";
         btnCancel.ShowAsButton = true;
         btnCancel.OnClientClick = $"{GridView.Scripts.GetClearFilterScript()};return false;";
@@ -200,7 +200,7 @@ internal class GridFilter
             {
                 Name = $"filter_collapse_{GridView.Name}",
                 HtmlBuilderContent = html,
-                Title = "Detailed Filters"
+                Title = GridView.StringLocalizer["Detailed Filters"]
             };
             panel.Buttons.Add(btnDoFilter);
             panel.Buttons.Add(btnCancel);
@@ -218,7 +218,7 @@ internal class GridFilter
             btnCancel.Attributes.Add(BootstrapHelper.Version >= 5 ? "data-bs-dismiss" : "data-dismiss","modal");
 
             modal.HtmlBuilderContent = html;
-            modal.Title = "Detailed Filters";
+            modal.Title = GridView.StringLocalizer["Detailed Filters"];
             modal.Buttons.Add(btnDoFilter);
             modal.Buttons.Add(btnCancel);
             

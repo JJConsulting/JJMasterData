@@ -194,15 +194,15 @@ internal class GridTableHeader
                 hasPages = false;
         }
 
-        th.WithCssClass("jjselect")
+        th.WithCssClass("jj-checkbox")
             .Append(HtmlTag.Input, input =>
             {
                 input.WithAttribute("type", "checkbox")
-                    .WithNameAndId("jjcheckbox-select-all-rows")
+                    .WithNameAndId("jj-checkbox-select-all-rows")
                     .WithCssClass("form-check-input")
                     .WithToolTip(StringLocalizer["Mark|Unmark all from page"])
                     .WithAttribute("onclick",
-                        "$('td.jjselect input').not(':disabled').prop('checked',$('#jjcheckbox-select-all-rows').is(':checked')).change();");
+                        "$('td.jj-checkbox input').not(':disabled').prop('checked',$('#jj-checkbox-select-all-rows').is(':checked')).change();");
             });
 
         th.AppendIf(hasPages, HtmlTag.Span, span =>

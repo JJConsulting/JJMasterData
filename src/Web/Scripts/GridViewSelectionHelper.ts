@@ -1,10 +1,12 @@
 class GridViewSelectionHelper{
     static selectItem(componentName: string, obj: HTMLInputElement) {
+        console.log(componentName)
         const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName) as HTMLInputElement;
+        console.log(valuesInput)
         const values = valuesInput.value.toString();
         let valuesList: string[] = [];
 
-        if (obj.id === "jjcheckbox-select-all-rows") {
+        if (obj.id === "jj-checkbox-select-all-rows") {
             return;
         }
 
@@ -22,7 +24,7 @@ class GridViewSelectionHelper{
 
         valuesInput.value = valuesList.join(",");
 
-        let textInfo = "";
+        let textInfo: string;
         const selectedText = document.getElementById("selected-text-" + componentName);
         if (valuesList.length === 0) {
             textInfo = selectedText?.getAttribute("no-record-selected-label") || "";
@@ -53,7 +55,7 @@ class GridViewSelectionHelper{
     static selectAllRowsElements(componentName, rows) {
         const values = rows.split(",");
 
-        const checkboxes = document.querySelectorAll<HTMLInputElement>(".jjselect input:not(:disabled)");
+        const checkboxes = document.querySelectorAll<HTMLInputElement>(".jj-checkbox input:not(:disabled)");
         checkboxes.forEach(checkbox => checkbox.checked = true);
 
         const selectedRowsInput = document.getElementById("grid-view-selected-rows-" + componentName) as HTMLInputElement;
@@ -65,7 +67,7 @@ class GridViewSelectionHelper{
 
 
     static unSelectAll(componentName: string) {
-        const checkboxes = document.querySelectorAll(`#${componentName} .jjselect input:not(:disabled)`) as NodeListOf<HTMLInputElement>;
+        const checkboxes = document.querySelectorAll(`#${componentName} .jj-checkbox input:not(:disabled)`) as NodeListOf<HTMLInputElement>;
         const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName) as HTMLInputElement;
         const selectedText = document.getElementById("selected-text-" + componentName);
 

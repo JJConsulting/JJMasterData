@@ -997,10 +997,10 @@ class GridViewHelper {
         postFormValues({
             url: urlBuilder.build(),
             success: function (data) {
-                const gridViewElement = document.querySelector("#grid-view-" + componentName);
+                const gridViewTableElement = document.querySelector("#grid-view-table-" + componentName);
                 const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
-                if (gridViewElement) {
-                    gridViewElement.innerHTML = data;
+                if (gridViewTableElement) {
+                    gridViewTableElement.outerHTML = data;
                     if (reloadListeners) {
                         listenAllEvents();
                     }
@@ -1027,10 +1027,12 @@ class GridViewHelper {
 }
 class GridViewSelectionHelper {
     static selectItem(componentName, obj) {
+        console.log(componentName);
         const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName);
+        console.log(valuesInput);
         const values = valuesInput.value.toString();
         let valuesList = [];
-        if (obj.id === "jjcheckbox-select-all-rows") {
+        if (obj.id === "jj-checkbox-select-all-rows") {
             return;
         }
         if (values.length > 0) {
@@ -1045,7 +1047,7 @@ class GridViewSelectionHelper {
             valuesList = valuesList.filter((item) => item !== obj.value);
         }
         valuesInput.value = valuesList.join(",");
-        let textInfo = "";
+        let textInfo;
         const selectedText = document.getElementById("selected-text-" + componentName);
         if (valuesList.length === 0) {
             textInfo = (selectedText === null || selectedText === void 0 ? void 0 : selectedText.getAttribute("no-record-selected-label")) || "";
@@ -1073,7 +1075,7 @@ class GridViewSelectionHelper {
     }
     static selectAllRowsElements(componentName, rows) {
         const values = rows.split(",");
-        const checkboxes = document.querySelectorAll(".jjselect input:not(:disabled)");
+        const checkboxes = document.querySelectorAll(".jj-checkbox input:not(:disabled)");
         checkboxes.forEach(checkbox => checkbox.checked = true);
         const selectedRowsInput = document.getElementById("grid-view-selected-rows-" + componentName);
         selectedRowsInput.value = values.join(",");
@@ -1081,7 +1083,7 @@ class GridViewSelectionHelper {
         selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
     }
     static unSelectAll(componentName) {
-        const checkboxes = document.querySelectorAll(`#${componentName} .jjselect input:not(:disabled)`);
+        const checkboxes = document.querySelectorAll(`#${componentName} .jj-checkbox input:not(:disabled)`);
         const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName);
         const selectedText = document.getElementById("selected-text-" + componentName);
         if (checkboxes) {
@@ -1095,6 +1097,28 @@ class GridViewSelectionHelper {
         if (selectedText) {
             selectedText.textContent = selectedText.getAttribute("no-record-selected-label") || "";
         }
+    }
+}
+class GridViewSelectionListener {
+    static listenGridViewCheckboxes(componentName) {
+        document.querySelectorAll(`#${componentName} .jj-checkbox input`)
+            .forEach((input) => this.listenCheckboxChange(componentName, input));
+    }
+    static listenCheckboxChange(componentName, input) {
+        input.addEventListener('change', function () {
+            GridViewSelectionHelper.selectItem(componentName, input);
+        }, { once: true });
+    }
+    static listen(componentName) {
+        document.addEventListener('DOMContentLoaded', function () {
+            GridViewSelectionListener.listenGridViewCheckboxes(componentName);
+            const observer = new MutationObserver(() => GridViewSelectionListener.listenGridViewCheckboxes(componentName));
+            observer.observe(document.getElementById("grid-view-" + componentName), {
+                attributes: false,
+                childList: true,
+                subtree: true
+            });
+        });
     }
 }
 document.addEventListener("DOMContentLoaded", function () {

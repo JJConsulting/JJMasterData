@@ -625,19 +625,25 @@ public class JJGridView : AsyncComponent
     internal async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-        html.AppendIf(ShowTitle, GetTitle(_defaultValues).GetHtmlBuilder);
-
-        if (FilterAction.IsVisible)
+        await html.AppendAsync(HtmlTag.Div, async div =>
         {
-            html.Append( await Filter.GetFilterHtml());
-        }
+            div.WithAttribute("id", $"grid-view-{Name}");
 
-        if (ShowToolbar)
-        {
-            html.Append(await GetToolbarHtmlBuilder());
-        }
+            div.AppendIf(ShowTitle, GetTitle(_defaultValues).GetHtmlBuilder);
 
-        html.Append(await GetTableHtmlBuilder());
+            if (FilterAction.IsVisible)
+            {
+                div.Append(await Filter.GetFilterHtml());
+            }
+
+            if (ShowToolbar)
+            {
+                div.Append(await GetToolbarHtmlBuilder());
+            }
+
+            div.Append(await GetTableHtmlBuilder());
+        });
+
 
         return html;
     }
@@ -674,7 +680,7 @@ public class JJGridView : AsyncComponent
 
         await SetDataSource();
 
-        html.WithAttribute("id", $"grid-view-{Name}");
+        html.WithAttribute("id", $"grid-view-table-{Name}");
 
         if (SortAction.IsVisible)
         {
@@ -820,18 +826,7 @@ public class JJGridView : AsyncComponent
 
         if (EnableMultiSelect)
         {
-            var multiSelectScript = $$"""
-                                    document.addEventListener('DOMContentLoaded', function () {
-                                        const inputElements = document.querySelectorAll('.jjselect input');
-                                        
-                                        inputElements.forEach(function(input) {
-                                            input.addEventListener('change', function() {
-                                                GridViewSelectionHelper.selectItem('{{Name}}', input);
-                                            });
-                                        });
-                                    });
-                                    """;
-            script.AppendLine(multiSelectScript);
+            script.AppendLine($"GridViewSelectionListener.listen('{Name}')");
         }
 
         if (EnableEditMode)

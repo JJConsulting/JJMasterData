@@ -131,11 +131,11 @@ class GridViewHelper {
         postFormValues({
             url: urlBuilder.build(),
             success: function (data) {
-                const gridViewElement = document.querySelector<HTMLInputElement>("#grid-view-" + componentName);
+                const gridViewTableElement = document.querySelector<HTMLInputElement>("#grid-view-table-" + componentName);
                 const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
 
-                if (gridViewElement) {
-                    gridViewElement.innerHTML = data;
+                if (gridViewTableElement) {
+                    gridViewTableElement.outerHTML = data;
                     if (reloadListeners) {
                         listenAllEvents();
                     }

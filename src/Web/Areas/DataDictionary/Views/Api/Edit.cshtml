@@ -66,8 +66,8 @@
                 <caption>@StringLocalizer["Enable or disable HTTP operations"]</caption>
                 <thead>
                     <tr>
-                        <th class="jjselect">
-                            <input type="checkbox" id="CheckAll" @BootstrapHelper.GetDataToggle("tooltip") title="Enable or Disable All" onclick="$('td.jjselect input').not(':disabled').prop('checked', $('#CheckAll').is(':checked')).change();" />
+                        <th class="jj-checkbox">
+                            <input type="checkbox" id="CheckAll" @BootstrapHelper.GetDataToggle("tooltip") title="Enable or Disable All" onclick="$('td.jj-checkbox input').not(':disabled').prop('checked', $('#CheckAll').is(':checked')).change();" />
                         </th>
                         <th style="width: 90px">@StringLocalizer["Verb"]</th>
                         <th>@StringLocalizer["Description"]</th>
@@ -75,7 +75,7 @@
                 </thead>
                 <tbody>
                     <tr class="text-info jjgrid-action">
-                        <td class="jjselect">
+                        <td class="jj-checkbox">
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableGetAll)
                         </td>
                         <td>
@@ -86,7 +86,7 @@
                         </td>
                     </tr>
                     <tr class="text-info jjgrid-action">
-                        <td class="jjselect">
+                        <td class="jj-checkbox">
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableGetDetail)
                         </td>
                         <td>
@@ -97,7 +97,7 @@
                         </td>
                     </tr>
                     <tr class="text-success jjgrid-action">
-                        <td class="jjselect">
+                        <td class="jj-checkbox">
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableAdd)
                         </td>
                         <td>
@@ -108,7 +108,7 @@
                         </td>
                     </tr>
                     <tr class="text-primary jjgrid-action">
-                        <td class="jjselect">
+                        <td class="jj-checkbox">
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableUpdate)
                         </td>
                         <td>
@@ -119,7 +119,7 @@
                         </td>
                     </tr>
                     <tr class="text-primary jjgrid-action">
-                        <td class="jjselect">
+                        <td class="jj-checkbox">
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableUpdatePart)
                         </td>
                         <td>
@@ -130,7 +130,7 @@
                         </td>
                     </tr>
                     <tr class="text-danger jjgrid-action">
-                        <td class="jjselect">
+                        <td class="jj-checkbox">
                             @Html.CheckBoxFor(model => Model.MetadataApiOptions.EnableDel)
                         </td>
                         <td>

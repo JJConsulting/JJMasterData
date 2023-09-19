@@ -65,18 +65,18 @@
     width: 45px;
 }
 
-.table .jjselect {
+.table .jj-checkbox {
     vertical-align: middle;
     width: 70px;
     padding-left: 24px;
 }
 
-    .table .jjselect i {
+    .table .jj-checkbox i {
         padding-top: 3px;
         float: right;
     }
 
-    .table .jjselect .dropdown-toggle{
+    .table .jj-checkbox .dropdown-toggle{
         margin-left: 3px;
     }
 

@@ -79,7 +79,8 @@ internal class GridTableBody
         {
             var checkBox = await GetMultiSelect(row, index, values);
             var td = new HtmlBuilder(HtmlTag.Td);
-            td.WithCssClass("jjselect");
+            td.WithCssClass("jj-checkbox");
+            
             await td.AppendControlAsync(checkBox);
 
             if (!GridView.EnableEditMode && onClickScript == string.Empty)
@@ -319,7 +320,7 @@ internal class GridTableBody
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
         var td = new HtmlBuilder(HtmlTag.Td);
-        td.WithCssClass("jjselect");
+        td.WithCssClass("jj-checkbox");
 
         var checkBox = new JJCheckBox(GridView.CurrentContext.Request.Form)
         {
