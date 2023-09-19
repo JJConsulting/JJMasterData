@@ -1,10 +1,7 @@
-﻿@using JJMasterData.Core.Web
-@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.AboutViewModel;
+﻿@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.AboutViewModel;
 @inject IStringLocalizer<JJMasterDataResources> Localizer
-@inject IOptions<JJMasterDataWebOptions> Options
 
 @{
-    Layout = Options.Value.PopUpLayoutPath;
     ViewData["Title"] = Localizer["About"];
 }
 
@@ -12,44 +9,30 @@
     <img class="mb-5" src="~/_content/JJMasterData.Web/images/JJMasterDataLogoVertical.png" alt="JJMasterData"/>
 </div>
 <div class="col-xs-12">
-    <div class="@BootstrapHelper.GetPanel("default")">
-        <div class="@BootstrapHelper.GetPanelHeading("default")">
-            <h5>
-                <span class="text-info fa fa-info-circle"></span>
-                &nbsp;@Localizer["System Version"]
-            </h5>
+    <jj-collapse-panel title="@Localizer["Executing Assembly"]" icon="SolidCircleInfo" expanded-by-default="true">
+        <div class="col-xs-12">
+            <b>@Model.ExecutingAssemblyProduct</b>
+            <br/>
+            Version: @Model.ExecutingAssemblyVersion
+            <br/>
+            Last Write: @Model.ExecutingAssemblyLastWriteTime  
+            <br/>
+            @Model.ExecutingAssemblyCopyright
         </div>
-        <div class="@BootstrapHelper.PanelBody">
-            <div class="@(BootstrapHelper.Version != 3 ? "container-fluid" : string.Empty)">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <b>@Model.ExecutingAssemblyProduct</b>
-                        <br/>
-                        Version: @Model.ExecutingAssemblyVersion
-                        <br/>
-                        @Model.ExecutingAssemblyCopyright
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <ul class="list-group">
-
-        @foreach (var assembly in Model.Dependencies!)
-        {
-            <li class="list-group-item">
-                <span>@assembly.GetName().Name</span>
-                <br />
-                <span>Version: @assembly.GetName().Version?.ToString()</span>
-                <br />
-            </li>
-        }
-        <li class="list-group-item">
-            <span>Bootstrap</span>
-            <br />
-            <span>Version: @Model.BootstrapVersion</span>
-        </li>
-    </ul>
+    </jj-collapse-panel>
+    <jj-collapse-panel icon="PuzzlePiece" title="@Localizer["Dependencies"]" expanded-by-default="false">
+        <ul class="list-group">
+            @foreach (var assembly in Model.Dependencies!)
+            {
+                <li class="list-group-item">
+                    <span>@assembly.GetName().Name</span>
+                    <br />
+                    <span>Version: @assembly.GetName().Version?.ToString()</span>
+                    <br />
+                </li>
+            }
+        </ul>
+    </jj-collapse-panel>
 </div>
 
 <div class="col-xs-12">

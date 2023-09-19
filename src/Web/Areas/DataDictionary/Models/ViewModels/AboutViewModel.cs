@@ -4,10 +4,9 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 public class AboutViewModel
 {
-    public string? AssemblyInfoHtml { get; set; }
-    public List<Assembly>? Dependencies { get; set; }
-    public string? BootstrapVersion { get; set; }
-    public string? ExecutingAssemblyProduct { get; set; }
-    public string? ExecutingAssemblyVersion { get; set; }
-    public string? ExecutingAssemblyCopyright { get; set; }
+    public required List<Assembly> Dependencies { get; set; }
+    public required string ExecutingAssemblyProduct { get; set; }
+    public required string ExecutingAssemblyVersion { get; set; }
+    public required string ExecutingAssemblyCopyright { get; set; }
+    public required DateTime ExecutingAssemblyLastWriteTime { get; set; }
 }

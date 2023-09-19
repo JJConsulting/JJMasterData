@@ -156,6 +156,7 @@ public class DataDictionaryFormElementFactory
             Icon = IconType.InfoCircle,
             ShowAsButton = true,
             IsModal = true,
+            IsIframe = false,
             ModalTitle = StringLocalizer["About"],
             UrlRedirect = UrlHelper.GetUrl("Index", "About", "DataDictionary"),
             Order = 13,

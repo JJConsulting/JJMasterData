@@ -157,7 +157,7 @@ internal class FormViewRelationshipLayout
             ParentFormView.UserValues[col.FkColumn] = value;
         }
 
-        var mappedForeignKeys = DataHelper.GetFkValues(ParentFormView.FormElement, filter);
+        var mappedForeignKeys = DataHelper.GetRelationValues(ParentFormView.FormElement, filter);
         switch (relationship.ViewType)
         {
             case RelationshipViewType.View or RelationshipViewType.Update:

@@ -675,7 +675,7 @@ public class JJFormView : AsyncComponent
         var values =
             await FieldValuesService.MergeWithExpressionValuesAsync(formElement, selectionValues, PageState.Insert, true);
 
-        var mappedFkValues = DataHelper.GetFkValues(FormElement, values, true);
+        var mappedFkValues = DataHelper.GetRelationValues(FormElement, values, true);
         
         var errors = await InsertFormValuesAsync(mappedFkValues!, false);
 
@@ -698,7 +698,8 @@ public class JJFormView : AsyncComponent
         else
         {
             PageState = PageState.Update;
-            var result = await GetFormResult(new FormContext(values, PageState), false);
+            
+            var result = await GetFormResult(new FormContext(mappedFkValues!, PageState), false);
 
             if (result is RenderedComponentResult renderedComponentResult)
             {

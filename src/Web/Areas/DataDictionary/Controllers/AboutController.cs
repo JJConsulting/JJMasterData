@@ -10,11 +10,11 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class AboutController : DataDictionaryController
 {
-    private AboutService Service { get; }
+
     
-    public AboutController(AboutService service)
+    public AboutController()
     {
-        Service = service;
+
     }
 
     public IActionResult Index()
@@ -22,13 +22,14 @@ public class AboutController : DataDictionaryController
         var executingAssembly = Assembly.GetExecutingAssembly();
         var model = new AboutViewModel
         {
-            ExecutingAssemblyProduct = Service.GetAssemblyProduct(executingAssembly),
-            ExecutingAssemblyVersion =executingAssembly.GetName().Version?.ToString(),
-            ExecutingAssemblyCopyright = Service.GetAssemblyCopyright(executingAssembly),
-            BootstrapVersion = BootstrapHelper.Version.ToString(),
-            Dependencies = Service.GetJJAssemblies()
+            ExecutingAssemblyProduct = AboutService.GetAssemblyProduct(executingAssembly),
+            ExecutingAssemblyVersion = executingAssembly.GetName()
+                .Version!.ToString(),
+            ExecutingAssemblyCopyright = AboutService.GetAssemblyCopyright(executingAssembly),
+            Dependencies = AboutService.GetJJAssemblies(),
+            ExecutingAssemblyLastWriteTime = AboutService.GetAssemblyDate(executingAssembly)
         };
 
-        return View("Index", model);
+        return PartialView("Index", model);
     }
 }

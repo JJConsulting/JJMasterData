@@ -62,7 +62,7 @@
                 <td>
                     @relationship.ElementRelationship!.DeleteOnCascade
                 </td>
-                <td style="text-align: center;">
+                <td style="text-align: center;width: 120px">
                     <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
                             onclick="defaultModal.showIframe('@Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName, id = relationship.Id })','@StringLocalizer["Edit Relation"]');"
                             data-original-title="@StringLocalizer["Edit"]">

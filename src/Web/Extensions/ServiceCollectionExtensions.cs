@@ -79,7 +79,6 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IValidationDictionary, ModelStateWrapper>();
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<OptionsService>();
-        services.AddTransient<AboutService>();
         services.AddTransient<LocalizationService>();
             
         services.AddHttpContextAccessor();
