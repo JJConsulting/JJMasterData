@@ -233,7 +233,7 @@ public class FieldController : DataDictionaryController
         ViewBag.FieldName = field.Name;
         ViewBag.Fields = formElement.Fields;
 
-        if (field.Component != FormComponent.Lookup) 
+        if (field.Component is not FormComponent.Lookup && field.Component is not FormComponent.Search && field.Component is not FormComponent.ComboBox) 
             return;
 
         ViewBag.ElementNameList = await _fieldService.GetElementListAsync();
@@ -275,6 +275,8 @@ public class FieldController : DataDictionaryController
             case FormComponent.TextArea:
                 field.SetAttr(FormElementField.RowsAttribute, Request.Form["txtTextAreaRows"].ToString());
                 break;
+            case FormComponent.ComboBox:
+            case FormComponent.Search:
             case FormComponent.Lookup:
                 field.SetAttr(FormElementField.PopUpSizeAttribute, Request.Form["cboLkPopUpSize"].ToString());
                 field.SetAttr(FormElementField.PopUpTitleAttribute, Request.Form["txtLkPopUpTitle"].ToString());

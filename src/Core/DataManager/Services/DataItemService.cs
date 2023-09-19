@@ -19,12 +19,14 @@ public class DataItemService : IDataItemService
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
     private IFormValues FormValues { get; }
+    private ILookupService LookupService { get; }
 
-    public DataItemService(IEntityRepository entityRepository, IExpressionsService expressionsService, IFormValues formValues)
+    public DataItemService(IEntityRepository entityRepository, IExpressionsService expressionsService, IFormValues formValues, ILookupService lookupService)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
         FormValues = formValues;
+        LookupService = lookupService;
     }
     
     public async Task<string?> GetSelectedValueAsync(FormElementField field, FormStateData formStateData, string? searchText = null, string? searchId = null)
@@ -56,6 +58,8 @@ public class DataItemService : IDataItemService
         string? searchText,
         string? searchId)
     {
+
+        
         if ((dataItem.Command == null || string.IsNullOrEmpty(dataItem.Command.Sql)) && dataItem.Items != null)
         {
             foreach (var item in dataItem.Items)

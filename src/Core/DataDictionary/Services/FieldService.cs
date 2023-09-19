@@ -26,7 +26,7 @@ public class FieldService : BaseService
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
-        RemoveUnusedProperties(ref field);
+        RemoveUnusedProperties(field);
 
         if (field.DataFile != null)
         {
@@ -60,7 +60,7 @@ public class FieldService : BaseService
         return IsValid;
     }
 
-    private static void RemoveUnusedProperties(ref FormElementField field)
+    private static void RemoveUnusedProperties(FormElementField field)
     {
         if (field.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.Lookup)
         {

@@ -16,37 +16,9 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["List Type"]">@StringLocalizer["ListType"]</label>
-        <select asp-for="DataItem!.DataItemType" onchange="this.form.requestSubmit();" class="form-control form-select">
-            @if (Model.DataItem!.DataItemType == DataItemType.Manual)
-            {
-                <option selected="selected" value="@((int)DataItemType.Manual)">@DataItemType.Manual.ToString()</option>
-            }
-            else
-            {
-                <option value="@((int)DataItemType.Manual)">@DataItemType.Manual.ToString()</option>
-            }
-
-            @if (Model.DataItem.DataItemType == DataItemType.SqlCommand)
-            {
-                <option selected="selected" value="@((int)DataItemType.SqlCommand)">@DataItemType.SqlCommand.ToString()</option>
-            }
-            else
-            {
-                <option value="@((int)DataItemType.SqlCommand)">@DataItemType.SqlCommand.ToString()</option>
-            }
-            
-            @* @(if (Model.DataItem.DataItemType == DataItemType.Dictionary)) *@
-            @* { *@
-            @*     <option selected="selected" value="@((int)DataItemType.Dictionary)">@DataItemType.SqlCommand.ToString()</option> *@
-            @* } *@
-            @* @else *@
-            @* { *@
-            @*     <option value="@((int)DataItemType.SqlCommand)">@DataItemType.Manual.ToString()</option> *@
-            @*     <option value="@((int)DataItemType.Dictionary)">@DataItemType.SqlCommand.ToString()</option> *@
-            @* } *@
-
-            
+        <select asp-for="DataItem!.DataItemType" asp-items="Enum.GetValues<DataItemType>().Select(d=> new SelectListItem(d.ToString(),d.ToString()))" onchange="this.form.requestSubmit();" class="form-control form-select">
         </select>
+
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divReplaceTextOnGrid">
@@ -97,6 +69,9 @@
             break;
         case DataItemType.SqlCommand:
             <partial name="_DataItemSql" model="@Model"/>
+            break;
+        case DataItemType.ElementMap:
+            <partial name="_DataItemElementMap" model="@Model"/>
             break;
     }
 

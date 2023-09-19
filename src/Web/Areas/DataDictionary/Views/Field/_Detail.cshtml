@@ -79,9 +79,9 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " for="DataBehavior">@StringLocalizer["DataBehavior"]</label>
-                  
+
                     <tooltip title="Field behavior in relation to the database"/>
-                  
+
                     <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
@@ -131,7 +131,7 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " for="AutoPostBack">@StringLocalizer["AutoPostBack"]</label>
-               
+
                     <tooltip title="When changing the content, it reloads all form fields"/>
 
                     @Html.DropDownListFor(modelItem => modelItem.AutoPostBack, new[]
@@ -154,13 +154,13 @@
 
             </div>
 
-            @if (Model.Component == FormComponent.Text |
-                 Model.Component == FormComponent.Email |
-                 Model.Component == FormComponent.Number |
-                 Model.Component == FormComponent.Cep |
-                 Model.Component == FormComponent.Cnpj |
-                 Model.Component == FormComponent.Cpf |
-                 Model.Component == FormComponent.CnpjCpf)
+            @if (Model.Component is FormComponent.Text 
+                    or FormComponent.Email 
+                    or FormComponent.Number 
+                    or FormComponent.Cep 
+                    or FormComponent.Cnpj 
+                    or FormComponent.Cpf 
+                    or FormComponent.CnpjCpf)
             {
                 if (ViewBag.OriginalName == null || ViewBag.OriginalName == "")
                 {
@@ -191,7 +191,7 @@
             }
             else if (Model.Component is FormComponent.Lookup)
             {
-                @await Html.PartialAsync("_DataItemElementMap", Model)
+                @await Html.PartialAsync("_DataItemElementMAp", Model)
             }
             else if (Model.Component is FormComponent.File)
             {
@@ -205,37 +205,37 @@
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
                     <label class="@BootstrapHelper.Label " for="VisibleExpression">@StringLocalizer["Visible Expression"]</label>
                     <tooltip title="Boolean expression to show the field. Check expressions at the docs for more information."/>
-                
+
                     @Html.TextBoxFor(model => model.VisibleExpression, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
                     <label class="@BootstrapHelper.Label " for="EnableExpression">@StringLocalizer["Enable Expression"]</label>
                     <tooltip title="Boolean expression to enable the field. Check expressions at the docs for more information."/>
-                 
+
                     @Html.TextBoxFor(model => model.EnableExpression, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
                     <label class="@BootstrapHelper.Label " for="TriggerExpression">@StringLocalizer["Trigger Expression"]</label>
                     <tooltip title="Expression triggered whenever a field triggers a POST to the server. Check expressions at the docs for more information."/>
-             
+
                     @Html.TextBoxFor(model => model.TriggerExpression, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-4">
                     <label class="@BootstrapHelper.Label " for="CssClass">@StringLocalizer["CssClass"]</label>
                     <tooltip title="Class name (CSS) one to be assigned to object group rendering"/>
-              
+
                     @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2">
                     <label class="@BootstrapHelper.Label " for="LineGroup">@StringLocalizer["Group Line"]</label>
                     <tooltip title="Row counter, used to break the line in the form (row class)"/>
-            
+
                     @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " for="Export">@StringLocalizer["Export"]</label>
                     <tooltip title="Allows you to export the field"/>
-                
+
                     @Html.DropDownListFor(modelItem => modelItem.Export, new[]
                     {
                         new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" },
@@ -246,7 +246,7 @@
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " for="ValidateRequest">@StringLocalizer["Validate Request"]</label>
                     <tooltip title="Validates possibly dangerous values on request"/>
-                    
+
                     @Html.DropDownListFor(modelItem => modelItem.ValidateRequest, new[]
                     {
                         new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" },
