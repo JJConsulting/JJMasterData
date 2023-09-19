@@ -57,7 +57,7 @@ public class LookupService : ILookupService
         return UrlHelper.GetUrl("GetDescription", "Lookup","MasterData", 
             new
             {
-                dictionaryName = EncryptionService.EncryptStringWithUrlEscape(elementName),
+                elementName = EncryptionService.EncryptStringWithUrlEscape(elementName),
                 componentName,
                 fieldName,
                 pageState

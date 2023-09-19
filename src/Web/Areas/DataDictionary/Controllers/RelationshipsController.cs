@@ -149,30 +149,30 @@ public class RelationshipsController : DataDictionaryController
         return selectList;
     }
 
-    private async Task<List<SelectListItem>> GetForeignKeysSelectList(string childDictionaryName)
+    private async Task<List<SelectListItem>> GetForeignKeysSelectList(string childElementName)
     {
         var selectList = new List<SelectListItem>();
 
-        if (string.IsNullOrEmpty(childDictionaryName))
+        if (string.IsNullOrEmpty(childElementName))
         {
             selectList.Add(new SelectListItem(StringLocalizer["(Select)"], string.Empty));
         }
         else
         {
-            var formElement = await _relationshipsService.DataDictionaryRepository.GetMetadataAsync(childDictionaryName);
+            var formElement = await _relationshipsService.DataDictionaryRepository.GetMetadataAsync(childElementName);
             selectList.AddRange(formElement.Fields.Select(field => new SelectListItem(field.Name, field.Name)));
         }
 
         return selectList;
     }
 
-    private async Task<List<SelectListItem>> GetElementsSelectList(string childDictionaryName)
+    private async Task<List<SelectListItem>> GetElementsSelectList(string childElementName)
     {
         IEnumerable<string> list = await _relationshipsService.DataDictionaryRepository.GetNameListAsync().ToListAsync();
 
         var selectList = list.Select(name => new SelectListItem(name, name)).ToList();
 
-        if (string.IsNullOrEmpty(childDictionaryName))
+        if (string.IsNullOrEmpty(childElementName))
         {
             selectList.Insert(0, new SelectListItem(StringLocalizer["(Select)"], string.Empty));
         }

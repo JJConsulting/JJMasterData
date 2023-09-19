@@ -46,9 +46,9 @@ public abstract class BaseService
 
     public bool IsValid => _validationDictionary.IsValid;
 
-    public async Task<FormElement> GetFormElementAsync(string dictionaryName)
+    public async Task<FormElement> GetFormElementAsync(string elementName)
     {
-        return await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        return await DataDictionaryRepository.GetMetadataAsync(elementName);
     }
 
     public bool ValidateName(string name)

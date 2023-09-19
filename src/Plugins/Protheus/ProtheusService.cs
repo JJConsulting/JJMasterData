@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Protheus.Abstractions;
 
-namespace JJMasterData.Commons.Protheus;
+namespace JJMasterData.Protheus;
 
 /// <summary>
 /// Execute connection with Protheus through an http service

@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace JJMasterData.Commons.Util;
+namespace JJMasterData.Protheus;
 
 public class FunctionLoader
 {
-    public const uint DONT_RESOLVE_DLL_REFERENCES = 0x00000001;
-    public const uint LOAD_IGNORE_CODE_AUTHZ_LEVEL = 0x00000010;
-    public const uint LOAD_LIBRARY_AS_DATAFILE = 0x00000002;
-    public const uint LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE = 0x00000040;
-    public const uint LOAD_LIBRARY_AS_IMAGE_RESOURCE = 0x00000020;
-    public const uint LOAD_LIBRARY_SEARCH_APPLICATION_DIR = 0x00000200;
-    public const uint LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000;
-    public const uint LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR = 0x00000100;
-    public const uint LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x00000800;
-    public const uint LOAD_LIBRARY_SEARCH_USER_DIRS = 0x00000400;
-    public const uint LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008;
+    public const uint DontResolveDllReferences = 0x00000001;
+    public const uint LoadIgnoreCodeAuthzLevel = 0x00000010;
+    public const uint LoadLibraryAsDatafile = 0x00000002;
+    public const uint LoadLibraryAsDatafileExclusive = 0x00000040;
+    public const uint LoadLibraryAsImageResource = 0x00000020;
+    public const uint LoadLibrarySearchApplicationDir = 0x00000200;
+    public const uint LoadLibrarySearchDefaultDirs = 0x00001000;
+    public const uint LoadLibrarySearchDllLoadDir = 0x00000100;
+    public const uint LoadLibrarySearchSystem32 = 0x00000800;
+    public const uint LoadLibrarySearchUserDirs = 0x00000400;
+    public const uint LoadWithAlteredSearchPath = 0x00000008;
 
 
 
@@ -64,7 +64,7 @@ public class FunctionLoader
     /// </exception>
     public static IntPtr LoadWin32Library(string dllFilePath)
     {
-        IntPtr moduleHandle = LoadLibraryEx(dllFilePath, IntPtr.Zero, LOAD_WITH_ALTERED_SEARCH_PATH);
+        IntPtr moduleHandle = LoadLibraryEx(dllFilePath, IntPtr.Zero, LoadWithAlteredSearchPath);
         if (moduleHandle == IntPtr.Zero)
         {
             int errorCode = Marshal.GetLastWin32Error();

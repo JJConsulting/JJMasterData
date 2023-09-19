@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace JJMasterData.Commons.Protheus;
+namespace JJMasterData.Protheus;
 
 public class ProtheusException : Exception
 {

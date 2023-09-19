@@ -47,17 +47,17 @@ public class IndexesService : BaseService
         return IsValid;
     }
 
-    public async Task DeleteAsync(string dictionaryName, string index)
+    public async Task DeleteAsync(string elementName, string index)
     {
-        var dictionary = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var dictionary = await DataDictionaryRepository.GetMetadataAsync(elementName);
         var elementIndex = dictionary.Indexes[int.Parse(index)];
         dictionary.Indexes.Remove(elementIndex);
         await DataDictionaryRepository.InsertOrReplaceAsync(dictionary);
     }
 
-    public async Task MoveDownAsync(string dictionaryName, string index)
+    public async Task MoveDownAsync(string elementName, string index)
     {
-        var dictionary = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var dictionary = await DataDictionaryRepository.GetMetadataAsync(elementName);
         var indexes = dictionary.Indexes;
         int indexToMoveDown = int.Parse(index);
         if (indexToMoveDown >= 0 && indexToMoveDown < indexes.Count - 1)
@@ -67,9 +67,9 @@ public class IndexesService : BaseService
         }
     }
 
-    public async Task MoveUpAsync(string dictionaryName, string index)
+    public async Task MoveUpAsync(string elementName, string index)
     {
-        var dictionary = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var dictionary = await DataDictionaryRepository.GetMetadataAsync(elementName);
         var indexes = dictionary.Indexes;
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)

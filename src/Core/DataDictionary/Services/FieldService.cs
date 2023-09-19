@@ -377,9 +377,9 @@ public class FieldService : BaseService
         return false;
     }
 
-    public async Task<bool> DeleteField(string dictionaryName, string fieldName)
+    public async Task<bool> DeleteField(string elementName, string fieldName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         if (!formElement.Fields.Contains(fieldName))
             return false;
         
@@ -390,9 +390,9 @@ public class FieldService : BaseService
         return IsValid;
     }
 
-    public async Task<string> GetNextFieldNameAsync(string dictionaryName, string fieldName)
+    public async Task<string> GetNextFieldNameAsync(string elementName, string fieldName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         string nextField = null;
         if (formElement.Fields.Contains(fieldName))
         {

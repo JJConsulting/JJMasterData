@@ -22,7 +22,8 @@ class GridViewHelper {
     static closeSettingsModal(componentName: string) {
         const form = document.querySelector("form");
         const checkboxes = document.querySelectorAll("form");
-        const modal = document.getElementById("config-modal-" + componentName);
+        const modalId = "config-modal-" + componentName;
+        const modalElement = document.getElementById("config-modal-" + componentName);
 
         if (form) {
             form.reset();
@@ -36,9 +37,10 @@ class GridViewHelper {
             });
         }
 
-        if (modal) {
-            modal.classList.remove("show");
-            modal.style.display = "none";
+        if (modalElement) {
+            const modal = new Modal();
+            modal.modalId = modalId;
+            modal.hide();
         }
     }
     

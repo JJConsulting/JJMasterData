@@ -15,9 +15,9 @@ public class PanelService : BaseService
     {
     }
 
-    public async Task SavePanelAsync(string dictionaryName, FormElementPanel panel, string[] selectedFields)
+    public async Task SavePanelAsync(string elementName, FormElementPanel panel, string[] selectedFields)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
         if (selectedFields?.Length == 0)
         {
@@ -78,9 +78,9 @@ public class PanelService : BaseService
         return IsValid;
     }
 
-    public async Task<bool> DeleteFieldAsync(string dictionaryName, int panelId)
+    public async Task<bool> DeleteFieldAsync(string elementName, int panelId)
     {
-        var dictionary = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var dictionary = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
         for (int i = 0; i < dictionary.Panels.Count; i++)
         {
@@ -119,9 +119,9 @@ public class PanelService : BaseService
         return true;
     }
 
-    public async Task<FormElementPanel> CopyPanel(string dictionaryName, FormElementPanel panel)
+    public async Task<FormElementPanel> CopyPanel(string elementName, FormElementPanel panel)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         var newPanel = panel.DeepCopy();
         newPanel.PanelId = 1 + formElement.Panels.Max(x => x.PanelId);
         formElement.Panels.Add(newPanel);

@@ -73,11 +73,11 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         var files = dir.GetFiles("*.json").OrderBy(x => x.Name);
         foreach (var file in files)
         {
-            string dictionaryName = file.Name;
-            if (!dictionaryName.EndsWith(".json"))
-                dictionaryName += ".json";
+            string elementName = file.Name;
+            if (!elementName.EndsWith(".json"))
+                elementName += ".json";
             
-            list.Add(dictionaryName);
+            list.Add(elementName);
         }
 
         return list;
@@ -96,16 +96,16 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
 
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>
-    public FormElement GetMetadata(string dictionaryName)
+    public FormElement GetMetadata(string elementName)
     {
-        string fileFullName = GetFullFileName(dictionaryName);
+        string fileFullName = GetFullFileName(elementName);
         string json = File.ReadAllText(fileFullName);
         return JsonConvert.DeserializeObject<FormElement>(json);
     }
     
-    public Task<FormElement> GetMetadataAsync(string dictionaryName)
+    public Task<FormElement> GetMetadataAsync(string elementName)
     {
-        var result = GetMetadata(dictionaryName);
+        var result = GetMetadata(elementName);
         return Task.FromResult(result);
     }
 
@@ -131,15 +131,15 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.Delete"/>
-    public void Delete(string dictionaryName)
+    public void Delete(string elementName)
     {
-        string fileFullName = GetFullFileName(dictionaryName);
+        string fileFullName = GetFullFileName(elementName);
         File.Delete(fileFullName);
     }
 
-    public Task DeleteAsync(string dictionaryName)
+    public Task DeleteAsync(string elementName)
     {
-        Delete(dictionaryName);
+        Delete(elementName);
         return Task.CompletedTask;
     }
 
@@ -151,15 +151,15 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>
-    public bool Exists(string dictionaryName)
+    public bool Exists(string elementName)
     {
-        string fileFullName = GetFullFileName(dictionaryName);
+        string fileFullName = GetFullFileName(elementName);
         return File.Exists(fileFullName);
     }
     
-    public Task<bool> ExistsAsync(string dictionaryName)
+    public Task<bool> ExistsAsync(string elementName)
     {
-        var result = Exists(dictionaryName);
+        var result = Exists(elementName);
 
         return Task.FromResult(result);
     }
@@ -223,14 +223,14 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         return list.OrderBy(orderBy.ToQueryParameter()).Skip((currentPage - 1) * recordsPerPage).Take(recordsPerPage);
     }
 
-    private string GetFullFileName(string dictionaryName)
+    private string GetFullFileName(string elementName)
     {
-        if (string.IsNullOrEmpty(dictionaryName))
-            throw new ArgumentNullException(nameof(dictionaryName), "Dictionary invalid");
+        if (string.IsNullOrEmpty(elementName))
+            throw new ArgumentNullException(nameof(elementName), "Dictionary invalid");
 
-        if (!dictionaryName.EndsWith(".json"))
-            dictionaryName += ".json";
+        if (!elementName.EndsWith(".json"))
+            elementName += ".json";
         
-        return Path.Combine(FolderPath, dictionaryName);
+        return Path.Combine(FolderPath, elementName);
     }
 }

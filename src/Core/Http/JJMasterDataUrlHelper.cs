@@ -46,9 +46,9 @@ public class JJMasterDataUrlHelper
                 .ToDictionary(prop => prop.Name, prop => prop.GetValue(values)?.ToString());
         }
         
-        if(valuesDictionary.TryGetValue("dictionaryName", out var dictionaryName))
+        if(valuesDictionary.TryGetValue("elementName", out var elementName))
         {
-            valuesDictionary.Remove("dictionaryName");
+            valuesDictionary.Remove("elementName");
         }
         
         var url = baseUrl;
@@ -70,9 +70,9 @@ public class JJMasterDataUrlHelper
             url += $"{action}/";
         }
 
-        if (!string.IsNullOrEmpty(dictionaryName))
+        if (!string.IsNullOrEmpty(elementName))
         {
-            url += $"{dictionaryName}";
+            url += $"{elementName}";
         }
         
         if (valuesDictionary.Count > 0)

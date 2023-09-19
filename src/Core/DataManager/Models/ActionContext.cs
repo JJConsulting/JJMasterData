@@ -43,7 +43,7 @@ public class ActionContext
         var actionMap = new ActionMap
         {
             ActionName = actionName,
-            DictionaryName = FormElement.Name,
+            ElementName = FormElement.Name,
             ActionSource = actionSource,
             FieldName = FieldName
         };

@@ -71,7 +71,7 @@ public class ElementService : BaseService
             element = new FormElement
             {
                 TableName = tableName,
-                Name = GetDictionaryName(tableName),
+                Name = GetElementName(tableName),
                 CustomProcNameGet = _options.GetReadProcedureName(tableName),
                 CustomProcNameSet = _options.GetWriteProcedureName(tableName)
             };
@@ -102,21 +102,21 @@ public class ElementService : BaseService
         return IsValid;
     }
 
-    public string GetDictionaryName(string tablename)
+    public static string GetElementName(string tablename)
     {
-        string dicname;
+        string elementName;
         if (tablename.ToLower().StartsWith("tb_"))
-            dicname = tablename[3..];
+            elementName = tablename[3..];
         else if (tablename.ToLower().StartsWith("tb"))
-            dicname = tablename[2..];
+            elementName = tablename[2..];
         else
-            dicname = tablename;
+            elementName = tablename;
 
-        dicname = dicname.Replace('_', ' ');
-        dicname = dicname.FirstCharToUpper();
-        dicname = dicname.Replace(" ", "");
-
-        return dicname;
+        elementName = elementName.Replace('_', ' ');
+        elementName = elementName.FirstCharToUpper();
+        elementName = elementName.Replace(" ", "");
+        
+        return elementName;
     }
 
     #endregion
@@ -183,16 +183,16 @@ public class ElementService : BaseService
             {
                 case "preview":
                     args.LinkButton.OnClientClick =
-                        $"window.open('{UrlHelper.GetUrl("Render", "Form", "MasterData", new { dictionaryName = elementName })}', '_blank').focus();";
+                        $"window.open('{UrlHelper.GetUrl("Render", "Form", "MasterData", new { elementName })}', '_blank').focus();";
                     break;
                 case "tools":
                     args.LinkButton.UrlAction = UrlHelper.GetUrl("Index", "Entity", "DataDictionary",
-                        new { dictionaryName = elementName });
+                        new { elementName });
                     args.LinkButton.OnClientClick = "";
                     break;
                 case "duplicate":
                     args.LinkButton.UrlAction = UrlHelper.GetUrl("Duplicate", "Element", "DataDictionary",
-                        new { dictionaryName = elementName });
+                        new { elementName });
                     args.LinkButton.OnClientClick = "";
                     break;
             }
@@ -206,8 +206,8 @@ public class ElementService : BaseService
 
     public async Task<byte[]> ExportSingleRowAsync(IDictionary<string, object> row)
     {
-        var dictionaryName = row["name"].ToString();
-        var metadata = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var elementName = row["name"].ToString();
+        var metadata = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
         var json = FormElementSerializer.Serialize(metadata, settings =>
         {
@@ -224,15 +224,15 @@ public class ElementService : BaseService
         {
             foreach (var element in selectedRows)
             {
-                var dictionaryName = element["name"].ToString();
-                var metadata = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+                var elementName = element["name"].ToString();
+                var metadata = await DataDictionaryRepository.GetMetadataAsync(elementName);
                 
                 var json = FormElementSerializer.Serialize(metadata,settings =>
                 {
                     settings.Formatting = Formatting.Indented;
                 });
 
-                var jsonFile = archive.CreateEntry($"{dictionaryName}.json");
+                var jsonFile = archive.CreateEntry($"{elementName}.json");
 #if NET
                 await 
 #endif

@@ -11,8 +11,8 @@ namespace JJMasterData.Core.DataManager;
 
 public class ActionMap
 {
-    [JsonProperty("dictionaryName")]
-    public required string DictionaryName { get; set; }
+    [JsonProperty("elementName")]
+    public required string ElementName { get; set; }
 
     [JsonProperty("actionName")] 
     public required string ActionName { get; set; }
@@ -20,7 +20,8 @@ public class ActionMap
     [JsonProperty("fieldName")] 
     public string? FieldName { get; set; }
 
-    [JsonProperty("pkFieldValues")] public IDictionary<string, object> PkFieldValues { get; set; }
+    [JsonProperty("pkFieldValues")] 
+    public IDictionary<string, object> PkFieldValues { get; set; }
     
     
     [JsonProperty("contextAction")] 
@@ -38,7 +39,7 @@ public class ActionMap
         IDictionary<string, object> row,
         string actionName)
     {
-        DictionaryName = formElement.Name;
+        ElementName = formElement.Name;
         ActionSource = actionSource;
         ActionName = actionName;
         PkFieldValues = new Dictionary<string, object>();

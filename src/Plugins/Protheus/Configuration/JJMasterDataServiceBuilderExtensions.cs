@@ -1,5 +1,4 @@
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Protheus;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Protheus.Abstractions;
 using Microsoft.Extensions.DependencyInjection;

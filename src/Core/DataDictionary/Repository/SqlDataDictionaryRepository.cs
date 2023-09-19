@@ -63,9 +63,9 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     }
 
 
-    public async Task<FormElement?> GetMetadataAsync(string dictionaryName)
+    public async Task<FormElement?> GetMetadataAsync(string elementName)
     {
-        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, dictionaryName }, {DataDictionaryStructure.Type, "F" } };
+        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
 
         var values = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
 
@@ -114,20 +114,20 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         return values;
     }
 
-    public async Task DeleteAsync(string dictionaryName)
+    public async Task DeleteAsync(string elementName)
     {
-        if (string.IsNullOrEmpty(dictionaryName))
+        if (string.IsNullOrEmpty(elementName))
             throw new ArgumentException();
 
-        var filters = new Dictionary<string, object> { { DataDictionaryStructure.Name, dictionaryName } };
+        var filters = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
         await _entityRepository.DeleteAsync(MasterDataElement, filters);
     }
 
 
-    public async Task<bool> ExistsAsync(string dictionaryName)
+    public async Task<bool> ExistsAsync(string elementName)
     {
-        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, dictionaryName } };
+        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
         var fields = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
         return fields.Any();
     }

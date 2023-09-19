@@ -66,9 +66,9 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         DataExportationWriterFactory = dataExportationWriterFactory;
     }
 
-    public async Task<JJDataExportation> CreateAsync(string dictionaryName)
+    public async Task<JJDataExportation> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         return Create(formElement);
     }
 

@@ -14,12 +14,12 @@ public class UIOptionsService : BaseService
     {
     }
 
-    private async Task<bool> ValidateOptions(FormElementOptions options, string dictionaryName)
+    private async Task<bool> ValidateOptions(FormElementOptions options, string elementName)
     {
 
         if (options.Grid.EnableMultSelect)
         {
-            var formElement = await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+            var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
             var pks = formElement.Fields.ToList().FindAll(x => x.IsPk);
             if (pks.Count == 0)
             {
@@ -31,13 +31,13 @@ public class UIOptionsService : BaseService
     }
 
 
-    public async Task<bool> EditOptionsAsync(FormElementOptions options,string dictionaryName)
+    public async Task<bool> EditOptionsAsync(FormElementOptions options,string elementName)
     {
         try
         {
-            if (await ValidateOptions(options, dictionaryName))
+            if (await ValidateOptions(options, elementName))
             {
-                var dicParser =await DataDictionaryRepository.GetMetadataAsync(dictionaryName);
+                var dicParser =await DataDictionaryRepository.GetMetadataAsync(elementName);
                 dicParser.Options.Form = options.Form;
                 dicParser.Options.Grid = options.Grid;
 

@@ -12,11 +12,11 @@ namespace JJMasterData.Core.DataDictionary.Repository.Abstractions;
 public interface IDataDictionaryRepository
 {
     Task CreateStructureIfNotExistsAsync();
-    Task<FormElement> GetMetadataAsync(string dictionaryName);
+    Task<FormElement> GetMetadataAsync(string elementName);
     Task<IEnumerable<FormElement>> GetMetadataListAsync(bool? apiEnabled = null);
     IAsyncEnumerable<string> GetNameListAsync();
     Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderByData, int recordsPerPage, int currentPage);
-    Task<bool> ExistsAsync(string dictionaryName);
+    Task<bool> ExistsAsync(string elementName);
     Task InsertOrReplaceAsync(FormElement metadata);
-    Task DeleteAsync(string dictionaryName);
+    Task DeleteAsync(string elementName);
 }
