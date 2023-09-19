@@ -196,7 +196,7 @@ internal class GridFilter
 
         if (action.ShowAsCollapse)
         {
-            var panel = new JJCollapsePanel( GridView.CurrentContext)
+            var panel = new JJCollapsePanel( GridView.CurrentContext.Request.Form)
             {
                 Name = $"filter_collapse_{GridView.Name}",
                 HtmlBuilderContent = html,
@@ -236,7 +236,7 @@ internal class GridFilter
         body.WithCssClass("col-sm-12");
         body.Append(await GetHtmlToolBarSearch(isToolBar:false));
         
-        var panel = new JJCollapsePanel( GridView.CurrentContext)
+        var panel = new JJCollapsePanel( GridView.CurrentContext.Request.Form)
         {
             Name = $"filter_collapse_{GridView.Name}",
             HtmlBuilderContent = body,

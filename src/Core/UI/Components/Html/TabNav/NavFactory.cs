@@ -1,3 +1,4 @@
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 
@@ -5,15 +6,15 @@ namespace JJMasterData.Core.Web.Components;
 
 public class NavFactory : IComponentFactory<JJTabNav>
 {
-    private readonly IHttpContext _httpContext;
+    private readonly IFormValues _formValues;
 
-    public NavFactory(IHttpContext httpContext)
+    public NavFactory(IFormValues formValues)
     {
-        _httpContext = httpContext;
+        _formValues = formValues;
     }
     
     public JJTabNav Create()
     {
-        return new JJTabNav(_httpContext);
+        return new JJTabNav(_formValues);
     }
 }

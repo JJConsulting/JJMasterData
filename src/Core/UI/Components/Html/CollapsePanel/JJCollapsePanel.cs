@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -31,20 +32,20 @@ public class JJCollapsePanel : HtmlComponent
 
     public PanelColor Color { get; set; }
 
-    internal IHttpContext CurrentContext { get; }
+    internal IFormValues FormValues { get; }
     
     private bool IsCollapseOpen
     {
         get
         {
-            var collapseMode = CurrentContext.Request[$"collapse_mode_{Name}"];
+            var collapseMode = FormValues[$"collapse_mode_{Name}"];
             return string.IsNullOrEmpty(collapseMode) ? ExpandedByDefault : "1".Equals(collapseMode);
         }
     }
 
-    public JJCollapsePanel(IHttpContext currentContext)
+    public JJCollapsePanel(IFormValues formValues)
     {
-        CurrentContext = currentContext;
+        FormValues = formValues;
         ButtonPosition = Position.Right;
         Name = "collapse1";
         Buttons = new List<JJLinkButton>();
@@ -59,7 +60,7 @@ public class JJCollapsePanel : HtmlComponent
         root.Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("hidden", "hidden");
-            input.WithNameAndId($"collapse_mode_{Name}");
+            input.WithNameAndId($"collapse-mode-{Name}");
             input.WithValue(IsCollapseOpen ? "1" : "0");
         });
 

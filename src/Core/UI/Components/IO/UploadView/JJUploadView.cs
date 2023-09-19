@@ -416,7 +416,7 @@ public class JJUploadView : AsyncComponent
         if (!ShowAddFiles)
             return html;
 
-        html.AppendComponent(new JJCollapsePanel(CurrentContext)
+        html.AppendComponent(new JJCollapsePanel(CurrentContext.Request.Form)
         {
             Title = "New File",
             ExpandedByDefault = IsCollapseExpandedByDefault,

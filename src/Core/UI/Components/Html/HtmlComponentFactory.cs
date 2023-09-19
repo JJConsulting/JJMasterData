@@ -29,7 +29,7 @@ public class HtmlComponentFactory
 
     public CardFactory Card => new();
     
-    public CollapsePanelFactory CollapsePanel => new(_currentContext);
+    public CollapsePanelFactory CollapsePanel => new(_currentContext.Request.Form);
     
     public IconFactory Icon => new();
     
@@ -45,7 +45,7 @@ public class HtmlComponentFactory
     
     public SpinnerFactory Spinner => new();
     
-    public NavFactory TabNav => new(_currentContext);
+    public NavFactory TabNav => new(_currentContext.Request.Form);
     
     public TitleFactory Title => new();
     

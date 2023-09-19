@@ -1,4 +1,5 @@
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using JJMasterData.Web.Services;
@@ -34,25 +35,23 @@ public class CollapsePanelTagHelper : TagHelper
     public PanelColor Color { get; set; }
     
     private RazorPartialRendererService RendererService { get; }
-    private IHttpContext HttpContext { get; }
+    private IComponentFactory<JJCollapsePanel> CollapsePanelFactory { get; }
 
-    public CollapsePanelTagHelper(RazorPartialRendererService rendererService, IHttpContext httpContext)
+    public CollapsePanelTagHelper(RazorPartialRendererService rendererService, IComponentFactory<JJCollapsePanel> collapsePanelFactory)
     {
         RendererService = rendererService;
-        HttpContext = httpContext;
+        CollapsePanelFactory = collapsePanelFactory;
     }
     
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         AssertAttributes();
-        
-        var panel = new JJCollapsePanel(HttpContext)
-        {
-            Name = Title!.ToLower().Replace(" ", "_"),
-            Title = Title,
-            ExpandedByDefault = ExpandedByDefault,
-            Color = Color
-        };
+
+        var panel = CollapsePanelFactory.Create();
+        panel.Name = Title!.ToLower().Replace(" ", "_");
+        panel.Title = Title;
+        panel.ExpandedByDefault = ExpandedByDefault;
+        panel.Color = Color;
 
         if (Icon != default)
         {

@@ -1,3 +1,4 @@
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 
@@ -5,15 +6,15 @@ namespace JJMasterData.Core.Web.Components;
 
 public class CollapsePanelFactory : IComponentFactory<JJCollapsePanel>
 {
-    private readonly IHttpContext _currentContext;
+    private readonly IFormValues _formValues;
 
-    public CollapsePanelFactory(IHttpContext currentContext)
+    public CollapsePanelFactory(IFormValues formValues)
     {
-        _currentContext = currentContext;
+        _formValues = formValues;
     }
     
     public JJCollapsePanel Create()
     {
-        return new JJCollapsePanel(_currentContext);
+        return new JJCollapsePanel(_formValues);
     }
 }

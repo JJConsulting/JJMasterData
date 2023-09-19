@@ -116,7 +116,7 @@ internal class DataImportationLog
 
     private HtmlBuilder GetHtmlLogDetails()
     {
-        var panel = new JJCollapsePanel(CurrentContext)
+        var panel = new JJCollapsePanel(CurrentContext.Request.Form)
         {
             Title = StringLocalizer["Importation Details"],
             TitleIcon = new JJIcon(IconType.Film),

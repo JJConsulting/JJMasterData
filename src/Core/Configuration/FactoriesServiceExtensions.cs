@@ -49,6 +49,7 @@ public static class FactoriesServiceExtensions
         services.AddTransient<IComponentFactory<JJUploadView>, UploadViewFactory>();
         services.AddTransient<IComponentFactory<JJFileDownloader>, FileDownloaderFactory>();
         services.AddTransient<IComponentFactory<JJUploadArea>, UploadAreaFactory>();
+        services.AddTransient<IComponentFactory<JJCollapsePanel>, CollapsePanelFactory>();
         services.AddScoped<RouteContextFactory>();
         services.AddTransient<ValidationSummaryFactory>();
         services.AddTransient<HtmlComponentFactory>();
