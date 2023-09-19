@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Runtime.InteropServices;
+using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
 using Microsoft.Extensions.Configuration;
 
@@ -20,36 +21,32 @@ namespace JJMasterData.Commons.Configuration.Options;
 /// </summary>
 public class JJMasterDataCommonsOptions
 {
+
+    public string ConnectionString { get; set; } = null!;
+    
+    public DataAccessProvider ConnectionProvider { get; set; }
+    
     /// <summary>
     /// Default value: JJMasterDataResources <br></br>
     /// </summary>
-    public string LocalizationTableName { get; set; }
+    public string LocalizationTableName { get; set; } = "JJMasterDataResources";
 
     /// <summary>
     /// Default value: {tablename}Get <br></br>
     /// </summary>
-    [ConfigurationKeyName("PrefixGetProc")]
-    public string ReadProcedurePattern { get; set; }
+    public string ReadProcedurePattern { get; set; } = "{tablename}Get";
 
     /// <summary>
     /// Default value: {tablename}Set <br></br>
     /// </summary>
-    [ConfigurationKeyName("PrefixSetProc")]
-    public string WriteProcedurePattern { get; set; }
-    
+    public string WriteProcedurePattern { get; set; } = "{tablename}Set";
+
     /// <summary>
     /// Secret key used at JJMasterDataEncryptionService
     /// </summary>
     public string? SecretKey { get; set; }
 
     public static bool IsNetFramework => RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
-
-    public JJMasterDataCommonsOptions()
-    {
-        LocalizationTableName = "JJMasterDataResources";
-        ReadProcedurePattern = "{tablename}Get";
-        WriteProcedurePattern = "{tablename}Set";
-    }
 
     public string GetReadProcedureName(Element element)
     {

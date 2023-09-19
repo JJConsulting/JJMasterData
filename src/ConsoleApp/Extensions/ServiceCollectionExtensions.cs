@@ -24,10 +24,8 @@ public static class ServiceCollectionExtensions
         services.AddJJMasterDataCore(coreOptions =>
         {
             coreOptions.DataDictionaryTableName = tableName;
-        }, commonsOptions =>
-        {
-            commonsOptions.WriteProcedurePattern = configuration.GetJJMasterData().GetValue<string>("PrefixGetProc")!;
-            commonsOptions.ReadProcedurePattern = configuration.GetJJMasterData().GetValue<string>("PrefixSetProc")!;
+            coreOptions.WriteProcedurePattern = configuration.GetJJMasterData().GetValue<string>("PrefixGetProc")!;
+            coreOptions.ReadProcedurePattern = configuration.GetJJMasterData().GetValue<string>("PrefixSetProc")!;
         });
 
         services.AddTransient<MetadataRepository>();

@@ -14,107 +14,60 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Core.Options;
 using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Options;
+using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.FileProviders;
 
 namespace JJMasterData.Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {
     
+    public static JJMasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
+    {
+        services.AddOptions<JJMasterDataWebOptions>();
+        AddDefaultServices(services);
+        return services.AddJJMasterDataCore();
+    }
+    
     /// <summary>
     /// Adds all services you need to run a JJMasterData
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="filePath">
-    /// Path relative to the base path stored in IConfigurationBuilder.Properties.
-    /// </param>
+    /// <param name="configuration"></param>
     public static JJMasterDataServiceBuilder AddJJMasterDataWeb(
         this IServiceCollection services,
-        string filePath = "appsettings.json")
+        IConfiguration configuration)
     {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(filePath, optional: false, reloadOnChange: true)
-            .Build();
-
         AddDefaultServices(services);
         
         services.ConfigureWritableOptions<JJMasterDataCommonsOptions>(
-            configuration.GetSection("JJMasterData"), filePath);
+            configuration.GetJJMasterData());
         services.ConfigureWritableOptions<JJMasterDataCoreOptions>(
-            configuration.GetSection("JJMasterData"), filePath);
+            configuration.GetJJMasterData());
         services.ConfigureWritableOptions<JJMasterDataWebOptions>(
-            configuration.GetSection("JJMasterData"), filePath);
-        services.ConfigureWritableOptions<ConnectionStrings>(
-            configuration.GetSection("ConnectionStrings"), filePath);
-        services.ConfigureWritableOptions<ConnectionProviders>(
-            configuration.GetSection("ConnectionProviders"), filePath);
-
+            configuration.GetJJMasterData());
         
         return services.AddJJMasterDataCore(configuration);
     }
 
-    public static JJMasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services, IConfiguration configuration)
+    public static JJMasterDataServiceBuilder AddJJMasterDataWeb(
+        this IServiceCollection services,
+        Action<JJMasterDataWebOptions> configureOptions)
     {
+        var webOptions = new JJMasterDataWebOptions();
+        services.Configure(configureOptions);
+
         AddDefaultServices(services);
 
-        services.Configure<ConnectionString>(configuration.GetSection("ConnectionString"));
-        services.Configure<ConnectionProviders>(configuration.GetSection("ConnectionProviders"));
-        
-        return services.AddJJMasterDataCore(configuration);
-    }
+        return services.AddJJMasterDataCore(ConfigureJJMasterDataCoreOptions);
 
-    public static JJMasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services,
-        Action<JJMasterDataConfigurationOptions> configureOptions)
-    {
-        var wrapper = new JJMasterDataConfigurationOptions();
-
-        configureOptions(wrapper);
-
-        void ConfigureJJMasterDataCommonsOptions(JJMasterDataCommonsOptions options)
-        {
-            var wrapperOptions = wrapper.JJMasterDataCommons;
-            options.SecretKey = wrapperOptions.SecretKey;
-            options.ReadProcedurePattern = wrapperOptions.ReadProcedurePattern;
-            options.WriteProcedurePattern = wrapperOptions.WriteProcedurePattern;
-            options.LocalizationTableName = wrapperOptions.LocalizationTableName;
-        }
-        
         void ConfigureJJMasterDataCoreOptions(JJMasterDataCoreOptions options)
         {
-            var wrapperOptions = wrapper.JJMasterDataCore;
-            options.ExportationFolderPath = wrapperOptions.ExportationFolderPath;
-            options.AuditLogTableName = wrapperOptions.AuditLogTableName;
-            options.DataDictionaryTableName = wrapperOptions.DataDictionaryTableName;
-            options.JJMasterDataUrl = wrapperOptions.JJMasterDataUrl;
+            options.ExportationFolderPath = webOptions.ExportationFolderPath;
+            options.AuditLogTableName = webOptions.AuditLogTableName;
+            options.DataDictionaryTableName = webOptions.DataDictionaryTableName;
+            options.JJMasterDataUrl = webOptions.JJMasterDataUrl;
         }
-        
-        void ConfigureJJMasterDataWebOptions(JJMasterDataWebOptions options)
-        {
-            var wrapperOptions = wrapper.JJMasterDataWeb;
-            options.LayoutPath = wrapperOptions.LayoutPath;
-            options.PopUpLayoutPath = wrapperOptions.PopUpLayoutPath;
-            options.UseCustomBootstrap = wrapperOptions.UseCustomBootstrap;
-        }
-
-        void ConfigureConnectionStrings(ConnectionStrings options)
-        {
-            options.ConnectionString = wrapper.ConnectionStrings.ConnectionString;
-        }
-
-        void ConfigureConnectionProviders(ConnectionProviders options)
-        {
-            options.ConnectionString = wrapper.ConnectionProviders.ConnectionString;
-        }
-
-        services.Configure((Action<JJMasterDataCommonsOptions>)ConfigureJJMasterDataCommonsOptions);
-        services.Configure((Action<JJMasterDataCoreOptions>)ConfigureJJMasterDataCoreOptions);
-        services.Configure((Action<JJMasterDataWebOptions>)ConfigureJJMasterDataWebOptions);
-        services.Configure((Action<ConnectionStrings>)ConfigureConnectionStrings);
-        services.Configure((Action<ConnectionProviders>)ConfigureConnectionProviders);
-
-        AddDefaultServices(services);
-
-        return services.AddJJMasterDataCore(ConfigureJJMasterDataCoreOptions, ConfigureJJMasterDataCommonsOptions);
     }
 
     private static void AddDefaultServices(IServiceCollection services)
@@ -135,10 +88,9 @@ public static class ServiceCollectionExtensions
         services.AddRequestUrlCultureProvider();
         services.AddActionFilters();
     }
-    
 
 
-    internal static void AddRequestUrlCultureProvider(this IServiceCollection services,
+    private static void AddRequestUrlCultureProvider(this IServiceCollection services,
         params CultureInfo[]? supportedCultures)
     {
         if (supportedCultures == null || supportedCultures.Length == 0)

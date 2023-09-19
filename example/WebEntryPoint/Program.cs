@@ -6,10 +6,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
 var settingsPath = Path.Combine(root, "appsettings.json");
+
 builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
+
+builder.Services.AddJJMasterDataWeb(builder.Configuration);
+
 builder.Services.AddControllersWithViews().AddViewLocalization();
-builder.Services.AddJJMasterDataWeb(settingsPath)
-    .WithPdfExportation();
 
 builder.Services.AddAuthorization(options =>
 {

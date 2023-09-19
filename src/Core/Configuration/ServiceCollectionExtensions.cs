@@ -16,28 +16,36 @@ namespace JJMasterData.Core.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static JJMasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services, string filePath = "appsettings.json")
+    public static JJMasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services)
     {
-        var configuration = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile(filePath, optional: false, reloadOnChange: true)
-        .Build();
-
-        services.Configure<JJMasterDataCoreOptions>(configuration.GetJJMasterData());
+        services.AddOptions<JJMasterDataCommonsOptions>();
         
         services.AddDefaultServices();
         
-        return services.AddJJMasterDataCommons(configuration);
+        return services.AddJJMasterDataCommons();
     }
 
     public static JJMasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
-        Action<JJMasterDataCoreOptions> configureCore,
-        Action<JJMasterDataCommonsOptions> configureCommons, IConfiguration loggingConfiguration = null)
+        Action<JJMasterDataCoreOptions> configureCore, IConfiguration loggingConfiguration = null)
     {
+        var coreOptions = new JJMasterDataCoreOptions();
+
+        configureCore(coreOptions);
+
         services.Configure(configureCore);
         
         services.AddDefaultServices();
-        return services.AddJJMasterDataCommons(configureCommons, loggingConfiguration);
+        return services.AddJJMasterDataCommons(ConfigureJJMasterDataCommonsOptions, loggingConfiguration);
+
+        void ConfigureJJMasterDataCommonsOptions(JJMasterDataCommonsOptions options)
+        {
+            options.ConnectionString = coreOptions.ConnectionString;
+            options.ConnectionProvider = coreOptions.ConnectionProvider;
+            options.LocalizationTableName = coreOptions.LocalizationTableName;
+            options.ReadProcedurePattern = coreOptions.ReadProcedurePattern;
+            options.WriteProcedurePattern = coreOptions.WriteProcedurePattern;
+            options.SecretKey = coreOptions.SecretKey;
+        }
     }
 
     public static JJMasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfiguration configuration)
@@ -45,6 +53,7 @@ public static class ServiceCollectionExtensions
         services.Configure<JJMasterDataCoreOptions>(configuration.GetJJMasterData());
         
         services.AddDefaultServices();
+        
         return services.AddJJMasterDataCommons(configuration);
     }
 

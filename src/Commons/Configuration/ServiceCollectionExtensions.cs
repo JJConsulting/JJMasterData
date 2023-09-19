@@ -1,29 +1,31 @@
 using System;
 using System.IO;
 using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Cryptography.Abstractions;
+using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Logging;
+using JJMasterData.Commons.Logging.Db;
+using JJMasterData.Commons.Logging.File;
+using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Configuration;
 
 public static class ServiceCollectionExtensions
 {
-    public static JJMasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, string filePath = "appsettings.json")
+    public static JJMasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services)
     {
-        string basePath = Directory.GetCurrentDirectory();
         var builder = new JJMasterDataServiceBuilder(services);
+        services.AddOptions<JJMasterDataCommonsOptions>();
 
-        if (File.Exists(Path.Combine(basePath, filePath)))
-        {
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(basePath)
-                .AddJsonFile(filePath, optional: false, reloadOnChange: true)
-                .Build();
-
-            builder.AddDefaultServices(configuration);
-            builder.Services.Configure<JJMasterDataCommonsOptions>(configuration.GetJJMasterData());
-        }
-
+        services.AddJJMasterDataCommonsServices();
+        
         return builder;
     }
 
@@ -31,8 +33,9 @@ public static class ServiceCollectionExtensions
     {
         var builder = new JJMasterDataServiceBuilder(services);
 
-        builder.AddDefaultServices(configuration);
         builder.Services.Configure<JJMasterDataCommonsOptions>(configuration.GetJJMasterData());
+        
+        services.AddJJMasterDataCommonsServices(configuration);
 
         return builder;
     }
@@ -41,9 +44,40 @@ public static class ServiceCollectionExtensions
     {
         var builder = new JJMasterDataServiceBuilder(services);
 
-        builder.AddDefaultServices(loggingConfiguration);
-        builder.Services.Configure(configure);
+        services.AddJJMasterDataCommonsServices(loggingConfiguration);
+        services.Configure(configure);
 
         return builder;
+    }
+    
+    private static IServiceCollection AddJJMasterDataCommonsServices(this IServiceCollection services,IConfiguration configuration = null)
+    {
+        services.AddLocalization();
+        services.AddMemoryCache();
+        services.AddSingleton<ResourceManagerStringLocalizerFactory>();
+        services.AddSingleton<IStringLocalizerFactory, JJMasterDataStringLocalizerFactory>();
+        services.Add(new ServiceDescriptor(typeof(IStringLocalizer<>), typeof(JJMasterDataStringLocalizer<>), ServiceLifetime.Transient));
+        services.AddLogging(builder =>
+        {
+            if (configuration != null)
+            {
+                var loggingOptions = configuration.GetSection("Logging");
+                builder.AddConfiguration(loggingOptions);
+
+                if (loggingOptions.GetSection(DbLoggerProvider.ProviderName) != null)
+                    builder.AddDbLoggerProvider();
+
+                if (loggingOptions.GetSection(FileLoggerProvider.ProviderName) != null)
+                    builder.AddFileLoggerProvider();
+            }
+        });
+
+        services.AddTransient<IEntityRepository, EntityRepository>();
+        services.AddTransient<IEncryptionAlgorithm, AesEncryptionAlgorithm>();
+        services.AddTransient<IEncryptionService,EncryptionService>();
+
+        services.AddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
+
+        return services;
     }
 }

@@ -8,27 +8,22 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Configuration.Options.Abstractions;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using System.Text;
+using JJMasterData.Web.Options;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Services;
 
 public class OptionsService : BaseService
 {
-    private IWritableOptions<ConnectionStrings>? ConnectionStringsWritableOptions { get; }
-    private IWritableOptions<ConnectionProviders>? ConnectionProvidersWritableOptions { get; }
-    internal IWritableOptions<JJMasterDataCommonsOptions>? JJMasterDataWritableOptions { get; }
+    internal IWritableOptions<JJMasterDataWebOptions>? JJMasterDataWritableOptions { get; }
 
     public OptionsService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IWritableOptions<ConnectionStrings>? connectionStringsWritableOptions = null,
-        IWritableOptions<JJMasterDataCommonsOptions>? masterDataWritableOptions = null,
-        IWritableOptions<ConnectionProviders>? connectionProvidersWritableOptions = null)
+        IWritableOptions<JJMasterDataWebOptions>? masterDataWritableOptions = null)
         : base(validationDictionary, dataDictionaryRepository, stringLocalizer)
     {
         JJMasterDataWritableOptions = masterDataWritableOptions;
-        ConnectionStringsWritableOptions = connectionStringsWritableOptions;
-        ConnectionProvidersWritableOptions = connectionProvidersWritableOptions;
     }
 
 
@@ -38,32 +33,24 @@ public class OptionsService : BaseService
 
         if (IsValid)
         {
-            await ConnectionStringsWritableOptions!.UpdateAsync(options =>
+            await JJMasterDataWritableOptions!.UpdateAsync(options =>
             {
                 options.ConnectionString = model.ConnectionString.ToString();
-            });
-
-            await ConnectionProvidersWritableOptions!.UpdateAsync(options =>
-            {
-                options.ConnectionString = model.ConnectionProvider.GetDescription();
+                options.ConnectionProvider = model.ConnectionProvider;
             });
         }
     }
 
     public async Task<OptionsViewModel> GetViewModel(bool isFullscreen)
     {
-        var stringConnection = ConnectionStringsWritableOptions?.Value.ConnectionString;
-        var stringProvider = ConnectionProvidersWritableOptions?.Value.ConnectionString;
-        var provider = DataAccessProvider.SqlServer;
+        var connectionString = JJMasterDataWritableOptions?.Value.ConnectionString;
+        var connectionProvider = JJMasterDataWritableOptions?.Value.ConnectionProvider ?? DataAccessProvider.SqlServer;
         
-        if (stringProvider != null)
-            provider = Enum.Parse<DataAccessProvider>(stringProvider);
-
-        var connectionResult = await GetConnectionResultAsync(stringConnection, provider);
+        var connectionResult = await GetConnectionResultAsync(connectionString, connectionProvider);
         var viewModel = new OptionsViewModel
         {
-            ConnectionString = new ConnectionString(stringConnection),
-            ConnectionProvider = provider,
+            ConnectionString = new ConnectionString(connectionString),
+            ConnectionProvider = connectionProvider,
             FilePath = JJMasterDataWritableOptions?.FilePath,
             IsFullscreen = isFullscreen,
             IsConnectionSuccessful = connectionResult.IsConnectionSuccessful
@@ -85,8 +72,7 @@ public class OptionsService : BaseService
 
     private void ValidateWritableOptions()
     {
-        if (ConnectionProvidersWritableOptions == null || JJMasterDataWritableOptions == null ||
-            ConnectionStringsWritableOptions == null)
+        if ( JJMasterDataWritableOptions == null)
             AddError("IWritableOptions",
                 GetWritableOptionsErrorMessage());
     }

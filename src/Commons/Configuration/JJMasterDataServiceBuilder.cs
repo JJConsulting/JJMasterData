@@ -27,38 +27,7 @@ public class JJMasterDataServiceBuilder
     {
         Services = services;
     }
-
-    public JJMasterDataServiceBuilder AddDefaultServices(IConfiguration configuration)
-    {
-        Services.AddLocalization();
-        Services.AddMemoryCache();
-        Services.AddSingleton<ResourceManagerStringLocalizerFactory>();
-        Services.AddSingleton<IStringLocalizerFactory, JJMasterDataStringLocalizerFactory>();
-        Services.Add(new ServiceDescriptor(typeof(IStringLocalizer<>), typeof(JJMasterDataStringLocalizer<>), ServiceLifetime.Transient));
-        Services.AddLogging(builder =>
-        {
-            if (configuration != null)
-            {
-                var loggingOptions = configuration.GetSection("Logging");
-                builder.AddConfiguration(loggingOptions);
-
-                if (loggingOptions.GetSection(DbLoggerProvider.ProviderName) != null)
-                    builder.AddDbLoggerProvider();
-
-                if (loggingOptions.GetSection(FileLoggerProvider.ProviderName) != null)
-                    builder.AddFileLoggerProvider();
-            }
-        });
-
-        Services.AddTransient<IEntityRepository, EntityRepository>();
-        Services.AddTransient<IEncryptionAlgorithm, AesEncryptionAlgorithm>();
-        Services.AddTransient<IEncryptionService,EncryptionService>();
-
-        Services.AddSingleton<IBackgroundTaskManager, BackgroundTaskManager>();
-
-        return this;
-    }
-
+    
     public JJMasterDataServiceBuilder WithBackgroundTask<T>() where T : class, IBackgroundTaskManager
     {
         Services.Replace(ServiceDescriptor.Transient<IBackgroundTaskManager, T>());

@@ -24,11 +24,11 @@ public class EntityRepository : IEntityRepository
     private BaseProvider Provider { get; }
     
     [ActivatorUtilitiesConstructor]
-    public EntityRepository(IConfiguration configuration, IOptions<JJMasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
+    public EntityRepository(IOptions<JJMasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
     {
         LoggerFactory = loggerFactory;
-        var connectionString = configuration.GetConnectionString("ConnectionString");
-        var connectionProvider = configuration.GetSection("ConnectionProviders").GetValue<string?>("ConnectionString") ?? "SqlServer";
+        var connectionString = options.Value.ConnectionString;
+        var connectionProvider = options.Value.ConnectionProvider;
         DataAccess = new DataAccess(connectionString, connectionProvider);
         Options = options.Value;
         Provider = GetProvider();

@@ -10,7 +10,7 @@ public class UrlRedirectAction : UserCreatedAction
     
     [JsonProperty("urlAsPopUp")]
     public bool IsModal { get; set; }
-
+    
     /// <summary>
     /// If the action is inside a modal, render as iFrame. If this is false, it will only add the resulting HTML inside the modal (recommended).
     /// </summary>
