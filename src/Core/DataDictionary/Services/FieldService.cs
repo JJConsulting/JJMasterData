@@ -66,7 +66,7 @@ public class FieldService : BaseService
         {
             switch (field.DataItem!.DataItemType)
             {
-                case DataItemType.Dictionary:
+                case DataItemType.ElementMap:
                     field.DataFile = null;
                     field.DataItem.Command = null;
                     field.DataItem.Items?.Clear();
@@ -225,7 +225,7 @@ public class FieldService : BaseService
             RemoveError("DataItem.Command.Sql");
             ValidateManualItens(dataItem.Items);
         }
-        else if (dataItem.DataItemType == DataItemType.Dictionary)
+        else if (dataItem.DataItemType == DataItemType.ElementMap)
         {
             
             await ValidateDataElementMapAsync(field);

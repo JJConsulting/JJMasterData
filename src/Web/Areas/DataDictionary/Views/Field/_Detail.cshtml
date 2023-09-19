@@ -1,7 +1,6 @@
 ﻿@using JJMasterData.Commons.Data.Entity
 @using JJMasterData.Core.Web
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FormElementField
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
@@ -186,16 +185,15 @@
                            })
                 }
             }
-            else if (Model.Component == FormComponent.ComboBox |
-                     Model.Component == FormComponent.Search)
+            else if (Model.Component is FormComponent.ComboBox or FormComponent.Search)
             {
                 @await Html.PartialAsync("_DataItem", Model)
             }
-            else if (Model.Component == FormComponent.Lookup)
+            else if (Model.Component is FormComponent.Lookup)
             {
-                @await Html.PartialAsync("_Lookup", Model)
+                @await Html.PartialAsync("_DataItemElementMap", Model)
             }
-            else if (Model.Component == FormComponent.File)
+            else if (Model.Component is FormComponent.File)
             {
                 @await Html.PartialAsync("_DataFile", Model)
             }

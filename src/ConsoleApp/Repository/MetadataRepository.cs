@@ -140,7 +140,7 @@ public class MetadataRepository
                 if (field.DataItem.Command != null && !string.IsNullOrEmpty(field.DataItem.Command.Sql))
                     field.DataItem.DataItemType = DataItemType.SqlCommand;
                 else if (field.DataItem.ElementMap != null && !string.IsNullOrEmpty(field.DataItem.ElementMap.ElementName))
-                    field.DataItem.DataItemType = DataItemType.Dictionary;
+                    field.DataItem.DataItemType = DataItemType.ElementMap;
             }
         }
 
