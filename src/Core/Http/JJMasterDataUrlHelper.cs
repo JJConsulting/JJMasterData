@@ -14,7 +14,7 @@ namespace JJMasterData.Core.Web;
 public class JJMasterDataUrlHelper 
 {
     private IHttpRequest HttpRequest { get; }
-    public string? JJMasterDataUrl { get; }
+    private string? JJMasterDataUrl { get; }
     public JJMasterDataUrlHelper(IHttpRequest httpRequest,IOptions<JJMasterDataCoreOptions> options)
     {
         JJMasterDataUrl = options.Value.JJMasterDataUrl;
@@ -26,7 +26,7 @@ public class JJMasterDataUrlHelper
 
         string baseUrl;
         
-        if (JJMasterDataUrl is null)
+        if (JJMasterDataUrl is null || string.IsNullOrEmpty(JJMasterDataUrl))
         {
             var appPath = HttpRequest.ApplicationPath;
 
