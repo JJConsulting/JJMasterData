@@ -55,7 +55,7 @@ public class ElementMapService
         }
         else
         {
-            filters[elementMap.FieldKey] = StringManager.ClearText(value?.ToString());
+            filters[elementMap.FieldId] = StringManager.ClearText(value?.ToString());
         }
        
         return filters;

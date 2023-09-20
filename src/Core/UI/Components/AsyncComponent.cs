@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using JJMasterData.Core.UI.Components;
 
@@ -9,6 +10,8 @@ namespace JJMasterData.Core.Web.Components;
 /// <summary>
 /// A ComponentBase with asynchronous programming support.
 /// </summary>
+
+[DebuggerStepThrough]
 public abstract class AsyncComponent : ComponentBase
 {
     public async Task<ComponentResult> GetResultAsync()

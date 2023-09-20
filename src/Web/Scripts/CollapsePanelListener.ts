@@ -1,7 +1,7 @@
 class CollapsePanelListener{
     static listen(name) {
         let nameSelector = "#" + name;
-        let collapseSelector = '#collapse_mode_' + name;
+        let collapseSelector = '#collapse-mode-' + name;
 
         document.addEventListener("DOMContentLoaded", function() {
             let collapseElement = document.querySelector(nameSelector);

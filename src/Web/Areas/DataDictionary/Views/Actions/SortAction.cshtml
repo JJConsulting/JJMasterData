@@ -11,15 +11,15 @@
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
     <ul class="nav nav-tabs">
-        <li id="navGeneral" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a></li>
-        <li id="navAdvanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@StringLocalizer["Advanced"]</a></li>
+        <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
+        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
     </ul>
 
     <div class="tab-content" style="margin-top: 20px;">
-        <div id="divGeneral" class="tab-pane fade active @BootstrapHelper.Show">
+        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
             @await Html.PartialAsync("_NavGeneral", Model)
         </div>
-        <div id="divAdvanced" class="tab-pane fade">
+        <div id="div-advanced" class="tab-pane fade">
             @await Html.PartialAsync("_NavAdvanced", Model)
         </div>
     </div>

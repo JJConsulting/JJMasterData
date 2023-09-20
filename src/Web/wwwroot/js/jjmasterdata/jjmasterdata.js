@@ -205,7 +205,7 @@ class CheckboxHelper {
 class CollapsePanelListener {
     static listen(name) {
         let nameSelector = "#" + name;
-        let collapseSelector = '#collapse_mode_' + name;
+        let collapseSelector = '#collapse-mode-' + name;
         document.addEventListener("DOMContentLoaded", function () {
             let collapseElement = document.querySelector(nameSelector);
             collapseElement.addEventListener("hidden.bs.collapse", function () {
@@ -1788,7 +1788,7 @@ class SearchBoxListener {
                 triggerLength: triggerLength,
                 items: numberOfItems,
                 scrollBar: scrollbar,
-                item: '<li class="dropdown-item"><a href="#"></a></li>',
+                item: '<li><a class="dropdown-item" href="#"></a></li>',
                 highlighter: function (item) {
                     const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
                     let textSel;

@@ -5,57 +5,59 @@
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @{
-    string currentTab = ViewBag.Tab;
+    string currentTab = ViewBag.Tab ?? "#div-general";
 
-    string IsActive(string tab)
+    string Active(string tab)
     {
-        if (currentTab == tab)
-        {
-            return "active";
-        }
-        return string.Empty;
+        return currentTab == tab ? "active show" : string.Empty;
     }
 }
 
 <script lang="javascript" type="text/javascript">
     function save() {
         SpinnerOverlay.show();
-        const url = "@Url.Action("Save", new { elementName = ViewBag.ElementName })";
-        $("form:first").attr("action", url).submit();
+        const url = `@Url.Action("Save", new { elementName = ViewBag.ElementName })`;
+        const form = document.querySelector("form");
+        form.action = url;
+        form.requestSubmit();
     }
-
+    
     function copy() {
         SpinnerOverlay.show();
-        const url = "@Url.Action("Copy", new { elementName = ViewBag.ElementName })";
-        $("form:first").attr("action", url).submit();
+        const url = `@Url.Action("Copy", new { elementName = ViewBag.ElementName })`;
+        const form = document.querySelector("form");
+        form.action = url;
+        form.requestSubmit();
     }
-
+    
     function showSuccess(fieldName) {
-        $(document).ready(function () {
-            $("#divSuccess").css("display", "");
-            window.parent.$('#current_field').val(fieldName);
-            window.parent.cmdRefresh();
+        document.addEventListener("DOMContentLoaded", function () {
+            const successDiv = document.getElementById("div-success");
+            successDiv.style.display = "";
+            window.parent.document.querySelector('#current_field').value = fieldName;
         });
     }
+
+   
 </script>
 
 @Html.HiddenFor(model => Model.PanelId)
 <div class="container-fluid jjcontainer">
 
-    <ul class="nav nav-tabs">
-        <li class="nav-item" id="navGeneral" @IsActive("navGeneral")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a>
+    <ul id="field-nav" class="nav nav-tabs">
+        <li class="nav-item" id="nav-general" @Active("#div-general")>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-general" href="#div-general">@StringLocalizer["General"]</a>
         </li>
-        <li class="nav-item" id="navComponent" @IsActive("navComponent")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divComponent">@StringLocalizer["Component"]</a>
+        <li class="nav-item" id="nav-component" @Active("#div-component")>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-component" href="#div-component">@StringLocalizer["Component"]</a>
         </li>
-        <li class="nav-item" id="navAdvanced" @IsActive("navAdvanced")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@StringLocalizer["Advanced"]</a>
+        <li class="nav-item" id="nav-advanced" @Active("#div-advanced")>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-advanced" href="#div-advanced">@StringLocalizer["Advanced"]</a>
         </li>
     </ul>
 
     <div class="tab-content" style="margin-top: 20px;">
-        <div id="divGeneral" class="tab-pane fade">
+        <div id="div-general" class="tab-pane fade @Active("#div-general")">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label " for="Name">@StringLocalizer["FieldName"]</label>
@@ -78,7 +80,7 @@
                     <select asp-for="Filter.Type" class="form-control form-select" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="DataBehavior">@StringLocalizer["DataBehavior"]</label>
+                    <label class="@BootstrapHelper.Label " for="DataBehavior">@StringLocalizer["Data Behavior"]</label>
 
                     <tooltip title="Field behavior in relation to the database"/>
 
@@ -122,7 +124,7 @@
 
         </div>
 
-        <div id="divComponent" class="tab-pane fade">
+        <div id="div-component" class="tab-pane fade @Active("#div-component")">
             <div class="row">
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
@@ -200,7 +202,7 @@
 
         </div>
 
-        <div id="divAdvanced" class="tab-pane fade">
+        <div id="div-advanced" class="tab-pane fade @Active("#div-advanced")">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
                     <label class="@BootstrapHelper.Label " for="VisibleExpression">@StringLocalizer["Visible Expression"]</label>
@@ -265,7 +267,7 @@
         </div>
 
         <div class="col-sm-12">
-            <div id="divSuccess" class="alert alert-success alert-dismissible" role="alert" style="display:none">
+            <div id="div-success" class="alert alert-success alert-dismissible" role="alert" style="display:none">
                 <button type="button" class="@BootstrapHelper.Close" @BootstrapHelper.GetDataDismiss("alert") aria-label="Close">
                     <span aria-hidden="true">@BootstrapHelper.CloseButtonTimes</span>
                 </button>

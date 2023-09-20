@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
@@ -88,7 +89,7 @@ public class JJComboBox : ControlBase
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass(CssClass)
             .WithCssClass("form-control ")
-            .WithCssClass((MultiSelect || DataItem.ShowImageLegend) ? "selectpicker" : "form-select")
+            .WithCssClass((MultiSelect || DataItem.ShowIcon) ? "selectpicker" : "form-select")
             .WithNameAndId(Name)
             .WithAttributeIf(MultiSelect, "multiple")
             .WithAttributeIf(MultiSelect, "title", StringLocalizer["All"])
@@ -125,12 +126,19 @@ public class JJComboBox : ControlBase
             {
                 isSelected = SelectedValue.Split(',').Contains(value.Id);
             }
+            
+            var content = new HtmlBuilder(HtmlTag.Div);
+            content.AppendComponentIf(DataItem.ShowIcon,new JJIcon(value.Icon,value.IconColor));
+            content.Append(HtmlTag.Span, span =>
+            {
+                span.AppendText(value.Description);
+                span.WithCssClassIf(DataItem.ShowIcon,$"{BootstrapHelper.MarginLeft}-1");
+            });
 
             var option = new HtmlBuilder(HtmlTag.Option)
                 .WithValue(value.Id)
                 .WithAttributeIf(isSelected, "selected")
-                .WithAttributeIf(DataItem.ShowImageLegend, "data-icon", value.Icon.GetCssClass())
-                .AppendText(label);
+                .WithAttributeIf(DataItem.ShowIcon, "data-content",HttpUtility.HtmlAttributeEncode(content.ToString()));
 
             yield return option;
         }
@@ -202,7 +210,7 @@ public class JJComboBox : ControlBase
 
         var label = IsManualValues() ? StringLocalizer[item.Description] : item.Description;
 
-        if (DataItem.ShowImageLegend)
+        if (DataItem.ShowIcon)
         {
             var div = new HtmlBuilder(HtmlTag.Div);
 

@@ -49,7 +49,7 @@ public class DataItemService : IDataItemService
     {
         foreach (var i in values.ToArray())
         {
-            var description = dataItem.ShowImageLegend
+            var description = dataItem.ShowIcon
                 ? $"{i.Description}|{i.Icon.GetCssClass()}|{i.IconColor}"
                 : i.Description;
 
@@ -91,13 +91,16 @@ public class DataItemService : IDataItemService
         {
             var item = new DataItemValue
             {
-                Id = value[elementMap!.FieldKey]?.ToString(),
+                Id = value[elementMap!.FieldId]?.ToString(),
                 Description = value[elementMap.FieldDescription]?.ToString(),
             };
-            if (dataItem.ShowImageLegend)
+            if (dataItem.ShowIcon)
             {
-                item.Icon = (IconType)int.Parse(value[elementMap.FieldIconId!]?.ToString() ?? string.Empty);
-                item.IconColor = value[elementMap.FieldIconColor!]?.ToString();
+                if (elementMap.FieldIconId != null)
+                    item.Icon = (IconType)int.Parse(value[elementMap.FieldIconId]?.ToString() ?? string.Empty);
+                
+                if (elementMap.FieldIconColor != null)
+                    item.IconColor = value[elementMap.FieldIconColor]?.ToString();
             }
 
             if (searchText == null || item.Description!.ToLower().Contains(searchText))
@@ -123,7 +126,7 @@ public class DataItemService : IDataItemService
                 Id = row.ElementAt(0).Value?.ToString(),
                 Description = row.ElementAt(1).Value?.ToString()!.Trim()
             };
-            if (dataItem.ShowImageLegend)
+            if (dataItem.ShowIcon)
             {
                 item.Icon = (IconType)int.Parse(row.ElementAt(2).Value?.ToString() ?? string.Empty);
                 item.IconColor = row.ElementAt(3).Value?.ToString();

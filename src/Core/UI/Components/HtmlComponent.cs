@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
+[DebuggerStepThrough]
 public abstract class HtmlComponent : ComponentBase
 {
     /// <summary>

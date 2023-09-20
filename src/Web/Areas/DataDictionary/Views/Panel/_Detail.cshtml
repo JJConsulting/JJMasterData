@@ -6,28 +6,30 @@
 
 <script lang="javascript" type="text/javascript">
 
-    $(document).ready(function () {
+    document.addEventListener("DOMContentLoaded", function () {
         saveOptions();
     });
 
     function save() {
         SpinnerOverlay.show();
-        var url = "@Url.Action("Save", new { elementName = ViewBag.ElementName })";
-        $("form:first").attr("action", url).submit();
+        const url = "@Url.Action("Save", new { elementName = ViewBag.ElementName })";
+        const form = document.querySelector("form");
+        form.action = url;
+        form.submit();
     }
-
+    
     function copy() {
         SpinnerOverlay.show();
-        var url = "@Url.Action("Copy", new { elementName = ViewBag.ElementName })";
-        $("form:first").attr("action", url).submit();
+        const url = "@Url.Action("Copy", new { elementName = ViewBag.ElementName })";
+        const form = document.querySelector("form");
+        form.action = url;
+        form.submit();
     }
-
+    
     function showSuccess(fieldName) {
-        $(document).ready(function () {
-            $("#divSuccess").css("display", "");
-            window.parent.$('#current_field').val(fieldName);
-            window.parent.cmdRefresh();
-        });
+        const successDiv = document.getElementById("div-success");
+        successDiv.style.display = "";
+        window.parent.document.querySelector('#current-field').value = fieldName;
     }
 
 
@@ -76,29 +78,28 @@
         $('#listSelected option:selected').detach().insertAfter(after);
         saveOptions();
     }
-
 </script>
 
 
-<div class="container-fluid jjcontainer">
+<div class="container-fluid">
 
     <ul class="nav nav-tabs">
-        <li id="navGeneral" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divGeneral">@StringLocalizer["General"]</a>
+        <li id="nav-general" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
         </li>
-        <li id="navAdvanced" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAdvanced">@StringLocalizer["Advanced"]</a>
+        <li id="nav-advanced" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
         </li>
     </ul>
 
     @Html.HiddenFor(model => model.PanelId)
     <div class="tab-content" style="margin-top: 20px;">
-        <div id="divGeneral" class="tab-pane fade">
+        <div id="div-general" class="tab-pane fade">
             <partial name="_DetailData" model="Model"/>
             <partial name="_DetailFields" model="Model"/>
         </div>
 
-        <div id="divAdvanced" class="tab-pane fade">
+        <div id="div-advanced" class="tab-pane fade">
             <partial name="_DetailAdvanced" model="Model"/>
         </div>
 
@@ -110,7 +111,7 @@
         </div>
 
         <div class="col-sm-12">
-            <div id="divSuccess" class="alert alert-success alert-dismissible" role="alert" style="display:none">
+            <div id="div-success" class="alert alert-success alert-dismissible" role="alert" style="display:none">
                 <button type="button" class="@BootstrapHelper.Close" @BootstrapHelper.GetDataDismiss("alert") aria-label="Close">
                     <span aria-hidden="true">@BootstrapHelper.CloseButtonTimes</span>
                 </button>

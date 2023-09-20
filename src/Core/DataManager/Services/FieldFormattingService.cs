@@ -35,7 +35,7 @@ public class FieldFormattingService : IFieldFormattingService
         if (field == null)
             throw new ArgumentNullException(nameof(field), "FormElementField cannot be null");
 
-        string stringValue = null;
+        string stringValue;
         switch (field.Component)
         {
             case FormComponent.Number:

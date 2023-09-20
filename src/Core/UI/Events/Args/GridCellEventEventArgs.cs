@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.FormEvents.Args;
 
@@ -28,5 +29,5 @@ public class GridCellEventArgs : EventArgs
     /// <summary>
     /// Retorno esperado com o conteudo HTML renderizado
     /// </summary>
-    public string HtmlResult { get; set; }
+    public HtmlBuilder HtmlResult { get; set; }
 }

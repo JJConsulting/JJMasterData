@@ -117,7 +117,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                         await OnRenderCellAsync(this, args);
                     }
                     
-                    value = args.HtmlResult;
+                    value = args.HtmlResult.ToString();
                 }
 
                 await sw.WriteAsync(value);

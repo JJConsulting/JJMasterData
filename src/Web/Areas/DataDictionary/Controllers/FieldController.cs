@@ -72,7 +72,7 @@ public class FieldController : DataDictionaryController
         
         var iconSearchBox = _searchBoxFactory.Create();
         iconSearchBox.Name = fieldName ?? "searchBox";
-        iconSearchBox.DataItem.ShowImageLegend = true;
+        iconSearchBox.DataItem.ShowIcon = true;
         iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
             .Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
 
@@ -210,17 +210,21 @@ public class FieldController : DataDictionaryController
         if (formElement.Fields.Contains(field.Name))
             field.Actions = formElement.Fields[field.Name].Actions;
 
-        if (!string.IsNullOrEmpty(Request.Query["selected-tab"]))
-            ViewBag.Tab = Request.Form["selected-tab"].ToString();
-        else if (TempData["selected-tab"] != null)
-            ViewBag.Tab = TempData["selected-tab"]!;
+        if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab)) 
+            ViewBag.Tab = selectedTab;
 
+        else if (TempData.TryGetValue("selected-tab",  out var tempSelectedTab))
+            ViewBag.Tab = tempSelectedTab?.ToString()!;
+        
         if (TempData.TryGetValue("error", out var value))
             ViewBag.Error = value!;
 
-        if ((string?)Request.Query["originalName"] != null)
-            ViewBag.OriginalName = Request.Form["originalName"].ToString();
-        else if (TempData["originalName"] != null)
+        if (Request.HasFormContentType && Request.Form.TryGetValue("originalName", out var originalName))
+            ViewBag.OriginalName = originalName;
+        else if (TempData.TryGetValue("originalName",  out var tempOriginalName))
+            ViewBag.OriginalName = tempOriginalName?.ToString()!;
+        
+        if (TempData["originalName"] != null)
             ViewBag.OriginalName = TempData["originalName"]!;
         else
             ViewBag.OriginalName = field.Name;

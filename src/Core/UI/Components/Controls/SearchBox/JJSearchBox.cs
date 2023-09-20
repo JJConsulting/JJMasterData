@@ -266,7 +266,7 @@ public class JJSearchBox : ControlBase
             input.WithAttribute("query-string", GetQueryString());
             input.WithAttribute("autocomplete", "off");
             input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
-            input.WithAttributeIf(DataItem.ShowImageLegend, "show-image-legend", "true");
+            input.WithAttributeIf(DataItem.ShowIcon, "show-image-legend", "true");
             input.WithAttributeIf(ReadOnly, "readonly", "readonly");
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
             input.WithAttributes(Attributes);

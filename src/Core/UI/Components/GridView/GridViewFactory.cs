@@ -33,14 +33,15 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
     private IComponentFactory Factory { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
+    private IDataItemService DataItemService { get; }
     private IHttpContext CurrentContext { get; }
 
 
     public GridViewFactory(
-        IDataDictionaryRepository dataDictionaryService,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
+        IDataItemService dataItemService,
         JJMasterDataUrlHelper urlHelper,
         IExpressionsService expressionsService,
         IEncryptionService encryptionService,
@@ -61,12 +62,13 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         Factory = factory;
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
+        DataItemService = dataItemService;
     }
 
 
     public JJGridView Create(FormElement formElement)
     {
-        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, DataDictionaryRepository,
+        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, DataDictionaryRepository,DataItemService,
             UrlHelper,
             ExpressionsService,
             EncryptionService, FieldsService, FormValuesService, StringLocalizer, Factory);

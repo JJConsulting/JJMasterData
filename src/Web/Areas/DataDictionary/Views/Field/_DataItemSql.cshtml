@@ -5,9 +5,73 @@
 
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @{
-    bool showImage = Model.DataItem!.ShowImageLegend;
+    bool showImage = Model.DataItem!.ShowIcon;
 }
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+         $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function () {
+             refreshCodeMirror();
+         });
+         buildCodeMirror();
+    });
+
+
+    function refreshCodeMirror() {
+        var codeMirror = $(".CodeMirror");
+        var cm1 = codeMirror[0];
+        if (cm1 && cm1.CodeMirror) {
+            cm1.CodeMirror.refresh();
+        }
+
+        var cm2 = codeMirror[1];
+        if (cm2 && cm2.CodeMirror) {
+            cm2.CodeMirror.refresh();
+        }
+    }
+
+    function buildCodeMirror() {
+        var cm = CodeMirror.fromTextArea(document.getElementById('DataItem_Command_Sql'), {
+            mode: "text/x-sql",
+            indentWithTabs: true,
+            smartIndent: true,
+            lineNumbers: true,
+            matchBrackets: true,
+            autofocus: true,
+            autohint: true,
+            extraKeys: { "Ctrl-Space": "autocomplete" },
+            hintOptions: {
+                tables: {
+                    AppUser: ["USR_ID", "USR_USERNAME", "USR_FIRSTNAME", "USR_LASTNAME", "USR_EMAIL", "USR_ISDISABLED"],
+                    AppMenu: ["MNU_ID", "MNU_ORDER", "MNU_ICON", "MNU_LABEL", "MNU_TYPE", "MNU_ACTION"],
+                }
+            }
+        });
+
+        cm.setSize(null, 250);
+
+        // Register our custom Codemirror hint plugin.
+        CodeMirror.registerHelper('hint', 'dictionaryHint', function (editor) {
+            var dictionary = @Html.Raw(ViewBag.HintDictionary);
+            var cur = editor.getCursor();
+            var start = cur.ch;
+            var end = start;
+            return {
+                list: dictionary,
+                from: CodeMirror.Pos(cur.line, start),
+                to: CodeMirror.Pos(cur.line, end)
+            }
+        });
+
+        cm.on("keyup", function (cm, event) {
+            if (!cm.state.completionActive && /*Enables keyboard navigation in autocomplete list*/
+                event.keyCode == 219) {       /*Enter - do not open autocomplete list just after item has been selected in it*/
+                CodeMirror.commands.autocomplete(cm, CodeMirror.hint.dictionaryHint, { completeSingle: false });
+                //CodeMirror.showHint(cm, CodeMirror.hint.dictionaryHint);
+            }
+        });
+    }
+</script>
 
 <div id="divSqlCommand" >
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">

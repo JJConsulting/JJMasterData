@@ -46,7 +46,7 @@ public class LookupService : ILookupService
     
     public string GetFormViewUrl(DataElementMap elementMap, FormStateData formStateData, string componentName)
     {
-        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.FieldKey,elementMap.FieldDescription,
+        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.FieldId,elementMap.FieldDescription,
             elementMap.EnableElementActions, elementMap.Filters);
 
         var encryptedLookupParameters =
@@ -99,7 +99,7 @@ public class LookupService : ILookupService
 
 
         if (string.IsNullOrEmpty(elementMap.FieldDescription))
-            return fields[elementMap.FieldKey]?.ToString();
+            return fields[elementMap.FieldId]?.ToString();
 
         return fields.Any() ? fields[elementMap.FieldDescription]?.ToString() : null;
     }

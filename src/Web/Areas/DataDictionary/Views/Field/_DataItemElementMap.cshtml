@@ -8,31 +8,31 @@
             <label class="@BootstrapHelper.Label ">@StringLocalizer["ElementName"]</label>
             @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.ElementName,
                 new SelectList(ViewBag.ElementNameList, "Key", "Value"),
-                new { @class = "form-control form-select", onchange = "this.form.requestSubmit();" })
+                new { @class = "form-control form-select", onchange = "document.forms[0].submit();" })
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-3 required">
-            <label class="@BootstrapHelper.Label">@StringLocalizer["Field Key"]</label>
-            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldKey,
+            <label class="@BootstrapHelper.Label">@StringLocalizer["Id"]</label>
+            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldId,
                 new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                 new { @class = "form-control form-select" })
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-3">
-            <label class="@BootstrapHelper.Label">@StringLocalizer["Field Description"]</label>
+            <label class="@BootstrapHelper.Label">@StringLocalizer["Description"]</label>
             @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldDescription,
                 new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                 new { @class = "form-control form-select" })
         </div>
 
-        @if (Model.Component is FormComponent.ComboBox or FormComponent.Search && Model.DataItem!.ShowImageLegend)
+        @if (Model.Component is FormComponent.ComboBox or FormComponent.Search && Model.DataItem!.ShowIcon)
         {
             <div class="@BootstrapHelper.FormGroup col-sm-3">
-                <label class="@BootstrapHelper.Label">@StringLocalizer["Field Icon"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldDescription,
+                <label class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldIconId,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                     new { @class = "form-control form-select" })
             </div>
             <div class="@BootstrapHelper.FormGroup col-sm-3">
-                <label class="@BootstrapHelper.Label">@StringLocalizer["Field Icon Color"]</label>
+                <label class="@BootstrapHelper.Label">@StringLocalizer["Icon Color"]</label>
                 @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldIconColor,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                     new { @class = "form-control form-select" })
@@ -73,7 +73,7 @@
                     var mapFilter = Model.DataItem.ElementMap.MapFilters[i];
                     <tr>
                         <td>
-                            @mapFilter.FieldName <span>=</span>@mapFilter.ExpressionValue
+                            @mapFilter.FieldName<i class="fa-solid fa-arrow-right"></i>@mapFilter.ExpressionValue
                             @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[i].FieldName, mapFilter.FieldName)
                             @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[i].ExpressionValue, mapFilter.ExpressionValue)
                         </td>

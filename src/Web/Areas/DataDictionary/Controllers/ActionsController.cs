@@ -87,7 +87,7 @@ public class ActionsController : DataDictionaryController
     private async Task<ComponentResult> GetIconSearchBoxResult(BasicAction? action)
     {
         var iconSearchBox = _searchBoxFactory.Create();
-        iconSearchBox.DataItem.ShowImageLegend = true;
+        iconSearchBox.DataItem.ShowIcon = true;
         iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
             .Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
         iconSearchBox.SelectedValue = ((int)action!.Icon).ToString();

@@ -10,7 +10,7 @@ public class DataElementMap
     [JsonProperty("elementName")] public string ElementName { get; set; } = null!;
 
     [JsonProperty("fieldKey")]
-    public string FieldKey { get; set; } = null!;
+    public string FieldId { get; set; } = null!;
 
     [JsonProperty("fieldDescription")]
     public string FieldDescription { get; set; } = null!;

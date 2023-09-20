@@ -73,17 +73,16 @@
     <script src="~/_content/JJMasterData.Web/js/codemirror/mode/sql/sql.js" type="text/javascript"></script>
     <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js" type="text/javascript"></script>
     <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js" type="text/javascript"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
+    <script type="text/javascript">        
+        document.addEventListener("DOMContentLoaded",function (){
             sortableGrid();
-            savePanelState();
+            saveTabState();
     
             resizeContainer();
             window.onresize = resizeContainer;
-        });
+        })
     
         function resizeContainer() {
-    
             const buttonBar = document.getElementsByClassName("jjtoolbar");
             let container = document.getElementsByClassName("jjcontainer");
             let containerHeight = 0;
@@ -101,18 +100,44 @@
             }
         }
     
-        function savePanelState() {
-            let currentTab = $("#selected-tab").val();
+        function saveTabState() {
+            let currentTab = document.querySelector("#selected-tab").value;
+            console.log("<h1>"+currentTab+"</h1>")
             if (!currentTab) {
-                currentTab = "#divGeneral";
+                currentTab = "#div-general";
             }
-            $(".nav a[href='" + currentTab + "']").tab("show");
-    
-            $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
-                const target = $(e.target).attr("href");
-                $("#selected-tab").val(target);
-  
-                resizeContainer();
+            
+            let tabLinks = document.querySelectorAll("[@BootstrapHelper.DataToggle='tab']");
+            tabLinks.forEach(function(link) {
+                if (link.getAttribute('href') === currentTab) {
+                    link.classList.add('active');
+                    link.classList.add('show');
+                } else {
+                    link.classList.remove('active');
+                    link.classList.remove('remove');
+                }
+            });
+            
+            document.querySelectorAll(".tab-pane").forEach(function (tabPane){
+              if (tabPane.id === currentTab.replace("#","")) {
+                    tabPane.classList.add('active');
+                    tabPane.classList.add('show');
+                } else {
+                    tabPane.classList.remove('active');
+                    tabPane.classList.remove('remove');
+                }
+            })
+        
+            document.querySelector(currentTab).classList.add('active');
+            document.querySelector(currentTab).classList.add('show');
+            
+            tabLinks.forEach(function(tabLink) {
+                tabLink.addEventListener("click", function(e) {
+                   
+                    document.querySelector("#selected-tab").value = e.target.getAttribute("href");
+        
+                    resizeContainer();
+                });
             });
         }
     
@@ -143,16 +168,20 @@
         }
     
         function loadFieldDetails(url, fieldName) {
-            $("#sortable-grid a").removeClass("active");
+            document.querySelector("#sortable-grid .active").classList.remove("active");
     
             if (fieldName !== "")
-                $("#" + fieldName).addClass("active");
+                document.querySelector("#" + fieldName).classList.add("active");
+            
+            SpinnerOverlay.show()
             
             fetch(url).then((response)=>response.text()).then((html)=>{
                 document.querySelector("#field-details").innerHTML = html;
                 listenAllEvents("#field-details");
-                savePanelState();
+                saveTabState();
                 resizeContainer();
+                
+                SpinnerOverlay.hide()
             })
         }
     

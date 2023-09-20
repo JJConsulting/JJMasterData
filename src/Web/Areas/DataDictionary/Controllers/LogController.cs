@@ -10,6 +10,7 @@ using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Controls;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Html;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -66,7 +67,7 @@ public class LogController : DataDictionaryController
                 }
             
             }
-            args.HtmlResult = message;
+            args.HtmlResult = new HtmlBuilder(message ?? string.Empty);
         };
         
         var result = await formView.GetResultAsync();

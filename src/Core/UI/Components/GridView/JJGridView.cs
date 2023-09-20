@@ -536,6 +536,7 @@ public class JJGridView : AsyncComponent
 
     internal IHttpContext CurrentContext { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
+    internal IDataItemService DataItemService { get; }
     internal IEncryptionService EncryptionService { get; }
 
     #endregion
@@ -547,6 +548,7 @@ public class JJGridView : AsyncComponent
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
+        IDataItemService dataItemService,
         JJMasterDataUrlHelper urlHelper,
         IExpressionsService expressionsService,
         IEncryptionService encryptionService,
@@ -576,6 +578,7 @@ public class JJGridView : AsyncComponent
         UrlHelper = urlHelper;
         CurrentContext = currentContext;
         DataDictionaryRepository = dataDictionaryRepository;
+        DataItemService = dataItemService;
         FormValuesService = formValuesService;
     }
 

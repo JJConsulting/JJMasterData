@@ -104,7 +104,7 @@ internal class GridLegendView
     private FormElementField GetLegendField()
     {
         return FormElement.Fields.FirstOrDefault(f 
-            => f.Component == FormComponent.ComboBox && (f.DataItem?.ShowImageLegend ?? false));
+            => f.Component == FormComponent.ComboBox && (f.DataItem?.ShowIcon ?? false));
     }
 
 }

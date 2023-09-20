@@ -111,7 +111,7 @@ internal class GridSortingConfig
         tbody.WithAttribute("id", $"sortable-{Name}");
         tbody.WithCssClass("ui-sortable jjsortable");
         
-        ComboBox.DataItem.ShowImageLegend = true;
+        ComboBox.DataItem.ShowIcon = true;
         ComboBox.DataItem.Items = new List<DataItemValue>
         {
             new("A", _stringLocalizer["Ascendant"], IconType.SortAmountAsc, null),

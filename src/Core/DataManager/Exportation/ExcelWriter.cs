@@ -201,7 +201,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                 await OnRenderCellAsync(this, args);
             }
 
-            value = args.HtmlResult;
+            value = args.HtmlResult.ToString();
         }
 
         return value;
