@@ -150,7 +150,7 @@ internal class GridTableHeader
         {
             case FormComponent.ComboBox:
             {
-                if (field.DataItem is { ShowImageLegend: true, ReplaceTextOnGrid: false })
+                if (field.DataItem is { ShowIcon: true, ReplaceTextOnGrid: false })
                 {
                     style = "text-align:center";
                 }

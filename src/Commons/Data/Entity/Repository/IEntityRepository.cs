@@ -142,8 +142,13 @@ public interface IEntityRepository
     /// <returns>
     /// Returns a DictionaryListResult with the records found and the count of records at your data source.
     /// </returns>
-    Task<DictionaryListResult> GetDictionaryListAsync(
+    Task<DictionaryListResult> GetDictionaryListResultAsync(
         Element element,
         EntityParameters? parameters = null,
         bool recoverTotalOfRecords = true);
+
+    Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(
+        Element element,
+        EntityParameters? parameters = null
+    );
 }

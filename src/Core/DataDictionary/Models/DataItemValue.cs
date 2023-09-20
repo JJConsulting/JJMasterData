@@ -24,7 +24,7 @@ public class DataItemValue
     /// #FF112F1
     /// </example>
     [JsonProperty("imagecolor")]
-    public string ImageColor { get; set; }
+    public string IconColor { get; set; }
 
 
     public DataItemValue() { }
@@ -34,12 +34,12 @@ public class DataItemValue
         Id = id;
         Description = description;
     }
-    public DataItemValue(string id, string description, IconType icon, string imageColor)
+    public DataItemValue(string id, string description, IconType icon, string iconColor)
     {
         Id = id;
         Description = description;
         Icon = icon;
-        ImageColor = imageColor;
+        IconColor = iconColor;
     }
 
 }

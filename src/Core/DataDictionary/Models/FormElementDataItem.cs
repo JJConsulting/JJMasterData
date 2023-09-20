@@ -84,7 +84,7 @@ public class FormElementDataItem
     /// propriedade ReplaceTextOnGrid esta configurada para falso.
     /// </remarks>
     [JsonProperty("showimagelegend")]
-    public bool ShowImageLegend { get; set; }
+    public bool ShowIcon { get; set; }
 
     public bool HasSqlExpression()
     {

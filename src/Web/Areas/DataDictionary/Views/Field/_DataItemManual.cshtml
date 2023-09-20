@@ -9,100 +9,139 @@
 
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @{
-    bool showImage = Model.DataItem!.ShowImageLegend;
+    bool showImage = Model.DataItem!.ShowIcon;
 }
 
+<script lang="javascript" type="text/javascript">
+   
+
+    function addDataItem(qtd) {
+        SpinnerOverlay.show();
+        $("<input>").attr({
+            type: "hidden",
+            id: "qtdRowsToAdd",
+            name: "qtdRowsToAdd",
+            value: qtd
+        }).appendTo("form");
+
+        const url = "@Url.Action("AddDataItem", new { elementName = ViewBag.ElementName })";
+        $("form:first").attr("action", url).submit();
+    }
+
+    function removeDataItem(dataItemIndex) {
+        SpinnerOverlay.show();
+        $("<input>").attr({
+            type: "hidden",
+            id: "dataItemIndex",
+            name: "dataItemIndex",
+            value: dataItemIndex
+        }).appendTo("form");
+
+        const url = "@Url.Action("RemoveDataItem", new { elementName = ViewBag.ElementName })";
+        $("form:first").attr("action", url).submit();
+    }
+
+    function removeAllDataItem() {
+        SpinnerOverlay.show();
+        const url = "@Url.Action("RemoveAllDataItem", new { elementName = ViewBag.ElementName })";
+        $("form:first").attr("action", url).submit();
+    }
+</script>
 
 
-   <div id="divManualValues" class="col-sm-12" >
-               <table class="table table-striped table-bordered table-hover">
-                   <thead>
-                   <tr>
-                       <th style="width:120px;">@StringLocalizer["Id"]</th>
-                       <th>@StringLocalizer["Description"]</th>
-                       @if (showImage)
-                       {
-                           <th>@StringLocalizer["IconId"]</th>
-                           <th>@StringLocalizer["Color"]</th>
-                       }
-                       <th style="width:60px;">@StringLocalizer["Remove"]</th>
-                   </tr>
-                   </thead>
-                   <tbody>
-                   @for (int i = 0; i < Model.DataItem.Items?.Count; i++)
-                   {
-                       <tr>
-                           <td>
-                               @Html.TextBox($"DataItem.Items[{i}].Id",
-                                   Model.DataItem.Items[i].Id, new { @class = "form-control" })
-                           </td>
-                           <td>
-                               @Html.TextBox($"DataItem.Items[{i}].Description",
-                                   Model.DataItem.Items[i].Description, new { @class = "form-control" })
-                           </td>
-       
-                           @if (showImage)
-                           {
-                               <td>
-                                   @{
-       
-                                       var iconSearchBox = SearchBoxFactory.Create();
-                                       iconSearchBox.Name = Html.NameFor(m=>m.DataItem!.Items![i].Icon);
-                                       iconSearchBox.HtmlId = Html.IdFor(m=>m.DataItem!.Items![i].Icon);
-                                       iconSearchBox.DataItem.ShowImageLegend = true;
-                                       iconSearchBox.SelectedValue = ((int)Model.DataItem.Items[i].Icon).ToString();
-                                       iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
-                                           .Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
-                                   }
-       
-                                   <div class="row">
-                                       @Html.Raw(await iconSearchBox.GetResultAsync())
-                                   </div>
-                               </td>
-                               <td>
-                                   @Html.TextBox($"DataItem.Items[{i}].ImageColor",
-                                       Model.DataItem.Items[i].ImageColor, new { @class = "form-control", type = "color" })
-                               </td>
-                           }
-       
-                           <td align="center" valign="middle">
-                               <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Remove"]" onclick="removeDataItem(@i);">
-                                   <span class="fa fa-trash"></span>
-                               </a>
-                           </td>
-                       </tr>
-                   }
-                   </tbody>
-                   <tfoot>
-                   <tr>
-                       <td colspan="@(showImage ? 5 : 3)">
-                           <div class="btn-group dropup">
-                               <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="addDataItem(1);">
-                                   <span class="fa fa-plus-circle"></span>
-                                   <span>&nbsp;@StringLocalizer["Add"]</span>
-                               </button>
-                               <button type="button" class="@BootstrapHelper.DefaultButton btn-small dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
-                                   <span class="caret"></span>
-                                   <span class="sr-only">@StringLocalizer["Toggle Dropdown"]</span>
-                               </button>
-                               <ul class="dropdown-menu">
-                                  @for(var i = 2; i <= 10; i++)
-                                  {
-                                      <li>
-                                          <a class="dropdown-item" href="javascript:addDataItem(@i);">@i @StringLocalizer["Lines"]</a>
-                                      </li>
-                                  }
-                               </ul>
-                           </div>
-       
-                           <button class="@BootstrapHelper.DefaultButton btn-small" onclick="removeAllDataItem();">
-                               <span class="fa fa-trash"></span>
-                               <span>&nbsp;@StringLocalizer["Remove All"]</span>
-                           </button>
-                       </td>
-                   </tr>
-                   </tfoot>
-               </table>
-           </div>
+<div id="divManualValues" class="col-sm-12">
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th style="width:120px;">@StringLocalizer["Id"]</th>
+            <th>@StringLocalizer["Description"]</th>
+            @if (showImage)
+            {
+                <th>@StringLocalizer["IconId"]</th>
+                <th>@StringLocalizer["Color"]</th>
+            }
+            <th style="width:60px;">@StringLocalizer["Remove"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for (int i = 0; i < Model.DataItem.Items?.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.TextBox($"DataItem.Items[{i}].Id",
+                        Model.DataItem.Items[i].Id, new { @class = "form-control" })
+                </td>
+                <td>
+                    @Html.TextBox($"DataItem.Items[{i}].Description",
+                        Model.DataItem.Items[i].Description, new { @class = "form-control" })
+                </td>
 
+                @if (showImage)
+                {
+                    <td>
+                        @{
+                            var iconSearchBox = SearchBoxFactory.Create();
+                            iconSearchBox.Name = Html.NameFor(m => m.DataItem!.Items![i].Icon);
+                            iconSearchBox.HtmlId = Html.IdFor(m => m.DataItem!.Items![i].Icon);
+                            iconSearchBox.DataItem.ShowIcon = true;
+                            iconSearchBox.SelectedValue = ((int)Model.DataItem.Items[i].Icon).ToString();
+                            iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
+                                .Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
+                        }
 
+                        <div class="row" style="position:relative">
+                            <div class="col-sm-10">
+                                @Html.Raw(await iconSearchBox.GetResultAsync())
+                            </div>
+                            <div class="col-sm-2">
+                                <button class="@BootstrapHelper.DefaultButton" type="button" onclick="defaultModal.showUrl('@Url.Action("Index", "Icons")','Icons',);">
+                                    <span class="fa fa-search"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        @Html.TextBox($"DataItem.Items[{i}].IconColor",
+                            Model.DataItem.Items[i].IconColor, new { @class = "form-control", type = "color" })
+                    </td>
+                }
+
+                <td align="center" valign="middle">
+                    <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Remove"]" onclick="removeDataItem(@i);">
+                        <span class="fa fa-trash"></span>
+                    </a>
+                </td>
+            </tr>
+        }
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="@(showImage ? 5 : 3)">
+                <div class="btn-group dropup">
+                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="addDataItem(1);">
+                        <span class="fa fa-plus-circle"></span>
+                        <span>&nbsp;@StringLocalizer["Add"]</span>
+                    </button>
+                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
+                        <span class="caret"></span>
+                        <span class="sr-only">@StringLocalizer["Toggle Dropdown"]</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        @for (var i = 2; i <= 10; i++)
+                        {
+                            <li>
+                                <a class="dropdown-item" href="javascript:addDataItem(@i);">@i @StringLocalizer["Lines"]</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <button class="@BootstrapHelper.DefaultButton btn-small" onclick="removeAllDataItem();">
+                    <span class="fa fa-trash"></span>
+                    <span>&nbsp;@StringLocalizer["Remove All"]</span>
+                </button>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+</div>

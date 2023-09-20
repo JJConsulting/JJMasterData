@@ -26,7 +26,7 @@ public class FieldService : BaseService
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
-        RemoveUnusedProperties(ref field);
+        RemoveUnusedProperties(field);
 
         if (field.DataFile != null)
         {
@@ -60,7 +60,7 @@ public class FieldService : BaseService
         return IsValid;
     }
 
-    private static void RemoveUnusedProperties(ref FormElementField field)
+    private static void RemoveUnusedProperties(FormElementField field)
     {
         if (field.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.Lookup)
         {
@@ -277,16 +277,16 @@ public class FieldService : BaseService
             return;
         }
 
-        var childField = childFormElement.Fields[elementMap.FieldKey];
+        var childField = childFormElement.Fields[elementMap.FieldId];
 
         if (field.DataType != childField.DataType)
         {
-            AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldKey] DataType must be the same of your field."]);
+            AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldId] DataType must be the same of your field."]);
         }
         
         
-        if (elementMap.FieldKey.Equals(elementMap.FieldDescription))
-            AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldDescription] can not be equal a [FieldKey]"]);
+        if (elementMap.FieldId.Equals(elementMap.FieldDescription))
+            AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldDescription] can not be equal a [FieldId]"]);
         
         if (dataItem.ReplaceTextOnGrid && string.IsNullOrEmpty(elementMap.FieldDescription))
             AddError(nameof(dataItem.ReplaceTextOnGrid), StringLocalizer["[ReplaceTextOnGrid] invalid fill a [FieldDescription]"]);
@@ -349,8 +349,8 @@ public class FieldService : BaseService
             AddError(nameof(mapFilter.ExpressionValue), StringLocalizer["Invalid filter field"]);
         }
 
-        if (string.IsNullOrEmpty(elementMap.FieldKey))
-            AddError(nameof(elementMap.FieldKey),
+        if (string.IsNullOrEmpty(elementMap.FieldId))
+            AddError(nameof(elementMap.FieldId),
                 StringLocalizer["Required [{0}] field", StringLocalizer["Field Key"]]);
 
         if (string.IsNullOrEmpty(elementMap.ElementName))
@@ -359,12 +359,12 @@ public class FieldService : BaseService
         if (IsValid)
         {
             var dataEntry = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
-            var fieldKey = dataEntry.Fields[elementMap.FieldKey];
+            var fieldKey = dataEntry.Fields[elementMap.FieldId];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
                 string err = StringLocalizer["Field [{0}] invalid, as it is not PK or not configured as a filter",
-                    elementMap.FieldKey];
-                AddError(nameof(elementMap.FieldKey), err);
+                    elementMap.FieldId];
+                AddError(nameof(elementMap.FieldId), err);
             }
         }
 

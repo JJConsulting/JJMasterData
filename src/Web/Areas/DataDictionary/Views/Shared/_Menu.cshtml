@@ -160,24 +160,24 @@
             @StringLocalizer["More"] <span class="caret"></span>
         </a>
         <ul class="dropdown-menu">
-            <li class="dropdown-item" onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
-                <a href="#">
+            <li onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
+                <a class="dropdown-item" href="#">
                     <span class="fa fa-play-circle fa-fw fa-lg"></span> @StringLocalizer["Get Script"]
                 </a>
             </li>
-            <li class="dropdown-item" onclick="defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Class Source Code"]',1);">
-                <a href="#">
+            <li onclick="defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Class Source Code"]',1);">
+                <a class="dropdown-item" href="#">
                     <span class="fa-regular fa-file-code fa-fw fa-lg"></span> @StringLocalizer["Get C# Class"]
                 </a>
             </li>
-            <li class="dropdown-item" onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })', '_blank').focus();">
-                <a href="#">
+            <li onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })', '_blank').focus();">
+                <a class="dropdown-item" href="#">
                     <span class="fa fa-eye fa-fw fa-lg"></span> @StringLocalizer["Preview"]
                 </a>
             </li>
             <li role="separator" class="@(BootstrapHelper.Version > 3 ? " divider" : "dropdown-divider")"></li>
-            <li class="dropdown-item" onclick="defaultModal.showIframe('https://portal.jjconsulting.com.br/jjdoc/','Help');">
-                <a href="#">
+            <li onclick="defaultModal.showIframe('https://portal.jjconsulting.com.br/jjdoc/','Help');">
+                <a class="dropdown-item" href="#">
                     <span class="fa fa-question-circle fa-fw fa-lg"></span> @StringLocalizer["Help"]
                 </a>
             </li>

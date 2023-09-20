@@ -114,7 +114,7 @@ public class DictionariesService
             Filters = filters,
             RecordsPerPage = 1
         };
-        var result = await _entityRepository.GetDictionaryListAsync(element, parameters);
+        var result = await _entityRepository.GetDictionaryListResultAsync(element, parameters);
         return result.TotalOfRecords;
     }
     

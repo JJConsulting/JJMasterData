@@ -53,7 +53,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
             };
-            var result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+            var result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
             DataSource = result.Data;
             ProcessReporter.TotalOfRecords = result.TotalOfRecords;
             ProcessReporter.Message = StringLocalizer["Exporting {0} records...",  result.TotalOfRecords.ToString("N0")];
@@ -70,7 +70,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                     OrderBy = CurrentOrder,
                     CurrentPage = i,
                 };
-                result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
                 DataSource = result.Data;
                 TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(sw, token);
@@ -117,7 +117,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                         await OnRenderCellAsync(this, args);
                     }
                     
-                    value = args.HtmlResult;
+                    value = args.HtmlResult.ToString();
                 }
 
                 await sw.WriteAsync(value);

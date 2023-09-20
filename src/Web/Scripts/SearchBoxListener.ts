@@ -72,7 +72,7 @@
                 triggerLength: triggerLength,
                 items: numberOfItems,
                 scrollBar: scrollbar,
-                item: '<li class="dropdown-item"><a href="#"></a></li>',
+                item: '<li><a class="dropdown-item" href="#"></a></li>',
                 highlighter: function (item) {
                     const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
                     let textSel;

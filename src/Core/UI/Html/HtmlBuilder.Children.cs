@@ -180,6 +180,14 @@ public partial class HtmlBuilder
         return this;
     }
     
+    public HtmlBuilder AppendComponentIf(bool condition, HtmlComponent? component)
+    {
+        if (condition)
+            AppendComponent(component);
+
+        return this;
+    }
+    
     public async Task<HtmlBuilder> AppendControlAsync(ControlBase? control)
     {
         if (control != null)

@@ -107,10 +107,6 @@ internal class GridTableBody
         await foreach (var field in GridView.GetVisibleFieldsAsync())
         {
             string value = string.Empty;
-            if (values.ContainsKey(field.Name))
-            {
-                value = await GridView.FieldsService.FormatGridValueAsync(field, values, GridView.UserValues);
-            }
 
             var td = new HtmlBuilder(HtmlTag.Td);
             string style = GetTdStyle(field);
@@ -124,12 +120,37 @@ internal class GridTableBody
             }
             else
             {
+                value = values[field.Name]?.ToString();
+                var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
+                HtmlBuilder cell;
+                if (field.DataItem is not null && field.DataItem.ShowIcon)
+                {
+                    var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,null,value).FirstOrDefaultAsync();
+                    cell = new HtmlBuilder(HtmlTag.Div);
+                    cell.AppendComponent(new JJIcon(dataItemValue.Icon,dataItemValue.IconColor ?? string.Empty));
+                    cell.Append(HtmlTag.Span, span =>
+                    {
+                        span.AppendText(field.DataItem.ReplaceTextOnGrid ? dataItemValue.Description : dataItemValue.Id);
+                        span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
+                    });
+                }
+                else if (field.DataFile is not null)
+                {
+                    var textFile =  GridView.ComponentFactory.Controls.Create<JJTextFile>(GridView.FormElement, field, new(formStateData,value));
+                    cell = textFile.GetButtonGroupHtml();
+                }
+                else
+                {
+                    value = await GridView.FieldsService.FormatGridValueAsync(field, values, GridView.UserValues);
+                    cell = new HtmlBuilder(value.Trim());
+                }
                 if (OnRenderCell != null || OnRenderCellAsync != null)
                 {
                     var args = new GridCellEventArgs
                     {
                         Field = field,
                         DataRow = row,
+                        HtmlResult = cell,
                         Sender = new JJText(value)
                     };
                     OnRenderCell?.Invoke(this,args);
@@ -138,28 +159,18 @@ internal class GridTableBody
                     {
                         await OnRenderCellAsync(this, args);
                     }
-                    
-                    if (args.HtmlResult != null)
+
+                    if (args.HtmlResult is not null)
                     {
-                        td.AppendText(args.HtmlResult);
+                        td.Append(args.HtmlResult);
                     }
                     else
                     {
-                        td.AppendText(value.Trim());
+                        td.AppendText(value?.Trim() ?? string.Empty);
                     }
                 }
-                else
-                {
-                    if (field.Component == FormComponent.File)
-                    {
-                        var upload = (JJTextFile)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List),  value);
-                        td.Append(upload.GetButtonGroupHtml());
-                    }
-                    else
-                    {
-                        td.AppendText(value.Trim());
-                    }
-                }
+
+                td.Append(cell);
             }
 
             yield return td;
@@ -196,7 +207,7 @@ internal class GridTableBody
             var args = new GridCellEventArgs { Field = field, DataRow = row, Sender = control };
 
             OnRenderCell?.Invoke(GridView, args);
-            div.AppendText(args.HtmlResult);
+            div.Append(args.HtmlResult);
         }
         else
         {
@@ -295,7 +306,7 @@ internal class GridTableBody
         switch (field.Component)
         {
             case FormComponent.ComboBox:
-                if (field.DataItem is { ShowImageLegend: true, ReplaceTextOnGrid: false })
+                if (field.DataItem is { ShowIcon: true, ReplaceTextOnGrid: false })
                 {
                     return "text-align:center;";
                 }

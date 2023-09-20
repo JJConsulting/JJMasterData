@@ -90,7 +90,7 @@ public class MasterApiService
 
         var filters = GetDefaultFilter(dictionary, true);
         var element = dictionary;
-        var result = await _entityRepository.GetDictionaryListAsync(element, new EntityParameters
+        var result = await _entityRepository.GetDictionaryListResultAsync(element, new EntityParameters
         {
             Filters = filters!,
             CurrentPage = pag,

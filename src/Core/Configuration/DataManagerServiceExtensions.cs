@@ -23,7 +23,8 @@ public static class DataManagerServiceExtensions
         
         services.AddTransient<FormFileManagerFactory>();
         services.AddTransient<IFormFileService,FormFileService>();
-        
+
+        services.AddTransient<ElementMapService>();
         return services;
     }
 }

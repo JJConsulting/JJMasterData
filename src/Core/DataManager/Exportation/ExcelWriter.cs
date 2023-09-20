@@ -99,7 +99,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
             };
-            var result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+            var result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
             DataSource = result.Data;
             TotalOfRecords = result.TotalOfRecords;
             ProcessReporter.TotalOfRecords = result.TotalOfRecords;
@@ -117,7 +117,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                     RecordsPerPage = RecordsPerPage,
                     OrderBy = CurrentOrder
                 };
-                result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
                 DataSource = result.Data;
                 TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(sw, token);
@@ -201,7 +201,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                 await OnRenderCellAsync(this, args);
             }
 
-            value = args.HtmlResult;
+            value = args.HtmlResult.ToString();
         }
 
         return value;

@@ -7,7 +7,7 @@ namespace JJMasterData.Commons.Data.Entity.Repository;
 
 public class DictionaryListResult : ListResult<Dictionary<string, object?>>
 {
-    internal DictionaryListResult(IList<Dictionary<string, object?>> list, int totalOfRecords) : base(list,totalOfRecords)
+    internal DictionaryListResult(List<Dictionary<string, object?>> list, int totalOfRecords) : base(list,totalOfRecords)
     {
     }
 

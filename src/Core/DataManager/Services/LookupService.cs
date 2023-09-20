@@ -22,6 +22,7 @@ public class LookupService : ILookupService
     private IEntityRepository EntityRepository { get; }
     private IExpressionsService ExpressionsService { get; }
     private IEncryptionService EncryptionService { get; }
+    private ElementMapService ElementMapService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public LookupService(
@@ -30,6 +31,7 @@ public class LookupService : ILookupService
         IEntityRepository entityRepository,
         IExpressionsService expressionsService,
         IEncryptionService encryptionService,
+        ElementMapService elementMapService,
         JJMasterDataUrlHelper urlHelper)
     {
         FormValues = formValues;
@@ -37,13 +39,14 @@ public class LookupService : ILookupService
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
         EncryptionService = encryptionService;
+        ElementMapService = elementMapService;
         UrlHelper = urlHelper;
     }
 
     
     public string GetFormViewUrl(DataElementMap elementMap, FormStateData formStateData, string componentName)
     {
-        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.FieldKey,elementMap.FieldDescription,
+        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.FieldId,elementMap.FieldDescription,
             elementMap.EnableElementActions, elementMap.Filters);
 
         var encryptedLookupParameters =
@@ -83,13 +86,11 @@ public class LookupService : ILookupService
                 return null;
         }
 
-        var filters = GetFilters(elementMap, value, formStateData);
-
         IDictionary<string, object?> fields;
         
         try
         {
-            fields = await GetFieldsAsync(elementMap, filters);
+            fields = await ElementMapService.GetFieldsAsync(elementMap, value, formStateData);
         }
         catch
         {
@@ -98,33 +99,9 @@ public class LookupService : ILookupService
 
 
         if (string.IsNullOrEmpty(elementMap.FieldDescription))
-            return fields[elementMap.FieldKey]?.ToString();
+            return fields[elementMap.FieldId]?.ToString();
 
         return fields.Any() ? fields[elementMap.FieldDescription]?.ToString() : null;
-    }
-
-    private IDictionary<string, object> GetFilters(DataElementMap elementMap, object? value, FormStateData formStateData)
-    {
-        var filters = new Dictionary<string, object>();
-
-        if (elementMap.Filters.Count > 0)
-        {
-            foreach (var filter in elementMap.Filters)
-            {
-                string? filterParsed =
-                    ExpressionsService.ParseExpression(filter.Value?.ToString(), formStateData, false);
-                filters[filter.Key] = StringManager.ClearText(filterParsed);
-            }
-        }
-
-        filters[elementMap.FieldKey] = StringManager.ClearText(value?.ToString());
-        return filters;
-    }
-
-    private async Task<IDictionary<string, object?>> GetFieldsAsync(DataElementMap elementMap, IDictionary<string, object> filters)
-    {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
-        return await EntityRepository.GetFieldsAsync(formElement, filters);
     }
     
     public string? GetSelectedValue(string componentName)

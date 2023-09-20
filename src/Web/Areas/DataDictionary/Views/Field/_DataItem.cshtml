@@ -1,13 +1,9 @@
 ﻿@using JJMasterData.Core.Web
 @using JJMasterData.Core.Web.Components
-@using Microsoft.AspNetCore.Mvc.TagHelpers
-@using JJMasterData.Core.UI.Components
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 
 @model FormElementField
-
-<partial name="_DataItemScripts"/>
 
 <div class="row">
     <div class="col-sm-12">
@@ -15,42 +11,16 @@
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["List Type"]">@StringLocalizer["ListType"]</label>
-        <select asp-for="DataItem!.DataItemType" onchange="this.form.requestSubmit();" class="form-control form-select">
-            @if (Model.DataItem!.DataItemType == DataItemType.Manual)
-            {
-                <option selected="selected" value="@((int)DataItemType.Manual)">@DataItemType.Manual.ToString()</option>
-            }
-            else
-            {
-                <option value="@((int)DataItemType.Manual)">@DataItemType.Manual.ToString()</option>
-            }
-
-            @if (Model.DataItem.DataItemType == DataItemType.SqlCommand)
-            {
-                <option selected="selected" value="@((int)DataItemType.SqlCommand)">@DataItemType.SqlCommand.ToString()</option>
-            }
-            else
-            {
-                <option value="@((int)DataItemType.SqlCommand)">@DataItemType.SqlCommand.ToString()</option>
-            }
-            
-            @* @(if (Model.DataItem.DataItemType == DataItemType.Dictionary)) *@
-            @* { *@
-            @*     <option selected="selected" value="@((int)DataItemType.Dictionary)">@DataItemType.SqlCommand.ToString()</option> *@
-            @* } *@
-            @* @else *@
-            @* { *@
-            @*     <option value="@((int)DataItemType.SqlCommand)">@DataItemType.Manual.ToString()</option> *@
-            @*     <option value="@((int)DataItemType.Dictionary)">@DataItemType.SqlCommand.ToString()</option> *@
-            @* } *@
-
-            
+        <label class="@BootstrapHelper.Label" >@StringLocalizer["Type"]</label>
+        <select asp-for="DataItem!.DataItemType" 
+                asp-items="Enum.GetValues<DataItemType>().Select(d=> new SelectListItem(d.ToString(),d.ToString()))" onchange="this.form.requestSubmit();" class="form-control form-select">
         </select>
+
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divReplaceTextOnGrid">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Replace the field value with a description of the combination when displaying a grid"]">@StringLocalizer["ReplaceTextOnGrid"]</label>
+        <label class="@BootstrapHelper.Label">@StringLocalizer["Replace Text On Grid"]</label>
+        <tooltip title="Replace the field value with the description in the grid"></tooltip>
         @Html.DropDownListFor(modelItem => modelItem.DataItem!.ReplaceTextOnGrid, new[]
         {
             new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" },
@@ -62,26 +32,27 @@
     @if (Model.Component is FormComponent.ComboBox)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divFirstOption">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Display text (All) as first option"]">@StringLocalizer["FirstOption"]</label>
+            <label class="@BootstrapHelper.Label">@StringLocalizer["First Option Mode"]</label>
             <select asp-for="DataItem!.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
         </div>
     }
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Display images with text in the combo"]">@StringLocalizer["ShowImageLegend"]</label>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ShowImageLegend, new[]
+        <label class="@BootstrapHelper.Label">@StringLocalizer["Show Icon"]</label>
+        <tooltip title="Display a FontAwesome icon alongside the options"/>
+        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ShowIcon, new[]
         {
             new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
             new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
-        },
-            new { @class = "form-control form-select", onchange = "this.form.requestSubmit();" })
+        },new { @class = "form-control form-select", onchange = "this.form.requestSubmit();" })
     </div>
     
     @if (Model.Component is FormComponent.ComboBox)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table."]">
+            <label class="@BootstrapHelper.Label">
                 @StringLocalizer["Multiselect"]
             </label>
+            <tooltip title="Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table."/>
             <select class="form-control form-select" asp-for="DataItem!.EnableMultiSelect">
                 <option value="true">@StringLocalizer["Yes"]</option>
                 <option value="false">@StringLocalizer["No"]</option>
@@ -97,6 +68,9 @@
             break;
         case DataItemType.SqlCommand:
             <partial name="_DataItemSql" model="@Model"/>
+            break;
+        case DataItemType.ElementMap:
+            <partial name="_DataItemElementMap" model="@Model"/>
             break;
     }
 
