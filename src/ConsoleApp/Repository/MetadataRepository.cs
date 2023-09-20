@@ -49,7 +49,7 @@ public class MetadataRepository
         
         
         string currentName = "";
-        var dt = _entityRepository.GetDictionaryListAsync(MasterDataElement,entityParameters, false).GetAwaiter().GetResult();
+        var dt = _entityRepository.GetDictionaryListResultAsync(MasterDataElement,entityParameters, false).GetAwaiter().GetResult();
         Metadata currentParser = null;
         foreach (var row in dt.Data)
         {

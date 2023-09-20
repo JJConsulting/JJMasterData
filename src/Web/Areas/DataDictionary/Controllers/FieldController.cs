@@ -133,7 +133,7 @@ public class FieldController : DataDictionaryController
                 Id = field.DataItem.Items.Count.ToString(),
                 Description = "",
                 Icon = IconType.Star,
-                ImageColor = "#ffffff"
+                IconColor = "#ffffff"
             };
             field.DataItem.Items.Add(item);
         }

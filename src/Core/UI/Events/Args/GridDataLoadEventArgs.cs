@@ -26,5 +26,5 @@ public class GridDataLoadEventArgs : EventArgs
     /// </summary>
     public int TotalOfRecords { get; set; }
     
-    public IList<Dictionary<string,object?>>? DataSource { get; set; }
+    public List<Dictionary<string,object?>>? DataSource { get; set; }
 }

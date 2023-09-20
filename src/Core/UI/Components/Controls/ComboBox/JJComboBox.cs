@@ -206,7 +206,7 @@ public class JJComboBox : ControlBase
         {
             var div = new HtmlBuilder(HtmlTag.Div);
 
-            var icon = new JJIcon(item.Icon, item.ImageColor, item.Description)
+            var icon = new JJIcon(item.Icon, item.IconColor, item.Description)
             {
                 CssClass = "fa-lg fa-fw"
             }.BuildHtml();

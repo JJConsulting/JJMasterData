@@ -62,7 +62,7 @@ internal class GridLegendView
                     {
                         div.WithAttribute("style", "height:40px");
 
-                        div.AppendComponent(new JJIcon(item.Icon, item.ImageColor, item.Description)
+                        div.AppendComponent(new JJIcon(item.Icon, item.IconColor, item.Description)
                         {
                             CssClass = "fa-fw fa-2x"
                         });

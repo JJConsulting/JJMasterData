@@ -99,11 +99,6 @@ public class EntityRepository : IEntityRepository
         return await DataAccess.GetDictionaryAsync(cmd);
     }
 
-    public async Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(DataAccessCommand command)
-    {
-        return await DataAccess.GetDictionaryListAsync(command);
-    }
-
     public async Task CreateDataModelAsync(Element element) => await Provider.CreateDataModelAsync(element);
 
     ///<inheritdoc cref="IEntityRepository.GetScriptCreateTable(Element)"/>
@@ -141,7 +136,22 @@ public class EntityRepository : IEntityRepository
         return await Provider.GetFieldsListAsTextAsync(element, parameters ?? new EntityParameters(), showLogInfo, delimiter);
     }
     
-    public async Task<DictionaryListResult> GetDictionaryListAsync(
+    public async Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(
+        Element element,
+        EntityParameters? parameters = null
+    )
+    {
+        var result = await Provider.GetDictionaryListAsync(element, parameters ?? new EntityParameters(), false);
+        
+        return result.Data;
+    }
+    
+    public async Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(DataAccessCommand command)
+    {
+        return await DataAccess.GetDictionaryListAsync(command);
+    }
+    
+    public async Task<DictionaryListResult> GetDictionaryListResultAsync(
         Element element,
         EntityParameters? parameters = null,
         bool recoverTotalOfRecords = true
@@ -151,5 +161,7 @@ public class EntityRepository : IEntityRepository
         
         return new DictionaryListResult(result.Data,result.TotalOfRecords);
     }
+    
+
    
 }

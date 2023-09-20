@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -13,6 +14,7 @@ namespace JJMasterData.Core.Web.Html;
 /// <example>
 /// [!include[Test](../../../doc/JJMasterData.Documentation/articles/usages/htmlbuilder.md)]
 /// </example>
+[DebuggerStepThrough]
 public partial class HtmlBuilder
 {
     private readonly string? _rawText;

@@ -36,7 +36,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         orderBy.AddOrReplace(DataDictionaryStructure.Name, OrderByDirection.Asc);
         orderBy.AddOrReplace(DataDictionaryStructure.Type, OrderByDirection.Asc);
 
-        var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
+        var result = await _entityRepository.GetDictionaryListResultAsync(MasterDataElement,
             new EntityParameters { Filters = filters, OrderBy = orderBy }, false);
 
         return ParseDictionaryList(result.Data);
@@ -54,7 +54,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         var filter = new Dictionary<string, object?> { { DataDictionaryStructure.Type, "F" } };
 
-        var dt = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
+        var dt = await _entityRepository.GetDictionaryListResultAsync(MasterDataElement,
             new EntityParameters { Filters = filter }, false);
         foreach (var row in dt.Data)
         {
@@ -144,7 +144,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var filters = filter.ToDictionary();
         filters.Add(DataDictionaryStructure.Type, "F");
 
-        var result = await _entityRepository.GetDictionaryListAsync(MasterDataElement,
+        var result = await _entityRepository.GetDictionaryListResultAsync(MasterDataElement,
             new EntityParameters
             {
                 Filters = filters!, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage

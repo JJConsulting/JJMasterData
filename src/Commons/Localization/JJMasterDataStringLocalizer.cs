@@ -190,7 +190,7 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
     {
         var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         var filter = new Dictionary<string,object?> { { "cultureCode", culture} };
-        var result = EntityRepository.GetDictionaryListAsync(element, new EntityParameters(){Filters = filter},false).GetAwaiter().GetResult();
+        var result = EntityRepository.GetDictionaryListResultAsync(element, new EntityParameters(){Filters = filter},false).GetAwaiter().GetResult();
         foreach (var row in result.Data)
         {
             values.Add(row["resourceKey"]!.ToString()!, row["resourceValue"]?.ToString());

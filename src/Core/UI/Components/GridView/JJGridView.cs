@@ -1184,7 +1184,7 @@ public class JJGridView : AsyncComponent
         }
         else
         {
-            return await EntityRepository.GetDictionaryListAsync(FormElement, parameters);
+            return await EntityRepository.GetDictionaryListResultAsync(FormElement, parameters);
         }
 
         return DictionaryListResult.FromDataTable(dataTable);

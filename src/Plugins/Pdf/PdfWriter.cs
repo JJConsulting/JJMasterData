@@ -144,7 +144,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
                 OrderBy = CurrentOrder,
                 CurrentPage = 1,
             };
-            var result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+            var result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
             DataSource = result.Data;
             TotalOfRecords = result.TotalOfRecords;
             ProcessReporter.TotalOfRecords = result.TotalOfRecords;
@@ -162,7 +162,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
                     OrderBy = CurrentOrder,
                     CurrentPage = i,
                 };
-                result = await EntityRepository.GetDictionaryListAsync(FormElement, entityParameters);
+                result = await EntityRepository.GetDictionaryListResultAsync(FormElement, entityParameters);
                 DataSource = result.Data;
                 TotalOfRecords = result.TotalOfRecords;
                 await GenerateRows(table, token);
@@ -328,7 +328,7 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
             if (field.DataItem.ShowImageLegend)
             {
                 image = new Text(item.Icon.GetUnicode().ToString());
-                var color = ColorTranslator.FromHtml(item.ImageColor);
+                var color = ColorTranslator.FromHtml(item.IconColor);
 
                 var rgbColor = $"rgb({Convert.ToInt16(color.R)},{Convert.ToInt16(color.G)},{Convert.ToInt16(color.B)})";
 

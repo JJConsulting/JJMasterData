@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary;
@@ -6,15 +7,20 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class DataElementMap
 {
-    [JsonProperty("elementName")]
-    public string ElementName { get; set; }
+    [JsonProperty("elementName")] public string ElementName { get; set; } = null!;
 
     [JsonProperty("fieldKey")]
-    public string FieldKey { get; set; }
+    public string FieldKey { get; set; } = null!;
 
     [JsonProperty("fieldDescription")]
-    public string FieldDescription { get; set; }
+    public string FieldDescription { get; set; } = null!;
 
+    [JsonProperty("iconId")] 
+    public string? FieldIconId { get; set; }
+    
+    [JsonProperty("iconColor")]
+    public string? FieldIconColor { get; set; }
+    
     [JsonProperty("popUpSize")]
     public ModalSize ModalSize { get; set; }
 
