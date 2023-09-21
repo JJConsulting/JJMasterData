@@ -29,8 +29,8 @@ public class InsertAction : GridToolbarAction
     [JsonProperty("reopenForm")]
     public bool ReopenForm { get; set; }
 
-    [JsonProperty("showAsPopup")]
-    public bool ShowAsPopup { get; set; }
+    [JsonProperty("showAsModal")]
+    public bool ShowAsModal { get; set; }
     
     public InsertAction()
     {

@@ -38,7 +38,7 @@ public class JJCollapsePanel : HtmlComponent
     {
         get
         {
-            var collapseMode = FormValues[$"collapse_mode_{Name}"];
+            var collapseMode = FormValues[$"collapse-mode-{Name}"];
             return string.IsNullOrEmpty(collapseMode) ? ExpandedByDefault : "1".Equals(collapseMode);
         }
     }

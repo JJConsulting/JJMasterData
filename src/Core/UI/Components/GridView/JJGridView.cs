@@ -612,6 +612,13 @@ public class JJGridView : AsyncComponent
             return new JsonComponentResult(new {selectedRows});
         }
 
+        if (ComponentContext is ComponentContext.GridViewFilterReload)
+        {
+            var html = await Filter.GetFilterHtml();
+            
+            return HtmlComponentResult.FromHtmlBuilder(html);
+        }
+        
         if (ComponentContext is ComponentContext.GridViewFilterSearchBox)
         {
             var fieldName = CurrentContext.Request.QueryString["fieldName"];

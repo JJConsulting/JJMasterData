@@ -1,14 +1,27 @@
-class GridViewFilterHelper{
-    static filter(componentName, routeContext) {
-        document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
-        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#grid-view-page-" + componentName).value = "1";
-        GridViewHelper.clearCurrentFormAction(componentName)
-        GridViewHelper.refreshGrid(componentName, routeContext);
+class GridViewFilterHelper {
+    static filter(gridViewName, routeContext) {
+        document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + gridViewName).value = "filter";
+        document.querySelector<HTMLInputElement>("#grid-view-action-" + gridViewName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-page-" + gridViewName).value = "1";
+        GridViewHelper.clearCurrentFormAction(gridViewName)
+        GridViewHelper.refreshGrid(gridViewName, routeContext);
     }
 
+    static reload(gridViewName, filterPanelName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        
+        document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + gridViewName).value = "filter";
+        
+        postFormValues({
+            url: urlBuilder.build(), 
+            success: (content) => {
+                document.getElementById(filterPanelName).innerHTML = content;
+            }
+        })
+    }
 
-    static clearFilterInputs(componentName){
+    static clearFilterInputs(componentName) {
         const divId = "#current-grid-filter-" + componentName;
         const selector = divId + " input:enabled, " + divId + " select:enabled";
 
@@ -37,10 +50,11 @@ class GridViewFilterHelper{
             }
         });
 
-        document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "CLEARACTION";
+        document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "clear";
         document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
         GridViewHelper.clearCurrentFormAction(componentName)
     }
+
     static clearFilter(componentName, routeContext) {
         this.clearFilterInputs(componentName);
 

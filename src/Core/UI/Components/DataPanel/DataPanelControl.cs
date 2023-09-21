@@ -358,7 +358,7 @@ internal class DataPanelControl
         var reloadPanelScript = Scripts.GetReloadPanelScript(field.Name);
         
         //Workarround to trigger event on search component
-        if (field.Component != FormComponent.Search) 
+        if (field.Component is not FormComponent.Search) 
             return reloadPanelScript;
         
         var script = new StringBuilder();

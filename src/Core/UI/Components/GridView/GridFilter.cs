@@ -17,8 +17,9 @@ namespace JJMasterData.Core.Web.Components;
 
 internal class GridFilter
 {
-    private const string FilterActionName = "FILTERACTION";
-    private const string ClearActionName = "CLEARACTION";
+    private const string FilterActionName = "filter";
+    private const string ClearActionName = "clear";
+    
     internal const string FilterFieldPrefix = "filter_";
 
     private IDictionary<string, object> _currentFilter;
@@ -26,6 +27,8 @@ internal class GridFilter
 
     private IHttpContext CurrentContext => GridView.CurrentContext;
     private IStringLocalizer<JJMasterDataResources> StringLocalizer => GridView.StringLocalizer;
+    public string Name => GridView.Name + "-filter";
+
     public GridFilter(JJGridView grid)
     {
         GridView = grid;
@@ -35,6 +38,7 @@ internal class GridFilter
     {
         var filterAction = GridView.FilterAction;
         var formData = await GridView.GetFormDataAsync();
+        var filterHtml = new HtmlBuilder(HtmlTag.Div).WithId(Name);
         bool isVisible = await GridView.ExpressionsService.GetBoolValueAsync(filterAction.VisibleExpression, formData);
 
         if (!isVisible)
@@ -43,10 +47,10 @@ internal class GridFilter
         if (GridView.FilterAction is { ShowAsCollapse: true, EnableScreenSearch: true })
         {
             var collapse = await GetFilterScreenCollapse();
-            return collapse.GetHtmlBuilder();
+            return filterHtml.AppendComponent(collapse);
         }
 
-        return await GetDefaultFilter();
+        return filterHtml.Append(await GetDefaultFilter());
     }
 
     /// <summary>
@@ -64,8 +68,8 @@ internal class GridFilter
         {
             case FilterActionName:
             {
-                var formFilters = await GetFilterFormValues();
-                await ApplyCurrentFilter(formFilters);
+                var filterFormValues = await GetFilterFormValues();
+                await ApplyCurrentFilter(filterFormValues);
                 return _currentFilter;
             }
             case ClearActionName:
@@ -73,6 +77,7 @@ internal class GridFilter
                 return _currentFilter;
         }
 
+        
         var sessionFilter = CurrentContext.Session.GetSessionValue<Dictionary<string, object>>(
             $"jjcurrentfilter_{GridView.Name}");
         
@@ -133,10 +138,10 @@ internal class GridFilter
             }
         }
         
-        var qValues = GetFilterQueryString();
-        if (qValues != null)
+        var queryString = GetFilterQueryString();
+        if (queryString != null)
         {
-            foreach (var r in qValues)
+            foreach (var r in queryString)
             {
                 if (!values.ContainsKey(r.Key))
                     values.Add(r.Key, r.Value);
@@ -160,23 +165,28 @@ internal class GridFilter
                 field.EnableExpression = "val:0";
 
             field.IsRequired = false;
+
+            if (field.AutoPostBack)
+            {
+                field.Attributes["onchange"] = GridView.Scripts.GetReloadFilterScript();
+            }
         }
 
         if (fields.Count == 0)
             return new HtmlBuilder(string.Empty);
-
+        
         var values = await GetCurrentFilter();
 
         var dataPanelControl = new DataPanelControl(GridView, values)
         {
             FieldNamePrefix = FilterFieldPrefix
         };
-
+        
         var htmlPanel = await dataPanelControl.GetHtmlForm(fields.DeepCopy());
         htmlPanel.WithAttribute("id", $"current-grid-filter-{GridView.Name}");
 
         var html = new HtmlBuilder(HtmlTag.Div)
-            .WithAttribute("id", "pnlgridfilter")
+            .WithAttribute("id", $"{Name}-body")
             .AppendHiddenInput($"grid-view-filter-action-{GridView.Name}")
             .Append(htmlPanel);
 
@@ -198,7 +208,7 @@ internal class GridFilter
         {
             var panel = new JJCollapsePanel( GridView.CurrentContext.Request.Form)
             {
-                Name = $"filter_collapse_{GridView.Name}",
+                Name = $"grid-view-filter-collapse-{GridView.Name}",
                 HtmlBuilderContent = html,
                 Title = GridView.StringLocalizer["Detailed Filters"]
             };
@@ -382,9 +392,6 @@ internal class GridFilter
 
     public IDictionary<string, object>  GetFilterQueryString()
     {
-        if (GridView.FormElement == null)
-            return null;
-
         IDictionary<string, object>  values = null;
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
         foreach (var f in fieldsFilter)
@@ -405,7 +412,7 @@ internal class GridFilter
                 string sto = CurrentContext.Request.QueryString[$"{name}_to"];
                 if (!string.IsNullOrEmpty(sto))
                 {
-                    values.Add($"{f.Name}_to", sto);
+                    values?.Add($"{f.Name}_to", sto);
                 }
             }
             else

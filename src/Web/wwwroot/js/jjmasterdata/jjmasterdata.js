@@ -820,12 +820,23 @@ var bootstrapVersion = (() => {
 const locale = (_a = document.documentElement.lang) !== null && _a !== void 0 ? _a : 'pt-BR';
 const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 'pt';
 class GridViewFilterHelper {
-    static filter(componentName, routeContext) {
-        document.querySelector("#grid-view-filter-action-" + componentName).value = "FILTERACTION";
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        document.querySelector("#grid-view-page-" + componentName).value = "1";
-        GridViewHelper.clearCurrentFormAction(componentName);
-        GridViewHelper.refreshGrid(componentName, routeContext);
+    static filter(gridViewName, routeContext) {
+        document.querySelector("#grid-view-filter-action-" + gridViewName).value = "filter";
+        document.querySelector("#grid-view-action-" + gridViewName).value = "";
+        document.querySelector("#grid-view-page-" + gridViewName).value = "1";
+        GridViewHelper.clearCurrentFormAction(gridViewName);
+        GridViewHelper.refreshGrid(gridViewName, routeContext);
+    }
+    static reload(gridViewName, filterPanelName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        document.querySelector("#grid-view-filter-action-" + gridViewName).value = "filter";
+        postFormValues({
+            url: urlBuilder.build(),
+            success: (content) => {
+                document.getElementById(filterPanelName).innerHTML = content;
+            }
+        });
     }
     static clearFilterInputs(componentName) {
         const divId = "#current-grid-filter-" + componentName;
@@ -855,7 +866,7 @@ class GridViewFilterHelper {
                 }
             }
         });
-        document.querySelector("#grid-view-filter-action-" + componentName).value = "CLEARACTION";
+        document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
         document.querySelector("#grid-view-action-" + componentName).value = "";
         GridViewHelper.clearCurrentFormAction(componentName);
     }

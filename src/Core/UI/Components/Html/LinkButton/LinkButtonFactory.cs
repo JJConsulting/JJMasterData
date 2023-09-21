@@ -89,7 +89,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 
                 if (gridTableAction is EditAction editAction)
                 {
-                    actionContext.IsModal = editAction.ShowAsPopup;
+                    actionContext.IsModal = editAction.ShowAsModal;
                 }
                 
                 button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable);
@@ -145,7 +145,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                     BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-filter-modal");
                 break;
             case InsertAction insertAction:
-                if (insertAction.ShowAsPopup)
+                if (insertAction.ShowAsModal)
                 {
                     actionContext.IsModal = true;
                 }

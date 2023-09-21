@@ -46,8 +46,8 @@ public class ActionsController : DataDictionaryController
             FormToolbarActions = formElement.Options.FormToolbarActions.GetAllSorted()
         };
         
-        if ((string?)Request.Query["selected-tab"] == null)
-            ViewBag.Tab = Request.Query["selected-tab"];
+        if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab))
+            ViewBag.Tab = selectedTab;
 
         return View(model);
     }
@@ -55,9 +55,8 @@ public class ActionsController : DataDictionaryController
     public async Task<IActionResult> Edit(string elementName, string actionName, ActionSource context, string fieldName)
     {
         if (elementName is null)
-        {
             throw new ArgumentNullException(nameof(elementName));
-        }
+        
 
         var formElement = await _actionsService.DataDictionaryRepository.GetMetadataAsync(elementName);
 
@@ -76,7 +75,6 @@ public class ActionsController : DataDictionaryController
             return iconSearchBoxResult.ToActionResult();
 
         ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
-        ViewBag.FormElement = formElement;
         
         await PopulateViewBag(elementName, action!, context, fieldName);
 
@@ -332,6 +330,12 @@ public class ActionsController : DataDictionaryController
         {
             case SqlCommandAction _:
             case ImportAction _:
+            case InsertAction _:
+            {
+                var formElement = await _actionsService.GetFormElementAsync(elementName);
+                ViewBag.FormElement = formElement;
+                break;
+            }
             case ExportAction _:
             {
                 var formElement = await _actionsService.GetFormElementAsync(elementName);

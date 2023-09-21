@@ -7,7 +7,7 @@ public class EditAction : GridTableAction
     /// Default action name
     /// </summary>
     public const string ActionName = "edit";
-    public bool ShowAsPopup { get; set; }
+    public bool ShowAsModal { get; set; }
     public EditAction()
     {
         Name = ActionName;

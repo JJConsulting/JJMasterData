@@ -12,7 +12,21 @@ public partial class HtmlBuilder
     public HtmlBuilder WithNameAndId(string? id)
     {
         if (id != null && !string.IsNullOrWhiteSpace(id))
-            WithAttribute("id", id).WithAttribute("name", id);
+            WithId(id).WithName(id);
+
+        return this;
+    }
+    
+    public HtmlBuilder WithId(string id)
+    {
+        WithAttribute("id", id);
+
+        return this;
+    }
+    
+    public HtmlBuilder WithName(string name)
+    {
+        WithAttribute("name", name);
 
         return this;
     }
@@ -149,5 +163,4 @@ public partial class HtmlBuilder
         attributeName += name;
         return WithAttribute(attributeName, value);
     }
-
 }

@@ -7,7 +7,7 @@ public class ViewAction : GridTableAction
     /// Nome padrão da ação
     /// </summary>
     public const string ActionName = "view";
-    public bool ShowAsPopup { get; set; }
+    public bool ShowAsModal { get; set; }
     public ViewAction()
     {
         Name = ActionName;

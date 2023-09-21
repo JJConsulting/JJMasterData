@@ -8,15 +8,18 @@ public enum ComponentContext
     RenderComponent,
         
     FormViewReload,
+        
+    GridViewSelectAllRows,
+    GridViewRow,
+    GridViewReload,
+
+    GridViewFilterReload,
     
     /// <summary>
     /// The component is requesting a JJSearchBox result from a GridView filter
     /// </summary>
     GridViewFilterSearchBox,
-    GridViewSelectAllRows,
-    GridViewRow,
-    GridViewReload,
-        
+    
     /// <summary>
     /// Reloads the current JJDataPanel
     /// </summary>

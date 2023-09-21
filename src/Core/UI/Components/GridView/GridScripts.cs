@@ -79,4 +79,9 @@ public class GridScripts
     {
         return $"GridViewHelper.refresh('{_gridView.Name}','{GetEncryptedRouteContext()}');";
     }
+
+    public object GetReloadFilterScript()
+    {
+        return $"GridViewFilterHelper.reload('{_gridView.Name}','{_gridView.Filter.Name}','{GetEncryptedRouteContext(ComponentContext.GridViewFilterReload)}')";
+    }
 }

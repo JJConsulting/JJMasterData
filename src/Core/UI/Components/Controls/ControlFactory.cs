@@ -132,7 +132,8 @@ public class ControlFactory
         }
 
         control.ReadOnly = field.DataBehavior == FieldBehavior.ViewOnly && formStateData.PageState != PageState.Filter;
-
+        control.SetAttr(field.Attributes);
+        
         return control;
     }
 }
