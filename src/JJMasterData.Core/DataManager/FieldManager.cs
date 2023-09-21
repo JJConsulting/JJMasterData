@@ -111,7 +111,7 @@ public class FieldManager
                         break;
                     }
                     default:
-                        throw new JJMasterDataException("Invalid FieldType for Slider component");
+                        throw new JJMasterDataException($"Invalid FieldType for Numeric component - {field.Name}");
                 }
                 break;
             case FormComponent.ComboBox 

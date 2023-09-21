@@ -636,7 +636,7 @@ public class JJGridView : JJBaseView
         return html;
     }
 
-    public string GetTableHtml() => GetTableHtmlBuilder().ToString();
+    public string GetTableHtml() => GetTableHtmlBuilder()?.ToString();
 
     private HtmlBuilder GetTableHtmlBuilder()
     {
