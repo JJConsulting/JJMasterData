@@ -14,7 +14,7 @@ using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class ExpressionsService : IExpressionsService
+public class ExpressionsService 
 {
     #region "Properties"
 

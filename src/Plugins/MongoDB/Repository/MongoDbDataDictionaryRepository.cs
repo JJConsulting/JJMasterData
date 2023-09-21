@@ -4,15 +4,9 @@ using JJMasterData.MongoDB.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Collections;
-using System.Linq.Expressions;
-using System.Reflection;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.IdGenerators;
-using MongoDB.Bson.Serialization.Serializers;
 
 namespace JJMasterData.MongoDB.Repository;
 

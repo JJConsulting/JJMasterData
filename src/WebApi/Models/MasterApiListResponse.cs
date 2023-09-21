@@ -1,6 +1,4 @@
-﻿using System.Data;
-using System.Runtime.Serialization;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary;
 using Newtonsoft.Json;
 
 namespace JJMasterData.WebApi.Models;

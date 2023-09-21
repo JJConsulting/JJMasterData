@@ -8,7 +8,7 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Factories;
@@ -55,7 +55,7 @@ public class JJAuditLogView : AsyncComponent
 
     private IHttpContext CurrentContext { get; }
 
-    public IAuditLogService AuditLogService { get; }
+    public AuditLogService AuditLogService { get; }
     private IEncryptionService EncryptionService { get; }
     
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
@@ -83,7 +83,7 @@ public class JJAuditLogView : AsyncComponent
         FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
-        IAuditLogService auditLogService,
+        AuditLogService auditLogService,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)

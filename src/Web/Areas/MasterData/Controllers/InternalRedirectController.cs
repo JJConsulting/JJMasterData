@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Web;
+﻿using System.Web;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;

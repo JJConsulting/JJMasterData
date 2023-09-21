@@ -10,9 +10,8 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Imports;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Importation;
@@ -61,7 +60,7 @@ public class JJDataImportation : ProcessComponent
     /// </summary>
     public bool ExpandedByDefault { get; set; } = true;
     
-    internal IFormService FormService { get; }
+    internal FormService FormService { get; }
     internal IComponentFactory ComponentFactory { get; }
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
 
@@ -88,9 +87,9 @@ public class JJDataImportation : ProcessComponent
     public JJDataImportation(
         FormElement formElement,
         IEntityRepository entityRepository,
-        IExpressionsService expressionsService,
-        IFormService formService,
-        IFieldsService fieldsService,
+        ExpressionsService expressionsService,
+        FormService formService,
+        FieldsService fieldsService,
         IBackgroundTaskManager backgroundTaskManager,
         IHttpContext currentContext,
         IComponentFactory componentFactory,

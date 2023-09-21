@@ -4,7 +4,7 @@ using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.Core.DataManager;
 
-public class FormFileService : IFormFileService
+public class FormFileService
 {
     private FormFileManagerFactory FormFileManagerFactory { get; }
 

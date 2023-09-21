@@ -9,7 +9,7 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web.Components;
@@ -147,7 +147,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
         await sw.FlushAsync();
     }
 
-    public TextWriter(IExpressionsService expressionsService, 
+    public TextWriter(ExpressionsService expressionsService, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer, 
         IOptions<JJMasterDataCoreOptions> options, 
         ControlFactory controlFactory, 

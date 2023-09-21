@@ -7,17 +7,16 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 
-public class FieldFormattingService : IFieldFormattingService
+public class FieldFormattingService 
 {
-    private IDataItemService DataItemService { get; }
-    private ILookupService LookupService { get; }
+    private DataItemService DataItemService { get; }
+    private LookupService LookupService { get; }
 
-    public FieldFormattingService(IDataItemService dataItemService, ILookupService lookupService)
+    public FieldFormattingService(DataItemService dataItemService, LookupService lookupService)
     {
         DataItemService = dataItemService;
         LookupService = lookupService;

@@ -8,7 +8,6 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -16,7 +15,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class AuditLogService : IAuditLogService
+public class AuditLogService
 {
     public const string DicId = "id";
     public const string DicName = "dictionary";

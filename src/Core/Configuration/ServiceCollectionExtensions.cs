@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Core.Configuration;

@@ -1,5 +1,4 @@
 using JJMasterData.Web.Extensions;
-using JJMasterData.Pdf;
 using JJMasterData.WebExample.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);

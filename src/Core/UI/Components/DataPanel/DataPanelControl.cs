@@ -4,14 +4,13 @@ using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Components.Scripts;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -45,8 +44,8 @@ internal class DataPanelControl
 
 
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
-    internal IExpressionsService ExpressionsService { get; }
-    private IFieldsService FieldsService { get; }
+    internal ExpressionsService ExpressionsService { get; }
+    private FieldsService FieldsService { get; }
     internal IEncryptionService EncryptionService { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     internal DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(this);

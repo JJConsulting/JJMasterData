@@ -2,27 +2,26 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 
-public class FormService : IFormService
+public class FormService
 {
     #region Properties
     private IEntityRepository EntityRepository { get; }
-    private IExpressionsService ExpressionsService { get; }
-    private IFormFileService FormFileService { get; }
+    private ExpressionsService ExpressionsService { get; }
+    private FormFileService FormFileService { get; }
 
-    private IFieldValidationService FieldValidationService { get; }
+    private FieldValidationService FieldValidationService { get; }
 
-    private IAuditLogService AuditLogService { get; }
+    private AuditLogService AuditLogService { get; }
 
     public bool EnableErrorLinks { get; set; }
     
@@ -51,10 +50,10 @@ public class FormService : IFormService
     
     public FormService(
         IEntityRepository entityRepository,
-        IExpressionsService expressionsService,
-        IFormFileService formFileService,
-        IFieldValidationService fieldValidationService,
-        IAuditLogService auditLogService)
+        ExpressionsService expressionsService,
+        FormFileService formFileService,
+        FieldValidationService fieldValidationService,
+        AuditLogService auditLogService)
     {
         FieldValidationService = fieldValidationService;
         EntityRepository = entityRepository;

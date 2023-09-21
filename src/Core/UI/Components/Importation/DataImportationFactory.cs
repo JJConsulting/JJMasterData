@@ -4,7 +4,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.UI.Components;
@@ -15,7 +15,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Components.Importation;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -24,10 +23,10 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
 {
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IEntityRepository EntityRepository { get; }
-    private IExpressionsService ExpressionsService { get; }
-    private IFieldsService FieldsService { get; }
+    private ExpressionsService ExpressionsService { get; }
+    private FieldsService FieldsService { get; }
     private IBackgroundTaskManager BackgroundTaskManager { get; }
-    private IFormService FormService { get; }
+    private FormService FormService { get; }
     private IFormEventHandlerFactory FormEventHandlerFactory { get; }
     private IHttpContext HttpContext { get; }
     private IComponentFactory ComponentFactory { get; }
@@ -43,10 +42,10 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     public DataImportationFactory(
         IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository,
-        IExpressionsService expressionsService,
+        ExpressionsService expressionsService,
         IBackgroundTaskManager backgroundTaskManager,
-        IFormService formService,
-        IFieldsService fieldsService,
+        FormService formService,
+        FieldsService fieldsService,
         IFormEventHandlerFactory formEventHandlerFactory,
         IHttpContext httpContext,
         IComponentFactory componentFactory,

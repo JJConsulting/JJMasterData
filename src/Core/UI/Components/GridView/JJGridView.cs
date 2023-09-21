@@ -11,7 +11,7 @@ using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.UI.Components.GridView;
@@ -25,7 +25,6 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.FormView;
 using Microsoft.Extensions.Localization;
@@ -172,7 +171,7 @@ public class JJGridView : AsyncComponent
     internal ActionsScripts ActionsScripts =>
         _actionsScripts ??= new ActionsScripts(ExpressionsService, DataDictionaryRepository, UrlHelper, EncryptionService, StringLocalizer);
 
-    internal IFormValuesService FormValuesService { get; }
+    internal FormValuesService FormValuesService { get; }
 
     /// <summary>
     /// <see cref="FormElement"/>
@@ -524,8 +523,8 @@ public class JJGridView : AsyncComponent
     #endregion
 
     #region Injected Services
-    internal IFieldsService FieldsService { get; }
-    internal IExpressionsService ExpressionsService { get; }
+    internal FieldsService FieldsService { get; }
+    internal ExpressionsService ExpressionsService { get; }
 
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IComponentFactory ComponentFactory { get; }
@@ -536,7 +535,7 @@ public class JJGridView : AsyncComponent
 
     internal IHttpContext CurrentContext { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    internal IDataItemService DataItemService { get; }
+    internal DataItemService DataItemService { get; }
     internal IEncryptionService EncryptionService { get; }
 
     #endregion
@@ -548,12 +547,12 @@ public class JJGridView : AsyncComponent
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IDataItemService dataItemService,
+        DataItemService dataItemService,
         JJMasterDataUrlHelper urlHelper,
-        IExpressionsService expressionsService,
+        ExpressionsService expressionsService,
         IEncryptionService encryptionService,
-        IFieldsService fieldsService,
-        IFormValuesService formValuesService,
+        FieldsService fieldsService,
+        FormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
     {

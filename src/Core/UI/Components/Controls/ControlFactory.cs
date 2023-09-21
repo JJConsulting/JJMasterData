@@ -7,7 +7,7 @@ using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -15,7 +15,7 @@ namespace JJMasterData.Core.Web.Factories;
 public class ControlFactory 
 {
     private IServiceScopeFactory ServiceScopeFactory { get; }
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
 
     public IControlFactory<JJCheckBox> CheckBox => GetControlFactory<JJCheckBox>();
     public IControlFactory<JJComboBox> ComboBox => GetControlFactory<JJComboBox>();
@@ -29,7 +29,7 @@ public class ControlFactory
     public IControlFactory<JJTextRange> TextRange => GetControlFactory<JJTextRange>();
 
     public ControlFactory(IServiceScopeFactory serviceScopeFactory,
-        IExpressionsService expressionsService)
+        ExpressionsService expressionsService)
     {
         ServiceScopeFactory = serviceScopeFactory;
         ExpressionsService = expressionsService;

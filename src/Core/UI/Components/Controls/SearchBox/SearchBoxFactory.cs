@@ -3,7 +3,7 @@ using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using System;
@@ -13,16 +13,16 @@ namespace JJMasterData.Core.Web.Factories;
 
 internal class SearchBoxFactory : IControlFactory<JJSearchBox>
 {
-    private IDataItemService DataItemService { get; }
+    private DataItemService DataItemService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IFormValuesService FormValuesService { get; }
+    private FormValuesService FormValuesService { get; }
     private IHttpRequest HttpRequest { get; }
     private IEncryptionService EncryptionService { get; }
 
     public SearchBoxFactory(
-        IDataItemService dataItemService,
+        DataItemService dataItemService,
         IDataDictionaryRepository dataDictionaryRepository,
-        IFormValuesService formValuesService,
+        FormValuesService formValuesService,
         IHttpRequest httpRequest,
         IEncryptionService encryptionService)
     {

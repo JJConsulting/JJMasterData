@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Http.Abstractions;
 using Moq;
 
 namespace JJMasterData.Core.Test.Web.Components

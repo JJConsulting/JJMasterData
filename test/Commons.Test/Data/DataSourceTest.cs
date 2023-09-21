@@ -1,9 +1,5 @@
-using JJMasterData.Commons.Data.Entity;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using JJMasterData.Commons.Data.Entity.Repository;
-using Xunit;
 
 namespace JJMasterData.Commons.Tests;
 

@@ -3,7 +3,7 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Web.Factories;
 using JJMasterData.Core.Web.Html;
@@ -13,8 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
 
 #if NET48
@@ -100,9 +98,9 @@ public class JJDataPanel : AsyncComponent
     internal IHttpContext CurrentContext { get; }
     internal IEncryptionService EncryptionService { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
-    internal IFieldsService FieldsService { get; }
-    internal IFormValuesService FormValuesService { get; }
-    internal IExpressionsService ExpressionsService { get; }
+    internal FieldsService FieldsService { get; }
+    internal FormValuesService FormValuesService { get; }
+    internal ExpressionsService ExpressionsService { get; }
     internal IComponentFactory ComponentFactory { get; }
 
     #endregion
@@ -114,9 +112,9 @@ public class JJDataPanel : AsyncComponent
         ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<IComponentFactory>();
         EntityRepository =  StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
         CurrentContext =  StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
-        FieldsService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldsService>();
-        FormValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFormValuesService>();
-        ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
+        FieldsService = StaticServiceLocator.Provider.GetScopedDependentService<FieldsService>();
+        FormValuesService = StaticServiceLocator.Provider.GetScopedDependentService<FormValuesService>();
+        ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<ExpressionsService>();
         UrlHelper = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
 
         Values = new Dictionary<string, object>();
@@ -149,9 +147,9 @@ public class JJDataPanel : AsyncComponent
         IHttpContext currentContext,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
-        IFieldsService fieldsService,
-        IFormValuesService formValuesService,
-        IExpressionsService expressionsService,
+        FieldsService fieldsService,
+        FormValuesService formValuesService,
+        ExpressionsService expressionsService,
         IComponentFactory componentFactory
     ) 
     {
@@ -175,9 +173,9 @@ public class JJDataPanel : AsyncComponent
         IHttpContext currentContext,
         IEncryptionService encryptionService,
         JJMasterDataUrlHelper urlHelper,
-        IFieldsService fieldsService,
-        IFormValuesService formValuesService,
-        IExpressionsService expressionsService,
+        FieldsService fieldsService,
+        FormValuesService formValuesService,
+        ExpressionsService expressionsService,
         IComponentFactory componentFactory
     ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
     {

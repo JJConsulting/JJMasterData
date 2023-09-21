@@ -1,6 +1,5 @@
 using JJMasterData.Web.Options;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 #if DEBUG
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;

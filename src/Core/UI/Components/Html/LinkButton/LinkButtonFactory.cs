@@ -16,7 +16,7 @@ using JJMasterData.Core.Web.Components.Scripts;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components.Importation;
 
 namespace JJMasterData.Core.UI.Components.Widgets;
@@ -24,7 +24,7 @@ namespace JJMasterData.Core.UI.Components.Widgets;
 public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 {
     private ActionsScripts _actionsScripts;
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -32,7 +32,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
     private ActionsScripts ActionsScripts => _actionsScripts ??= new ActionsScripts(ExpressionsService,DataDictionaryRepository, UrlHelper, EncryptionService, StringLocalizer);
     
     public LinkButtonFactory(
-        IExpressionsService expressionsService,
+        ExpressionsService expressionsService,
         IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,

@@ -1,10 +1,10 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.Test.DataManager.Services;
 
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using Microsoft.Extensions.Localization;
 using Moq;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ public class FieldValidationServiceTests
     public async Task ValidateFieldsAsync_NullFormValues_ThrowsArgumentNullException()
     {
         // Arrange
-        var expressionsServiceMock = new Mock<IExpressionsService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
         var localizerMock = new Mock<IStringLocalizer<JJMasterDataResources>>();
         var service = new FieldValidationService(expressionsServiceMock.Object, localizerMock.Object);
 
@@ -29,7 +29,7 @@ public class FieldValidationServiceTests
     public async Task ValidateFieldsAsync_InvalidField_ReturnsError()
     {
         // Arrange
-        var expressionsServiceMock = new Mock<IExpressionsService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
         expressionsServiceMock.Setup(e => e.GetBoolValueAsync(It.IsAny<string>(), It.IsAny<FormStateData>()))
                              .ReturnsAsync(false);
 
@@ -52,7 +52,7 @@ public class FieldValidationServiceTests
     public void ValidateField_RequiredFieldEmpty_ReturnsError()
     {
         // Arrange
-        var expressionsServiceMock = new Mock<IExpressionsService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
         var localizerMock = new Mock<IStringLocalizer<JJMasterDataResources>>();
         localizerMock.Setup(l => l["{0} field is required", It.IsAny<string>()]).Returns(new LocalizedString("Field is required","Field is required"));
 

@@ -9,26 +9,25 @@ using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager;
 
-public class FormValuesService : IFormValuesService
+public class FormValuesService 
 {
     private IEntityRepository EntityRepository { get; }
-    private IFieldValuesService FieldValuesService { get; }
-    private IDataItemService DataItemService { get; }
-    private ILookupService LookupService { get; }
+    private FieldValuesService FieldValuesService { get; }
+    private DataItemService DataItemService { get; }
+    private LookupService LookupService { get; }
     private IEncryptionService EncryptionService { get; }
     private IFormValues FormValues { get; }
     public FormValuesService(
         IEntityRepository entityRepository,
-        IFieldValuesService fieldValuesService,
-        IDataItemService dataItemService,
-        ILookupService lookupService,
+        FieldValuesService fieldValuesService,
+        DataItemService dataItemService,
+        LookupService lookupService,
         IEncryptionService encryptionService,
         IFormValues formValues)
     {

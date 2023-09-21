@@ -16,7 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.DataManager.Imports;
 
@@ -41,24 +41,24 @@ public class DataImportationWorker : IBackgroundTaskWorker
     public string RawData { get; }
     public char Separator { get;}
     
-    internal IExpressionsService ExpressionsService { get; }
+    internal ExpressionsService ExpressionsService { get; }
 
     internal IEntityRepository EntityRepository { get; }
     
-    internal IFieldValuesService FieldValuesService { get; }
+    internal FieldValuesService FieldValuesService { get; }
 
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     internal ILogger<DataImportationWorker> Logger { get; }
 
-    internal IFormService FormService { get; }
+    internal FormService FormService { get; }
     
     public DataImportationWorker(
         DataImportationContext context,
-        IFormService formService, 
-        IExpressionsService expressionsService, 
+        FormService formService, 
+        ExpressionsService expressionsService, 
         IEntityRepository entityRepository, 
-        IFieldValuesService fieldValuesService,
+        FieldValuesService fieldValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILogger<DataImportationWorker> logger)
     {

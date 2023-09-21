@@ -6,19 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.DataManager;
 
-public class FieldValuesService : IFieldValuesService
+public class FieldValuesService
 {
     private IEntityRepository EntityRepository { get; }
-    private IFieldValidationService FieldValidationService { get; }
+    private FieldValidationService FieldValidationService { get; }
 
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
 
 
-    public FieldValuesService(IExpressionsService expressionsService, IEntityRepository entityRepository, IFieldValidationService fieldValidationService)
+    public FieldValuesService(ExpressionsService expressionsService, IEntityRepository entityRepository, FieldValidationService fieldValidationService)
     {
         ExpressionsService = expressionsService;
         EntityRepository = entityRepository;

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace JJMasterData.ReceitaFederal.Models;
+﻿namespace JJMasterData.ReceitaFederal.Models;
 
 
 public class CnaeInfo

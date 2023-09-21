@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Data;
-using JJMasterData.Core.DataManager;
-
 namespace JJMasterData.Xunit.Tester;
 
 internal interface IDataDictionaryTester

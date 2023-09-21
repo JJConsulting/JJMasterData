@@ -1,11 +1,10 @@
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.Test.DataManager.Services;
 
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,10 +17,10 @@ public class FormServiceTests
     {
         // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<IExpressionsService>();
-        var formFileServiceMock = new Mock<IFormFileService>();
-        var fieldValidationServiceMock = new Mock<IFieldValidationService>();
-        var auditLogServiceMock = new Mock<IAuditLogService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
+        var formFileServiceMock = new Mock<FormFileService>();
+        var fieldValidationServiceMock = new Mock<FieldValidationService>();
+        var auditLogServiceMock = new Mock<AuditLogService>();
 
         var formService = new FormService(
             entityRepositoryMock.Object,
@@ -51,10 +50,10 @@ public class FormServiceTests
     {
         // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<IExpressionsService>();
-        var formFileServiceMock = new Mock<IFormFileService>();
-        var fieldValidationServiceMock = new Mock<IFieldValidationService>();
-        var auditLogServiceMock = new Mock<IAuditLogService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
+        var formFileServiceMock = new Mock<FormFileService>();
+        var fieldValidationServiceMock = new Mock<FieldValidationService>();
+        var auditLogServiceMock = new Mock<AuditLogService>();
 
         var formService = new FormService(
             entityRepositoryMock.Object,
@@ -84,10 +83,10 @@ public class FormServiceTests
     {
         // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<IExpressionsService>();
-        var formFileServiceMock = new Mock<IFormFileService>();
-        var fieldValidationServiceMock = new Mock<IFieldValidationService>();
-        var auditLogServiceMock = new Mock<IAuditLogService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
+        var formFileServiceMock = new Mock<FormFileService>();
+        var fieldValidationServiceMock = new Mock<FieldValidationService>();
+        var auditLogServiceMock = new Mock<AuditLogService>();
 
         var formService = new FormService(
             entityRepositoryMock.Object,
@@ -117,10 +116,10 @@ public class FormServiceTests
     {
         // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<IExpressionsService>();
-        var formFileServiceMock = new Mock<IFormFileService>();
-        var fieldValidationServiceMock = new Mock<IFieldValidationService>();
-        var auditLogServiceMock = new Mock<IAuditLogService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
+        var formFileServiceMock = new Mock<FormFileService>();
+        var fieldValidationServiceMock = new Mock<FieldValidationService>();
+        var auditLogServiceMock = new Mock<AuditLogService>();
 
         var formService = new FormService(
             entityRepositoryMock.Object,
@@ -150,10 +149,10 @@ public class FormServiceTests
     {
         // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<IExpressionsService>();
-        var formFileServiceMock = new Mock<IFormFileService>();
-        var fieldValidationServiceMock = new Mock<IFieldValidationService>();
-        var auditLogServiceMock = new Mock<IAuditLogService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
+        var formFileServiceMock = new Mock<FormFileService>();
+        var fieldValidationServiceMock = new Mock<FieldValidationService>();
+        var auditLogServiceMock = new Mock<AuditLogService>();
 
         var formService = new FormService(
             entityRepositoryMock.Object,
@@ -183,10 +182,10 @@ public class FormServiceTests
     {
         // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<IExpressionsService>();
-        var formFileServiceMock = new Mock<IFormFileService>();
-        var fieldValidationServiceMock = new Mock<IFieldValidationService>();
-        var auditLogServiceMock = new Mock<IAuditLogService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
+        var formFileServiceMock = new Mock<FormFileService>();
+        var fieldValidationServiceMock = new Mock<FieldValidationService>();
+        var auditLogServiceMock = new Mock<AuditLogService>();
 
         var formService = new FormService(
             entityRepositoryMock.Object,
@@ -216,10 +215,10 @@ public class FormServiceTests
     {
         // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<IExpressionsService>();
-        var formFileServiceMock = new Mock<IFormFileService>();
-        var fieldValidationServiceMock = new Mock<IFieldValidationService>();
-        var auditLogServiceMock = new Mock<IAuditLogService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
+        var formFileServiceMock = new Mock<FormFileService>();
+        var fieldValidationServiceMock = new Mock<FieldValidationService>();
+        var auditLogServiceMock = new Mock<AuditLogService>();
 
         var formService = new FormService(
             entityRepositoryMock.Object,
@@ -253,10 +252,10 @@ public class FormServiceTests
     {
         // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<IExpressionsService>();
-        var formFileServiceMock = new Mock<IFormFileService>();
-        var fieldValidationServiceMock = new Mock<IFieldValidationService>();
-        var auditLogServiceMock = new Mock<IAuditLogService>();
+        var expressionsServiceMock = new Mock<ExpressionsService>();
+        var formFileServiceMock = new Mock<FormFileService>();
+        var fieldValidationServiceMock = new Mock<FieldValidationService>();
+        var auditLogServiceMock = new Mock<AuditLogService>();
 
         var formService = new FormService(
             entityRepositoryMock.Object,

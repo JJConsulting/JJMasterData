@@ -6,7 +6,6 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -14,9 +13,9 @@ public class ElementMapService
 {
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IEntityRepository EntityRepository { get; }
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
 
-    public ElementMapService(IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository,IExpressionsService expressionsService)
+    public ElementMapService(IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository,ExpressionsService expressionsService)
     {
         DataDictionaryRepository = dataDictionaryRepository;
         EntityRepository = entityRepository;

@@ -6,8 +6,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -20,7 +19,7 @@ public abstract class ProcessComponent : AsyncComponent
     private ProcessOptions _processOptions;
     private string _userId;
 
-    internal IExpressionsService ExpressionsService { get; }
+    internal ExpressionsService ExpressionsService { get; }
 
     internal IEntityRepository EntityRepository { get; }
 
@@ -57,7 +56,7 @@ public abstract class ProcessComponent : AsyncComponent
     /// </summary>
     public FormElement FormElement { get; set; }
     
-    internal IFieldsService FieldsService { get; } 
+    internal FieldsService FieldsService { get; } 
     internal IBackgroundTaskManager BackgroundTaskManager { get; }
     private ILogger<ProcessComponent> Logger { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -66,8 +65,8 @@ public abstract class ProcessComponent : AsyncComponent
     protected ProcessComponent(
         IHttpContext currentContext,
         IEntityRepository entityRepository,
-        IExpressionsService expressionsService,
-        IFieldsService fieldsService,
+        ExpressionsService expressionsService,
+        FieldsService fieldsService,
         IBackgroundTaskManager backgroundTaskManager,
         ILogger<ProcessComponent> logger,
         IEncryptionService encryptionService,

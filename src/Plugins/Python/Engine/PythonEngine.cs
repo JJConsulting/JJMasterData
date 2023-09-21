@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
 using Microsoft.Scripting.Hosting;
 
 namespace JJMasterData.Python.Engine;

@@ -6,7 +6,6 @@ using JJMasterData.Core.UI.Components.Controls.TextBox;
 using JJMasterData.Core.UI.Components.GridView;
 using JJMasterData.Core.UI.Components.Importation;
 using JJMasterData.Core.UI.Components.Widgets;
-using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.DependencyInjection;

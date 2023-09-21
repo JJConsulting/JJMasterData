@@ -12,10 +12,7 @@ using System.Text.RegularExpressions;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Core.Options;
-using JJMasterData.Web.Areas.DataDictionary.Models;
 using JJMasterData.Web.Options;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.FileProviders;
 
 namespace JJMasterData.Web.Extensions;
 

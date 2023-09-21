@@ -1,11 +1,6 @@
-﻿using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.Options;
-using JJMasterData.Web.Extensions;
+﻿using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 

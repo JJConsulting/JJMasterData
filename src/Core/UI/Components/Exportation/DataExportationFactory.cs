@@ -4,7 +4,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
@@ -14,7 +14,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Exports;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -24,8 +23,8 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
     private IEncryptionService EncryptionService { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IExpressionsService ExpressionsService { get; }
-    private IFieldsService FieldsService { get; }
+    private ExpressionsService ExpressionsService { get; }
+    private FieldsService FieldsService { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IBackgroundTaskManager BackgroundTaskManager { get; }
     private IHttpContext HttpContext { get; }
@@ -38,8 +37,8 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
     public DataExportationFactory(
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IExpressionsService expressionsService,
-        IFieldsService fieldsService,
+        ExpressionsService expressionsService,
+        FieldsService fieldsService,
         IOptions<JJMasterDataCoreOptions> options,
         IBackgroundTaskManager backgroundTaskManager,
         IHttpContext httpContext,

@@ -2,12 +2,11 @@
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.WebApi.Models;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -20,25 +19,25 @@ public class MasterApiService
 {
     private readonly HttpContext _httpContext;
     private AccountService AccountService { get; }
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
     private IHttpContext HttpContext { get; }
-    private IDataItemService DataItemService { get; }
-    private IFormService FormService { get; }
-    private IFieldsService FieldsService { get; }
+    private DataItemService DataItemService { get; }
+    private FormService FormService { get; }
+    private FieldsService FieldsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
     public MasterApiService(
         AccountService accountService,
-        IExpressionsService expressionsService,
+        ExpressionsService expressionsService,
         IHttpContextAccessor httpContextAccessor,
         IHttpContext httpContext,
-        IDataItemService dataItemService,
-        IFormService formService,
+        DataItemService dataItemService,
+        FormService formService,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IFieldsService fieldsService,
+        FieldsService fieldsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer
         )
     {

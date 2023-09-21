@@ -1,5 +1,3 @@
-using JJMasterData.Core.Web.Components;
-
 namespace JJMasterData.Web.Areas.MasterData.Models;
 
 public class LookupViewModel

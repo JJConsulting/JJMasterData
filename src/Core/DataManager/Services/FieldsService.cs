@@ -1,20 +1,20 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FieldsService : IFieldsService
+public class FieldsService 
 {
-    private IFieldFormattingService FieldFormattingService { get; }
-    private IFieldValidationService FieldValidationService { get; }
-    private IFieldValuesService  FieldValuesService { get; }
+    private FieldFormattingService FieldFormattingService { get; }
+    private FieldValidationService FieldValidationService { get; }
+    private FieldValuesService  FieldValuesService { get; }
     
     public FieldsService(
-        IFieldFormattingService fieldFormattingService,
-        IFieldValuesService fieldValuesService,
-        IFieldValidationService fieldValidationService)
+        FieldFormattingService fieldFormattingService,
+        FieldValuesService fieldValuesService,
+        FieldValidationService fieldValidationService)
     {
         FieldFormattingService = fieldFormattingService;
         FieldValidationService = fieldValidationService;

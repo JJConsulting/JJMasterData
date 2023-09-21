@@ -5,7 +5,6 @@ using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
@@ -20,17 +19,16 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class LookupController : MasterDataController
 {
-    private ILookupService LookupService { get; }
-    private IFormValuesService FormValuesService { get; }
+    private LookupService LookupService { get; }
+    private FormValuesService FormValuesService { get; }
     private IEncryptionService EncryptionService { get; }
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public LookupController(
-        ILookupService lookupService,
-        IFormValuesService formValuesService,
+        LookupService lookupService,
+        FormValuesService formValuesService,
         IEncryptionService encryptionService,
-        IExpressionsService expressionsService,
         IFormElementComponentFactory<JJFormView> formViewFactory,
         IStringLocalizer<JJMasterDataResources> stringLocalizer
         )
@@ -77,8 +75,8 @@ public class LookupController : MasterDataController
         var formStateData = new FormStateData(formValues, pageState);
         var selectedValue = LookupService.GetSelectedValue(componentName);
         
-        var description = await LookupService.GetDescriptionAsync(elementMap, formStateData, selectedValue, false);
-        return Json(new LookupResultDto(selectedValue, description));
+        var description = await LookupService.GetDescriptionAsync(elementMap!, formStateData, selectedValue, false);
+        return Json(new LookupResultDto(selectedValue!, description!));
     }
 
     private void ConfigureLookupForm(JJFormView form, LookupParameters lookupParameters)

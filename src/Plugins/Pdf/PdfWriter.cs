@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -26,13 +24,9 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
@@ -51,19 +45,19 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
 
     public bool IsLandscape { get; set; }
 
-    private IDataItemService DataItemService { get; }
+    private DataItemService DataItemService { get; }
     public IEntityRepository EntityRepository { get; } 
     
-    public IFieldFormattingService FieldFormattingService { get; }
+    public FieldFormattingService FieldFormattingService { get; }
     
     
-    public PdfWriter(IExpressionsService expressionsService, 
+    public PdfWriter(ExpressionsService expressionsService, 
                      IStringLocalizer<JJMasterDataResources> stringLocalizer, 
                      IOptions<JJMasterDataCoreOptions> options, 
-                     IDataItemService dataItemService,
+                     DataItemService dataItemService,
                      ILogger<PdfWriter> logger, 
                      IEntityRepository entityRepository, 
-                     IFieldFormattingService fieldFormattingService, 
+                     FieldFormattingService fieldFormattingService, 
                      ControlFactory controlFactory) : base(expressionsService, stringLocalizer, options, controlFactory, logger)
     {
         DataItemService = dataItemService;

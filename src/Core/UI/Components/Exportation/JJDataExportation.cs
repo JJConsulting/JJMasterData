@@ -14,8 +14,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
@@ -73,8 +72,8 @@ public class JJDataExportation : ProcessComponent
     internal JJDataExportation(
         FormElement formElement,
         IEntityRepository entityRepository,
-        IExpressionsService expressionsService,
-        IFieldsService fieldsService,
+        ExpressionsService expressionsService,
+        FieldsService fieldsService,
         IOptions<JJMasterDataCoreOptions> masterDataOptions,
         IBackgroundTaskManager backgroundTaskManager, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,

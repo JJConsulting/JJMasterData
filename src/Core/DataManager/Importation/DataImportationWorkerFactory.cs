@@ -1,8 +1,8 @@
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Imports;
+using JJMasterData.Core.DataManager.Services;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -14,15 +14,17 @@ public class DataImportationWorkerFactory
 
     public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public IFieldValuesService FieldValuesService { get; }
+    public FieldValuesService FieldValuesService { get; }
 
     public IEntityRepository EntityRepository { get; }
 
-    public IExpressionsService ExpressionsService { get; }
+    public ExpressionsService ExpressionsService { get; }
 
-    public IFormService FormService { get; }
-    
-    public DataImportationWorkerFactory(IFormService formService, IExpressionsService expressionsService, IEntityRepository entityRepository, IFieldValuesService fieldValuesService, IStringLocalizer<JJMasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
+    public FormService FormService { get; }
+
+    public DataImportationWorkerFactory(FormService formService, ExpressionsService expressionsService,
+        IEntityRepository entityRepository, FieldValuesService fieldValuesService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
     {
         FormService = formService;
         ExpressionsService = expressionsService;

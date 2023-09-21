@@ -8,16 +8,16 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.DataManager;
 
-public class FieldValidationService : IFieldValidationService
+public class FieldValidationService
 {
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> Localizer { get; }
 
-    public FieldValidationService(IExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> localizer)
+    public FieldValidationService(ExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> localizer)
     {
         ExpressionsService = expressionsService;
         Localizer = localizer;

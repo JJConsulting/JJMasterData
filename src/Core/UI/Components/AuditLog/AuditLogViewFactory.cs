@@ -2,7 +2,7 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -16,7 +16,7 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
 {
     private IHttpContext HttpContext { get; }
     private IEntityRepository EntityRepository { get; }
-    private IAuditLogService AuditLogService { get; }
+    private AuditLogService AuditLogService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IComponentFactory ComponentFactory { get; }
     private IEncryptionService EncryptionService { get; }
@@ -25,7 +25,7 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
     public AuditLogViewFactory(
         IHttpContext httpContext,
         IEntityRepository entityRepository,
-        IAuditLogService auditLogService,
+        AuditLogService auditLogService,
         IDataDictionaryRepository dataDictionaryRepository,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,

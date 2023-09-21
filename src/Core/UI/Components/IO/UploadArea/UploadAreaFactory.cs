@@ -11,14 +11,14 @@ namespace JJMasterData.Core.Web.Factories;
 internal class UploadAreaFactory : IComponentFactory<JJUploadArea>
 {
     private IHttpContext HttpContext { get; }
-    private IUploadAreaService UploadAreaService { get; }
+    private UploadAreaService UploadAreaService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
     public UploadAreaFactory(
         IHttpContext httpContext,
-        IUploadAreaService uploadAreaService, 
+        UploadAreaService uploadAreaService, 
         JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)

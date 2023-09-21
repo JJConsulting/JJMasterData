@@ -11,7 +11,7 @@ using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
 
@@ -22,10 +22,10 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     private IHttpContext CurrentContext { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IFormService FormService { get; }
+    private FormService FormService { get; }
     private IEncryptionService EncryptionService { get; }
-    private IFieldValuesService FieldValuesService { get; }
-    private IExpressionsService ExpressionsService { get; }
+    private FieldValuesService FieldValuesService { get; }
+    private ExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IComponentFactory Factory { get; }
@@ -35,10 +35,10 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IFormService formService,
+        FormService formService,
         IEncryptionService encryptionService,
-        IFieldValuesService fieldValuesService,
-        IExpressionsService expressionsService,
+        FieldValuesService fieldValuesService,
+        ExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IOptions<JJMasterDataCoreOptions> options,
         IComponentFactory factory,

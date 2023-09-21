@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace JJMasterData.WebApi.Models;

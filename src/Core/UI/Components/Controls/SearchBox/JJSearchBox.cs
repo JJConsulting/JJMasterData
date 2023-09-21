@@ -3,7 +3,7 @@
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Web.Html;
@@ -171,7 +171,7 @@ public class JJSearchBox : ControlBase
 
     private IHttpRequest Request { get; }
     private IEncryptionService EncryptionService { get; }
-    public IDataItemService DataItemService { get; }
+    public DataItemService DataItemService { get; }
     public FormStateData FormStateData { get; internal set; }
 
     public string SelectedValue
@@ -205,7 +205,7 @@ public class JJSearchBox : ControlBase
     public JJSearchBox(
         IHttpRequest request,
         IEncryptionService encryptionService,
-        IDataItemService dataItemService) : base(request.Form)
+        DataItemService dataItemService) : base(request.Form)
     {
         HtmlId = Name;
         Request = request;

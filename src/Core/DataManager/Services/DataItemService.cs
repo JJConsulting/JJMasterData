@@ -7,23 +7,21 @@ using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.DataManager.Services.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class DataItemService : IDataItemService
+public class DataItemService 
 {
     private IEntityRepository EntityRepository { get; }
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
     private IFormValues FormValues { get; }
     private ElementMapService ElementMapService { get; }
 
     public DataItemService(
         IEntityRepository entityRepository,
-        IExpressionsService expressionsService,
+        ExpressionsService expressionsService,
         IFormValues formValues,
         ElementMapService elementMapService)
     {
@@ -60,8 +58,8 @@ public class DataItemService : IDataItemService
     public async IAsyncEnumerable<DataItemValue> GetValuesAsync(
         FormElementDataItem dataItem,
         FormStateData formStateData,
-        string? searchText,
-        string? searchId)
+        string? searchText = null,
+        string? searchId = null)
     {
         switch (dataItem.DataItemType)
         {

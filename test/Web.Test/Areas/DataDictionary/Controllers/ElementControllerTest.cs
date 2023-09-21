@@ -1,7 +1,6 @@
 ﻿using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit.Extensions.Ordering;
 

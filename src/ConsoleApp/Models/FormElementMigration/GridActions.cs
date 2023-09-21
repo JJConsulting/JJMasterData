@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Actions.Abstractions;
 using JJMasterData.Core.DataDictionary.Actions.GridTable;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;

@@ -29,8 +29,8 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
@@ -282,12 +282,12 @@ public class JJFormView : AsyncComponent
     internal IHttpContext CurrentContext { get; }
     internal IFormValues FormValues => CurrentContext.Request.Form;
     internal IEntityRepository EntityRepository { get; }
-    internal IFieldValuesService FieldValuesService { get; }
-    internal IExpressionsService ExpressionsService { get; }
+    internal FieldValuesService FieldValuesService { get; }
+    internal ExpressionsService ExpressionsService { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
-    internal IFormService FormService { get; }
+    internal FormService FormService { get; }
     internal IEncryptionService EncryptionService { get; }
     internal IComponentFactory ComponentFactory { get; }
     
@@ -303,10 +303,10 @@ public class JJFormView : AsyncComponent
         CurrentContext = StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
         EntityRepository = StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
         ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<IComponentFactory>();
-        FormService = StaticServiceLocator.Provider.GetScopedDependentService<IFormService>();
-        FieldValuesService = StaticServiceLocator.Provider.GetScopedDependentService<IFieldValuesService>();
+        FormService = StaticServiceLocator.Provider.GetScopedDependentService<FormService>();
+        FieldValuesService = StaticServiceLocator.Provider.GetScopedDependentService<FieldValuesService>();
         Options = StaticServiceLocator.Provider.GetScopedDependentService<IOptions<JJMasterDataCoreOptions>>();
-        ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<IExpressionsService>();
+        ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<ExpressionsService>();
         StringLocalizer = StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
         DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         FormService.EnableErrorLinks = true;
@@ -331,10 +331,10 @@ public class JJFormView : AsyncComponent
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IFormService formService,
+        FormService formService,
         IEncryptionService encryptionService,
-        IFieldValuesService fieldValuesService,
-        IExpressionsService expressionsService,
+        FieldValuesService fieldValuesService,
+        ExpressionsService expressionsService,
         IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
@@ -1122,7 +1122,7 @@ public class JJFormView : AsyncComponent
     public async Task<IDictionary<string, string>> DeleteFormValuesAsync(IDictionary<string, object>? filter)
     {
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, filter, PageState.Delete, true);
+            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, filter!, PageState.Delete, true);
         var result = await FormService.DeleteAsync(FormElement, values,
             new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;

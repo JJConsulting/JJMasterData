@@ -4,10 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Web;
@@ -15,12 +13,12 @@ using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class LookupService : ILookupService
+public class LookupService 
 {
     private IFormValues FormValues { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IEntityRepository EntityRepository { get; }
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
     private IEncryptionService EncryptionService { get; }
     private ElementMapService ElementMapService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
@@ -29,7 +27,7 @@ public class LookupService : ILookupService
         IFormValues formValues,
         IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository,
-        IExpressionsService expressionsService,
+        ExpressionsService expressionsService,
         IEncryptionService encryptionService,
         ElementMapService elementMapService,
         JJMasterDataUrlHelper urlHelper)

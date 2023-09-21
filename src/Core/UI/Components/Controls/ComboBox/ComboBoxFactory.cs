@@ -1,11 +1,10 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
@@ -14,15 +13,15 @@ namespace JJMasterData.Core.Web.Factories;
 internal class ComboBoxFactory : IControlFactory<JJComboBox>
 {
     private IFormValues FormValues { get; }
-    private IDataItemService DataItemService { get; }
-    private IExpressionsService ExpressionsService { get; }
+    private DataItemService DataItemService { get; }
+    private ExpressionsService ExpressionsService { get; }
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
     public ComboBoxFactory(
         IFormValues formValues, 
-        IDataItemService dataItemService,
-        IExpressionsService expressionsService, 
+        DataItemService dataItemService,
+        ExpressionsService expressionsService, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {

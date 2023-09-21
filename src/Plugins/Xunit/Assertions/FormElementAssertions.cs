@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Xunit.Tester;
-using Xunit;
-
-namespace JJMasterData.Xunit.Assertions;
+﻿namespace JJMasterData.Xunit.Assertions;
 
 public static class DataDictionaryAssertions 
 {

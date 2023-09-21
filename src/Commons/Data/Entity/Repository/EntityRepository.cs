@@ -9,7 +9,6 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Providers;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

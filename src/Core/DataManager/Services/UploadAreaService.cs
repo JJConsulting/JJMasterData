@@ -13,7 +13,7 @@ using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class UploadAreaService : IUploadAreaService
+public class UploadAreaService 
 {
     private IHttpContext CurrentContext { get; }
     public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -65,7 +65,7 @@ public class LookupParameters
         return queryString.ToString();
     }
     
-    public string ToQueryString(IExpressionsService expressionsService, FormStateData formStateData)
+    public string ToQueryString(ExpressionsService expressionsService, FormStateData formStateData)
     {
         var queryString = new StringBuilder();
 

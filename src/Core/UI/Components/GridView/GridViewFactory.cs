@@ -5,7 +5,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
@@ -14,7 +14,6 @@ using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.FormEvents.Abstractions;
 using JJMasterData.Core.Web.FormEvents.Abstractions;
 using JJMasterData.Core.Web.FormEvents.Factories;
@@ -24,16 +23,16 @@ namespace JJMasterData.Core.UI.Components.GridView;
 internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private IFieldsService FieldsService { get; }
-    private IFormValuesService FormValuesService { get; }
-    private IExpressionsService ExpressionsService { get; }
+    private FieldsService FieldsService { get; }
+    private FormValuesService FormValuesService { get; }
+    private ExpressionsService ExpressionsService { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IGridEventHandlerFactory GridEventHandlerFactory { get; }
     private IComponentFactory Factory { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IDataItemService DataItemService { get; }
+    private DataItemService DataItemService { get; }
     private IHttpContext CurrentContext { get; }
 
 
@@ -41,12 +40,12 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IDataItemService dataItemService,
+        DataItemService dataItemService,
         JJMasterDataUrlHelper urlHelper,
-        IExpressionsService expressionsService,
+        ExpressionsService expressionsService,
         IEncryptionService encryptionService,
-        IFieldsService fieldsService,
-        IFormValuesService formValuesService,
+        FieldsService fieldsService,
+        FormValuesService formValuesService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IGridEventHandlerFactory gridEventHandlerFactory,
         IComponentFactory factory)

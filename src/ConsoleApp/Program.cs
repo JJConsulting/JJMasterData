@@ -2,7 +2,6 @@
 using System.CommandLine.Builder;
 using System.CommandLine.Help;
 using System.CommandLine.Parsing;
-using JJMasterData.Commons.Configuration;
 using JJMasterData.ConsoleApp.CommandLine;
 using JJMasterData.ConsoleApp.Extensions;
 using JJMasterData.ConsoleApp.Services;

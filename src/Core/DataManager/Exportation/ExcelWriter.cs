@@ -11,11 +11,9 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.FormEvents.Args;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Factories;
 using Microsoft.Extensions.Localization;
@@ -38,16 +36,16 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
     public bool ShowRowStriped { get; set; }
 
     private IEntityRepository EntityRepository { get; }
-    private IFieldFormattingService FieldFormattingService { get; }
+    private FieldFormattingService FieldFormattingService { get; }
 
     public ExcelWriter(
-        IExpressionsService expressionsService,
+        ExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IOptions<JJMasterDataCoreOptions> options, 
         ControlFactory controlFactory,
         ILoggerFactory loggerFactory, 
         IEntityRepository entityRepository,
-        IFieldFormattingService fieldFormattingService) : base(
+        FieldFormattingService fieldFormattingService) : base(
             expressionsService,
             stringLocalizer, 
             options,

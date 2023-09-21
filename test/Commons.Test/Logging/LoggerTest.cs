@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Logging.Db;
+﻿using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Commons.Logging.File;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

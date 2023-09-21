@@ -3,12 +3,11 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -18,9 +17,9 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IHttpContext HttpContext { get; }
     private IEncryptionService EncryptionService { get; }
-    private IFieldsService FieldsService { get; }
-    private IFormValuesService FormValuesService { get; }
-    private IExpressionsService ExpressionsService { get; }
+    private FieldsService FieldsService { get; }
+    private FormValuesService FormValuesService { get; }
+    private ExpressionsService ExpressionsService { get; }
     private IComponentFactory ComponentFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
@@ -28,9 +27,9 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
         IDataDictionaryRepository dataDictionaryRepository,
         IHttpContext httpContext, 
         IEncryptionService encryptionService, 
-        IFieldsService fieldsService,
-        IFormValuesService formValuesService, 
-        IExpressionsService expressionsService,
+        FieldsService fieldsService,
+        FormValuesService formValuesService, 
+        ExpressionsService expressionsService,
         IComponentFactory componentFactory, 
         JJMasterDataUrlHelper urlHelper)
     {

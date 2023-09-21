@@ -1,13 +1,7 @@
-﻿using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.UI.Components;
+﻿using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Html;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
-using JJMasterData.Web.Filters;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;

@@ -11,7 +11,7 @@ namespace JJMasterData.Core.Web.Factories;
 internal class LookupFactory : IControlFactory<JJLookup>
 {
     private IFormValues FormValues { get; }
-    private ILookupService LookupService { get; }
+    private LookupService LookupService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IComponentFactory ComponentFactory { get; }
 
@@ -19,7 +19,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
 
     public LookupFactory(       
         IFormValues formValues,
-        ILookupService lookupService,
+        LookupService lookupService,
         JJMasterDataUrlHelper urlHelper,
         IComponentFactory componentFactory,
         ILoggerFactory loggerFactory)

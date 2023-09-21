@@ -1,7 +1,5 @@
-﻿using JJMasterData.Commons.Logging;
-using JJMasterData.Commons.Util;
+﻿using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using System.Collections;
 using System.Text;
 using JJMasterData.Commons.Data.Entity;

@@ -9,7 +9,7 @@ public static class ExpressionsServiceExtensions
 {
     public static IServiceCollection AddExpressionServices(this IServiceCollection services)
     {
-        services.AddTransient<IExpressionsService,ExpressionsService>();
+        services.AddTransient<ExpressionsService,ExpressionsService>();
         services.AddTransient<IExpressionParser, ExpressionParser>();
 
         services.AddScoped<IExpressionProvider, ValueExpressionProvider>();

@@ -2,17 +2,16 @@ using System;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions.UserCreated;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class UrlRedirectService : IUrlRedirectService
+public class UrlRedirectService 
 {
-    private IFormValuesService FormValuesService { get; }
-    private IExpressionsService ExpressionsService { get; }
+    private FormValuesService FormValuesService { get; }
+    private ExpressionsService ExpressionsService { get; }
 
-    public UrlRedirectService(IFormValuesService formValuesService, IExpressionsService expressionsService)
+    public UrlRedirectService(FormValuesService formValuesService, ExpressionsService expressionsService)
     {
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;

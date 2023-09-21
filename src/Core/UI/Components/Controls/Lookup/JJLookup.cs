@@ -17,7 +17,7 @@ namespace JJMasterData.Core.Web.Components;
 public class JJLookup : ControlBase
 {
     private FormElement FormElement { get; set; }
-    private ILookupService LookupService { get; }
+    private LookupService LookupService { get; }
     private IComponentFactory ComponentFactory { get; }
 
     #region "Properties"
@@ -90,7 +90,7 @@ public class JJLookup : ControlBase
         FormElementField field,
         ControlContext controlContext,
         IFormValues formValues,
-        ILookupService lookupService,
+        LookupService lookupService,
         IComponentFactory componentFactory) : base(formValues)
     {
         FormElement = formElement;

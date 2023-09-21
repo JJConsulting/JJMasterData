@@ -3,7 +3,7 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Web.Html;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 
@@ -22,9 +21,9 @@ public class JJComboBox : ControlBase
 {
     private string? _selectedValue;
 
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private IDataItemService DataItemService { get; }
+    private DataItemService DataItemService { get; }
     internal ILogger<JJComboBox> Logger { get; }
     internal FormStateData FormStateData { get; set; }
 
@@ -51,8 +50,8 @@ public class JJComboBox : ControlBase
 
     public JJComboBox(
         IFormValues formValues,
-        IDataItemService dataItemService,
-        IExpressionsService expressionsService,
+        DataItemService dataItemService,
+        ExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         ILogger<JJComboBox> logger) : base(formValues)
     {

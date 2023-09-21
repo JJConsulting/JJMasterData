@@ -14,7 +14,7 @@ using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components.Exportation;
 using JJMasterData.Core.Web.Factories;
@@ -35,7 +35,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     private DataExportationReporter _processReporter;
     private List<FormElementField> _fields;
 
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
     protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     
@@ -137,7 +137,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
 
     protected DataExportationWriterBase(
-        IExpressionsService expressionsService,
+        ExpressionsService expressionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer, 
         IOptions<JJMasterDataCoreOptions> options,
         ControlFactory controlFactory, 

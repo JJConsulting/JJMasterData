@@ -1,11 +1,3 @@
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using Microsoft.Extensions.Options;
-using Moq;
-using Newtonsoft.Json;
-
 namespace JJMasterData.Core.Test.DataDictionary.Repository;
 
 public class FileSystemDataDictionaryRepositoryTests //: IDisposable

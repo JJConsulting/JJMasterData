@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components.Actions;
 using Microsoft.IdentityModel.Tokens;
 
@@ -20,14 +20,14 @@ namespace JJMasterData.Core.UI.Components.FormView;
 
 internal class ActionsScripts
 {
-    private IExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
 
     public ActionsScripts(
-        IExpressionsService expressionsService,
+        ExpressionsService expressionsService,
         IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
