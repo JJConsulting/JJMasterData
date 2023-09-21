@@ -62,7 +62,7 @@ public class FieldController : DataDictionaryController
     public async Task<IActionResult> Delete(string elementName, string fieldName)
     {
         await _fieldService.DeleteField(elementName, fieldName);
-        var nextField = _fieldService.GetNextFieldNameAsync(elementName, fieldName);
+        var nextField = await _fieldService.GetNextFieldNameAsync(elementName, fieldName);
         return RedirectToAction("Index", new { elementName, fieldName = nextField });
     }
     
