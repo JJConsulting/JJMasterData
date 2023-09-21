@@ -1,7 +1,6 @@
 @using JJMasterData.Core.Web
 @model JJMasterData.Core.DataDictionary.FormElementField
 
-@using Microsoft.AspNetCore.Localization
 
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @{
@@ -18,13 +17,13 @@
 
 
     function refreshCodeMirror() {
-        var codeMirror = $(".CodeMirror");
-        var cm1 = codeMirror[0];
+        const codeMirror = $(".CodeMirror");
+        const cm1 = codeMirror[0];
         if (cm1 && cm1.CodeMirror) {
             cm1.CodeMirror.refresh();
         }
 
-        var cm2 = codeMirror[1];
+        const cm2 = codeMirror[1];
         if (cm2 && cm2.CodeMirror) {
             cm2.CodeMirror.refresh();
         }
@@ -52,10 +51,10 @@
 
         // Register our custom Codemirror hint plugin.
         CodeMirror.registerHelper('hint', 'dictionaryHint', function (editor) {
-            var dictionary = @Html.Raw(ViewBag.HintDictionary);
-            var cur = editor.getCursor();
-            var start = cur.ch;
-            var end = start;
+            const dictionary = @Html.Raw(ViewBag.HintDictionary);
+            const cur = editor.getCursor();
+            const start = cur.ch;
+            const end = start;
             return {
                 list: dictionary,
                 from: CodeMirror.Pos(cur.line, start),

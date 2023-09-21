@@ -45,12 +45,12 @@
         break;
     case FormComponent.Lookup:
         <div class="@BootstrapHelper.FormGroup col-sm-2">
-            <label class="@BootstrapHelper.Label " for="cboLkPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Popup Size"]">@StringLocalizer["Popup Size"]</label>
+            <label class="@BootstrapHelper.Label " for="cboLkPopUpSize">@StringLocalizer["Modal Size"]</label>
             <select id="cboLkPopUpSize" name="cboLkPopUpSize" class="form-control form-select" asp-items="@Html.GetEnumSelectList<ModalSize>()"></select>
         </div>
 
         <div class="@BootstrapHelper.FormGroup col-sm-4">
-            <label class="@BootstrapHelper.Label " for="txtLkPopUpTitle" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Title Pop Up"]">@StringLocalizer["Title Pop Up"]</label>
+            <label class="@BootstrapHelper.Label " for="txtLkPopUpTitle">@StringLocalizer["Modal Title"]</label>
             <input class="form-control" id="txtLkPopUpTitle" name="txtLkPopUpTitle" maxlength="200" type="text" placeholder="@StringLocalizer["Search..."]" value="@Model.GetAttr(FormElementField.PopUpTitleAttribute)">
         </div>
         break;

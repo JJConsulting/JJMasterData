@@ -399,8 +399,8 @@ public class JJFormView : AsyncComponent
                 return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
             case ComponentContext.DataPanelReload:
                 return await GetReloadPanelResultAsync();
+            case ComponentContext.DataExportation:
             case ComponentContext.GridViewReload:
-                return await GridView.GetResultAsync();
             case ComponentContext.GridViewFilterSearchBox:
                 return await GridView.GetResultAsync();
             case ComponentContext.DownloadFile:

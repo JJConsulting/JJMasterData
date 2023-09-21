@@ -131,14 +131,15 @@ public class JJComboBox : ControlBase
             content.AppendComponentIf(DataItem.ShowIcon,new JJIcon(value.Icon,value.IconColor));
             content.Append(HtmlTag.Span, span =>
             {
-                span.AppendText(value.Description);
+                span.AppendText(label);
                 span.WithCssClassIf(DataItem.ShowIcon,$"{BootstrapHelper.MarginLeft}-1");
             });
 
             var option = new HtmlBuilder(HtmlTag.Option)
                 .WithValue(value.Id)
                 .WithAttributeIf(isSelected, "selected")
-                .WithAttributeIf(DataItem.ShowIcon, "data-content",HttpUtility.HtmlAttributeEncode(content.ToString()));
+                .WithAttributeIf(DataItem.ShowIcon, "data-content", HttpUtility.HtmlAttributeEncode(content.ToString()))
+                .AppendTextIf(!DataItem.ShowIcon, label);
 
             yield return option;
         }
