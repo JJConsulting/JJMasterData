@@ -32,7 +32,7 @@ public class FormController : MasterDataController
         if (result.IsActionResult())
             return result.ToActionResult();
         
-        var model = new FormViewModel(formView.FormElement.Title ?? formView.FormElement.Name, result.Content);
+        var model = new FormViewModel(formView.FormElement.Name, result.Content);
         return View(model);
     }
     

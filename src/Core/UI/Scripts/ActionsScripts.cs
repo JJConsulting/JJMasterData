@@ -113,7 +113,7 @@ internal class ActionsScripts
         
         var formViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.FormViewReload);
         actionData.EncryptedFormViewRouteContext = EncryptionService.EncryptRouteContext(formViewRouteContext);
-        
+        actionData.IsSubmit = actionContext.IsSubmit;
         if (actionContext.IsModal)
         {
             var modalRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);

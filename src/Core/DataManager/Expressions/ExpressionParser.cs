@@ -21,7 +21,7 @@ public class ExpressionParser : IExpressionParser
     public string? ParseExpression(
         string? expression,
         FormStateData formStateData,
-        bool addQuotationMarks,
+        bool addQuotationMarks = false,
         ExpressionParserInterval? interval = null)
     {
         if (expression is null)

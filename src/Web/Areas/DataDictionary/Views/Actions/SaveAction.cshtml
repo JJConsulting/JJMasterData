@@ -13,12 +13,24 @@
 {
     <ul class="nav nav-tabs">
         <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
+        <li id="nav-save" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-save-action">@StringLocalizer["Save Action"]</a></li>
         <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
     </ul>
 
     <div class="tab-content" style="margin-top: 20px;">
         <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
             <partial name="_NavGeneral" model="Model"/>
+        </div>
+        <div id="div-save-action" class="tab-pane fade">
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <label asp-for="SubmitOnSave" class="@BootstrapHelper.Label">@StringLocalizer["Submit On Save"]</label>
+                    <tooltip title="If true, the entire page will be reloaded after saving the form, else, a AJAX request is made to reload just the current form. If inside a modal, this option will be ignored."/>
+                         <div class="input-append">
+                          @Html.CheckBoxFor(model => model.SubmitOnSave, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
+                       </div>
+                </div>
+            </div>
         </div>
         <div id="div-advanced" class="tab-pane fade">
             <partial name="_NavAdvanced" model="Model"/>

@@ -37,7 +37,7 @@ internal class GridFilter
     internal async Task<HtmlBuilder> GetFilterHtml()
     {
         var filterAction = GridView.FilterAction;
-        var formData = await GridView.GetFormDataAsync();
+        var formData = await GridView.GetFormStateDataAsync();
         var filterHtml = new HtmlBuilder(HtmlTag.Div).WithId(Name);
         bool isVisible = await GridView.ExpressionsService.GetBoolValueAsync(filterAction.VisibleExpression, formData);
 
@@ -87,7 +87,7 @@ internal class GridFilter
             return _currentFilter;
         }
         
-        var filters = CurrentContext.Request.Form[$"{GridView.Name}-filters"];
+        var filters = CurrentContext.Request.Form[$"grid-view-filters-{GridView.Name}"];
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
@@ -308,7 +308,7 @@ internal class GridFilter
 
         //Relation Filters
         var values = new Dictionary<string, object>();
-        var filters = CurrentContext.Request.Form[$"{GridView.Name}-filters"];
+        var filters = CurrentContext.Request.Form[$"grid-view-filters-{GridView.Name}"];
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);

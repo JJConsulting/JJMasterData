@@ -70,7 +70,7 @@
       <Compile Update="UI\Components\RenderedComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
-      <Compile Update="UI\Components\HtmlComponentResult.cs">
+      <Compile Update="UI\Components\ContentComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
       <Compile Update="UI\Components\EmptyComponentResult.cs">
@@ -78,9 +78,6 @@
       </Compile>
       <Compile Update="UI\Components\RedirectComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
-      </Compile>
-      <Compile Update="UI\Scripts\ActionData.cs">
-        <DependentUpon>ActionsScripts.cs</DependentUpon>
       </Compile>
       <Compile Update="UI\Components\IComponentFactoryOfT.cs">
         <DependentUpon>IComponentFactory.cs</DependentUpon>

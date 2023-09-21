@@ -181,28 +181,24 @@ internal class FormViewRelationshipLayout
                 var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
                 childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
                 childFormView.UserValues = ParentFormView.UserValues;
-                childFormView.PageState = relationship.ViewType is RelationshipViewType.List
-                    ? PageState.List
-                    : PageState.Update;
+                childFormView.SetRelationshipPageState(relationship.ViewType);
                 childFormView.RelationValues = mappedForeignKeys;
                 await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
-                childFormView.GridView.ShowTitle = false;
+                childFormView.ShowTitle = false;
 
                 var result = await childFormView.GetFormResultAsync();
-                if (result is RenderedComponentResult renderedComponentResult)
-                {
-                    var filters =
-                        ParentFormView.EncryptionService.EncryptStringWithUrlEscape(
-                            JsonConvert.SerializeObject(filter));
-                    renderedComponentResult.HtmlBuilder.AppendHiddenInput($"{childFormView.GridView.Name}-fk-values",
-                        ParentFormView.EncryptionService.EncryptDictionary(mappedForeignKeys));
-                    renderedComponentResult.HtmlBuilder.AppendHiddenInput($"{childFormView.GridView.Name}-filters",
-                        filters);
+                
+                if (result is not RenderedComponentResult renderedComponentResult) 
+                    return result;
+                
+                var filters =
+                    ParentFormView.EncryptionService.EncryptStringWithUrlEscape(
+                        JsonConvert.SerializeObject(filter));
+                renderedComponentResult.HtmlBuilder.AppendHiddenInput($"{childFormView.GridView.Name}-filters",
+                    filters);
 
-                    return renderedComponentResult;
-                }
+                return renderedComponentResult;
 
-                return result;
             }
             default:
                 return new EmptyComponentResult();

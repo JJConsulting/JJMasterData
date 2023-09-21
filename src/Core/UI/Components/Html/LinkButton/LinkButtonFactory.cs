@@ -196,6 +196,8 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                         button.Type = LinkButtonType.Submit;
                     else
                         button.Type = saveAction.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
+
+                    actionContext.IsSubmit = saveAction.SubmitOnSave;
                     button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
                     break;
             }

@@ -26,7 +26,7 @@ public abstract class AsyncComponent : ComponentBase
 
     public static bool CanSendResult(ComponentResult componentResult)
     {
-        return componentResult is HtmlComponentResult or JsonComponentResult or RedirectComponentResult;
+        return componentResult is ContentComponentResult or JsonComponentResult or RedirectComponentResult;
     }
     
 #if NET48

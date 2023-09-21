@@ -82,7 +82,7 @@ public class FormValuesService : IFormValuesService
                             out var numericValue))
                         value = numericValue;
                     else
-                        value = 0;
+                        value = null;
                     break;
                 case FormComponent.CheckBox:
                     value ??= FormValues[$"{fieldName}_hidden"];

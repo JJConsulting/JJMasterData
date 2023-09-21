@@ -60,7 +60,7 @@ class ActionManager {
         });
     }
     static executeActionData(actionData) {
-        const { componentName, actionMap, modalTitle, modalRouteContext, gridViewRouteContext, formViewRouteContext, confirmationMessage } = actionData;
+        const { componentName, actionMap, modalTitle, modalRouteContext, gridViewRouteContext, formViewRouteContext, isSubmit, confirmationMessage } = actionData;
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -99,12 +99,17 @@ class ActionManager {
             });
         }
         else {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
-            postFormValues({ url: urlBuilder.build(), success: (data) => {
-                    document.getElementById(componentName).innerHTML = data;
-                    listenAllEvents("#" + componentName);
-                } });
+            if (!isSubmit) {
+                const urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
+                postFormValues({ url: urlBuilder.build(), success: (data) => {
+                        document.getElementById(componentName).innerHTML = data;
+                        listenAllEvents("#" + componentName);
+                    } });
+            }
+            else {
+                document.forms[0].requestSubmit();
+            }
         }
     }
     static executeAction(actionDataJson) {

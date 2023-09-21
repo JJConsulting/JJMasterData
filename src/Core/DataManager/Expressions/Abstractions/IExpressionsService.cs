@@ -12,7 +12,7 @@ public interface IExpressionsService
     string? ParseExpression(
         string? expression,
         FormStateData formStateData,
-        bool quotationMarks,
+        bool addQuotationMarks = false,
         ExpressionParserInterval? interval = null);
     
     Task<bool> GetBoolValueAsync(string expression, FormStateData formStateData);

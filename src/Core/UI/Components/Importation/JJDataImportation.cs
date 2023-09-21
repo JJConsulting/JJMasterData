@@ -163,7 +163,7 @@ public class JJDataImportation : ProcessComponent
             }
         }
 
-        return HtmlComponentResult.FromHtmlBuilder(htmlBuilder);
+        return new ContentComponentResult(htmlBuilder);
     }
 
     private HtmlBuilder GetHtmlLogProcess()

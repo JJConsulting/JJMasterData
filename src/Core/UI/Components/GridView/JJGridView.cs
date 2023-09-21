@@ -588,7 +588,7 @@ public class JJGridView : AsyncComponent
     {
         if (ComponentContext is ComponentContext.GridViewReload)
         {
-            return HtmlComponentResult.FromHtmlBuilder(await GetTableHtmlBuilder());
+            return new ContentComponentResult(await GetTableHtmlBuilder());
         }
         
         if (ComponentContext is ComponentContext.DataExportation)
@@ -602,7 +602,7 @@ public class JJGridView : AsyncComponent
 
             var htmlResponse = await GetTableRowHtmlAsync(rowIndex);
 
-            return new HtmlComponentResult(htmlResponse);
+            return new ContentComponentResult(new HtmlBuilder(htmlResponse));
         }
 
         if (ComponentContext is ComponentContext.GridViewSelectAllRows)
@@ -616,7 +616,7 @@ public class JJGridView : AsyncComponent
         {
             var html = await Filter.GetFilterHtml();
             
-            return HtmlComponentResult.FromHtmlBuilder(html);
+            return new ContentComponentResult(html);
         }
         
         if (ComponentContext is ComponentContext.GridViewFilterSearchBox)
@@ -639,7 +639,7 @@ public class JJGridView : AsyncComponent
         {
             div.WithAttribute("id", $"grid-view-{Name}");
 
-            div.AppendIf(ShowTitle, GetTitle(_defaultValues).GetHtmlBuilder);
+            div.AppendIf(ShowTitle, GetTitle(await GetDefaultValuesAsync()).GetHtmlBuilder);
 
             if (FilterAction.IsVisible)
             {
@@ -753,18 +753,16 @@ public class JJGridView : AsyncComponent
     }
     
 
-    internal JJTitle GetTitle(IDictionary<string, object?>? values = null)
+    internal JJTitle GetTitle(IDictionary<string, object?> values)
     {
         var title = FormElement.Title;
         var subTitle = FormElement.SubTitle;
-
+        
         foreach (var field in FormElement.Fields)
         {
-            if (values != null && values.TryGetValue(field.Name, out var fieldValue))
-            {
-                title = title?.Replace($"{{{field.Name}}}", fieldValue?.ToString());
-                subTitle = subTitle?.Replace($"{{{field.Name}}}", fieldValue?.ToString());
-            }
+            values.TryGetValue(field.Name, out var fieldValue);
+            title = title?.Replace($"{{{field.Name}}}", fieldValue?.ToString());
+            subTitle = subTitle?.Replace($"{{{field.Name}}}", fieldValue?.ToString());
         }
 
         var titleComponent = ComponentFactory.Html.Title.Create(title, subTitle);
@@ -780,9 +778,6 @@ public class JJGridView : AsyncComponent
     public async Task<HtmlBuilder> GetToolbarHtmlAsync() => await GetToolbarHtmlBuilder();
 
     private async Task<HtmlBuilder> GetSortingConfigAsync() => await new GridSortingConfig(this).GetHtmlBuilderAsync();
-
-    public string GetTitleHtml() => GetTitle(_defaultValues).GetHtml();
-
 
     private bool CheckForSqlCommand()
     {
@@ -940,7 +935,7 @@ public class JJGridView : AsyncComponent
     internal async Task<IDictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
         await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
 
-    internal async Task<FormStateData> GetFormDataAsync()
+    internal async Task<FormStateData> GetFormStateDataAsync()
     {
         if (_formData == null)
         {
@@ -959,7 +954,7 @@ public class JJGridView : AsyncComponent
     private async Task<HtmlBuilder> GetSettingsHtml()
     {
         var action = ConfigAction;
-        var formData = await GetFormDataAsync();
+        var formData = await GetFormStateDataAsync();
         bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
@@ -993,7 +988,7 @@ public class JJGridView : AsyncComponent
     private async Task<HtmlBuilder> GetExportHtml()
     {
         var action = ExportAction;
-        var formData = await GetFormDataAsync();
+        var formData = await GetFormStateDataAsync();
         bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
@@ -1010,7 +1005,7 @@ public class JJGridView : AsyncComponent
     private async Task<HtmlBuilder> GetLegendHtml()
     {
         var action = LegendAction;
-        var formData = await GetFormDataAsync();
+        var formData = await GetFormStateDataAsync();
         bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
 
         if (!isVisible)
@@ -1095,12 +1090,12 @@ public class JJGridView : AsyncComponent
                         {
                             var validationSummary = ComponentFactory.Html.ValidationSummary.Create(ExceptionManager.GetMessage(ex));
                             validationSummary.MessageTitle = StringLocalizer["Error"];
-                            return HtmlComponentResult.FromHtmlBuilder(validationSummary.GetHtmlBuilder());
+                            return new ContentComponentResult(validationSummary.GetHtmlBuilder());
                         }
                     }
 
                     var html = new DataExportationLog(DataExportation).GetHtmlProcess();
-                    return HtmlComponentResult.FromHtmlBuilder(html);
+                    return new ContentComponentResult(html);
                 }
             case "checkProgress":
                 {

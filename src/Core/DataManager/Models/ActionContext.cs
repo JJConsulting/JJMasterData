@@ -15,7 +15,8 @@ public class ActionContext
     public required string ParentComponentName { get; init; }
     public bool IsModal { get; set; }
     public string? FieldName { get; init; }
-    
+    public bool IsSubmit { get; set; }
+
     public static async Task<ActionContext> FromFormViewAsync(JJFormView formView)
     {
         return new ActionContext

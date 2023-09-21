@@ -4,12 +4,10 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class RenderedComponentResult : ComponentResult
+public class RenderedComponentResult : HtmlComponentResult
 {
-    internal HtmlBuilder HtmlBuilder { get; }
-    public override string Content => HtmlBuilder.ToString(true);
-    public RenderedComponentResult(HtmlBuilder htmlBuilder) 
+    public RenderedComponentResult(HtmlBuilder htmlBuilder) : base(htmlBuilder)
     {
-        HtmlBuilder = htmlBuilder;
+
     }
 }

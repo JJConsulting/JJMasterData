@@ -1,20 +1,15 @@
-#nullable enable
-
 using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class HtmlComponentResult : ComponentResult
+public abstract class HtmlComponentResult : ComponentResult
 {
-    public override string Content { get; }
-    public HtmlComponentResult(string content)
+  
+    internal HtmlBuilder HtmlBuilder { get; }
+    public override string Content => HtmlBuilder.ToString(true);
+    public HtmlComponentResult(HtmlBuilder htmlBuilder) 
     {
-        Content = content;
+        HtmlBuilder = htmlBuilder;
     }
     
-    public static ComponentResult FromHtmlBuilder(HtmlBuilder htmlBuilder)
-    {
-        var html = htmlBuilder.ToString();
-        return new HtmlComponentResult(html);
-    }
 }

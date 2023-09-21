@@ -18,4 +18,6 @@ public class SaveAction : FormToolbarAction
     }
 
     public FormEnterKey EnterKeyBehavior { get; set; }
+    
+    public bool SubmitOnSave { get; set; }
 }

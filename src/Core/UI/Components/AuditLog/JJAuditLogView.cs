@@ -123,7 +123,7 @@ public class JJAuditLogView : AsyncComponent
 
                 var panelHtmlBuilder = await panel.GetPanelHtmlBuilderAsync();
                 
-                return HtmlComponentResult.FromHtmlBuilder(panelHtmlBuilder);
+                return new ContentComponentResult(panelHtmlBuilder);
             }
 
             html.Append(await GetLogDetailsHtmlAsync(logId));

@@ -5,5 +5,6 @@ class ActionData{
     modalRouteContext?: string
     gridViewRouteContext?: string
     formViewRouteContext?: string
+    isSubmit: boolean
     confirmationMessage?: string
 }

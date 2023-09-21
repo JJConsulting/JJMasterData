@@ -37,17 +37,16 @@ public class ExpressionsService : IExpressionsService
     }
 
     #endregion
-
-
+    
     public async Task<string?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
     {
         return await GetExpressionValueAsync(field.DefaultValue, field, formStateData);
     }
 
-    public string? ParseExpression(string? expression, FormStateData formStateData, bool quotationMarks,
+    public string? ParseExpression(string? expression, FormStateData formStateData, bool addQuotationMarks = false,
         ExpressionParserInterval? interval = null)
     {
-        return ExpressionParser.ParseExpression(expression, formStateData, quotationMarks, interval);
+        return ExpressionParser.ParseExpression(expression, formStateData, addQuotationMarks, interval);
     }
 
     public async Task<bool> GetBoolValueAsync(string expression, FormStateData formStateData)
@@ -62,7 +61,22 @@ public class ExpressionsService : IExpressionsService
             throw new JJMasterDataException($"Expression type not supported: {expressionType}.");
         }
 
-        var result = await provider.EvaluateAsync(expression, formStateData);
+        object? result;
+        
+        try
+        {
+            result = await provider.EvaluateAsync(expression, formStateData);
+        }
+
+        catch (Exception ex)
+        {
+            var exception = new ExpressionException("Unhandled exception at a expression provider.",ex);
+
+            Logger.LogError(exception,"Error retrieving expression. Expression: {Expression}", expression);
+
+            throw exception;
+        }
+        
         return ParseBool(result);
     }
 
@@ -98,7 +112,7 @@ public class ExpressionsService : IExpressionsService
         {
             var exception = new ExpressionException("Unhandled exception at a expression provider.",ex);
 
-            Logger.LogError(exception,"Error retrieving expression or trigger. Field: {FieldName}", field.Name);
+            Logger.LogError(exception,"Error retrieving expression.Expression: {Expression}\nField: {FieldName}",expression, field.Name);
 
             throw exception;
         }

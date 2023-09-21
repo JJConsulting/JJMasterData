@@ -68,6 +68,7 @@ class ActionManager {
             modalRouteContext,
             gridViewRouteContext,
             formViewRouteContext,
+            isSubmit,
             confirmationMessage
         } = actionData;
         
@@ -117,13 +118,18 @@ class ActionManager {
                 }
             })
         } else {
-            const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
-            
-            postFormValues({url:urlBuilder.build(), success:(data)=>{
-                document.getElementById(componentName).innerHTML =data;
-                listenAllEvents("#" + componentName)
-            }});
+            if(!isSubmit){
+                const urlBuilder = new UrlBuilder();
+                urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
+
+                postFormValues({url:urlBuilder.build(), success:(data)=>{
+                        document.getElementById(componentName).innerHTML =data;
+                        listenAllEvents("#" + componentName)
+                    }});
+            } 
+            else{
+                document.forms[0].requestSubmit();
+            }
         }
     }
     

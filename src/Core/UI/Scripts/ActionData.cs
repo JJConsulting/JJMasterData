@@ -26,7 +26,10 @@ internal record ActionData
     
     [JsonProperty("confirmationMessage")]
     public string? ConfirmationMessage { get; set; }
-    
+
+    [JsonProperty("isSubmit")]
+    public bool IsSubmit { get; set; }
+
     public string ToJson()
     {
         return JsonConvert.SerializeObject(this, new JsonSerializerSettings()

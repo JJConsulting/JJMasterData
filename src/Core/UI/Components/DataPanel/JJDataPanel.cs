@@ -204,8 +204,7 @@ public class JJDataPanel : AsyncComponent
             case ComponentContext.DataPanelReload:
             {
                 var html = await GetPanelHtmlBuilderAsync();
-                var panelHtml = html.ToString();
-                return new HtmlComponentResult(panelHtml);
+                return new ContentComponentResult(html);
             }
             default:
                 return new RenderedComponentResult(await GetPanelHtmlBuilderAsync());
@@ -236,7 +235,7 @@ public class JJDataPanel : AsyncComponent
 
         if (PageState == PageState.Update)
         {
-            html.AppendHiddenInput($"data-panel-pk-values-{Name}", GetPkHiddenInput());
+            html.AppendHiddenInput($"data-panel-pk-values-{ComponentNameGenerator.Create(FormElement.Name)}", GetPkHiddenInput());
         }
 
         var panelGroup = new DataPanelLayout(this);

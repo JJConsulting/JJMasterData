@@ -101,9 +101,9 @@ public class JJDataExportation : ProcessComponent
         ComponentResult result;
         
         if (IsRunning())
-            result = HtmlComponentResult.FromHtmlBuilder(new DataExportationLog(this).GetHtmlProcess());
+            result = new ContentComponentResult(new DataExportationLog(this).GetHtmlProcess());
         else
-            result = HtmlComponentResult.FromHtmlBuilder(new DataExportationSettings(this).GetHtmlBuilder());
+            result = new ContentComponentResult(new DataExportationSettings(this).GetHtmlBuilder());
         
         return await Task.FromResult(result);
     }

@@ -144,7 +144,7 @@ public class JJTextFile : ControlBase
             return result;
         }
         
-        return HtmlComponentResult.FromHtmlBuilder(html);
+        return new ContentComponentResult(html);
     }
 
     private async Task<HtmlBuilder> GetHtmlTextGroup()

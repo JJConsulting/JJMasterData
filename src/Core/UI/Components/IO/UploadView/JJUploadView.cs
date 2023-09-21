@@ -267,11 +267,11 @@ public class JJUploadView : AsyncComponent
     {
         var previewImage = CurrentContext.Request.QueryString["previewImage"];
         if (!string.IsNullOrEmpty(previewImage))
-            return HtmlComponentResult.FromHtmlBuilder(GetHtmlPreviewImage(previewImage));
+            return new ContentComponentResult(GetHtmlPreviewImage(previewImage));
 
         var previewVideo = CurrentContext.Request.QueryString["previewVideo"];
         if (!string.IsNullOrEmpty(previewVideo))
-            return HtmlComponentResult.FromHtmlBuilder(GetHtmlPreviewVideo(previewVideo));
+            return new ContentComponentResult(GetHtmlPreviewVideo(previewVideo));
 
         var html = new HtmlBuilder();
 
