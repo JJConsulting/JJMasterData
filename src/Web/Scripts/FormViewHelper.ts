@@ -12,6 +12,15 @@ class FormViewHelper {
 
         GridViewHelper.refresh(componentName,gridViewRouteContext)
     }
+    
+    static setPanelState(componentName: string,pageState: PageState, routeContext: string){
+        document.querySelector<HTMLInputElement>(`#form-view-panel-state-${componentName}`).value = pageState.toString();
+        const url = new UrlBuilder().addQueryParameter("routeContext",routeContext).build();
+        
+        postFormValues({url:url, success:(data)=>{
+            HTMLHelper.setInnerHTML(componentName,data);
+        }});
+    }
 
     static insertSelection(componentName: string, insertValues: string, routeContext: string) {
         const selectActionValuesInput = document.querySelector(`#form-view-insert-selection-values-${componentName}`) as HTMLInputElement;
@@ -20,7 +29,7 @@ class FormViewHelper {
         const url = new UrlBuilder().addQueryParameter("routeContext",routeContext).build();
         
         postFormValues({url:url, success:(data)=>{
-            document.getElementById(componentName).innerHTML = data;
+            HTMLHelper.setInnerHTML(componentName,data);
         }})
     }
 }

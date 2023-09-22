@@ -85,6 +85,15 @@
       <Compile Update="UI\Components\HtmlComponentResult.cs">
         <DependentUpon>ComponentResult.cs</DependentUpon>
       </Compile>
+      <Compile Update="UI\Components\HtmlComponent.cs">
+        <DependentUpon>ComponentBase.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\AsyncComponent.cs">
+        <DependentUpon>ComponentBase.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\ProcessComponent.cs">
+        <DependentUpon>ComponentBase.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
     
     

@@ -134,7 +134,7 @@ public class FormValuesService
     private async Task<IDictionary<string, object?>?> GetDbValues(Element element)
     {
         string encryptedPkValues = FormValues[
-            $"data-panel-pk-values-{ComponentNameGenerator.Create(element.Name)}"];
+            $"data-panel-pk-values-{element.Name}"];
         if (string.IsNullOrEmpty(encryptedPkValues))
             return null;
 

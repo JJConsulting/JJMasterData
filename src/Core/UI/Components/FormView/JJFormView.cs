@@ -72,7 +72,7 @@ public class JJFormView : AsyncComponent
 
     private JJDataPanel? _dataPanel;
     private JJGridView? _gridView;
-    private FormViewScripts? _formViewScripts;
+    private FormViewScripts? _scripts;
     private ActionMap? _currentActionMap;
     private JJAuditLogView? _auditLogView;
     private JJDataImportation? _dataImportation;
@@ -254,7 +254,7 @@ public class JJFormView : AsyncComponent
         }
     }
     
-    private FormViewScripts FormViewScripts => _formViewScripts ??= new(this);
+    internal FormViewScripts Scripts => _scripts ??= new(this);
     public bool ShowTitle
     {
         get
@@ -357,14 +357,19 @@ public class JJFormView : AsyncComponent
         if (RouteContext.ElementName == Options.Value.AuditLogTableName)
             return await AuditLogView.GetResultAsync();
         
-        var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
-        formView.FormElement.ParentName = RouteContext.ParentElementName;
-        formView.UserValues = UserValues;
-        formView.RelationValues = formView.GetRelationValuesFromForm();
-        formView.ShowTitle = false;
-        formView.DataPanel.FieldNamePrefix = $"{formView.DataPanel.Name}_";
+        var childFormView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
+        childFormView.FormElement.ParentName = RouteContext.ParentElementName;
+        childFormView.UserValues = UserValues;
+        childFormView.RelationValues = childFormView.GetRelationValuesFromForm();
+        childFormView.ShowTitle = false;
+        childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
 
-        return await formView.GetFormResultAsync();
+        if (PageState is PageState.View)
+        {
+            childFormView.DisableActionsAtViewMode();
+        }
+
+        return await childFormView.GetFormResultAsync();
     }
 
     
@@ -473,7 +478,7 @@ public class JJFormView : AsyncComponent
                 .WithCssClass("fade-out")
                 .AppendComponent(alert);
         });
-        htmlBuilder.AppendScript(FormViewScripts.GetShowInsertSuccessScript());
+        htmlBuilder.AppendScript(Scripts.GetShowInsertSuccessScript());
     }
 
     private async Task<ComponentResult> GetCancelActionResult()
@@ -936,7 +941,7 @@ public class JJFormView : AsyncComponent
 
         if (!visibleRelationships.Any() || visibleRelationships.Count == 1)
         {
-            var panelHtml = await GetHtmlFromPanel(parentPanel, isAtRelationshipLayout: false);
+            var panelHtml = await GetParentPanel(parentPanel);
             panelHtml.AppendScript($"document.getElementById('form-view-page-state-{Name}').value={(int)PageState}");
             if (ComponentContext is ComponentContext.Modal)
             {
@@ -952,7 +957,7 @@ public class JJFormView : AsyncComponent
         var html = new HtmlBuilder(HtmlTag.Div);
         if (ShowTitle)
             html.AppendComponent(GridView.GetTitle(values));
-
+        
         var layout = new FormViewRelationshipLayout(this);
 
         var topActions = FormElement.Options.FormToolbarActions
@@ -975,20 +980,14 @@ public class JJFormView : AsyncComponent
         return new RenderedComponentResult(html);
     }
 
-    internal async Task<HtmlBuilder> GetHtmlFromPanel(JJDataPanel panel, bool isAtRelationshipLayout)
+    internal async Task<HtmlBuilder> GetParentPanel(JJDataPanel panel)
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
 
         var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
 
-        var toolbarActions = panel.FormElement.Options.FormToolbarActions
-            .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel || !isAtRelationshipLayout).ToList();
+        var toolbarActions = GetToolbarActions(panel);
 
-        if (isAtRelationshipLayout)
-        {
-            toolbarActions.Add(new FormEditAction());
-        }
-        
         var toolbar = await GetFormToolbarAsync(toolbarActions);
         
         formHtml.Append(parentPanelHtml);
@@ -1000,15 +999,58 @@ public class JJFormView : AsyncComponent
         
         return formHtml;
     }
+    
+    internal async Task<HtmlBuilder> GetRelationshipParentPanel(JJDataPanel panel)
+    {
+        var formHtml = new HtmlBuilder(HtmlTag.Div);
+
+        var panelState = PageState.View;
+        
+        if (CurrentContext.Request.Form[$"form-view-panel-state-{Name}"] != null)
+            panelState = (PageState)int.Parse(CurrentContext.Request.Form[$"form-view-panel-state-{Name}"]);
+        
+        panel.PageState = panelState;
+        
+        var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
+        
+        var toolbarActions = GetToolbarActions(panel);
+
+        if (PageState is PageState.Update)
+        {
+            if (panelState is PageState.View)
+            {
+                 toolbarActions.Add(new FormEditAction());
+            }
+            else
+            {
+                toolbarActions.Add(new CancelAction());
+            }
+        }
+        
+        var toolbar = await GetFormToolbarAsync(toolbarActions);
+        
+        formHtml.Append(parentPanelHtml);
+        
+        formHtml.AppendComponent(toolbar);
+        
+        if (panel.Errors.Any())
+            formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(panel.Errors));
+        
+        formHtml.AppendHiddenInput($"form-view-panel-state-{Name}", ((int)panelState).ToString());
+        
+        return formHtml;
+    }
+
+    private static List<BasicAction> GetToolbarActions(JJDataPanel panel)
+    {
+        var toolbarActions = panel.FormElement.Options.FormToolbarActions
+            .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel);
+
+        return toolbarActions.ToList();
+    }
 
     private JJToolbar GetFormLogBottomBar(IDictionary<string, object?> values)
     {
-        var backScript = new StringBuilder();
-        backScript.Append($"$('#form-view-page-state-{Name}').val('{(int)PageState.List}'); ");
-        backScript.AppendLine("$('form:first').submit(); ");
-
-        var btnBack = GetBackButton();
-        btnBack.OnClientClick = backScript.ToString();
 
         var btnHideLog = GetButtonHideLog(values);
 
@@ -1016,7 +1058,6 @@ public class JJFormView : AsyncComponent
         {
             CssClass = "pb-3 mt-3"
         };
-        toolbar.Items.Add(btnBack.GetHtmlBuilder());
         toolbar.Items.Add(btnHideLog.GetHtmlBuilder());
         return toolbar;
     }
@@ -1065,8 +1106,7 @@ public class JJFormView : AsyncComponent
         {
             if (GridView.ToolBarActions.LogAction.IsVisible)
             {
-                var values = await GetFormValuesAsync();
-                toolbar.Items.Add(GetButtonViewLog(values).GetHtmlBuilder());
+                toolbar.Items.Add(GetButtonViewLog().GetHtmlBuilder());
             }
         }
 
@@ -1081,7 +1121,7 @@ public class JJFormView : AsyncComponent
         if (args.Action is InsertSelectionAction)
         {
             args.LinkButton.Tooltip = StringLocalizer["Select"];
-            args.LinkButton.OnClientClick = FormViewScripts.GetInsertSelectionScript(args.FieldValues);
+            args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(args.FieldValues);
         }
     }
 
@@ -1161,9 +1201,6 @@ public class JJFormView : AsyncComponent
         var btn = ComponentFactory.Html.LinkButton.Create();
         btn.Type = LinkButtonType.Button;
         btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
-        btn.OnClientClick = $"JJViewHelper.doPainelAction('{Name}','CANCEL');";
-        btn.IconClass = IconType.Times.GetCssClass();
-        btn.Text = "Cancel";
         btn.IconClass = IconType.ArrowLeft.GetCssClass();
         btn.Text = "Back";
         return btn;
@@ -1186,19 +1223,20 @@ public class JJFormView : AsyncComponent
         btn.Type = LinkButtonType.Button;
         btn.Text = "Hide Log";
         btn.IconClass = IconType.Film.GetCssClass();
-        btn.CssClass = "btn btn-primary btn-small";
-        btn.OnClientClick = $"$('#form-view-page-state-{Name}').val('{(int)PageState.List}');{scriptAction}";
+        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
+        btn.OnClientClick = $"document.getElementById('form-view-page-state-{Name}').value = '{(int)PageState.List}';{scriptAction}";
         return btn;
     }
 
-    private JJLinkButton GetButtonViewLog(IDictionary<string, object?> values)
+    private JJLinkButton GetButtonViewLog()
     {
         var context = new ActionContext
         {
-            FormElement = FormElement,
-            FormStateData = new FormStateData(values, UserValues, PageState),
+            FormElement = AuditLogView.FormElement,
+            FormStateData = new FormStateData(DataPanel.Values, UserValues, PageState),
             ParentComponentName = Name
         };
+        
         string scriptAction = GridView.ActionsScripts.GetFormActionScript(
             GridView.ToolBarActions.LogAction, 
             context,
@@ -1206,7 +1244,7 @@ public class JJFormView : AsyncComponent
         
         var btn = ComponentFactory.Html.LinkButton.Create();
         btn.Type = LinkButtonType.Button;
-        btn.Text = "View Log";
+        btn.Text = StringLocalizer["View Log"];
         btn.IconClass = IconType.Film.GetCssClass();
         btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
         btn.OnClientClick = scriptAction;
@@ -1244,6 +1282,28 @@ public class JJFormView : AsyncComponent
         else
         {
             PageState = relationshipPageState;
+        }
+    }
+    
+    internal void DisableActionsAtViewMode()
+    {
+        foreach (var action in FormElement.Options.GridTableActions)
+        {
+            if (action is not ViewAction)
+            {
+                action.SetVisible(false);
+            }
+        }
+
+        foreach (var action in FormElement.Options.GridToolbarActions)
+        {
+            if (action is not FilterAction &&
+                action is not RefreshAction &&
+                action is not LegendAction &&
+                action is not ConfigAction)
+            {
+                action.SetVisible(false);
+            }
         }
     }
 

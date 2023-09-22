@@ -37,8 +37,11 @@ public class JJCollapsePanel : HtmlComponent
     {
         get
         {
-            var collapseMode = FormValues[$"collapse-mode-{Name}"];
-            return string.IsNullOrEmpty(collapseMode) ? ExpandedByDefault : "1".Equals(collapseMode);
+            var collapseMode = FormValues[$"{Name}-is-open"];
+            if (string.IsNullOrEmpty(collapseMode))
+                return ExpandedByDefault;
+            else
+                return "1".Equals(collapseMode);
         }
     }
 
@@ -59,7 +62,7 @@ public class JJCollapsePanel : HtmlComponent
         root.Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("hidden", "hidden");
-            input.WithNameAndId($"collapse-mode-{Name}");
+            input.WithNameAndId($"{Name}-is-open");
             input.WithValue(IsCollapseOpen ? "1" : "0");
         });
 

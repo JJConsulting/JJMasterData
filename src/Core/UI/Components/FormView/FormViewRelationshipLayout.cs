@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
@@ -92,7 +94,7 @@ internal class FormViewRelationshipLayout
             case PanelLayout.Collapse or PanelLayout.Panel:
                 var collapse = new JJCollapsePanel(ParentFormView.CurrentContext.Request.Form)
                 {
-                    Name = $"{relationship.Id}-collapse",
+                    Name = $"{relationship.ElementRelationship?.ChildElement ?? ParentFormView.Name}-collapse-panel",
                     Title = relationship.Panel.Title,
                     HtmlBuilderContent = content,
                     Color = relationship.Panel.Color,
@@ -138,7 +140,7 @@ internal class FormViewRelationshipLayout
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
         {
-            return new RenderedComponentResult(await ParentFormView.GetHtmlFromPanel(parentPanel,isAtRelationshipLayout: true));
+            return new RenderedComponentResult(await ParentFormView.GetRelationshipParentPanel(parentPanel));
         }
 
         var childElement =
@@ -184,6 +186,11 @@ internal class FormViewRelationshipLayout
                 await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
                 childFormView.ShowTitle = false;
 
+                if (ParentFormView.PageState is PageState.View)
+                {
+                    childFormView.DisableActionsAtViewMode();
+                }
+                
                 var result = await childFormView.GetFormResultAsync();
                 
                 return result;

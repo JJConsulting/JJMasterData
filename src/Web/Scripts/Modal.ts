@@ -150,27 +150,9 @@ class _Modal extends ModalBase {
     
     private setAndShowModal(content: string){
         const modalBody = this.modalElement.querySelector<HTMLElement>(`#${this.modalId} .modal-body`);
-        this.setInnerHTML(modalBody, content)
+        HTMLHelper.setInnerHTML(modalBody, content)
 
         this.showModal();
-    }
-
-
-    private setInnerHTML(element: HTMLElement, html: string): void {
-        element.innerHTML = html;
-
-        Array.from(element.querySelectorAll("script")).forEach((oldScriptElement: HTMLScriptElement) => {
-            const newScriptElement = document.createElement("script");
-
-            Array.from(oldScriptElement.attributes).forEach((attr) => {
-                newScriptElement.setAttribute(attr.name, attr.value);
-            });
-
-            const scriptText = document.createTextNode(oldScriptElement.innerHTML);
-            newScriptElement.appendChild(scriptText);
-
-            oldScriptElement.parentNode?.replaceChild(newScriptElement, oldScriptElement);
-        });
     }
 
     hide() {

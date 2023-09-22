@@ -118,7 +118,7 @@ public class AuditLogService
         return element;
     }
 
-    public FormElement GetFormElement()
+    public FormElement GetFormElement(string parentElement)
     {
         var formElement = new FormElement(GetElement());
         formElement.Fields[DicId].VisibleExpression = "val:0";
@@ -152,7 +152,7 @@ public class AuditLogService
             Tooltip = "View"
         };
         btnViewLog.Name = nameof(btnViewLog);
-        btnViewLog.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{formElement.Name}','{{{DicId}}}');";
+        btnViewLog.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{parentElement}','{{{DicId}}}');";
 
         formElement.Options.GridTableActions.Add(btnViewLog);
         return formElement;

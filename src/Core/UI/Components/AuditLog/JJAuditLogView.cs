@@ -100,7 +100,7 @@ public class JJAuditLogView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        string logId = CurrentContext.Request.Form[$"audit-log-id-{Name}"];
+        string logId = CurrentContext.Request.Form[$"audit-log-id-{FormElement.Name}"];
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (string.IsNullOrEmpty(logId))
@@ -130,7 +130,7 @@ public class JJAuditLogView : AsyncComponent
             html.AppendComponent(GetFormBottombar());
         }
 
-        html.AppendHiddenInput($"audit-log-id-{Name}", logId);
+        html.AppendHiddenInput($"audit-log-id-{FormElement.Name}", logId);
 
         return new RenderedComponentResult(html);
     }
@@ -139,14 +139,14 @@ public class JJAuditLogView : AsyncComponent
     {
         var filter = new Dictionary<string, object>
         {
-            { DataManager.Services.AuditLogService.DicName, FormElement.Name },
+            { AuditLogService.DicName, FormElement.Name },
             {
-                DataManager.Services.AuditLogService.DicKey, AuditLogService.GetKey(FormElement, values)
+                AuditLogService.DicKey, AuditLogService.GetKey(FormElement, values)
             }
         };
 
         var orderBy = new OrderByData();
-        orderBy.AddOrReplace(DataManager.Services.AuditLogService.DicModified,OrderByDirection.Desc);
+        orderBy.AddOrReplace(AuditLogService.DicModified,OrderByDirection.Desc);
 
         var entryId = string.Empty;
         var result = await EntityRepository.GetDictionaryListResultAsync(GridView.FormElement, new EntityParameters()
@@ -167,7 +167,7 @@ public class JJAuditLogView : AsyncComponent
     {
         string entryId = await GetEntryKey(values);
         var html = await GetLogDetailsHtmlAsync(entryId);
-        html.AppendHiddenInput($"audit-log-id-{Name}", entryId);
+        html.AppendHiddenInput($"audit-log-id-{FormElement.Name}", entryId);
         return html;
     }
 
@@ -191,11 +191,11 @@ public class JJAuditLogView : AsyncComponent
             return alert.GetHtmlBuilder();
         }
 
-        var filter = new Dictionary<string, object> { { DataManager.Services.AuditLogService.DicId, logId } };
+        var filter = new Dictionary<string, object> { { AuditLogService.DicId, logId } };
 
         var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
-        string json = values[DataManager.Services.AuditLogService.DicJson]?.ToString();
-        string recordsKey = values[DataManager.Services.AuditLogService.DicKey]?.ToString();
+        string json = values[AuditLogService.DicJson]?.ToString();
+        string recordsKey = values[AuditLogService.DicKey]?.ToString();
         var fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json ?? string.Empty);
 
         var panel = DataPanel;
@@ -255,10 +255,10 @@ public class JJAuditLogView : AsyncComponent
 
     private async Task<JJDataPanel> GetDetailsPanel(string logId)
     {
-        var filter = new Dictionary<string, object> { { DataManager.Services.AuditLogService.DicId, logId } };
+        var filter = new Dictionary<string, object> { { AuditLogService.DicId, logId } };
 
         var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
-        string json = values[DataManager.Services.AuditLogService.DicJson].ToString();
+        string json = values[AuditLogService.DicJson].ToString();
 
         IDictionary<string, object> fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
@@ -275,14 +275,15 @@ public class JJAuditLogView : AsyncComponent
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
-        var gridViewFormElement = AuditLogService.GetFormElement();
+        var gridViewFormElement = AuditLogService.GetFormElement(FormElement.Name);
         gridViewFormElement.ParentName = FormElement.ParentName;
         var grid = _componentFactory.GridView.Create(gridViewFormElement);
         grid.FormElement.Title = FormElement.Title;
-        grid.SetCurrentFilter(DataManager.Services.AuditLogService.DicName, FormElement.Name);
-        grid.CurrentOrder = new OrderByData().AddOrReplace(DataManager.Services.AuditLogService.DicModified,OrderByDirection.Desc);
-
-        var fieldKey = grid.FormElement.Fields[DataManager.Services.AuditLogService.DicKey];
+        grid.SetCurrentFilter(AuditLogService.DicName, FormElement.Name);
+        grid.CurrentOrder = new OrderByData().AddOrReplace(AuditLogService.DicModified,OrderByDirection.Desc);
+        grid.ExportAction.SetVisible(false);
+        
+        var fieldKey = grid.FormElement.Fields[AuditLogService.DicKey];
         int qtdPk = FormElement.Fields.Count(x => x.IsPk);
         if (qtdPk == 1)
         {
@@ -303,9 +304,9 @@ public class JJAuditLogView : AsyncComponent
         var btn = _componentFactory.Html.LinkButton.Create();
         btn.Type = LinkButtonType.Button;
         btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
-        btn.OnClientClick = $"AuditLogViewHelper.viewLog('{Name}','');";
+        btn.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{FormElement.Name}','');";
         btn.IconClass = IconType.ArrowLeft.GetCssClass();
-        btn.Text = "Back";
+        btn.Text = StringLocalizer["Back"];
 
         var toolbar = new JJToolbar();
         toolbar.Items.Add(btn.GetHtmlBuilder());
@@ -316,11 +317,11 @@ public class JJAuditLogView : AsyncComponent
     {
         var filter = new Dictionary<string, object>
         {
-            { DataManager.Services.AuditLogService.DicKey, recordsKey },
-            { DataManager.Services.AuditLogService.DicName, FormElement.Name }
+            { AuditLogService.DicKey, recordsKey },
+            { AuditLogService.DicName, FormElement.Name }
         };
 
-        var orderBy = new OrderByData().AddOrReplace(DataManager.Services.AuditLogService.DicModified, OrderByDirection.Desc);
+        var orderBy = new OrderByData().AddOrReplace(AuditLogService.DicModified, OrderByDirection.Desc);
 
 
         var result = await EntityRepository.GetDictionaryListResultAsync(GridView.FormElement,new EntityParameters()
@@ -366,7 +367,7 @@ public class JJAuditLogView : AsyncComponent
                 origem = DataContextSource.Upload.ToString();
 
             string logId = row["id"].ToString();
-            string message = StringLocalizer["{0} from {1} by user:{2}", action, origem, row["userId"].ToString()];
+            string message = StringLocalizer["{0} from {1} by user:{2}", action, origem, row["userId"]?.ToString() ?? string.Empty];
 
             html.Append(HtmlTag.A, a =>
             {

@@ -103,7 +103,7 @@ class ActionManager {
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
                 postFormValues({ url: urlBuilder.build(), success: (data) => {
-                        document.getElementById(componentName).innerHTML = data;
+                        HTMLHelper.setInnerHTML(componentName, data);
                         listenAllEvents("#" + componentName);
                     } });
             }
@@ -208,17 +208,15 @@ class CheckboxHelper {
     }
 }
 class CollapsePanelListener {
-    static listen(name) {
-        let nameSelector = "#" + name;
-        let collapseSelector = '#collapse-mode-' + name;
-        document.addEventListener("DOMContentLoaded", function () {
-            let collapseElement = document.querySelector(nameSelector);
-            collapseElement.addEventListener("hidden.bs.collapse", function () {
-                document.querySelector(collapseSelector).value = "0";
-            });
-            collapseElement.addEventListener("show.bs.collapse", function () {
-                document.querySelector(collapseSelector).value = "1";
-            });
+    static listen(componentName) {
+        let nameSelector = "#" + componentName;
+        let collapseSelector = '#' + componentName + '-is-open';
+        let collapseElement = document.querySelector(nameSelector);
+        collapseElement.addEventListener("hidden.bs.collapse", function () {
+            document.querySelector(collapseSelector).value = "0";
+        });
+        collapseElement.addEventListener("show.bs.collapse", function () {
+            document.querySelector(collapseSelector).value = "1";
         });
     }
 }
@@ -803,12 +801,19 @@ class FormViewHelper {
         }, 3000);
         GridViewHelper.refresh(componentName, gridViewRouteContext);
     }
+    static setPanelState(componentName, pageState, routeContext) {
+        document.querySelector(`#form-view-panel-state-${componentName}`).value = pageState.toString();
+        const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
+        postFormValues({ url: url, success: (data) => {
+                HTMLHelper.setInnerHTML(componentName, data);
+            } });
+    }
     static insertSelection(componentName, insertValues, routeContext) {
         const selectActionValuesInput = document.querySelector(`#form-view-insert-selection-values-${componentName}`);
         selectActionValuesInput.value = insertValues;
         const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
         postFormValues({ url: url, success: (data) => {
-                document.getElementById(componentName).innerHTML = data;
+                HTMLHelper.setInnerHTML(componentName, data);
             } });
     }
 }
@@ -1131,6 +1136,25 @@ class GridViewSelectionHelper {
         if (selectedText) {
             selectedText.textContent = selectedText.getAttribute("no-record-selected-label") || "";
         }
+    }
+}
+class HTMLHelper {
+    static setInnerHTML(element, html) {
+        const targetElement = typeof element === "string" ? document.getElementById(element) : element;
+        if (!targetElement) {
+            throw new Error(`Element not found: ${element}`);
+        }
+        targetElement.innerHTML = html;
+        Array.from(targetElement.querySelectorAll("script")).forEach((oldScriptElement) => {
+            var _a;
+            const newScriptElement = document.createElement("script");
+            Array.from(oldScriptElement.attributes).forEach((attr) => {
+                newScriptElement.setAttribute(attr.name, attr.value);
+            });
+            const scriptText = document.createTextNode(oldScriptElement.innerHTML);
+            newScriptElement.appendChild(scriptText);
+            (_a = oldScriptElement.parentNode) === null || _a === void 0 ? void 0 : _a.replaceChild(newScriptElement, oldScriptElement);
+        });
     }
 }
 document.addEventListener("DOMContentLoaded", function () {
@@ -1519,21 +1543,8 @@ class _Modal extends ModalBase {
     }
     setAndShowModal(content) {
         const modalBody = this.modalElement.querySelector(`#${this.modalId} .modal-body`);
-        this.setInnerHTML(modalBody, content);
+        HTMLHelper.setInnerHTML(modalBody, content);
         this.showModal();
-    }
-    setInnerHTML(element, html) {
-        element.innerHTML = html;
-        Array.from(element.querySelectorAll("script")).forEach((oldScriptElement) => {
-            var _a;
-            const newScriptElement = document.createElement("script");
-            Array.from(oldScriptElement.attributes).forEach((attr) => {
-                newScriptElement.setAttribute(attr.name, attr.value);
-            });
-            const scriptText = document.createTextNode(oldScriptElement.innerHTML);
-            newScriptElement.appendChild(scriptText);
-            (_a = oldScriptElement.parentNode) === null || _a === void 0 ? void 0 : _a.replaceChild(newScriptElement, oldScriptElement);
-        });
     }
     hide() {
         this.hideModal();
@@ -1708,6 +1719,17 @@ class popup {
         defaultModal.hide();
     }
 }
+var PageState;
+(function (PageState) {
+    PageState[PageState["List"] = 1] = "List";
+    PageState[PageState["View"] = 2] = "View";
+    PageState[PageState["Insert"] = 3] = "Insert";
+    PageState[PageState["Update"] = 4] = "Update";
+    PageState[PageState["Filter"] = 5] = "Filter";
+    PageState[PageState["Import"] = 6] = "Import";
+    PageState[PageState["Delete"] = 7] = "Delete";
+    PageState[PageState["AuditLog"] = 8] = "AuditLog";
+})(PageState || (PageState = {}));
 class PostFormValuesOptions {
 }
 function postFormValues(options) {

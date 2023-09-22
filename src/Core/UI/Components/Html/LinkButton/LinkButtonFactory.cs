@@ -177,7 +177,7 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
         {
             switch (action)
             {
-                case BackAction or CancelAction:
+                case BackAction:
                     if (actionContext.IsModal)
                     {
                         button.OnClientClick = ActionsScripts.GetHideModalScript(actionContext.ParentComponentName);
@@ -186,6 +186,13 @@ public class LinkButtonFactory : IComponentFactory<JJLinkButton>
                     {
                         button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
                     }
+                    break;
+
+                case FormEditAction:
+                    button.OnClientClick = formView.Scripts.GetSetPanelStateScript(PageState.Update);
+                    break;
+                case CancelAction:
+                    button.OnClientClick = formView.Scripts.GetSetPanelStateScript(PageState.View);
                     break;
                 case SaveAction saveAction:
                     if (saveAction.EnterKeyBehavior == FormEnterKey.Submit)

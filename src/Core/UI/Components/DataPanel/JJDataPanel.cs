@@ -231,11 +231,9 @@ public class JJDataPanel : AsyncComponent
             .WithNameAndId(Name)
             .WithCssClass(CssClass);
 
-        if (PageState == PageState.Update)
-        {
-            html.AppendHiddenInput($"data-panel-pk-values-{ComponentNameGenerator.Create(FormElement.Name)}", GetPkHiddenInput());
-        }
-
+  
+        html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
+        
         var panelGroup = new DataPanelLayout(this);
         await html.AppendRangeAsync(panelGroup.GetHtmlPanelList());
         html.AppendScript(await GetHtmlFormScript());

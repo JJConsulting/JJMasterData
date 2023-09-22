@@ -1,18 +1,16 @@
 class CollapsePanelListener{
-    static listen(name) {
-        let nameSelector = "#" + name;
-        let collapseSelector = '#collapse-mode-' + name;
+    static listen(componentName: string) {
+        let nameSelector = "#" + componentName;
+        let collapseSelector = '#'+componentName + '-is-open';
 
-        document.addEventListener("DOMContentLoaded", function() {
-            let collapseElement = document.querySelector(nameSelector);
+        let collapseElement = document.querySelector(nameSelector);
 
-            collapseElement.addEventListener("hidden.bs.collapse", function() {
-                document.querySelector<HTMLInputElement>(collapseSelector).value = "0";
-            });
+        collapseElement.addEventListener("hidden.bs.collapse", function() {
+            document.querySelector<HTMLInputElement>(collapseSelector).value = "0";
+        });
 
-            collapseElement.addEventListener("show.bs.collapse", function() {
-                document.querySelector<HTMLInputElement>(collapseSelector).value = "1";
-            });
+        collapseElement.addEventListener("show.bs.collapse", function() {
+            document.querySelector<HTMLInputElement>(collapseSelector).value = "1";
         });
     }
 }
