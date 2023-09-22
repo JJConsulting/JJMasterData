@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Core.Web.Components;
 
@@ -140,7 +138,7 @@ internal class FormViewRelationshipLayout
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
         {
-            return new RenderedComponentResult(await ParentFormView.GetHtmlFromPanel(parentPanel));
+            return new RenderedComponentResult(await ParentFormView.GetHtmlFromPanel(parentPanel,isAtRelationshipLayout: true));
         }
 
         var childElement =
@@ -160,6 +158,7 @@ internal class FormViewRelationshipLayout
         var mappedForeignKeys = DataHelper.GetRelationValues(ParentFormView.FormElement, filter);
         switch (relationship.ViewType)
         {
+            case RelationshipViewType.Update:
             case RelationshipViewType.View:
             {
                 var childValues =
@@ -167,7 +166,7 @@ internal class FormViewRelationshipLayout
                         (IDictionary<string, object>)filter);
                 var childDataPanel = ParentFormView.ComponentFactory.DataPanel.Create(childElement);
                 childDataPanel.FieldNamePrefix = $"{childDataPanel.Name}_";
-                childDataPanel.PageState = PageState.View;
+                childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
                 childDataPanel.UserValues = ParentFormView.UserValues;
                 childDataPanel.Values = childValues;
                 childDataPanel.RenderPanelGroup = false;
@@ -175,7 +174,6 @@ internal class FormViewRelationshipLayout
 
                 return await childDataPanel.GetResultAsync();
             }
-            case RelationshipViewType.Update:
             case RelationshipViewType.List:
             {
                 var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);

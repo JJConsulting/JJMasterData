@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Actions;
@@ -38,7 +38,7 @@ public abstract class FormElementActionList : IList<BasicAction>
         return List.First(a => a.Name == actionName);
     }
 
-    public List<BasicAction> GetAllSorted()
+    public virtual List<BasicAction> GetAllSorted()
     {
         return List.OrderBy(x => x.Order).ToList();
     }

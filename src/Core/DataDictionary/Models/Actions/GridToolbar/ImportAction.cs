@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+namespace JJMasterData.Core.DataDictionary.Actions;
 
 public class ImportAction : GridToolbarAction
 {

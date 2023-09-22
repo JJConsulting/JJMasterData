@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace JJMasterData.Core.DataDictionary.Actions.FormToolbar;
+namespace JJMasterData.Core.DataDictionary.Actions;
 
 public class SaveAction : FormToolbarAction
 {

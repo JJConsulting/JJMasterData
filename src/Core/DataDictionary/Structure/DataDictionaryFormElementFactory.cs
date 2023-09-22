@@ -1,6 +1,6 @@
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.Web;

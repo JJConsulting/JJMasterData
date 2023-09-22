@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Web.Html;
@@ -125,7 +126,7 @@ internal class DataPanelLayout
             {
                 Title = panel.Title,
                 SubTitle = panel.SubTitle,
-                Name = $"{Name}_panel{panel.PanelId}",
+                Name = $"{Name}-panel-{GuidGenerator.FromValue(panel.PanelId.ToString())}",
                 CssClass = panel.CssClass,
                 HtmlBuilderContent = await GetHtmlForm(panel),
                 ExpandedByDefault = panel.ExpandedByDefault,

@@ -7,7 +7,7 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions.UserCreated;
+using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;

@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.DataDictionary.Actions.GridTable;
+﻿namespace JJMasterData.Core.DataDictionary.Actions;
 
 
 public class ViewAction : GridTableAction

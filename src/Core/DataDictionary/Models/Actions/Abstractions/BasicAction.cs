@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Actions.Abstractions;
+namespace JJMasterData.Core.DataDictionary.Actions;
 
 /// <summary>
 /// Action basic info

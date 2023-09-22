@@ -1,7 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+namespace JJMasterData.Core.DataDictionary.Actions;
 
 /// <summary>
 /// Represents the dictionary export button.

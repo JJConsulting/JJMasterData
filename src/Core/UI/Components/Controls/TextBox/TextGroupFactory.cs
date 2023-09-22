@@ -86,7 +86,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
             FormElement = formElement,
             FormStateData = controlContext.FormStateData,
             FieldName = field.Name,
-            ParentComponentName = "TODO"
+            ParentComponentName = textGroup.Name
         };
         
         foreach (var action in actions)

@@ -1,6 +1,4 @@
-using JJMasterData.Core.DataDictionary.Actions.Abstractions;
-
-namespace JJMasterData.Core.DataDictionary.Actions.FormToolbar;
+namespace JJMasterData.Core.DataDictionary.Actions;
 
 public abstract class FormToolbarAction : BasicAction
 {

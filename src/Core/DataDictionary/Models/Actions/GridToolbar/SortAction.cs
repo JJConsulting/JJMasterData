@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+﻿namespace JJMasterData.Core.DataDictionary.Actions;
 
 
 public class SortAction : GridToolbarAction

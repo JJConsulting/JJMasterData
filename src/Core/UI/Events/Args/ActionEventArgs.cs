@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using JJMasterData.Core.DataDictionary.Actions.Abstractions;
+using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.FormEvents.Args;

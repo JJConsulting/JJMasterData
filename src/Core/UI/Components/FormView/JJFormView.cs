@@ -10,11 +10,6 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Actions;
-using JJMasterData.Core.DataDictionary.Actions.Abstractions;
-using JJMasterData.Core.DataDictionary.Actions.FormToolbar;
-using JJMasterData.Core.DataDictionary.Actions.GridTable;
-using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
-using JJMasterData.Core.DataDictionary.Actions.UserCreated;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
@@ -941,7 +936,7 @@ public class JJFormView : AsyncComponent
 
         if (!visibleRelationships.Any() || visibleRelationships.Count == 1)
         {
-            var panelHtml = await GetHtmlFromPanel(parentPanel, true);
+            var panelHtml = await GetHtmlFromPanel(parentPanel, isAtRelationshipLayout: false);
             panelHtml.AppendScript($"document.getElementById('form-view-page-state-{Name}').value={(int)PageState}");
             if (ComponentContext is ComponentContext.Modal)
             {
@@ -961,7 +956,6 @@ public class JJFormView : AsyncComponent
         var layout = new FormViewRelationshipLayout(this);
 
         var topActions = FormElement.Options.FormToolbarActions
-            .GetAllSorted()
             .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Top).ToList();
 
         html.AppendComponent(await GetFormToolbarAsync(topActions));
@@ -974,7 +968,6 @@ public class JJFormView : AsyncComponent
         }
 
         var bottomActions = FormElement.Options.FormToolbarActions
-            .GetAllSorted()
             .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Bottom).ToList();
 
         html.AppendComponent(await GetFormToolbarAsync(bottomActions));
@@ -982,16 +975,21 @@ public class JJFormView : AsyncComponent
         return new RenderedComponentResult(html);
     }
 
-    internal async Task<HtmlBuilder> GetHtmlFromPanel(JJDataPanel panel, bool isParent = false)
+    internal async Task<HtmlBuilder> GetHtmlFromPanel(JJDataPanel panel, bool isAtRelationshipLayout)
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
 
         var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
 
-        var panelActions = panel.FormElement.Options.FormToolbarActions
-            .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel || isParent).ToList();
+        var toolbarActions = panel.FormElement.Options.FormToolbarActions
+            .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel || !isAtRelationshipLayout).ToList();
 
-        var toolbar = await GetFormToolbarAsync(panelActions);
+        if (isAtRelationshipLayout)
+        {
+            toolbarActions.Add(new FormEditAction());
+        }
+        
+        var toolbar = await GetFormToolbarAsync(toolbarActions);
         
         formHtml.Append(parentPanelHtml);
         

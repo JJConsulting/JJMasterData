@@ -1,5 +1,5 @@
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions.GridToolbar;
+using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Html;
 using System.Collections.Generic;
