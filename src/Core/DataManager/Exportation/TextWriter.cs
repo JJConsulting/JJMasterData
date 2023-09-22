@@ -99,7 +99,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                 if (field.DataBehavior != FieldBehavior.Virtual)
                 {
                     if (row.Keys.Contains(field.Name))
-                        value = row[field.Name].ToString();
+                        value = row[field.Name]?.ToString();
                 }
                 
                 if (OnRenderCell != null || OnRenderCellAsync != null)
