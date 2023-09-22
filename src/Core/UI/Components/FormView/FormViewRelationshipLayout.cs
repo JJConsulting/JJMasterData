@@ -188,17 +188,7 @@ internal class FormViewRelationshipLayout
 
                 var result = await childFormView.GetFormResultAsync();
                 
-                if (result is not RenderedComponentResult renderedComponentResult) 
-                    return result;
-                
-                var filters =
-                    ParentFormView.EncryptionService.EncryptStringWithUrlEscape(
-                        JsonConvert.SerializeObject(filter));
-                renderedComponentResult.HtmlBuilder.AppendHiddenInput($"{childFormView.GridView.Name}-filters",
-                    filters);
-
-                return renderedComponentResult;
-
+                return result;
             }
             default:
                 return new EmptyComponentResult();

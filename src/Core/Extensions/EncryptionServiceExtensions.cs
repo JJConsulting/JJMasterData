@@ -31,19 +31,30 @@ public static class EncryptionServiceExtensions
         return service.DecryptString(Uri.UnescapeDataString(cipherText));
     }
     
-    internal static string EncryptActionMap(this IEncryptionService service, ActionMap actionMap)
-    {
-        return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(actionMap));
-    }
-    
-    internal static string EncryptObject<T>(this IEncryptionService service, T @object)
+    public static string EncryptObject<T>(this IEncryptionService service, T @object)
     {
         return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(@object));
     }
     
-    internal static T DecryptObject<T>(this IEncryptionService service, string encryptedObject)
+    public static T DecryptObject<T>(this IEncryptionService service, string encryptedObject)
     {
         return JsonConvert.DeserializeObject<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!);
+    }
+    
+    
+    public static string EncryptDictionary(this IEncryptionService service, IDictionary<string,object> dictionary)
+    {
+        return service.EncryptObject(dictionary);
+    }
+    
+    public static IDictionary<string,object> DecryptDictionary(this IEncryptionService service, string encryptedDictionary)
+    {
+        return service.DecryptObject<IDictionary<string,object>>(encryptedDictionary);
+    }
+    
+    internal static string EncryptActionMap(this IEncryptionService service, ActionMap actionMap)
+    {
+        return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(actionMap));
     }
     
     internal static string EncryptRouteContext(this IEncryptionService service, RouteContext routeContext)
@@ -59,15 +70,5 @@ public static class EncryptionServiceExtensions
     internal static ActionMap DecryptActionMap(this IEncryptionService service, string encryptedActionMap)
     {
         return service.DecryptObject<ActionMap>(encryptedActionMap);
-    }
-    
-    internal static string EncryptDictionary(this IEncryptionService service, IDictionary<string,object> dictionary)
-    {
-        return service.EncryptObject(dictionary);
-    }
-    
-    internal static Dictionary<string,object> DecryptDictionary(this IEncryptionService service, string encryptedDictionary)
-    {
-        return service.DecryptObject<Dictionary<string,object>>(encryptedDictionary);
     }
 }

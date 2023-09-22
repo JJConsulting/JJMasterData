@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.Http.Abstractions;
@@ -44,13 +45,16 @@ public class DataItemService
         return first?.Id;
     }
 
-    public IEnumerable<DataItemResult> GetItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values)
+    public static IEnumerable<DataItemResult> GetItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values)
     {
         foreach (var i in values.ToArray())
         {
-            var description = dataItem.ShowIcon
-                ? $"{i.Description}|{i.Icon.GetCssClass()}|{i.IconColor}"
-                : i.Description;
+            string? description;
+            
+            if (dataItem.ShowIcon)
+                description = $"{i.Description}|{i.Icon.GetCssClass()}|{i.IconColor}";
+            else
+                description = i.Description;
 
             yield return new DataItemResult(i.Id, description);
         }
@@ -78,6 +82,8 @@ public class DataItemService
                 await foreach (var value in GetElementMapValues(dataItem, formStateData, searchId,searchText))
                     yield return value;
                 yield break;
+            default:
+                throw new JJMasterDataException("Invalid DataItemType.");
         }
     }
 

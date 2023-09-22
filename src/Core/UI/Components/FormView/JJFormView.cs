@@ -169,20 +169,15 @@ public class JJFormView : AsyncComponent
         {
             if (!_relationValues.Any())
             {
-                var encryptedRelationValues = CurrentContext.Request.Form[$"form-view-relation-values-{Name}"];
-                if (encryptedRelationValues is null)
-                    return _relationValues;
-
-                _relationValues = EncryptionService.DecryptDictionary(encryptedRelationValues);
-                GridView.RelationValues = _relationValues;
+                _relationValues = GetRelationValuesFromForm() ;
             }
 
             return _relationValues;
         }
         set
         {
-            GridView.RelationValues = value;
             _relationValues = value;
+            GridView.RelationValues = _relationValues;
         }
     }
 
@@ -370,6 +365,7 @@ public class JJFormView : AsyncComponent
         var formView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
         formView.FormElement.ParentName = RouteContext.ParentElementName;
         formView.UserValues = UserValues;
+        formView.RelationValues = formView.GetRelationValuesFromForm();
         formView.ShowTitle = false;
         formView.DataPanel.FieldNamePrefix = $"{formView.DataPanel.Name}_";
 
@@ -393,6 +389,7 @@ public class JJFormView : AsyncComponent
                 return await GetReloadPanelResultAsync();
             case ComponentContext.DataExportation:
             case ComponentContext.GridViewReload:
+            case ComponentContext.GridViewFilterReload:
             case ComponentContext.GridViewFilterSearchBox:
                 return await GridView.GetResultAsync();
             case ComponentContext.DownloadFile:
@@ -538,7 +535,6 @@ public class JJFormView : AsyncComponent
             html.AppendHiddenInput($"form-view-action-map-{Name}", EncryptionService.EncryptActionMap(CurrentActionMap));
             html.AppendHiddenInput($"form-view-relation-values-{Name}",
                 EncryptionService.EncryptDictionary(RelationValues));
-            
 
             if (ComponentContext is ComponentContext.FormViewReload)
             {
@@ -1226,6 +1222,16 @@ public class JJFormView : AsyncComponent
                 CurrentContext.Request.Form.ContainsFormValues());
 
         return new FormStateData(values, UserValues, PageState);
+    }
+
+    public IDictionary<string, object> GetRelationValuesFromForm()
+    {
+        var encryptedRelationValues = CurrentContext.Request.Form[$"form-view-relation-values-{Name}"];
+        
+        if (encryptedRelationValues is null)
+            return new Dictionary<string, object>();
+
+        return EncryptionService.DecryptDictionary(encryptedRelationValues);
     }
     
     public void SetRelationshipPageState(RelationshipViewType relationshipViewType)
