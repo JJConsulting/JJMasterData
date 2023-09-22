@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -65,7 +66,7 @@ public class DataItemService
         {
             case DataItemType.Manual:
             {
-                foreach (var item in dataItem.Items!)
+                foreach (var item in GetItemsValues(dataItem, searchId, searchText))
                     yield return item;
                 yield break;
             }
@@ -77,6 +78,31 @@ public class DataItemService
                 await foreach (var value in GetElementMapValues(dataItem, formStateData, searchId,searchText))
                     yield return value;
                 yield break;
+        }
+    }
+
+    private static IEnumerable<DataItemValue> GetItemsValues(FormElementDataItem dataItem, string? searchId, string? searchText)
+    {
+        foreach (var item in dataItem.Items!)
+        {
+            if (searchId is not null)
+            {
+                if (item.Id == searchId)
+                {
+                    yield return item;
+                }
+            }
+            else if (searchText is not null)
+            {
+                if (item.Description.Contains(searchText))
+                {
+                    yield return item;
+                }
+            }
+            else
+            {
+                yield return item;
+            }
         }
     }
 
