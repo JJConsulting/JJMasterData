@@ -124,13 +124,27 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
             var path = Options.Value.ExportationFolderPath;
             string folderPath = DataExportationHelper.GetFolderPath(FormElement, path, UserId);
 
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
+            CreateFolderPathIfNotExits(folderPath);
+            
             return folderPath;
         }
     }
 
+    private void CreateFolderPathIfNotExits(string folderPath)
+    {
+        try
+        {
+            if (folderPath != null && !Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+        }
+        catch (Exception ex)
+        {
+            string message = $"Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
+            throw new JJMasterDataException(message, ex);
+        }  
+
+    }
+    
     public string UserId { get; set; }
 
     #endregion
@@ -153,7 +167,8 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
     public async Task RunWorkerAsync(CancellationToken token)
     {
-        if (FormElement == null) throw new ArgumentNullException(nameof(FormElement));
+        if (FormElement == null) 
+            throw new ArgumentNullException(nameof(FormElement));
 
         try
         {
@@ -163,7 +178,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
             ProcessReporter.Message = StringLocalizer["Retrieving records..."];
 
             Reporter(ProcessReporter);
-
+ 
             var filePath = Path.Combine(FolderPath, GetFilePath());
 
             using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))
@@ -179,9 +194,6 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
         catch (Exception ex)
         {
             ProcessReporter.HasError = true;
-
-            if (File.Exists(FolderPath) && !FileIO.IsFileLocked(FolderPath))
-                File.Delete(FolderPath);
 
             switch (ex)
             {
@@ -206,6 +218,11 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
                     Logger.LogError(ex, "Error at data exportation");
                     break;
             }
+            
+            if (File.Exists(FolderPath) && !FileIO.IsFileLocked(FolderPath))
+                File.Delete(FolderPath);
+
+            
         }
         finally
         {
