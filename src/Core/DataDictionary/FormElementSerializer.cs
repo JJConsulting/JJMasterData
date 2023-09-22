@@ -11,6 +11,7 @@ public static class FormElementSerializer
     {
         TypeNameHandling = TypeNameHandling.Auto, 
         Formatting = Formatting.None,
+        NullValueHandling = NullValueHandling.Ignore,
         ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
         ContractResolver = new DefaultContractResolver
         {
