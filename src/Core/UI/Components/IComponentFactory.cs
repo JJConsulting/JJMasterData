@@ -1,5 +1,6 @@
 #nullable enable
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Actions;
 using JJMasterData.Core.Web.Components;
 
 namespace JJMasterData.Core.Web.Factories;
@@ -17,5 +18,6 @@ public interface IComponentFactory
     IComponentFactory<JJUploadArea> UploadArea { get; }
     ControlFactory Controls { get; }
     HtmlComponentFactory Html { get; }
+    ActionButtonFactory ActionButton { get; }
     RouteContext RouteContext { get; }
 }

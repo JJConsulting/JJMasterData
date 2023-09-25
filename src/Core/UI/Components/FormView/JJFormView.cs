@@ -1076,7 +1076,7 @@ public class JJFormView : AsyncComponent
                 saveAction.EnterKeyBehavior = DataPanel.FormUI.EnterKey;
             }
 
-            var factory = ComponentFactory.Html.LinkButton;
+            var factory = ComponentFactory.ActionButton;
 
 
             var linkButton = await factory.CreateFormToolbarButtonAsync(action, this);
@@ -1093,7 +1093,7 @@ public class JJFormView : AsyncComponent
             foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
             {
                 btnGroup.ShowAsButton = groupedAction.ShowAsButton;
-                var factory = ComponentFactory.Html.LinkButton;
+                var factory = ComponentFactory.ActionButton;
                 var linkButton = await factory.CreateFormToolbarButtonAsync(groupedAction, this);
                 btnGroup.Actions.Add(linkButton);
             }

@@ -2,6 +2,7 @@
 
 using System;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Components.Widgets;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.DependencyInjection;

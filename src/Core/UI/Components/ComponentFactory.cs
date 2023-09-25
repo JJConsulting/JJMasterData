@@ -4,6 +4,7 @@ using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using JJMasterData.Core.UI.Components.Actions;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -45,6 +46,8 @@ internal class ComponentFactory : IComponentFactory
 
     public HtmlComponentFactory Html  =>
         _htmlComponentFactory ??= ServiceProvider.GetRequiredService<HtmlComponentFactory>();
+
+    public ActionButtonFactory ActionButton =>  GetFactory<ActionButtonFactory>();
 
     public RouteContext RouteContext =>
         _routeContext ??= ServiceProvider.GetRequiredService<RouteContextFactory>().Create();

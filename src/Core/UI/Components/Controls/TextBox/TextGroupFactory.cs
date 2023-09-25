@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.Actions;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -20,18 +21,18 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
     private IFormValues FormValues { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private LinkButtonFactory LinkButtonFactory { get; }
+    private ActionButtonFactory ActionButtonFactory { get; }
 
     public TextGroupFactory(
         IFormValues formValues, 
                           IEncryptionService encryptionService,
                           IStringLocalizer<JJMasterDataResources> stringLocalizer, 
-                          LinkButtonFactory linkButtonFactory)
+                          ActionButtonFactory actionButtonFactory)
     {
         FormValues = formValues;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
-        LinkButtonFactory = linkButtonFactory;
+        ActionButtonFactory = actionButtonFactory;
     }
     
     public JJTextGroup Create()
@@ -91,7 +92,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
         
         foreach (var action in actions)
         {
-            var link = await LinkButtonFactory.CreateFieldLinkAsync(action,actionContext);
+            var link = await ActionButtonFactory.CreateFieldLinkAsync(action,actionContext);
             textGroup.Actions.Add(link);
         }
     }
@@ -220,7 +221,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
 
     private JJLinkButton GetDateAction()
     {
-        var btn = LinkButtonFactory.Create();
+        var btn = ActionButtonFactory.Create();
         btn.IconClass = $"fa fa-{BootstrapHelper.DateIcon}";
         btn.Tooltip = StringLocalizer["Calendar"];
         btn.ShowInFilter = true;

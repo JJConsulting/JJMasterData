@@ -67,7 +67,7 @@ public static class ServiceCollectionExtensions
         
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
         services.AddTransient<IExcelWriter, ExcelWriter>();
-        services.AddTransient<ITextWriter, DataManager.Exports.TextWriter>();
+        services.AddTransient<ITextWriter, TextWriter>();
         
         services.AddFactories();
     }
