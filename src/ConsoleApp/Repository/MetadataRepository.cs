@@ -4,7 +4,7 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.ConsoleApp.Models.FormElementMigration;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
@@ -148,7 +148,7 @@ public class MetadataRepository
         foreach (var action in dicParser.Options.GridActions.GetAll()
                      .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
         {
-            //action.IsUserCreated = true;
+            //=action.IsUserCreated = true;
         }
 
         foreach (var action in dicParser.Options.ToolbarActions

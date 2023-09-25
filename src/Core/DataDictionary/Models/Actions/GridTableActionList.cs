@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Actions;
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 
 public class GridTableActionList : FormElementActionList

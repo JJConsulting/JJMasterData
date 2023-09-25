@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;

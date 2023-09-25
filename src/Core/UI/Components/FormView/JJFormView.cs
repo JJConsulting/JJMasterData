@@ -9,7 +9,6 @@ using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.FormEvents.Args;
@@ -23,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
@@ -553,7 +553,7 @@ public class JJFormView : AsyncComponent
                 result = await GetSaveActionResult();
                 break;
             case BackAction:
-                result = await GetCancelActionResult();
+                result = await GetBackActionResult();
                 break;
             case CancelAction:
                 result = await GetCancelActionResult();

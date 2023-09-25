@@ -1,4 +1,4 @@
-namespace JJMasterData.Core.DataDictionary.Actions;
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public abstract class GridToolbarAction : BasicAction
 {

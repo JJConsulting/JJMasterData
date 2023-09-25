@@ -3,8 +3,8 @@
 using System;
 using System.Collections.Generic;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using Newtonsoft.Json;
-using JJMasterData.Core.DataDictionary.Actions;
 
 namespace JJMasterData.Core.DataDictionary;
 

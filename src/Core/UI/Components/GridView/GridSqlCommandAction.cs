@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
-using JJMasterData.Core.DataDictionary.Actions;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 
 namespace JJMasterData.Core.UI.Components.GridView;
 

@@ -94,7 +94,20 @@
       <Compile Update="UI\Components\ProcessComponent.cs">
         <DependentUpon>ComponentBase.cs</DependentUpon>
       </Compile>
+      <Compile Update="DataDictionary\Models\Actions\FormElementFieldActionList.cs">
+        <DependentUpon>FormElementActionList.cs</DependentUpon>
+      </Compile>
+      <Compile Update="DataDictionary\Models\Actions\FormToolbarActionList.cs">
+        <DependentUpon>FormElementActionList.cs</DependentUpon>
+      </Compile>
+      <Compile Update="DataDictionary\Models\Actions\GridToolbarActionList.cs">
+        <DependentUpon>FormElementActionList.cs</DependentUpon>
+      </Compile>
+      <Compile Update="DataDictionary\Models\Actions\GridTableActionList.cs">
+        <DependentUpon>FormElementActionList.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
+    
     
     
     

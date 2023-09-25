@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace JJMasterData.Core.DataDictionary.Actions;
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
 /// Action to save a DataPanel at a FormView.

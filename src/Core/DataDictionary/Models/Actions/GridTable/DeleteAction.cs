@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.DataDictionary.Actions;
+﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
 /// Represents the default delete action of a data dictionary

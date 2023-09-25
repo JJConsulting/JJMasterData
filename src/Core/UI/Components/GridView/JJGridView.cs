@@ -6,7 +6,6 @@ using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Exports.Configuration;
 using JJMasterData.Core.DataManager.Services;
@@ -32,6 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 
 // ReSharper disable UnusedMember.Local
 

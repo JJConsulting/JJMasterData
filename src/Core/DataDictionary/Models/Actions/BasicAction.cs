@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Actions;
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
 /// Action basic info

@@ -1,7 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary.Actions;
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
 /// Represents the dictionary export button.

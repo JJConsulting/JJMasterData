@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using JJMasterData.Core.DataDictionary.Actions;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.UI.Components.Actions;
 using Microsoft.IdentityModel.Tokens;

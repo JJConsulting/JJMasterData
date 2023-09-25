@@ -1,6 +1,6 @@
 
 
-namespace JJMasterData.Core.DataDictionary.Actions;
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
 /// When in a relationship, this is the action to edit the parent DataPanel.
