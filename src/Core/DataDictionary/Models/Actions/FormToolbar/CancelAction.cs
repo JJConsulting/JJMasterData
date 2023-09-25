@@ -13,7 +13,7 @@ public class CancelAction : FormToolbarAction
         Icon = IconType.Times;
         VisibleExpression = "val:1";
         Order = 0;
-        FormToolbarActionLocation = Actions.FormToolbarActionLocation.Panel;
+        Location = FormToolbarActionLocation.Panel;
         ShowAsButton = true;
         Text = "Cancel";
     }

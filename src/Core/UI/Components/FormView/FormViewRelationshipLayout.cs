@@ -140,7 +140,7 @@ internal class FormViewRelationshipLayout
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         if (relationship.IsParent)
         {
-            return new RenderedComponentResult(await ParentFormView.GetRelationshipParentPanel(parentPanel));
+            return new RenderedComponentResult(await ParentFormView.GetRelationshipParentPanelHtml(parentPanel));
         }
 
         var childElement =

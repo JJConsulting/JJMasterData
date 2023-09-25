@@ -12,7 +12,7 @@ public class FormEditAction : FormToolbarAction
         VisibleExpression = "val:1";
         Icon = IconType.Pencil;
         ShowAsButton = true;
-        FormToolbarActionLocation = DataDictionary.Actions.FormToolbarActionLocation.Panel;
+        Location = FormToolbarActionLocation.Panel;
         Order = 0;
         Text = "Edit";
     }

@@ -15,6 +15,8 @@ class FormViewHelper {
     
     static setPanelState(componentName: string,pageState: PageState, routeContext: string){
         document.querySelector<HTMLInputElement>(`#form-view-panel-state-${componentName}`).value = pageState.toString();
+        document.querySelector<HTMLInputElement>(`#form-view-action-map-${componentName}`).value = String();
+        
         const url = new UrlBuilder().addQueryParameter("routeContext",routeContext).build();
         
         postFormValues({url:url, success:(data)=>{

@@ -117,8 +117,8 @@ public abstract class BasicAction
     [JsonProperty("isCustomAction")] 
     public abstract bool IsUserCreated { get; }
 
-    [JsonProperty(PropertyName = "formToolbarActionLocation", NullValueHandling = NullValueHandling.Ignore)]
-    public FormToolbarActionLocation? FormToolbarActionLocation { get; set; }
+    [JsonProperty(PropertyName = "formToolbarActionLocation")]
+    public FormToolbarActionLocation? Location { get; set; }
     
     public BasicAction()
     {

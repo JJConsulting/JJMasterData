@@ -5,59 +5,66 @@
 @model JJMasterData.Core.DataDictionary.Actions.BasicAction
 
 <div class="row">
-    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Expression that returns a Boolean at runtime"]">@StringLocalizer["Visible Expression"]</label>
-        @Html.TextBoxFor(model => model.VisibleExpression, new { @class = "form-control" })
-    </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Expression that returns a Boolean at runtime"]">@StringLocalizer["Enable Expression"]</label>
-        @Html.TextBoxFor(model => model.EnableExpression, new { @class = "form-control" })
-    </div>
+    @if (Model is FormToolbarAction && Model.IsUserCreated)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+            <label class="@BootstrapHelper.Label" asp-for="VisibleExpression">@StringLocalizer["Visible Expression"]</label>
+            <tooltip title="Boolean expression to show the action. Check expressions at the docs for more information"/>
+            @Html.TextBoxFor(model => model.VisibleExpression, new { @class = "form-control" })
+        </div>
+        <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+            <label class="@BootstrapHelper.Label" asp-for="EnableExpression">@StringLocalizer["Enable Expression"]</label>
+            <tooltip title="Boolean expression to enable the action. Check expressions at the docs for more information"/>
+            @Html.TextBoxFor(model => model.EnableExpression, new { @class = "form-control" })
+        </div>
+    }
 </div>
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Action execution confirmation text"]">@StringLocalizer["Confirmation Message"]</label>
+        <label class="@BootstrapHelper.Label" asp-for="ConfirmationMessage">@StringLocalizer["Confirmation Message"]</label>
+        <tooltip title="If not null or empty, show a confirmation message before executing the action"/>
         @Html.TextBoxFor(model => model.ConfirmationMessage, new { @class = "form-control", placeholder = StringLocalizer["Are you sure you want to execute this action?"] })
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
-        <label class="@BootstrapHelper.Label">Css @StringLocalizer["Class"]</label>
+        <label asp-for="CssClass" class="@BootstrapHelper.Label">@StringLocalizer["Css Class"]</label>
         @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
     </div>
 </div>
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label">@StringLocalizer["Order"]</label>
+        <label asp-for="Order" class="@BootstrapHelper.Label">@StringLocalizer["Order"]</label>
         @Html.TextBoxFor(model => model.Order, new { @class = "form-control" })
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["Display name in grid header"]">@StringLocalizer["Show Title"]</label>
+        <label asp-for="ShowTitle" class="@BootstrapHelper.Label" >@StringLocalizer["Show Title"]</label>
         <div class="input-append">
             @Html.CheckBoxFor(model => model.ShowTitle, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="Exibir link como botão">@StringLocalizer["Show As Button"]</label>
+        <label class="@BootstrapHelper.Label" asp-for="ShowAsButton" >@StringLocalizer["Show As Button"]</label>
         <div class="input-append">
             @Html.CheckBoxFor(model => model.ShowAsButton, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["Set as default option"]">@StringLocalizer["Default"]</label>
+        <label asp-for="IsDefaultOption" class="@BootstrapHelper.Label">@StringLocalizer["Default"]</label>
         <div class="input-append">
             @Html.CheckBoxFor(model => model.IsDefaultOption, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["View Grouped"]">@StringLocalizer["Is Group"]</label>
+        <label asp-for="IsGroup" class="@BootstrapHelper.Label">@StringLocalizer["Is Group"]</label>
         <div class="input-append">
             @Html.CheckBoxFor(model => model.IsGroup, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["Make a menu separator before this action"]">@StringLocalizer["Divider Line"]</label>
+        <label asp-for="DividerLine" class="@BootstrapHelper.Label">@StringLocalizer["Divider Line"]</label>
+        <tooltip title="Show a separator before this action"/>
         <div class="input-append">
             @Html.CheckBoxFor(model => model.DividerLine, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
         </div>
@@ -65,9 +72,10 @@
     @if (ViewBag.ContextAction is ActionSource.FormToolbar)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-2">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["Location of the action when in a relationship"]">@StringLocalizer["Location"]</label>
+            <label asp-for="Location" class="@BootstrapHelper.Label">@StringLocalizer["Location"]</label>
+            <tooltip title="If not in a relationship, Panel is considered the same as Bottom."/>
             <div class="input-append">
-                <select asp-for="FormToolbarActionLocation" class="form-select" asp-items="Html.GetEnumSelectList<FormToolbarActionLocation>()"></select>
+                <select asp-for="Location" class="form-select" asp-items="Html.GetEnumSelectList<FormToolbarActionLocation>()"></select>
             </div>
         </div>
     }

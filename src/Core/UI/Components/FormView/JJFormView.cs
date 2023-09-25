@@ -79,9 +79,11 @@ public class JJFormView : AsyncComponent
     private string? _userId;
     private bool? _showTitle;
     private PageState? _pageState;
+    private PageState? _panelState;
     private IDictionary<string, object> _relationValues = new Dictionary<string, object>();
     private RouteContext? _routeContext;
-    
+
+
     #endregion
 
     #region "Properties"
@@ -210,6 +212,21 @@ public class JJFormView : AsyncComponent
         internal set => _pageState = value;
     }
 
+    /// <summary>
+    /// If inside a relationship, PageState of the parent DataPanel.
+    /// </summary>
+    private PageState PanelState
+    {
+        get
+        {
+            if (CurrentContext.Request.Form[$"form-view-panel-state-{Name}"] != null && _panelState is null)
+                _panelState = (PageState)int.Parse(CurrentContext.Request.Form[$"form-view-panel-state-{Name}"]);
+
+            return _panelState ?? PageState.View;
+        }
+        set => _panelState = value;
+    }
+    
     private ActionMap? CurrentActionMap
     {
         get
@@ -450,6 +467,12 @@ public class JJFormView : AsyncComponent
             return formResult;
         }
 
+        if (ContainsRelationships())
+        {
+            PanelState = PageState.View;
+            return await GetFormResult(new FormContext(values, PageState), false);
+        }
+        
         PageState = PageState.List;
 
         if (ComponentContext is ComponentContext.Modal)
@@ -459,6 +482,11 @@ public class JJFormView : AsyncComponent
 
         return await GridView.GetResultAsync();
 
+    }
+
+    private bool ContainsRelationships()
+    {
+        return CurrentContext.Request.Form[$"form-view-panel-state-{Name}"] != null;
     }
 
     private void AppendInsertSuccessAlert(HtmlBuilder htmlBuilder)
@@ -544,8 +572,7 @@ public class JJFormView : AsyncComponent
         
         return result;
     }
-
-
+    
     private void SetFormServiceEvents()
     {
         FormService.OnBeforeInsert += OnBeforeInsert;
@@ -766,8 +793,7 @@ public class JJFormView : AsyncComponent
 
         return new RenderedComponentResult(html);
     }
-
-
+    
     private async Task<ComponentResult> GetDeleteSelectedRowsResult()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
@@ -847,8 +873,7 @@ public class JJFormView : AsyncComponent
 
         return new RenderedComponentResult(html);
     }
-
-
+    
     private async Task<ComponentResult> GetAuditLogResult()
     {
         var actionMap = _currentActionMap;
@@ -918,20 +943,12 @@ public class JJFormView : AsyncComponent
 
         return new RenderedComponentResult(html);
     }
-
-
+    
     private async Task<ComponentResult> GetFormResult(FormContext formContext, bool autoReloadFormFields)
     {
         var (values, errors, pageState) = formContext;
 
-        var visibleRelationships = await FormElement
-            .Relationships
-            .ToAsyncEnumerable()
-            .Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
-            .WhereAwait(async r =>
-                await ExpressionsService.GetBoolValueAsync(r.Panel.VisibleExpression,
-                    new FormStateData(values, pageState)))
-            .ToListAsync();
+        var visibleRelationships = await GetVisibleRelationships(values, pageState);
 
         var parentPanel = DataPanel;
         parentPanel.PageState = pageState;
@@ -941,27 +958,22 @@ public class JJFormView : AsyncComponent
 
         if (!visibleRelationships.Any() || visibleRelationships.Count == 1)
         {
-            var panelHtml = await GetParentPanel(parentPanel);
-            panelHtml.AppendScript($"document.getElementById('form-view-page-state-{Name}').value={(int)PageState}");
-            if (ComponentContext is ComponentContext.Modal)
-            {
-                return new ContentComponentResult(panelHtml);
-            }
-            
-            if (ShowTitle)
-                panelHtml.Prepend(GridView.GetTitle(values).GetHtmlBuilder());
-
-            return new RenderedComponentResult(panelHtml);
+            return await GetParentPanelResult(parentPanel, values);
         }
 
+        return await GetRelationshipLayoutResult(visibleRelationships, values);
+    }
+
+    private async Task<ComponentResult> GetRelationshipLayoutResult(List<FormElementRelationship> visibleRelationships,
+        IDictionary<string, object?> values)
+    {
         var html = new HtmlBuilder(HtmlTag.Div);
         if (ShowTitle)
             html.AppendComponent(GridView.GetTitle(values));
-        
+
         var layout = new FormViewRelationshipLayout(this);
 
-        var topActions = FormElement.Options.FormToolbarActions
-            .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Top).ToList();
+        var topActions = GetTopToolbarActions(FormElement);
 
         html.AppendComponent(await GetFormToolbarAsync(topActions));
 
@@ -973,22 +985,53 @@ public class JJFormView : AsyncComponent
         }
 
         var bottomActions = FormElement.Options.FormToolbarActions
-            .Where(a => a.FormToolbarActionLocation is FormToolbarActionLocation.Bottom).ToList();
+            .Where(a => a.Location is FormToolbarActionLocation.Bottom).ToList();
 
         html.AppendComponent(await GetFormToolbarAsync(bottomActions));
 
         return new RenderedComponentResult(html);
     }
 
-    internal async Task<HtmlBuilder> GetParentPanel(JJDataPanel panel)
+    private async Task<ComponentResult> GetParentPanelResult(JJDataPanel parentPanel, IDictionary<string, object?> values)
+    {
+        var panelHtml = await GetParentPanelHtml(parentPanel);
+        panelHtml.AppendScript($"document.getElementById('form-view-page-state-{Name}').value={(int)PageState}");
+        if (ComponentContext is ComponentContext.Modal)
+            return new ContentComponentResult(panelHtml);
+
+        if (ShowTitle)
+            panelHtml.Prepend(GridView.GetTitle(values).GetHtmlBuilder());
+
+        return new RenderedComponentResult(panelHtml);
+    }
+
+    private async Task<List<FormElementRelationship>> GetVisibleRelationships(IDictionary<string, object?> values, PageState pageState)
+    {
+        var visibleRelationships = await FormElement
+            .Relationships
+            .ToAsyncEnumerable()
+            .Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
+            .WhereAwait(async r =>
+                await ExpressionsService.GetBoolValueAsync(r.Panel.VisibleExpression,
+                    new FormStateData(values, pageState)))
+            .ToListAsync();
+        return visibleRelationships;
+    }
+
+    internal async Task<HtmlBuilder> GetParentPanelHtml(JJDataPanel panel)
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
 
+        var topToolbarActions = GetTopToolbarActions(FormElement);
+        
+        formHtml.AppendComponent(await GetFormToolbarAsync(topToolbarActions));
+        
         var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
-
-        var toolbarActions = GetToolbarActions(panel);
-
-        var toolbar = await GetFormToolbarAsync(toolbarActions);
+        
+        var panelAndBottomToolbarActions = GetPanelToolbarActions(FormElement);
+        panelAndBottomToolbarActions.AddRange(GetBottomToolbarActions(FormElement));
+        
+        var toolbar = await GetFormToolbarAsync(panelAndBottomToolbarActions);
         
         formHtml.Append(parentPanelHtml);
         
@@ -1000,26 +1043,22 @@ public class JJFormView : AsyncComponent
         return formHtml;
     }
     
-    internal async Task<HtmlBuilder> GetRelationshipParentPanel(JJDataPanel panel)
+    internal async Task<HtmlBuilder> GetRelationshipParentPanelHtml(JJDataPanel panel)
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
-
-        var panelState = PageState.View;
         
-        if (CurrentContext.Request.Form[$"form-view-panel-state-{Name}"] != null)
-            panelState = (PageState)int.Parse(CurrentContext.Request.Form[$"form-view-panel-state-{Name}"]);
-        
-        panel.PageState = panelState;
+        panel.PageState = PanelState;
         
         var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
         
-        var toolbarActions = GetToolbarActions(panel);
+        var toolbarActions = GetPanelToolbarActions(panel.FormElement);
 
         if (PageState is PageState.Update)
         {
-            if (panelState is PageState.View)
+            if (PanelState is PageState.View)
             {
                  toolbarActions.Add(new FormEditAction());
+                 toolbarActions.RemoveAll(a => a is SaveAction);
             }
             else
             {
@@ -1036,15 +1075,31 @@ public class JJFormView : AsyncComponent
         if (panel.Errors.Any())
             formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(panel.Errors));
         
-        formHtml.AppendHiddenInput($"form-view-panel-state-{Name}", ((int)panelState).ToString());
+        formHtml.AppendHiddenInput($"form-view-panel-state-{Name}", ((int)PanelState).ToString());
         
         return formHtml;
     }
 
-    private static List<BasicAction> GetToolbarActions(JJDataPanel panel)
+    private static List<BasicAction> GetPanelToolbarActions(FormElement formElement)
     {
-        var toolbarActions = panel.FormElement.Options.FormToolbarActions
-            .Where(a => a.FormToolbarActionLocation == FormToolbarActionLocation.Panel);
+        var toolbarActions = formElement.Options.FormToolbarActions
+            .Where(a => a.Location == FormToolbarActionLocation.Panel);
+
+        return toolbarActions.ToList();
+    }
+    
+    private static List<BasicAction> GetTopToolbarActions(FormElement formElement)
+    {
+        var toolbarActions = formElement.Options.FormToolbarActions
+            .Where(a => a.Location == FormToolbarActionLocation.Top);
+
+        return toolbarActions.ToList();
+    }
+    
+    private static List<BasicAction> GetBottomToolbarActions(FormElement formElement)
+    {
+        var toolbarActions = formElement.Options.FormToolbarActions
+            .Where(a => a.Location == FormToolbarActionLocation.Bottom);
 
         return toolbarActions.ToList();
     }
@@ -1066,7 +1121,7 @@ public class JJFormView : AsyncComponent
     {
         var toolbar = new JJToolbar
         {
-            CssClass = "mt-3"
+            CssClass = "mb-3"
         };
 
         foreach (var action in actions.Where(a => !a.IsGroup))
@@ -1124,8 +1179,7 @@ public class JJFormView : AsyncComponent
             args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(args.FieldValues);
         }
     }
-
-
+    
 
     /// <summary>
     /// Insert the records in the database.

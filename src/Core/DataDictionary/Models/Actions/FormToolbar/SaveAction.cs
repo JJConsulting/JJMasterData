@@ -12,9 +12,9 @@ public class SaveAction : FormToolbarAction
         Name = ActionName;
         Icon = IconType.Check;
         Text = "Save";
-        FormToolbarActionLocation = Actions.FormToolbarActionLocation.Panel;
+        Location = FormToolbarActionLocation.Panel;
         ShowAsButton = true;
-        VisibleExpression = "exp:{pagestate} in ('INSERT','UPDATE')";
+        VisibleExpression = "val:1";
     }
 
     public FormEnterKey EnterKeyBehavior { get; set; }

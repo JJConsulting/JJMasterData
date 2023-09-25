@@ -82,7 +82,7 @@ class ActionManager {
         const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
 
         if (gridViewActionInput) {
-            gridViewActionInput.value = null;
+            gridViewActionInput.value = "";
         }
         if (formViewActionInput) {
             formViewActionInput.value = actionMap;

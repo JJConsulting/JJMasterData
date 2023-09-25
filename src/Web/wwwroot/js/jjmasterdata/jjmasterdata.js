@@ -69,7 +69,7 @@ class ActionManager {
         const gridViewActionInput = document.querySelector("#grid-view-action-" + componentName);
         const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
         if (gridViewActionInput) {
-            gridViewActionInput.value = null;
+            gridViewActionInput.value = "";
         }
         if (formViewActionInput) {
             formViewActionInput.value = actionMap;
@@ -803,6 +803,7 @@ class FormViewHelper {
     }
     static setPanelState(componentName, pageState, routeContext) {
         document.querySelector(`#form-view-panel-state-${componentName}`).value = pageState.toString();
+        document.querySelector(`#form-view-action-map-${componentName}`).value = String();
         const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
         postFormValues({ url: url, success: (data) => {
                 HTMLHelper.setInnerHTML(componentName, data);
