@@ -20,7 +20,7 @@ public abstract class FormElementActionList : IList<BasicAction>
     [JsonConstructor]
     protected FormElementActionList(List<BasicAction> list)
     {
-        List = list;
+        List = list.ToList();
     }
 
     public IEnumerator<BasicAction> GetEnumerator()

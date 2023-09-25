@@ -52,8 +52,6 @@
                             <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="@GetEditScript(action)">
                                 <span class="fa fa-pencil"></span>
                             </button>
-                            &nbsp;
-
                             @if (action.IsUserCreated)
                             {
                                 <button class="@BootstrapHelper.DefaultButton btn-small" style="margin-left:14px;" type="button"
@@ -61,10 +59,9 @@
                                     <span class="fa fa-trash"></span>
                                 </button>
                             }
-                            else
+                            else if (action is not FormToolbarAction)
                             {
                                 <input type="checkbox"
-                                       value="btninsert"
                                        @(action.IsVisible ? "checked=\"checked\"" : "")
                                        data-toggle="toggle"
                                        data-size="small"
@@ -102,7 +99,7 @@
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Add", "Actions",
-            new { elementName = Model.ElementName, actionName = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
+            new { elementName = Model.ElementName, actionType = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
         script.Append($"','{Model.Context.ToString().FirstCharToUpper()}");
         script.Append($" Action',{(int)ModalSize.ExtraLarge}");
         script.Append(");");

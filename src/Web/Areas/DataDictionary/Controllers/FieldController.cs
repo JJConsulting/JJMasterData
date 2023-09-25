@@ -156,13 +156,13 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field, string mapField, string mapExpressionValue)
     {
-        var mapFilter = new DataElementMapFilter
+        var elementMapFilter = new DataElementMapFilter
         {
             FieldName = mapField,
             ExpressionValue = mapExpressionValue
         };
 
-        bool isValid = await _fieldService.AddElementMapFilterAsync(field, mapFilter);
+        bool isValid = await _fieldService.AddElementMapFilterAsync(field, elementMapFilter);
         if (!isValid)
         {
             ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
@@ -196,8 +196,6 @@ public class FieldController : DataDictionaryController
             throw new ArgumentNullException(nameof(field));
 
         field.DataItem ??= new FormElementDataItem();
-        field.DataItem.ElementMap ??= new DataElementMap();
-        field.DataItem.ElementMap.MapFilters ??= new List<DataElementMapFilter>();
         field.DataFile ??= new FormElementDataFile
         {
             MaxFileSize = 2097152 //2mb

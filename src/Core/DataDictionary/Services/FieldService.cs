@@ -333,20 +333,20 @@ public class FieldService : BaseService
         }
     }
 
-    public async Task<bool> AddElementMapFilterAsync(FormElementField field, DataElementMapFilter mapFilter)
+    public async Task<bool> AddElementMapFilterAsync(FormElementField field, DataElementMapFilter elementMapFilter)
     {
         var elementMap = field.DataItem!.ElementMap;
 
-        if (string.IsNullOrEmpty(mapFilter.FieldName))
-            AddError(nameof(mapFilter.FieldName), StringLocalizer["Required filter field"]);
+        if (string.IsNullOrEmpty(elementMapFilter.FieldName))
+            AddError(nameof(elementMapFilter.FieldName), StringLocalizer["Required filter field"]);
 
-        if (!string.IsNullOrEmpty(mapFilter.ExpressionValue) &&
-            !mapFilter.ExpressionValue.Contains("val:") &&
-            !mapFilter.ExpressionValue.Contains("exp:") &&
-            !mapFilter.ExpressionValue.Contains("sql:") &&
-            !mapFilter.ExpressionValue.Contains("protheus:"))
+        if (!string.IsNullOrEmpty(elementMapFilter.ExpressionValue) &&
+            !elementMapFilter.ExpressionValue.Contains("val:") &&
+            !elementMapFilter.ExpressionValue.Contains("exp:") &&
+            !elementMapFilter.ExpressionValue.Contains("sql:") &&
+            !elementMapFilter.ExpressionValue.Contains("protheus:"))
         {
-            AddError(nameof(mapFilter.ExpressionValue), StringLocalizer["Invalid filter field"]);
+            AddError(nameof(elementMapFilter.ExpressionValue), StringLocalizer["Invalid filter field"]);
         }
 
         if (string.IsNullOrEmpty(elementMap.FieldId))
@@ -358,8 +358,8 @@ public class FieldService : BaseService
 
         if (IsValid)
         {
-            var dataEntry = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
-            var fieldKey = dataEntry.Fields[elementMap.FieldId];
+            var childElement = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
+            var fieldKey = childElement.Fields[elementMap.FieldId];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
                 string err = StringLocalizer["Field [{0}] invalid, as it is not PK or not configured as a filter",
@@ -368,13 +368,12 @@ public class FieldService : BaseService
             }
         }
 
-        if (IsValid)
-        {
-            field.DataItem.ElementMap.MapFilters.Add(mapFilter);
-            return true;
-        }
-
-        return false;
+        if (!IsValid) 
+            return false;
+        
+        field.DataItem.ElementMap.MapFilters.Add(elementMapFilter);
+            
+        return true;
     }
 
     public async Task<bool> DeleteField(string elementName, string fieldName)

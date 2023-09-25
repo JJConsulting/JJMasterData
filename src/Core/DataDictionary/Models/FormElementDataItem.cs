@@ -16,7 +16,7 @@ public class FormElementDataItem
 {
     private DataAccessCommand? _command;
     private IList<DataItemValue>? _items;
-    
+    private DataElementMap? _elementMap;
     /// <summary>
     /// Tipo da origem dos dados
     /// </summary>
@@ -30,7 +30,7 @@ public class FormElementDataItem
     /// </summary>
     [DataMember(Name = "command")]
     [RequiredIf(nameof(Items), null)]
-    public DataAccessCommand? Command
+    public DataAccessCommand Command
     {
         get => _command ??= new DataAccessCommand();
         set => _command = value;
@@ -38,7 +38,7 @@ public class FormElementDataItem
     
     [DataMember(Name = "itens")]
     [RequiredIf(nameof(Command), null)]
-    public IList<DataItemValue>? Items
+    public IList<DataItemValue> Items
     {
         get => _items ??= new List<DataItemValue>();
         set => _items = value;
@@ -49,7 +49,11 @@ public class FormElementDataItem
     /// Mapeamento do dicionário
     /// </summary>
     [JsonProperty("elementMap")]
-    public DataElementMap? ElementMap { get; set; } 
+    public DataElementMap ElementMap
+    {
+        get => _elementMap ??= new DataElementMap();
+        set => _elementMap = value;
+    }
 
     /// <summary>
     /// Exibir texto (Todos) como primeira opção (Default = NONE)
@@ -88,9 +92,6 @@ public class FormElementDataItem
 
     public bool HasSqlExpression()
     {
-        if (Command == null)
-            return false;
-
         if (string.IsNullOrEmpty(Command.Sql))
             return false;
 

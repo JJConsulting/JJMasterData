@@ -142,7 +142,7 @@ internal class ActionsScripts
         {
             UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
             SqlCommandAction => GetCommandScript(userCreatedAction, actionContext, actionSource),
-            ScriptAction jsAction => ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData, false),
+            ScriptAction jsAction => HttpUtility.HtmlAttributeEncode(ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData) ?? string.Empty),
             InternalAction internalAction => await GetInternalUrlScriptAsync(internalAction, formStateData.FormValues),
             _ => string.Empty
         };
