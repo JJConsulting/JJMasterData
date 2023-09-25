@@ -21,13 +21,12 @@
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <label class="@BootstrapHelper.Label">@StringLocalizer["Name"]</label>
         @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
-
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <label for="icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
-        <a href="javascript: void(0);" 
+        <a href="javascript: void(0);"
            @BootstrapHelper.GetDataToggle("tooltip")
-           title="Search Icon" onclick="iconsModal.showUrl({url:'@Url.Action("Index", "Icons", new {inputId = "icon"})'},'@StringLocalizer["Icons"]');" 
+           title="Search Icon" onclick="iconsModal.showUrl({url:'@Url.Action("Index", "Icons", new { inputId = "icon" })'},'@StringLocalizer["Icons"]');"
            style="text-decoration:none">
             <span class="fa fa-search "></span>
         </a>
@@ -36,7 +35,7 @@
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         <label class="@BootstrapHelper.Label">@StringLocalizer["Text"]</label>
         @Html.TextBoxFor(model => model.Text, new { @class = "form-control" })
-        <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName" />
+        <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         <label class="@BootstrapHelper.Label " for="txtName">@StringLocalizer["Tooltip"]</label>

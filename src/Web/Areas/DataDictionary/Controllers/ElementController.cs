@@ -63,17 +63,26 @@ public class ElementController : DataDictionaryController
 
     public async Task<IActionResult> Export()
     {
-        var formView =  _elementService.GetFormView();
+        var formView = _elementService.GetFormView();
         var selectedRows = formView.GridView.GetSelectedGridValues();
 
-        if(selectedRows.Count == 1)
+        if (selectedRows.Count == 1)
         {
-            var jsonBytes =await  _elementService.ExportSingleRowAsync(selectedRows[0]);
-            return File(jsonBytes, "application/json", $"{selectedRows[0]["name"]}.json");
+            var jsonBytes = await _elementService.ExportSingleRowAsync(selectedRows[0]);
+            var jsonFileName = $"{selectedRows[0]["name"]}.json";
+
+            Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{jsonFileName}\"");
+            
+            return File(jsonBytes, "application/octet-stream");
         }
 
         var zipBytes = await _elementService.ExportMultipleRowsAsync(selectedRows);
-        return File(zipBytes, "application/zip", $"FormElements-{DateTime.Now}.zip");
+        var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+        var zipFileName = $"DataDictionaryExportation_{timestamp}.zip";
+
+        Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{zipFileName}\"");
+        
+        return File(zipBytes, "application/octet-stream");
     }
 
     public async Task<IActionResult> Import()

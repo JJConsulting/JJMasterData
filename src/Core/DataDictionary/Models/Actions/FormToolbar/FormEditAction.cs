@@ -12,7 +12,7 @@ public class FormEditAction : FormToolbarAction
     public FormEditAction()
     {
         Name = ActionName;
-        VisibleExpression = "val:1";
+        VisibleExpression = "val:0";
         Icon = IconType.Pencil;
         ShowAsButton = true;
         EnableExpression = "val:1";

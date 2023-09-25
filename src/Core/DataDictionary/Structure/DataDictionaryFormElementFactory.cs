@@ -3,6 +3,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Actions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
@@ -147,7 +148,7 @@ public class DataDictionaryFormElementFactory
             Order = 10,
             CssClass = BootstrapHelper.PullRight,
             OnClientClick =
-                $"DataDictionaryUtils.exportElement('{_options.DataDictionaryTableName}', '{UrlHelper.GetUrl("Export", "Element", "DataDictionary")}', '{StringLocalizer["Select one or more dictionaries"]}');"
+                $"DataDictionaryUtils.exportElement('{ComponentNameGenerator.Create(_options.DataDictionaryTableName)}', '{UrlHelper.GetUrl("Export", "Element", "DataDictionary")}', '{StringLocalizer["Select one or more dictionaries"]}');"
         };
         formElement.Options.GridToolbarActions.Add(btnExport);
 

@@ -120,7 +120,7 @@ public class ActionButtonFactory
             case ConfigAction:
                 button.OnClientClick = BootstrapHelper.GetModalScript($"config-modal-{actionContext.ParentComponentName}");
                 break;
-            case DeleteSelectedRowsAction or LogAction:
+            case DeleteSelectedRowsAction or AuditLogGridToolbarAction:
                 button.OnClientClick =
                     ActionsScripts.GetFormActionScript(toolbarAction, actionContext, ActionSource.GridToolbar);
                 break;
@@ -197,6 +197,9 @@ public class ActionButtonFactory
                     break;
                 case CancelAction:
                     button.OnClientClick = formView.Scripts.GetSetPanelStateScript(PageState.View);
+                    break;
+                case AuditLogFormToolbarAction:
+                    button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.FormToolbar);
                     break;
                 case SaveAction saveAction:
                     if (saveAction.EnterKeyBehavior == FormEnterKey.Submit)

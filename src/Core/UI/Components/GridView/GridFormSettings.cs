@@ -13,12 +13,12 @@ internal class GridFormSettings
     private readonly IHttpContext _currentContext;
     private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
 
-    private const string TableTotalPerPage = "table_regperpage";
-    private const string TableTotalPaginationButtons = "table_totalpagebuttons";
-    private const string TableBorder = "table_border";
-    private const string TableRowsStriped = "table_rowstriped";
-    private const string TableRowHover = "table_rowhover";
-    private const string TableIsHeaderFixed = "table_headerfixed";
+    private const string TableTotalPerPage = "grid-view-table-regperpage";
+    private const string TableTotalPaginationButtons = "grid-view-table-totalpagebuttons";
+    private const string TableBorder = "grid-view-table-border";
+    private const string TableRowsStriped = "grid-view-table-rowstriped";
+    private const string TableRowHover = "grid-view-table-rowhover";
+    private const string TableIsHeaderFixed = "grid-view-table-header-fixed";
 
     public GridFormSettings(IHttpContext currentContext, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
@@ -29,17 +29,17 @@ internal class GridFormSettings
     public GridSettings LoadFromForm()
     {
         var gridSettings = new GridSettings();
-        string tableRegPerPage = _currentContext.Request[TableTotalPerPage];
-        string tableTotalPageButtons = _currentContext.Request[TableTotalPaginationButtons];
-        string tableBorder = _currentContext.Request[TableBorder];
-        string tableRowsStriped = _currentContext.Request[TableRowsStriped];
-        string tableRowHover = _currentContext.Request[TableRowHover];
-        string tableIsHeaderFixed = _currentContext.Request[TableIsHeaderFixed];
+        var tableRegPerPage = _currentContext.Request[TableTotalPerPage];
+        var tableTotalPageButtons = _currentContext.Request[TableTotalPaginationButtons];
+        var tableBorder = _currentContext.Request[TableBorder];
+        var tableRowsStriped = _currentContext.Request[TableRowsStriped];
+        var tableRowHover = _currentContext.Request[TableRowHover];
+        var tableIsHeaderFixed = _currentContext.Request[TableIsHeaderFixed];
 
-        if (int.TryParse(tableRegPerPage, out int totalPerPage))
+        if (int.TryParse(tableRegPerPage, out var totalPerPage))
             gridSettings.RecordsPerPage = totalPerPage;
 
-        if (int.TryParse(tableTotalPageButtons, out int totalPaggingButtons))
+        if (int.TryParse(tableTotalPageButtons, out var totalPaggingButtons))
             gridSettings.TotalPaginationButtons = totalPaggingButtons;
 
         gridSettings.ShowBorder = "1".Equals(tableBorder);

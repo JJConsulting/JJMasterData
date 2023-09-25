@@ -1,83 +1,55 @@
 ﻿class DataDictionaryUtils {
-    static deleteAction(actionName: string, url: string, questionStr: string): void {
-        let confirmed = confirm(questionStr);
+    static deleteAction(actionName: string, url: string, confirmationMessage: string): void {
+        let confirmed = confirm(confirmationMessage);
         if (confirmed == true) {
-            $.ajax({
-                type: "POST",
-                url: url,
-                success: function (response) {
-                    if (response.success) {
-                        $("#" + actionName).remove();
+            fetch(url, {
+                method: "POST",
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(actionName).remove();
                     }
-                },
-                error: function (xhr, status, error) {
-                    SpinnerOverlay.hide();
-                    if (xhr.responseText != "") {
-                        var err = JSON.parse(xhr.responseText);
-                        messageBox.show("JJMasterData", err.message, 4);
-                    } else {
-                        console.log(xhr);
-                    }
-                }
-            });
+                })
         }
     }
 
-    static sortAction(context: string, url: string, errorStr: string): void {
+    static sortAction(context: string, url: string, errorMessage: string): void {
         $("#sortable-" + context).sortable({
             update: function () {
-                var order = $(this).sortable('toArray');
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: { orderFields: order, context: context },
-                    success: function (response) {
-                        if (!response.success) {
-                            messageBox.show("JJMasterData", errorStr, 4);
+                const order = $(this).sortable('toArray');
+                const formData = new FormData();
+                formData.append('fieldsOrder', order);
+                formData.append('context', context);
+                fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        if (!data.success) {
+                            messageBox.show('JJMasterData', errorMessage, 4);
                         }
-                    },
-                    error: function (xhr, status, error) {
-                        SpinnerOverlay.hide();
-                        if (xhr.responseText != "") {
-                            var err = JSON.parse(xhr.responseText);
-                            if (err.status == 401) {
-                                document.forms[0].submit();
-                            } else {
-                                messageBox.show("JJMasterData", err.message, 4);
-                            }
-                        } else {
-                            messageBox.show("JJMasterData", errorStr, 4);
-                        }
-                    }
-                });
+                    });
             }
         }).disableSelection();
     }
 
-    static setDisableAction(isDisable: boolean, url: string, errorStr: string): void {
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: { value: isDisable },
-            success: function (response) {
-                if (!response.success) {
-                    messageBox.show("JJMasterData", errorStr, 4);
+    static toggleActionEnabled(visibility: boolean, url: string, errorMessage: string): void {
+        const formData = new FormData();
+        formData.append('visibility', visibility.toString());
+        fetch(url, {
+            method: "POST",
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    messageBox.show("JJMasterData", errorMessage, 4);
                 }
-            },
-            error: function (xhr, status, error) {
-                SpinnerOverlay.hide();
-                if (xhr.responseText != "") {
-                    var err = JSON.parse(xhr.responseText);
-                    if (err.status == 401) {
-                        document.forms[0].submit();
-                    } else {
-                        messageBox.show("JJMasterData", err.message, 4);
-                    }
-                } else {
-                    messageBox.show("JJMasterData", errorStr, 4);
-                }
-            }
-        });
+            })
     }
 
     static refreshActionList(): void {
@@ -87,27 +59,34 @@
 
     static postAction(url: string): void {
         SpinnerOverlay.show();
-        $("form:first").attr("action", url).submit();
+        window.parent.document.forms[0].requestSubmit();
     }
 
-    static exportElement(id: string, url: string, validStr: string): boolean {
-        var values = $("#grid-view-selected-rows-" + id).val();
-        if (values == "") {
-            messageBox.show("JJMasterData", validStr, 3);
+    static exportElement(id, url, validationMessage) {
+        const values = document.querySelector<HTMLInputElement>('#grid-view-selected-rows-' + id).value;
+        
+        if (values === "") {
+            messageBox.show("JJMasterData", validationMessage, 3);
             return false;
         }
-
-        var form = $("form:first");
-        var originAction = $("form:first").attr('action');
-
-        form.attr('action', url);
-        form.submit();
-
-        setTimeout(function () {
-            form.attr('action', originAction);
-            SpinnerOverlay.hide();
-        }, 2000);
-
-        return true;
+        
+        SpinnerOverlay.show();
+        fetch(url, {
+            method:"POST",
+            body: new FormData(document.querySelector("form"))
+        }).then(async response=>{
+            const blob = await response.blob()
+            const contentDisposition = response.headers.get('Content-Disposition');
+            const fileNameMatch = /filename="(.*)"/.exec(contentDisposition);
+            const fileName = fileNameMatch[1];
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            SpinnerOverlay.hide()
+        });
     }
+
 }

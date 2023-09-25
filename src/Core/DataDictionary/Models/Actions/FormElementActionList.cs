@@ -132,4 +132,12 @@ public abstract class FormElementActionList : IList<BasicAction>
         if (string.IsNullOrEmpty(action.Name))
             throw new ArgumentException("Property name action is not valid");
     }
+    
+    protected void EnsureActionExists<T>() where T : BasicAction, new()
+    {
+        if (List.OfType<T>().FirstOrDefault() == null)
+        {
+            List.Add(new T());
+        }
+    }
 }

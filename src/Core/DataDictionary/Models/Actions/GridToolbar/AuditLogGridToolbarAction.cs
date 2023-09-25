@@ -1,9 +1,9 @@
 ﻿namespace JJMasterData.Core.DataDictionary.Actions;
 
-public class LogAction : GridToolbarAction
+public class AuditLogGridToolbarAction : GridToolbarAction
 {
-    public const string ActionName = "log";
-    public LogAction()
+    public const string ActionName = "audit-log-grid-toolbar";
+    public AuditLogGridToolbarAction()
     {
         Name = ActionName;
         Tooltip = "Audit Log";

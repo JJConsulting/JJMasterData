@@ -14,7 +14,7 @@ public class FormToolbarActionList : FormElementActionList
     public CancelAction CancelAction => List.First(a => a is CancelAction) as CancelAction;
     
     public FormEditAction FormEditAction => List.First(a => a is FormEditAction) as FormEditAction;
-
+    public AuditLogFormToolbarAction AuditLogFormToolbarAction => List.First(a => a is AuditLogFormToolbarAction) as AuditLogFormToolbarAction;
     public FormToolbarActionList() 
     {
         List.Add(new SaveAction());
@@ -31,13 +31,6 @@ public class FormToolbarActionList : FormElementActionList
         EnsureActionExists<CancelAction>();
         EnsureActionExists<BackAction>();
         EnsureActionExists<FormEditAction>();
-    }
-
-    private void EnsureActionExists<T>() where T : BasicAction, new()
-    {
-        if (List.OfType<T>().FirstOrDefault() == null)
-        {
-            List.Add(new T());
-        }
+        EnsureActionExists<AuditLogFormToolbarAction>();
     }
 }

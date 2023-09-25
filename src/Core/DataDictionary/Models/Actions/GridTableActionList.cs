@@ -10,6 +10,7 @@ public class GridTableActionList : FormElementActionList
     public DeleteAction DeleteAction => List.First(a => a is DeleteAction) as DeleteAction;
     public EditAction EditAction => List.First(a => a is EditAction) as EditAction;
     public ViewAction ViewAction => List.First(a => a is ViewAction) as ViewAction;
+    
     public GridTableActionList()
     {
         List.Add(new DeleteAction());
@@ -21,6 +22,10 @@ public class GridTableActionList : FormElementActionList
     private GridTableActionList(List<BasicAction> list)
     {
         List = list;
+        
+        EnsureActionExists<DeleteAction>();
+        EnsureActionExists<EditAction>();
+        EnsureActionExists<ViewAction>();
     }
 
     public void Add(UserCreatedAction item)

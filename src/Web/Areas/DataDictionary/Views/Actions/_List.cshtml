@@ -14,31 +14,43 @@
 @if (Model.Actions?.Count > 1)
 {
     sortableClass = "jjsortable";
-    <script language="javascript" type="text/javascript">
-        $(document).ready(function () {
+    <script lang="javascript" type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
             DataDictionaryUtils.sortAction('@Model.Context.ToString()', '@GetUrlSort()','@StringLocalizer["Unexpected error"]');
         });
     </script>
 }
 
-<div class="row mt-3">
+<div class="row mt-3 mb-3">
     <div class="col-sm-12">
         <div class="btn-group">
             <button type="button" class="@BootstrapHelper.DefaultButton dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
                 <span class="fa fa-plus-circle"></span>&nbsp;@StringLocalizer["New Action"]&nbsp; <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item dropdown-link" href="javascript: void(0);" onclick="@GetAddScript(typeof(UrlRedirectAction))">@StringLocalizer["Url Redirect"]</a></li>
-                <li><a class="dropdown-item dropdown-link" href="javascript: void(0);" onclick="@GetAddScript(typeof(InternalAction))">@StringLocalizer["Internal Redirect"]</a></li>
-                <li><a class="dropdown-item dropdown-link" href="javascript: void(0);" onclick="@GetAddScript(typeof(SqlCommandAction))">@StringLocalizer["Sql Command"]</a></li>
-                <li><a class="dropdown-item dropdown-link" href="javascript: void(0);" onclick="@GetAddScript(typeof(ScriptAction))">@StringLocalizer["JavaScript Script"]</a></li>
+                <li>
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);" 
+                       onclick="@GetAddScript(typeof(UrlRedirectAction))">@StringLocalizer["Url Redirect"]</a>
+                </li>
+                <li>
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);" 
+                       onclick="@GetAddScript(typeof(InternalAction))">@StringLocalizer["Internal Redirect"]</a>
+                </li>
+                <li>
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);" 
+                       onclick="@GetAddScript(typeof(SqlCommandAction))">@StringLocalizer["Sql Command"]</a>
+                </li>
+                <li>
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                       onclick="@GetAddScript(typeof(ScriptAction))">@StringLocalizer["JavaScript Script"]</a>
+                </li>
             </ul>
         </div>
     </div>
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <ul class="list-group @sortableClass" id="sortable_@Model.Context.ToString()">
+        <ul class="list-group @sortableClass" id="sortable-@Model.Context.ToString()">
             @foreach (var action in Model.Actions!)
             {
                 <li class="list-group-item" id="@action.Name">
@@ -67,7 +79,7 @@
                                        data-size="small"
                                        data-on="On"
                                        data-off="Off"
-                                       onchange="DataDictionaryUtils.setDisableAction($(this).prop('checked'),'@GetUrlDisable(action)','@StringLocalizer["Unexpected error"]');">
+                                       onchange="DataDictionaryUtils.toggleActionEnabled($(this).prop('checked'),'@GetUrlDisable(action)','@StringLocalizer["Unexpected error"]');">
                             }
                         </div>
                     </div>
@@ -133,4 +145,5 @@
         return Url.Action("Sort", "Actions",
             new { elementName = Model.ElementName, fieldName = Model.FieldName });
     }
+
 }

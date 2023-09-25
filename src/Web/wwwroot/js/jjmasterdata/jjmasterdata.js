@@ -221,86 +221,53 @@ class CollapsePanelListener {
     }
 }
 class DataDictionaryUtils {
-    static deleteAction(actionName, url, questionStr) {
-        let confirmed = confirm(questionStr);
+    static deleteAction(actionName, url, confirmationMessage) {
+        let confirmed = confirm(confirmationMessage);
         if (confirmed == true) {
-            $.ajax({
-                type: "POST",
-                url: url,
-                success: function (response) {
-                    if (response.success) {
-                        $("#" + actionName).remove();
-                    }
-                },
-                error: function (xhr, status, error) {
-                    SpinnerOverlay.hide();
-                    if (xhr.responseText != "") {
-                        var err = JSON.parse(xhr.responseText);
-                        messageBox.show("JJMasterData", err.message, 4);
-                    }
-                    else {
-                        console.log(xhr);
-                    }
+            fetch(url, {
+                method: "POST",
+            })
+                .then(response => response.json())
+                .then(data => {
+                if (data.success) {
+                    document.getElementById(actionName).remove();
                 }
             });
         }
     }
-    static sortAction(context, url, errorStr) {
+    static sortAction(context, url, errorMessage) {
         $("#sortable-" + context).sortable({
             update: function () {
-                var order = $(this).sortable('toArray');
-                $.ajax({
-                    type: "POST",
-                    url: url,
-                    data: { orderFields: order, context: context },
-                    success: function (response) {
-                        if (!response.success) {
-                            messageBox.show("JJMasterData", errorStr, 4);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        SpinnerOverlay.hide();
-                        if (xhr.responseText != "") {
-                            var err = JSON.parse(xhr.responseText);
-                            if (err.status == 401) {
-                                document.forms[0].submit();
-                            }
-                            else {
-                                messageBox.show("JJMasterData", err.message, 4);
-                            }
-                        }
-                        else {
-                            messageBox.show("JJMasterData", errorStr, 4);
-                        }
+                const order = $(this).sortable('toArray');
+                const formData = new FormData();
+                formData.append('fieldsOrder', order);
+                formData.append('context', context);
+                fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(function (response) {
+                    return response.json();
+                })
+                    .then(function (data) {
+                    if (!data.success) {
+                        messageBox.show('JJMasterData', errorMessage, 4);
                     }
                 });
             }
         }).disableSelection();
     }
-    static setDisableAction(isDisable, url, errorStr) {
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: { value: isDisable },
-            success: function (response) {
-                if (!response.success) {
-                    messageBox.show("JJMasterData", errorStr, 4);
-                }
-            },
-            error: function (xhr, status, error) {
-                SpinnerOverlay.hide();
-                if (xhr.responseText != "") {
-                    var err = JSON.parse(xhr.responseText);
-                    if (err.status == 401) {
-                        document.forms[0].submit();
-                    }
-                    else {
-                        messageBox.show("JJMasterData", err.message, 4);
-                    }
-                }
-                else {
-                    messageBox.show("JJMasterData", errorStr, 4);
-                }
+    static toggleActionEnabled(visibility, url, errorMessage) {
+        const formData = new FormData();
+        formData.append('visibility', visibility.toString());
+        fetch(url, {
+            method: "POST",
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+            if (!data.success) {
+                messageBox.show("JJMasterData", errorMessage, 4);
             }
         });
     }
@@ -310,23 +277,31 @@ class DataDictionaryUtils {
     }
     static postAction(url) {
         SpinnerOverlay.show();
-        $("form:first").attr("action", url).submit();
+        window.parent.document.forms[0].requestSubmit();
     }
-    static exportElement(id, url, validStr) {
-        var values = $("#grid-view-selected-rows-" + id).val();
-        if (values == "") {
-            messageBox.show("JJMasterData", validStr, 3);
+    static exportElement(id, url, validationMessage) {
+        const values = document.querySelector('#grid-view-selected-rows-' + id).value;
+        if (values === "") {
+            messageBox.show("JJMasterData", validationMessage, 3);
             return false;
         }
-        var form = $("form:first");
-        var originAction = $("form:first").attr('action');
-        form.attr('action', url);
-        form.submit();
-        setTimeout(function () {
-            form.attr('action', originAction);
+        SpinnerOverlay.show();
+        fetch(url, {
+            method: "POST",
+            body: new FormData(document.querySelector("form"))
+        }).then((response) => __awaiter(this, void 0, void 0, function* () {
+            const blob = yield response.blob();
+            const contentDisposition = response.headers.get('Content-Disposition');
+            const fileNameMatch = /filename="(.*)"/.exec(contentDisposition);
+            const fileName = fileNameMatch[1];
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
             SpinnerOverlay.hide();
-        }, 2000);
-        return true;
+        }));
     }
 }
 class DataExportationHelper {

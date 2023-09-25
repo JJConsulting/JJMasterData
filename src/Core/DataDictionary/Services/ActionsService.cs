@@ -57,7 +57,7 @@ public class ActionsService : BaseService
             }
             case ActionSource.FormToolbar:
                 var formToolbarAction = formElement.Options.FormToolbarActions.Get(originalName);
-                formElement.Options.GridToolbarActions.Remove(formToolbarAction);
+                formElement.Options.FormToolbarActions.Remove(formToolbarAction);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(context), context, null);
@@ -210,7 +210,7 @@ public class ActionsService : BaseService
         return true;
     }
 
-    public async Task<bool> EnableDisable(string elementName, string actionName, ActionSource actionContext, bool visible)
+    public async Task<bool> EnableDisable(string elementName, string actionName, ActionSource actionContext, bool visibility)
     {
         var dicParser = await DataDictionaryRepository.GetMetadataAsync(elementName);
         BasicAction action = actionContext switch
@@ -221,7 +221,7 @@ public class ActionsService : BaseService
             _ => null
         };
 
-        action!.SetVisible(visible);
+        action!.SetVisible(visibility);
         await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
 
         return true;

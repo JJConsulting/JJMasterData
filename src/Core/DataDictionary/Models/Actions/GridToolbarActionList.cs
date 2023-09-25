@@ -14,15 +14,8 @@ public class GridToolbarActionList : FormElementActionList
     public ExportAction ExportAction => List.FirstOrDefault(a =>a is ExportAction) as ExportAction;
     public ConfigAction ConfigAction => List.FirstOrDefault(a =>a is ConfigAction) as ConfigAction;
     public SortAction SortAction => List.FirstOrDefault(a => a is SortAction) as SortAction;
-    public LogAction LogAction => List.FirstOrDefault(a => a is LogAction) as LogAction;
+    public AuditLogGridToolbarAction AuditLogGridToolbarAction => List.FirstOrDefault(a => a is AuditLogGridToolbarAction) as AuditLogGridToolbarAction;
 
-    
-    [JsonConstructor]
-    private GridToolbarActionList(List<BasicAction> list)
-    {
-        List = list;
-    }
-    
     public GridToolbarActionList()
     {
         List.Add(new InsertAction());
@@ -33,7 +26,22 @@ public class GridToolbarActionList : FormElementActionList
         List.Add(new ExportAction());
         List.Add(new ConfigAction());
         List.Add(new SortAction());
-        List.Add(new LogAction());
+        List.Add(new AuditLogGridToolbarAction());
     }
-
+    
+    [JsonConstructor]
+    private GridToolbarActionList(List<BasicAction> list)
+    {
+        List = list;
+        
+        EnsureActionExists<InsertAction>();
+        EnsureActionExists<LegendAction>();
+        EnsureActionExists<RefreshAction>();
+        EnsureActionExists<FilterAction>();
+        EnsureActionExists<ImportAction>();
+        EnsureActionExists<ExportAction>();
+        EnsureActionExists<ConfigAction>();
+        EnsureActionExists<SortAction>();
+        EnsureActionExists<AuditLogGridToolbarAction>();
+    }
 }

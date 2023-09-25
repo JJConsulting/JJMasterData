@@ -98,6 +98,13 @@ public class ActionsController : DataDictionaryController
             nameof(SqlCommandAction) => new SqlCommandAction(),
             _ => throw new JJMasterDataException("Invalid Action")
         };
+        
+        var iconSearchBoxResult = await GetIconSearchBoxResult(action);
+
+        if (iconSearchBoxResult.IsActionResult())
+            return iconSearchBoxResult.ToActionResult();
+
+        ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
 
         await PopulateViewBag(elementName, action, context, fieldName);
         return View(action.GetType().Name, action);
@@ -136,16 +143,16 @@ public class ActionsController : DataDictionaryController
 
 
     [HttpPost]
-    public async Task<ActionResult> Sort(string elementName, string[] orderFields, ActionSource context, string? fieldName)
+    public async Task<ActionResult> Sort(string elementName, string fieldsOrder, ActionSource context, string? fieldName)
     {
-        await _actionsService.SortActionsAsync(elementName, orderFields, context, fieldName);
+        await _actionsService.SortActionsAsync(elementName, fieldsOrder.Split(","), context, fieldName);
         return Json(new { success = true });
     }
 
     [HttpPost]
-    public async Task<ActionResult> EnableDisable(string elementName, string actionName, ActionSource context, bool value)
+    public async Task<ActionResult> EnableDisable(string elementName, string actionName, ActionSource context, bool visibility)
     {
-        await _actionsService.EnableDisable(elementName, actionName, context, value);
+        await _actionsService.EnableDisable(elementName, actionName, context, visibility);
         return Json(new { success = true });
     }
 
@@ -236,9 +243,15 @@ public class ActionsController : DataDictionaryController
     
 
     [HttpPost]
-    public async Task<IActionResult> LogAction(string elementName, LogAction logAction, ActionSource context, string? originalName, bool isActionSave)
+    public async Task<IActionResult> AuditLogGridToolbarAction(string elementName, AuditLogGridToolbarAction auditLogAction, ActionSource context, string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName,logAction,context,isActionSave,originalName);
+        return await EditActionResult(elementName,auditLogAction,context,isActionSave,originalName);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> AuditLogFormToolbarAction(string elementName, AuditLogFormToolbarAction auditLogAction, ActionSource context, string? originalName, bool isActionSave)
+    {
+        return await EditActionResult(elementName,auditLogAction,context,isActionSave,originalName);
     }
 
     [HttpPost]

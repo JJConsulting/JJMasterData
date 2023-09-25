@@ -421,7 +421,7 @@ public class FormService
     private async Task<bool> IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string, object> formValues)
     {
         var formState = new FormStateData(formValues, pageState);
-        var auditLogExpression = formElement.Options.GridToolbarActions.LogAction.EnableExpression;
+        var auditLogExpression = formElement.Options.GridToolbarActions.AuditLogGridToolbarAction.EnableExpression;
         var isEnabled = await ExpressionsService.GetBoolValueAsync(auditLogExpression, formState);
         return isEnabled;
     }
