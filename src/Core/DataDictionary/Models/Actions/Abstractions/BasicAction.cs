@@ -123,7 +123,7 @@ public abstract class BasicAction
     public BasicAction()
     {
         SetVisible(true);
-        SetEnable(true);
+        SetEnabled(true);
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public abstract class BasicAction
     /// Set if the action is enabled.
     /// </summary>
     /// <param name="value"></param>
-    public void SetEnable(bool value)
+    public void SetEnabled(bool value)
     {
         EnableExpression = value ? "val:1" : "val:0";
     }

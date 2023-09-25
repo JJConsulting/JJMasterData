@@ -1,0 +1,28 @@
+@using JJMasterData.Core.Web
+@model JJMasterData.Core.DataDictionary.Actions.FormToolbarAction
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IOptions<JJMasterDataWebOptions> Options
+
+@{
+    Layout = Options.Value.PopUpLayoutPath;
+}
+
+@using (Html.BeginForm("FormEditAction", "Actions",
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
+        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
+            <partial name="_NavGeneral" model="Model"/>
+        </div>
+        <div id="div-advanced" class="tab-pane fade">
+            <partial name="_NavAdvanced" model="Model"/>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}

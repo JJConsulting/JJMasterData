@@ -2,6 +2,9 @@
 
 namespace JJMasterData.Core.DataDictionary.Actions;
 
+/// <summary>
+/// Action to save a DataPanel at a FormView.
+/// </summary>
 public class SaveAction : FormToolbarAction
 {
     public const string ActionName = "save";

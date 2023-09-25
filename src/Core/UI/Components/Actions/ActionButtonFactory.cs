@@ -180,6 +180,7 @@ public class ActionButtonFactory
         {
             switch (action)
             {
+                case CancelAction when !formView.ContainsRelationships():
                 case BackAction:
                     if (actionContext.IsModal)
                     {
@@ -187,7 +188,7 @@ public class ActionButtonFactory
                     }
                     else
                     {
-                        button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
+                         button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
                     }
                     break;
 

@@ -227,6 +227,13 @@ public class ActionsController : DataDictionaryController
     {
         return await EditActionResult(elementName,cancelAction,context,isActionSave,originalName);
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> FormEditAction(string elementName, FormEditAction cancelAction, ActionSource context, string? originalName, bool isActionSave)
+    {
+        return await EditActionResult(elementName,cancelAction,context,isActionSave,originalName);
+    }
+    
 
     [HttpPost]
     public async Task<IActionResult> LogAction(string elementName, LogAction logAction, ActionSource context, string? originalName, bool isActionSave)

@@ -11,14 +11,14 @@ namespace JJMasterData.Core.DataDictionary.Actions;
 
 public abstract class FormElementActionList : IList<BasicAction>
 {
-    protected IList<BasicAction> List { get; set; }
+    protected List<BasicAction> List { get; init; }
     protected FormElementActionList()
     {
         List = new List<BasicAction>();
     }
 
     [JsonConstructor]
-    protected FormElementActionList(IList<BasicAction> list)
+    protected FormElementActionList(List<BasicAction> list)
     {
         List = list;
     }
@@ -38,7 +38,7 @@ public abstract class FormElementActionList : IList<BasicAction>
         return List.First(a => a.Name == actionName);
     }
 
-    public virtual List<BasicAction> GetAllSorted()
+    public List<BasicAction> GetAllSorted()
     {
         return List.OrderBy(x => x.Order).ToList();
     }
@@ -95,7 +95,7 @@ public abstract class FormElementActionList : IList<BasicAction>
     }
 
     public int Count => List.Count;
-    public bool IsReadOnly => List.IsReadOnly;
+    public bool IsReadOnly => (List as IList).IsReadOnly;
 
     public int IndexOf(BasicAction item)
     {
@@ -111,6 +111,11 @@ public abstract class FormElementActionList : IList<BasicAction>
     public void RemoveAt(int index)
     {
         List.RemoveAt(index);
+    }
+    
+    public void RemoveAll(Predicate<BasicAction> match)
+    {
+        List.RemoveAll(match);
     }
 
     public BasicAction this[int index]

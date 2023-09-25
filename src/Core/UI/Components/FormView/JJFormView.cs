@@ -215,7 +215,7 @@ public class JJFormView : AsyncComponent
     /// <summary>
     /// If inside a relationship, PageState of the parent DataPanel.
     /// </summary>
-    private PageState PanelState
+    internal PageState PanelState
     {
         get
         {
@@ -484,7 +484,7 @@ public class JJFormView : AsyncComponent
 
     }
 
-    private bool ContainsRelationships()
+    internal bool ContainsRelationships()
     {
         return CurrentContext.Request.Form[$"form-view-panel-state-{Name}"] != null;
     }
@@ -516,6 +516,12 @@ public class JJFormView : AsyncComponent
         return await GridView.GetResultAsync();
     }
 
+    
+    private async Task<ComponentResult> GetBackActionResult()
+    {
+        PageState = PageState.List;
+        return await GridView.GetResultAsync();
+    }
     private async Task<ComponentResult> GetFormActionResult()
     {
         var currentAction = CurrentActionMap?.GetCurrentAction(FormElement);
@@ -545,6 +551,9 @@ public class JJFormView : AsyncComponent
                 break;
             case SaveAction:
                 result = await GetSaveActionResult();
+                break;
+            case BackAction:
+                result = await GetCancelActionResult();
                 break;
             case CancelAction:
                 result = await GetCancelActionResult();
@@ -972,7 +981,27 @@ public class JJFormView : AsyncComponent
             html.AppendComponent(GridView.GetTitle(values));
 
         var layout = new FormViewRelationshipLayout(this);
-
+        
+        var formToolbarActions = FormElement.Options.FormToolbarActions;
+        
+        if (PageState is PageState.Update)
+        {
+            if (PanelState is PageState.View)
+            {
+                formToolbarActions.RemoveAll(a => a is SaveAction or CancelAction);
+            }
+            else
+            {
+                formToolbarActions.FormEditAction.SetVisible(false);
+            }
+        }
+        else
+        {
+            formToolbarActions.FormEditAction.SetVisible(false);
+        }
+        
+        FormElement.Options.FormToolbarActions.BackAction.SetVisible(true);
+        
         var topActions = GetTopToolbarActions(FormElement);
 
         html.AppendComponent(await GetFormToolbarAsync(topActions));
@@ -989,6 +1018,12 @@ public class JJFormView : AsyncComponent
 
         html.AppendComponent(await GetFormToolbarAsync(bottomActions));
 
+        if (ComponentContext is ComponentContext.Modal)
+        {
+            html.AppendScript($"document.getElementById('form-view-page-state-{Name}').value={(int)PageState}");
+            return new ContentComponentResult(html);
+        }
+        
         return new RenderedComponentResult(html);
     }
 
@@ -1051,22 +1086,9 @@ public class JJFormView : AsyncComponent
         
         var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
         
-        var toolbarActions = GetPanelToolbarActions(panel.FormElement);
-
-        if (PageState is PageState.Update)
-        {
-            if (PanelState is PageState.View)
-            {
-                 toolbarActions.Add(new FormEditAction());
-                 toolbarActions.RemoveAll(a => a is SaveAction);
-            }
-            else
-            {
-                toolbarActions.Add(new CancelAction());
-            }
-        }
+        var panelToolbarActions = GetPanelToolbarActions(panel.FormElement);
         
-        var toolbar = await GetFormToolbarAsync(toolbarActions);
+        var toolbar = await GetFormToolbarAsync(panelToolbarActions);
         
         formHtml.Append(parentPanelHtml);
         

@@ -16,6 +16,13 @@ public class GridToolbarActionList : FormElementActionList
     public SortAction SortAction => List.FirstOrDefault(a => a is SortAction) as SortAction;
     public LogAction LogAction => List.FirstOrDefault(a => a is LogAction) as LogAction;
 
+    
+    [JsonConstructor]
+    private GridToolbarActionList(List<BasicAction> list)
+    {
+        List = list;
+    }
+    
     public GridToolbarActionList()
     {
         List.Add(new InsertAction());
@@ -29,9 +36,4 @@ public class GridToolbarActionList : FormElementActionList
         List.Add(new LogAction());
     }
 
-    [JsonConstructor]
-    private GridToolbarActionList(IList<BasicAction> list)
-    {
-        List = list;
-    }
 }

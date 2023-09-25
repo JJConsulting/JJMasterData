@@ -3,6 +3,9 @@
 
 namespace JJMasterData.Core.DataDictionary.Actions;
 
+/// <summary>
+/// Action to return to the Grid at PageState.View.
+/// </summary>
 public class BackAction : FormToolbarAction
 {
     public const string ActionName = "back";
@@ -10,10 +13,10 @@ public class BackAction : FormToolbarAction
     public BackAction()
     {
         Name = ActionName;
-        VisibleExpression = "val:1";
+        VisibleExpression = "exp:{pagestate} = 'VIEW'";
         Icon = IconType.ArrowLeft;
         ShowAsButton = true;
-        Location = FormToolbarActionLocation.Panel;
+        Location = FormToolbarActionLocation.Bottom;
         Order = 0;
         Text = "Back";
     }

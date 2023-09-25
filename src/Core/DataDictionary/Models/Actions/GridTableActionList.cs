@@ -7,9 +7,9 @@ namespace JJMasterData.Core.DataDictionary.Actions;
 
 public class GridTableActionList : FormElementActionList
 {
-    public DeleteAction DeleteAction => List.First(a => a.Name == DeleteAction.ActionName) as DeleteAction;
-    public EditAction EditAction => List.First(a => a.Name == EditAction.ActionName) as EditAction;
-    public ViewAction ViewAction => List.First(a => a.Name == ViewAction.ActionName) as ViewAction;
+    public DeleteAction DeleteAction => List.First(a => a is DeleteAction) as DeleteAction;
+    public EditAction EditAction => List.First(a => a is EditAction) as EditAction;
+    public ViewAction ViewAction => List.First(a => a is ViewAction) as ViewAction;
     public GridTableActionList()
     {
         List.Add(new DeleteAction());
@@ -18,7 +18,7 @@ public class GridTableActionList : FormElementActionList
     }
     
     [JsonConstructor]
-    private GridTableActionList(IList<BasicAction> list)
+    private GridTableActionList(List<BasicAction> list)
     {
         List = list;
     }

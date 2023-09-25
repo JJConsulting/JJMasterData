@@ -3,6 +3,9 @@
 
 namespace JJMasterData.Core.DataDictionary.Actions;
 
+/// <summary>
+/// Action to cancel a DataPanel update at a FormView.
+/// </summary>
 public class CancelAction : FormToolbarAction
 {
     public const string ActionName = "cancel";
@@ -11,7 +14,7 @@ public class CancelAction : FormToolbarAction
     {
         Name = ActionName;
         Icon = IconType.Times;
-        VisibleExpression = "val:1";
+        VisibleExpression = "exp:{pagestate} in ('INSERT','UPDATE')";
         Order = 0;
         Location = FormToolbarActionLocation.Panel;
         ShowAsButton = true;
