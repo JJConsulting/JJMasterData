@@ -30,11 +30,13 @@ public class ActionButtonFactory
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private ActionsScripts ActionsScripts => _actionsScripts ??= new ActionsScripts(ExpressionsService,DataDictionaryRepository, UrlHelper, EncryptionService, StringLocalizer);
     
-    public ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFactory,
+    public ActionButtonFactory(
+        IComponentFactory<JJLinkButton> linkButtonFactory,
         ExpressionsService expressionsService,
         IDataDictionaryRepository dataDictionaryRepository, 
         JJMasterDataUrlHelper urlHelper, 
-        IEncryptionService encryptionService, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IEncryptionService encryptionService,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         LinkButtonFactory = linkButtonFactory;
         ExpressionsService = expressionsService;
@@ -49,7 +51,7 @@ public class ActionButtonFactory
         return LinkButtonFactory.Create();
     }
     
-    private JJLinkButton Create(BasicAction action, bool enabled, bool visible)
+    public JJLinkButton Create(BasicAction action, bool visible, bool enabled)
     {
         var button = LinkButtonFactory.Create();
         button.Tooltip = action.Tooltip;
@@ -71,7 +73,7 @@ public class ActionButtonFactory
     {
         var isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formStateData);
         var isEnabled = await ExpressionsService.GetBoolValueAsync(action.EnableExpression, formStateData);
-        return Create(action, isEnabled, isVisible);
+        return Create(action, isVisible, isEnabled);
     }
 
     public async Task<JJLinkButton> CreateGridTableButtonAsync(BasicAction action, JJGridView gridView, FormStateData formStateData)
@@ -82,7 +84,7 @@ public class ActionButtonFactory
         switch (action)
         {
             case UserCreatedAction userCreatedAction:
-                button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.GridTable);
+                button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.GridTable);
                 break;
             case GridTableAction gridTableAction:
 
@@ -108,7 +110,7 @@ public class ActionButtonFactory
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.GridToolbar);
+            button.OnClientClick =  ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.GridToolbar);
             return button;
         }
 
@@ -174,7 +176,7 @@ public class ActionButtonFactory
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.FormToolbar);
+            button.OnClientClick =  ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.FormToolbar);
         }
         else if (action is FormToolbarAction)
         {
@@ -227,7 +229,7 @@ public class ActionButtonFactory
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick = await ActionsScripts.GetUserActionScriptAsync(userCreatedAction, actionContext, ActionSource.Field);
+            button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.Field);
         }
 
         return button;

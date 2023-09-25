@@ -113,7 +113,6 @@ public abstract class BasicAction
     [JsonProperty("cssClass")]
     public string CssClass { get; set; }
 
-
     [JsonProperty("isCustomAction")] 
     public abstract bool IsUserCreated { get; }
 
@@ -144,7 +143,7 @@ public abstract class BasicAction
     }
 
     /// <summary>
-    /// Verifica se o controle é visivel, porém não aplica a expressao
+    /// Verify if the action is static toggled to be hidden.
     /// </summary>
     public bool IsVisible => !"val:0".Equals(VisibleExpression);
 

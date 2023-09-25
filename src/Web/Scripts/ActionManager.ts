@@ -60,6 +60,17 @@ class ActionManager {
         })
     }
 
+    private static executeInternalRedirect(url: string, modalSize: ModalSize, confirmationMessage: string) {
+        if (confirmationMessage) {
+            if (!confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+
+        defaultModal.showIframe(url, "", modalSize);
+    }
+    
+
     static executeActionData(actionData: ActionData){
         const {
             componentName,

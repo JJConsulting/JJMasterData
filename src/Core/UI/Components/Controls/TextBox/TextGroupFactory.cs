@@ -67,7 +67,6 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
         if (formStateData.PageState == PageState.Filter)
             textGroup.Actions = textGroup.Actions.Where(a => a.ShowInFilter).ToList();
         else
-            //TODO: make this synchronous passing if the action is visible and enabled;
             AddUserActions(formElement, field, context, textGroup).GetAwaiter().GetResult();
 
         return textGroup;

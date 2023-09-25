@@ -40,13 +40,10 @@ internal class ActionsScripts
     }
 
 
-    public async Task<string> GetInternalUrlScriptAsync(InternalAction action, IDictionary<string, object> formValues)
+    public string GetInternalUrlScript(InternalAction action, IDictionary<string, object> formValues)
     {
         var elementRedirect = action.ElementRedirect;
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(action.ElementRedirect.ElementNameRedirect);
-        string popUpTitle = formElement.Title;
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
-        string popup = "true";
         int popupSize = (int)elementRedirect.ModalSize;
 
         var @params = new StringBuilder();
@@ -74,7 +71,7 @@ internal class ActionsScripts
             });
 
         return
-            $"ActionManager.executeRedirectAction('{url}',{popup},'{popUpTitle}','{confirmationMessage}','{popupSize}');";
+            $"ActionManager.executeInternalRedirect('{url}','{popupSize}','{confirmationMessage}');";
     }
 
 
@@ -131,7 +128,7 @@ internal class ActionsScripts
     }
 
 
-    internal async Task<string> GetUserActionScriptAsync(
+    internal string GetUserActionScript(
         UserCreatedAction userCreatedAction,
         ActionContext actionContext,
         ActionSource actionSource)
@@ -143,7 +140,7 @@ internal class ActionsScripts
             UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
             SqlCommandAction => GetCommandScript(userCreatedAction, actionContext, actionSource),
             ScriptAction jsAction => HttpUtility.HtmlAttributeEncode(ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData) ?? string.Empty),
-            InternalAction internalAction => await GetInternalUrlScriptAsync(internalAction, formStateData.FormValues),
+            InternalAction internalAction => GetInternalUrlScript(internalAction, formStateData.FormValues),
             _ => string.Empty
         };
     }

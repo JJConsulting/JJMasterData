@@ -59,6 +59,14 @@ class ActionManager {
             }
         });
     }
+    static executeInternalRedirect(url, modalSize, confirmationMessage) {
+        if (confirmationMessage) {
+            if (!confirm(confirmationMessage)) {
+                return false;
+            }
+        }
+        defaultModal.showIframe(url, "", modalSize);
+    }
     static executeActionData(actionData) {
         const { componentName, actionMap, modalTitle, modalRouteContext, gridViewRouteContext, formViewRouteContext, isSubmit, confirmationMessage } = actionData;
         if (confirmationMessage) {
@@ -271,12 +279,7 @@ class DataDictionaryUtils {
             }
         });
     }
-    static refreshActionList() {
-        SpinnerOverlay.show();
-        window.parent.document.forms[0].requestSubmit();
-    }
     static postAction(url) {
-        SpinnerOverlay.show();
         window.parent.document.forms[0].requestSubmit();
     }
     static exportElement(id, url, validationMessage) {
@@ -1416,7 +1419,7 @@ class ModalBase {
 }
 class _Modal extends ModalBase {
     constructor() {
-        super(...arguments);
+        super();
         this.modalSizeCssClass = {
             Default: "jj-modal-default",
             ExtraLarge: "jj-modal-xl",
@@ -1424,6 +1427,13 @@ class _Modal extends ModalBase {
             Small: "jj-modal-sm",
             Fullscreen: "modal-fullscreen",
         };
+    }
+    get modalTitle() {
+        return this._modalTitle;
+    }
+    set modalTitle(value) {
+        this._modalTitle = value;
+        document.getElementById(`${this.modalId}-title`).innerText = value;
     }
     getBootstrapModal() {
         return bootstrap.Modal.getOrCreateInstance("#" + this.modalId);
@@ -1449,7 +1459,7 @@ class _Modal extends ModalBase {
       <div id="${this.modalId}-dialog" class="modal-dialog ${this.centered ? "modal-dialog-centered" : ""} modal-dialog-scrollable ${this.getModalCssClass()}" role="document">
         <div class="modal-content" >
           <div class="modal-header">
-            <h5 class="modal-title" id="${this.modalId}-label">${this.modalTitle}</h5>
+            <h5 class="modal-title" id="${this.modalId}-title">${this.modalTitle}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body"> </div>
@@ -1479,7 +1489,7 @@ class _Modal extends ModalBase {
         }
     }
     showIframe(url, title, size = null) {
-        this.modalTitle = title;
+        this._modalTitle = title;
         this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
@@ -1488,7 +1498,7 @@ class _Modal extends ModalBase {
     }
     showUrl(modalOptions, title, size = null) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.modalTitle = title;
+            this._modalTitle = title;
             this.modalSize = size !== null && size !== void 0 ? size : ModalSize.Default;
             this.createModalElement();
             let fetchUrl;
@@ -1533,6 +1543,13 @@ class _LegacyModal extends ModalBase {
         $("#" + this.modalId).on('hidden.bs.modal', function () {
             onModalHidden();
         });
+    }
+    get modalTitle() {
+        return this._modalTitle;
+    }
+    set modalTitle(value) {
+        this._modalTitle = value;
+        document.getElementById(`${this.modalId}-title`).innerText = value;
     }
     createModalHtml(content, isIframe) {
         const size = isIframe
@@ -1626,21 +1643,6 @@ class Modal {
         this.instance.modalId = "jjmasterdata-modal";
         this.instance.modalSize = ModalSize.ExtraLarge;
     }
-    showIframe(url, title, size = null) {
-        this.instance.showIframe(url, title, size);
-    }
-    showUrl(options, title, size = null) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this.instance.showUrl(options, title, size);
-        });
-    }
-    remove() {
-        this.instance.hide();
-        document.getElementById(this.instance.modalId).remove();
-    }
-    hide() {
-        this.instance.hide();
-    }
     get modalId() {
         return this.instance.modalId;
     }
@@ -1676,6 +1678,21 @@ class Modal {
     }
     set onModalHidden(value) {
         this.instance.onModalHidden = value;
+    }
+    showIframe(url, title, size = null) {
+        this.instance.showIframe(url, title, size);
+    }
+    showUrl(options, title, size = null) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.instance.showUrl(options, title, size);
+        });
+    }
+    remove() {
+        this.instance.hide();
+        document.getElementById(this.instance.modalId).remove();
+    }
+    hide() {
+        this.instance.hide();
     }
 }
 class DefaultModal {
@@ -2260,5 +2277,8 @@ var jjutil = (function () {
         }
     };
 })();
+function requestSubmitParentWindow() {
+    window.parent.document.forms[0].requestSubmit();
+}
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 //# sourceMappingURL=jjmasterdata.js.map

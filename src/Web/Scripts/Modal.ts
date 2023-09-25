@@ -13,17 +13,21 @@ class ModalUrlOptions{
 
 abstract class ModalBase{
     modalId: string;
-    modalTitle: string;
-    modalSize: ModalSize;
     modalElement: HTMLElement;
+    modalSize: ModalSize;
     centered: boolean;
     onModalHidden?: Function;
 
+
+    abstract get modalTitle();
+    abstract set modalTitle(value: string);
+    
     public constructor() {
         this.modalId = "jjmasterdata-modal";
         this.modalSize = ModalSize.ExtraLarge;
 
     }
+    
     abstract showIframe(url: string, title: string, size: ModalSize);
 
     abstract showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize) : Promise<any>;
@@ -39,6 +43,22 @@ class _Modal extends ModalBase {
         Small: "jj-modal-sm",
         Fullscreen: "modal-fullscreen",
     };
+    
+    private _modalTitle: string;
+    
+    get modalTitle(): string {
+        return this._modalTitle;
+    }
+
+    set modalTitle(value: string) {
+        this._modalTitle = value;
+        document.getElementById(`${this.modalId}-title`).innerText = value;
+    }
+
+
+    constructor() {
+        super();
+    }
     
     private getBootstrapModal(){
         return bootstrap.Modal.getOrCreateInstance("#" + this.modalId);
@@ -68,7 +88,7 @@ class _Modal extends ModalBase {
       <div id="${this.modalId}-dialog" class="modal-dialog ${this.centered ? "modal-dialog-centered" : ""} modal-dialog-scrollable ${this.getModalCssClass()}" role="document">
         <div class="modal-content" >
           <div class="modal-header">
-            <h5 class="modal-title" id="${this.modalId}-label">${this.modalTitle}</h5>
+            <h5 class="modal-title" id="${this.modalId}-title">${this.modalTitle}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body"> </div>
@@ -106,7 +126,7 @@ class _Modal extends ModalBase {
     }
 
     override showIframe(url: string, title: string, size: ModalSize = null) {
-        this.modalTitle = title;
+        this._modalTitle = title;
         this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
         const modalBody = this.modalElement.querySelector(".modal-body");
@@ -117,7 +137,7 @@ class _Modal extends ModalBase {
     }
 
     override async showUrl(modalOptions: ModalUrlOptions | string, title: string, size: ModalSize = null) {
-        this.modalTitle = title;
+        this._modalTitle = title;
         this.modalSize = size ?? ModalSize.Default;
         this.createModalElement();
         
@@ -158,10 +178,21 @@ class _Modal extends ModalBase {
     hide() {
         this.hideModal();
     }
+    
 }
 
-class _LegacyModal extends ModalBase {
+class _LegacyModal extends ModalBase{
+    private _modalTitle: string;
     
+    get modalTitle(): string {
+        return this._modalTitle;
+    }
+
+    set modalTitle(value: string) {
+        this._modalTitle = value;
+        document.getElementById(`${this.modalId}-title`).innerText = value;
+    }
+
     constructor() {
         super();
         let onModalHidden = this.onModalHidden;
@@ -267,33 +298,6 @@ class _LegacyModal extends ModalBase {
 class Modal {
     private instance: ModalBase;
 
-    constructor() {
-        if (bootstrapVersion === 5) {
-            this.instance = new _Modal();
-        } else {
-            this.instance = new _LegacyModal();
-        }
-
-        this.instance.modalId = "jjmasterdata-modal";
-        this.instance.modalSize = ModalSize.ExtraLarge;
-    }
-
-    showIframe(url: string, title: string, size: ModalSize = null) {
-        this.instance.showIframe(url,title,size);
-    }
-    async showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize = null): Promise<any> {
-        return await this.instance.showUrl(options,title,size);
-    }
-
-    remove() {
-        this.instance.hide();
-        document.getElementById(this.instance.modalId).remove();
-    }
-    
-    hide() {
-        this.instance.hide();
-    }
-    
     get modalId(): string {
         return this.instance.modalId;
     }
@@ -340,6 +344,33 @@ class Modal {
 
     set onModalHidden(value: Function) {
         this.instance.onModalHidden = value;
+    }
+    
+    constructor() {
+        if (bootstrapVersion === 5) {
+            this.instance = new _Modal();
+        } else {
+            this.instance = new _LegacyModal();
+        }
+
+        this.instance.modalId = "jjmasterdata-modal";
+        this.instance.modalSize = ModalSize.ExtraLarge;
+    }
+
+    showIframe(url: string, title: string, size: ModalSize = null) {
+        this.instance.showIframe(url,title,size);
+    }
+    async showUrl(options: ModalUrlOptions | string, title: string, size: ModalSize = null): Promise<any> {
+        return await this.instance.showUrl(options,title,size);
+    }
+
+    remove() {
+        this.instance.hide();
+        document.getElementById(this.instance.modalId).remove();
+    }
+    
+    hide() {
+        this.instance.hide();
     }
 }
 

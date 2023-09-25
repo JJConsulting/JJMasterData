@@ -14,7 +14,7 @@ namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class InternalRedirectController : MasterDataController
 {
-    private string? _dictionaryName;
+    private string? _elementName;
     private RelationshipViewType _relationshipType;
 
     private IComponentFactory ComponentFactory { get; }
@@ -39,27 +39,27 @@ public class InternalRedirectController : MasterDataController
         {
             case RelationshipViewType.List:
             {
-                var form = await ComponentFactory.FormView.CreateAsync(_dictionaryName);
+                var formView = await ComponentFactory.FormView.CreateAsync(_elementName);
 
-                var result = await form.GetResultAsync();
+                var result = await formView.GetResultAsync();
 
                 if (result.IsActionResult())
                     return result.ToActionResult();
 
-                form.RelationValues = RelationValues;
+                formView.RelationValues = RelationValues;
 
                 if (userId != null)
                 {
-                    form.SetUserValues("USERID", userId);
-                    await form.GridView.SetCurrentFilterAsync("USERID", userId);
+                    formView.SetUserValues("USERID", userId);
+                    await formView.GridView.SetCurrentFilterAsync("USERID", userId);
                 }
 
-                model = new(result.Content!, true);
+                model = new(formView.FormElement.Title ?? formView.Name,result.Content!, true);
                 break;
             }
             case RelationshipViewType.View:
             {
-                var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
+                var panel = await ComponentFactory.DataPanel.CreateAsync(_elementName);
                 panel.PageState = PageState.View;
                 if (userId != null)
                     panel.SetUserValues("USERID", userId);
@@ -72,12 +72,12 @@ public class InternalRedirectController : MasterDataController
 
                 await panel.LoadValuesFromPkAsync(RelationValues);
 
-                model = new(result.Content!, true);
+                model = new(panel.FormElement.Title ?? panel.Name,result.Content!, true);
                 break;
             }
             case RelationshipViewType.Update:
             {
-                var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
+                var panel = await ComponentFactory.DataPanel.CreateAsync(_elementName);
                 panel.PageState = PageState.Update;
 
                 var result = await panel.GetResultAsync();
@@ -87,7 +87,7 @@ public class InternalRedirectController : MasterDataController
 
                 await panel.LoadValuesFromPkAsync(RelationValues);
 
-                model = new(result.Content!, true);
+                model = new(panel.FormElement.Title ?? panel.Name,result.Content!, true);
                 break;
             }
             default:
@@ -104,7 +104,7 @@ public class InternalRedirectController : MasterDataController
 
         var userId = HttpContext.GetUserId();
 
-        var panel = await ComponentFactory.DataPanel.CreateAsync(_dictionaryName);
+        var panel = await ComponentFactory.DataPanel.CreateAsync(_elementName);
         panel.PageState = PageState.Update;
 
         await panel.LoadValuesFromPkAsync(RelationValues);
@@ -144,16 +144,16 @@ public class InternalRedirectController : MasterDataController
         if (string.IsNullOrEmpty(parameters))
             throw new ArgumentNullException();
 
-        _dictionaryName = null;
+        _elementName = null;
         _relationshipType = RelationshipViewType.List;
         var @params = HttpUtility.ParseQueryString(EncryptionService.DecryptStringWithUrlUnescape(parameters));
-        _dictionaryName = @params.Get("formname");
+        _elementName = @params.Get("formname");
         foreach (string key in @params)
         {
             switch (key.ToLower())
             {
                 case "formname":
-                    _dictionaryName = @params.Get(key);
+                    _elementName = @params.Get(key);
                     break;
                 case "viewtype":
                     _relationshipType = (RelationshipViewType)int.Parse(@params.Get(key) ?? string.Empty);

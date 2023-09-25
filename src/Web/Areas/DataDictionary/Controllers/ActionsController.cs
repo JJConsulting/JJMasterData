@@ -357,10 +357,10 @@ public class ActionsController : DataDictionaryController
             }
             case InternalAction internalAction:
             {
-                ViewBag.ElementNameList = _actionsService.GetElementListAsync();
-                ViewBag.InternalFieldList = _actionsService.GetFieldList(elementName);
+                ViewBag.ElementNameList = await _actionsService.GetElementListAsync();
+                ViewBag.InternalFieldList = await _actionsService.GetFieldList(elementName);
                 string elementNameRedirect = internalAction.ElementRedirect.ElementNameRedirect;
-                ViewBag.RedirectFieldList = _actionsService.GetFieldList(elementNameRedirect);
+                ViewBag.RedirectFieldList = await _actionsService.GetFieldList(elementNameRedirect);
                 break;
             }
         }

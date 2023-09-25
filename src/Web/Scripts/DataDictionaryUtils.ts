@@ -52,13 +52,7 @@
             })
     }
 
-    static refreshActionList(): void {
-        SpinnerOverlay.show();
-        window.parent.document.forms[0].requestSubmit();
-    }
-
     static postAction(url: string): void {
-        SpinnerOverlay.show();
         window.parent.document.forms[0].requestSubmit();
     }
 

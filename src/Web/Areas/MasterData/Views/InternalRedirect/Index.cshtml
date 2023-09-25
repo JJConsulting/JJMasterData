@@ -5,14 +5,18 @@
 
 @{
     Layout = Options.Value.PopUpLayoutPath;
+    
 }
 
 @using (Html.BeginForm())
 {
+    <script lang="js" type="text/javascript">
+         window.parent.defaultModal.modalTitle = '@Model.Title';
+    </script>
     if (ViewBag.Success == true)
     {
-        <script lang="javascript" type="text/javascript">
-            DataDictionaryUtils.refreshActionList()
+        <script lang="js" type="text/javascript">
+            requestSubmitParentWindow()
         </script>
     }
 
@@ -26,14 +30,14 @@
                 <span class="fa fa-check"></span>
                 <span>&nbsp;@StringLocalizer["Save"]</span>
             </button>
-
+    
             <button type="button" class="@BootstrapHelper.DefaultButton" onclick="window.parent.defaultModal.hide();">
                 <span class="fa fa-times"></span>
                 <span>&nbsp;@StringLocalizer["Cancel"]</span>
             </button>
         </div>
         <br/>
-
+    
         @Html.Raw(ViewBag.Error)
     }
 }
