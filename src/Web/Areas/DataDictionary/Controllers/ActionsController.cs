@@ -23,18 +23,13 @@ public class ActionsController : DataDictionaryController
 {
     private readonly ActionsService _actionsService;
     private readonly IControlFactory<JJSearchBox> _searchBoxFactory;
-    private readonly IEncryptionService _encryptionService;
-    private readonly JJMasterDataCoreOptions _options;
 
-    public ActionsController(ActionsService actionsService,
-        IControlFactory<JJSearchBox> searchBoxFactory,
-        IEncryptionService encryptionService,
-        IOptions<JJMasterDataCoreOptions> options)
+    public ActionsController(
+        ActionsService actionsService,
+        IControlFactory<JJSearchBox> searchBoxFactory)
     {
         _actionsService = actionsService;
         _searchBoxFactory = searchBoxFactory;
-        _encryptionService = encryptionService;
-        _options = options.Value;
     }
 
     public async Task<ActionResult> Index(string elementName)
@@ -145,8 +140,11 @@ public class ActionsController : DataDictionaryController
 
         if (iconSearchBoxResult.IsActionResult())
             return iconSearchBoxResult.ToActionResult();
-
+        
+        ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
+        
         await PopulateViewBag(elementName, action, context);
+        
         return View(action);
     }
 

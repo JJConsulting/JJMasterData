@@ -10,7 +10,7 @@
 }
 
 @using (Html.BeginForm("PluginAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName  }, FormMethod.Post))
 {
     <ul class="nav nav-tabs">
         <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>

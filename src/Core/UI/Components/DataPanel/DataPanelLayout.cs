@@ -148,11 +148,11 @@ internal class DataPanelLayout
     private async Task<HtmlBuilder> GetHtmlForm(FormElementPanel panel)
     {
         int panelId = panel?.PanelId ?? 0;
-        var fields = FormElement.Fields.ToList()
-            .FindAll(x => x.PanelId == panelId)
+        
+        var fields = FormElement.Fields
+            .Where(x => x.PanelId == panelId)
             .OrderBy(x => x.LineGroup)
-            .ToList()
-            .DeepCopy();
+            .ToList();
 
         if (fields.Count == 0)
             return null;

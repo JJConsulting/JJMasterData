@@ -24,7 +24,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
     private ActionButtonFactory ActionButtonFactory { get; }
 
     public TextGroupFactory(
-        IFormValues formValues, 
+         IFormValues formValues, 
                           IEncryptionService encryptionService,
                           IStringLocalizer<JJMasterDataResources> stringLocalizer, 
                           ActionButtonFactory actionButtonFactory)

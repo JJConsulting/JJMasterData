@@ -13,6 +13,7 @@
       <ProjectReference Include="..\..\src\Core\Core.csproj" />
       <ProjectReference Include="..\..\src\Plugins\MongoDB\MongoDB.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Pdf\Pdf.csproj" />
+      <ProjectReference Include="..\..\src\Plugins\Protheus\Protheus.csproj" />
       <ProjectReference Include="..\..\src\Web\Web.csproj" />
     </ItemGroup>
 
