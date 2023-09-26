@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace JJMasterData.Core.DataManager;
 
 public class ActionMap
 {
+
     [JsonProperty("elementName")]
     public required string ElementName { get; set; }
 
@@ -51,7 +53,12 @@ public class ActionMap
     
     internal BasicAction GetAction(FormElement formElement)
     {
-        return ActionSource switch
+        return GetAction<BasicAction>(formElement);
+    }
+    
+    internal TAction GetAction<TAction>(FormElement formElement) where TAction : BasicAction
+    {
+        var action = ActionSource switch
         {
             ActionSource.GridTable => formElement.Options.GridTableActions.First(a => a.Name.Equals(ActionName)),
             ActionSource.GridToolbar =>  formElement.Options.GridToolbarActions.First(a => a.Name.Equals(ActionName)),
@@ -59,5 +66,7 @@ public class ActionMap
             ActionSource.Field => formElement.Fields[FieldName!].Actions.Get(ActionName),
             _ => throw new JJMasterDataException("Invalid ActionSource"),
         };
+
+        return (TAction)action;
     }
 }

@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
+using ActionsService = JJMasterData.Core.DataDictionary.Services.ActionsService;
 
 namespace JJMasterData.Core.Web.Factories;
 
@@ -28,9 +29,11 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     private ExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
+    private ActionExecutionService ActionsService { get; }
     private IComponentFactory Factory { get; }
     private IFormEventHandlerFactory FormEventHandlerFactory { get; }
 
+    
     public FormViewFactory(
         IHttpContext currentContext,
         IEntityRepository entityRepository,
@@ -39,6 +42,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         IEncryptionService encryptionService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
+        ActionExecutionService actionsService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IOptions<JJMasterDataCoreOptions> options,
         IComponentFactory factory,
@@ -56,6 +60,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         Options = options;
         Factory = factory;
         FormEventHandlerFactory = formEventHandlerFactory;
+        ActionsService = actionsService;
     }
 
     public JJFormView Create(FormElement formElement)
@@ -69,6 +74,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
             EncryptionService, 
             FieldValuesService, 
             ExpressionsService,
+            ActionsService,
             Options,
             StringLocalizer,
             Factory);
@@ -77,6 +83,8 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         
         return formView;
     }
+
+
 
     public async Task<JJFormView> CreateAsync(string elementName)
     {

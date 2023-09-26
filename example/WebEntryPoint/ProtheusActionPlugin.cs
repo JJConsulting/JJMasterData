@@ -10,8 +10,12 @@ public class ProtheusActionPlugin : IActionPlugin
     public string Title => "Protheus";
     public HtmlBuilder? AdditionalInformationHtml => null;
 
-    public Task<PluginActionResult> ExecuteActionAsync(IDictionary<string, object> values)
+    public async Task<PluginActionResult> ExecuteActionAsync(IDictionary<string, object?> values)
     {
-        throw new NotImplementedException();
+        await Task.Delay(1);
+        return new PluginActionResult()
+        {
+            JsCallback = "alert('pan')"
+        };
     }
 }

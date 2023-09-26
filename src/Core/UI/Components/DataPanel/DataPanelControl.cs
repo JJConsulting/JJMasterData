@@ -47,7 +47,6 @@ internal class DataPanelControl
     internal ExpressionsService ExpressionsService { get; }
     private FieldsService FieldsService { get; }
     internal IEncryptionService EncryptionService { get; }
-    internal JJMasterDataUrlHelper UrlHelper { get; }
     internal DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(this);
 
     public DataPanelControl(JJDataPanel dataPanel)
@@ -57,7 +56,6 @@ internal class DataPanelControl
         ComponentFactory = dataPanel.ComponentFactory;
         Errors = dataPanel.Errors;
         EncryptionService = dataPanel.EncryptionService;
-        UrlHelper = dataPanel.UrlHelper;
         FieldsService = dataPanel.FieldsService;
         Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
@@ -73,7 +71,6 @@ internal class DataPanelControl
             IsVerticalLayout = false
         };
         EncryptionService = gridView.EncryptionService;
-        UrlHelper = gridView.UrlHelper;
         Errors = new Dictionary<string, string>();
         Name = gridView.Name;
         ComponentFactory = gridView.ComponentFactory;

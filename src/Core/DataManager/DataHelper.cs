@@ -205,16 +205,16 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoDictionary(IDictionary<string, object?> valuesToBeReceived, IDictionary<string, object?>? valuesToBeCopied, bool replaceIfExistKey)
+    public static void CopyIntoDictionary(IDictionary<string, object?> valuesToBeReceived, IDictionary<string, object?>? valuesToBeCopied, bool replaceIfKeyExists)
     {
-        if (valuesToBeCopied == null || valuesToBeCopied.Count == 0)
+        if (valuesToBeCopied == null || !valuesToBeCopied.Any())
             return;
 
         foreach (var entry in valuesToBeCopied)
         {
             if (valuesToBeReceived.ContainsKey(entry.Key))
             {
-                if (replaceIfExistKey)
+                if (replaceIfKeyExists)
                     valuesToBeReceived[entry.Key] = entry.Value;
             }
             else

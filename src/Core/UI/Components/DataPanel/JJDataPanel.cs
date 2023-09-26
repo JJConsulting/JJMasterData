@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.UI.Components;
 
 #if NET48
@@ -101,6 +102,7 @@ public class JJDataPanel : AsyncComponent
     internal FieldsService FieldsService { get; }
     internal FormValuesService FormValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
+    private ActionExecutionService ActionExecutionService { get; }
     internal IComponentFactory ComponentFactory { get; }
 
     #endregion
@@ -116,7 +118,8 @@ public class JJDataPanel : AsyncComponent
         FormValuesService = StaticServiceLocator.Provider.GetScopedDependentService<FormValuesService>();
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<ExpressionsService>();
         UrlHelper = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
-
+        ActionExecutionService = StaticServiceLocator.Provider.GetScopedDependentService<ActionExecutionService>();
+        
         Values = new Dictionary<string, object>();
         Errors =  new Dictionary<string, string>();
         AutoReloadFormFields = true;
@@ -150,6 +153,7 @@ public class JJDataPanel : AsyncComponent
         FieldsService fieldsService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
+        ActionExecutionService actionExecutionService,
         IComponentFactory componentFactory
     ) 
     {
@@ -160,6 +164,7 @@ public class JJDataPanel : AsyncComponent
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
+        ActionExecutionService = actionExecutionService;
         ComponentFactory = componentFactory;
         Values = new Dictionary<string, object>();
         Errors = new Dictionary<string, string>();
@@ -176,8 +181,9 @@ public class JJDataPanel : AsyncComponent
         FieldsService fieldsService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
+        ActionExecutionService actionExecutionService,
         IComponentFactory componentFactory
-    ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
+    ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService,actionExecutionService, componentFactory)
     {
         Name = $"{ComponentNameGenerator.Create(formElement.Name)}-data-panel";
         FormElement = formElement;
@@ -313,9 +319,11 @@ public class JJDataPanel : AsyncComponent
         return await FieldsService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink);
     }
     
-    internal async Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)
+    internal async Task<JsonComponentResult> GetUrlRedirectResult(UrlRedirectAction urlRedirectAction)
     {
-        var model = await new UrlRedirectService(FormValuesService, ExpressionsService).GetUrlRedirectAsync(FormElement,actionMap, PageState);
+        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement,PageState, true, FieldNamePrefix);
+        var formStateData = new FormStateData(values, PageState);
+        var model = ActionExecutionService.GetUrlRedirect(urlRedirectAction, formStateData);
 
         return new JsonComponentResult(model);
     }

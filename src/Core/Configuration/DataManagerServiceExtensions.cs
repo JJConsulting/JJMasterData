@@ -8,23 +8,21 @@ public static class DataManagerServiceExtensions
 {
     public static IServiceCollection AddDataManagerServices(this IServiceCollection services)
     {
-        services.AddTransient<AuditLogService>();
-        services.AddTransient<DataItemService>();
-        services.AddTransient<LookupService>();
-        services.AddTransient<FieldFormattingService>();
-        services.AddTransient<FieldValidationService>();
-        services.AddTransient<FormService>();
-        services.AddTransient<UrlRedirectService>();
-        services.AddTransient<FieldValuesService>();
-        services.AddTransient<FieldsService>();
-        services.AddTransient<UploadAreaService>();
+        services.AddScoped<AuditLogService>();
+        services.AddScoped<ActionExecutionService>();
+        services.AddScoped<DataItemService>();
+        services.AddScoped<LookupService>();
+        services.AddScoped<FieldFormattingService>();
+        services.AddScoped<FieldValidationService>();
+        services.AddScoped<FormService>();
+        services.AddScoped<FieldValuesService>();
+        services.AddScoped<FieldsService>();
+        services.AddScoped<UploadAreaService>();
         services.AddScoped<FormValuesService>();
-
+        services.AddScoped<FormFileManagerFactory>();
+        services.AddScoped<FormFileService>();
+        services.AddScoped<ElementMapService>();
         
-        services.AddTransient<FormFileManagerFactory>();
-        services.AddTransient<FormFileService>();
-
-        services.AddTransient<ElementMapService>();
         return services;
     }
 }

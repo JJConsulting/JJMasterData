@@ -22,35 +22,32 @@ namespace JJMasterData.Core.UI.Components.GridView;
 
 internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 {
-    private JJMasterDataUrlHelper UrlHelper { get; }
     private FieldsService FieldsService { get; }
     private FormValuesService FormValuesService { get; }
     private ExpressionsService ExpressionsService { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IGridEventHandlerFactory GridEventHandlerFactory { get; }
-    private IComponentFactory Factory { get; }
+    private IComponentFactory ComponentFactory { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private DataItemService DataItemService { get; }
     private IHttpContext CurrentContext { get; }
+    private ActionExecutionService ActionExecutionService { get; }
 
-
-    public GridViewFactory(
-        IHttpContext currentContext,
+    public GridViewFactory(IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        DataItemService dataItemService,
-        JJMasterDataUrlHelper urlHelper,
-        ExpressionsService expressionsService,
         IEncryptionService encryptionService,
+        DataItemService dataItemService,
+        ExpressionsService expressionsService,
         FieldsService fieldsService,
         FormValuesService formValuesService,
+        ActionExecutionService actionExecutionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IGridEventHandlerFactory gridEventHandlerFactory,
-        IComponentFactory factory)
+        IComponentFactory componentFactory)
     {
-        UrlHelper = urlHelper;
         CurrentContext = currentContext;
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
@@ -58,7 +55,8 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
         GridEventHandlerFactory = gridEventHandlerFactory;
-        Factory = factory;
+        ComponentFactory = componentFactory;
+        ActionExecutionService = actionExecutionService;
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         DataItemService = dataItemService;
@@ -67,10 +65,18 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 
     public JJGridView Create(FormElement formElement)
     {
-        var gridView = new JJGridView(formElement, CurrentContext, EntityRepository, DataDictionaryRepository,DataItemService,
-            UrlHelper,
-            ExpressionsService,
-            EncryptionService, FieldsService, FormValuesService, StringLocalizer, Factory);
+        var gridView = new JJGridView(
+            formElement, 
+            CurrentContext,
+            EntityRepository,
+            EncryptionService, 
+            DataItemService, 
+            ExpressionsService, 
+            FieldsService, 
+            FormValuesService,
+            ActionExecutionService,
+            StringLocalizer,
+            ComponentFactory);
 
         var eventHandler = GridEventHandlerFactory.GetGridEventHandler(formElement.Name);
         

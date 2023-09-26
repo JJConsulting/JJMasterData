@@ -23,24 +23,21 @@ public class ActionButtonFactory
 
     private ActionsScripts _actionsScripts;
     private ExpressionsService ExpressionsService { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
   
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private ActionsScripts ActionsScripts => _actionsScripts ??= new ActionsScripts(ExpressionsService,DataDictionaryRepository, UrlHelper, EncryptionService, StringLocalizer);
+    private ActionsScripts ActionsScripts => _actionsScripts ??= new ActionsScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
     
     public ActionButtonFactory(
         IComponentFactory<JJLinkButton> linkButtonFactory,
         ExpressionsService expressionsService,
-        IDataDictionaryRepository dataDictionaryRepository, 
         JJMasterDataUrlHelper urlHelper, 
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         LinkButtonFactory = linkButtonFactory;
         ExpressionsService = expressionsService;
-        DataDictionaryRepository = dataDictionaryRepository;
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
@@ -234,4 +231,5 @@ public class ActionButtonFactory
 
         return button;
     }
+    
 }

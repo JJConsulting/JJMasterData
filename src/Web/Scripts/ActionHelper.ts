@@ -47,12 +47,12 @@ class ActionHelper {
         postFormValues({
             url: url,
             success: (data) => {
-                if (data.urlAsPopUp) {
+                if (data.urlAsModal) {
                     if(data.isIframe){
-                        defaultModal.showIframe(data.urlRedirect, data.popUpTitle);
+                        defaultModal.showIframe(data.urlRedirect, data.modalTitle);
                     } 
                     else{
-                        defaultModal.showUrl(data.urlRedirect, data.popUpTitle);
+                        defaultModal.showUrl(data.urlRedirect, data.modalTitle);
                     }
                 } else {
                     window.location.href = data.urlRedirect;
@@ -135,9 +135,16 @@ class ActionHelper {
                 urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
 
                 postFormValues({url:urlBuilder.build(), success:(data)=>{
-                        HTMLHelper.setInnerHTML(componentName,data);
-                        listenAllEvents("#" + componentName)
-                    }});
+                        if (typeof data === "string") {
+                            HTMLHelper.setInnerHTML(componentName,data);
+                            listenAllEvents("#" + componentName)
+                        }
+                        else{
+                            if(data.jsCallback){
+                                eval(data.jsCallback)
+                            }
+                        }
+                }});
             } 
             else{
                 document.forms[0].requestSubmit();

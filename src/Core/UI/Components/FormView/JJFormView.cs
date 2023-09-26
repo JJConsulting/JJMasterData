@@ -25,7 +25,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
@@ -75,6 +74,7 @@ public class JJFormView : AsyncComponent
     private JJGridView? _gridView;
     private FormViewScripts? _scripts;
     private ActionMap? _currentActionMap;
+    private BasicAction? _currentAction;
     private JJAuditLogView? _auditLogView;
     private JJDataImportation? _dataImportation;
     private string? _userId;
@@ -243,6 +243,21 @@ public class JJFormView : AsyncComponent
         }
     }
     
+    private BasicAction? CurrentAction
+    {
+        get
+        {
+            if (_currentAction != null)
+                return _currentAction;
+            
+            if (CurrentActionMap is null)
+                return null;
+
+            _currentAction = CurrentActionMap.GetAction(FormElement);
+            return _currentAction;
+        }
+    }
+    
 
     protected RouteContext RouteContext
     {
@@ -285,12 +300,12 @@ public class JJFormView : AsyncComponent
             _showTitle = value;
         }
     }
-
     internal IHttpContext CurrentContext { get; }
     internal IFormValues FormValues => CurrentContext.Request.Form;
     internal IEntityRepository EntityRepository { get; }
     internal FieldValuesService FieldValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
+    private ActionExecutionService ActionsService { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
@@ -315,7 +330,8 @@ public class JJFormView : AsyncComponent
         Options = StaticServiceLocator.Provider.GetScopedDependentService<IOptions<JJMasterDataCoreOptions>>();
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<ExpressionsService>();
         StringLocalizer = StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
-        DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
+        DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();        
+        ActionsService = StaticServiceLocator.Provider.GetScopedDependentService<ActionExecutionService>();
         FormService.EnableErrorLinks = true;
     }
 
@@ -342,6 +358,7 @@ public class JJFormView : AsyncComponent
         IEncryptionService encryptionService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
+        ActionExecutionService actionsService,
         IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
@@ -354,6 +371,7 @@ public class JJFormView : AsyncComponent
         EncryptionService = encryptionService;
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
+        ActionsService = actionsService;
         Options = options;
         StringLocalizer = stringLocalizer;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -401,7 +419,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.SearchBox:
                 return await DataPanel.GetResultAsync();
             case ComponentContext.UrlRedirect:
-                return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
+                return await DataPanel.GetUrlRedirectResult(CurrentActionMap!.GetAction<UrlRedirectAction>(FormElement));
             case ComponentContext.DataPanelReload:
                 return await GetReloadPanelResultAsync();
             case ComponentContext.DataExportation:
@@ -524,12 +542,10 @@ public class JJFormView : AsyncComponent
     
     private async Task<ComponentResult> GetFormActionResult()
     {
-        var currentAction = CurrentActionMap?.GetAction(FormElement);
-
         SetFormServiceEvents();
 
         ComponentResult? result;
-        switch (currentAction)
+        switch (CurrentAction)
         {
             case ViewAction:
                 result = await GetViewResult();
@@ -559,7 +575,6 @@ public class JJFormView : AsyncComponent
             case CancelAction:
                 result = await GetCancelActionResult();
                 break;
-            
             case SqlCommandAction:
                 result = await GetSqlCommandActionResult();
                 break;
@@ -592,14 +607,12 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetSqlCommandActionResult()
     {
-        var currentAction = (SqlCommandAction)CurrentActionMap!.GetAction(FormElement);
 
         JJMessageBox? messageBox = null;
-        
+        var sqlAction = CurrentActionMap!.GetAction<SqlCommandAction>(FormElement);
         try
         {
-            var sqlCommand = ExpressionsService.ParseExpression(currentAction.CommandSql, await GetFormStateDataAsync());
-            await EntityRepository.SetCommandAsync(new(sqlCommand!));
+            await ActionsService.ExecuteSqlCommandAction(sqlAction, await GetFormStateDataAsync());
         }
         catch (Exception ex)
         {
@@ -619,6 +632,14 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetPluginActionResult()
     {
+        var formStateData = await GetFormStateDataAsync();
+        var pluginActionResult = await ActionsService.ExecutePluginAction((PluginAction)CurrentAction!,formStateData);
+
+        if (pluginActionResult.JsCallback is not null)
+        {
+            return new JsonComponentResult(pluginActionResult);
+        }
+        
         return await GetDefaultResult();
     }
 
@@ -945,7 +966,7 @@ public class JJFormView : AsyncComponent
             var html = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues);
 
             if (actionMap?.PkFieldValues != null)
-                html.AppendComponent(GetAuditLogBottomBar(actionMap.PkFieldValues!));
+                html.AppendComponent(await GetAuditLogBottomBar(actionMap.PkFieldValues!));
 
             PageState = PageState.AuditLog;
             return new ContentComponentResult(html);
@@ -1171,9 +1192,9 @@ public class JJFormView : AsyncComponent
         return toolbarActions.ToList();
     }
 
-    private JJToolbar GetAuditLogBottomBar(IDictionary<string, object?> values)
+    private async Task<JJToolbar> GetAuditLogBottomBar(IDictionary<string, object?> values)
     {
-        var hideAuditLogButton = GetAuditLogBackButton(values);
+        var hideAuditLogButton = await ComponentFactory.ActionButton.CreateFormToolbarButtonAsync(FormElement.Options.FormToolbarActions.BackAction,this);
 
         var toolbar = new JJToolbar
         {
@@ -1307,27 +1328,7 @@ public class JJFormView : AsyncComponent
         }
     }
 
-    private JJLinkButton GetAuditLogBackButton(IDictionary<string, object?> values)
-    {
-        var context = new ActionContext
-        {
-            FormElement = FormElement,
-            FormStateData = new FormStateData(values, UserValues, PageState),
-            ParentComponentName = Name
-        };
-        string scriptAction = GridView.ActionsScripts.GetFormActionScript(
-                GridView.GridActions.ViewAction, 
-                context,
-                ActionSource.GridTable);
-        
-        var btn = ComponentFactory.Html.LinkButton.Create();
-        btn.Type = LinkButtonType.Button;
-        btn.Text = StringLocalizer["Back"];
-        btn.IconClass = IconType.ArrowLeft.GetCssClass();
-        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
-        btn.OnClientClick = $"document.getElementById('form-view-page-state-{Name}').value = '{(int)PageState.List}';{scriptAction}";
-        return btn;
-    }
+
 
     public async Task<FormStateData> GetFormStateDataAsync()
     {

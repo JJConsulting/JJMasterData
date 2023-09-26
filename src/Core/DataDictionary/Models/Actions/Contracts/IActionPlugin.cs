@@ -21,5 +21,5 @@ public interface IActionPlugin
     /// </summary>
     public HtmlBuilder? AdditionalInformationHtml { get; }
     
-    public Task<PluginActionResult> ExecuteActionAsync(IDictionary<string,object> values);
+    public Task<PluginActionResult> ExecuteActionAsync(IDictionary<string,object?> values);
 }

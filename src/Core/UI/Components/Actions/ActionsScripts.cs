@@ -21,20 +21,17 @@ namespace JJMasterData.Core.UI.Components.FormView;
 internal class ActionsScripts
 {
     private ExpressionsService ExpressionsService { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
 
     public ActionsScripts(
         ExpressionsService expressionsService,
-        IDataDictionaryRepository dataDictionaryRepository,
         JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         ExpressionsService = expressionsService;
-        DataDictionaryRepository = dataDictionaryRepository;
         StringLocalizer = stringLocalizer;
         UrlHelper = urlHelper;
         EncryptionService = encryptionService;
@@ -127,7 +124,7 @@ internal class ActionsScripts
 
         return encodedFunction;
     }
-
+    
 
     internal string GetUserActionScript(
         UserCreatedAction userCreatedAction,
@@ -145,6 +142,8 @@ internal class ActionsScripts
             _ => GetFormActionScript(userCreatedAction, actionContext, actionSource)
         };
     }
+
+
 
     public string GetSqlCommandScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)
     {

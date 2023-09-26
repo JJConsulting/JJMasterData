@@ -21,6 +21,7 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
     private FormValuesService FormValuesService { get; }
     private ExpressionsService ExpressionsService { get; }
     private IComponentFactory ComponentFactory { get; }
+    private ActionExecutionService ActionExecutionService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
 
     public DataPanelFactory(IEntityRepository entityRepository, 
@@ -31,6 +32,7 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
         FormValuesService formValuesService, 
         ExpressionsService expressionsService,
         IComponentFactory componentFactory, 
+        ActionExecutionService actionExecutionService,
         JJMasterDataUrlHelper urlHelper)
     {
         EntityRepository = entityRepository;
@@ -41,6 +43,7 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
         ComponentFactory = componentFactory;
+        ActionExecutionService = actionExecutionService;
         UrlHelper = urlHelper;
     }
 
@@ -54,6 +57,7 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
             FieldsService, 
             FormValuesService, 
             ExpressionsService, 
+            ActionExecutionService,
             ComponentFactory);
     }
 

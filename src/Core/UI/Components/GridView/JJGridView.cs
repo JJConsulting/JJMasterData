@@ -87,7 +87,6 @@ public class JJGridView : AsyncComponent
     private GridFilter? _filter;
     private GridTable? _table;
     private IList<Dictionary<string,object?>>? _dataSource;
-    private ActionsScripts? _actionsScripts;
     private List<FormElementField>? _pkFields;
     private IDictionary<string, object?>? _defaultValues;
     private FormStateData? _formData;
@@ -165,10 +164,8 @@ public class JJGridView : AsyncComponent
         }
     }
 
-    internal ActionsScripts ActionsScripts =>
-        _actionsScripts ??= new ActionsScripts(ExpressionsService, DataDictionaryRepository, UrlHelper, EncryptionService, StringLocalizer);
-
     internal FormValuesService FormValuesService { get; }
+    internal ActionExecutionService ActionExecutionService { get; }
 
     /// <summary>
     /// <see cref="FormElement"/>
@@ -526,12 +523,10 @@ public class JJGridView : AsyncComponent
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
-    internal JJMasterDataUrlHelper UrlHelper { get; }
 
     internal GridScripts Scripts => _gridScripts ??= new GridScripts(this);
 
     internal IHttpContext CurrentContext { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
     internal DataItemService DataItemService { get; }
     internal IEncryptionService EncryptionService { get; }
 
@@ -539,17 +534,15 @@ public class JJGridView : AsyncComponent
 
     #region Constructors
 
-    internal JJGridView(
-        FormElement formElement,
+    internal JJGridView(FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
-        DataItemService dataItemService,
-        JJMasterDataUrlHelper urlHelper,
-        ExpressionsService expressionsService,
         IEncryptionService encryptionService,
+        DataItemService dataItemService,
+        ExpressionsService expressionsService,
         FieldsService fieldsService,
         FormValuesService formValuesService,
+        ActionExecutionService actionExecutionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
     {
@@ -571,11 +564,10 @@ public class JJGridView : AsyncComponent
         StringLocalizer = stringLocalizer;
         ComponentFactory = componentFactory;
         EntityRepository = entityRepository;
-        UrlHelper = urlHelper;
         CurrentContext = currentContext;
-        DataDictionaryRepository = dataDictionaryRepository;
         DataItemService = dataItemService;
         FormValuesService = formValuesService;
+        ActionExecutionService = actionExecutionService;
     }
 
     #endregion

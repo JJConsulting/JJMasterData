@@ -8,7 +8,6 @@ internal class DataPanelScripts
 {
 
     private readonly DataPanelControl _dataPanelControl;
-    private JJMasterDataUrlHelper UrlHelper => _dataPanelControl.UrlHelper;
     private IEncryptionService EncryptionService => _dataPanelControl.EncryptionService;
     
 

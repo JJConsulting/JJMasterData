@@ -1,6 +1,6 @@
 class PostFormValuesOptions{
     url : string;
-    success: (response: any ) => void;
+    success: (data: string | any ) => void;
     error?: (errorMessage: string) => void;
 }
 

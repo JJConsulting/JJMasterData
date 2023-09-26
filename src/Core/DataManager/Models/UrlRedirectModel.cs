@@ -6,8 +6,8 @@ namespace JJMasterData.Core.DataManager.Models;
 
 public record UrlRedirectModel
 {
-    [JsonProperty("urlAsPopUp")] public required bool UrlAsPopUp { get; init; }
+    [JsonProperty("urlAsModal")] public required bool UrlAsModal { get; init; }
     [JsonProperty("isIframe")] public required bool IsIframe { get; init; }
-    [JsonProperty("popUpTitle")] public required string PopUpTitle { get; init; }
+    [JsonProperty("modalTitle")] public required string ModalTitle { get; init; }
     [JsonProperty("urlRedirect")] public required string UrlRedirect { get; init; }
 }
