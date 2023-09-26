@@ -1,8 +1,16 @@
 #nullable enable
 
+using System;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public abstract class PluginAction : BasicAction
+public class PluginAction : UserCreatedAction
 {
-    public override bool IsUserCreated => true;
+    public required Guid PluginId { get; init; }
+    public PluginAction()
+    {
+        ShowAsButton = true;
+        Text = "Plugin";
+        Icon = IconType.Plug;
+    }
 }

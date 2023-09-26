@@ -5,7 +5,7 @@
 @using System.Reflection
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
-
+@inject IEnumerable<IActionPlugin> ActionPluginHandlers
 @model ActionsListDetailsViewModel
 
 @{
@@ -29,21 +29,31 @@
             </button>
             <ul class="dropdown-menu">
                 <li>
-                    <a class="dropdown-item dropdown-link" href="javascript: void(0);" 
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);"
                        onclick="@GetAddScript(typeof(UrlRedirectAction))">@StringLocalizer["Url Redirect"]</a>
                 </li>
                 <li>
-                    <a class="dropdown-item dropdown-link" href="javascript: void(0);" 
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);"
                        onclick="@GetAddScript(typeof(InternalAction))">@StringLocalizer["Internal Redirect"]</a>
                 </li>
                 <li>
-                    <a class="dropdown-item dropdown-link" href="javascript: void(0);" 
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);"
                        onclick="@GetAddScript(typeof(SqlCommandAction))">@StringLocalizer["Sql Command"]</a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link" href="javascript: void(0);"
                        onclick="@GetAddScript(typeof(ScriptAction))">@StringLocalizer["JavaScript Script"]</a>
                 </li>
+                @if (ActionPluginHandlers.Any())
+                {   <li><hr class="dropdown-divider"></li>
+                    <li><h6 class="dropdown-header">Plugins</h6></li>
+                    @foreach (var plugin in ActionPluginHandlers)
+                    {
+                        <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                           onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                    }
+                }
+                
             </ul>
         </div>
     </div>
@@ -106,18 +116,19 @@
         return script.ToString();
     }
 
-    private string GetAddScript(MemberInfo actionType)
+    private string GetAddScript(MemberInfo actionType, Guid? pluginId = null)
     {
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Add", "Actions",
-            new { elementName = Model.ElementName, actionType = actionType.Name, context = Model.Context, fieldName = Model.FieldName }));
+            new { elementName = Model.ElementName, actionType = actionType.Name, context = Model.Context, fieldName = Model.FieldName, pluginId }));
         script.Append($"','{Model.Context.ToString().FirstCharToUpper()}");
         script.Append($" Action',{(int)ModalSize.ExtraLarge}");
         script.Append(");");
 
         return script.ToString();
     }
+
 
     private string GetDeleteScript(BasicAction action)
     {

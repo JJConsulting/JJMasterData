@@ -1,23 +1,24 @@
-class ActionManager {
+class ActionHelper {
 
-    static executeSqlCommand(componentName, rowId, confirmMessage) {
+    static executeSqlCommand(componentName: string, encryptedActionMap: string, confirmMessage: string) {
         if (confirmMessage) {
-            var result = confirm(confirmMessage);
+            const result = confirm(confirmMessage);
             if (!result) {
                 return false;
             }
         }
 
-        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
-        document.querySelector<HTMLInputElement>("#grid-view-row-" + componentName).value = rowId;
-
-        const formViewActionMapElement = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
-
-        if (formViewActionMapElement) {
-            formViewActionMapElement.value = "";
+        const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName);
+        const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
+        
+        if(gridViewActionInput){
+            gridViewActionInput.value = encryptedActionMap;
         }
-
-        document.querySelector("form").dispatchEvent(new Event("submit"));
+        else if(formViewActionInput){
+            formViewActionInput.value = encryptedActionMap;
+        }
+        
+        document.forms[0].requestSubmit();
     }
 
     static executeRedirectAction(componentName: string, routeContext: string, encryptedActionMap: string, confirmationMessage?: string) {
@@ -89,7 +90,7 @@ class ActionManager {
             }
         }
 
-        const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
+        const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName);
         const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
 
         if (gridViewActionInput) {

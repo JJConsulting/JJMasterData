@@ -13,8 +13,8 @@
 <script lang="javascript" type="text/javascript">
 
     $(document).ready(function () {
-        buidCodeMirror('ProcessOptions_CommandBeforeProcess');
-        buidCodeMirror('ProcessOptions_CommandAfterProcess');
+        buildCodeMirror('ProcessOptions_CommandBeforeProcess');
+        buildCodeMirror('ProcessOptions_CommandAfterProcess');
 
         $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
             refreshCodeMirror();
@@ -46,7 +46,7 @@
         }
     }
 
-    function buidCodeMirror(fieldName) {
+    function buildCodeMirror(fieldName) {
         var cm = CodeMirror.fromTextArea(document.getElementById(fieldName), {
             mode: "text/x-sql",
             indentWithTabs: true,

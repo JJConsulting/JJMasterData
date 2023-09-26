@@ -18,7 +18,7 @@ public class ValidationSummaryTagHelper : TagHelper
     {
         var validationSummary = _validationSummaryFactory.Create();
         if (Errors != null)
-            validationSummary.Errors = Errors.ToList();
+            validationSummary.Errors.AddRange(Errors);
         
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(validationSummary.GetHtml());

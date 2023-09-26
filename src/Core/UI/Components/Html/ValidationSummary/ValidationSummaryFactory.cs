@@ -33,7 +33,7 @@ public class ValidationSummaryFactory : IComponentFactory<JJValidationSummary>
     public JJValidationSummary Create(IEnumerable<string> errors)
     {
         var validation = Create();
-        validation.Errors = errors.ToList();
+        validation.Errors.AddRange(errors);
         return validation;
     }
     

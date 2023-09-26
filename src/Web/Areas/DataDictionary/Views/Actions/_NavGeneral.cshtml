@@ -6,8 +6,8 @@
 @{
     TempData["selectedTab"] = ViewBag.ContextAction switch
     {
-        ActionSource.GridToolbar => "#divGridToolbar",
-        ActionSource.FormToolbar => "#divFormToolbar",
+        ActionSource.GridToolbar => "#div-grid-toolbar",
+        ActionSource.FormToolbar => "#div-form-toolbar",
         _ => "#divGrid"
     };
 }

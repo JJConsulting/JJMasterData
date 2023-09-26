@@ -41,7 +41,6 @@ public static class EncryptionServiceExtensions
         return JsonConvert.DeserializeObject<T>(service.DecryptStringWithUrlUnescape(encryptedObject)!);
     }
     
-    
     public static string EncryptDictionary(this IEncryptionService service, IDictionary<string,object> dictionary)
     {
         return service.EncryptObject(dictionary);

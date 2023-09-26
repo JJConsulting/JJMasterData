@@ -1,6 +1,7 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Web.TagHelpers;
 
@@ -48,15 +49,15 @@ public class AlertTagHelper : TagHelper
             alert.Icon = Icon.Value;
 
         if (Messages != null)
-            alert.Messages = Messages;
-
+            alert.Messages.AddRange(Messages);
+        
         if(!string.IsNullOrEmpty(Message))
             alert.Messages.Add(Message);
 
         var content = (await output.GetChildContentAsync()).GetContent();
 
         if (!string.IsNullOrEmpty(content))
-            alert.Messages.Add(content);
+            alert.InnerHtml = new HtmlBuilder(content);
 
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(alert.GetHtml());

@@ -54,7 +54,7 @@ public class InternalRedirectController : MasterDataController
                     await formView.GridView.SetCurrentFilterAsync("USERID", userId);
                 }
 
-                model = new(formView.FormElement.Title ?? formView.Name,result.Content!, true);
+                model = new(formView.FormElement.Title ?? formView.Name,result.Content!, false);
                 break;
             }
             case RelationshipViewType.View:
@@ -72,7 +72,7 @@ public class InternalRedirectController : MasterDataController
 
                 await panel.LoadValuesFromPkAsync(RelationValues);
 
-                model = new(panel.FormElement.Title ?? panel.Name,result.Content!, true);
+                model = new(panel.FormElement.Title ?? panel.Name,result.Content!, false);
                 break;
             }
             case RelationshipViewType.Update:

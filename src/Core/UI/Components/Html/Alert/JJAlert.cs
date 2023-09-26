@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
@@ -9,8 +11,10 @@ public class JJAlert : HtmlComponent
 {
     public PanelColor Color { get; set; }
     public IconType? Icon { get; set; }
-    public string Title { get; set; }
-    public IList<string> Messages { get; set; } = new List<string>();
+    public string? Title { get; set; }
+    public List<string> Messages { get; } = new();
+    public HtmlBuilder? InnerHtml { get; set; }
+    
     public bool ShowCloseButton { get; set; }
     
     /// <remarks>
@@ -20,7 +24,6 @@ public class JJAlert : HtmlComponent
 
     internal JJAlert()
     {
-        
     }
     
     internal override HtmlBuilder BuildHtml()
@@ -46,18 +49,17 @@ public class JJAlert : HtmlComponent
         }
      
 
-        if (!string.IsNullOrEmpty(Title))
+        if (Title is not null && !string.IsNullOrEmpty(Title))
             html.Append(HtmlTag.B, b => b.AppendText(Title));
 
-        if (Messages == null) 
-            return html;
-
-        for (var index = 0; index < Messages.Count; index++)
+        if (InnerHtml is not null || Messages.Any())
+            html.Append(HtmlTag.Br);
+        
+        if (InnerHtml is not null)
+            html.Append(InnerHtml);
+        
+        foreach (var message in Messages)
         {
-            if(index > 0 || !string.IsNullOrEmpty(Title)) 
-                html.Append(HtmlTag.Br);
-            
-            var message = Messages[index];
             html.AppendText(message);
         }
 

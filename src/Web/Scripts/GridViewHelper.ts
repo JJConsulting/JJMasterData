@@ -3,7 +3,7 @@
 class GridViewHelper {
 
     static openSettingsModal(componentName: string, encryptedActionMap: string) {
-        const gridViewActionInput = document.getElementById("grid-view-action-" + componentName) as HTMLInputElement;
+        const gridViewActionInput = document.getElementById("grid-view-action-map-" + componentName) as HTMLInputElement;
         const gridViewPageInput = document.getElementById("grid-view-page-" + componentName) as HTMLInputElement;
         const gridViewRowInput = document.getElementById("grid-view-row-" + componentName) as HTMLInputElement;
         const form = document.querySelector("form") as HTMLFormElement;
@@ -51,7 +51,7 @@ class GridViewHelper {
         else
             tableOrderElement.value = field + " ASC";
 
-        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName).value = "";
         this.clearCurrentFormAction(componentName)
 
         GridViewHelper.refreshGrid(componentName, routeContext);
@@ -102,7 +102,7 @@ class GridViewHelper {
     }
 
     static clearCurrentGridAction(componentName){
-        const currentGridAction = document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName);
+        const currentGridAction = document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName);
 
         if(currentGridAction)
             currentGridAction.value = "";

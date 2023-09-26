@@ -5,6 +5,7 @@ using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
@@ -108,6 +109,13 @@ public static class JJMasterDataServiceBuilderExtensions
     public static JJMasterDataServiceBuilder WithExpressionProvider<T>(this JJMasterDataServiceBuilder builder) where T : class, IExpressionProvider
     {
         builder.Services.AddScoped<IExpressionProvider, T>();
+        return builder;
+    }
+    
+    public static JJMasterDataServiceBuilder WithActionPlugin<TActionPlugin>(this JJMasterDataServiceBuilder builder) where TActionPlugin : class, IActionPlugin
+    {
+        builder.Services.AddScoped<IActionPlugin, TActionPlugin>();
+        
         return builder;
     }
 }

@@ -1,4 +1,7 @@
+using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Extensions;
+using JJMasterData.WebEntryPoint;
 using JJMasterData.WebExample.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +11,7 @@ var settingsPath = Path.Combine(root, "appsettings.json");
 
 builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
 
-builder.Services.AddJJMasterDataWeb(builder.Configuration);
+builder.Services.AddJJMasterDataWeb(builder.Configuration).WithActionPlugin<ProtheusActionPlugin>();
 
 builder.Services.AddControllersWithViews().AddViewLocalization();
 

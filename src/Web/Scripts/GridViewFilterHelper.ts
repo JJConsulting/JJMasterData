@@ -1,7 +1,7 @@
 class GridViewFilterHelper {
     static filter(gridViewName, routeContext) {
         document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + gridViewName).value = "filter";
-        document.querySelector<HTMLInputElement>("#grid-view-action-" + gridViewName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-action-map-" + gridViewName).value = "";
         document.querySelector<HTMLInputElement>("#grid-view-page-" + gridViewName).value = "1";
         GridViewHelper.clearCurrentFormAction(gridViewName)
         GridViewHelper.refreshGrid(gridViewName, routeContext);
@@ -51,7 +51,7 @@ class GridViewFilterHelper {
         });
 
         document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName).value = "clear";
-        document.querySelector<HTMLInputElement>("#grid-view-action-" + componentName).value = "";
+        document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName).value = "";
         GridViewHelper.clearCurrentFormAction(componentName)
     }
 

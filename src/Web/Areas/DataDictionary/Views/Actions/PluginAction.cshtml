@@ -1,0 +1,51 @@
+@using JJMasterData.Core.Web
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@model JJMasterData.Core.DataDictionary.Models.Actions.PluginAction
+@inject IOptions<JJMasterDataWebOptions> Options
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IEnumerable<IActionPlugin> Plugins
+@{
+    var plugin = Plugins.First(p => p.Id == Model.PluginId);
+    Layout = Options.Value.PopUpLayoutPath;
+}
+
+@using (Html.BeginForm("PluginAction", "Actions",
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
+        <li id="nav-plugin" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-plugin">@StringLocalizer["Plugin"]</a></li>
+        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
+            <partial name="_NavGeneral" model="Model"/>
+        </div>
+        
+        <div id="div-plugin" class="tab-pane fade @BootstrapHelper.Show">
+            <div class="container-fluid ">
+                <label asp-for="PluginId" class="form-label"></label>
+                <input asp-for="PluginId" class="form-control" readonly="readonly"/>
+                
+                <alert title="@plugin.Title" color="Info" icon="IconType.Plug">
+                    @if (plugin.AdditionalInformationHtml is null)
+                    {
+                        @Html.Raw(StringLocalizer["No additional information about this plugin."]);
+                    }
+                    else
+                    {
+                        @Html.Raw(plugin.AdditionalInformationHtml)
+                    }
+                </alert>
+            </div>
+        </div>
+        
+        <div id="div-advanced" class="tab-pane fade">
+            <partial name="_NavAdvanced" model="Model"/>
+        </div>
+        
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}

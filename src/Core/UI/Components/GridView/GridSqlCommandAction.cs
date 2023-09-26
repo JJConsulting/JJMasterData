@@ -4,6 +4,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Web.Components;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -74,8 +75,7 @@ internal class GridSqlCommandAction
     {
         var formElement = _gridView.FormElement;
         IDictionary<string, object> formValues;
-        if (map.PkFieldValues != null && (map.PkFieldValues != null ||
-                                          map.PkFieldValues.Count > 0))
+        if (map.PkFieldValues.Any())
         {
             formValues = await _gridView.EntityRepository.GetFieldsAsync(formElement, map.PkFieldValues);
         }

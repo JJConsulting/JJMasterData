@@ -15,7 +15,7 @@ namespace JJMasterData.Core.Web.Components;
 /// </example>
 public class JJValidationSummary : HtmlComponent
 {
-    public IList<string> Errors { get; set; }
+    public List<string> Errors { get; }
 
     /// <summary>
     /// Panel title
@@ -55,8 +55,12 @@ public class JJValidationSummary : HtmlComponent
             Icon = IconType.ExclamationTriangle,
             Title = MessageTitle,
             ShowCloseButton = ShowCloseButton,
-            Messages = Errors
         };
+
+        foreach (var message in Errors)
+        {
+            alert.Messages.Add(message);
+        }
 
         return alert.BuildHtml();
     }

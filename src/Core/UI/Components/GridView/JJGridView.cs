@@ -321,7 +321,7 @@ public class JJGridView : AsyncComponent
             if (_currentSettings != null)
                 return _currentSettings;
             
-            var action = CurrentActionMap?.GetCurrentAction(FormElement);
+            var action = CurrentActionMap?.GetAction(FormElement);
             var form = new GridFormSettings(CurrentContext, StringLocalizer);
             if (action is ConfigAction)
             {
@@ -483,7 +483,7 @@ public class JJGridView : AsyncComponent
         {
             if (_currentActionMap != null) 
                 return _currentActionMap;
-            var encryptedActionMap = CurrentContext.Request.Form[$"grid-view-action-{Name}"];
+            var encryptedActionMap = CurrentContext.Request.Form[$"grid-view-action-map-{Name}"];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -671,7 +671,7 @@ public class JJGridView : AsyncComponent
     {
         AssertProperties();
 
-        string? currentAction = CurrentContext.Request[$"grid-view-action-{Name}"];
+        string? currentAction = CurrentContext.Request[$"grid-view-action-map-{Name}"];
 
         var html = new HtmlBuilder(HtmlTag.Div);
 
@@ -730,7 +730,7 @@ public class JJGridView : AsyncComponent
     {
         yield return new HtmlBuilder().AppendHiddenInput($"grid-view-order-{Name}", CurrentOrder.ToQueryParameter() ?? string.Empty);
         yield return new HtmlBuilder().AppendHiddenInput($"grid-view-page-{Name}", CurrentPage.ToString());
-        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-action-{Name}", currentAction ?? string.Empty);
+        yield return new HtmlBuilder().AppendHiddenInput($"grid-view-action-map-{Name}", currentAction ?? string.Empty);
         yield return new HtmlBuilder().AppendHiddenInput($"grid-view-row-{Name}", string.Empty);
 
         if (EnableMultiSelect)
@@ -777,13 +777,13 @@ public class JJGridView : AsyncComponent
 
     private bool CheckForSqlCommand()
     {
-        var action = CurrentActionMap?.GetCurrentAction(FormElement);
+        var action = CurrentActionMap?.GetAction(FormElement);
         return action is SqlCommandAction;
     }
 
     private async Task<JJMessageBox?> ExecuteSqlCommand()
     {
-        var action = CurrentActionMap!.GetCurrentAction(FormElement);
+        var action = CurrentActionMap!.GetAction(FormElement);
         var gridSqlAction = new GridSqlCommandAction(this);
         return await gridSqlAction.ExecuteSqlCommand(CurrentActionMap, (SqlCommandAction)action);
     }

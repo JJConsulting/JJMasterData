@@ -9,21 +9,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 class ActionData {
 }
-class ActionManager {
-    static executeSqlCommand(componentName, rowId, confirmMessage) {
+class ActionHelper {
+    static executeSqlCommand(componentName, encryptedActionMap, confirmMessage) {
         if (confirmMessage) {
-            var result = confirm(confirmMessage);
+            const result = confirm(confirmMessage);
             if (!result) {
                 return false;
             }
         }
-        document.querySelector("#grid-view-action-" + componentName).value = "";
-        document.querySelector("#grid-view-row-" + componentName).value = rowId;
-        const formViewActionMapElement = document.querySelector("#form-view-action-map-" + componentName);
-        if (formViewActionMapElement) {
-            formViewActionMapElement.value = "";
+        const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
+        const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
+        if (gridViewActionInput) {
+            gridViewActionInput.value = encryptedActionMap;
         }
-        document.querySelector("form").dispatchEvent(new Event("submit"));
+        else if (formViewActionInput) {
+            formViewActionInput.value = encryptedActionMap;
+        }
+        document.forms[0].requestSubmit();
     }
     static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
@@ -74,7 +76,7 @@ class ActionManager {
                 return false;
             }
         }
-        const gridViewActionInput = document.querySelector("#grid-view-action-" + componentName);
+        const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
         const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
         if (gridViewActionInput) {
             gridViewActionInput.value = "";
@@ -811,7 +813,7 @@ const localeCode = (_b = locale.split("-")[0]) !== null && _b !== void 0 ? _b : 
 class GridViewFilterHelper {
     static filter(gridViewName, routeContext) {
         document.querySelector("#grid-view-filter-action-" + gridViewName).value = "filter";
-        document.querySelector("#grid-view-action-" + gridViewName).value = "";
+        document.querySelector("#grid-view-action-map-" + gridViewName).value = "";
         document.querySelector("#grid-view-page-" + gridViewName).value = "1";
         GridViewHelper.clearCurrentFormAction(gridViewName);
         GridViewHelper.refreshGrid(gridViewName, routeContext);
@@ -856,7 +858,7 @@ class GridViewFilterHelper {
             }
         });
         document.querySelector("#grid-view-filter-action-" + componentName).value = "clear";
-        document.querySelector("#grid-view-action-" + componentName).value = "";
+        document.querySelector("#grid-view-action-map-" + componentName).value = "";
         GridViewHelper.clearCurrentFormAction(componentName);
     }
     static clearFilter(componentName, routeContext) {
@@ -907,7 +909,7 @@ class GridViewFilterHelper {
 }
 class GridViewHelper {
     static openSettingsModal(componentName, encryptedActionMap) {
-        const gridViewActionInput = document.getElementById("grid-view-action-" + componentName);
+        const gridViewActionInput = document.getElementById("grid-view-action-map-" + componentName);
         const gridViewPageInput = document.getElementById("grid-view-page-" + componentName);
         const gridViewRowInput = document.getElementById("grid-view-row-" + componentName);
         const form = document.querySelector("form");
@@ -946,7 +948,7 @@ class GridViewHelper {
             tableOrderElement.value = field + " DESC";
         else
             tableOrderElement.value = field + " ASC";
-        document.querySelector("#grid-view-action-" + componentName).value = "";
+        document.querySelector("#grid-view-action-map-" + componentName).value = "";
         this.clearCurrentFormAction(componentName);
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
@@ -983,7 +985,7 @@ class GridViewHelper {
             currentGridPage.value = currentPage;
     }
     static clearCurrentGridAction(componentName) {
-        const currentGridAction = document.querySelector("#grid-view-action-" + componentName);
+        const currentGridAction = document.querySelector("#grid-view-action-map-" + componentName);
         if (currentGridAction)
             currentGridAction.value = "";
     }

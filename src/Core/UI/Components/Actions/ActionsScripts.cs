@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿using System;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -71,7 +72,7 @@ internal class ActionsScripts
             });
 
         return
-            $"ActionManager.executeInternalRedirect('{url}','{popupSize}','{confirmationMessage}');";
+            $"ActionHelper.executeInternalRedirect('{url}','{popupSize}','{confirmationMessage}');";
     }
 
 
@@ -90,7 +91,7 @@ internal class ActionsScripts
         var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
 
         return
-            $"ActionManager.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
     public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)
@@ -122,7 +123,7 @@ internal class ActionsScripts
 
         var actionDataJson = actionData.ToJson();
 
-        var encodedFunction = HttpUtility.HtmlAttributeEncode($"ActionManager.executeAction('{actionDataJson}')");
+        var encodedFunction = HttpUtility.HtmlAttributeEncode($"ActionHelper.executeAction('{actionDataJson}')");
 
         return encodedFunction;
     }
@@ -138,25 +139,25 @@ internal class ActionsScripts
         return userCreatedAction switch
         {
             UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
-            SqlCommandAction => GetCommandScript(userCreatedAction, actionContext, actionSource),
+            SqlCommandAction => GetSqlCommandScript(userCreatedAction, actionContext, actionSource),
             ScriptAction jsAction => HttpUtility.HtmlAttributeEncode(ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData) ?? string.Empty),
             InternalAction internalAction => GetInternalUrlScript(internalAction, formStateData.FormValues),
-            _ => string.Empty
+            _ => GetFormActionScript(userCreatedAction, actionContext, actionSource)
         };
     }
 
-    public string GetCommandScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)
+    public string GetSqlCommandScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)
     {
         var actionMap = actionContext.ToActionMap(action.Name, actionSource);
-        string encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
+        var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
         return
-            $"ActionManager.executeGridAction('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            $"ActionHelper.executeSqlCommand('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
     public static string GetHideModalScript(string componentName)
     {
-        return $"ActionManager.hideActionModal('{componentName}')";
+        return $"ActionHelper.hideActionModal('{componentName}')";
     }
 }

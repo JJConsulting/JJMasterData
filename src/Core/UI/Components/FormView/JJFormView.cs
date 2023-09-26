@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -523,7 +524,7 @@ public class JJFormView : AsyncComponent
     
     private async Task<ComponentResult> GetFormActionResult()
     {
-        var currentAction = CurrentActionMap?.GetCurrentAction(FormElement);
+        var currentAction = CurrentActionMap?.GetAction(FormElement);
 
         SetFormServiceEvents();
 
@@ -558,6 +559,13 @@ public class JJFormView : AsyncComponent
             case CancelAction:
                 result = await GetCancelActionResult();
                 break;
+            
+            case SqlCommandAction:
+                result = await GetSqlCommandActionResult();
+                break;
+            case PluginAction:
+                result = await GetPluginActionResult();
+                break;
             default:
                 result = await GetDefaultResult();
                 break;
@@ -581,7 +589,39 @@ public class JJFormView : AsyncComponent
         
         return result;
     }
-    
+
+    private async Task<ComponentResult> GetSqlCommandActionResult()
+    {
+        var currentAction = (SqlCommandAction)CurrentActionMap!.GetAction(FormElement);
+
+        JJMessageBox? messageBox = null;
+        
+        try
+        {
+            var sqlCommand = ExpressionsService.ParseExpression(currentAction.CommandSql, await GetFormStateDataAsync());
+            await EntityRepository.SetCommandAsync(new(sqlCommand!));
+        }
+        catch (Exception ex)
+        {
+            var message = ExceptionManager.GetMessage(ex);
+            messageBox = ComponentFactory.Html.MessageBox.Create(message, MessageIcon.Error);
+        }
+        
+        var result = await GetDefaultResult();
+
+        if (result is HtmlComponentResult htmlComponentResult)
+        {
+            htmlComponentResult.HtmlBuilder.AppendComponentIf(messageBox is not null, messageBox);
+        }
+
+        return result;
+    }   
+
+    private async Task<ComponentResult> GetPluginActionResult()
+    {
+        return await GetDefaultResult();
+    }
+
     private void SetFormServiceEvents()
     {
         FormService.OnBeforeInsert += OnBeforeInsert;
