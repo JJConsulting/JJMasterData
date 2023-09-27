@@ -91,7 +91,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
         
         foreach (var action in actions)
         {
-            var link = await ActionButtonFactory.CreateFieldLinkAsync(action,actionContext);
+            var link = await ActionButtonFactory.CreateFieldButtonAsync(action,actionContext);
             textGroup.Actions.Add(link);
         }
     }

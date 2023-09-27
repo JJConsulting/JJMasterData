@@ -220,7 +220,7 @@ public class ActionButtonFactory
         return button;
     }
 
-    public async Task<JJLinkButton> CreateFieldLinkAsync(BasicAction action, ActionContext actionContext)
+    public async Task<JJLinkButton> CreateFieldButtonAsync(BasicAction action, ActionContext actionContext)
     {
         var button = await CreateAsync(action, actionContext.FormStateData);
 
