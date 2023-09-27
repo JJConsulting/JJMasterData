@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.UI.Components.GridView;
 
@@ -20,12 +22,12 @@ internal class GridSqlCommandAction
         _gridView = gridView;
     }
 
-    public async Task<JJMessageBox> ExecuteSqlCommand(ActionMap map, SqlCommandAction cmdAction)
+    public async Task<JJMessageBox> ExecuteSqlCommand(ActionMap map, SqlCommandAction sqlCommandAction)
     {
         var messageFactory = _gridView.ComponentFactory.Html.MessageBox;
         try
         {
-            if (IsApplyOnList(map, cmdAction))
+            if (IsApplyOnList(map, sqlCommandAction))
             {
                 var selectedRows = _gridView.GetSelectedGridValues();
                 if (selectedRows.Count == 0)
@@ -34,12 +36,12 @@ internal class GridSqlCommandAction
                     return  messageFactory.Create(msg, MessageIcon.Warning);
                 }
 
-                await ExecuteOnList(cmdAction, selectedRows);
+                await ExecuteOnList(sqlCommandAction, selectedRows);
                 _gridView.ClearSelectedGridValues();
             }
             else
             {
-                await ExecuteOnRecord(map, cmdAction);
+                await ExecuteOnRecord(map, sqlCommandAction);
             }
         }
         catch (Exception ex)
@@ -51,27 +53,27 @@ internal class GridSqlCommandAction
         return null;
     }
 
-    private bool IsApplyOnList(ActionMap map, SqlCommandAction cmdAction)
+    private bool IsApplyOnList(ActionMap map, SqlCommandAction sqlCommandAction)
     {
         return map.ActionSource == ActionSource.GridToolbar
                && _gridView.EnableMultiSelect
-               && cmdAction.ApplyOnSelected;
+               && sqlCommandAction.ApplyOnSelected;
     }
 
-    private async Task ExecuteOnList(SqlCommandAction cmdAction, List<IDictionary<string, object>> selectedRows)
+    private async Task ExecuteOnList(SqlCommandAction sqlCommandAction, List<IDictionary<string, object>> selectedRows)
     {
         var commandList = new List<DataAccessCommand>();
         foreach (var row in selectedRows)
         {
             var formData = new FormStateData(row, _gridView.UserValues, PageState.List);
-            var sql = _gridView.ExpressionsService.ParseExpression(cmdAction.CommandSql, formData, false);
+            var sql = _gridView.ExpressionsService.ParseExpression(sqlCommandAction.CommandSql, formData, false);
             commandList.Add(new DataAccessCommand(sql!));
         }
 
         await _gridView.EntityRepository.SetCommandListAsync(commandList);
     }
 
-    private async Task ExecuteOnRecord(ActionMap map, SqlCommandAction cmdAction)
+    private async Task ExecuteOnRecord(ActionMap map, SqlCommandAction sqlCommandAction)
     {
         var formElement = _gridView.FormElement;
         IDictionary<string, object> formValues;
@@ -85,7 +87,9 @@ internal class GridSqlCommandAction
         }
 
         var formStateData = new FormStateData(formValues, _gridView.UserValues, PageState.List);
-        await _gridView.ActionExecutionService.ExecuteSqlCommandAction(cmdAction, formStateData);
+        var sqlCommand = _gridView.ExpressionsService.ParseExpression(sqlCommandAction.CommandSql, formStateData);
+        
+        await _gridView.EntityRepository.SetCommandAsync(new DataAccessCommand(sqlCommand!));
     }
 
 }

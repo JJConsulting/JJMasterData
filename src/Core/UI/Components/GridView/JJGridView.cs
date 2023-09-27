@@ -156,7 +156,7 @@ public class JJGridView : AsyncComponent
 
         var defaultValues = await GetDefaultValuesAsync();
         var formData = new FormStateData(defaultValues, UserValues, PageState.List);
-        foreach (var f in FormElement.Fields)
+        foreach (var f in FormElement.Fields.Where(f=>f.DataBehavior is not FieldBehavior.Virtual))
         {
             bool isVisible = await ExpressionsService.GetBoolValueAsync(f.VisibleExpression, formData);
             if (isVisible)
@@ -165,7 +165,6 @@ public class JJGridView : AsyncComponent
     }
 
     internal FormValuesService FormValuesService { get; }
-    internal ActionExecutionService ActionExecutionService { get; }
 
     /// <summary>
     /// <see cref="FormElement"/>
@@ -544,7 +543,6 @@ public class JJGridView : AsyncComponent
         ExpressionsService expressionsService,
         FieldsService fieldsService,
         FormValuesService formValuesService,
-        ActionExecutionService actionExecutionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
     {
@@ -569,7 +567,6 @@ public class JJGridView : AsyncComponent
         CurrentContext = currentContext;
         DataItemService = dataItemService;
         FormValuesService = formValuesService;
-        ActionExecutionService = actionExecutionService;
     }
 
     #endregion

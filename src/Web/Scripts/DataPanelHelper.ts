@@ -4,7 +4,7 @@ class DataPanelHelper {
 
         let urlBuilder = new UrlBuilder()
         urlBuilder.addQueryParameter("panelName",componentName)
-        urlBuilder.addQueryParameter("componentName",fieldName)
+        urlBuilder.addQueryParameter("fieldName",fieldName)
         urlBuilder.addQueryParameter("routeContext",routeContext)
         
         const form = document.querySelector("form");

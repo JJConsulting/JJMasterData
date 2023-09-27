@@ -33,7 +33,6 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private DataItemService DataItemService { get; }
     private IHttpContext CurrentContext { get; }
-    private ActionExecutionService ActionExecutionService { get; }
 
     public GridViewFactory(IHttpContext currentContext,
         IEntityRepository entityRepository,
@@ -43,7 +42,6 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         ExpressionsService expressionsService,
         FieldsService fieldsService,
         FormValuesService formValuesService,
-        ActionExecutionService actionExecutionService,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IGridEventHandlerFactory gridEventHandlerFactory,
         IComponentFactory componentFactory)
@@ -56,7 +54,6 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         StringLocalizer = stringLocalizer;
         GridEventHandlerFactory = gridEventHandlerFactory;
         ComponentFactory = componentFactory;
-        ActionExecutionService = actionExecutionService;
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         DataItemService = dataItemService;
@@ -74,7 +71,6 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
             ExpressionsService, 
             FieldsService, 
             FormValuesService,
-            ActionExecutionService,
             StringLocalizer,
             ComponentFactory);
 

@@ -9,7 +9,6 @@ public static class DataManagerServiceExtensions
     public static IServiceCollection AddDataManagerServices(this IServiceCollection services)
     {
         services.AddScoped<AuditLogService>();
-        services.AddScoped<ActionExecutionService>();
         services.AddScoped<DataItemService>();
         services.AddScoped<LookupService>();
         services.AddScoped<FieldFormattingService>();

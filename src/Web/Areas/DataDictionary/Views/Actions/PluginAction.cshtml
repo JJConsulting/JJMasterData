@@ -80,7 +80,7 @@
                 </textarea>
                 
                 <alert title="@plugin.Title" color="Info" icon="IconType.Plug">
-                    @if (plugin.AdditionalInformationHtml is null)
+                    @if (plugin.AdditionalInformationHtml is null || !plugin.AdditionalInformationHtml.GetChildren().Any())
                     {
                         @Html.Raw(StringLocalizer["No additional information about this plugin."])
                     }

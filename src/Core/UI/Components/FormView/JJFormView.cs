@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -304,17 +305,18 @@ public class JJFormView : AsyncComponent
     }
     internal IHttpContext CurrentContext { get; }
     internal IFormValues FormValues => CurrentContext.Request.Form;
+    public IQueryString QueryString => CurrentContext.Request.QueryString;
     internal IEntityRepository EntityRepository { get; }
     internal FieldValuesService FieldValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
-    private ActionExecutionService ActionsService { get; }
+    private IEnumerable<IActionPlugin> ActionPlugins { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal FormService FormService { get; }
     internal IEncryptionService EncryptionService { get; }
     internal IComponentFactory ComponentFactory { get; }
-    
+
     #endregion
 
     #region "Constructors"
@@ -333,7 +335,7 @@ public class JJFormView : AsyncComponent
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<ExpressionsService>();
         StringLocalizer = StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
         DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();        
-        ActionsService = StaticServiceLocator.Provider.GetScopedDependentService<ActionExecutionService>();
+        ActionPlugins = StaticServiceLocator.Provider.GetScopedDependentService<IEnumerable<IActionPlugin>>();
         FormService.EnableErrorLinks = true;
     }
 
@@ -360,7 +362,7 @@ public class JJFormView : AsyncComponent
         IEncryptionService encryptionService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
-        ActionExecutionService actionsService,
+        IEnumerable<IActionPlugin> actionPlugins,
         IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
@@ -373,7 +375,7 @@ public class JJFormView : AsyncComponent
         EncryptionService = encryptionService;
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
-        ActionsService = actionsService;
+        ActionPlugins = actionPlugins;
         Options = options;
         StringLocalizer = stringLocalizer;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -451,10 +453,14 @@ public class JJFormView : AsyncComponent
         else
             values = await GetFormValuesAsync();
 
+        var fieldName = QueryString["fieldName"];
+        
+        var result = await GetPluginActionResult(values,fieldName);
+        
         DataPanel.Values = values;
         return await DataPanel.GetResultAsync();
     }
-
+    
 
     private async Task<ComponentResult> GetSaveActionResult()
     {
@@ -614,7 +620,9 @@ public class JJFormView : AsyncComponent
         var sqlAction = CurrentActionMap!.GetAction<SqlCommandAction>(FormElement);
         try
         {
-            await ActionsService.ExecuteSqlCommandAction(sqlAction, await GetFormStateDataAsync());
+            var sqlCommand = ExpressionsService.ParseExpression(sqlAction.CommandSql, await GetFormStateDataAsync());
+        
+            await EntityRepository.SetCommandAsync(new DataAccessCommand(sqlCommand!));
         }
         catch (Exception ex)
         {
@@ -632,17 +640,33 @@ public class JJFormView : AsyncComponent
         return result;
     }   
 
-    private async Task<ComponentResult> GetPluginActionResult()
+    private async Task<ComponentResult> GetPluginActionResult(string? triggeredFieldName = null)
     {
         var formValues = await GetFormValuesAsync();
-        var pluginActionResult = await ActionsService.ExecutePluginAction((PluginAction)CurrentAction!, formValues);
 
-        if (pluginActionResult.JsCallback is not null)
+        var result = await GetPluginActionResult(formValues);
+
+        if (result.JsCallback is not null)
         {
-            return new JsonComponentResult(pluginActionResult);
+            return new JsonComponentResult(result);
         }
         
-        return await GetDefaultResult();
+        return await GetDefaultResult(formValues);
+    }
+
+    private async Task<PluginActionResult> GetPluginActionResult(IDictionary<string, object?> formValues, string? fieldName = null)
+    {
+        var pluginAction = (PluginAction)CurrentAction!;
+
+        var actionPlugin = ActionPlugins.First(p => p.Id == pluginAction.PluginId);
+
+        var result = await actionPlugin.ExecuteActionAsync(new PluginActionContext
+        {
+            Values = formValues,
+            AdditionalParameters = pluginAction.AdditionalParameters ?? new Dictionary<string, object?>(),
+            TriggeredFieldName = fieldName
+        });
+        return result;
     }
 
     private void SetFormServiceEvents()
@@ -688,7 +712,7 @@ public class JJFormView : AsyncComponent
         return await GetFormResult(new FormContext(values, PageState), autoReloadFields);
     }
 
-    private async Task<ComponentResult> GetDefaultResult()
+    private async Task<ComponentResult> GetDefaultResult(IDictionary<string,object?>? formValues = null)
     {
         switch (PageState)
         {
@@ -696,8 +720,8 @@ public class JJFormView : AsyncComponent
                 return await GetFormResult(new FormContext((IDictionary<string, object?>)RelationValues, PageState),
                     false);
             case PageState.Update:
-                var values = await GetFormValuesAsync();
-                return await GetFormResult(new FormContext(values, PageState), true);
+                formValues ??= await GetFormValuesAsync();
+                return await GetFormResult(new FormContext(formValues, PageState), true);
             default:
                 return await GetGridViewResult();
         }

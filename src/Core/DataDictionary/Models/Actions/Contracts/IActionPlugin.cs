@@ -16,7 +16,6 @@ public interface IActionPlugin
     
     public string Title { get; }
     
-        
     /// <summary>
     /// Hint keywords to the additional parameters.
     /// </summary>
@@ -27,5 +26,5 @@ public interface IActionPlugin
     /// </summary>
     public HtmlBuilder? AdditionalInformationHtml { get; }
     
-    public Task<PluginActionResult> ExecuteActionAsync(IDictionary<string,object?> values);
+    public Task<PluginActionResult> ExecuteActionAsync(PluginActionContext pluginActionContext);
 }

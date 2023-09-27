@@ -1,3 +1,4 @@
+using JJMasterData.Brasil.Extensions;
 using JJMasterData.Protheus.Configuration;
 using JJMasterData.Web.Extensions;
 using JJMasterData.WebExample.Authorization;
@@ -9,7 +10,7 @@ var settingsPath = Path.Combine(root, "appsettings.json");
 
 builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
 
-builder.Services.AddJJMasterDataWeb(builder.Configuration).WithProtheusServices();
+builder.Services.AddJJMasterDataWeb(builder.Configuration).WithProtheusServices().WithCepPluginAction();
 
 builder.Services.AddControllersWithViews().AddViewLocalization();
 

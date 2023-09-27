@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Cryptography;
+﻿using System.Collections.Generic;
+using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
@@ -11,6 +12,7 @@ using JJMasterData.Core.Web.Components;
 using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
@@ -29,7 +31,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     private ExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
-    private ActionExecutionService ActionsService { get; }
+    private IEnumerable<IActionPlugin> ActionPlugins { get; }
     private IComponentFactory Factory { get; }
     private IFormEventHandlerFactory FormEventHandlerFactory { get; }
 
@@ -42,7 +44,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         IEncryptionService encryptionService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
-        ActionExecutionService actionsService,
+        IEnumerable<IActionPlugin> actionPlugins,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IOptions<JJMasterDataCoreOptions> options,
         IComponentFactory factory,
@@ -60,7 +62,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         Options = options;
         Factory = factory;
         FormEventHandlerFactory = formEventHandlerFactory;
-        ActionsService = actionsService;
+        ActionPlugins = actionPlugins;
     }
 
     public JJFormView Create(FormElement formElement)
@@ -74,7 +76,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
             EncryptionService, 
             FieldValuesService, 
             ExpressionsService,
-            ActionsService,
+            ActionPlugins,
             Options,
             StringLocalizer,
             Factory);

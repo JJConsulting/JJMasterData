@@ -10,7 +10,7 @@ public class PluginAction : UserCreatedAction
 {
     public required Guid PluginId { get; init; }
     
-    public bool? AutoReloadFormFields { get; set; }
+    public bool AutoReloadFormFields { get; set; }
     public IDictionary<string,object?>? AdditionalParameters { get; set; }
     
     public PluginAction()

@@ -1,8 +1,10 @@
 ﻿using System;
 using JJMasterData.Brasil.Abstractions;
+using JJMasterData.Brasil.Actions;
 using JJMasterData.Brasil.Models;
 using JJMasterData.Brasil.Services;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Core.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
@@ -52,6 +54,14 @@ public static class JJMasterDataServiceBuilderExtensions
     public static JJMasterDataServiceBuilder WithViaCep(this JJMasterDataServiceBuilder builder)
     {
         builder.Services.AddTransient<ICepService, ViaCepService>();
+        
+        return builder;
+    }
+    
+    public static JJMasterDataServiceBuilder WithCepPluginAction(this JJMasterDataServiceBuilder builder)
+    {
+        builder.WithViaCep();
+        builder.WithActionPlugin<CepPluginAction>();
         
         return builder;
     }

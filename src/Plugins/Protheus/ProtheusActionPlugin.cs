@@ -17,11 +17,11 @@ public class ProtheusActionPlugin : IActionPlugin
         }
     }
     public HtmlBuilder? AdditionalInformationHtml => null;
-    public async Task<PluginActionResult> ExecuteActionAsync(IDictionary<string, object?> values)
+    
+    public async Task<PluginActionResult> ExecuteActionAsync(PluginActionContext pluginActionContext)
     {
         await Task.Delay(1);
-        values["NomePedido"] = "oi do protheus";
-        return new PluginActionResult()
+        return new PluginActionResult
         {
             JsCallback = "alert('pan')"
         };

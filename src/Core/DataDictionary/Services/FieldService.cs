@@ -55,7 +55,9 @@ public class FieldService : BaseService
         }
 
         formElement.Fields[field.Name] = field;
-        await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+        
+        if(IsValid)
+            await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
         return IsValid;
     }

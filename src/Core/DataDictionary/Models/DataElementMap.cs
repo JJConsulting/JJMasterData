@@ -7,7 +7,8 @@ namespace JJMasterData.Core.DataDictionary;
 
 public class DataElementMap
 {
-    [JsonProperty("elementName")] public string ElementName { get; set; } = null!;
+    [JsonProperty("elementName")] 
+    public string ElementName { get; set; } = null!;
 
     [JsonProperty("fieldKey")]
     public string FieldId { get; set; } = null!;
