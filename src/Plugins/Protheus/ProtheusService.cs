@@ -28,7 +28,6 @@ public class ProtheusService : IProtheusService
     public ProtheusService(HttpClient httpClient)
     {
         _httpClient = httpClient;
-        _httpClient.Timeout = TimeSpan.FromMinutes(10);
     }
 
     public async Task<string> CallFunctionAsync(string urlProtheus, string functionName, string parms)

@@ -7,18 +7,22 @@ namespace JJMasterData.Core.DataDictionary.Repository;
 
 public static class FormElementSerializer
 {
-    private static JsonSerializerSettings Settings { get; } = new()
-    {
-        TypeNameHandling = TypeNameHandling.Auto, 
-        Formatting = Formatting.None,
-        NullValueHandling = NullValueHandling.Ignore,
-        ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-        ContractResolver = new DefaultContractResolver
+    private static JsonSerializerSettings? _settings;
+
+    public static JsonSerializerSettings Settings =>
+        _settings ??= new JsonSerializerSettings
         {
-            NamingStrategy = new CamelCaseNamingStrategy()
-        }
-    };
-    
+            TypeNameHandling = TypeNameHandling.Auto,
+            Formatting = Formatting.None,
+            NullValueHandling = NullValueHandling.Ignore,
+            ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+            ContractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy()
+            }
+        };
+
+
     public static string Serialize(FormElement formElement, Action<JsonSerializerSettings>? configureSettings = null)
     {
         configureSettings?.Invoke(Settings);

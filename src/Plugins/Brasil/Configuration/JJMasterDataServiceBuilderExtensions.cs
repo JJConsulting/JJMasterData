@@ -61,7 +61,7 @@ public static class JJMasterDataServiceBuilderExtensions
     public static JJMasterDataServiceBuilder WithCepPluginAction(this JJMasterDataServiceBuilder builder)
     {
         builder.WithViaCep();
-        builder.WithActionPlugin<CepPluginAction>();
+        builder.WithActionPlugin<CepActionPlugin>();
         
         return builder;
     }

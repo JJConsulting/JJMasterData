@@ -18,8 +18,8 @@
     Layout = Options.Value.PopUpLayoutPath;
 }
 
-<link href="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.css" rel="stylesheet"/>
-<link href="~/_content/JJMasterData.Web/css/codemirror/show-hint.css" rel="stylesheet"/>
+<link href="~/_content/JJMasterData.Web/css/codemirror/codemirror.css" rel="stylesheet"/>
+<link href="~/_content/JJMasterData.Web/css/codemirror/show-hint.css"rel="stylesheet"/>
 
 @section Scripts{
     <script src="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.js" type="text/javascript"></script>
@@ -29,7 +29,7 @@
     <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js" type="text/javascript"></script>
     
     <script type="text/javascript">
-        CodeMirrorWrapper.setupCodeMirror("additionalParametersJson",{mode: "javascript", hintList: @Html.Raw(JsonConvert.SerializeObject(hints)), hintKeyCode: 222})
+        CodeMirrorWrapper.setupCodeMirror("additionalParametersJson",{mode: "javascript", hintList: @Html.Raw(JsonConvert.SerializeObject(hints)), hintKeyCode: 192})
     </script>
 }
 

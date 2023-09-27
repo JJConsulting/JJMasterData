@@ -25,6 +25,7 @@ public class FieldController : DataDictionaryController
     {
         var formElement = await _fieldService.GetFormElementAsync(elementName);
         FormElementField? field;
+     
         if (string.IsNullOrEmpty(fieldName))
         {
             if (TempData.ContainsKey("field"))

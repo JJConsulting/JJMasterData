@@ -664,7 +664,7 @@ public class JJFormView : AsyncComponent
         {
             Values = formValues,
             AdditionalParameters = pluginAction.AdditionalParameters ?? new Dictionary<string, object?>(),
-            TriggeredFieldName = fieldName
+            TriggeredFieldName = CurrentActionMap!.FieldName!
         });
         return result;
     }

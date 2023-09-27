@@ -18,42 +18,4 @@ public static class GenericExtensions
     {
         return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(self));
     }
-    
-    public static IDictionary<string, string> ToDictionary(this object metaToken)
-    {
-        if (metaToken == null)
-        {
-            return null;
-        }
-
-        if (metaToken is not JToken token)
-        {
-            return ToDictionary(JObject.FromObject(metaToken));
-        }
-
-        if (token.HasValues)
-        {
-            var contentData = new Dictionary<string, string>();
-
-            return token.Children()
-                .ToList()
-                .Select(child => child.ToDictionary())
-                .Where(childContent => childContent != null)
-                .Aggregate(contentData, (current, childContent) => current.Concat(childContent)
-                    .ToDictionary(k => k.Key, v => v.Value));
-        }
-
-        var jValue = token as JValue;
-        if (jValue?.Value == null)
-        {
-            return null;
-        }
-
-        var value = jValue?.Type == JTokenType.Date ?
-            jValue?.ToString("o", CultureInfo.InvariantCulture) :
-            jValue?.ToString(CultureInfo.InvariantCulture);
-
-        return new Dictionary<string, string> { { token.Path, value } };
-    }
-
 }
