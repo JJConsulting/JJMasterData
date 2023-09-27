@@ -22,6 +22,8 @@ internal class DataPanelControl
 
     private DataPanelScripts? _panelScripts;
 
+    
+    public string ParentComponentName { get; }
     public string Name { get; }
 
     public FormElement FormElement { get; }
@@ -52,6 +54,7 @@ internal class DataPanelControl
     public DataPanelControl(JJDataPanel dataPanel)
     {
         FormElement = dataPanel.FormElement;
+        ParentComponentName = dataPanel.ParentComponentName ?? dataPanel.Name;
         FormUI = dataPanel.FormUI;
         ComponentFactory = dataPanel.ComponentFactory;
         Errors = dataPanel.Errors;
@@ -65,6 +68,7 @@ internal class DataPanelControl
 
     public DataPanelControl(JJGridView gridView, IDictionary<string, object?> values)
     {
+        ParentComponentName = gridView.ParentComponentName ?? gridView.Name;
         FormElement = gridView.FormElement;
         FormUI = new FormUI
         {
@@ -305,7 +309,7 @@ internal class DataPanelControl
     private async Task<HtmlBuilder> GetControlField(FormElementField field, object? value)
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
-        var control = await ComponentFactory.Controls.CreateAsync(FormElement, field, formStateData, value);
+        var control = await ComponentFactory.Controls.CreateAsync(FormElement, field, formStateData, ParentComponentName, value);
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             control.Name = FieldNamePrefix + field.Name;

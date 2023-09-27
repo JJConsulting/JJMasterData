@@ -195,6 +195,8 @@ public class JJGridView : AsyncComponent
 
     public bool EnableFilter { get; set; }
 
+    public string? ParentComponentName { get; set; }
+    
     public bool ShowToolbar { get; set; }
 
     /// <summary>

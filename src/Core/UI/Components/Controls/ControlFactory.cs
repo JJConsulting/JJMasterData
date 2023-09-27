@@ -64,9 +64,10 @@ public class ControlFactory
         FormElement formElement,
         FormElementField field,
         FormStateData formStateData,
+        string parentComponentName,
         object? value = null)
     {
-        var context = new ControlContext(formStateData, value);
+        var context = new ControlContext(formStateData, parentComponentName, value);
         if (formStateData.PageState == PageState.Filter && field.Filter.Type == FilterMode.Range)
         {
             var factory = GetControlFactory<JJTextRange>();

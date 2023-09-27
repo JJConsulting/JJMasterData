@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.UI.Components;
 
@@ -68,6 +69,9 @@ public class JJDataPanel : AsyncComponent
     /// (Default=True)
     /// </summary>
     public bool AutoReloadFormFields { get; set; }
+    
+    [CanBeNull] 
+    public string ParentComponentName { get; set; }
 
     /// <summary>
     /// Render field grouping
@@ -219,7 +223,7 @@ public class JJDataPanel : AsyncComponent
     {
         var fieldName = CurrentContext.Request.QueryString["fieldName"];
         var formStateData = new FormStateData(await GetFormValuesAsync(), UserValues, PageState);
-        var controlContext = new ControlContext(formStateData);
+        var controlContext = new ControlContext(formStateData, Name);
 
         if (!FormElement.Fields.TryGetField(fieldName, out var field))
             return new EmptyComponentResult();

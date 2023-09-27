@@ -37,7 +37,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
 
     public JJTextFile Create(FormElement formElement, FormElementField field, ControlContext context)
     {
-        var (formStateData, value) = context;
+        var (formStateData, _, value) = context;
 
         if (field == null)
             throw new ArgumentNullException(nameof(field));

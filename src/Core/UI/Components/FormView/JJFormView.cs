@@ -145,6 +145,7 @@ public class JJFormView : AsyncComponent
         get
         {
             _dataPanel ??= ComponentFactory.DataPanel.Create(FormElement);
+            _dataPanel.ParentComponentName = Name;
             _dataPanel.FormUI = FormElement.Options.Form;
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
@@ -189,7 +190,8 @@ public class JJFormView : AsyncComponent
                 return _gridView;
 
             _gridView = ComponentFactory.GridView.Create(FormElement);
-            _gridView.Name = Name.ToLower();
+            _gridView.Name = Name;
+            _gridView.ParentComponentName = Name;
             _gridView.FormElement = FormElement;
             _gridView.UserValues = UserValues;
             _gridView.ShowTitle = true;
