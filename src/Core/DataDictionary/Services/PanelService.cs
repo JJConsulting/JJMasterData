@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Extensions;
+﻿using System;
+using JJMasterData.Commons.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -63,7 +64,7 @@ public class PanelService : BaseService
         
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }
-
+    
     public bool ValidatePanel(FormElementPanel panel)
     {
         if (string.IsNullOrWhiteSpace(panel.VisibleExpression))

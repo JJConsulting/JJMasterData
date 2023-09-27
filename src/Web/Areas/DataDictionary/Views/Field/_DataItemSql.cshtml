@@ -9,67 +9,12 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-         $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function () {
-             refreshCodeMirror();
+         CodeMirrorWrapper.setupCodeMirror("Data_Item_Command_Sql","text/x-sql", {
+             mode: "text/x-sql",
+             hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
+             hintKeyCode: 219
          });
-         buildCodeMirror();
     });
-
-
-    function refreshCodeMirror() {
-        const codeMirror = $(".CodeMirror");
-        const cm1 = codeMirror[0];
-        if (cm1 && cm1.CodeMirror) {
-            cm1.CodeMirror.refresh();
-        }
-
-        const cm2 = codeMirror[1];
-        if (cm2 && cm2.CodeMirror) {
-            cm2.CodeMirror.refresh();
-        }
-    }
-
-    function buildCodeMirror() {
-        var cm = CodeMirror.fromTextArea(document.getElementById('DataItem_Command_Sql'), {
-            mode: "text/x-sql",
-            indentWithTabs: true,
-            smartIndent: true,
-            lineNumbers: true,
-            matchBrackets: true,
-            autofocus: true,
-            autohint: true,
-            extraKeys: { "Ctrl-Space": "autocomplete" },
-            hintOptions: {
-                tables: {
-                    AppUser: ["USR_ID", "USR_USERNAME", "USR_FIRSTNAME", "USR_LASTNAME", "USR_EMAIL", "USR_ISDISABLED"],
-                    AppMenu: ["MNU_ID", "MNU_ORDER", "MNU_ICON", "MNU_LABEL", "MNU_TYPE", "MNU_ACTION"],
-                }
-            }
-        });
-
-        cm.setSize(null, 250);
-
-        // Register our custom Codemirror hint plugin.
-        CodeMirror.registerHelper('hint', 'dictionaryHint', function (editor) {
-            const dictionary = @Html.Raw(ViewBag.HintDictionary);
-            const cur = editor.getCursor();
-            const start = cur.ch;
-            const end = start;
-            return {
-                list: dictionary,
-                from: CodeMirror.Pos(cur.line, start),
-                to: CodeMirror.Pos(cur.line, end)
-            }
-        });
-
-        cm.on("keyup", function (cm, event) {
-            if (!cm.state.completionActive && /*Enables keyboard navigation in autocomplete list*/
-                event.keyCode == 219) {       /*Enter - do not open autocomplete list just after item has been selected in it*/
-                CodeMirror.commands.autocomplete(cm, CodeMirror.hint.dictionaryHint, { completeSingle: false });
-                //CodeMirror.showHint(cm, CodeMirror.hint.dictionaryHint);
-            }
-        });
-    }
 </script>
 
 <div id="divSqlCommand" >
@@ -95,15 +40,15 @@
         @if (Model.Component == FormComponent.Search)
         {
             <span>
-                @StringLocalizer["{search_id} retrieves the list record from the found ID that can be used in the query filter condition"]<br/>
-                @StringLocalizer["{search_text} passage of typed text that can be used with the LIKE command in the query."]<br/>
+                @StringLocalizer["{SearchId} retrieves the list record from the found ID that can be used in the query filter condition"]<br/>
+                @StringLocalizer["{SearchText} passage of typed text that can be used with the LIKE command in the query."]<br/>
                 <i>@StringLocalizer["Optimizing the reading of SEARCH component records"]</i>
             </span>
         }
         else if (Model.Component == FormComponent.ComboBox)
         {
             <span>
-                @StringLocalizer["{search_id} retrieves the list record from the found ID that can be used in the query filter condition"]
+                @StringLocalizer["{SearchId} retrieves the list record from the found ID that can be used in the query filter condition"]
             </span>
         }
     </label>

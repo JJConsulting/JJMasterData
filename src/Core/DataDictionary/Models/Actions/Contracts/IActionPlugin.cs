@@ -16,8 +16,14 @@ public interface IActionPlugin
     
     public string Title { get; }
     
+        
     /// <summary>
-    /// Optional nformation about the plugin that will be shown to the developer.
+    /// Hint keywords to the additional parameters.
+    /// </summary>
+    public IEnumerable<string> AdditionalParametersHints { get; }
+    
+    /// <summary>
+    /// Optional information about the plugin that will be shown to the developer.
     /// </summary>
     public HtmlBuilder? AdditionalInformationHtml { get; }
     

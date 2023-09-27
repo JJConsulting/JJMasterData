@@ -96,8 +96,8 @@ public class FormElementDataItem
             return false;
 
         string sql = Command.Sql;
-        sql = sql.Replace("{search_id}", string.Empty);
-        sql = sql.Replace("{search_text}", string.Empty);
+        sql = sql.Replace("{SearchId}", string.Empty);
+        sql = sql.Replace("{SearchText}", string.Empty);
         return sql.Contains("{");
     }
 }

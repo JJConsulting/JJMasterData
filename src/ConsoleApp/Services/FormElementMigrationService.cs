@@ -47,7 +47,30 @@ public class FormElementMigrationService
         }
 
         DataAccess.SetCommand($"delete from {TableName} where type <> 'F'");
-
+        
+        DataAccess.SetCommand($$"""
+                              UPDATE {{TableName}}
+                              SET [json] = REPLACE([json],
+                                  '{search_id}', 
+                                  '{SearchId}') 
+                              WHERE [json] LIKE '%{search_id}%';
+                              """);
+        DataAccess.SetCommand($$"""
+                                UPDATE {{TableName}}
+                                SET [json] = REPLACE([json],
+                                    '{search_text}',
+                                    '{SearchText}')
+                                WHERE [json] LIKE '%{search_text}%';
+                                """);
+        
+        DataAccess.SetCommand($$"""
+                                UPDATE {{TableName}}
+                                SET [json] = REPLACE([json],
+                                    '{objname}',
+                                    '{ComponentName}')
+                                WHERE [json] LIKE '%{objid}%';
+                                """);
+        
         Console.WriteLine($@"Process started: {start}");
         Console.WriteLine($@"Process finished: {DateTime.Now}");
         Console.ReadLine();

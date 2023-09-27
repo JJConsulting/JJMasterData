@@ -6,6 +6,7 @@ using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -229,7 +230,7 @@ public class FieldController : DataDictionaryController
         ViewBag.MenuId = "Field";
         ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;
-        ViewBag.HintDictionary = _fieldService.GetHintDictionary(formElement);
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(_fieldService.GetAutocompleteHintsList(formElement));
         ViewBag.MaxRequestLength = GetMaxRequestLength();
         ViewBag.FieldName = field.Name;
         ViewBag.Fields = formElement.Fields;

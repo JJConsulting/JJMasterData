@@ -634,8 +634,8 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetPluginActionResult()
     {
-        var formStateData = await GetFormStateDataAsync();
-        var pluginActionResult = await ActionsService.ExecutePluginAction((PluginAction)CurrentAction!,formStateData);
+        var formValues = await GetFormValuesAsync();
+        var pluginActionResult = await ActionsService.ExecutePluginAction((PluginAction)CurrentAction!, formValues);
 
         if (pluginActionResult.JsCallback is not null)
         {

@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -49,13 +50,9 @@ public class ActionExecutionService
         await EntityRepository.SetCommandAsync(new DataAccessCommand(sqlCommand!));
     }
     
-    public async Task<PluginActionResult> ExecutePluginAction(PluginAction pluginAction, FormStateData formStateData)
+    public async Task<PluginActionResult> ExecutePluginAction(PluginAction pluginAction, IDictionary<string,object?> values)
     {
         var actionPlugin = ActionPlugins.First(p => p.Id == pluginAction.PluginId);
-
-        var values = formStateData.FormValues;
-
-        DataHelper.CopyIntoDictionary(values, formStateData.UserValues, false);
         
         return await actionPlugin.ExecuteActionAsync(values);
     }

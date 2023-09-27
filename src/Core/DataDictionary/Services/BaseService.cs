@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,27 +87,25 @@ public abstract class BaseService
         return _validationDictionary.IsValid;
     }
 
+    //todo: "Expressions can start with anything now."
     public bool ValidateExpression(string value, params string[] args)
     {
         return args.Any(value.StartsWith);
     }
 
-    public string GetHintDictionary(FormElement formElement)
+    public IEnumerable<string> GetAutocompleteHintsList(FormElement formElement, bool includeAdditionalHints = true)
     {
-        var hints = new StringBuilder();
-        hints.Append("[");
-        hints.AppendFormat("'pagestate'");
-        hints.AppendFormat(",'objname'");
-        hints.AppendFormat(",'search_id'");
-        hints.AppendFormat(",'search_text'");
-        hints.AppendFormat(",'USERID'");
-        if (formElement != null)
+        if (includeAdditionalHints)
         {
-            foreach (var f in formElement.Fields)
-                hints.AppendFormat(",'{0}'", f.Name);
+            yield return "PageState";
+            yield return "ComponentName";
+            yield return "UserId";
+            yield return "SearchId";
+            yield return "SearchText";
         }
-        hints.Append("]");
-        return hints.ToString();
+        
+        foreach (var field in formElement.Fields)
+            yield return field.Name;
     }
 
     public async Task<Dictionary<string, string>> GetElementListAsync()

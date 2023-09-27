@@ -7,74 +7,22 @@
     Layout = Options.Value.PopUpLayoutPath;
 }
 
-<link href="@Url.Content("~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.css")" rel="stylesheet"/>
-<link href="@Url.Content("~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.css")" rel="stylesheet"/>
-<script src="@Url.Content("~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/_content/JJMasterData.Web/js/codemirror/mode/sql/sql.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js")" type="text/javascript"></script>
+<link href="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.css" rel="stylesheet"/>
+<link href="~/_content/JJMasterData.Web/css/codemirror/show-hint.css"rel="stylesheet"/>
 
+@section Scripts{
+    <script src="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.js" type="text/javascript"></script>
+    <script src="~/_content/JJMasterData.Web/js/codemirror/mode/sql.js" type="text/javascript"></script>
+    <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js" type="text/javascript"></script>
+    <script src="~/_content/JJMasterData.Web/js/codemirror/addon/autorefresh/autorefresh.js" type="text/javascript"></script>
+    <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js" type="text/javascript"></script>
 
-<script lang="javascript" type="text/javascript">
-
-    $(document).ready(function () {
-        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
-            refreshCodeMirror();
+    <script lang="javascript" type="text/javascript">
+        document.addEventListener("DOMContentLoaded",()=>{
+            CodeMirrorWrapper.setupCodeMirror('@nameof(Model.CommandSql)',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKeyCode: 219})
         });
-        buildCodeMirror();
-    });
-
-    function refreshCodeMirror() {
-        const cm1 = $(".CodeMirror")[0];
-        if (cm1 && cm1.CodeMirror) {
-            cm1.CodeMirror.refresh();
-        }
-    }
-
-    function buildCodeMirror() {
-        const cm = CodeMirror.fromTextArea(document.getElementById('CommandSql'), {
-            mode: "text/x-sql",
-            indentWithTabs: true,
-            smartIndent: true,
-            lineNumbers: true,
-            matchBrackets: true,
-            autofocus: true,
-            autohint: true,
-            extraKeys: { "Ctrl-Space": "autocomplete" },
-            hintOptions: {
-                tables: {
-                    AppUser: ["USR_ID", "USR_USERNAME", "USR_FIRSTNAME", "USR_LASTNAME", "USR_EMAIL", "USR_ISDISABLED"],
-                    AppMenu: ["MNU_ID", "MNU_ORDER", "MNU_ICON", "MNU_LABEL", "MNU_TYPE", "MNU_ACTION"],
-                }
-            }
-        });
-
-        cm.setSize(null, 250);
-
-        // Register our custom Codemirror hint plugin.
-        CodeMirror.registerHelper('hint', 'dictionaryHint', function (editor) {
-            const dictionary = @Html.Raw(ViewBag.HintDictionary);
-            const cur = editor.getCursor();
-            const curLine = editor.getLine(cur.line);
-            const start = cur.ch;
-            const end = start;
-            return {
-                list: dictionary,
-                from: CodeMirror.Pos(cur.line, start),
-                to: CodeMirror.Pos(cur.line, end)
-            }
-        });
-
-        cm.on("keyup", function (cm, event) {
-            if (!cm.state.completionActive && /*Enables keyboard navigation in autocomplete list*/
-                event.keyCode == 219) {       /*Enter - do not open autocomplete list just after item has been selected in it*/
-                CodeMirror.commands.autocomplete(cm, CodeMirror.hint.dictionaryHint, { completeSingle: false });
-                //CodeMirror.showHint(cm, CodeMirror.hint.dictionaryHint);
-            }
-        });
-    }
-
-</script>
+    </script>
+}
 
 @using (Html.BeginForm("SqlCommandAction", "Actions",
     new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))

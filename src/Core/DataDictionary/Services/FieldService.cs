@@ -214,9 +214,9 @@ public class FieldService : BaseService
             if (string.IsNullOrEmpty(dataItem.Command.Sql))
                 AddError("Command.Sql", StringLocalizer["[Field Command.Sql] required"]);
 
-            if (dataItem.ReplaceTextOnGrid && !dataItem.Command.Sql.Contains("{search_id}"))
+            if (dataItem.ReplaceTextOnGrid && !dataItem.Command.Sql.Contains("{SearchId}"))
             {
-                AddError("Command.Sql", "{search_id} is required at queries using ReplaceTextOnGrid. " +
+                AddError("Command.Sql", "{SearchId} is required at queries using ReplaceTextOnGrid. " +
                                         "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
             }
         }

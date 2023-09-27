@@ -176,14 +176,14 @@ public class DataItemService
         {
             if (searchId != null)
             {
-                if (formStateData.UserValues != null && !formStateData.UserValues.ContainsKey("search_id"))
-                    formStateData.UserValues.Add("search_id", StringManager.ClearText(searchId));
+                if (formStateData.UserValues != null && !formStateData.UserValues.ContainsKey("SearchId"))
+                    formStateData.UserValues.Add("SearchId", StringManager.ClearText(searchId));
             }
 
             if (searchText != null)
             {
-                if (formStateData.UserValues != null && !formStateData.UserValues.ContainsKey("search_text"))
-                    formStateData.UserValues.Add("search_text", StringManager.ClearText(searchText));
+                if (formStateData.UserValues != null && !formStateData.UserValues.ContainsKey("SearchText"))
+                    formStateData.UserValues.Add("SearchText", StringManager.ClearText(searchText));
             }
 
             sql = ExpressionsService.ParseExpression(sql, formStateData, false);

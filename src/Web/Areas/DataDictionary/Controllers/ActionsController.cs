@@ -4,17 +4,15 @@ using System.Dynamic;
 using System.Reflection;
 using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -22,13 +20,16 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class ActionsController : DataDictionaryController
 {
     private readonly ActionsService _actionsService;
+    private readonly ValidationSummaryFactory _validationSummaryFactory;
     private readonly IControlFactory<JJSearchBox> _searchBoxFactory;
 
     public ActionsController(
         ActionsService actionsService,
+        ValidationSummaryFactory validationSummaryFactory,
         IControlFactory<JJSearchBox> searchBoxFactory)
     {
         _actionsService = actionsService;
+        _validationSummaryFactory = validationSummaryFactory;
         _searchBoxFactory = searchBoxFactory;
     }
 
@@ -361,6 +362,19 @@ public class ActionsController : DataDictionaryController
         bool isActionSave,
         string? fieldName)
     {
+        string additionalParametersJson = Request.Form["additionalParametersJson"]!;
+        try
+        {
+            pluginAction.AdditionalParameters = JsonConvert.DeserializeObject<Dictionary<string,object>>(additionalParametersJson)!;
+        }
+        catch
+        {
+            ViewBag.Error = _validationSummaryFactory.Create("Invalid Additional Parameters JSON data.").GetHtml();
+            ViewBag.AdditionalParametersJson = additionalParametersJson;
+            await PopulateViewBag(elementName, pluginAction, context);
+            return View(pluginAction);
+        }
+
         return await EditActionResult(elementName, pluginAction, context, isActionSave, originalName, fieldName);
     }
 
@@ -395,14 +409,23 @@ public class ActionsController : DataDictionaryController
             case InsertAction _:
             {
                 var formElement = await _actionsService.GetFormElementAsync(elementName);
-                ViewBag.HintDictionary = _actionsService.GetHintDictionary(formElement);
+                ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(_actionsService.GetAutocompleteHintsList(formElement));
                 ViewBag.FormElement = formElement;
                 break;
             }
+            
+            case PluginAction _:
+            {
+                var formElement = await _actionsService.GetFormElementAsync(elementName);
+                ViewBag.CodeMirrorHintList = _actionsService.GetAutocompleteHintsList(formElement, includeAdditionalHints:false);
+                ViewBag.FormElement = formElement;
+                break;
+            }
+            
             case ExportAction _:
             {
                 var formElement = await _actionsService.GetFormElementAsync(elementName);
-                ViewBag.HintDictionary = _actionsService.GetHintDictionary(formElement);
+                ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(_actionsService.GetAutocompleteHintsList(formElement));
                 break;
             }
             case InternalAction internalAction:
