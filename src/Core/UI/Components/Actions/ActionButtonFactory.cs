@@ -229,6 +229,8 @@ public class ActionButtonFactory
             button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.Field);
         }
 
+        button.Enabled = button.Enabled && actionContext.FormStateData.PageState is not PageState.View;
+
         return button;
     }
     
