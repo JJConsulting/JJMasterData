@@ -276,7 +276,7 @@ public class FormService
     /// >
     public async Task<FormLetter> DeleteAsync(FormElement formElement, IDictionary<string, object> primaryKeys, DataContext dataContext)
     {
-        var errors = await FieldValidationService.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, EnableErrorLinks);
+        var errors = new Dictionary<string, string>();
         var result = new FormLetter(errors);
 
         if (OnBeforeDelete != null || OnBeforeDeleteAsync != null)

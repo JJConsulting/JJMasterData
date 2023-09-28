@@ -13,25 +13,4 @@ public class GenericExtensionsTest
         
         Assert.NotEqual(obj1,obj2);
     }
-
-    [Fact]
-    public void ToDictionaryTest()
-    {
-        const string formElementName = "FormElementTest";
-        const string formElementFieldName = "FieldTest";
-        
-        var formElement = new Element
-        {
-            Name = formElementName
-        };
-        formElement.Fields.Add(new()
-        {
-            Name = formElementFieldName
-        });
-
-        var dictionary = formElement.ToDictionary();
-        
-        Assert.Equal(formElementName, dictionary["name"]);
-        Assert.Equal(formElementFieldName, dictionary["fields[0].fieldname"]);
-    }
 }

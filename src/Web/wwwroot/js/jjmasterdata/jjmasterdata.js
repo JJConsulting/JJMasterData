@@ -248,7 +248,7 @@ class CodeMirrorWrapper {
             };
         });
         codeMirrorTextArea.on("keyup", function (cm, event) {
-            if (!cm.state.completionActive && event.keyCode == options.hintKeyCode) {
+            if (!cm.state.completionActive && event.key === "\"") {
                 CodeMirror.commands.autocomplete(cm, CodeMirror.hint.hintList, { completeSingle: false });
             }
         });

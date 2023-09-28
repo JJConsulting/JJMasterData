@@ -19,7 +19,7 @@
 
     <script lang="javascript" type="text/javascript">
         document.addEventListener("DOMContentLoaded",()=>{
-            CodeMirrorWrapper.setupCodeMirror('@nameof(Model.CommandSql)',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKeyCode: 219})
+            CodeMirrorWrapper.setupCodeMirror('@nameof(Model.CommandSql)',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'})
         });
     </script>
 }

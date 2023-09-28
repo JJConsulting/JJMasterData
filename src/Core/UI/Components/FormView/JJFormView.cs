@@ -839,7 +839,7 @@ public class JJFormView : AsyncComponent
             }
         }
 
-        return new RenderedComponentResult(html);
+        return new ContentComponentResult(html);
     }
 
     private async Task<ComponentResult> GetViewResult()

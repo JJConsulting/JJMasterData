@@ -29,7 +29,7 @@
     <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js" type="text/javascript"></script>
     
     <script type="text/javascript">
-        CodeMirrorWrapper.setupCodeMirror("additionalParametersJson",{mode: "javascript", hintList: @Html.Raw(JsonConvert.SerializeObject(hints)), hintKeyCode: 192})
+        CodeMirrorWrapper.setupCodeMirror("additionalParametersJson",{mode: "javascript", hintList: @Html.Raw(JsonConvert.SerializeObject(hints)), hintKey: '"'})
     </script>
 }
 
@@ -71,7 +71,10 @@
                 <textarea id="additionalParametersJson" name="additionalParametersJson">
                 @if (Model.AdditionalParameters?.Any() ?? false)
                 {
-                    @JsonConvert.SerializeObject(Model.AdditionalParameters)
+                    @JsonConvert.SerializeObject(Model.AdditionalParameters, new JsonSerializerSettings
+                    {
+                        Formatting = Formatting.Indented
+                    })
                 }
                 else
                 {

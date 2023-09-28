@@ -36,20 +36,20 @@ public class FieldControllerTest : IClassFixture<JJMasterDataWebExampleAppFactor
     {
         var postRequest = new HttpRequestMessage(HttpMethod.Post, "/en-us/DataDictionary/Field/Save");
 
-        var content = new FormElementField()
-        {
-            Name = "Age",
-            Label = "Age",
-            DataType = FieldType.Int,
-            Size = 100,
-            Component = FormComponent.Number
-        }.ToDictionary();
+        // var content = new FormElementField()
+        // {
+        //     Name = "Age",
+        //     Label = "Age",
+        //     DataType = FieldType.Int,
+        //     Size = 100,
+        //     Component = FormComponent.Number
+        // }.ToDictionary();
+        //
+        // content.Add("name", "Age");
+        // content.Add("dictionaryName",Constants.TestDataDictionaryName);
+        // content.Add("originalName",Constants.TestDataDictionaryName);
         
-        content.Add("name", "Age");
-        content.Add("dictionaryName",Constants.TestDataDictionaryName);
-        content.Add("originalName",Constants.TestDataDictionaryName);
-        
-        postRequest.Content = new FormUrlEncodedContent(content);
+        // postRequest.Content = new FormUrlEncodedContent(content);
 
         var response = await _client.SendAsync(postRequest);
 

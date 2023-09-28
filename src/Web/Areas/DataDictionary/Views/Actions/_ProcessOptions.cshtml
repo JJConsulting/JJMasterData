@@ -14,8 +14,8 @@
 
 <script lang="javascript" type="text/javascript">
     document.addEventListener("DOMContentLoaded",()=>{
-        CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandBeforeProcess','text/x-sql',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKeyCode: 219});
-        CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandAfterProcess','text/x-sql',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKeyCode: 219});
+        CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandBeforeProcess','text/x-sql',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'});
+        CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandAfterProcess','text/x-sql',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'});
 
         $("#cboSqlEvent").change(function () {
             var selectedVal = $("#cboSqlEvent").selectpicker('val');
