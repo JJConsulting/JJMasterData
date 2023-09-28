@@ -6,14 +6,7 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJMessageBox : HtmlComponent
 {
-    private string _text;
-
-    public string Text
-    {
-        get => _text;
-
-        set => _text = !string.IsNullOrEmpty(value) ? value.Replace("'", "`") : value;
-    }
+    public string Content { get; set; }
 
     public string Title { get; set; }
     public MessageIcon Icon { get; set; }
@@ -34,27 +27,35 @@ public class JJMessageBox : HtmlComponent
         var html = new HtmlBuilder(HtmlTag.Script)
             .WithAttribute("type", "text/javascript")
             .WithAttribute("lang", "javascript")
-            .AppendText(GetScript());
+            .AppendText(GetDomContentLoadedScript());
 
         return html;
     }
 
-    public string GetScript()
+    public string GetDomContentLoadedScript()
     {
 
-        var message = Text.Replace("<br>", "\\n").Replace("\r\n", string.Empty);
+        var showScript = GetShowScript();
         return $$"""
                  document.addEventListener('DOMContentLoaded', function() {
-                        MessageBox.show(
-                        '{{Title}}',
-                        '{{message}}',
-                        '{{(int)Icon}}',
-                        '{{(int)Size}}',
-                        '{{Button1Label}}',
-                        {{Button1JsCallback}},
-                        '{{Button2Label}}',
-                        {{Button2JsCallback}})
+                        {{showScript}}
                     });
                  """;
+    }
+
+    public string GetShowScript()
+    {
+        var message = Content.Replace("<br>", "\\n").Replace("\r\n", string.Empty);
+        return $"""
+                    MessageBox.show(
+                       '{Title}',
+                       '{message}',
+                       '{(int)Icon}',
+                       '{(int)Size}',
+                       '{Button1Label}',
+                       {Button1JsCallback},
+                       '{Button2Label}',
+                       {Button2JsCallback})
+                """;
     }
 }

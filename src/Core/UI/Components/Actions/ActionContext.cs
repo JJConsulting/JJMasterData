@@ -17,6 +17,18 @@ public class ActionContext
     public string? FieldName { get; init; }
     public bool IsSubmit { get; set; }
 
+    
+    public static ActionContext FromFormView(JJFormView formView, FormStateData formStateData)
+    {
+        return new ActionContext
+        {
+            FormElement = formView.FormElement,
+            FormStateData = formStateData,
+            IsModal = formView.ComponentContext is ComponentContext.Modal,
+            ParentComponentName = formView.Name
+        };
+    }
+    
     public static async Task<ActionContext> FromFormViewAsync(JJFormView formView)
     {
         return new ActionContext

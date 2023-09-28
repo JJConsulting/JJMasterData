@@ -23,7 +23,7 @@ public class MessageFactory : IComponentFactory<JJMessageBox>
     public JJMessageBox Create(string text, MessageIcon icon)
     {
         var messageBox = Create();
-        messageBox.Text = text;
+        messageBox.Content = text;
         messageBox.Icon = icon;
         messageBox.Size = MessageSize.Default;
         messageBox.Title = messageBox.Icon switch
@@ -54,7 +54,7 @@ public class MessageFactory : IComponentFactory<JJMessageBox>
     {
         var messageBox = Create();
         messageBox.Title = title;
-        messageBox.Text = text;
+        messageBox.Content = text;
         messageBox.Icon = icon;
         messageBox.Size = size;
 

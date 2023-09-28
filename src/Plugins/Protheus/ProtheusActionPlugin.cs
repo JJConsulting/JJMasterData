@@ -20,10 +20,25 @@ public class ProtheusActionPlugin : IActionPlugin
     
     public async Task<PluginActionResult> ExecuteActionAsync(PluginActionContext pluginActionContext)
     {
+        var pluginAction =
+            pluginActionContext.FormElement.Options.FormToolbarActions.First(a =>
+                a is PluginAction pa && pa.PluginId == Id);
+
+        var gridAction =
+            pluginActionContext.FormElement.Options.FormToolbarActions.First(a => a is BackAction);
+        
         await Task.Delay(1);
         return new PluginActionResult
         {
-            JsCallback = "alert('pan')"
+            Modal =
+            new PluginActionModal {
+                Title = "Integração Protheus",
+                Content = "Selecione uma opção",
+                Button1Action = pluginAction,
+                Button1Label = "Rodar de novo",
+                Button2Label = "Vai pra grid",
+                Button2Action = gridAction
+            }
         };
     }
 }

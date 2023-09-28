@@ -21,11 +21,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
@@ -661,9 +663,33 @@ public class JJFormView : AsyncComponent
 
         var result = await GetPluginActionResult(formValues);
 
-        if (result.JsCallback is not null)
+        if (result.Modal is not null)
         {
-            return new JsonComponentResult(result);
+            var modal = result.Modal;
+
+            var actionScripts = new ActionScripts(ExpressionsService,
+                new JJMasterDataUrlHelper(CurrentContext.Request, Options), EncryptionService, StringLocalizer);
+
+            var formStateData = new FormStateData
+            {
+                FormValues = formValues,
+                UserValues = UserValues,
+                PageState = PageState,
+            };
+            
+            var messageBox = new JJMessageBox
+            {
+                Content = modal.Content,
+                Icon = modal.Icon,
+                Size = modal.Size,
+                Title = modal.Title,
+                Button1Label = modal.Button1Label,
+                Button2Label = modal.Button2Label,
+                Button1JsCallback = "()=>{" + actionScripts.GetFormActionScript(modal.Button1Action,ActionContext.FromFormView(this,formStateData), ActionSource.FormToolbar, false) + "}",
+                Button2JsCallback ="()=>{" +  actionScripts.GetFormActionScript(modal.Button2Action,ActionContext.FromFormView(this,formStateData), ActionSource.FormToolbar, false) + "}",
+            };
+            
+            return new JsonComponentResult(new {jsCallback = messageBox.GetShowScript()});
         }
         
         return await GetDefaultResult(formValues);
@@ -679,7 +705,8 @@ public class JJFormView : AsyncComponent
         {
             Values = formValues,
             AdditionalParameters = pluginAction.AdditionalParameters ?? new Dictionary<string, object?>(),
-            TriggeredFieldName = CurrentActionMap!.FieldName!
+            TriggeredFieldName = CurrentActionMap!.FieldName!,
+            FormElement = FormElement
         });
         return result;
     }

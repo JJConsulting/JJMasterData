@@ -5,6 +5,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public class PluginActionContext
 {
+    public required FormElement FormElement { get; init; }
     public required IDictionary<string,object?> AdditionalParameters { get; init; }
     public required IDictionary<string,object?> Values { get; init; }
     

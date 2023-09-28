@@ -18,14 +18,14 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace JJMasterData.Core.UI.Components.FormView;
 
-internal class ActionsScripts
+internal class ActionScripts
 {
     private ExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
 
-    public ActionsScripts(
+    public ActionScripts(
         ExpressionsService expressionsService,
         JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
@@ -91,7 +91,7 @@ internal class ActionsScripts
             $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
-    public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)
+    public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource, bool encode = true)
     {
         var formElement = actionContext.FormElement;
         var actionMap = actionContext.ToActionMap(action.Name, actionSource);
@@ -120,9 +120,12 @@ internal class ActionsScripts
 
         var actionDataJson = actionData.ToJson();
 
-        var encodedFunction = HttpUtility.HtmlAttributeEncode($"ActionHelper.executeAction('{actionDataJson}')");
+        var functionSignature = $"ActionHelper.executeAction('{actionDataJson}');";
 
-        return encodedFunction;
+        if (encode)
+            return HttpUtility.HtmlAttributeEncode(functionSignature);
+
+        return functionSignature;
     }
     
 
