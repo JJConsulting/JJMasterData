@@ -578,7 +578,7 @@ public class JJUploadView : AsyncComponent
         var url = CurrentContext.Request.AbsoluteUri;
 
         string src;
-        var filePath = Path.Combine(FormFileManager.FolderPath, fileName);
+     
 
         if (file.IsInMemory)
         {
@@ -587,6 +587,7 @@ public class JJUploadView : AsyncComponent
         }
         else
         {
+            var filePath = Path.Combine(FormFileManager.FolderPath, fileName);
             var downloader = ComponentFactory.Downloader.Create();
             src = downloader.GetDownloadUrl(filePath);
         }

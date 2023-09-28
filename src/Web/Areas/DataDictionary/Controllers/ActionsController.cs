@@ -417,7 +417,7 @@ public class ActionsController : DataDictionaryController
             case PluginAction _:
             {
                 var formElement = await _actionsService.GetFormElementAsync(elementName);
-                ViewBag.CodeMirrorHintList = _actionsService.GetAutocompleteHintsList(formElement, includeAdditionalHints:false);
+                ViewBag.CodeMirrorHintList = _actionsService.GetAutocompleteHintsList(formElement, includeAdditionalHints:false).ToList();
                 ViewBag.FormElement = formElement;
                 break;
             }

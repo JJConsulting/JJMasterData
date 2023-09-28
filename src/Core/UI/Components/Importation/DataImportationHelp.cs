@@ -251,7 +251,7 @@ internal class DataImportationHelp
         var defaultValues = await DataImportation.FieldsService.GetDefaultValuesAsync(DataImportation.FormElement,null, PageState.Import);
         var expOptions = new FormStateData(defaultValues, DataImportation.UserValues, PageState.Import);
         //TODO: DataItemService is better
-        var comboBox = DataImportation.ComponentFactory.Controls.Create<JJComboBox>(null,field, new(expOptions,null));
+        var comboBox = DataImportation.ComponentFactory.Controls.Create<JJComboBox>(null,field, new(expOptions,DataImportation.Name));
         var items = await comboBox.GetValuesAsync().ToListAsync();
 
         if (items.Count == 0)

@@ -10,10 +10,14 @@
 @{
     var plugin = Plugins.First(p => p.Id == Model.PluginId);
 
-    var hints = new List<string>();
+    string elementName = ViewBag.ElementName;
     
-    hints.AddRange(plugin.AdditionalParametersHints);
-    hints.AddRange(ViewBag.CodeMirrorHintList);
+    List<string> fieldHints = ViewBag.CodeMirrorHintList;
+    
+    var hints = new List<object>();
+    
+    hints.AddRange(plugin.AdditionalParametersHints.Select(s=>new {text = s, displayText = $"{plugin.Title} - {s}"}));
+    hints.AddRange(fieldHints.Select(s=>new {text = s, displayText = $"{elementName} - {s}"}));
     
     Layout = Options.Value.PopUpLayoutPath;
 }

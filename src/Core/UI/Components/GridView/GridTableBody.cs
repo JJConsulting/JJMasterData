@@ -136,7 +136,7 @@ internal class GridTableBody
                 }
                 else if (field.DataFile is not null)
                 {
-                    var textFile =  GridView.ComponentFactory.Controls.Create<JJTextFile>(GridView.FormElement, field, new(formStateData,value));
+                    var textFile =  GridView.ComponentFactory.Controls.Create<JJTextFile>(GridView.FormElement, field, new(formStateData,Name,value));
                     cell = textFile.GetButtonGroupHtml();
                 }
                 else
