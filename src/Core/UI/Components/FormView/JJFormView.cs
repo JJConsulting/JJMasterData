@@ -396,6 +396,13 @@ public class JJFormView : AsyncComponent
         if (RouteContext.ElementName == Options.Value.AuditLogTableName)
             return await AuditLogView.GetResultAsync();
         
+        var childFormView = await GetChildFormView();
+
+        return await childFormView.GetFormResultAsync();
+    }
+
+    private async Task<JJFormView> GetChildFormView()
+    {
         var childFormView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
         childFormView.FormElement.ParentName = RouteContext.ParentElementName;
         childFormView.UserValues = UserValues;
@@ -404,23 +411,22 @@ public class JJFormView : AsyncComponent
         childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
 
         if (PageState is PageState.View)
-        {
             childFormView.DisableActionsAtViewMode();
-        }
 
         var isInsertSelection = PageState is PageState.Insert &&
                                 GridView.ToolBarActions.InsertAction.ElementNameToSelect ==
                                 childFormView.FormElement.Name;
-        if (isInsertSelection)
-        {  
-            childFormView.GridView.GridActions.Add(new InsertSelectionAction());
-            childFormView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
-        }
-          
-        return await childFormView.GetFormResultAsync();
+        
+        if (!isInsertSelection)
+            return childFormView;
+        
+        childFormView.GridView.GridActions.Add(new InsertSelectionAction());
+        childFormView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
+
+        return childFormView;
     }
 
-    
+
     internal async Task<ComponentResult> GetFormResultAsync()
     {
         
