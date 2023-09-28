@@ -143,8 +143,8 @@ public class ElementController : DataDictionaryController
         {
             ElementName = elementName,
             CreateTableScript = scripts[0]!,
-            WriteProcedureScript = scripts[1]!,
-            ReadProcedureScript = scripts[2]!,
+            WriteProcedureScript = scripts[2]!,
+            ReadProcedureScript = scripts[1]!,
             AlterTableScript = scripts[3]
         };
 

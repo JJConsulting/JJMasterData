@@ -89,17 +89,17 @@
                     </li>
                     <li class="@NavItem("Field")">
                         <a class="nav-link @ActiveBs5("Field")" href="@Url.Action("Index", "Field", new { elementName = Model.ElementName })">
-                            <span class="fa fa-th" aria-selected="@AriaSelected("Field")"></span>&nbsp;@StringLocalizer["Fields"]
+                            <span class="fa fa-th-list" aria-selected="@AriaSelected("Field")"></span>&nbsp;@StringLocalizer["Fields"]
                         </a>
                     </li>
                     <li class="@NavItem("Panel")">
                         <a class="nav-link @ActiveBs5("Panel")" href="@Url.Action("Index", "Panel", new { elementName = Model.ElementName })">
-                            <span class="fa-solid fa-table-columns" aria-selected="@AriaSelected("Panel")"></span>&nbsp;@StringLocalizer["Panels"]
+                            <span class="fa-solid fa-layer-group" aria-selected="@AriaSelected("Panel")"></span>&nbsp;@StringLocalizer["Panels"]
                         </a>
                     </li>
                     <li class="@NavItem("Relationships")">
                         <a class="nav-link @ActiveBs5("Relationships")" href="@Url.Action("Index", "Relationships", new { elementName = Model.ElementName })">
-                            <span class="fa fa-joomla" aria-selected="@AriaSelected("Relationships")"></span>&nbsp;@StringLocalizer["Relationships"]
+                            <span class="fas fa-code-branch" aria-selected="@AriaSelected("Relationships")"></span>&nbsp;@StringLocalizer["Relationships"]
                         </a>
                     </li>
                     <li class="@NavItem("Indexes")">
@@ -161,7 +161,7 @@
         <ul class="dropdown-menu">
             <li onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
                 <a class="dropdown-item" href="#">
-                    <span class="fa fa-play-circle fa-fw fa-lg"></span> @StringLocalizer["Get Script"]
+                    <span class="fa fa-play-circle fa-fw fa-lg"></span> @StringLocalizer["Get Scripts"]
                 </a>
             </li>
             <li onclick="defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Class Source Code"]',1);">
