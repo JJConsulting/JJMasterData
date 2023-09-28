@@ -142,11 +142,11 @@ class MessageBox {
             html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-dismiss="modal"></button>\r\n';
             html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-dismiss="modal"></button>\r\n';
         } else if (MessageBox.bootstrapVersion == 4) {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-outline-dark" data-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-outline-dark" data-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-dismiss="modal"></button>\r\n';
         } else {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-outline-dark" data-bs-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-outline-dark" data-bs-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
         }
         html += "      </div>\r\n";
         html += "    </div>\r\n";

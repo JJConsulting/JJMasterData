@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System.Web;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.Web.Html;
 
@@ -6,22 +6,27 @@ namespace JJMasterData.Core.Web.Components;
 
 public class JJMessageBox : HtmlComponent
 {
-    
     private string _text;
+
     public string Text
     {
         get => _text;
-        
-        set => _text = !string.IsNullOrEmpty(value) ? value.Replace("'","`") : value;
+
+        set => _text = !string.IsNullOrEmpty(value) ? value.Replace("'", "`") : value;
     }
-    
+
     public string Title { get; set; }
     public MessageIcon Icon { get; set; }
     public MessageSize Size { get; set; }
-
+    
+    public string Button1Label { get; set; }
+    public string Button1JsCallback { get; set; }
+    
+    public string Button2Label { get; set; }
+    public string Button2JsCallback { get; set; }
+    
     internal JJMessageBox()
     {
-
     }
 
     internal override HtmlBuilder BuildHtml()
@@ -36,25 +41,20 @@ public class JJMessageBox : HtmlComponent
 
     public string GetScript()
     {
-        var javaScript = new StringBuilder();
-        
-        string msg = Text;
-        javaScript.AppendLine("$(document).ready(function() {");
-        javaScript.Append("\t\t\t");
-        javaScript.Append("messageBox.show('");
-        javaScript.Append(Title);
-        javaScript.Append("','");
-        javaScript.Append(msg.Replace("<br>", "\\r\\n").Replace("\r\n", ""));
-        javaScript.Append("', ");
-        javaScript.Append((int)Icon);
-        javaScript.Append(", ");
-        javaScript.Append((int)Size);
-        javaScript.AppendLine(");");
-        javaScript.Append("\t\t");
-        javaScript.AppendLine("});");
 
-        return javaScript.ToString();
+        var message = Text.Replace("<br>", "\\n").Replace("\r\n", string.Empty);
+        return $$"""
+                 document.addEventListener('DOMContentLoaded', function() {
+                        MessageBox.show(
+                        '{{Title}}',
+                        '{{message}}',
+                        '{{(int)Icon}}',
+                        '{{(int)Size}}',
+                        '{{Button1Label}}',
+                        {{Button1JsCallback}},
+                        '{{Button2Label}}',
+                        {{Button2JsCallback}})
+                    });
+                 """;
     }
-
-
 }
