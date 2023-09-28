@@ -408,6 +408,15 @@ public class JJFormView : AsyncComponent
             childFormView.DisableActionsAtViewMode();
         }
 
+        var isInsertSelection = PageState is PageState.Insert &&
+                                GridView.ToolBarActions.InsertAction.ElementNameToSelect ==
+                                childFormView.FormElement.Name;
+        if (isInsertSelection)
+        {  
+            childFormView.GridView.GridActions.Add(new InsertSelectionAction());
+            childFormView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
+        }
+          
         return await childFormView.GetFormResultAsync();
     }
 
