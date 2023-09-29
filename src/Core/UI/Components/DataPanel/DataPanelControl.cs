@@ -314,8 +314,7 @@ internal class DataPanelControl
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             control.Name = FieldNamePrefix + field.Name;
 
-        var formData = new FormStateData(Values, UserValues, PageState);
-        control.Enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formData);
+        control.Enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formStateData);
 
         if (BootstrapHelper.Version > 3 && Errors.ContainsKey(field.Name))
         {
@@ -327,26 +326,25 @@ internal class DataPanelControl
             control.SetAttr("onchange", GetScriptReload(field));
         }
 
-        if (PageState == PageState.Filter)
+        if (PageState != PageState.Filter) 
+            return await control.GetHtmlBuilderAsync();
+        
+        if (control is JJTextGroup textGroup)
         {
-            if (control is JJTextGroup textGroup)
-            {
-                if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
-                {
-                    textGroup.Attributes.Add("data-role", "tagsinput");
-                    textGroup.MaxLength = 0;
-                }
-            }
-            else if (control is JJComboBox comboBox)
-            {
-                if (field.Filter.IsRequired || field.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain)
-                    comboBox.DataItem.FirstOption = FirstOptionMode.None;
-                else
-                    comboBox.DataItem.FirstOption = FirstOptionMode.All;
+            if (field.Filter.Type is not (FilterMode.MultValuesContain or FilterMode.MultValuesEqual))
+                return await control.GetHtmlBuilderAsync();
+            textGroup.Attributes.Add("data-role", "tagsinput");
+            textGroup.MaxLength = 0;
+        }
+        else if (control is JJComboBox comboBox)
+        {
+            if (field.Filter.IsRequired || field.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain)
+                comboBox.DataItem.FirstOption = FirstOptionMode.None;
+            else
+                comboBox.DataItem.FirstOption = FirstOptionMode.All;
 
-                if (field.Filter.Type == FilterMode.MultValuesEqual)
-                    comboBox.MultiSelect = true;
-            }
+            if (field.Filter.Type == FilterMode.MultValuesEqual)
+                comboBox.MultiSelect = true;
         }
 
         return await control.GetHtmlBuilderAsync();

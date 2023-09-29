@@ -12,7 +12,7 @@ class DataPanelHelper {
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
-                if(data === "string"){
+                if(typeof data === "string"){
                     document.getElementById(componentName).outerHTML = data;
                     listenAllEvents();
                     jjutil.gotoNextFocus(fieldName);
