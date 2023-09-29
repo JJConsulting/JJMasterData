@@ -759,23 +759,20 @@ class DataPanelHelper {
         urlBuilder.addQueryParameter("fieldName", fieldName);
         urlBuilder.addQueryParameter("routeContext", routeContext);
         const form = document.querySelector("form");
-        fetch(urlBuilder.build(), {
-            method: form.method,
-            body: new FormData(form),
-        })
-            .then(response => {
-            if (!response.ok) {
-                throw new Error(response.statusText);
+        postFormValues({
+            url: urlBuilder.build(),
+            success: data => {
+                if (data === "string") {
+                    document.getElementById(componentName).outerHTML = data;
+                    listenAllEvents();
+                    jjutil.gotoNextFocus(fieldName);
+                }
+                else {
+                    if (data.jsCallback) {
+                        eval(data.jsCallback);
+                    }
+                }
             }
-            return response.text();
-        })
-            .then(data => {
-            document.getElementById(componentName).outerHTML = data;
-            listenAllEvents();
-            jjutil.gotoNextFocus(fieldName);
-        })
-            .catch(error => {
-            console.error(error);
         });
     }
 }

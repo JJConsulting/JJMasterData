@@ -47,7 +47,7 @@ internal class DataPanelExpressionScripts
             script.Append('\t');
             script.AppendLine($"$({selector}).change(function () {{");
             script.Append('\t', 2);
-            script.AppendLine($"var exp = \"{exp}\";");
+            script.AppendLine($"let exp = \"{exp}\";");
 
             for (int i = 0; i < list.Count; i++)
             {
@@ -61,7 +61,7 @@ internal class DataPanelExpressionScripts
             }
 
             script.Append('\t', 2);
-            script.AppendLine("var enable = eval(exp);");
+            script.AppendLine("let enable = eval(exp);");
             script.Append('\t', 2);
             script.AppendLine("if (enable)");
             script.Append('\t', 3);

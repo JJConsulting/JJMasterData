@@ -475,8 +475,19 @@ public class JJFormView : AsyncComponent
 
         var fieldName = QueryString["fieldName"];
 
-        var result = await GetPluginActionResult(values);
+        var field = FormElement.Fields[fieldName];
 
+        foreach (var action in field.Actions)
+        {
+            if (action is not PluginFieldAction { AutoTriggerOnChange: true } pluginAction) 
+                continue;
+            
+            var result = await GetPluginActionResult(pluginAction, values, fieldName);
+
+            if (result.JsCallback is not null)
+                return new JsonComponentResult(new {jsCallback = result.JsCallback});
+        }
+        
         DataPanel.Values = values;
         return await DataPanel.GetResultAsync();
     }
@@ -493,9 +504,8 @@ public class JJFormView : AsyncComponent
             return await GetFormResult(new FormContext(values, errors, PageState), true);
 
         if (!string.IsNullOrEmpty(UrlRedirect))
-        {
             return new RedirectComponentResult(UrlRedirect!);
-        }
+        
 
         if (GridView.ToolBarActions.InsertAction.ReopenForm)
         {
@@ -677,11 +687,17 @@ public class JJFormView : AsyncComponent
     {
         var pluginAction = (PluginAction)CurrentAction!;
 
+        return await GetPluginActionResult(pluginAction, formValues, CurrentActionMap!.FieldName);
+    }
+
+    private async Task<PluginActionResult> GetPluginActionResult(PluginAction pluginAction,
+        IDictionary<string, object?> values, string? fieldName)
+    {
         var pluginHandler = PluginHandlers.First(p => p.Id == pluginAction.PluginId);
-        
+
         var formStateData = new FormStateData
         {
-            Values = formValues,
+            Values = values,
             UserValues = UserValues,
             PageState = PageState,
         };
@@ -691,13 +707,13 @@ public class JJFormView : AsyncComponent
             case IPluginActionHandler pluginActionHandler:
                 return await pluginActionHandler.ExecuteActionAsync(new PluginActionContext
                 {
-                    ActionContext = GetActionContext(pluginAction,formStateData),
+                    ActionContext = GetActionContext(pluginAction, formStateData),
                 });
             case IPluginFieldActionHandler pluginFieldActionHandler:
                 return await pluginFieldActionHandler.ExecuteActionAsync(context: new PluginFieldActionContext
                 {
                     ActionContext = GetActionContext(pluginAction,
-                        formStateData, CurrentActionMap!.FieldName),
+                        formStateData, fieldName),
                     FieldMap = ((PluginFieldAction)pluginAction).FieldMap,
                 });
             default:

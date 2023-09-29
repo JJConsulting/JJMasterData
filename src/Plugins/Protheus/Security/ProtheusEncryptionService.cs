@@ -1,6 +1,6 @@
 using JJMasterData.Commons.Cryptography;
 
-namespace JJMasterData.Protheus;
+namespace JJMasterData.Protheus.Security;
 
 internal class ProtheusEncryptionService : IEncryptionService
 {

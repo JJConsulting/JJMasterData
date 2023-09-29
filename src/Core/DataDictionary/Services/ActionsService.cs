@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -68,7 +69,7 @@ public class ActionsService : BaseService
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
         ValidateActionName(formElement, action.Name, originalName, context, fieldName);
-        ValidateAction(formElement, action);
+        ValidateAction(formElement, action, fieldName);
 
         if (!IsValid)
             return false;
@@ -146,11 +147,11 @@ public class ActionsService : BaseService
         {
             if (a.Name.Equals(actionName))
                 AddError(nameof(actionName),
-                    StringLocalizer["Invalid[Name] field! There is already an action registered with that name."]);
+                    StringLocalizer["Invalid [Name] field! There is already an action registered with that name."]);
         }
     }
 
-    private void ValidateAction(FormElement formElement, BasicAction action)
+    private void ValidateAction(FormElement formElement, BasicAction action, [CanBeNull] string fieldName = null)
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
             AddError(nameof(action.VisibleExpression), StringLocalizer["Required [VisibleExpression] field"]);
@@ -162,29 +163,43 @@ public class ActionsService : BaseService
         else if (!ValidateExpression(action.EnableExpression, "val:", "exp:", "sql:"))
             AddError(nameof(action.EnableExpression), "Invalid [EnableExpression] field");
 
-        if (action is SqlCommandAction sqlAction)
+        switch (action)
         {
-            if (string.IsNullOrEmpty(sqlAction.CommandSql))
-                AddError(nameof(sqlAction.CommandSql), StringLocalizer["Required [Sql Command] field"]);
+            case SqlCommandAction sqlAction:
+            {
+                if (string.IsNullOrEmpty(sqlAction.CommandSql))
+                    AddError(nameof(sqlAction.CommandSql), StringLocalizer["Required [Sql Command] field"]);
 
-            if (!formElement.Options.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
-                AddError(nameof(sqlAction.ApplyOnSelected), StringLocalizer["[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"]);
-        }
-
-        else if (action is UrlRedirectAction urlAction)
-        {
-            if (string.IsNullOrEmpty(urlAction.UrlRedirect))
-                AddError(nameof(urlAction.UrlRedirect), StringLocalizer["Required [Url Redirect] field"]);
-        }
-        else if (action is ScriptAction scriptAction)
-        {
-            if (string.IsNullOrEmpty(scriptAction.OnClientClick))
-                AddError(nameof(scriptAction.OnClientClick), StringLocalizer["Required [JavaScript Command] field"]);
-        }
-        else if (action is InternalAction internalAction)
-        {
-            if (string.IsNullOrEmpty(internalAction.ElementRedirect.ElementNameRedirect))
-                AddError(nameof(internalAction.ElementRedirect.ElementNameRedirect), StringLocalizer["Required [Entity Name] field"]);
+                if (!formElement.Options.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
+                    AddError(nameof(sqlAction.ApplyOnSelected), StringLocalizer["[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"]);
+                break;
+            }
+            case UrlRedirectAction urlAction:
+            {
+                if (string.IsNullOrEmpty(urlAction.UrlRedirect))
+                    AddError(nameof(urlAction.UrlRedirect), StringLocalizer["Required [Url Redirect] field"]);
+                break;
+            }
+            case ScriptAction scriptAction:
+            {
+                if (string.IsNullOrEmpty(scriptAction.OnClientClick))
+                    AddError(nameof(scriptAction.OnClientClick), StringLocalizer["Required [JavaScript Command] field"]);
+                break;
+            }
+            case InternalAction internalAction:
+            {
+                if (string.IsNullOrEmpty(internalAction.ElementRedirect.ElementNameRedirect))
+                    AddError(nameof(internalAction.ElementRedirect.ElementNameRedirect), StringLocalizer["Required [Entity Name] field"]);
+                break;
+            }
+            case PluginFieldAction:
+            {
+                if (!formElement.Fields[fieldName!].AutoPostBack)
+                {
+                    AddError(nameof(PluginFieldAction.AutoTriggerOnChange), StringLocalizer["To use [AutoTriggerOnChange], [AutoPostBack] must be enabled at your field."]);
+                }
+                break;
+            }
         }
     }
 
