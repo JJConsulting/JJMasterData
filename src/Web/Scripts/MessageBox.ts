@@ -40,14 +40,13 @@ class MessageBox {
                     $(MessageBox.jQueryModalButton1Id).focus();
                 });
         } else {
-            const modal = new bootstrap.Modal(
+            const modal = bootstrap.Modal.getOrCreateInstance(
                 document.getElementById(MessageBox.modalId),
                 {}
             );
             modal.show();
 
-            // @ts-ignore
-            modal.addEventListener("shown.bs.modal", function () {
+            document.addEventListener("shown.bs.modal", function () {
                 document.getElementById(MessageBox.button1Id).focus();
             });
         }
@@ -70,13 +69,7 @@ class MessageBox {
     }
 
     private static reset(): void {
-        MessageBox.setTitle("");
-        MessageBox.setContent("");
-
-        $(MessageBox.jQueryModalButton1Id).text("");
-        $(MessageBox.jQueryModalButton1Id).off("click.siteModalClick1");
-        $(MessageBox.jQueryModalButton2Id).text("");
-        $(MessageBox.jQueryModalButton2Id).off("click.siteModalClick2");
+        MessageBox.hide()
     }
 
     private static loadHtml(icontype: TMessageIcon, sizetype: TMessageSize): void {

@@ -14,7 +14,7 @@ class DataPanelHelper {
             success: data => {
                 if(typeof data === "string"){
                     document.getElementById(componentName).outerHTML = data;
-                    listenAllEvents();
+                    listenAllEvents("#" + componentName);
                     jjutil.gotoNextFocus(fieldName);
                 }
                 else{

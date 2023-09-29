@@ -24,11 +24,11 @@ public class ProtheusExpressionProvider : IExpressionProvider
         if (exp.Length < 3)
             throw new JJMasterDataException("Invalid Protheus Request");
 
-        var urlProtheus = _expressionParser.ParseExpression(exp[0], formStateData, false);
-        var functionName = _expressionParser.ParseExpression(exp[1], formStateData, false);
+        var urlProtheus = _expressionParser.ParseExpression(exp[0], formStateData);
+        var functionName = _expressionParser.ParseExpression(exp[1], formStateData);
         var parms = "";
         if (exp.Length >= 3)
-            parms = _expressionParser.ParseExpression(exp[2], formStateData, false);
+            parms = _expressionParser.ParseExpression(exp[2], formStateData);
 
         return await _protheusService.CallFunctionAsync(urlProtheus!, functionName!, parms!);
     }

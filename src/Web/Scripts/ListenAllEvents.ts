@@ -16,7 +16,10 @@
     TabNavListener.listenTabNavs(selectorPrefix);
     SliderListener.listenSliders(selectorPrefix);
     SliderListener.listenInputs(selectorPrefix);
-
+    
+    //@ts-ignore
+    Inputmask().mask(document.querySelectorAll("input"));
+    
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&

@@ -137,7 +137,7 @@ class GridViewHelper {
                 if (gridViewTableElement) {
                     gridViewTableElement.outerHTML = data;
                     if (reloadListeners) {
-                        listenAllEvents();
+                        listenAllEvents("#" + componentName);
                     }
                     if(filterActionElement){
                         filterActionElement.value = "";

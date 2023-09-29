@@ -139,7 +139,7 @@ internal class DataPanelLayout
         {
             Title = panel.Title,
             SubTitle = panel.SubTitle,
-            Layout = PanelLayout.Well,
+            Layout = panel.Layout,
             HtmlBuilderContent = await GetHtmlForm(panel)
         };
         return card.GetHtmlBuilder();

@@ -764,7 +764,7 @@ class DataPanelHelper {
             success: data => {
                 if (typeof data === "string") {
                     document.getElementById(componentName).outerHTML = data;
-                    listenAllEvents();
+                    listenAllEvents("#" + componentName);
                     jjutil.gotoNextFocus(fieldName);
                 }
                 else {
@@ -821,6 +821,7 @@ class FormViewHelper {
         const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
         postFormValues({ url: url, success: (data) => {
                 HTMLHelper.setInnerHTML(componentName, data);
+                listenAllEvents("#" + componentName);
             } });
     }
     static insertSelection(componentName, insertValues, routeContext) {
@@ -829,6 +830,7 @@ class FormViewHelper {
         const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
         postFormValues({ url: url, success: (data) => {
                 HTMLHelper.setInnerHTML(componentName, data);
+                listenAllEvents("#" + componentName);
             } });
     }
 }
@@ -1046,7 +1048,7 @@ class GridViewHelper {
                 if (gridViewTableElement) {
                     gridViewTableElement.outerHTML = data;
                     if (reloadListeners) {
-                        listenAllEvents();
+                        listenAllEvents("#" + componentName);
                     }
                     if (filterActionElement) {
                         filterActionElement.value = "";
@@ -1190,6 +1192,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     TabNavListener.listenTabNavs(selectorPrefix);
     SliderListener.listenSliders(selectorPrefix);
     SliderListener.listenInputs(selectorPrefix);
+    Inputmask().mask(document.querySelectorAll("input"));
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&
@@ -1295,9 +1298,9 @@ class MessageBox {
             });
         }
         else {
-            const modal = new bootstrap.Modal(document.getElementById(MessageBox.modalId), {});
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById(MessageBox.modalId), {});
             modal.show();
-            modal.addEventListener("shown.bs.modal", function () {
+            document.addEventListener("shown.bs.modal", function () {
                 document.getElementById(MessageBox.button1Id).focus();
             });
         }
@@ -1317,12 +1320,7 @@ class MessageBox {
         $(MessageBox.jQueryModalButton2Id).show();
     }
     static reset() {
-        MessageBox.setTitle("");
-        MessageBox.setContent("");
-        $(MessageBox.jQueryModalButton1Id).text("");
-        $(MessageBox.jQueryModalButton1Id).off("click.siteModalClick1");
-        $(MessageBox.jQueryModalButton2Id).text("");
-        $(MessageBox.jQueryModalButton2Id).off("click.siteModalClick2");
+        MessageBox.hide();
     }
     static loadHtml(icontype, sizetype) {
         if ($(MessageBox.jQueryModalId).length) {

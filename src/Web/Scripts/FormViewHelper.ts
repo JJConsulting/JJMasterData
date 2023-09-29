@@ -21,6 +21,7 @@ class FormViewHelper {
         
         postFormValues({url:url, success:(data)=>{
             HTMLHelper.setInnerHTML(componentName,data);
+            listenAllEvents("#" + componentName)
         }});
     }
 
@@ -32,6 +33,7 @@ class FormViewHelper {
         
         postFormValues({url:url, success:(data)=>{
             HTMLHelper.setInnerHTML(componentName,data);
+            listenAllEvents("#" + componentName)
         }})
     }
 }
