@@ -21,13 +21,13 @@ public class ActionButtonFactory
 {
     private IComponentFactory<JJLinkButton> LinkButtonFactory { get; }
 
-    private ActionsScripts _actionsScripts;
+    private ActionScripts _actionScripts;
     private ExpressionsService ExpressionsService { get; }
   
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private ActionsScripts ActionsScripts => _actionsScripts ??= new ActionsScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
+    private ActionScripts ActionScripts => _actionScripts ??= new ActionScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
     
     public ActionButtonFactory(
         IComponentFactory<JJLinkButton> linkButtonFactory,
@@ -75,13 +75,13 @@ public class ActionButtonFactory
 
     public async Task<JJLinkButton> CreateGridTableButtonAsync(BasicAction action, JJGridView gridView, FormStateData formStateData)
     {
-        var actionContext = ActionContext.FromGridView(gridView, formStateData);
+        var actionContext = gridView.GetActionContext(action, formStateData);
         var button = await CreateAsync(action, actionContext.FormStateData);
 
         switch (action)
         {
             case UserCreatedAction userCreatedAction:
-                button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.GridTable);
+                button.OnClientClick = ActionScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.GridTable);
                 break;
             case GridTableAction gridTableAction:
 
@@ -90,7 +90,7 @@ public class ActionButtonFactory
                     actionContext.IsModal = editAction.ShowAsModal;
                 }
                 
-                button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable);
+                button.OnClientClick = ActionScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable);
                 break;
             default:
                 throw new JJMasterDataException("Action is not user created or a GridTableAction.");
@@ -102,12 +102,12 @@ public class ActionButtonFactory
 
     public async Task<JJLinkButton> CreateGridToolbarButtonAsync(BasicAction action, JJGridView gridView, FormStateData formStateData)
     {
-        var actionContext = ActionContext.FromGridView(gridView, formStateData);
+        var actionContext = gridView.GetActionContext(action, formStateData);
         var button = await CreateAsync(action, formStateData);
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick =  ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.GridToolbar);
+            button.OnClientClick =  ActionScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.GridToolbar);
             return button;
         }
 
@@ -121,7 +121,7 @@ public class ActionButtonFactory
                 break;
             case DeleteSelectedRowsAction or AuditLogGridToolbarAction:
                 button.OnClientClick =
-                    ActionsScripts.GetFormActionScript(toolbarAction, actionContext, ActionSource.GridToolbar);
+                    ActionScripts.GetFormActionScript(toolbarAction, actionContext, ActionSource.GridToolbar);
                 break;
             
             case ImportAction:
@@ -147,7 +147,7 @@ public class ActionButtonFactory
                 {
                     actionContext.IsModal = true;
                 }
-                button.OnClientClick = ActionsScripts.GetFormActionScript(insertAction, actionContext,
+                button.OnClientClick = ActionScripts.GetFormActionScript(insertAction, actionContext,
                     ActionSource.GridToolbar);
                 break;
             case LegendAction:
@@ -168,12 +168,12 @@ public class ActionButtonFactory
 
     public async Task<JJLinkButton> CreateFormToolbarButtonAsync(BasicAction action, JJFormView formView)
     {
-        var actionContext = await ActionContext.FromFormViewAsync(formView);
+        var actionContext = await formView.GetActionContextAsync(action);
         var button = await CreateAsync(action, actionContext.FormStateData);
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick =  ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.FormToolbar);
+            button.OnClientClick =  ActionScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.FormToolbar);
         }
         else if (action is FormToolbarAction)
         {
@@ -183,11 +183,11 @@ public class ActionButtonFactory
                 case BackAction:
                     if (actionContext.IsModal)
                     {
-                        button.OnClientClick = ActionsScripts.GetHideModalScript(actionContext.ParentComponentName);
+                        button.OnClientClick = ActionScripts.GetHideModalScript(actionContext.ParentComponentName);
                     }
                     else
                     {
-                         button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
+                         button.OnClientClick = ActionScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
                     }
                     break;
 
@@ -198,7 +198,7 @@ public class ActionButtonFactory
                     button.OnClientClick = formView.Scripts.GetSetPanelStateScript(PageState.View);
                     break;
                 case AuditLogFormToolbarAction:
-                    button.OnClientClick = ActionsScripts.GetFormActionScript(action, actionContext, ActionSource.FormToolbar);
+                    button.OnClientClick = ActionScripts.GetFormActionScript(action, actionContext, ActionSource.FormToolbar);
                     break;
                 case SaveAction saveAction:
                     if (saveAction.EnterKeyBehavior == FormEnterKey.Submit)
@@ -207,7 +207,7 @@ public class ActionButtonFactory
                         button.Type = saveAction.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
 
                     actionContext.IsSubmit = saveAction.SubmitOnSave;
-                    button.OnClientClick = ActionsScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
+                    button.OnClientClick = ActionScripts.GetFormActionScript(action,actionContext, ActionSource.FormToolbar);
                     break;
             }
         }
@@ -226,7 +226,7 @@ public class ActionButtonFactory
 
         if (action is UserCreatedAction userCreatedAction)
         {
-            button.OnClientClick = ActionsScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.Field);
+            button.OnClientClick = ActionScripts.GetUserActionScript(userCreatedAction, actionContext, ActionSource.Field);
         }
 
         button.Enabled = button.Enabled && actionContext.FormStateData.PageState is not PageState.View;

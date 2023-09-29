@@ -251,7 +251,7 @@ internal class GridTableBody
 
             if (OnRenderAction != null || OnRenderActionAsync != null)
             {
-                var args = new ActionEventArgs(groupedAction, linkButton, formStateData.FormValues);
+                var args = new ActionEventArgs(groupedAction, linkButton, formStateData.Values);
                 
                 OnRenderAction?.Invoke(GridView,args);
 
@@ -279,7 +279,7 @@ internal class GridTableBody
             var link =  await factory.CreateGridTableButtonAsync(action, GridView, formStateData);
             if (OnRenderAction is not null || OnRenderActionAsync is not null)
             {
-                var args = new ActionEventArgs(action, link, formStateData.FormValues);
+                var args = new ActionEventArgs(action, link, formStateData.Values);
                 OnRenderAction?.Invoke(GridView, args);
 
                 if (OnRenderActionAsync != null)
@@ -379,7 +379,7 @@ internal class GridTableBody
 
         if (OnRenderAction != null)
         {
-            var args = new ActionEventArgs(defaultAction, actionButton, formStateData.FormValues);
+            var args = new ActionEventArgs(defaultAction, actionButton, formStateData.Values);
             OnRenderAction.Invoke(GridView, args);
 
             if (args.HtmlResult != null)

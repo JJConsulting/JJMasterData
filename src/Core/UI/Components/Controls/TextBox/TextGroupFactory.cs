@@ -81,16 +81,18 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
     {
         var actions = field.Actions.GetAllSorted().FindAll(x => x.IsVisible);
 
-        var actionContext = new ActionContext
-        {
-            FormElement = formElement,
-            FormStateData = controlContext.FormStateData,
-            FieldName = field.Name,
-            ParentComponentName = controlContext.ParentComponentName
-        };
-        
+
         foreach (var action in actions)
         {
+            var actionContext = new ActionContext
+            {
+                Action = action,
+                FormElement = formElement,
+                FormStateData = controlContext.FormStateData,
+                FieldName = field.Name,
+                ParentComponentName = controlContext.ParentComponentName
+            };
+
             var link = await ActionButtonFactory.CreateFieldButtonAsync(action,actionContext);
             textGroup.Actions.Add(link);
         }

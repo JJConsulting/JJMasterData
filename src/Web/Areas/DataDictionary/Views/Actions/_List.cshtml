@@ -5,7 +5,8 @@
 @using System.Reflection
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
-@inject IEnumerable<IActionPlugin> ActionPluginHandlers
+@inject IEnumerable<IPluginHandler> ActionPluginHandlers
+
 @model ActionsListDetailsViewModel
 
 @{
@@ -16,7 +17,7 @@
     sortableClass = "jjsortable";
     <script lang="javascript" type="text/javascript">
         document.addEventListener('DOMContentLoaded', function () {
-            DataDictionaryUtils.sortAction('@Model.Context.ToString()', '@GetUrlSort()','@StringLocalizer["Unexpected error"]');
+            DataDictionaryUtils.sortAction('@Model.Source.ToString()', '@GetUrlSort()','@StringLocalizer["Unexpected error"]');
         });
     </script>
 }
@@ -47,11 +48,32 @@
                 @if (ActionPluginHandlers.Any())
                 {   <li><hr class="dropdown-divider"></li>
                     <li><h6 class="dropdown-header">Plugins</h6></li>
-                    @foreach (var plugin in ActionPluginHandlers)
+                    @if (Model.Source is ActionSource.Field)
                     {
-                        <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                           onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                        @foreach (var plugin in ActionPluginHandlers.Where(p=> p is IPluginFieldActionHandler || p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
+                        {
+                            @if (plugin is IPluginFieldActionHandler)
+                            {
+                                <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                                   onclick="@GetAddScript(typeof(PluginFieldAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                            }
+                            else
+                            {
+                                <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                                   onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                            }
+
+                        }
                     }
+                    else
+                    {
+                        @foreach (var plugin in ActionPluginHandlers.Where(p=> p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
+                        {
+                            <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                               onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                        }
+                    }
+   
                 }
                 
             </ul>
@@ -60,7 +82,7 @@
 </div>
 <div class="row">
     <div class="col-sm-12">
-        <ul class="list-group @sortableClass" id="sortable-@Model.Context.ToString()">
+        <ul class="list-group @sortableClass" id="sortable-@Model.Source.ToString()">
             @foreach (var action in Model.Actions!)
             {
                 <li class="list-group-item" id="@action.Name">
@@ -108,8 +130,8 @@
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Edit", "Actions",
-            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
-        script.Append($"','{Model.Context.ToString().FirstCharToUpper()}");
+            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName }));
+        script.Append($"','{Model.Source.ToString().FirstCharToUpper()}");
         script.Append($" Action', {(int)ModalSize.ExtraLarge}");
         script.Append(");");
 
@@ -121,8 +143,8 @@
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Add", "Actions",
-            new { elementName = Model.ElementName, actionType = actionType.Name, context = Model.Context, fieldName = Model.FieldName, pluginId }));
-        script.Append($"','{Model.Context.ToString().FirstCharToUpper()}");
+            new { elementName = Model.ElementName, actionType = actionType.Name, context = Model.Source, fieldName = Model.FieldName, pluginId }));
+        script.Append($"','{Model.Source.ToString().FirstCharToUpper()}");
         script.Append($" Action',{(int)ModalSize.ExtraLarge}");
         script.Append(");");
 
@@ -137,7 +159,7 @@
         script.Append(action.Name);
         script.Append("', '");
         script.Append(Url.Action("Remove", "Actions",
-            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName }));
+            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName }));
         script.Append("', '");
         script.Append(StringLocalizer["Are you sure you want to delete [{0}] action?", action.Name]);
         script.Append("');");
@@ -148,7 +170,7 @@
     public string? GetUrlDisable(BasicAction action)
     {
         return Url.Action("EnableDisable", "Actions",
-            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Context, fieldName = Model.FieldName });
+            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName });
     }
 
     public string? GetUrlSort()

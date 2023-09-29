@@ -6,11 +6,11 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.Web.Components;
 
-public class MessageFactory : IComponentFactory<JJMessageBox>
+public class MessageBoxFactory : IComponentFactory<JJMessageBox>
 {
     public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public MessageFactory(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public MessageBoxFactory(IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
     }
@@ -23,7 +23,7 @@ public class MessageFactory : IComponentFactory<JJMessageBox>
     public JJMessageBox Create(string text, MessageIcon icon)
     {
         var messageBox = Create();
-        messageBox.Text = text;
+        messageBox.Content = text;
         messageBox.Icon = icon;
         messageBox.Size = MessageSize.Default;
         messageBox.Title = messageBox.Icon switch
@@ -50,11 +50,11 @@ public class MessageFactory : IComponentFactory<JJMessageBox>
         return Create(errorMessage.ToString(), icon);
     }
 
-    public JJMessageBox Create(string text, string title, MessageIcon icon, MessageSize size)
+    public JJMessageBox Create(string title, string text, MessageIcon icon, MessageSize size)
     {
         var messageBox = Create();
         messageBox.Title = title;
-        messageBox.Text = text;
+        messageBox.Content = text;
         messageBox.Icon = icon;
         messageBox.Size = size;
 

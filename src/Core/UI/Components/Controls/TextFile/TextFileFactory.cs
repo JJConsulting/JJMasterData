@@ -49,7 +49,7 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
         textFile.FormElementField = field;
         textFile.PageState = formStateData.PageState;
         textFile.Text = value != null ? value.ToString() : "";
-        textFile.FortStateValues = formStateData.FormValues;
+        textFile.FortStateValues = formStateData.Values;
         textFile.Name = field.Name;
         textFile.FieldName = field.Name;
         textFile.Enabled = true;

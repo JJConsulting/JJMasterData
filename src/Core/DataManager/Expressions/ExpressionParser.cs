@@ -38,7 +38,7 @@ public class ExpressionParser : IExpressionParser
         var valueList = StringManager.FindValuesByInterval(expression, interval.Begin, interval.End);
         var userValues = formStateData.UserValues;
         var state = formStateData.PageState;
-        var values = formStateData.FormValues;
+        var values = formStateData.Values;
 
         foreach (var field in valueList)
         {

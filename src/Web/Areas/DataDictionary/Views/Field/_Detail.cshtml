@@ -180,7 +180,7 @@
                 {
                     @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new ActionsListDetailsViewModel
                            {
-                               Context = ActionSource.Field,
+                               Source = ActionSource.Field,
                                ElementName = ViewBag.ElementName,
                                Actions = Model.Actions.GetAllSorted(),
                                FieldName = ViewBag.OriginalName

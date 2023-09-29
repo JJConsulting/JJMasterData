@@ -1,95 +1,45 @@
 @using JJMasterData.Core.Web
 @using JJMasterData.Core.DataDictionary.Models.Actions
-@using JJMasterData.Core.Web.Components
-@using Newtonsoft.Json
 @model JJMasterData.Core.DataDictionary.Models.Actions.PluginAction
 @inject IOptions<JJMasterDataWebOptions> Options
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
-@inject IEnumerable<IActionPlugin> Plugins
+@inject IEnumerable<IPluginHandler> Plugins
 
 @{
-    var plugin = Plugins.First(p => p.Id == Model.PluginId);
+    var plugin = (IPluginActionHandler)Plugins.First(p => p.Id == Model.PluginId && p is IPluginActionHandler);
 
-    string elementName = ViewBag.ElementName;
-    
-    List<string> fieldHints = ViewBag.CodeMirrorHintList;
-    
-    var hints = new List<object>();
-    
-    hints.AddRange(plugin.AdditionalParametersHints.Select(s=>new {text = s, displayText = $"{plugin.Title} - {s}"}));
-    hints.AddRange(fieldHints.Select(s=>new {text = s, displayText = $"{elementName} - {s}"}));
-    
     Layout = Options.Value.PopUpLayoutPath;
 }
 
-<link href="~/_content/JJMasterData.Web/css/codemirror/codemirror.css" rel="stylesheet"/>
-<link href="~/_content/JJMasterData.Web/css/codemirror/show-hint.css"rel="stylesheet"/>
-
-@section Scripts{
-    <script src="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.js" type="text/javascript"></script>
-    <script src="~/_content/JJMasterData.Web/js/codemirror/mode/javascript.js" type="text/javascript"></script>
-    <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js" type="text/javascript"></script>
-    <script src="~/_content/JJMasterData.Web/js/codemirror/addon/autorefresh/autorefresh.js" type="text/javascript"></script>
-    <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js" type="text/javascript"></script>
-    
-    <script type="text/javascript">
-        CodeMirrorWrapper.setupCodeMirror("additionalParametersJson",{mode: "javascript", hintList: @Html.Raw(JsonConvert.SerializeObject(hints)), hintKey: '"'})
-    </script>
-}
-
 @using (Html.BeginForm("PluginAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName  }, FormMethod.Post))
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
 {
+    <input asp-for="PluginId" class="form-control" hidden="hidden"/>
+
     <ul class="nav nav-tabs">
-        <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
-        <li id="nav-plugin" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-plugin">@StringLocalizer["Plugin"]</a></li>
-        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
+        <li id="nav-general" class="nav-item active">
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+        </li>
+        <li id="nav-plugin" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-plugin">@StringLocalizer["Plugin"]</a>
+        </li>
+        <li id="nav-advanced" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+        </li>
     </ul>
 
     <div class="tab-content" style="margin-top: 20px;">
         <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
             <partial name="_NavGeneral" model="Model"/>
         </div>
-        
+
         <div id="div-plugin" class="tab-pane fade @BootstrapHelper.Show">
             <div class="container-fluid ">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <label asp-for="PluginId" class="form-label"></label>
-                        <input asp-for="PluginId" class="form-control" readonly="readonly"/>
-                    </div>
-                    @if (ViewBag.ContextAction is ActionSource.Field)
-                    {
-                        <div class="col-sm-12">
-                            <label asp-for="AutoReloadFormFields" class="form-label">
-                            </label>
-                            <div class="input-append">
-                                <input asp-for="AutoReloadFormFields" class="form-control" data-toggle="toggle" data-on="Yes" data-off="No" data-size="small" type="checkbox"/>
-                            </div>
-                        </div>
-                    }
-                </div>
-                
-                <label for="additionalParametersJson" class="form-label">@StringLocalizer["Additional Parameters"]</label>
-                <tooltip title="Additional parameters that will be used by the plugin at runtime."/>
-                <textarea id="additionalParametersJson" name="additionalParametersJson">
-                @if (Model.AdditionalParameters?.Any() ?? false)
-                {
-                    @JsonConvert.SerializeObject(Model.AdditionalParameters, new JsonSerializerSettings
-                    {
-                        Formatting = Formatting.Indented
-                    })
-                }
-                else
-                {
-                    @ViewBag.AdditionalParametersJson
-                }  
-                </textarea>
                 
                 <alert title="@plugin.Title" color="Info" icon="IconType.Plug">
                     @if (plugin.AdditionalInformationHtml is null || !plugin.AdditionalInformationHtml.GetChildren().Any())
                     {
-                        @Html.Raw(StringLocalizer["No additional information about this plugin."])
+                        @Html.Raw(StringLocalizer["The developer give no additional information about this plugin."])
                     }
                     else
                     {
@@ -98,11 +48,11 @@
                 </alert>
             </div>
         </div>
-        
+
         <div id="div-advanced" class="tab-pane fade">
             <partial name="_NavAdvanced" model="Model"/>
         </div>
-        
+
     </div>
 
     @await Html.PartialAsync("_Toolbar")
