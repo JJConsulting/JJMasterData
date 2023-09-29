@@ -40,7 +40,7 @@ public class HtmlComponentFactory
     
     public LinkButtonFactory LinkButton => _serviceProvider.GetRequiredService<LinkButtonFactory>();
     
-    public MessageFactory MessageBox =>  new(_stringLocalizer);
+    public MessageBoxFactory MessageBox =>  new(_stringLocalizer);
     
     public ModalDialogFactory ModalDialog => new();
     

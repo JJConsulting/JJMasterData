@@ -20,16 +20,16 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class ActionsController : DataDictionaryController
 {
     private readonly ActionsService _actionsService;
-    private readonly ValidationSummaryFactory _validationSummaryFactory;
+    private readonly IEnumerable<IPluginHandler> _pluginHandlers;
     private readonly IControlFactory<JJSearchBox> _searchBoxFactory;
 
     public ActionsController(
         ActionsService actionsService,
-        ValidationSummaryFactory validationSummaryFactory,
+        IEnumerable<IPluginHandler> pluginHandlers,
         IControlFactory<JJSearchBox> searchBoxFactory)
     {
         _actionsService = actionsService;
-        _validationSummaryFactory = validationSummaryFactory;
+        _pluginHandlers = pluginHandlers;
         _searchBoxFactory = searchBoxFactory;
     }
 
@@ -106,6 +106,10 @@ public class ActionsController : DataDictionaryController
             nameof(InternalAction) => new InternalAction(),
             nameof(SqlCommandAction) => new SqlCommandAction(),
             nameof(PluginAction) => new PluginAction
+            {
+                PluginId = pluginId!.Value
+            },
+            nameof(PluginFieldAction) => new PluginFieldAction
             {
                 PluginId = pluginId!.Value
             },
@@ -362,20 +366,38 @@ public class ActionsController : DataDictionaryController
         bool isActionSave,
         string? fieldName)
     {
-        string additionalParametersJson = Request.Form["additionalParametersJson"]!;
-        try
+        
+        return await EditActionResult(elementName, pluginAction, context, isActionSave, originalName, fieldName);
+    }
+    [HttpPost]
+    public async Task<IActionResult> PluginFieldAction(
+        string elementName, 
+        PluginFieldAction pluginFieldAction,
+        ActionSource context,
+        string? originalName, 
+        bool isActionSave,
+        string? fieldName)
+    {
+        pluginFieldAction.FieldMap = GetPluginFieldMap(pluginFieldAction.PluginId);
+        return await EditActionResult(elementName, pluginFieldAction, context, isActionSave, originalName, fieldName);
+    }
+
+    private IDictionary<string, string> GetPluginFieldMap(Guid pluginId)
+    {
+        var pluginHandler = (IPluginFieldActionHandler)_pluginHandlers.First(p => p.Id == pluginId);
+
+        var map = new Dictionary<string, string>();
+        
+        foreach (var key in pluginHandler.FieldMapKeys)
         {
-            pluginAction.AdditionalParameters = JsonConvert.DeserializeObject<Dictionary<string,object>>(additionalParametersJson)!;
-        }
-        catch
-        {
-            ViewBag.Error = _validationSummaryFactory.Create("Invalid Additional Parameters JSON data.").GetHtml();
-            ViewBag.AdditionalParametersJson = additionalParametersJson;
-            await PopulateViewBag(elementName, pluginAction, context);
-            return View(pluginAction);
+
+            if (Request.Form.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value))
+            {
+                map[key] = value!;
+            }
         }
 
-        return await EditActionResult(elementName, pluginAction, context, isActionSave, originalName, fieldName);
+        return map;
     }
 
     private async Task SaveAction(string elementName, BasicAction basicAction, ActionSource context,
@@ -438,4 +460,5 @@ public class ActionsController : DataDictionaryController
             }
         }
     }
+    
 }

@@ -30,7 +30,7 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
 
     public JJTextRange Create(FormElement formElement, FormElementField field, ControlContext context)
     {
-        var values = context.FormStateData.FormValues;
+        var values = context.FormStateData.Values;
         string valueFrom = "";
         if (values != null && values.ContainsKey($"{field.Name}_from"))
         {

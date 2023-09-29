@@ -313,7 +313,7 @@ public class JJFormView : AsyncComponent
     internal IEntityRepository EntityRepository { get; }
     internal FieldValuesService FieldValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
-    private IEnumerable<IPluginActionHandler> ActionPlugins { get; }
+    private IEnumerable<IPluginHandler> PluginHandlers { get; }
     private IOptions<JJMasterDataCoreOptions> Options { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
@@ -340,7 +340,7 @@ public class JJFormView : AsyncComponent
         StringLocalizer =
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<JJMasterDataResources>>();
         DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();        
-        ActionPlugins = StaticServiceLocator.Provider.GetScopedDependentService<IEnumerable<IPluginActionHandler>>();
+        PluginHandlers = StaticServiceLocator.Provider.GetScopedDependentService<IEnumerable<IPluginHandler>>();
         FormService.EnableErrorLinks = true;
     }
 
@@ -368,7 +368,7 @@ public class JJFormView : AsyncComponent
         IEncryptionService encryptionService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
-        IEnumerable<IPluginActionHandler> actionPlugins,
+        IEnumerable<IPluginHandler> pluginHandlers,
         IOptions<JJMasterDataCoreOptions> options,
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
@@ -381,7 +381,7 @@ public class JJFormView : AsyncComponent
         EncryptionService = encryptionService;
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
-        ActionPlugins = actionPlugins;
+        PluginHandlers = pluginHandlers;
         Options = options;
         StringLocalizer = stringLocalizer;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -475,7 +475,7 @@ public class JJFormView : AsyncComponent
 
         var fieldName = QueryString["fieldName"];
 
-        var result = await GetPluginActionResult(values, fieldName);
+        var result = await GetPluginActionResult(values);
 
         DataPanel.Values = values;
         return await DataPanel.GetResultAsync();
@@ -659,68 +659,50 @@ public class JJFormView : AsyncComponent
         return result;
     }
 
-    private async Task<ComponentResult> GetPluginActionResult(string? triggeredFieldName = null)
+    private async Task<ComponentResult> GetPluginActionResult()
     {
         var formValues = await GetFormValuesAsync();
-
+        
         var result = await GetPluginActionResult(formValues);
 
-        if (result.Modal is not null)
+        if (result.JsCallback is not null)
         {
-            var modal = result.Modal;
-
-            var actionScripts = new ActionScripts(ExpressionsService,
-                new JJMasterDataUrlHelper(CurrentContext.Request, Options), EncryptionService, StringLocalizer);
-
-            var formStateData = new FormStateData
-            {
-                FormValues = formValues,
-                UserValues = UserValues,
-                PageState = PageState,
-            };
-
-            var messageBox = new JJMessageBox();
-            messageBox.Content = modal.Content;
-            messageBox.Icon = modal.Icon;
-            messageBox.Size = modal.Size;
-            messageBox.Title = modal.Title;
-            messageBox.Button1Label = modal.Button1Label;
-            messageBox.Button2Label = modal.Button2Label;
-
-            if (modal.Button1Action is not null)
-            {
-                messageBox.Button1JsCallback = "()=>{" + actionScripts.GetFormActionScript(modal.Button1Action,
-                    ActionContext.FromFormView(this, formStateData), ActionSource.FormToolbar, false) + "}";
-            }
-
-            if (modal.Button2Action is not null)
-            {
-                messageBox.Button2JsCallback = "()=>{" + actionScripts.GetFormActionScript(modal.Button2Action,
-                    ActionContext.FromFormView(this, formStateData), ActionSource.FormToolbar, false) + "}";
-            }
-
-
-            return new JsonComponentResult(new { jsCallback = messageBox.GetShowScript() });
+            return new JsonComponentResult(new { jsCallback = result.JsCallback });
         }
 
         return await GetDefaultResult(formValues);
     }
 
-    private async Task<PluginActionResult> GetPluginActionResult(IDictionary<string, object?> formValues,
-        string? fieldName = null)
+    private async Task<PluginActionResult> GetPluginActionResult(IDictionary<string, object?> formValues)
     {
         var pluginAction = (PluginAction)CurrentAction!;
 
-        var actionPlugin = ActionPlugins.First(p => p.Id == pluginAction.PluginId);
-
-        var result = await actionPlugin.ExecuteActionAsync(new PluginActionContext
+        var pluginHandler = PluginHandlers.First(p => p.Id == pluginAction.PluginId);
+        
+        var formStateData = new FormStateData
         {
             Values = formValues,
-            AdditionalParameters = pluginAction.AdditionalParameters ?? new Dictionary<string, object?>(),
-            TriggeredFieldName = CurrentActionMap!.FieldName!,
-            FormElement = FormElement
-        });
-        return result;
+            UserValues = UserValues,
+            PageState = PageState,
+        };
+
+        switch (pluginHandler)
+        {
+            case IPluginActionHandler pluginActionHandler:
+                return await pluginActionHandler.ExecuteActionAsync(new PluginActionContext
+                {
+                    ActionContext = GetActionContext(pluginAction,formStateData),
+                });
+            case IPluginFieldActionHandler pluginFieldActionHandler:
+                return await pluginFieldActionHandler.ExecuteActionAsync(context: new PluginFieldActionContext
+                {
+                    ActionContext = GetActionContext(pluginAction,
+                        formStateData, CurrentActionMap!.FieldName),
+                    FieldMap = ((PluginFieldAction)pluginAction).FieldMap,
+                });
+            default:
+                throw new JJMasterDataException("Invalid plugin handler");
+        }
     }
 
     private void SetFormServiceEvents()
@@ -1485,6 +1467,31 @@ public class JJFormView : AsyncComponent
         }
     }
 
+    public ActionContext GetActionContext(BasicAction action, FormStateData formStateData, string? fieldName = null)
+    {
+        return new ActionContext
+        {
+            Action = action,
+            FormElement = FormElement,
+            FormStateData = formStateData,
+            FieldName = fieldName,
+            IsModal = ComponentContext is ComponentContext.Modal,
+            ParentComponentName = Name
+        };
+    }
+    
+    public async Task<ActionContext> GetActionContextAsync(BasicAction action)
+    {
+        return new ActionContext
+        {
+            Action = action,
+            FormElement = FormElement,
+            FormStateData = await GetFormStateDataAsync(),
+            IsModal = ComponentContext is ComponentContext.Modal,
+            ParentComponentName = Name
+        };
+    }
+    
     #region "Legacy inherited GridView compatibility"
 
     [Obsolete("Please use GridView.GridActions")]

@@ -1,0 +1,111 @@
+@using JJMasterData.Core.Web
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@using System.Collections.Immutable
+@model JJMasterData.Core.DataDictionary.Models.Actions.PluginFieldAction
+@inject IOptions<JJMasterDataWebOptions> Options
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IEnumerable<IPluginHandler> Plugins
+
+@{
+    var plugin = (IPluginFieldActionHandler)Plugins.First(p => p.Id == Model.PluginId && p is IPluginFieldActionHandler);
+
+    Layout = Options.Value.PopUpLayoutPath;
+
+    FormElement formElement = ViewBag.FormElement;
+
+    var dataItem = new FormElementDataItem
+    {
+        DataItemType = DataItemType.Manual,
+        FirstOption = FirstOptionMode.Choose,
+        Items = formElement.Fields.Select(f=>new DataItemValue(f.Name,f.Name)).ToImmutableList()
+    };
+}
+
+@using (Html.BeginForm("PluginFieldAction", "Actions",
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+{
+    <input asp-for="PluginId" class="form-control" hidden="hidden"/>
+
+    <ul class="nav nav-tabs">
+        <li id="nav-general" class="nav-item active">
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+        </li>
+        <li id="nav-plugin" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-plugin">@StringLocalizer["Plugin"]</a>
+        </li>
+        <li id="nav-advanced" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
+            <partial name="_NavGeneral" model="Model"/>
+        </div>
+
+        <div id="div-plugin" class="tab-pane fade @BootstrapHelper.Show">
+            <div class="container-fluid ">
+                
+                <table class="table table-responsive table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>
+                            @StringLocalizer["Plugin Key"]
+                        </th>
+                        <th>
+                            @StringLocalizer["Field Name"]
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pluginKey in plugin.FieldMapKeys)
+                        {
+                            <tr>
+                                <td>
+                                    @pluginKey
+                                </td>
+                                <td>
+                                    @if (Model.FieldMap.TryGetValue(@pluginKey, out var value))
+                                    {
+                                        <combobox name="@pluginKey" form-element-data-item="dataItem" value="value"/>
+                                    }
+                                    else
+                                    {
+                                        <combobox name="@pluginKey" form-element-data-item="dataItem"/>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label asp-for="AutoTriggerOnChange" class="form-label"></label>
+                        <tooltip title="Trigger the action when the value of the field is changed."/>
+                        <div class="input-append">
+                            <input asp-for="AutoTriggerOnChange" class="form-control" data-toggle="toggle" data-on="Yes" data-off="No" data-size="small" type="checkbox"/>
+                        </div>
+                    </div>
+                </div>
+                
+                <alert title="@plugin.Title" color="Info" icon="IconType.Plug">
+                    @if (plugin.AdditionalInformationHtml is null || !plugin.AdditionalInformationHtml.GetChildren().Any())
+                    {
+                        @Html.Raw(StringLocalizer["The developer give no additional information about this plugin."])
+                    }
+                    else
+                    {
+                        @Html.Raw(plugin.AdditionalInformationHtml)
+                    }
+                </alert>
+            </div>
+        </div>
+
+        <div id="div-advanced" class="tab-pane fade">
+            <partial name="_NavAdvanced" model="Model"/>
+        </div>
+
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}

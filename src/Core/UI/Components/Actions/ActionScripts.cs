@@ -18,7 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace JJMasterData.Core.UI.Components.FormView;
 
-internal class ActionScripts
+public class ActionScripts
 {
     private ExpressionsService ExpressionsService { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
@@ -79,7 +79,7 @@ internal class ActionScripts
         ActionSource actionSource
     )
     {
-        var actionMap = actionContext.ToActionMap(action.Name, actionSource);
+        var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
@@ -94,7 +94,7 @@ internal class ActionScripts
     public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource, bool encode = true)
     {
         var formElement = actionContext.FormElement;
-        var actionMap = actionContext.ToActionMap(action.Name, actionSource);
+        var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 
@@ -141,7 +141,7 @@ internal class ActionScripts
             UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
             SqlCommandAction => GetSqlCommandScript(userCreatedAction, actionContext, actionSource),
             ScriptAction jsAction => HttpUtility.HtmlAttributeEncode(ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData) ?? string.Empty),
-            InternalAction internalAction => GetInternalUrlScript(internalAction, formStateData.FormValues),
+            InternalAction internalAction => GetInternalUrlScript(internalAction, formStateData.Values),
             _ => GetFormActionScript(userCreatedAction, actionContext, actionSource)
         };
     }
@@ -150,7 +150,7 @@ internal class ActionScripts
 
     public string GetSqlCommandScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)
     {
-        var actionMap = actionContext.ToActionMap(action.Name, actionSource);
+        var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
 

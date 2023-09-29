@@ -58,12 +58,12 @@ public class JJMessageBox : HtmlComponent
 
         if (!string.IsNullOrEmpty(Button1JsCallback))
         {
-            script += $", '{Button1Label}', {Button1JsCallback}";
+            script += $", '{Button1Label}', ()=>{{{Button1JsCallback};}}";
         }
 
         if (!string.IsNullOrEmpty(Button2JsCallback))
         {
-            script += $", '{Button2Label}', {Button2JsCallback}";
+            script += $", '{Button2Label}', ()=>{{{Button2JsCallback}}}";
         }
 
         script += ")";

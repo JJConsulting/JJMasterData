@@ -32,7 +32,7 @@ public class ExpressionParserTests
                     "userField", "UserFieldValue"
                 }
             },
-            FormValues = new Dictionary<string, object?>()
+            Values = new Dictionary<string, object?>()
             {
                 {"formValue","FormValue"}
             },
@@ -60,7 +60,7 @@ public class ExpressionParserTests
                     "userField", "UserFieldValue"
                 }
             },
-            FormValues = new Dictionary<string, object?>()
+            Values = new Dictionary<string, object?>()
             {
                 {"formValue","FormValue"}
             },

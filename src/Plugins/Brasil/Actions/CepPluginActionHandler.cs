@@ -12,13 +12,12 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Brasil.Actions;
 
-public class CepPluginActionHandler : IPluginActionHandler
+public class CepPluginActionHandler : IPluginFieldActionHandler
 {
     private ICepService CepService { get; }
     public Guid Id => GuidGenerator.FromValue(nameof(CepPluginActionHandler));
     public string Title => "CEP";
-
-    public IEnumerable<string> AdditionalParametersHints
+    public IEnumerable<string> FieldMapKeys
     {
         get
         {
@@ -32,16 +31,21 @@ public class CepPluginActionHandler : IPluginActionHandler
     }
     public HtmlBuilder AdditionalInformationHtml { get; } = new();
 
-    public CepPluginActionHandler(ICepService cepService)
+    private MessageBoxFactory MessageBoxFactory { get; }
+    
+    public CepPluginActionHandler(ICepService cepService, HtmlComponentFactory htmlComponentFactory)
     {
         CepService = cepService;
+        MessageBoxFactory = htmlComponentFactory.MessageBox;
     }
     
     public bool CanCreate(ActionSource actionSource) => actionSource is ActionSource.Field;
     
-    public async Task<PluginActionResult> ExecuteActionAsync(PluginActionContext context)
+    public async Task<PluginActionResult> ExecuteActionAsync(PluginFieldActionContext context)
     {
-        var cep = context.Values[context.TriggeredFieldName!].ToString();
+        var values = context.Values;
+        
+        var cep = values[context.FieldName!].ToString();
 
         CepResult cepResult;
 
@@ -53,19 +57,14 @@ public class CepPluginActionHandler : IPluginActionHandler
         {
             return new PluginActionResult
             {
-                Modal = new PluginActionModal
-                {
-                    Title = "Erro",
-                    Content = "CEP não encontrado",
-                    Icon = MessageIcon.Error
-                }
+                JsCallback = MessageBoxFactory.Create("Erro","CEP não encontrado.",MessageIcon.Error,MessageSize.Default).GetShowScript()
             };
         }
         
         var cepDictionary = cepResult.ToDictionary();
-        foreach (var parameter in context.AdditionalParameters)
+        foreach (var parameter in context.FieldMap)
         {
-            context.Values[parameter.Key] = cepDictionary[parameter.Value!.ToString()!];
+            context.Values[parameter.Value] = cepDictionary[parameter.Key];
         }
 
         return new PluginActionResult();

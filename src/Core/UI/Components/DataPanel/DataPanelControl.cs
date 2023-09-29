@@ -38,7 +38,7 @@ internal class DataPanelControl
 
     public IDictionary<string, object?>? UserValues => FormState.UserValues;
 
-    public IDictionary<string, object?> Values => FormState.FormValues;
+    public IDictionary<string, object?> Values => FormState.Values;
 
     public FormStateData FormState { get; }
 

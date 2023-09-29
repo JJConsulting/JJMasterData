@@ -75,7 +75,7 @@ public class ActionButtonFactory
 
     public async Task<JJLinkButton> CreateGridTableButtonAsync(BasicAction action, JJGridView gridView, FormStateData formStateData)
     {
-        var actionContext = ActionContext.FromGridView(gridView, formStateData);
+        var actionContext = gridView.GetActionContext(action, formStateData);
         var button = await CreateAsync(action, actionContext.FormStateData);
 
         switch (action)
@@ -102,7 +102,7 @@ public class ActionButtonFactory
 
     public async Task<JJLinkButton> CreateGridToolbarButtonAsync(BasicAction action, JJGridView gridView, FormStateData formStateData)
     {
-        var actionContext = ActionContext.FromGridView(gridView, formStateData);
+        var actionContext = gridView.GetActionContext(action, formStateData);
         var button = await CreateAsync(action, formStateData);
 
         if (action is UserCreatedAction userCreatedAction)
@@ -168,7 +168,7 @@ public class ActionButtonFactory
 
     public async Task<JJLinkButton> CreateFormToolbarButtonAsync(BasicAction action, JJFormView formView)
     {
-        var actionContext = await ActionContext.FromFormViewAsync(formView);
+        var actionContext = await formView.GetActionContextAsync(action);
         var button = await CreateAsync(action, actionContext.FormStateData);
 
         if (action is UserCreatedAction userCreatedAction)

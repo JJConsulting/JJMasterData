@@ -7,6 +7,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exports;
 using JJMasterData.Core.DataManager.Exports.Abstractions;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.UI.Components.FormView;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -64,6 +65,7 @@ public static class ServiceCollectionExtensions
         services.AddDataManagerServices();
         services.AddEventHandlers();
         services.AddExpressionServices();
+        services.AddActionServices();
         
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
         

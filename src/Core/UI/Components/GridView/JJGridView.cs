@@ -32,6 +32,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager.Models;
 
 // ReSharper disable UnusedMember.Local
 
@@ -89,7 +90,7 @@ public class JJGridView : AsyncComponent
     private IList<Dictionary<string,object?>>? _dataSource;
     private List<FormElementField>? _pkFields;
     private IDictionary<string, object?>? _defaultValues;
-    private FormStateData? _formData;
+    private FormStateData? _formStateData;
     private ActionMap? _currentActionMap;
     private JJDataImportation? _dataImportation;
     private JJDataExportation? _dataExportation;
@@ -924,7 +925,7 @@ public class JJGridView : AsyncComponent
 
     internal async Task<FormStateData> GetFormStateDataAsync()
     {
-        if (_formData == null)
+        if (_formStateData == null)
         {
             var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
             var userValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
@@ -932,10 +933,10 @@ public class JJGridView : AsyncComponent
             DataHelper.CopyIntoDictionary(userValues, UserValues, false);
             DataHelper.CopyIntoDictionary(userValues, defaultValues, true);
 
-            _formData = new FormStateData(defaultValues, userValues, PageState.List);
+            _formStateData = new FormStateData(defaultValues, userValues, PageState.List);
         }
 
-        return _formData;
+        return _formStateData;
     }
     
     private async Task<HtmlBuilder> GetSettingsHtml()
@@ -1483,5 +1484,17 @@ public class JJGridView : AsyncComponent
     public bool IsExportPost()
     {
         return "export".Equals(CurrentContext.Request["dataExportationOperation"]) && Name.Equals(CurrentContext.Request["gridViewName"]);
+    }
+
+    public ActionContext GetActionContext(BasicAction basicAction, FormStateData formStateData)
+    {
+        return new ActionContext
+        {
+            Action = basicAction,
+            FormElement = FormElement,
+            FormStateData = formStateData,
+            ParentComponentName = Name,
+            IsModal = ComponentContext is ComponentContext.Modal
+        };
     }
 }

@@ -11,7 +11,7 @@ public class FormStateData
 {
     public required IDictionary<string, object?>? UserValues { get; init; }
 
-    public required IDictionary<string, object?> FormValues { get; init; }
+    public required IDictionary<string, object?> Values { get; init; }
     
     public required PageState PageState { get; init; }
 
@@ -22,21 +22,21 @@ public class FormStateData
     
     [SetsRequiredMembers]
     public FormStateData(
-        IDictionary<string, object?> formValues, 
+        IDictionary<string, object?> values, 
         IDictionary<string, object?>? userValues,
         PageState pageState)
     {
         UserValues = userValues.DeepCopy();
-        FormValues = formValues;
+        Values = values;
         PageState = pageState;
     }
 
     [SetsRequiredMembers]
     public FormStateData(
-        IDictionary<string, object?> formValues,
+        IDictionary<string, object?> values,
         PageState pageState)
     {
-        FormValues = formValues;
+        Values = values;
         PageState = pageState;
     }
 

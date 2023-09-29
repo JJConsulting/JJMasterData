@@ -5,7 +5,8 @@
 @using System.Reflection
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
-@inject IEnumerable<IPluginActionHandler> ActionPluginHandlers
+@inject IEnumerable<IPluginHandler> ActionPluginHandlers
+
 @model ActionsListDetailsViewModel
 
 @{
@@ -47,11 +48,32 @@
                 @if (ActionPluginHandlers.Any())
                 {   <li><hr class="dropdown-divider"></li>
                     <li><h6 class="dropdown-header">Plugins</h6></li>
-                    @foreach (var plugin in ActionPluginHandlers.Where(p=>p.CanCreate(Model.Source)))
+                    @if (Model.Source is ActionSource.Field)
                     {
-                        <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                           onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                        @foreach (var plugin in ActionPluginHandlers.Where(p=> p is IPluginFieldActionHandler || p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
+                        {
+                            @if (plugin is IPluginFieldActionHandler)
+                            {
+                                <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                                   onclick="@GetAddScript(typeof(PluginFieldAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                            }
+                            else
+                            {
+                                <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                                   onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                            }
+
+                        }
                     }
+                    else
+                    {
+                        @foreach (var plugin in ActionPluginHandlers.Where(p=> p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
+                        {
+                            <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                               onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                        }
+                    }
+   
                 }
                 
             </ul>
