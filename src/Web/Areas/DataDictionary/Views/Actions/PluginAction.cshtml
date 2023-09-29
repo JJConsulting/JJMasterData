@@ -5,7 +5,7 @@
 @model JJMasterData.Core.DataDictionary.Models.Actions.PluginAction
 @inject IOptions<JJMasterDataWebOptions> Options
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
-@inject IEnumerable<IActionPlugin> Plugins
+@inject IEnumerable<IPluginActionHandler> Plugins
 
 @{
     var plugin = Plugins.First(p => p.Id == Model.PluginId);

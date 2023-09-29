@@ -5,7 +5,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 public class ActionsListDetailsViewModel : DataDictionaryViewModel
 {
-    public required ActionSource Context { get; set; }
+    public required ActionSource Source { get; set; }
     public required List<BasicAction> Actions { get; init; }
     public string? FieldName { get; set; }
     

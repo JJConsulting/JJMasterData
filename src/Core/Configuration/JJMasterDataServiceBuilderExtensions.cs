@@ -112,9 +112,9 @@ public static class JJMasterDataServiceBuilderExtensions
         return builder;
     }
     
-    public static JJMasterDataServiceBuilder WithActionPlugin<TActionPlugin>(this JJMasterDataServiceBuilder builder) where TActionPlugin : class, IActionPlugin
+    public static JJMasterDataServiceBuilder WithActionPlugin<TActionPlugin>(this JJMasterDataServiceBuilder builder) where TActionPlugin : class, IPluginActionHandler
     {
-        builder.Services.AddScoped<IActionPlugin, TActionPlugin>();
+        builder.Services.AddScoped<IPluginActionHandler, TActionPlugin>();
         
         return builder;
     }

@@ -7,7 +7,7 @@ using JJMasterData.Core.Web.Html;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public interface IActionPlugin
+public interface IPluginActionHandler
 {
     /// <summary>
     /// Unique identifier of the plugin.
@@ -25,6 +25,8 @@ public interface IActionPlugin
     /// Optional information about the plugin that will be shown to the developer.
     /// </summary>
     public HtmlBuilder? AdditionalInformationHtml { get; }
+
+    public bool CanCreate(ActionSource actionSource);
     
     public Task<PluginActionResult> ExecuteActionAsync(PluginActionContext pluginActionContext);
 }

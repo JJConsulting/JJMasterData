@@ -10,7 +10,7 @@ public class PluginActionContext
     public required IDictionary<string,object?> Values { get; init; }
     
     /// <summary>
-    /// Name of the field that triggered the action
+    /// If a field action, name of the field that triggered the action
     /// </summary>
     public string? TriggeredFieldName { get; init; }
 }

@@ -13,7 +13,7 @@ public static class JJMasterDataServiceBuilderExtensions
         builder.Services.AddSingleton<HttpClient>();
         builder.Services.AddScoped<IProtheusService, ProtheusService>();
         builder.Services.AddScoped<IExpressionProvider, ProtheusExpressionProvider>();
-        builder.Services.AddScoped<IActionPlugin, ProtheusActionPlugin>();
+        builder.Services.AddScoped<IPluginActionHandler, ProtheusPluginActionHandler>();
         
         return builder;
     }   
