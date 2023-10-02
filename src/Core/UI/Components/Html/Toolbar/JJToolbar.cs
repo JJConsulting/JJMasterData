@@ -39,7 +39,7 @@ public class JJToolbar : HtmlComponent
                 continue;
 
             if (i != 0)
-                element.WithAttribute("style", "margin-left: 3px;");
+                element.WithAttribute("style", "margin-right: 3px;");
 
             div.Append(element);
         }

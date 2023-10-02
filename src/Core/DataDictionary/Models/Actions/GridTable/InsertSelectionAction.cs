@@ -5,7 +5,7 @@ internal class InsertSelectionAction : GridTableAction
     /// <summary>
     /// Nome padrão da ação
     /// </summary>
-    internal const string ActionName = "insert-select";
+    internal const string ActionName = "insert-selection";
 
     internal InsertSelectionAction()
     {

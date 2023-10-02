@@ -147,10 +147,13 @@ public class ActionScripts
     {
         var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
+        
+        var encryptedRouteContext = EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(actionContext.FormElement, ComponentContext.FormViewReload));
+        
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
-
+        
         return
-            $"ActionHelper.executeSqlCommand('{actionContext.ParentComponentName}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            $"ActionHelper.executeSqlCommand('{actionContext.ParentComponentName}','{encryptedActionMap}','{encryptedRouteContext}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
     public static string GetHideModalScript(string componentName)

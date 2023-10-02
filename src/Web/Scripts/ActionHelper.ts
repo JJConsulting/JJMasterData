@@ -1,6 +1,11 @@
 class ActionHelper {
 
-    static executeSqlCommand(componentName: string, encryptedActionMap: string, confirmMessage: string) {
+    static executeSqlCommand(
+        componentName: string,
+        encryptedActionMap: string, 
+        encryptedRouteContext: string,
+        confirmMessage: string) {
+        
         if (confirmMessage) {
             const result = confirm(confirmMessage);
             if (!result) {
@@ -18,7 +23,12 @@ class ActionHelper {
             formViewActionInput.value = encryptedActionMap;
         }
         
-        document.forms[0].requestSubmit();
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+        
+        postFormValues({url:urlBuilder.build(), success: data => {
+            document.getElementById(componentName).innerHTML = data;
+        }})
     }
 
     static executeRedirectAction(componentName: string, routeContext: string, encryptedActionMap: string, confirmationMessage?: string) {

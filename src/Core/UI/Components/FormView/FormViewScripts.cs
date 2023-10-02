@@ -34,6 +34,12 @@ public class FormViewScripts
         return $"FormViewHelper.insertSelection('{_formView.Name}', '{encryptedValues}', '{encryptedRouteContext}')";
     }
 
+    public string GetSetPageStateScript(PageState pageState)
+    {
+        var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.FormViewReload);
+        return $"FormViewHelper.setPageState('{_formView.Name}','{(int)pageState}', '{encryptedRouteContext}')";
+    }
+    
     public string GetSetPanelStateScript(PageState pageState)
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.FormViewReload);

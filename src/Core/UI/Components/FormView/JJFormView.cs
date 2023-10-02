@@ -26,6 +26,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Events.Args;
@@ -406,26 +407,32 @@ public class JJFormView : AsyncComponent
 
     private async Task<JJFormView> GetChildFormView()
     {
+        
+        
         var childFormView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
         childFormView.FormElement.ParentName = RouteContext.ParentElementName;
         childFormView.UserValues = UserValues;
         childFormView.RelationValues = childFormView.GetRelationValuesFromForm();
-        childFormView.ShowTitle = false;
         childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
-
-        if (PageState is PageState.View)
-            childFormView.DisableActionsAtViewMode();
-
+        
         var isInsertSelection = PageState is PageState.Insert &&
                                 GridView.ToolBarActions.InsertAction.ElementNameToSelect ==
                                 childFormView.FormElement.Name;
+        
+        childFormView.ShowTitle = isInsertSelection;
+        
+        if (PageState is PageState.View)
+            childFormView.DisableActionsAtViewMode();
 
         if (!isInsertSelection)
             return childFormView;
 
         childFormView.GridView.GridActions.Add(new InsertSelectionAction());
+        childFormView.GridView.ToolBarActions.Add(GetInsertSelectionBackAction());
+        
         childFormView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
 
+        
         return childFormView;
     }
 
@@ -494,11 +501,11 @@ public class JJFormView : AsyncComponent
     {
         var values = await GetFormValuesAsync();
 
-        var fieldsWithPlugins = FormElement
+        var fieldsWithActions = FormElement
             .Fields
             .Where(f => f.Actions.Any());
         
-        foreach (var field in fieldsWithPlugins)
+        foreach (var field in fieldsWithActions)
         {
             // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
             foreach (PluginFieldAction pluginFieldAction in field.Actions.Where(a=>a is PluginFieldAction))
@@ -830,29 +837,16 @@ public class JJFormView : AsyncComponent
         var formView = ComponentFactory.FormView.Create(formElement);
         formView.UserValues = UserValues;
         formView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
-
-        var backScript = new StringBuilder();
-        backScript.Append($"document.getElementById('form-view-page-state-{Name}').value = '{(int)PageState.List}'; ");
-        backScript.Append($"document.getElementById('form-view-action-map-{Name}').value = null; ");
-        backScript.AppendLine("document.forms[0].submit(); ");
-
-        formView.GridView.ToolBarActions.Add(new ScriptAction
-        {
-            Name = "back-action",
-            Icon = IconType.ArrowLeft,
-            Text = StringLocalizer["Back"],
-            ShowAsButton = true,
-            OnClientClick = backScript.ToString(),
-            IsDefaultOption = true
-        });
+        
+        formView.GridView.ToolBarActions.Add(GetInsertSelectionBackAction());
 
         formView.GridView.GridActions.Add(new InsertSelectionAction());
 
         var result = await formView.GetFormResultAsync();
 
-        if (result is RenderedComponentResult renderedComponentResult)
+        if (result is HtmlComponentResult htmlComponentResult)
         {
-            html.Append((HtmlBuilder?)renderedComponentResult.HtmlBuilder);
+            html.Append(htmlComponentResult.HtmlBuilder);
         }
         else
         {
@@ -860,6 +854,19 @@ public class JJFormView : AsyncComponent
         }
 
         return new RenderedComponentResult(html);
+    }
+
+    private ScriptAction GetInsertSelectionBackAction()
+    {
+        return new ScriptAction
+        {
+            Name = "back-action",
+            Icon = IconType.ArrowLeft,
+            Text = StringLocalizer["Back"],
+            ShowAsButton = true,
+            OnClientClick = Scripts.GetSetPageStateScript(PageState.List),
+            IsDefaultOption = true
+        };
     }
 
     private async Task<ComponentResult> GetInsertSelectionResult()
@@ -1358,7 +1365,7 @@ public class JJFormView : AsyncComponent
         if (sender is not JJGridView)
             return;
 
-        if (args.ActionName == nameof(InsertSelectionAction))
+        if (args.ActionName is not InsertSelectionAction.ActionName)
             return;
 
         args.LinkButton.Tooltip = StringLocalizer["Select"];

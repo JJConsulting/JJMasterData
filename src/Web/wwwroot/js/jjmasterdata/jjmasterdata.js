@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 class ActionData {
 }
 class ActionHelper {
-    static executeSqlCommand(componentName, encryptedActionMap, confirmMessage) {
+    static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, confirmMessage) {
         if (confirmMessage) {
             const result = confirm(confirmMessage);
             if (!result) {
@@ -25,7 +25,11 @@ class ActionHelper {
         else if (formViewActionInput) {
             formViewActionInput.value = encryptedActionMap;
         }
-        document.forms[0].requestSubmit();
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+        postFormValues({ url: urlBuilder.build(), success: data => {
+                document.getElementById(componentName).innerHTML = data;
+            } });
     }
     static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
@@ -815,23 +819,29 @@ class FormViewHelper {
         }, 3000);
         GridViewHelper.refresh(componentName, gridViewRouteContext);
     }
+    static refreshFormView(componentName, routeContext) {
+        const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
+        postFormValues({
+            url: url,
+            success: (data) => {
+                HTMLHelper.setInnerHTML(componentName, data);
+                listenAllEvents("#" + componentName);
+            }
+        });
+    }
+    static setPageState(componentName, pageState, routeContext) {
+        document.querySelector(`#form-view-page-state-${componentName}`).value = pageState.toString();
+        document.querySelector(`#form-view-action-map-${componentName}`).value = String();
+        this.refreshFormView(componentName, routeContext);
+    }
     static setPanelState(componentName, pageState, routeContext) {
         document.querySelector(`#form-view-panel-state-${componentName}`).value = pageState.toString();
         document.querySelector(`#form-view-action-map-${componentName}`).value = String();
-        const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
-        postFormValues({ url: url, success: (data) => {
-                HTMLHelper.setInnerHTML(componentName, data);
-                listenAllEvents("#" + componentName);
-            } });
+        this.refreshFormView(componentName, routeContext);
     }
     static insertSelection(componentName, insertValues, routeContext) {
-        const selectActionValuesInput = document.querySelector(`#form-view-insert-selection-values-${componentName}`);
-        selectActionValuesInput.value = insertValues;
-        const url = new UrlBuilder().addQueryParameter("routeContext", routeContext).build();
-        postFormValues({ url: url, success: (data) => {
-                HTMLHelper.setInnerHTML(componentName, data);
-                listenAllEvents("#" + componentName);
-            } });
+        document.querySelector(`#form-view-insert-selection-values-${componentName}`).value = insertValues;
+        this.refreshFormView(componentName, routeContext);
     }
 }
 var _a, _b;

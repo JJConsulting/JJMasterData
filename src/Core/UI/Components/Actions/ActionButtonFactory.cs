@@ -105,17 +105,14 @@ public class ActionButtonFactory
             return button;
         }
 
-        if (action is not GridToolbarAction toolbarAction)
-            throw new JJMasterDataException("Invalid GridToolBarAction.");
-
-        switch (toolbarAction)
+        switch (action)
         {
             case ConfigAction:
                 button.OnClientClick = BootstrapHelper.GetModalScript($"config-modal-{actionContext.ParentComponentName}");
                 break;
             case DeleteSelectedRowsAction or AuditLogGridToolbarAction:
                 button.OnClientClick =
-                    ActionScripts.GetFormActionScript(toolbarAction, actionContext, ActionSource.GridToolbar);
+                    ActionScripts.GetFormActionScript(action, actionContext, ActionSource.GridToolbar);
                 break;
             
             case ImportAction:
@@ -155,6 +152,8 @@ public class ActionButtonFactory
                 button.OnClientClick =
                     BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-sort-modal");
                 break;
+            default:
+                throw new JJMasterDataException("Invalid GridToolBarAction.");
         }
 
         return button;
