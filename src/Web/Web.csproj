@@ -46,21 +46,5 @@
         <Content Update="package-lock.json" Pack="false">
             <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </Content>
-        <Content Remove="wwwroot\js\jjmasterdata\jjmasterdata.min.js" />
     </ItemGroup>
-    
-	<ItemGroup>
-	  <None Remove="gulpfile.js" />
-	</ItemGroup>
-    
-	<ItemGroup>
-	  <TypeScriptCompile Remove="Scripts\Modals\_LegacyModal.ts" />
-	  <TypeScriptCompile Remove="Scripts\Modals\ModalUrlOptions.ts" />
-	</ItemGroup>
-    
-	<ItemGroup>
-	  <Folder Include="Scripts\Modals\" />
-	</ItemGroup>
-    
-    
 </Project>
