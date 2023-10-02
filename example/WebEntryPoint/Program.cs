@@ -1,5 +1,4 @@
 using JJMasterData.Brasil.Configuration;
-using JJMasterData.Brasil.Services;
 using JJMasterData.Protheus.Configuration;
 using JJMasterData.Web.Extensions;
 using JJMasterData.WebEntryPoint.Authorization;

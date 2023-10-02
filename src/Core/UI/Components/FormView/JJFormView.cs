@@ -493,6 +493,23 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetSaveActionResult()
     {
         var values = await GetFormValuesAsync();
+
+        var fieldsWithPlugins = FormElement
+            .Fields
+            .Where(f => f.Actions.Any());
+        
+        foreach (var field in fieldsWithPlugins)
+        {
+            // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
+            foreach (PluginFieldAction pluginFieldAction in field.Actions.Where(a=>a is PluginFieldAction))
+            {
+                var result = await GetPluginActionResult(pluginFieldAction, values, field.Name);
+
+                if (result.JsCallback is not null)
+                    return new JsonComponentResult(new {jsCallback = result.JsCallback});
+            }
+        }
+        
         var errors = PageState is PageState.Insert
             ? await InsertFormValuesAsync(values)
             : await UpdateFormValuesAsync(values);
