@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using JJMasterData.Commons.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,11 +17,11 @@ public class PanelService : BaseService
     {
     }
 
-    public async Task SavePanelAsync(string elementName, FormElementPanel panel, string[] selectedFields)
+    public async Task SavePanelAsync(string elementName, FormElementPanel panel, string[]? selectedFields)
     {
         var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
 
-        if (selectedFields?.Length == 0)
+        if (selectedFields is null || !selectedFields.Any())
         {
             AddError(nameof(selectedFields), "No fields selected for this panel.");
         }
@@ -41,11 +42,11 @@ public class PanelService : BaseService
         {
             for (int i = 0; i < formElement.Panels.Count; i++)
             {
-                if (formElement.Panels[i].PanelId == panel.PanelId)
-                {
-                    formElement.Panels[i] = panel;
-                    break;
-                }
+                if (formElement.Panels[i].PanelId != panel.PanelId) 
+                    continue;
+                
+                formElement.Panels[i] = panel;
+                break;
             }
         }
 

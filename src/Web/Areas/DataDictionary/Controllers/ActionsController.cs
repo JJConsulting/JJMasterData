@@ -419,6 +419,12 @@ public class ActionsController : DataDictionaryController
         else
             ViewBag.OriginalName = basicAction.Name;
 
+        if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab)) 
+            ViewBag.Tab = selectedTab;
+
+        else if (TempData.TryGetValue("selected-tab",  out var tempSelectedTab))
+            ViewBag.Tab = tempSelectedTab?.ToString()!;
+        
         ViewBag.ElementName = elementName;
         ViewBag.ContextAction = context;
         ViewBag.MenuId = "Actions";

@@ -107,10 +107,11 @@ public class PanelController : DataDictionaryController
 
     private void PopulateViewBag(FormElement formElement, FormElementPanel panel)
     {
-        if (!string.IsNullOrEmpty(Request.Query["selected-tab"]))
-            ViewBag.Tab = Request.Form["selected-tab"];
-        else if (TempData["selected-tab"] != null)
-            ViewBag.Tab = TempData["selected-tab"]!;
+        if (Request.HasFormContentType && Request.Form.TryGetValue("selected-tab", out var selectedTab)) 
+            ViewBag.Tab = selectedTab;
+
+        else if (TempData.TryGetValue("selected-tab",  out var tempSelectedTab))
+            ViewBag.Tab = tempSelectedTab?.ToString()!;
 
         if (TempData.ContainsKey("error"))
             ViewBag.Error = TempData["error"]!;
