@@ -91,7 +91,7 @@
                 <alert title="@plugin.Title" color="Info" icon="IconType.Plug">
                     @if (plugin.AdditionalInformationHtml is null || !plugin.AdditionalInformationHtml.GetChildren().Any())
                     {
-                        @Html.Raw(StringLocalizer["The developer give no additional information about this plugin."])
+                        @Html.Raw(StringLocalizer["The developer has not provided additional information about this plugin."])
                     }
                     else
                     {

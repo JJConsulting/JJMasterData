@@ -20,11 +20,8 @@ public class JJFileDownloader : HtmlComponent
     public const string DownloadParameter = "jjdownload";
     
     public string FilePath { get; set; }
-
     public bool IsExternalLink { get; set; }
-    
     internal IHttpContext CurrentContext { get; }
-    
     internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     internal ILogger<JJFileDownloader> Logger { get; }

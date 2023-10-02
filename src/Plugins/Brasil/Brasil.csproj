@@ -1,11 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>10</LangVersion>
         <Nullable>disable</Nullable>
         <RootNamespace>JJMasterData.Brasil</RootNamespace>
         <AssemblyName>JJMasterData.Brasil</AssemblyName>
-    </PropertyGroup>
+        <UserSecretsId>f3a7ef0a-07c3-4eaa-95eb-7c578e67e286</UserSecretsId>
+  </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Commons\Commons.csproj" />
       <ProjectReference Include="..\..\Core\Core.csproj" />

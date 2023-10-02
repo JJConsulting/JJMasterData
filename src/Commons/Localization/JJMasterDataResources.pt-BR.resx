@@ -3436,4 +3436,7 @@
   <data name="Importation Details" xml:space="preserve">
     <value>Detalhes da Importação</value>
   </data>
+  <data name="The developer has not provided additional information about this plugin." xml:space="preserve">
+    <value>O desenvolvedor não trouxe nenhuma informação adicional sobre esse plugin.</value>
+  </data>
 </root>

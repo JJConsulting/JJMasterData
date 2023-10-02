@@ -5,6 +5,7 @@ using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Models;
 using JJMasterData.Commons.Security.Hashing;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Web.Components;
@@ -45,7 +46,7 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
     {
         var values = context.Values;
         
-        var cep = values[context.FieldName!].ToString();
+        var cep = StringManager.ClearCpfCnpjChars(values[context.FieldName!].ToString());
 
         CepResult cepResult;
 
@@ -55,7 +56,8 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
         }
         catch (ViaCepException)
         {
-            return CepNotFound(context);
+            ClearCep(context);
+            return PluginActionResult.Success();
         }
         
         var cepDictionary = cepResult.ToDictionary();
@@ -66,11 +68,9 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
         return PluginActionResult.Success();
     }
 
-    private static PluginActionResult CepNotFound(PluginFieldActionContext context)
+    private static void ClearCep(PluginFieldActionContext context)
     {
         foreach (var parameter in context.FieldMap)
             context.Values[parameter.Value] = null;
-
-        return PluginActionResult.Error("Erro", "CEP não encontrado.");
     }
 }

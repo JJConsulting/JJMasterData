@@ -15,10 +15,7 @@ public class CepResult
 
     public static CepResult FromJson(string json)
     {
-        return JsonConvert.DeserializeObject<CepResult>(json, new JsonSerializerSettings
-        {
-            MissingMemberHandling = MissingMemberHandling.Error
-        });
+        return JsonConvert.DeserializeObject<CepResult>(json);
     }
     
     public Dictionary<string, string> ToDictionary()
