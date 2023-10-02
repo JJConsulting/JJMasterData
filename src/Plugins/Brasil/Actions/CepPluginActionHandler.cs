@@ -55,18 +55,22 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
         }
         catch (ViaCepException)
         {
-            return new PluginActionResult
-            {
-                JsCallback = MessageBoxFactory.Create("Erro","CEP não encontrado.",MessageIcon.Error,MessageSize.Default).GetShowScript()
-            };
+            return CepNotFound(context);
         }
         
         var cepDictionary = cepResult.ToDictionary();
+        
         foreach (var parameter in context.FieldMap)
-        {
             context.Values[parameter.Value] = cepDictionary[parameter.Key];
-        }
+        
+        return PluginActionResult.Success();
+    }
 
-        return new PluginActionResult();
+    private static PluginActionResult CepNotFound(PluginFieldActionContext context)
+    {
+        foreach (var parameter in context.FieldMap)
+            context.Values[parameter.Value] = null;
+
+        return PluginActionResult.Error("Erro", "CEP não encontrado.");
     }
 }

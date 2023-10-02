@@ -29,7 +29,7 @@ public class ViaCepService : ICepService
              
              var response = await HttpClient.GetAsync(url);
              var content = await response.Content.ReadAsStringAsync();
-             return JsonConvert.DeserializeObject<CepResult>(content);
+             return CepResult.FromJson(content);
          }
          catch (Exception ex)
          {
