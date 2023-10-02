@@ -806,7 +806,7 @@ FeedbackIcon.warningClass = "jj-icon-warning";
 FeedbackIcon.errorClass = "jj-icon-error";
 class FormViewHelper {
     static showInsertSuccess(componentName, gridViewRouteContext) {
-        const insertAlertDiv = document.getElementById("insert-alert-div-item");
+        const insertAlertDiv = document.getElementById(`insert-alert-div-${componentName}`);
         setTimeout(function () {
             insertAlertDiv.style.opacity = "0";
         }, 1000);

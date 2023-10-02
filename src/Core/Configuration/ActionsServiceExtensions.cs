@@ -7,7 +7,7 @@ public static class ActionsServiceExtensions
 {
     public static IServiceCollection AddActionServices(this IServiceCollection services)
     {
-        services.AddTransient<ActionScripts>();
+        services.AddScoped<ActionScripts>();
         return services;
     }
 }

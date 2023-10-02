@@ -5,7 +5,7 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Http.SystemWeb;
 
-public class SystemWebHttpRequestWrapper : IHttpRequest
+internal class SystemWebHttpRequestWrapper : IHttpRequest
 {
     private HttpRequest Request { get; }
     public string UserHostAddress { get; }

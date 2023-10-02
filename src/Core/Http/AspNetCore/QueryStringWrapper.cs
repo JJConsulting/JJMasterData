@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.Http.AspNetCore;
 
-public class QueryStringWrapper : IQueryString
+internal class QueryStringWrapper : IQueryString
 {
     private IQueryCollection QueryCollection { get; }
     private QueryString QueryString { get; }

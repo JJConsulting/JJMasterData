@@ -504,10 +504,8 @@ public class JJFormView : AsyncComponent
             return new RedirectComponentResult(UrlRedirect!);
         
 
-        if (GridView.ToolBarActions.InsertAction.ReopenForm)
+        if (PageState is PageState.Insert && GridView.ToolBarActions.InsertAction.ReopenForm)
         {
-            PageState = PageState.Insert;
-
             var formResult = await GetFormResult(new FormContext(RelationValues!, PageState.Insert), false);
 
             if (formResult is HtmlComponentResult htmlComponent)
@@ -625,11 +623,7 @@ public class JJFormView : AsyncComponent
             var html = htmlComponent.HtmlBuilder;
 
             html.WithNameAndId(Name);
-            html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
-            html.AppendHiddenInput($"form-view-action-map-{Name}",
-                EncryptionService.EncryptActionMap(CurrentActionMap));
-            html.AppendHiddenInput($"form-view-relation-values-{Name}",
-                EncryptionService.EncryptDictionary(RelationValues));
+            AppendFormViewHiddenInputs(html);
 
             if (ComponentContext is ComponentContext.FormViewReload)
             {
@@ -638,6 +632,15 @@ public class JJFormView : AsyncComponent
         }
 
         return result;
+    }
+
+    private void AppendFormViewHiddenInputs(HtmlBuilder html)
+    {
+        html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
+        html.AppendHiddenInput($"form-view-action-map-{Name}",
+            EncryptionService.EncryptActionMap(CurrentActionMap));
+        html.AppendHiddenInput($"form-view-relation-values-{Name}",
+            EncryptionService.EncryptDictionary(RelationValues));
     }
 
     private async Task<ComponentResult> GetSqlCommandActionResult()
@@ -888,6 +891,8 @@ public class JJFormView : AsyncComponent
                 return result;
             }
         }
+        
+        AppendFormViewHiddenInputs(html);
 
         return new ContentComponentResult(html);
     }
@@ -1030,10 +1035,10 @@ public class JJFormView : AsyncComponent
 
         var goBackAction = new ScriptAction
         {
-            Name = "goBackAction",
+            Name = "go-back-action",
             Icon = IconType.Backward,
             ShowAsButton = true,
-            Text = "Back",
+            Text = StringLocalizer["Back"],
             OnClientClick = script.ToString()
         };
 
@@ -1169,8 +1174,11 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetParentPanelResult(JJDataPanel parentPanel,
         IDictionary<string, object?> values)
     {
+        FormElement.Options.FormToolbarActions.FormEditAction.SetVisible(false);
+        
         var panelHtml = await GetParentPanelHtml(parentPanel);
         panelHtml.AppendScript($"document.getElementById('form-view-page-state-{Name}').value={(int)PageState}");
+        
         if (ComponentContext is ComponentContext.Modal)
             return new ContentComponentResult(panelHtml);
 

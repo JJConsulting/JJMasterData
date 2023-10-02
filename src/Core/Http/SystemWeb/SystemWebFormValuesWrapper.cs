@@ -6,10 +6,10 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Http.SystemWeb;
 
-public class SystemWebFormValuesWrapper : IFormValues
+internal class SystemWebFormValuesWrapper : IFormValues
 {
-    private UnvalidatedRequestValues UnvalidatedFormCollection { get; }
-    private NameValueCollection FormCollection { get; }
+    private UnvalidatedRequestValues UnvalidatedFormCollection { get; set; }
+    private NameValueCollection FormCollection { get; set; }
     private HttpContext HttpContext { get; }
 
     public SystemWebFormValuesWrapper()
@@ -18,6 +18,7 @@ public class SystemWebFormValuesWrapper : IFormValues
         FormCollection = HttpContext.Request.Form;
         UnvalidatedFormCollection = HttpContext.Request.Unvalidated;
     }
+    
     public bool ContainsFormValues() => FormCollection is { Count: > 0 };
     public string this[string key] => FormCollection?[key];
     public HttpPostedFile GetFile(string file)

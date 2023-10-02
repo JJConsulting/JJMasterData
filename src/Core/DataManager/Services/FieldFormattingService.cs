@@ -87,7 +87,7 @@ public class FieldFormattingService
         return stringValue;
     }
 
-    public string FormatValue(FormElementField field, object value)
+    public static string FormatValue(FormElementField field, object value)
     {
         if (value == null)
             return string.Empty;
@@ -110,11 +110,9 @@ public class FieldFormattingService
                 switch (type)
                 {
                     case FieldType.Float:
-                        {
-                            if (double.TryParse(stringValue, out double doubleValue))
-                                stringValue = doubleValue.ToString($"N{field.NumberOfDecimalPlaces}");
-                            break;
-                        }
+                    {
+                        return GetNumericValueAsString(field, value);
+                    }
                     case FieldType.Int when !field.IsPk:
                         {
                             if (int.TryParse(stringValue, out int intVal))

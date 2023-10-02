@@ -46,12 +46,12 @@ public class JJLookup : ControlBase
         get => GetAttr("modal-title");
         set => SetAttr("modal-title", value);
     }
-
+    
     public new string? Text
     {
         get
         {
-            if (AutoReloadFormFields && _text == null && FormValues.ContainsFormValues())
+            if (AutoReloadFormFields && _text is not null && FormValues.ContainsFormValues())
             {
                 _text = FormValues[Name];
             }
@@ -60,7 +60,7 @@ public class JJLookup : ControlBase
         }
         set => _text = value;
     }
-
+    
     public object? SelectedValue
     {
         get
@@ -150,9 +150,9 @@ public class JJLookup : ControlBase
         idTextBox.Tooltip = Tooltip;
         idTextBox.ReadOnly = ReadOnly;
         idTextBox.Enabled = Enabled;
-
-
+        
         await div.AppendControlAsync(idTextBox);
+        
         var dataItem = FormElement.Fields[FieldName].DataItem!;
         if (!string.IsNullOrEmpty(dataItem.ElementMap!.FieldDescription))
         {

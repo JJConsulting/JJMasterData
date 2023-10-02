@@ -44,7 +44,7 @@ internal class LookupFactory : IControlFactory<JJLookup>
             FormValues,
             LookupService,
             ComponentFactory);
-       
+        
         return lookup;
     }
 

@@ -70,13 +70,9 @@ public class FormValuesService
                         break;
                     }
                 case FormComponent.Slider:
-                    if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
-                            out var doubleValue))
-                        value = doubleValue;
-                    break;
                 case FormComponent.Currency:
                 case FormComponent.Number:
-                    if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
+                    if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture,
                             out var numericValue))
                         value = numericValue;
                     else

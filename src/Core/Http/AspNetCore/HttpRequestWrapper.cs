@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.Features;
 
 namespace JJMasterData.Core.Http.AspNetCore;
 
-public class HttpRequestWrapper : IHttpRequest
+internal class HttpRequestWrapper : IHttpRequest
 {
     public IQueryString QueryString { get; }
     public IFormValues Form { get; }

@@ -20,10 +20,7 @@ public class JJTextBox : ControlBase
             
             return null;
         }
-        set
-        {
-            SetAttr(FormElementField.MinValueAttribute, value);
-        }
+        set => SetAttr(FormElementField.MinValueAttribute, value);
     }
 
     public double? MaxValue
@@ -35,10 +32,7 @@ public class JJTextBox : ControlBase
             
             return null;
         }
-        set
-        {
-            SetAttr(FormElementField.MaxValueAttribute, value);
-        }
+        set => SetAttr(FormElementField.MaxValueAttribute, value);
     }
 
     public JJTextBox(IFormValues formValues) : base(formValues)

@@ -1,6 +1,6 @@
 class FormViewHelper {
     static showInsertSuccess(componentName: string, gridViewRouteContext: string) {
-        const insertAlertDiv = document.getElementById("insert-alert-div-item");
+        const insertAlertDiv = document.getElementById(`insert-alert-div-${componentName}`);
         
         setTimeout(function () {
             insertAlertDiv.style.opacity = "0";
@@ -13,7 +13,7 @@ class FormViewHelper {
         GridViewHelper.refresh(componentName,gridViewRouteContext)
     }
     
-    static setPanelState(componentName: string,pageState: PageState, routeContext: string){
+    static setPanelState(componentName: string, pageState: PageState, routeContext: string){
         document.querySelector<HTMLInputElement>(`#form-view-panel-state-${componentName}`).value = pageState.toString();
         document.querySelector<HTMLInputElement>(`#form-view-action-map-${componentName}`).value = String();
         

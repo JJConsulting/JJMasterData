@@ -7,10 +7,15 @@ using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.Http.AspNetCore;
 
-public class FormValuesWrapper : IFormValues
+internal class FormValuesWrapper : IFormValues
 {
-    private IFormCollection? FormCollection { get; }
-    
+    private IFormCollection? FormCollection { get; set; }
+
+    public void Invalidate()
+    {
+        FormCollection = null;
+    }
+
     public bool ContainsFormValues() => FormCollection is not null;
 
     public string? this[string key] => FormCollection?[key];

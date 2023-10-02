@@ -5,7 +5,7 @@ using JJMasterData.Core.Http.Abstractions;
 #if NETFRAMEWORK
 namespace JJMasterData.Core.Http.SystemWeb;
 
-public class SystemWebQueryStringWrapper : IQueryString
+internal class SystemWebQueryStringWrapper : IQueryString
 {
     private NameValueCollection QueryString { get; } = HttpContext.Current.Request.QueryString;
     public string this[string key] => QueryString[key];
