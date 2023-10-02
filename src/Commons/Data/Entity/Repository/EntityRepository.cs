@@ -6,14 +6,14 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Data.Providers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Commons.Data.Entity;
+namespace JJMasterData.Commons.Data.Entity.Repository;
 
 public class EntityRepository : IEntityRepository
 {

@@ -1,18 +1,18 @@
 ﻿using System;
 using System.IO;
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class JJFileDownloader : HtmlComponent
 {

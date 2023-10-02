@@ -1,6 +1,6 @@
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 

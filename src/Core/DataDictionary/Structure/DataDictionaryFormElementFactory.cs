@@ -1,16 +1,16 @@
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
+using JJMasterData.Core.UI;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Core.DataDictionary.Factories;
+namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class DataDictionaryFormElementFactory 
 {

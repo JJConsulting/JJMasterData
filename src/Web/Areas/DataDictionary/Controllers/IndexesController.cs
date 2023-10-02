@@ -1,5 +1,5 @@
-﻿using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

@@ -1,4 +1,4 @@
-﻿using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,7 +39,7 @@ public class UIOptionsController : DataDictionaryController
 
     private async Task<FormElementOptions> Populate(string elementName)
     {
-        var dicParser = await _optionsService!.DataDictionaryRepository.GetMetadataAsync(elementName);
+        var dicParser = await _optionsService!.DataDictionaryRepository.GetFormElementAsync(elementName);
         var uIOptions = dicParser.Options;
         ViewBag.MenuId = "Options";
         ViewBag.ElementName = elementName;

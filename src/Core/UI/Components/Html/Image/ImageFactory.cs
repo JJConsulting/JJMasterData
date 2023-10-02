@@ -1,6 +1,6 @@
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class ImageFactory
 {

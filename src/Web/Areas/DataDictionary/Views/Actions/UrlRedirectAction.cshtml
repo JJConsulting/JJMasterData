@@ -1,10 +1,11 @@
-﻿@using JJMasterData.Core.Web
-@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+﻿@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IOptions<JJMasterDataWebOptions> Options
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
 @model  JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction
 
 @{
-    Layout = Options.Value.PopUpLayoutPath;
+    Layout = Options.Value.ModalLayoutPath;
 }
 
 @using (Html.BeginForm("UrlRedirectAction", "Actions",

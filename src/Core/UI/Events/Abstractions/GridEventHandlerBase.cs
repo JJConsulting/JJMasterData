@@ -1,8 +1,7 @@
 using System.Threading.Tasks;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Web.FormEvents.Abstractions;
+using JJMasterData.Core.UI.Events.Args;
 
-namespace JJMasterData.Core.UI.FormEvents.Abstractions;
+namespace JJMasterData.Core.UI.Events.Abstractions;
 
 public abstract class GridEventHandlerBase : IGridEventHandler
 {

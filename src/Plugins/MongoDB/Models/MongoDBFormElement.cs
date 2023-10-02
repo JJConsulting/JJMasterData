@@ -1,4 +1,4 @@
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace JJMasterData.MongoDB.Models;

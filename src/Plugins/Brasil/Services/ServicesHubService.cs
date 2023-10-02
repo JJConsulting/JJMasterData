@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Models;
-using JJMasterData.Commons.Util;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

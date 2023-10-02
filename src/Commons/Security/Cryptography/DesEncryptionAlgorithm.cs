@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using JJMasterData.Commons.Cryptography.Abstractions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 
-namespace JJMasterData.Commons.Cryptography;
+namespace JJMasterData.Commons.Security.Cryptography;
 
 /// <summary>
 /// DES algorithm can be broken easily as it has known vulnerabilities. Please use AesEncryptionService.

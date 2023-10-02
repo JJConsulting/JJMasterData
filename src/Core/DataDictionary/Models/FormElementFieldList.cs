@@ -1,12 +1,12 @@
 ﻿#nullable enable
-using JJMasterData.Commons.Data.Entity;
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Commons.Data.Entity.Models;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
 /// Implementation of IList representing a list of data dictionary fields.

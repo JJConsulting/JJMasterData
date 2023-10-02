@@ -1,10 +1,10 @@
 ﻿using System.Web;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;

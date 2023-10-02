@@ -1,13 +1,10 @@
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Web.Html;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.UI.Html;
 
-
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class GridToolbar
 {

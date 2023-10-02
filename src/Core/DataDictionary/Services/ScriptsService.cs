@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -19,7 +19,7 @@ public class ScriptsService
     }
     public async Task<List<string>> GetScriptsListAsync(string id)
     {
-        var formElement = await _dataDictionaryRepository.GetMetadataAsync(id);
+        var formElement = await _dataDictionaryRepository.GetFormElementAsync(id);
         Element element = formElement;
         
         var listScripts = new List<string>
@@ -35,7 +35,7 @@ public class ScriptsService
     
     public async Task ExecuteScriptsAsync(string id, string scriptOption)
     {
-        var formElement = await _dataDictionaryRepository.GetMetadataAsync(id);
+        var formElement = await _dataDictionaryRepository.GetFormElementAsync(id);
 
         switch (scriptOption)
         {

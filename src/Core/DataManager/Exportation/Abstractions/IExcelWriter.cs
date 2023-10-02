@@ -1,8 +1,8 @@
 ﻿using System;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.UI.Events.Args;
 
-namespace JJMasterData.Core.DataManager.Exports.Abstractions;
+namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 public interface IExcelWriter : IExportationWriter
 {

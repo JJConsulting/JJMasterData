@@ -1,5 +1,5 @@
 ﻿#nullable disable
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using Newtonsoft.Json;
 
 namespace JJMasterData.ConsoleApp.Models.FormElementMigration;

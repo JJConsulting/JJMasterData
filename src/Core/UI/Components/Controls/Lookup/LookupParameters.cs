@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Models;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class LookupParameters
 {

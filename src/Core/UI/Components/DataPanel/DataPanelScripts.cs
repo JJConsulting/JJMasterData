@@ -1,8 +1,8 @@
-using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Routing;
 
-namespace JJMasterData.Core.Web.Components.Scripts;
+namespace JJMasterData.Core.UI.Components;
 
 internal class DataPanelScripts
 {

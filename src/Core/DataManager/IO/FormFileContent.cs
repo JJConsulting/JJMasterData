@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JJMasterData.Core.DataManager;
+namespace JJMasterData.Core.DataManager.IO;
 
 public class FormFileContent
 {

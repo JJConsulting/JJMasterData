@@ -3,12 +3,13 @@ using System.Globalization;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Imports;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Importation;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class DataImportationLog
 {

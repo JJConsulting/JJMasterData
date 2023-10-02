@@ -1,16 +1,12 @@
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
-
-namespace JJMasterData.Core.Test.Expressions;
-
-using Commons.Data.Entity;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
+
+namespace JJMasterData.Core.Test.DataManager.Expressions;
 
 public class ExpressionsServiceTests
 {

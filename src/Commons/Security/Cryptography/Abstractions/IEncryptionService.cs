@@ -1,4 +1,4 @@
-namespace JJMasterData.Commons.Cryptography;
+namespace JJMasterData.Commons.Security.Cryptography.Abstractions;
 
 public interface IEncryptionService
 {

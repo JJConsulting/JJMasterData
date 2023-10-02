@@ -1,11 +1,12 @@
 ﻿using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
 using System.Collections;
 using System.Text;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.WebApi.Models;
 using Microsoft.Extensions.Localization;
@@ -50,7 +51,7 @@ public class DictionariesService
             throw new ArgumentException("DicSyncParam invalid");
 
         var dStart = DateTime.Now;
-        var dictionaries = await _dataDictionaryRepository.GetMetadataListAsync(true);
+        var dictionaries = await _dataDictionaryRepository.GetFormElementListAsync(true);
         var syncInfo = new DicSyncInfo
         {
             ServerDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm")

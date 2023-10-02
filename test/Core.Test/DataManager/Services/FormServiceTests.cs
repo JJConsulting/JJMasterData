@@ -1,10 +1,12 @@
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.IO;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 
 namespace JJMasterData.Core.Test.DataManager.Services;
 
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;

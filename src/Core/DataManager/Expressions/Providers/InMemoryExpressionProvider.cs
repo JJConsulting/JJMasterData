@@ -1,8 +1,9 @@
 using System.Data;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Models;
 
-namespace JJMasterData.Core.DataManager.Services;
+namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
 public class InMemoryExpressionProvider : IExpressionProvider
 {

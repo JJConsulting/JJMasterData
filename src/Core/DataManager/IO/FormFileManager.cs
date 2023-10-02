@@ -1,16 +1,17 @@
-﻿using JJMasterData.Commons.Util;
-using JJMasterData.Core.FormEvents.Args;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Core.DataManager;
+namespace JJMasterData.Core.DataManager.IO;
 
 public class FormFileManager
 {

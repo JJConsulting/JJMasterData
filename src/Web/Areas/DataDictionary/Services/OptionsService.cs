@@ -1,15 +1,15 @@
+using System.Text;
+using JJMasterData.Commons.Configuration.Options.Abstractions;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models;
-using JJMasterData.Commons.Configuration.Options.Abstractions;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
-using System.Text;
 using JJMasterData.Web.Options;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Web.Services;
+namespace JJMasterData.Web.Areas.DataDictionary.Services;
 
 public class OptionsService : BaseService
 {

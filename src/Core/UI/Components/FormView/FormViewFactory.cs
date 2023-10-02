@@ -1,24 +1,21 @@
 ﻿using System.Collections.Generic;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.FormEvents.Abstractions;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Http.Abstractions;
-using Microsoft.Extensions.Localization;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Events.Abstractions;
+using JJMasterData.Core.Events.Args;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using ActionsService = JJMasterData.Core.DataDictionary.Services.ActionsService;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
 {
@@ -90,7 +87,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
 
     public async Task<JJFormView> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         var formView = Create(formElement);
         await SetFormEventHandlerAsync(formView, formElement);
         return formView;

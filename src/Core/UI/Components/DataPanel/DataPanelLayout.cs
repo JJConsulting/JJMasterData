@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Security.Hashing;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
 /// Render panels with fields

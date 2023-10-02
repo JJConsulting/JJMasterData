@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.Db;

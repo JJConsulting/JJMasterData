@@ -1,9 +1,9 @@
 ﻿#nullable enable
 
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -113,7 +113,7 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public async Task<IActionResult> Copy(string elementName, FormElementField? field)
     {
-        var dictionary = await  _fieldService.DataDictionaryRepository.GetMetadataAsync(elementName);
+        var dictionary = await  _fieldService.DataDictionaryRepository.GetFormElementAsync(elementName);
         await _fieldService.CopyFieldAsync(dictionary, field);
         if (!ModelState.IsValid)
             ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();

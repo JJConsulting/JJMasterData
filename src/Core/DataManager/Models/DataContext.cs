@@ -1,8 +1,8 @@
 ﻿#nullable enable
 
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 
-namespace JJMasterData.Core.DataManager;
+namespace JJMasterData.Core.DataManager.Models;
 
 public class DataContext
 {

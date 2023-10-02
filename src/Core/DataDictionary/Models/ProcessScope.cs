@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.DataDictionary;
+﻿namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
 /// Escopo de execução do pocesso

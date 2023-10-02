@@ -1,4 +1,4 @@
-namespace JJMasterData.Commons.Cryptography.Abstractions;
+namespace JJMasterData.Commons.Security.Cryptography.Abstractions;
 
 /// <summary>
 /// Represents a secure encryption algorithm.

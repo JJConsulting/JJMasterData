@@ -1,6 +1,6 @@
 using System;
 using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;

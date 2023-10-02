@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataManager.Exports;
+namespace JJMasterData.Core.DataManager.Exportation;
 
 internal record DataExportationProgressDto
 {

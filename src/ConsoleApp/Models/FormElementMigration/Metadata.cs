@@ -1,8 +1,8 @@
 ﻿#nullable disable
 
 using System.Collections;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
 using Newtonsoft.Json;
 
 namespace JJMasterData.ConsoleApp.Models.FormElementMigration;

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.FormEvents.Args;
+namespace JJMasterData.Core.UI.Events.Args;
 
 /// <summary>
 /// Argumento utilizado para customizar o conteúdo renderizado em uma celula

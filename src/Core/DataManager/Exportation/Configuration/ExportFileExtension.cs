@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.DataManager.Exports.Configuration;
+﻿namespace JJMasterData.Core.DataManager.Exportation.Configuration;
 
 public enum ExportFileExtension
 {

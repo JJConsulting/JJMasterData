@@ -4,11 +4,11 @@ using JJMasterData.Brasil.Actions;
 using JJMasterData.Brasil.Models;
 using JJMasterData.Brasil.Services;
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Brasil.Extensions;
+namespace JJMasterData.Brasil.Configuration;
 
 public static class JJMasterDataServiceBuilderExtensions
 {

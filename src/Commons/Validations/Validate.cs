@@ -2,8 +2,9 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using JJMasterData.Commons.Util;
 
-namespace JJMasterData.Commons.Util;
+namespace JJMasterData.Commons.Validations;
 
 public static class Validate
 {

@@ -1,9 +1,9 @@
 #nullable enable
 
 using System.Collections.Generic;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Core.DataManager;
+namespace JJMasterData.Core.DataManager.Models;
 
 internal class FormContext
 {

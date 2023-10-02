@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
@@ -24,7 +25,7 @@ public class FieldService : BaseService
 
     public async Task<bool> SaveFieldAsync(string elementName, FormElementField field, string originalName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
         RemoveUnusedProperties(field);
 
@@ -271,7 +272,7 @@ public class FieldService : BaseService
             return;
         }
         
-        var childFormElement = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
+        var childFormElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
 
         if (childFormElement is null)
         {
@@ -317,7 +318,7 @@ public class FieldService : BaseService
 
     public async Task<bool> SortFieldsAsync(string elementName, IEnumerable<string> fieldsOrder)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         
         SortFields(fieldsOrder, formElement);
 
@@ -360,7 +361,7 @@ public class FieldService : BaseService
 
         if (IsValid)
         {
-            var childElement = await DataDictionaryRepository.GetMetadataAsync(elementMap.ElementName);
+            var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
             var fieldKey = childElement.Fields[elementMap.FieldId];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
@@ -380,7 +381,7 @@ public class FieldService : BaseService
 
     public async Task<bool> DeleteField(string elementName, string fieldName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         if (!formElement.Fields.Contains(fieldName))
             return false;
         
@@ -393,7 +394,7 @@ public class FieldService : BaseService
 
     public async Task<string> GetNextFieldNameAsync(string elementName, string fieldName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         string nextField = null;
         if (formElement.Fields.Contains(fieldName))
         {
@@ -417,7 +418,7 @@ public class FieldService : BaseService
         if (string.IsNullOrEmpty(map.ElementName))
             return dicFields;
 
-        var dataEntry = await DataDictionaryRepository.GetMetadataAsync(map.ElementName);
+        var dataEntry = await DataDictionaryRepository.GetFormElementAsync(map.ElementName);
         if (dataEntry == null)
             return dicFields;
 

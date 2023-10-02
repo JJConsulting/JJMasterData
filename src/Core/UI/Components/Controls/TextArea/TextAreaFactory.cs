@@ -1,12 +1,10 @@
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Components;
-using Microsoft.Extensions.Localization;
 using System;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
+using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class TextAreaFactory : IControlFactory<JJTextArea>
 {

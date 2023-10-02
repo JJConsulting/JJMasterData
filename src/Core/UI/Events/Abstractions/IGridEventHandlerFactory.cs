@@ -1,6 +1,4 @@
-using JJMasterData.Core.Web.FormEvents.Abstractions;
-
-namespace JJMasterData.Core.Web.FormEvents.Factories;
+namespace JJMasterData.Core.UI.Events.Abstractions;
 
 public interface IGridEventHandlerFactory
 {

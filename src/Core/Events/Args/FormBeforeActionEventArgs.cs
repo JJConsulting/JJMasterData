@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace JJMasterData.Core.FormEvents.Args;
+namespace JJMasterData.Core.Events.Args;
 
 public class FormBeforeActionEventArgs : EventArgs
 {

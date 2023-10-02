@@ -1,14 +1,16 @@
 ﻿#nullable enable
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Extensions;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Structure;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
@@ -24,7 +26,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         MasterDataElement = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
     }
 
-    public async Task<IEnumerable<FormElement>> GetMetadataListAsync(bool? apiEnabled = null)
+    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiEnabled = null)
     {
         var filters = new Dictionary<string, object?>();
         if (apiEnabled.HasValue)
@@ -63,7 +65,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     }
 
 
-    public async Task<FormElement?> GetMetadataAsync(string elementName)
+    public async Task<FormElement?> GetFormElementAsync(string elementName)
     {
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
 

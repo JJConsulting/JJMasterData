@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Net;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
 using Microsoft.AspNetCore.Authorization;

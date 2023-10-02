@@ -1,5 +1,6 @@
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Expressions.Providers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Configuration;

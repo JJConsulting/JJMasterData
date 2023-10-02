@@ -2,7 +2,6 @@
 
 using System.Web;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Web.Http.Abstractions;
 
 namespace JJMasterData.Core.Http.SystemWeb;
 

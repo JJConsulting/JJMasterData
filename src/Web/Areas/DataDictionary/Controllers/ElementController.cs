@@ -1,11 +1,10 @@
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.FormEvents.Args;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Extensions;
 using Microsoft.Extensions.Localization;

@@ -1,9 +1,9 @@
 ﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
 /// Class responsible to render the UI on JJGridView

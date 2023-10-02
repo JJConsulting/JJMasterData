@@ -1,8 +1,7 @@
 using System;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class TitleFactory : IComponentFactory<JJTitle>
 {

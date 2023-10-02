@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Components;
 
-namespace JJMasterData.Core.FormEvents.Args;
+namespace JJMasterData.Core.UI.Events.Args;
 
 /// <summary>
 /// Argumentos do evento utilizado para customizar o conteúdo do checkbox ao selecionar a linha da Grid

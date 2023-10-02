@@ -1,13 +1,13 @@
 using System;
 using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Cryptography.Abstractions;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Commons.Logging.File;
+using JJMasterData.Commons.Security.Cryptography;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

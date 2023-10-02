@@ -1,5 +1,5 @@
 #nullable enable
-using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Expressions.Abstractions;
 

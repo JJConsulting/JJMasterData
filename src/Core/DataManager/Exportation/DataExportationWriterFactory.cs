@@ -1,13 +1,13 @@
 ﻿#nullable enable
 using System;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.DataManager.Exports.Abstractions;
-using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Exportation.Configuration;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace JJMasterData.Core.DataManager.Exports;
+namespace JJMasterData.Core.DataManager.Exportation;
 
 public class DataExportationWriterFactory
 {

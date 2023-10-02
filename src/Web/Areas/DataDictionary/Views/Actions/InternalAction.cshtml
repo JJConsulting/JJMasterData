@@ -1,11 +1,12 @@
-﻿@using JJMasterData.Commons.Data.Entity
-@using JJMasterData.Core.Web
+﻿@using JJMasterData.Commons.Data.Entity.Models
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IOptions<JJMasterDataWebOptions> Options
 @model JJMasterData.Core.DataDictionary.Models.Actions.InternalAction
 
 @{
-    Layout = Options.Value.PopUpLayoutPath;
+    Layout = Options.Value.ModalLayoutPath;
 }
 
 <script type="text/javascript">

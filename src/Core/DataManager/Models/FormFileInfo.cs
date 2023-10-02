@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Core.DataManager;
+﻿using JJMasterData.Core.DataManager.IO;
+
+namespace JJMasterData.Core.DataManager.Models;
 
 public class FormFileInfo
 {

@@ -1,4 +1,4 @@
-using JJMasterData.Core.DataManager.Exports;
+using JJMasterData.Core.DataManager.Exportation;
 
 namespace JJMasterData.Core.Test.DataManager.Exports;
 

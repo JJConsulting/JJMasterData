@@ -1,10 +1,11 @@
-﻿@using JJMasterData.Core.Web
-@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+﻿@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IOptions<JJMasterDataWebOptions> Options
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.DataDictionary.Models.Actions
 @model JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction
 
 @{
-    Layout = Options.Value.PopUpLayoutPath;
+    Layout = Options.Value.ModalLayoutPath;
 }
 
 <link href="~/_content/JJMasterData.Web/css/codemirror/codemirror.css" rel="stylesheet"/>

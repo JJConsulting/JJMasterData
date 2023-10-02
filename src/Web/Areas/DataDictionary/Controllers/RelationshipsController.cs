@@ -1,6 +1,6 @@
-﻿using JJMasterData.Commons.Data.Entity;
+﻿using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -159,7 +159,7 @@ public class RelationshipsController : DataDictionaryController
         }
         else
         {
-            var formElement = await _relationshipsService.DataDictionaryRepository.GetMetadataAsync(childElementName);
+            var formElement = await _relationshipsService.DataDictionaryRepository.GetFormElementAsync(childElementName);
             selectList.AddRange(formElement.Fields.Select(field => new SelectListItem(field.Name, field.Name)));
         }
 
@@ -214,7 +214,7 @@ public class RelationshipsController : DataDictionaryController
         string elementName,
         int id)
     {
-        var formElement = await _relationshipsService.DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await _relationshipsService.DataDictionaryRepository.GetFormElementAsync(elementName);
 
         var relationship = formElement.Relationships.GetById(id);
         

@@ -1,7 +1,7 @@
 using System;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Core.FormEvents.Args;
+namespace JJMasterData.Core.Events.Args;
 
 public class FormElementLoadEventArgs : EventArgs
 {

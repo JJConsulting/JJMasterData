@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Events.Args;
 
-namespace JJMasterData.Core.FormEvents.Abstractions;
+namespace JJMasterData.Core.Events.Abstractions;
 
 public interface IFormEventHandler : IEventHandler
 {

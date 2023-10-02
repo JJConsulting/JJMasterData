@@ -1,11 +1,4 @@
-using JJMasterData.Core.Http.Abstractions;
-
-
-#if NET || NETSTANDARD
-using Microsoft.AspNetCore.Http;
-#endif
-
-namespace JJMasterData.Core.Web.Http.Abstractions;
+namespace JJMasterData.Core.Http.Abstractions;
 
 public interface IHttpRequest
 {

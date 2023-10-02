@@ -1,9 +1,7 @@
 #nullable enable
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Actions;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Routing;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 public interface IComponentFactory
 {

@@ -1,7 +1,7 @@
-﻿using JJMasterData.Core.DataManager;
-using System;
+﻿using System;
+using JJMasterData.Core.DataManager.IO;
 
-namespace JJMasterData.Core.FormEvents.Args;
+namespace JJMasterData.Core.UI.Events.Args;
 
 public class FormUploadFileEventArgs : EventArgs
 {

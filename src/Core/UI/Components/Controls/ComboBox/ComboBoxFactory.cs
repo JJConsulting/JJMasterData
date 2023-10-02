@@ -1,14 +1,13 @@
+using System;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using System;
-using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class ComboBoxFactory : IControlFactory<JJComboBox>
 {

@@ -1,13 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Html
-@using JJMasterData.Core.Web
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.IdentityModel.Tokens
+@using JJMasterData.Core.UI
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IOptions<JJMasterDataWebOptions> Options
 @model ElementScriptsViewModel
 
 @{
-    Layout = Options.Value.PopUpLayoutPath;
+    Layout = Options.Value.ModalLayoutPath;
 }
 
 @{

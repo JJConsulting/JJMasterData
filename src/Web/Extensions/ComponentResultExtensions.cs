@@ -1,6 +1,5 @@
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Extensions;

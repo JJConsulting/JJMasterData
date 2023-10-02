@@ -1,8 +1,9 @@
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.IO;
 
 namespace JJMasterData.WebApi.Services;
 
@@ -19,7 +20,7 @@ public class FileService
 
     public async Task<FileStream> GetDictionaryFileAsync(string elementName, string pkValues, string fieldName, string fileName)
     {
-        var formElement =await _dictionaryRepository.GetMetadataAsync(elementName);
+        var formElement =await _dictionaryRepository.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
@@ -41,7 +42,7 @@ public class FileService
     
     public async Task SetDictionaryFileAsync(string elementName, string fieldName, string pkValues, IFormFile file)
     {
-        var formElement = await _dictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await _dictionaryRepository.GetFormElementAsync(elementName);
         
         if (!formElement.ApiOptions.EnableAdd)
             throw new UnauthorizedAccessException();
@@ -114,7 +115,7 @@ public class FileService
     
     public async Task DeleteFileAsync(string elementName, string fieldName, string pkValues, string fileName)
     {
-        var formElement = await _dictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await _dictionaryRepository.GetFormElementAsync(elementName);
         
         if (!formElement.ApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
@@ -167,7 +168,7 @@ public class FileService
     
     public async Task RenameFileAsync(string elementName, string fieldName, string pkValues, string oldName, string newName)
     {
-        var formElement = await _dictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await _dictionaryRepository.GetFormElementAsync(elementName);
         
         if (!formElement.ApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();

@@ -1,8 +1,7 @@
-﻿
-using System.Text;
+﻿using System.Text;
 using JJMasterData.Commons.Util;
 
-namespace JJMasterData.Protheus;
+namespace JJMasterData.Protheus.Reflection;
 
 /// <summary>
 /// Classe Responsável pela comunicação com o Protheus

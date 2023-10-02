@@ -1,8 +1,8 @@
 ﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
-@using JJMasterData.Core.Web
+@using JJMasterData.Core.UI
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
-@model FormElementOptions
+@model JJMasterData.Core.DataDictionary.Models.FormElementOptions
 
 @{
     ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Options"]}";

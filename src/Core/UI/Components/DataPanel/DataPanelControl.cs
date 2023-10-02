@@ -1,18 +1,17 @@
 ﻿#nullable enable
 
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Web.Components.Scripts;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Html;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
 /// Render components fields in a div

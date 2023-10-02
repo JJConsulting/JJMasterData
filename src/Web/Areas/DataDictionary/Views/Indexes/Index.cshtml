@@ -1,12 +1,12 @@
 ﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
-@using JJMasterData.Commons.Data.Entity
-@using JJMasterData.Core.Web
-@using JJMasterData.Core.Web.Components
-@using JJMasterData.Core.Web.Http.Abstractions
+@using JJMasterData.Commons.Data.Entity.Models
+@using JJMasterData.Core.Http.Abstractions
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
 
 @inject HtmlComponentFactory HtmlComponentFactory
 
-@model List<JJMasterData.Commons.Data.Entity.ElementIndex>
+@model List<JJMasterData.Commons.Data.Entity.Models.ElementIndex>
 
 @functions {
     private void ConfigureFilterTextGroup(JJTextGroup filterTextBox)

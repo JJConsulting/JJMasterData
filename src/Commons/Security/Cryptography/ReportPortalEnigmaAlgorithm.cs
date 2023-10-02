@@ -1,7 +1,7 @@
 using System;
-using JJMasterData.Commons.Cryptography.Abstractions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 
-namespace JJMasterData.Commons.Cryptography;
+namespace JJMasterData.Commons.Security.Cryptography;
 
 public class ReportPortalEnigmaAlgorithm : IEncryptionAlgorithm
 {

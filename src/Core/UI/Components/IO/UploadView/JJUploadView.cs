@@ -6,25 +6,24 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.IO;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.IO.UploadView;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Events.Args;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
 /// Form responsible for managing files in a directory
@@ -134,7 +133,7 @@ public class JJUploadView : AsyncComponent
             
             _gridView.OnRenderAction += (_, args) =>
             {
-                if(args.Action.Name.Equals(_downloadAction.Name))
+                if(args.ActionName.Equals(_downloadAction.Name))
                 {
                     var fileName = args.FieldValues["Name"].ToString();
                     var isInMemory = FormFileManager.GetFile(fileName)?.IsInMemory ?? false;
@@ -281,7 +280,7 @@ public class JJUploadView : AsyncComponent
 
             if (result is RenderedComponentResult renderedComponent)
             {
-                html.Append(renderedComponent.HtmlBuilder);
+                html.Append((HtmlBuilder)renderedComponent.HtmlBuilder);
             }
             else
             {
@@ -348,7 +347,7 @@ public class JJUploadView : AsyncComponent
         if (file.IsInMemory)
         {
             var base64 = Convert.ToBase64String(file.Content.Bytes.ToArray());
-            src = $"data:image/{Path.GetExtension(fileName).Replace(".", "")};base64,{base64}";
+            src = $"data:image/{Path.GetExtension((string)fileName).Replace(".", "")};base64,{base64}";
         }
         else
         {
@@ -372,8 +371,7 @@ public class JJUploadView : AsyncComponent
             c.Append(HtmlTag.Img, img =>
             {
                 img.WithAttribute("id", "img")
-                   .WithAttribute("src", src)
-                   .WithAttribute("alt", fileName)
+                    .WithAttribute("src", src).WithAttribute((string)"alt", (string)fileName)
                    .WithAttribute("style", "max-height:350px;display:none;")
                    .WithCssClass("img-responsive");
             });

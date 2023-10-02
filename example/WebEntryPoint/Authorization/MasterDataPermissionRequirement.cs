@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
-namespace JJMasterData.WebExample.Authorization;
+namespace JJMasterData.WebEntryPoint.Authorization;
 
 public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizationRequirement>, IAuthorizationRequirement
 {

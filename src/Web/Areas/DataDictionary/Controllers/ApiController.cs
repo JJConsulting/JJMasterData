@@ -1,5 +1,5 @@
-﻿using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +17,7 @@ public class ApiController : DataDictionaryController
 
     public async Task<ActionResult> Index(string elementName)
     {
-        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync(elementName);
+        var dic = await _apiService.DataDictionaryRepository.GetFormElementAsync(elementName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -25,7 +25,7 @@ public class ApiController : DataDictionaryController
 
     public async Task<ActionResult> Edit(string elementName)
     {
-        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync(elementName);
+        var dic = await _apiService.DataDictionaryRepository.GetFormElementAsync(elementName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -34,7 +34,7 @@ public class ApiController : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> Edit(ApiViewModel apiViewModel)
     {
-        var dic = await _apiService.DataDictionaryRepository.GetMetadataAsync( apiViewModel.ElementName);
+        var dic = await _apiService.DataDictionaryRepository.GetFormElementAsync( apiViewModel.ElementName);
         dic.ApiOptions = apiViewModel.MetadataApiOptions;
         dic.EnableApi = apiViewModel.IsSync;
         dic.SyncMode = apiViewModel.Mode;

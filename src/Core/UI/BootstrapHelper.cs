@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.Web;
+﻿namespace JJMasterData.Core.UI;
 
 /// <summary>
 /// Helper to Bootstrap strings, everything defaults to version 3.

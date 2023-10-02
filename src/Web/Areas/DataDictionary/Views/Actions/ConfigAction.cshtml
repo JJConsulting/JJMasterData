@@ -1,11 +1,10 @@
-﻿
-@using JJMasterData.Core.Web
+﻿@using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.Actions.ConfigAction
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IOptions<JJMasterDataWebOptions> Options
 
 @{
-    Layout = Options.Value.PopUpLayoutPath;
+    Layout = Options.Value.ModalLayoutPath;
 }
 
 @using (Html.BeginForm("ConfigAction", "Actions", new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))

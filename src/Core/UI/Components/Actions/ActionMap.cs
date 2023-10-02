@@ -1,14 +1,13 @@
 ﻿#nullable enable
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataManager;
+namespace JJMasterData.Core.UI.Components;
 
 public class ActionMap
 {

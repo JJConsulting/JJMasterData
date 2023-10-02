@@ -4,21 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.DataManager.Exports.Abstractions;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Events.Args;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Core.DataManager.Exports;
+namespace JJMasterData.Core.DataManager.Exportation;
 
 public class TextWriter : DataExportationWriterBase, ITextWriter
 {

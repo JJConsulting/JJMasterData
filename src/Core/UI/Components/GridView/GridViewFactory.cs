@@ -1,24 +1,19 @@
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Web;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Http.Abstractions;
-using Microsoft.Extensions.Localization;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using JJMasterData.Core.UI.FormEvents.Abstractions;
-using JJMasterData.Core.Web.FormEvents.Abstractions;
-using JJMasterData.Core.Web.FormEvents.Factories;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Events.Abstractions;
+using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.UI.Components.GridView;
+namespace JJMasterData.Core.UI.Components;
 
 internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 {
@@ -129,7 +124,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 
     public async Task<JJGridView> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
         var gridView = Create(formElement);
 

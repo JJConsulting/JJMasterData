@@ -1,6 +1,6 @@
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Protheus.Abstractions;
 
 namespace JJMasterData.Protheus;

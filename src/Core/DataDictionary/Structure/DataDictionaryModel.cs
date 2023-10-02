@@ -1,6 +1,6 @@
 using System;
 
-namespace JJMasterData.Core.DataDictionary.Repository;
+namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class DataDictionaryModel
 {

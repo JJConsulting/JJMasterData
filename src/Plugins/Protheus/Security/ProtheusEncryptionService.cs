@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 
 namespace JJMasterData.Protheus.Security;
 

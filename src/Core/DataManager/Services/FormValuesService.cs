@@ -1,19 +1,18 @@
 ﻿#nullable enable
 
-using JJMasterData.Core.DataDictionary;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
 
-namespace JJMasterData.Core.DataManager;
+namespace JJMasterData.Core.DataManager.Services;
 
 public class FormValuesService 
 {

@@ -1,4 +1,4 @@
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Http;
 

@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class JJTextBox : ControlBase
 {

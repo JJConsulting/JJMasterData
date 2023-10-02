@@ -1,8 +1,7 @@
 ﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.UI.Components.Widgets;
+namespace JJMasterData.Core.UI.Components;
 
 public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 {

@@ -1,10 +1,11 @@
-﻿@using JJMasterData.Core.Web
-@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+﻿@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IOptions<JJMasterDataWebOptions> Options
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.DataDictionary.Models.Actions
 @model JJMasterData.Core.DataDictionary.Models.Actions.ScriptAction
 
 @{
-    Layout = Options.Value.PopUpLayoutPath;
+    Layout = Options.Value.ModalLayoutPath;
 }
 
 @using (Html.BeginForm("ScriptAction", "Actions",

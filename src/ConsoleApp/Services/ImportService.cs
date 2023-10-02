@@ -1,5 +1,5 @@
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -25,7 +25,7 @@ public class ImportService
 
         var start = DateTime.Now;
         
-        var databaseDictionaries = DataDictionaryRepository.GetMetadataListAsync(false).GetAwaiter().GetResult();
+        var databaseDictionaries = DataDictionaryRepository.GetFormElementListAsync(false).GetAwaiter().GetResult();
         var folderDictionaries = new List<FormElement>();
 
         if (DictionariesPath != null)

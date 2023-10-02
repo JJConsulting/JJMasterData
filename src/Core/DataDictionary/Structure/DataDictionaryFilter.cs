@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace JJMasterData.Core.DataDictionary.Repository;
+namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class DataDictionaryFilter
 {

@@ -1,10 +1,10 @@
 #nullable enable
 using System.Collections.Generic;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Routing;
 
-namespace JJMasterData.Core.UI.Components.FormView;
+namespace JJMasterData.Core.UI.Components;
 
 public class FormViewScripts
 {

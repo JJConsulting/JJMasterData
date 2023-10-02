@@ -1,7 +1,8 @@
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging.Db;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.Web;
+using JJMasterData.Core.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

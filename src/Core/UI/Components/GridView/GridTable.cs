@@ -1,9 +1,9 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class GridTable
 {

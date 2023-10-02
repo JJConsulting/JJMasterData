@@ -1,5 +1,5 @@
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Web.TagHelpers;
 

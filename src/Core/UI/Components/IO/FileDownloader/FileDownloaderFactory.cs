@@ -1,12 +1,11 @@
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class FileDownloaderFactory : IComponentFactory<JJFileDownloader>
 {

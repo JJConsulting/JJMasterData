@@ -1,12 +1,13 @@
 #nullable  disable
 
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.ConsoleApp.Models.FormElementMigration;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -38,7 +39,7 @@ public class MetadataRepository
         _options = options;
     }
    
-    ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataListAsync"/>
+    ///<inheritdoc cref="IDataDictionaryRepository.GetFormElementListAsync"/>
     public IEnumerable<Metadata> GetMetadataList(bool? sync = null)
     {
         var list = new List<Metadata>();

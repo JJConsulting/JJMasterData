@@ -1,29 +1,5 @@
 ﻿#nullable enable
 
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.UI.Components.GridView;
-using JJMasterData.Core.Web.Components.Scripts;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
-using JJMasterData.Commons.Data.Entity.Repository;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Tasks;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.FormView;
-using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -31,12 +7,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Tasks;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Exportation.Configuration;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Events.Args;
+using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.UI.Routing;
+using Microsoft.Extensions.Localization;
 
 // ReSharper disable UnusedMember.Local
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
 /// Display the database values in a table,
@@ -627,7 +624,7 @@ public class JJGridView : AsyncComponent
         {
             div.WithAttribute("id", $"grid-view-{Name}");
 
-            div.AppendIf(ShowTitle, GetTitle(await GetDefaultValuesAsync()).GetHtmlBuilder);
+            div.AppendIf(ShowTitle, (Func<HtmlBuilder>)GetTitle(await GetDefaultValuesAsync()).GetHtmlBuilder);
 
             if (FilterAction.IsVisible)
             {
@@ -872,7 +869,7 @@ public class JJGridView : AsyncComponent
                     {
                         script.Append("\t\t$(prefixSelector + \"");
                         script.Append(".");
-                        script.Append(f.Name);
+                        script.Append((string?)f.Name);
                         script.AppendLine("\").change(function () {");
                         script.AppendLine("\t\tvar obj = $(this);");
                         script.AppendLine("\t\tsetTimeout(function() {");
@@ -881,7 +878,7 @@ public class JJGridView : AsyncComponent
                         script.Append("\t\t\t");
                         script.Append(functionname);
                         script.Append("(nRowId, \"");
-                        script.Append(f.Name);
+                        script.Append((string?)f.Name);
                         script.AppendLine("\", objid);");
                         script.AppendLine("\t\t\t},200);");
                         script.AppendLine("\t\t});");
@@ -891,7 +888,7 @@ public class JJGridView : AsyncComponent
                     {
                         script.Append("\t\t$(prefixSelector + \"");
                         script.Append(".");
-                        script.Append(f.Name);
+                        script.Append((string?)f.Name);
                         script.AppendLine("\").change(function () {");
                         script.AppendLine("\t\t\tvar obj = $(this);");
                         script.AppendLine("\t\t\tvar nRowId = obj.attr(\"gridViewRowIndex\");");
@@ -899,7 +896,7 @@ public class JJGridView : AsyncComponent
                         script.Append("\t\t\t");
                         script.Append(functionname);
                         script.Append("(nRowId, \"");
-                        script.Append(f.Name);
+                        script.Append((string?)f.Name);
                         script.AppendLine("\", objid);");
                         script.AppendLine("\t\t});");
                         script.AppendLine("");
@@ -1281,7 +1278,7 @@ public class JJGridView : AsyncComponent
                 selectedKeys.Append(",");
 
             string values = DataHelper.ParsePkValues(FormElement, row, ';');
-            selectedKeys.Append(EncryptionService.EncryptStringWithUrlEscape(values));
+            selectedKeys.Append((string?)EncryptionService.EncryptStringWithUrlEscape(values));
         }
 
         return selectedKeys.ToString();

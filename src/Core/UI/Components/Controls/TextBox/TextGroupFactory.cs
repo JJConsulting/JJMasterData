@@ -1,20 +1,15 @@
-﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.UI.Components.Widgets;
-using Microsoft.Extensions.Localization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Actions;
+using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class TextGroupFactory : IControlFactory<JJTextGroup>
 {

@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace JJMasterData.Brasil.Models;
+﻿namespace JJMasterData.Brasil.Models;
 
 
 using Newtonsoft.Json;
-using System;
 
 public class CnpjResult
 {

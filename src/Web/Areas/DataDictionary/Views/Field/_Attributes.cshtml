@@ -1,7 +1,8 @@
-﻿@using JJMasterData.Core.Web
-@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+﻿@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
-@model FormElementField
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
+@model JJMasterData.Core.DataDictionary.Models.FormElementField
 
 @if (Model.Component is FormComponent.Text 
     or FormComponent.Number 

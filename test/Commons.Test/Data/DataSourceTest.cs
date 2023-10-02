@@ -1,7 +1,7 @@
 using System.Data;
 using JJMasterData.Commons.Data.Entity.Repository;
 
-namespace JJMasterData.Commons.Tests;
+namespace JJMasterData.Commons.Test.Data;
 
 public class DataSourceTest
 {

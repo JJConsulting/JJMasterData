@@ -1,5 +1,5 @@
 using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Localization;
 

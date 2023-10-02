@@ -1,17 +1,18 @@
 ﻿using System.Text;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public abstract class ProcessComponent : AsyncComponent
 {
@@ -100,7 +101,7 @@ public abstract class ProcessComponent : AsyncComponent
                 break;
         }
 
-        processKey.Append(FormElement.Name);
+        processKey.Append((string)FormElement.Name);
 
         if (ProcessOptions.Scope != ProcessScope.User)
             return processKey.ToString();

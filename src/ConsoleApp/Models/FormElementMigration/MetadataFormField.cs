@@ -1,7 +1,7 @@
 ﻿#nullable disable
 
 using System.Collections;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using Newtonsoft.Json;
 

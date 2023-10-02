@@ -1,9 +1,9 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Repository;
 
-namespace JJMasterData.Core.FormEvents.Args;
+namespace JJMasterData.Core.UI.Events.Args;
 
 /// <summary>
 /// Event fired when data is ready to be loaded at GridView

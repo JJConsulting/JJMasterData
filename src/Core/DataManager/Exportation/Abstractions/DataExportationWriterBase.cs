@@ -6,23 +6,23 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Exportation.Configuration;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.UI.Components.Exportation;
-using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Core.DataManager.Exports.Abstractions;
+namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExportationWriter
 {

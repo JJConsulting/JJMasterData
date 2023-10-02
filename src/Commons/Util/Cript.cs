@@ -2,8 +2,8 @@
 using System;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Hashing;
+using JJMasterData.Commons.Security.Cryptography;
+using JJMasterData.Commons.Security.Hashing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

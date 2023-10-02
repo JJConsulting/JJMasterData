@@ -2,10 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class JJTextGroup : JJTextBox
 {
@@ -66,7 +65,7 @@ public class JJTextGroup : JJTextBox
         if (hasAddons)
             inputGroup.Append(GetHtmlAddons());
 
-        inputGroup.Append(input);
+        inputGroup.Append((HtmlBuilder)input);
 
         if (hasAction)
             AddActionsAt(inputGroup);

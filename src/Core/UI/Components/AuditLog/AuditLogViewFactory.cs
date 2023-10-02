@@ -1,16 +1,14 @@
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView>
 {
@@ -48,7 +46,7 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
     
     public async Task<JJAuditLogView> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         return Create(formElement);
     }
 }

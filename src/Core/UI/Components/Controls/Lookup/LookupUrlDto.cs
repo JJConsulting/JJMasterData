@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public record LookupUrlDto(string Url)
 {

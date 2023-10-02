@@ -1,10 +1,10 @@
-﻿@using JJMasterData.Core.Web
-@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+﻿@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IOptions<JJMasterDataWebOptions> Options
+@using JJMasterData.Core.UI
 @model  JJMasterData.Core.DataDictionary.Models.Actions.DeleteAction
 
 @{
-    Layout = Options.Value.PopUpLayoutPath;
+    Layout = Options.Value.ModalLayoutPath;
 }
 
 @using (Html.BeginForm("DeleteAction", "Actions",

@@ -1,5 +1,5 @@
 ﻿using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 

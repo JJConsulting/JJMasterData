@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.Extensions;
 using Microsoft.AspNetCore.Mvc;
 

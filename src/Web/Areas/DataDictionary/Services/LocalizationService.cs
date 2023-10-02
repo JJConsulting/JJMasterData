@@ -1,10 +1,9 @@
 using JJMasterData.Core.DataDictionary.Structure;
-using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace JJMasterData.Web.Services;
+namespace JJMasterData.Web.Areas.DataDictionary.Services;
 
 public class LocalizationService
 {

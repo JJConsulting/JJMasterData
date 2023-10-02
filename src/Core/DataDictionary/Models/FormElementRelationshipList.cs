@@ -1,10 +1,10 @@
-﻿using JJMasterData.Commons.Data.Entity;
-using Newtonsoft.Json;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Commons.Data.Entity.Models;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Models;
 
 
 public class FormElementRelationshipList : IList<FormElementRelationship>

@@ -1,18 +1,15 @@
 ﻿using System;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Core.Configuration;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Exports;
-using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.DataManager.Exportation;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.UI.Components.FormView;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-
-namespace JJMasterData.Core.Extensions;
+namespace JJMasterData.Core.Configuration;
 
 public static class ServiceCollectionExtensions
 {

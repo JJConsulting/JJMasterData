@@ -3,7 +3,7 @@
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @{
     ViewData["Title"] = StringLocalizer["Localization"];
-    Layout = Options.Value.PopUpLayoutPath;
+    Layout = Options.Value.ModalLayoutPath;
 }
 
 @using (Html.BeginForm())

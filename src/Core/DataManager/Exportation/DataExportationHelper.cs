@@ -1,10 +1,10 @@
 #nullable enable
 
 using System.IO;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.UI.Components;
 
-namespace JJMasterData.Core.UI.Components.Exportation;
+namespace JJMasterData.Core.DataManager.Exportation;
 
 internal static class DataExportationHelper
 {
@@ -14,7 +14,7 @@ internal static class DataExportationHelper
     public static string GetFolderPath(FormElement formElement, string path, string userId)
     {
         var processOptions = formElement.Options.GridToolbarActions.ExportAction.ProcessOptions;
-        string folderPath = Path.Combine(path, formElement.Name);
+        string folderPath = Path.Combine(path, (string)formElement.Name);
 
         if (processOptions.Scope == ProcessScope.User)
         {

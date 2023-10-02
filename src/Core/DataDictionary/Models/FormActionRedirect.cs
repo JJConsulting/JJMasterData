@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Models;
 
 
 public class FormActionRedirect

@@ -1,9 +1,7 @@
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class SliderFactory : IControlFactory<JJSlider>
 {

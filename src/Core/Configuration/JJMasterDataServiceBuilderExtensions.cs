@@ -4,13 +4,13 @@ using System;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Exports.Abstractions;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +18,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Core.Extensions;
+namespace JJMasterData.Core.Configuration;
 
 public static class JJMasterDataServiceBuilderExtensions
 {

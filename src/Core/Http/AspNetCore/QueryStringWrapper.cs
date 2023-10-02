@@ -1,5 +1,5 @@
 #if NET
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.Http.AspNetCore;

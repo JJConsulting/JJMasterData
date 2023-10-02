@@ -12,7 +12,7 @@ public class JJMasterDataWebOptions : JJMasterDataCoreOptions
     /// <summary>
     /// Default value:_MasterDataLayout.Popup <br></br>
     /// </summary>
-    public string PopUpLayoutPath { get; set; } = "_MasterDataLayout.PopUp";
+    public string ModalLayoutPath { get; set; } = "_MasterDataLayout.PopUp";
 
     /// <summary>
     /// Default value: false (Generate a link to the default bootstrap layout)

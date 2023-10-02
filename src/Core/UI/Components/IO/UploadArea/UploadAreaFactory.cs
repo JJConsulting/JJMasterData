@@ -1,12 +1,11 @@
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class UploadAreaFactory : IComponentFactory<JJUploadArea>
 {

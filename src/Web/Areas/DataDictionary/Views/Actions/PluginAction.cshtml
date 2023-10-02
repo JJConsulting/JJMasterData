@@ -1,5 +1,5 @@
-@using JJMasterData.Core.Web
 @using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.Actions.PluginAction
 @inject IOptions<JJMasterDataWebOptions> Options
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
@@ -8,7 +8,7 @@
 @{
     var plugin = (IPluginActionHandler)Plugins.First(p => p.Id == Model.PluginId && p is IPluginActionHandler);
 
-    Layout = Options.Value.PopUpLayoutPath;
+    Layout = Options.Value.ModalLayoutPath;
 }
 
 @using (Html.BeginForm("PluginAction", "Actions",

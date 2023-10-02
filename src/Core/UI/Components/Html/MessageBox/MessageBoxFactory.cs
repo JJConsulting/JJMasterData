@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Text;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class MessageBoxFactory : IComponentFactory<JJMessageBox>
 {

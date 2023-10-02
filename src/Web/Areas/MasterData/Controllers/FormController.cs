@@ -1,5 +1,4 @@
 ﻿using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;

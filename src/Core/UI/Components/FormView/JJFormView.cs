@@ -4,41 +4,40 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable EventNeverSubscribedTo.Global
 
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
-using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Events.Args;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.FormView;
+using JJMasterData.Core.UI.Events.Args;
+using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.UI.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-
 #if NET48
 using JJMasterData.Commons.Configuration;
 #endif
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
 /// Represents a CRUD.
@@ -347,7 +346,7 @@ public class JJFormView : AsyncComponent
         var dataDictionaryRepository =
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
         var factory = StaticServiceLocator.Provider.GetScopedDependentService<FormViewFactory>();
-        FormElement = dataDictionaryRepository.GetMetadataAsync(elementName).GetAwaiter().GetResult();
+        FormElement = dataDictionaryRepository.GetFormElementAsync(elementName).GetAwaiter().GetResult();
         factory.SetFormEventHandlerAsync(this, FormElement).GetAwaiter().GetResult();
     }
 
@@ -805,7 +804,7 @@ public class JJFormView : AsyncComponent
         var insertAction = GridView.ToolBarActions.InsertAction;
         var html = new HtmlBuilder(HtmlTag.Div);
         html.AppendHiddenInput($"form-view-insert-selection-values-{Name}");
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(insertAction.ElementNameToSelect);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(insertAction.ElementNameToSelect);
         formElement.ParentName = FormElement.Name;
 
         var formView = ComponentFactory.FormView.Create(formElement);
@@ -833,7 +832,7 @@ public class JJFormView : AsyncComponent
 
         if (result is RenderedComponentResult renderedComponentResult)
         {
-            html.Append(renderedComponentResult.HtmlBuilder);
+            html.Append((HtmlBuilder?)renderedComponentResult.HtmlBuilder);
         }
         else
         {
@@ -848,7 +847,7 @@ public class JJFormView : AsyncComponent
         var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]);
         var html = new HtmlBuilder(HtmlTag.Div);
         var formElement =
-            await DataDictionaryRepository.GetMetadataAsync(GridView.ToolBarActions.InsertAction.ElementNameToSelect);
+            await DataDictionaryRepository.GetFormElementAsync(GridView.ToolBarActions.InsertAction.ElementNameToSelect);
         var selectionValues = await EntityRepository.GetFieldsAsync(formElement, insertValues);
         var values =
             await FieldValuesService.MergeWithExpressionValuesAsync(formElement, selectionValues, PageState.Insert,
@@ -865,7 +864,7 @@ public class JJFormView : AsyncComponent
 
             if (insertSelectionResult is RenderedComponentResult renderedComponentResult)
             {
-                html.Append(renderedComponentResult.HtmlBuilder);
+                html.Append((HtmlBuilder?)renderedComponentResult.HtmlBuilder);
             }
             else
             {
@@ -882,7 +881,7 @@ public class JJFormView : AsyncComponent
 
             if (result is RenderedComponentResult renderedComponentResult)
             {
-                html.Append(renderedComponentResult.HtmlBuilder);
+                html.Append((HtmlBuilder?)renderedComponentResult.HtmlBuilder);
             }
             else
             {
@@ -1081,7 +1080,7 @@ public class JJFormView : AsyncComponent
 
         if (result is RenderedComponentResult renderedComponentResult)
         {
-            html.Append(renderedComponentResult.HtmlBuilder);
+            html.Append((HtmlBuilder?)renderedComponentResult.HtmlBuilder);
         }
         else
         {
@@ -1150,7 +1149,7 @@ public class JJFormView : AsyncComponent
 
         if (relationshipsResult is RenderedComponentResult renderedComponentResult)
         {
-            html.Append(renderedComponentResult.HtmlBuilder);
+            html.Append((HtmlBuilder?)renderedComponentResult.HtmlBuilder);
         }
 
         var bottomActions = FormElement.Options.FormToolbarActions
@@ -1334,7 +1333,7 @@ public class JJFormView : AsyncComponent
         if (sender is not JJGridView)
             return;
 
-        if (args.Action is not InsertSelectionAction)
+        if (args.ActionName == nameof(InsertSelectionAction))
             return;
 
         args.LinkButton.Tooltip = StringLocalizer["Select"];

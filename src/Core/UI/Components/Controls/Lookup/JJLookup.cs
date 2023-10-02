@@ -1,17 +1,15 @@
 ﻿#nullable enable
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Web.Html;
 using System;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// Represents a field with a value from another FormElement accessed via modal.
 public class JJLookup : ControlBase

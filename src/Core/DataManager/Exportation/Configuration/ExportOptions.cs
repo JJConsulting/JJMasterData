@@ -1,6 +1,6 @@
-﻿using JJMasterData.Core.Web.Http.Abstractions;
+﻿using JJMasterData.Core.Http.Abstractions;
 
-namespace JJMasterData.Core.DataManager.Exports.Configuration;
+namespace JJMasterData.Core.DataManager.Exportation.Configuration;
 
 /// <summary>
 /// Classe responsável por configurar a exportação dos dados da JJGridView

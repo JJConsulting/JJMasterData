@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Exceptions;
 
-
-namespace JJMasterData.Commons.Data.Entity;
+namespace JJMasterData.Commons.Data.Entity.Models;
 
 /// <summary>
 /// Table Field List

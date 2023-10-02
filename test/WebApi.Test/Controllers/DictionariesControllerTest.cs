@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using JJMasterData.WebApi.Controllers;
 using JJMasterData.WebApi.Services;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Moq;
 using Xunit.Extensions.Ordering;

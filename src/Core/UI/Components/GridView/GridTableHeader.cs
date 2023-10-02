@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class GridTableHeader
 {
@@ -97,7 +97,7 @@ internal class GridTableHeader
 
                     if (order.Equals($"{field.Name} DESC"))
                         th.Append(GetDescendingIcon());
-                    else if (order.Equals($"{field.Name} ASC") || order.Equals(field.Name))
+                    else if (order.Equals($"{field.Name} ASC") || order.Equals((string)field.Name))
                         th.Append(GetAscendingIcon());
                 }
             }
@@ -114,7 +114,7 @@ internal class GridTableHeader
             if (IsAppliedFilter(field, currentFilter))
             {
                 th.AppendText("&nbsp;");
-                th.Append(new JJIcon("fa fa-filter").GetHtmlBuilder()
+                th.Append((HtmlBuilder)new JJIcon("fa fa-filter").GetHtmlBuilder()
                     .WithToolTip(StringLocalizer["Applied filter"]));
             }
 
@@ -214,7 +214,7 @@ internal class GridTableHeader
                 a.WithAttribute(BootstrapHelper.DataToggle, "dropdown");
                 a.WithCssClass("dropdown-toggle");
                 a.AppendIf(BootstrapHelper.Version == 3,
-                    new JJIcon("fa fa-caret-down fa-fw fa-lg").GetHtmlBuilder);
+                    (Func<HtmlBuilder>)new JJIcon("fa fa-caret-down fa-fw fa-lg").GetHtmlBuilder);
             });
 
             span.Append(HtmlTag.Ul, ul =>

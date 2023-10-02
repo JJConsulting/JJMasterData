@@ -1,12 +1,12 @@
-﻿using JJMasterData.Core.DataDictionary;
-using Swashbuckle.Swagger;
+﻿using Swashbuckle.Swagger;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Web.Http.Description;
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,7 +17,7 @@ namespace JJMasterData.Swagger
         public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
         {
             var dictionaryRepository  = StaticServiceLocator.Provider.GetRequiredService<IDataDictionaryRepository>();
-            var dictionaries = dictionaryRepository.GetMetadataListAsync().GetAwaiter().GetResult();
+            var dictionaries = dictionaryRepository.GetFormElementListAsync().GetAwaiter().GetResult();
 
             foreach (var formElement in dictionaries)
             {

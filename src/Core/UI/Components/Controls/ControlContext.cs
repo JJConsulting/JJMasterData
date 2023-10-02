@@ -1,8 +1,8 @@
 #nullable enable
 
-using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Models;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal record ControlContext(
     FormStateData FormStateData,

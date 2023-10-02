@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace JJMasterData.Core.DataManager;
+namespace JJMasterData.Core.DataManager.Models;
 
 public class FormLetter
 {

@@ -1,6 +1,7 @@
-@using JJMasterData.Core.Web
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @using System.Collections.Immutable
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.Actions.PluginFieldAction
 @inject IOptions<JJMasterDataWebOptions> Options
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
@@ -9,7 +10,7 @@
 @{
     var plugin = (IPluginFieldActionHandler)Plugins.First(p => p.Id == Model.PluginId && p is IPluginFieldActionHandler);
 
-    Layout = Options.Value.PopUpLayoutPath;
+    Layout = Options.Value.ModalLayoutPath;
 
     FormElement formElement = ViewBag.FormElement;
 

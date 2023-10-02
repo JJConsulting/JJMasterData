@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class DataImportationHelp
 {
@@ -116,7 +117,7 @@ internal class DataImportationHelp
             });
             tr.Append(HtmlTag.Td, td =>
             {
-                td.AppendText(field.LabelOrName);
+                td.AppendText((string)field.LabelOrName);
                 td.AppendIf(field.IsPk, HtmlTag.Span, span =>
                 {
                     span.WithCssClass("fa fa-star")

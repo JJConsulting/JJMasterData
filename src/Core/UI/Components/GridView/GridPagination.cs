@@ -1,10 +1,10 @@
+using System;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
-using System;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class GridPagination
 {

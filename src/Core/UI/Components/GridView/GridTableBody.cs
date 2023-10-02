@@ -1,17 +1,18 @@
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Web.Html;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.Extensions;
+using JJMasterData.Core.UI.Events.Args;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class GridTableBody
 {
@@ -125,7 +126,7 @@ internal class GridTableBody
                 HtmlBuilder cell;
                 if (field.DataItem is not null && field.DataItem.ShowIcon)
                 {
-                    var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,null,value).FirstOrDefaultAsync();
+                    var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,null,value).FirstOrDefaultAsync<DataItemValue>();
                     cell = new HtmlBuilder(HtmlTag.Div);
                     cell.AppendComponent(new JJIcon(dataItemValue.Icon,dataItemValue.IconColor ?? string.Empty));
                     cell.Append(HtmlTag.Span, span =>

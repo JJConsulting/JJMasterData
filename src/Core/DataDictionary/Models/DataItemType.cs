@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.DataDictionary;
+﻿namespace JJMasterData.Core.DataDictionary.Models;
 
 public enum DataItemType
 {

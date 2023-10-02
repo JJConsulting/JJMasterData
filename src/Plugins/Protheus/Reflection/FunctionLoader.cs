@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace JJMasterData.Protheus;
+namespace JJMasterData.Protheus.Reflection;
 
 public class FunctionLoader
 {

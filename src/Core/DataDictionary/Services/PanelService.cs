@@ -1,10 +1,10 @@
 ﻿#nullable enable
-using System;
 using JJMasterData.Commons.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
@@ -19,7 +19,7 @@ public class PanelService : BaseService
 
     public async Task SavePanelAsync(string elementName, FormElementPanel panel, string[]? selectedFields)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
         if (selectedFields is null || !selectedFields.Any())
         {
@@ -82,7 +82,7 @@ public class PanelService : BaseService
 
     public async Task<bool> DeleteFieldAsync(string elementName, int panelId)
     {
-        var dictionary = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var dictionary = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
         for (int i = 0; i < dictionary.Panels.Count; i++)
         {
@@ -103,7 +103,7 @@ public class PanelService : BaseService
 
     public async Task<bool> SortPanelsAsync(string elementName, string[] orderFields)
     {
-        var formElement =await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement =await DataDictionaryRepository.GetFormElementAsync(elementName);
         var newList = new List<FormElementPanel>();
         for (int i = 0; i < orderFields.Length; i++)
         {
@@ -123,7 +123,7 @@ public class PanelService : BaseService
 
     public async Task<FormElementPanel> CopyPanel(string elementName, FormElementPanel panel)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         var newPanel = panel.DeepCopy();
         newPanel.PanelId = 1 + formElement.Panels.Max(x => x.PanelId);
         formElement.Panels.Add(newPanel);

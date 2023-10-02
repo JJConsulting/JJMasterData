@@ -1,29 +1,29 @@
-﻿using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.UI.Components;
-
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.UI.Routing;
 #if NET48
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 #endif
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
 /// Render panels with fields
@@ -134,7 +134,7 @@ public class JJDataPanel : AsyncComponent
     {
         Name = $"{ComponentNameGenerator.Create(elementName)}-data-panel";
         FormElement = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>()
-            .GetMetadataAsync(elementName).GetAwaiter().GetResult();
+            .GetFormElementAsync(elementName).GetAwaiter().GetResult();
         RenderPanelGroup = FormElement.Panels.Count > 0;
     }
     

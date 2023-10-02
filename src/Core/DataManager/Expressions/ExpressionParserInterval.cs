@@ -1,5 +1,5 @@
 #nullable enable
-namespace JJMasterData.Core.DataManager.Services;
+namespace JJMasterData.Core.DataManager.Expressions;
 
 public class ExpressionParserInterval
 {

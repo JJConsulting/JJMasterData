@@ -1,21 +1,21 @@
 #nullable enable
 
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Web.Html;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Html;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class JJComboBox : ControlBase
 {
@@ -240,7 +240,7 @@ public class JJComboBox : ControlBase
     public async Task<DataItemValue?> GetValueAsync(string? searchId)
     {
         var values = DataItemService.GetValuesAsync(DataItem,FormStateData,null,searchId);
-        return await values.FirstOrDefaultAsync(v=> v.Id==searchId);
+        return await values.FirstOrDefaultAsync<DataItemValue>(v=> v.Id==searchId);
     }
     
 

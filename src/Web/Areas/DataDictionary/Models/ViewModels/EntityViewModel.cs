@@ -1,5 +1,5 @@
-﻿using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.FormEvents.Abstractions;
+﻿using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.Events.Abstractions;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 

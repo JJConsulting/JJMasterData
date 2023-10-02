@@ -1,7 +1,7 @@
-using JJMasterData.Brasil.Extensions;
+using JJMasterData.Brasil.Configuration;
 using JJMasterData.Protheus.Configuration;
 using JJMasterData.Web.Extensions;
-using JJMasterData.WebExample.Authorization;
+using JJMasterData.WebEntryPoint.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 

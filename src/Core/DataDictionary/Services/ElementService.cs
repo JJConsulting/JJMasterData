@@ -1,12 +1,7 @@
 ﻿#nullable enable
 
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.Repository;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IO;
@@ -14,12 +9,16 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Core.DataDictionary.Factories;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Structure;
+using JJMasterData.Core.Http;
 using JJMasterData.Core.Options;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
-using JJMasterData.Core.Web;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -127,7 +126,7 @@ public class ElementService : BaseService
     {
         if (await ValidateEntityAsync(newName))
         {
-            var dicParser = await DataDictionaryRepository.GetMetadataAsync(originName);
+            var dicParser = await DataDictionaryRepository.GetFormElementAsync(originName);
             dicParser.Name = newName;
             await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
         }
@@ -179,7 +178,7 @@ public class ElementService : BaseService
         {
             var elementName = args.FieldValues["name"]?.ToString();
             
-            switch (args.Action.Name)
+            switch (args.ActionName)
             {
                 case "preview":
                     args.LinkButton.OnClientClick =
@@ -207,7 +206,7 @@ public class ElementService : BaseService
     public async Task<byte[]> ExportSingleRowAsync(IDictionary<string, object> row)
     {
         var elementName = row["name"].ToString();
-        var metadata = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var metadata = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
         var json = FormElementSerializer.Serialize(metadata, settings =>
         {
@@ -225,7 +224,7 @@ public class ElementService : BaseService
             foreach (var element in selectedRows)
             {
                 var elementName = element["name"].ToString();
-                var metadata = await DataDictionaryRepository.GetMetadataAsync(elementName);
+                var metadata = await DataDictionaryRepository.GetFormElementAsync(elementName);
                 
                 var json = FormElementSerializer.Serialize(metadata,settings =>
                 {

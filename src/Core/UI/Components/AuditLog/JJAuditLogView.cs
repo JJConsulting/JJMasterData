@@ -2,22 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class JJAuditLogView : AsyncComponent
 {
@@ -108,7 +110,7 @@ public class JJAuditLogView : AsyncComponent
             var gridResult = await GridView.GetResultAsync();
             if (gridResult is RenderedComponentResult renderedComponentResult)
             {
-                html.Append(renderedComponentResult.HtmlBuilder);
+                html.Append((HtmlBuilder)renderedComponentResult.HtmlBuilder);
             }
             else
             {
@@ -158,7 +160,7 @@ public class JJAuditLogView : AsyncComponent
         });
 
         if (result.Data.Count > 0)
-            entryId = result.Data.ElementAt(0).ElementAt(0).Value.ToString();
+            entryId = Enumerable.ElementAt<Dictionary<string, object>>(result.Data, 0).ElementAt(0).Value.ToString();
 
         return entryId;
     }
@@ -401,7 +403,7 @@ public class JJAuditLogView : AsyncComponent
                         span.AppendComponent(infoIcon);
                     });
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b => { b.AppendText(row["modified"]!.ToString()); });
+                    div.Append(HtmlTag.B, b => { b.AppendText((string)row["modified"]!.ToString()); });
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.B, b => { b.AppendText($"IP: {row["ip"]}"); });
                 });

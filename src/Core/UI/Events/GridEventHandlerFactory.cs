@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using JJMasterData.Core.FormEvents;
-using JJMasterData.Core.Web.FormEvents.Abstractions;
+using JJMasterData.Core.Events.Abstractions;
+using JJMasterData.Core.UI.Events.Abstractions;
 
-namespace JJMasterData.Core.Web.FormEvents.Factories;
+namespace JJMasterData.Core.UI.Events;
 
 public class GridEventHandlerFactory : EventHandlerFactoryBase<IGridEventHandler>, IGridEventHandlerFactory
 {

@@ -1,13 +1,13 @@
 ﻿#nullable enable
 
-using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.DataDictionary;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager;
 

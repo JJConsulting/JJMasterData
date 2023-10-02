@@ -1,7 +1,7 @@
 using System.Reflection;
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Core.Configuration;
 using JJMasterData.WebApi.Handlers;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Swagger.AspNetCore;
 using JJMasterData.WebApi.Extensions;
 using Microsoft.AspNetCore.Authentication;

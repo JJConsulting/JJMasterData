@@ -1,9 +1,10 @@
 #nullable enable
 using System;
+using JJMasterData.Core.DataDictionary.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace JJMasterData.Core.DataDictionary.Repository;
+namespace JJMasterData.Core.DataDictionary;
 
 public static class FormElementSerializer
 {

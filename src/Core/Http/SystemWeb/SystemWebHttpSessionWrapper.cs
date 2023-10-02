@@ -1,7 +1,7 @@
 #if NETFRAMEWORK
 using System.Web;
 using System.Web.SessionState;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Http.SystemWeb;
 

@@ -1,22 +1,23 @@
 ﻿#nullable enable
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
-using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.IO;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Events.Args;
+using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.UI.Routing;
+using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class JJUploadArea : AsyncComponent
 {
@@ -158,7 +159,7 @@ public class JJUploadArea : AsyncComponent
         div.WithAttributes(Attributes);
         div.WithAttributeIf(Url is not null,"upload-url", Url!);
         div.WithAttribute("js-callback",JsCallback);
-        div.WithAttribute("route-context", EncryptionService.EncryptRouteContext(RouteContext));
+        div.WithAttribute((string)"route-context", (string)EncryptionService.EncryptRouteContext(RouteContext));
         div.WithAttribute("allow-multiple-files", Multiple.ToString().ToLower());
         div.WithAttribute("query-string-params", GetQueryStringParams());
         div.WithAttribute("max-file-size", MaxFileSize.ToString().ToLower());

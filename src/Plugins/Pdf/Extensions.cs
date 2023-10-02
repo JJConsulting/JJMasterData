@@ -1,5 +1,5 @@
 ﻿using JJMasterData.Commons.Configuration;
-using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Configuration;
 
 namespace JJMasterData.Pdf;
 public static class Extensions

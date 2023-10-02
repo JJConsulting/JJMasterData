@@ -2,9 +2,9 @@
 
 using System.Web;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Routing;
 
-namespace JJMasterData.Core.UI.Components.Controls;
+namespace JJMasterData.Core.UI.Components;
 
 internal class TextFileScripts
 {

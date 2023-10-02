@@ -1,9 +1,8 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.Linq;
-using JJMasterData.Core.FormEvents.Abstractions;
 
-namespace JJMasterData.Core.FormEvents;
+namespace JJMasterData.Core.Events.Abstractions;
 
 public class EventHandlerFactoryBase<TEventHandler> where TEventHandler : IEventHandler
 {

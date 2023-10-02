@@ -1,19 +1,19 @@
-﻿using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
-using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Html;
+using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class GridFilter
 {

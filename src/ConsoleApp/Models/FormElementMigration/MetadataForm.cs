@@ -1,7 +1,7 @@
 ﻿#nullable disable
 
 using System.Runtime.Serialization;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using Newtonsoft.Json;
 
 namespace JJMasterData.ConsoleApp.Models.FormElementMigration;

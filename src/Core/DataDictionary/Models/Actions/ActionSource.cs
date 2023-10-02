@@ -1,5 +1,5 @@
 ﻿
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public enum ActionSource
 {

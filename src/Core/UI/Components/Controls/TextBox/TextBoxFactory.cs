@@ -1,10 +1,8 @@
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Factories;
 
-namespace JJMasterData.Core.UI.Components.Controls.TextBox;
+namespace JJMasterData.Core.UI.Components;
 
 internal class TextBoxFactory : IControlFactory<JJTextBox>
 {

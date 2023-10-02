@@ -2,31 +2,30 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Exports;
-using JJMasterData.Core.DataManager.Exports.Abstractions;
-using JJMasterData.Core.DataManager.Exports.Configuration;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Exportation;
+using JJMasterData.Core.DataManager.Exportation.Abstractions;
+using JJMasterData.Core.DataManager.Exportation.Configuration;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components.Scripts;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.UI.Events.Args;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
 /// Exporta dados para um arquivo

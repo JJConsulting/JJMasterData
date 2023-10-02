@@ -1,4 +1,4 @@
-using JJMasterData.Core.DataDictionary.Repository;
+using JJMasterData.Core.DataDictionary;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 

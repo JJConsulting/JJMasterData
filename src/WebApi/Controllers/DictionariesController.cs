@@ -1,7 +1,7 @@
-﻿using JJMasterData.Core.DataDictionary;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.WebApi.Models;
 using JJMasterData.WebApi.Services;
@@ -38,7 +38,7 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/")]
     public async Task<ActionResult<FormElement[]>> GetAll()
     {
-        var dicList = await _dataDictionaryRepository.GetMetadataListAsync(true);
+        var dicList = await _dataDictionaryRepository.GetFormElementListAsync(true);
         if (dicList == null)
             return NotFound();
 
@@ -59,7 +59,7 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/{id}")]
     public async Task<FormElement> Get(string id)
     {
-        return await _dataDictionaryRepository.GetMetadataAsync(id);
+        return await _dataDictionaryRepository.GetFormElementAsync(id);
     }
 
     /// <summary>

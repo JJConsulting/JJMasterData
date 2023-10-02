@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
+using JJMasterData.Commons.Validations;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -49,7 +49,7 @@ public abstract class BaseService
 
     public async Task<FormElement> GetFormElementAsync(string elementName)
     {
-        return await DataDictionaryRepository.GetMetadataAsync(elementName);
+        return await DataDictionaryRepository.GetFormElementAsync(elementName);
     }
 
     public bool ValidateName(string name)

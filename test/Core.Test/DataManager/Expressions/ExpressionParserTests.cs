@@ -1,10 +1,10 @@
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.Http.Abstractions;
 using Moq;
 
-namespace JJMasterData.Core.Test.Expressions;
+namespace JJMasterData.Core.Test.DataManager.Expressions;
 
 
 public class ExpressionParserTests

@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.DataDictionary;
+﻿namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
 /// Cor do painel de agrupamento de dados

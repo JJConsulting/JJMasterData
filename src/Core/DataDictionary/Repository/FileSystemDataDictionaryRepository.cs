@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Extensions;
-using Newtonsoft.Json;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Newtonsoft.Json;
+using JJMasterData.Core.DataDictionary.Structure;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
@@ -55,7 +56,7 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         return list;
     }
 
-    public async Task<IEnumerable<FormElement>> GetMetadataListAsync(bool? apiEnabled = null)
+    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiEnabled = null)
     {
         var result = GetMetadataList();
         return await Task.FromResult(result);
@@ -103,7 +104,7 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         return JsonConvert.DeserializeObject<FormElement>(json);
     }
     
-    public Task<FormElement> GetMetadataAsync(string elementName)
+    public Task<FormElement> GetFormElementAsync(string elementName)
     {
         var result = GetMetadata(elementName);
         return Task.FromResult(result);

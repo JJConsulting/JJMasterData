@@ -1,5 +1,4 @@
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Web.Models;
 using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Builder;
@@ -11,7 +10,9 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Options;
+using JJMasterData.Web.Areas.DataDictionary.Services;
 using JJMasterData.Web.Options;
 
 namespace JJMasterData.Web.Extensions;

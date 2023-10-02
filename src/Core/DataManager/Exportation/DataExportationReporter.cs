@@ -1,7 +1,7 @@
 ﻿using System;
 using JJMasterData.Commons.Tasks.Progress;
 
-namespace JJMasterData.Core.DataManager.Exports;
+namespace JJMasterData.Core.DataManager.Exportation;
 
 public class DataExportationReporter : ProgressReporter
 {

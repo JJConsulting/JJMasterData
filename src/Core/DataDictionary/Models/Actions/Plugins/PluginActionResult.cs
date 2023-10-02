@@ -1,7 +1,7 @@
 #nullable enable
 
 
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 

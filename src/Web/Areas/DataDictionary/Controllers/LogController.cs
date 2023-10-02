@@ -1,12 +1,11 @@
 ﻿using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Html;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;

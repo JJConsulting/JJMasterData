@@ -1,7 +1,7 @@
 using System;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 
-namespace JJMasterData.Core.DataDictionary.Repository;
+namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class DataDictionaryStructure
 {

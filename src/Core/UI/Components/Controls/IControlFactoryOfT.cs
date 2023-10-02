@@ -1,6 +1,4 @@
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Factories;
+using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.UI.Components;
 

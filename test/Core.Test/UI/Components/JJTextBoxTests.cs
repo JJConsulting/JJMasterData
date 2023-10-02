@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Components;
 using Moq;
 
-namespace JJMasterData.Core.Test.Web.Components
+namespace JJMasterData.Core.Test.UI.Components
 {
     public class JJTextBoxTests
     {

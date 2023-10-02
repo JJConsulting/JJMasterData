@@ -3,7 +3,7 @@
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormElementOptions
 {

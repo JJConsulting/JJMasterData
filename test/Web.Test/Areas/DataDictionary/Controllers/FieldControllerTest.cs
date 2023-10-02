@@ -1,6 +1,3 @@
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Core.DataDictionary;
 using Xunit.Extensions.Ordering;
 
 namespace JJMasterData.Web.Test.Areas.DataDictionary.Controllers;

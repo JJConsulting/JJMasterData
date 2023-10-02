@@ -1,12 +1,10 @@
 ﻿#nullable enable
 
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
-using Microsoft.Extensions.DependencyInjection;
 using System;
-using JJMasterData.Core.UI.Components.Actions;
+using JJMasterData.Core.UI.Routing;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class ComponentFactory : IComponentFactory
 {

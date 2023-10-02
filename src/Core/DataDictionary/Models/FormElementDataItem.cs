@@ -5,7 +5,7 @@ using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Validations;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
 /// Configurações de objetos do tipo lista

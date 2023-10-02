@@ -1,9 +1,8 @@
 ﻿using JJMasterData.Commons.Localization;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 
 public class JJLabel : HtmlComponent

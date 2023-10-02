@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using JJMasterData.Commons.Util;
 
-namespace JJMasterData.Commons.Data.Entity;
+namespace JJMasterData.Commons.Data.Entity.Repository;
 
 public class OrderByData
 {

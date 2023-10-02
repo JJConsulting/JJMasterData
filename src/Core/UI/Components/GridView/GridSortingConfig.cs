@@ -4,13 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components.Scripts;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class GridSortingConfig
 {
@@ -134,7 +132,7 @@ internal class GridSortingConfig
             ComboBox.Name = $"{item.Name}_order";
             ComboBox.SelectedValue = "N";
 
-            var sort = sortList.Find(x => x.FieldName.Equals(item.Name));
+            var sort = sortList.Find(x => x.FieldName.Equals((string)item.Name));
             if (sort != null)
             {
                 ComboBox.SelectedValue = sort.IsAsc ? "A" : "D";
@@ -142,7 +140,7 @@ internal class GridSortingConfig
 
             await tbody.AppendAsync(HtmlTag.Tr, async tr =>
             {
-                tr.WithAttribute("id", item.Name);
+                tr.WithAttribute((string)"id", (string)item.Name);
                 tr.WithCssClass("ui-sortable-handle");
                 tr.Append(HtmlTag.Td, td =>
                 {
@@ -156,7 +154,7 @@ internal class GridSortingConfig
                 {
                     var comboBoxResult = (RenderedComponentResult)await ComboBox.GetResultAsync();
                     
-                    td.Append(comboBoxResult.HtmlBuilder);
+                    td.Append((HtmlBuilder)comboBoxResult.HtmlBuilder);
                 });
             });
         }

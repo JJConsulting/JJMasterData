@@ -1,15 +1,14 @@
-﻿using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data.Entity.Abstractions;
-using JJMasterData.Core.DataDictionary;
+﻿using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Http.Abstractions;
-using System.Threading.Tasks;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
 {
@@ -60,7 +59,7 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
 
     public async Task<JJDataPanel> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         return Create(formElement);
     }
 }

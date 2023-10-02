@@ -1,17 +1,20 @@
 ﻿using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.WebApi.Models;
-using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using System.Diagnostics;
 using System.Net;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.WebApi.Services;
 
@@ -58,7 +61,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var formElement = await _dataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await _dataDictionaryRepository.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -83,7 +86,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = await _dataDictionaryRepository.GetMetadataAsync(elementName);
+        var dictionary = await _dataDictionaryRepository.GetFormElementAsync(elementName);
         if (!dictionary.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
@@ -111,7 +114,7 @@ public class MasterApiService
 
     public async Task<Dictionary<string, object>> GetFieldsAsync(string elementName, string id)
     {
-        var formElement = await _dataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await _dataDictionaryRepository.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
         
@@ -352,7 +355,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = await _dataDictionaryRepository.GetMetadataAsync(elementName);
+        var dictionary = await _dataDictionaryRepository.GetFormElementAsync(elementName);
 
         if (!dictionary.ApiOptions.EnableAdd & !dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
@@ -476,7 +479,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        return await _dataDictionaryRepository.GetMetadataAsync(elementName);
+        return await _dataDictionaryRepository.GetFormElementAsync(elementName);
     }
 
     /// <summary>

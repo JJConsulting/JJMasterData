@@ -1,15 +1,12 @@
 #nullable enable
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Http.Abstractions;
 using System;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Http.Abstractions;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class SearchBoxFactory : IControlFactory<JJSearchBox>
 {

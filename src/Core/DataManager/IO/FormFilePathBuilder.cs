@@ -1,10 +1,10 @@
-﻿using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Core.DataManager;
+namespace JJMasterData.Core.DataManager.IO;
 
 public class FormFilePathBuilder
 {

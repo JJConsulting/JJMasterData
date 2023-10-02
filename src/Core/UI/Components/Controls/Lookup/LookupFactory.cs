@@ -1,12 +1,11 @@
 using System;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
 using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components;
 
 internal class LookupFactory : IControlFactory<JJLookup>
 {

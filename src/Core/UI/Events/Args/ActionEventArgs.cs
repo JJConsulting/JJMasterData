@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.Web.Components;
+using JJMasterData.Core.UI.Components;
 
-namespace JJMasterData.Core.FormEvents.Args;
+namespace JJMasterData.Core.UI.Events.Args;
 
 public class ActionEventArgs : EventArgs
 {
-    public BasicAction Action { get; internal set; }
+    [Obsolete("Please use ActionName property")]
+    public BasicAction Action => throw new InvalidOperationException("Please use ActionName property.");
+    
+    public string ActionName { get; init; }
     
     public JJLinkButton LinkButton { get; set; }
     
@@ -17,8 +20,7 @@ public class ActionEventArgs : EventArgs
 
     public ActionEventArgs(BasicAction action, JJLinkButton linkButton, IDictionary<string, object> fieldValues)
     {
-        Action = action ?? throw new ArgumentNullException(nameof(action));
-        Action.Name = action.Name;
+        ActionName = action.Name ?? throw new ArgumentNullException(nameof(action));
         LinkButton = linkButton;
         FieldValues = fieldValues;
         HtmlResult = null;

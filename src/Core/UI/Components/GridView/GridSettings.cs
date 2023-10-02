@@ -1,6 +1,6 @@
 ﻿
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
 /// Class responsible to render the UI on JJGridView

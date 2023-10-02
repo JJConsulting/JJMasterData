@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;

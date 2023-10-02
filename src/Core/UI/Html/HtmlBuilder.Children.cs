@@ -4,9 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
 
-namespace JJMasterData.Core.Web.Html;
+namespace JJMasterData.Core.UI.Html;
 
 public partial class HtmlBuilder
 {
@@ -175,7 +174,7 @@ public partial class HtmlBuilder
     public HtmlBuilder AppendComponent(HtmlComponent? component)
     {
         if (component != null)
-            Append(component.GetHtmlBuilder());
+            Append((HtmlBuilder?)component.GetHtmlBuilder());
 
         return this;
     }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Commons.Data.Entity;
+namespace JJMasterData.Commons.Data.Entity.Models;
 
 /// <summary> 
 /// Elemento base com a estrutura basica da tabela

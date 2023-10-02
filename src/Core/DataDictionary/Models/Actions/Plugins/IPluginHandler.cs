@@ -1,6 +1,6 @@
 #nullable enable
 using System;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 

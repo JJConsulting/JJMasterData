@@ -1,6 +1,6 @@
 using JJMasterData.Commons.Exceptions;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Models;
 
 public static class IconTypeExtensions
 {

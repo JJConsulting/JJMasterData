@@ -1,5 +1,5 @@
 ﻿
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public enum MessageIcon
 {

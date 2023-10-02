@@ -1,6 +1,6 @@
 ﻿using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.MongoDB.Models;
 using JJMasterData.MongoDB.Repository;

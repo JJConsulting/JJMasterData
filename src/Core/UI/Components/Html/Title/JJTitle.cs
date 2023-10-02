@@ -1,8 +1,7 @@
 ﻿using System;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class JJTitle : HtmlComponent
 {

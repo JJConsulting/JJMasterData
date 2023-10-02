@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace JJMasterData.Web.Services;
+namespace JJMasterData.Web.Areas.DataDictionary.Services;
 
 public static class AboutService
 {

@@ -1,4 +1,4 @@
-using JJMasterData.Core.UI.Components.FormView;
+using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Configuration;

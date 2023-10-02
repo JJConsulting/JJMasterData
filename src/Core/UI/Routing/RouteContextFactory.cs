@@ -1,8 +1,8 @@
-using JJMasterData.Commons.Cryptography;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 
-namespace JJMasterData.Core.UI.Components;
+namespace JJMasterData.Core.UI.Routing;
 
 public class RouteContextFactory
 {

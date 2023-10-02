@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
@@ -20,7 +20,7 @@ public class ClassGenerationService
     {
         const string propertyTemplate = "public @PropertyType @PropertyName { get; set; } ";
 
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         var properties = new StringBuilder();
 
         foreach (var item in formElement.Fields.ToList())

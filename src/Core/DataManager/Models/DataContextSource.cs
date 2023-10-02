@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.DataManager;
+﻿namespace JJMasterData.Core.DataManager.Models;
 
 public enum DataContextSource
 {

@@ -1,4 +1,4 @@
-namespace JJMasterData.Core.Web.Http.Abstractions;
+namespace JJMasterData.Core.Http.Abstractions;
 
 public interface IHttpSession
 {

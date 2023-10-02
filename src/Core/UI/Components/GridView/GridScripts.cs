@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataManager;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Routing;
 
-namespace JJMasterData.Core.Web.Components.Scripts;
+namespace JJMasterData.Core.UI.Components;
 
 public class GridScripts
 {

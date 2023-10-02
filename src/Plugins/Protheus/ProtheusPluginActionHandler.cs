@@ -1,9 +1,7 @@
 using JJMasterData.Commons.Security.Hashing;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.UI.Components.FormView;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Html;
 using JJMasterData.Protheus.Abstractions;
 
 namespace JJMasterData.Protheus;

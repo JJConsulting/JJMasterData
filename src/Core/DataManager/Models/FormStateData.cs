@@ -1,11 +1,11 @@
 ﻿#nullable enable
 
-using JJMasterData.Commons.Extensions;
-using JJMasterData.Core.DataDictionary;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using JJMasterData.Commons.Extensions;
+using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.Core.DataManager;
+namespace JJMasterData.Core.DataManager.Models;
 
 public class FormStateData
 {

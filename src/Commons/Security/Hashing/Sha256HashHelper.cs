@@ -2,7 +2,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace JJMasterData.Commons.Hashing;
+namespace JJMasterData.Commons.Security.Hashing;
 
 public static class Sha256HashHelper
 {

@@ -1,22 +1,21 @@
 ﻿#nullable enable
 
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.FormEvents.Args;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Events.Args;
+using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.UI.Routing;
 
-
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 /// <summary>
 /// Represents a searchable combobox.
@@ -327,7 +326,7 @@ public class JJSearchBox : ControlBase
         }
         else
         {
-            _values ??= await DataItemService.GetValuesAsync(DataItem, FormStateData, null, searchId).ToListAsync();
+            _values ??= await DataItemService.GetValuesAsync(DataItem, FormStateData, null, searchId).ToListAsync<DataItemValue>();
         }
 
         var item = _values?.ToList().Find(x => x.Id.Equals(searchId));
@@ -373,6 +372,6 @@ public class JJSearchBox : ControlBase
         var values = await GetValuesAsync(textSearch);
         var items = DataItemService.GetItems(DataItem, values);
 
-        return items.ToList();
+        return items.ToList<DataItemResult>();
     }
 }

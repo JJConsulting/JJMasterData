@@ -1,9 +1,9 @@
 ﻿using System;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.FormEvents.Args;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.UI.Events.Args;
 
-namespace JJMasterData.Core.DataManager.Exports.Abstractions;
+namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 public interface IPdfWriter : IExportationWriter
 {

@@ -1,12 +1,11 @@
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.DataManager.Imports;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Core.UI.Components.Importation;
+namespace JJMasterData.Core.DataManager.Importation;
 
 public class DataImportationWorkerFactory
 {

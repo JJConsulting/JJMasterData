@@ -1,17 +1,14 @@
-﻿using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.Web.Components;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.DataManager.Models;
 
-namespace JJMasterData.Core.UI.Components.GridView;
+namespace JJMasterData.Core.UI.Components;
 
 internal class GridSqlCommandAction
 {

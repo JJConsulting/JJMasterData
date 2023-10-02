@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.FormEvents;
-using JJMasterData.Core.FormEvents.Abstractions;
-using JJMasterData.Core.Web.FormEvents.Abstractions;
-using JJMasterData.Core.Web.FormEvents.Factories;
+using JJMasterData.Core.Events;
+using JJMasterData.Core.Events.Abstractions;
+using JJMasterData.Core.UI.Events;
+using JJMasterData.Core.UI.Events.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Configuration;

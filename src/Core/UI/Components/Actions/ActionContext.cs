@@ -1,11 +1,12 @@
 #nullable enable
 
 using System.Linq;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataManager.Models;
 
-
-namespace JJMasterData.Core.DataManager.Models;
+namespace JJMasterData.Core.UI.Components;
 
 public record ActionContext
 {

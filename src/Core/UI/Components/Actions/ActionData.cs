@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.UI.Components.Actions;
+namespace JJMasterData.Core.UI.Components;
 
 internal record ActionData
 {

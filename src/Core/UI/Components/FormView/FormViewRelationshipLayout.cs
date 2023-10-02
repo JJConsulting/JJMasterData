@@ -3,14 +3,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Security.Hashing;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class FormViewRelationshipLayout
 {
@@ -31,7 +30,7 @@ internal class FormViewRelationshipLayout
 
             if (tabNavResult is RenderedComponentResult renderedComponentResult)
             {
-                relationshipsDiv.Append(renderedComponentResult.HtmlBuilder);
+                relationshipsDiv.Append((HtmlBuilder?)renderedComponentResult.HtmlBuilder);
             }
             else
             {
@@ -144,12 +143,12 @@ internal class FormViewRelationshipLayout
         }
 
         var childElement =
-            await ParentFormView.DataDictionaryRepository.GetMetadataAsync(relationship.ElementRelationship!
+            await ParentFormView.DataDictionaryRepository.GetFormElementAsync(relationship.ElementRelationship!
                 .ChildElement);
         childElement.ParentName = ParentFormView.FormElement.ParentName ?? ParentFormView.FormElement.Name;
 
         var filter = new Dictionary<string, object?>();
-        foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
+        foreach (var col in Enumerable.Where(relationship.ElementRelationship.Columns, col =>
                      formContext.Values.ContainsKey(col.PkColumn)))
         {
             var value = formContext.Values[col.PkColumn];

@@ -4,12 +4,13 @@ using System.Linq;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager.Exports.Configuration;
-using JJMasterData.Core.UI.Components.Exportation;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Exportation;
+using JJMasterData.Core.DataManager.Exportation.Configuration;
+using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class DataExportationSettings
 {

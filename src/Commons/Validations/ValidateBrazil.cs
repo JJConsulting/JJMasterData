@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JJMasterData.Commons.Util;
+namespace JJMasterData.Commons.Validations;
 
 internal static class ValidateBrazil
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -23,7 +24,7 @@ public class ActionsService : BaseService
 
     public async Task<bool> DeleteActionAsync(string elementName, string actionName, ActionSource context, string fieldName = null)
     {
-        var dicParser = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var dicParser = await DataDictionaryRepository.GetFormElementAsync(elementName);
         DeleteAction(dicParser, actionName, context, fieldName);
         await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
 
@@ -67,7 +68,7 @@ public class ActionsService : BaseService
 
     public async Task<bool> SaveAction(string elementName, BasicAction action, ActionSource context, string originalName, string fieldName = null)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         ValidateActionName(formElement, action.Name, originalName, context, fieldName);
         ValidateAction(formElement, action, fieldName);
 
@@ -205,7 +206,7 @@ public class ActionsService : BaseService
 
     public async Task<bool> SortActionsAsync(string elementName, string[] listAction, ActionSource actionContext, string fieldName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         for (int i = 0; i < listAction.Length; i++)
         {
             string actionName = listAction[i];
@@ -227,7 +228,7 @@ public class ActionsService : BaseService
 
     public async Task<bool> EnableDisable(string elementName, string actionName, ActionSource actionContext, bool visibility)
     {
-        var dicParser = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var dicParser = await DataDictionaryRepository.GetFormElementAsync(elementName);
         BasicAction action = actionContext switch
         {
             ActionSource.GridTable => dicParser.Options.GridTableActions.Get(actionName),
@@ -249,7 +250,7 @@ public class ActionsService : BaseService
         if (string.IsNullOrEmpty(elementName))
             return dicFields;
 
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         if (formElement == null)
             return dicFields;
 

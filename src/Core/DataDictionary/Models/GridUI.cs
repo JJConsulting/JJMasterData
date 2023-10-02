@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
 /// Opções configuradas no dicionário de dados

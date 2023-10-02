@@ -1,11 +1,9 @@
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Factories;
+namespace JJMasterData.Core.UI.Components.TextRange;
 
 internal class TextRangeFactory : IControlFactory<JJTextRange>
 {

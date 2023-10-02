@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace JJMasterData.Core.FormEvents.Args;
+namespace JJMasterData.Core.UI.Events.Args;
 
 public class FormRenameFileEventArgs : EventArgs
 {

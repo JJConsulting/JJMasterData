@@ -1,8 +1,8 @@
 using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Cryptography.Abstractions;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Commons.Cryptography;
+namespace JJMasterData.Commons.Security.Cryptography;
 
 /// <summary>
 /// Wrapper to IEncryptionService with the secret key loaded by IOptions.

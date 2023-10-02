@@ -1,7 +1,6 @@
 using System.Web;
-using JJMasterData.Core.Web.Components;
 
-namespace JJMasterData.Core.UI.Components.IO.UploadView;
+namespace JJMasterData.Core.UI.Components;
 
 public class UploadViewScripts
 {

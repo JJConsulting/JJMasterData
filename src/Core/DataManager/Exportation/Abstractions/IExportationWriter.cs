@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace JJMasterData.Core.DataManager.Exports.Abstractions;
+namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 
 public interface IExportationWriter
 {

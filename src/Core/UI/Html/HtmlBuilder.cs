@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace JJMasterData.Core.Web.Html;
+namespace JJMasterData.Core.UI.Html;
 
 /// <summary>
 /// Represents a mutable string of HTML tags.

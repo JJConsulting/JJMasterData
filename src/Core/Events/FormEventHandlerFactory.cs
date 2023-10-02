@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using JJMasterData.Core.FormEvents;
-using JJMasterData.Core.FormEvents.Abstractions;
+using JJMasterData.Core.Events.Abstractions;
 
-namespace JJMasterData.Core.DataDictionary.FormEvents;
+namespace JJMasterData.Core.Events;
 
 public class FormEventHandlerFactory : EventHandlerFactoryBase<IFormEventHandler>, IFormEventHandlerFactory
 {

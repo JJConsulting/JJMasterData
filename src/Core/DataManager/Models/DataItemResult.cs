@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.DataManager.Models;
 
 /// <summary>
 /// Record used to send data to the client.

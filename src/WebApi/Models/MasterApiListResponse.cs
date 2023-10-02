@@ -1,4 +1,4 @@
-﻿using JJMasterData.Core.DataDictionary;
+﻿using JJMasterData.Core.DataDictionary.Models;
 using Newtonsoft.Json;
 
 namespace JJMasterData.WebApi.Models;

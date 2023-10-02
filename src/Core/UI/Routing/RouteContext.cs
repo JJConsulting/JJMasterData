@@ -1,8 +1,9 @@
 #nullable enable
 
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.UI.Components;
 
-namespace JJMasterData.Core.UI.Components;
+namespace JJMasterData.Core.UI.Routing;
 
 public class RouteContext
 {

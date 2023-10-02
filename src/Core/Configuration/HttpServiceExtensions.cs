@@ -1,7 +1,5 @@
 using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Web;
-using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.Configuration;

@@ -1,5 +1,5 @@
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
-using JJMasterData.Web.Services;
+using JJMasterData.Web.Areas.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;

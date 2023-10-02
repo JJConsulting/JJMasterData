@@ -1,5 +1,4 @@
-﻿using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Data;
+﻿using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
@@ -11,6 +10,8 @@ using Microsoft.Extensions.Options;
 using System.Data;
 using System.Globalization;
 using System.Reflection;
+using JJMasterData.Commons.Security.Cryptography;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 
 namespace JJMasterData.WebApi.Services;
 

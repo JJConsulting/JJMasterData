@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace JJMasterData.Core.Web.Html;
+namespace JJMasterData.Core.UI.Html;
 
 public partial class HtmlBuilder
 {

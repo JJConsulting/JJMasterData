@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Commons.Data.Entity;
+﻿namespace JJMasterData.Commons.Data.Entity.Models;
 
 public enum RelationshipViewType
 {

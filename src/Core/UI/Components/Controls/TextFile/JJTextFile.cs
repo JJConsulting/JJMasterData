@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Controls;
-using JJMasterData.Core.Web.Factories;
-using JJMasterData.Core.Web.Html;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.IO;
+using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Html;
+using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class JJTextFile : ControlBase
 {
@@ -136,7 +135,7 @@ public class JJTextFile : ControlBase
 
         if (result is RenderedComponentResult uploadViewResult)
         {
-            html.Append(uploadViewResult.HtmlBuilder);
+            html.Append((HtmlBuilder)uploadViewResult.HtmlBuilder);
             html.AppendScript(Scripts.GetRefreshScript());
         }
         else 

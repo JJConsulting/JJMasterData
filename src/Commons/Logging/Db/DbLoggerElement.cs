@@ -1,4 +1,4 @@
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Logging.Db;
 

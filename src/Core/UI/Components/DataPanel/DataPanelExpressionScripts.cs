@@ -3,10 +3,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataManager;
+using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Models;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 internal class DataPanelExpressionScripts
 {
@@ -66,13 +66,13 @@ internal class DataPanelExpressionScripts
             script.AppendLine("if (enable)");
             script.Append('\t', 3);
             script.Append("$(\"#");
-            script.Append(f.Name);
+            script.Append((string)f.Name);
             script.AppendLine("\").removeAttr(\"readonly\").removeAttr(\"disabled\");");
             script.Append('\t', 2);
             script.AppendLine("else");
             script.Append('\t', 3);
             script.Append("$(\"#");
-            script.Append(f.Name);
+            script.Append((string)f.Name);
 
             //Se alterar para disabled o valor não voltará no post e vai zuar a rotina GetFormValues() qd exisir exp EnabledExpression
             script.AppendLine("\").attr(\"readonly\",\"readonly\").val(\"\");");

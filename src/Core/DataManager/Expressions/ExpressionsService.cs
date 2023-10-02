@@ -1,18 +1,17 @@
 #nullable enable
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Models;
+using Microsoft.Extensions.Logging;
 
-
-namespace JJMasterData.Core.DataManager.Services;
+namespace JJMasterData.Core.DataManager.Expressions;
 
 public class ExpressionsService 
 {

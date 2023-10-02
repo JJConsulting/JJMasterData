@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -18,7 +18,7 @@ public class IndexesService : BaseService
 
     public async Task<bool> SaveAsync(string id, string index, ElementIndex elementIndex)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(id);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(id);
 
         
         if (!string.IsNullOrEmpty(index))
@@ -49,7 +49,7 @@ public class IndexesService : BaseService
 
     public async Task DeleteAsync(string elementName, string index)
     {
-        var dictionary = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var dictionary = await DataDictionaryRepository.GetFormElementAsync(elementName);
         var elementIndex = dictionary.Indexes[int.Parse(index)];
         dictionary.Indexes.Remove(elementIndex);
         await DataDictionaryRepository.InsertOrReplaceAsync(dictionary);
@@ -57,7 +57,7 @@ public class IndexesService : BaseService
 
     public async Task MoveDownAsync(string elementName, string index)
     {
-        var dictionary = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var dictionary = await DataDictionaryRepository.GetFormElementAsync(elementName);
         var indexes = dictionary.Indexes;
         int indexToMoveDown = int.Parse(index);
         if (indexToMoveDown >= 0 && indexToMoveDown < indexes.Count - 1)
@@ -69,7 +69,7 @@ public class IndexesService : BaseService
 
     public async Task MoveUpAsync(string elementName, string index)
     {
-        var dictionary = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var dictionary = await DataDictionaryRepository.GetFormElementAsync(elementName);
         var indexes = dictionary.Indexes;
         int indexToMoveUp = int.Parse(index);
         if (indexToMoveUp > 0)

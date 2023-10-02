@@ -1,5 +1,5 @@
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Core.DataDictionary;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 

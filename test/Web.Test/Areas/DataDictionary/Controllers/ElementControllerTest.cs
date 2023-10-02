@@ -1,6 +1,6 @@
 ﻿using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Data.Entity;
-using JJMasterData.Commons.Data.Entity.Abstractions;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using Moq;
 using Xunit.Extensions.Ordering;
 

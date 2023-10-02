@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace JJMasterData.Commons.Data.Entity;
+namespace JJMasterData.Commons.Data.Entity.Repository;
 
 public class EntityParameters
 {

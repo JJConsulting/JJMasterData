@@ -1,6 +1,6 @@
 using System.Collections.Specialized;
 using System.Web;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 
 #if NETFRAMEWORK
 namespace JJMasterData.Core.Http.SystemWeb;

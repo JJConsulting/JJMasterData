@@ -1,7 +1,6 @@
 #if NET || NETSTANDARD
 
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.Features;

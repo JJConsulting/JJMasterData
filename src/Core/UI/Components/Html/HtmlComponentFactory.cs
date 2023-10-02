@@ -2,13 +2,11 @@
 
 using System;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.UI.Components.Widgets;
-using JJMasterData.Core.Web.Http.Abstractions;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class HtmlComponentFactory
 {

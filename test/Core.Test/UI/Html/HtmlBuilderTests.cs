@@ -1,7 +1,7 @@
 using System.Text;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Html;
 
-namespace JJMasterData.Core.Test.Web.Html;
+namespace JJMasterData.Core.Test.UI.Html;
 
 public class HtmlBuilderTests
 {

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataManager.Imports;
+namespace JJMasterData.Core.DataManager.Importation;
 
 internal record DataImportationDto
 {

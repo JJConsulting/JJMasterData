@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using JJMasterData.Commons.Tasks.Progress;
 
-namespace JJMasterData.Core.DataManager.Imports;
+namespace JJMasterData.Core.DataManager.Importation;
 
 public class DataImportationReporter : ProgressReporter
 {

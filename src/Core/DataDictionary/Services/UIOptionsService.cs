@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
@@ -19,7 +20,7 @@ public class UIOptionsService : BaseService
 
         if (options.Grid.EnableMultSelect)
         {
-            var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+            var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
             var pks = formElement.Fields.ToList().FindAll(x => x.IsPk);
             if (pks.Count == 0)
             {
@@ -37,7 +38,7 @@ public class UIOptionsService : BaseService
         {
             if (await ValidateOptions(options, elementName))
             {
-                var dicParser =await DataDictionaryRepository.GetMetadataAsync(elementName);
+                var dicParser =await DataDictionaryRepository.GetFormElementAsync(elementName);
                 dicParser.Options.Form = options.Form;
                 dicParser.Options.Grid = options.Grid;
 

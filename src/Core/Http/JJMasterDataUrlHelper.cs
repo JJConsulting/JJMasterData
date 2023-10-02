@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Options;
-using JJMasterData.Core.Web.Http.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace JJMasterData.Core.Web;
+namespace JJMasterData.Core.Http;
 
 public class JJMasterDataUrlHelper 
 {

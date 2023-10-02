@@ -1,10 +1,9 @@
 using System;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.DataDictionary.Models;
 using Microsoft.Extensions.Localization;
 
-namespace JJMasterData.Core.Web.Components;
+namespace JJMasterData.Core.UI.Components;
 
 public class LabelFactory :  IComponentFactory<JJLabel>
 {

@@ -6,10 +6,9 @@ using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Models;
 using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.Web.Components;
-using JJMasterData.Core.Web.Html;
+using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Brasil.Actions;
 

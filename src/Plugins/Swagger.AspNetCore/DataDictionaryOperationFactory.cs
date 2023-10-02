@@ -1,9 +1,9 @@
-﻿using JJMasterData.Core.DataDictionary;
-using Microsoft.OpenApi.Any;
+﻿using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using System.Globalization;
 using System.Text;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.DataDictionary.Models;
 using static JJMasterData.Swagger.AspNetCore.DataDictionarySchema;
 
 namespace JJMasterData.Swagger.AspNetCore;

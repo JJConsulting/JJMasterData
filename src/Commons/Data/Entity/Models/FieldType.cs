@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Commons.Data.Entity;
+﻿namespace JJMasterData.Commons.Data.Entity.Models;
 
 /// <summary>
 /// Specifies the type of data in the database

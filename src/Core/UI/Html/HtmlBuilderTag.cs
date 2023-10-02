@@ -1,4 +1,4 @@
-﻿namespace JJMasterData.Core.Web.Html;
+﻿namespace JJMasterData.Core.UI.Html;
 
 /// <summary>
 /// Implementation of HTML tag.

@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using Newtonsoft.Json;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
 /// Field-specific information in the form, inherits from ElementField

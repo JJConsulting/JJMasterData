@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Localization;
 
@@ -25,7 +26,7 @@ public class RelationshipsService : BaseService
 
     public async Task SaveElementRelationship(ElementRelationship elementRelationship, int? id, string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
         var relationships = formElement.Relationships;
 
         if (!relationships.Any(r => r.IsParent))
@@ -51,7 +52,7 @@ public class RelationshipsService : BaseService
     public async Task SaveFormElementRelationship(FormElementPanel panel, RelationshipViewType viewType, int id,
         string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
         var relationship = formElement.Relationships.First(r=>r.Id == id);
         relationship.ViewType = viewType;
@@ -177,7 +178,7 @@ public class RelationshipsService : BaseService
 
     public async Task DeleteAsync(string elementName, int id)
     {
-        var formElement =  await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement =  await DataDictionaryRepository.GetFormElementAsync(elementName);
         var relationship = formElement.Relationships.GetById(id);
 
         formElement.Relationships.Remove(relationship);
@@ -192,7 +193,7 @@ public class RelationshipsService : BaseService
 
     public async Task SortAsync(string elementName, IEnumerable<string> relationships)
     {
-        var formElement = await DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
         FormElementRelationship GetRelationship(string name)
         {

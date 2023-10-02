@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace JJMasterData.Core.FormEvents.Args;
+namespace JJMasterData.Core.UI.Events.Args;
 
 public class FormDownloadFileEventArgs : EventArgs
 {

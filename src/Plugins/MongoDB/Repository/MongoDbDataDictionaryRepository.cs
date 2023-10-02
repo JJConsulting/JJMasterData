@@ -1,12 +1,11 @@
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.MongoDB.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Structure;
 
 namespace JJMasterData.MongoDB.Repository;
 
@@ -29,13 +28,13 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
     public Task CreateStructureIfNotExistsAsync() => Task.CompletedTask;
 
 
-    public async Task<FormElement> GetMetadataAsync(string dictionaryName)
+    public async Task<FormElement> GetFormElementAsync(string dictionaryName)
     {
         var formElementQuery = await _formElementCollection.FindAsync(formElement => formElement.FormElement.Name == dictionaryName);
 
         return (await formElementQuery.FirstAsync()).FormElement;
     }
-    public async Task<IEnumerable<FormElement>> GetMetadataListAsync(bool? sync = null)
+    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? sync = null)
     {
         var formElements = await _formElementCollection.FindAsync(_ => true);
 

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace JJMasterData.Core.DataDictionary;
+namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
 /// Tamanho da janela do popup

@@ -1,22 +1,17 @@
-﻿using System;
-using JJMasterData.Commons.Cryptography;
-using JJMasterData.Commons.Localization;
-using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Web;
-using Microsoft.Extensions.Localization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
+using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.UI.Components.Actions;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.Extensions;
+using JJMasterData.Core.Http;
+using JJMasterData.Core.UI.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
 
-namespace JJMasterData.Core.UI.Components.FormView;
+namespace JJMasterData.Core.UI.Components;
 
 public class ActionScripts
 {

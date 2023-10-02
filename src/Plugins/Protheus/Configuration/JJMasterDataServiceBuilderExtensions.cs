@@ -1,7 +1,6 @@
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.Configuration;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.Extensions;
 using JJMasterData.Protheus.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 

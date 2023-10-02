@@ -2,7 +2,7 @@
 
 using System.Runtime.InteropServices;
 using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Data.Entity;
+using JJMasterData.Commons.Data.Entity.Models;
 using Microsoft.Extensions.Configuration;
 
 namespace JJMasterData.Commons.Configuration.Options;

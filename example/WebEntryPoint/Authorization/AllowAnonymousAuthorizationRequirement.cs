@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace JJMasterData.WebExample.Authorization;
+namespace JJMasterData.WebEntryPoint.Authorization;
 
 public class AllowAnonymousAuthorizationRequirement : AuthorizationHandler<IAuthorizationRequirement>, IAuthorizationRequirement
 {

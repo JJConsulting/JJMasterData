@@ -1,15 +1,11 @@
 ﻿#nullable enable
 
-using System.Dynamic;
-using System.Reflection;
-using JJMasterData.Commons.Cryptography;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.UI.Components;
-using JJMasterData.Core.Web.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +31,7 @@ public class ActionsController : DataDictionaryController
 
     public async Task<ActionResult> Index(string elementName)
     {
-        var formElement = await _actionsService.DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await _actionsService.DataDictionaryRepository.GetFormElementAsync(elementName);
         var model = new ActionsListViewModel(elementName, "Actions")
         {
             GridTableActions = formElement.Options.GridTableActions.GetAllSorted(),
@@ -55,7 +51,7 @@ public class ActionsController : DataDictionaryController
             throw new ArgumentNullException(nameof(elementName));
 
 
-        var formElement = await _actionsService.DataDictionaryRepository.GetMetadataAsync(elementName);
+        var formElement = await _actionsService.DataDictionaryRepository.GetFormElementAsync(elementName);
 
         var action = context switch
         {
