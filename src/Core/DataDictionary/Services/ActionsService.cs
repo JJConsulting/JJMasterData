@@ -193,9 +193,9 @@ public class ActionsService : BaseService
                     AddError(nameof(internalAction.ElementRedirect.ElementNameRedirect), StringLocalizer["Required [Entity Name] field"]);
                 break;
             }
-            case PluginFieldAction:
+            case PluginFieldAction pluginFieldAction:
             {
-                if (!formElement.Fields[fieldName!].AutoPostBack)
+                if (!formElement.Fields[fieldName!].AutoPostBack && pluginFieldAction.AutoTriggerOnChange)
                 {
                     AddError(nameof(PluginFieldAction.AutoTriggerOnChange), StringLocalizer["To use [AutoTriggerOnChange], [AutoPostBack] must be enabled at your field."]);
                 }

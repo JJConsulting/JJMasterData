@@ -1,14 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <LangVersion>10</LangVersion>
-        <Nullable>disable</Nullable>
+        <LangVersion>11</LangVersion>
+        <Nullable>enable</Nullable>
         <RootNamespace>JJMasterData.Brasil</RootNamespace>
         <AssemblyName>JJMasterData.Brasil</AssemblyName>
-        <UserSecretsId>f3a7ef0a-07c3-4eaa-95eb-7c578e67e286</UserSecretsId>
   </PropertyGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\Commons\Commons.csproj" />
       <ProjectReference Include="..\..\Core\Core.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="PolySharp" Version="1.13.2">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 </Project>

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Brasil.Models;
@@ -6,118 +8,118 @@ namespace JJMasterData.Brasil.Models;
 internal class SintegraCnpjDto
 {
     [JsonProperty("code")]
-    public string Code { get; set; }
+    public required string Code { get; set; }
 
     [JsonProperty("status")]
-    public string Status { get; set; }
+    public required string Status { get; set; }
 
     [JsonProperty("message")]
-    public string Message { get; set; }
+    public required string Message { get; set; }
 
     [JsonProperty("cnpj")]
-    public string Cnpj { get; set; }
+    public required string Cnpj { get; set; }
 
     [JsonProperty("nome")]
-    public string Nome { get; set; }
+    public required string Nome { get; set; }
 
     [JsonProperty("fantasia")]
-    public string Fantasia { get; set; }
+    public required string Fantasia { get; set; }
 
     [JsonProperty("cep")]
-    public string Cep { get; set; }
+    public required string Cep { get; set; }
 
     [JsonProperty("uf")]
-    public string Uf { get; set; }
+    public required string Uf { get; set; }
 
     [JsonProperty("municipio")]
-    public string Municipio { get; set; }
+    public required string Municipio { get; set; }
 
     [JsonProperty("bairro")]
-    public string Bairro { get; set; }
+    public required string Bairro { get; set; }
 
     [JsonProperty("tipo_logradouro")]
-    public object TipoLogradouro { get; set; }
+    public required object TipoLogradouro { get; set; }
 
     [JsonProperty("logradouro")]
-    public string Logradouro { get; set; }
+    public required string Logradouro { get; set; }
 
     [JsonProperty("numero")]
-    public string Numero { get; set; }
+    public required string Numero { get; set; }
 
     [JsonProperty("complemento")]
-    public string Complemento { get; set; }
+    public required string Complemento { get; set; }
 
     [JsonProperty("telefone")]
-    public string Telefone { get; set; }
+    public required string Telefone { get; set; }
 
     [JsonProperty("email")]
-    public string Email { get; set; }
+    public required string Email { get; set; }
 
     [JsonProperty("capital_social")]
-    public string CapitalSocial { get; set; }
+    public required string CapitalSocial { get; set; }
 
     [JsonProperty("data_situacao")]
-    public string DataSituacao { get; set; }
+    public required string DataSituacao { get; set; }
 
     [JsonProperty("data_situacao_especial")]
-    public string DataSituacaoEspecial { get; set; }
+    public required string DataSituacaoEspecial { get; set; }
 
     [JsonProperty("abertura")]
-    public string Abertura { get; set; }
+    public required DateTime Abertura { get; set; }
 
     [JsonProperty("motivo_situacao")]
-    public string MotivoSituacao { get; set; }
+    public required string MotivoSituacao { get; set; }
 
     [JsonProperty("sigla_natureza_juridica")]
-    public string SiglaNaturezaJuridica { get; set; }
+    public required string SiglaNaturezaJuridica { get; set; }
 
     [JsonProperty("natureza_juridica")]
-    public string NaturezaJuridica { get; set; }
+    public required string NaturezaJuridica { get; set; }
 
     [JsonProperty("situacao")]
-    public string Situacao { get; set; }
+    public required string Situacao { get; set; }
 
     [JsonProperty("situacao_especial")]
-    public string SituacaoEspecial { get; set; }
+    public required string SituacaoEspecial { get; set; }
 
     [JsonProperty("tipo")]
-    public string Tipo { get; set; }
+    public required string Tipo { get; set; }
 
     [JsonProperty("atividade_principal")]
-    public AtividadePrincipal[] AtividadePrincipal { get; set; }
+    public required AtividadePrincipal[] AtividadePrincipal { get; set; }
 
     [JsonProperty("atividades_secundarias")]
-    public AtividadesSecundarias[] AtividadesSecundarias { get; set; }
+    public required AtividadesSecundaria[] AtividadesSecundarias { get; set; }
 
     [JsonProperty("qsa")]
-    public Qsa[] Qsa { get; set; }
+    public required Qsa[] Qsa { get; set; }
 
     [JsonProperty("ultima_atualizacao")]
-    public string UltimaAtualizacao { get; set; }
+    public required string UltimaAtualizacao { get; set; }
 
     [JsonProperty("efr")]
-    public string Efr { get; set; }
+    public required string Efr { get; set; }
 
     [JsonProperty("extra")]
-    public object Extra { get; set; }
+    public object? Extra { get; set; }
 
     [JsonProperty("porte")]
-    public string Porte { get; set; }
+    public required string Porte { get; set; }
 
     [JsonProperty("ibge")]
-    public Ibge Ibge { get; set; }
+    public required Ibge Ibge { get; set; }
 
     [JsonProperty("cnpjs_do_grupo")]
-    public CnpjsDoGrupo[] CnpjsDoGrupo { get; set; }
+    public required CnpjDoGrupo[] CnpjsDoGrupo { get; set; }
 
     [JsonProperty("inscricao_municipal")]
-    public string InscricaoMunicipal { get; set; }
+    public required string InscricaoMunicipal { get; set; }
 
     [JsonProperty("coordinates")]
-    public Coordinates Coordinates { get; set; }
+    public required Coordinates Coordinates { get; set; }
 
     [JsonProperty("version")]
-    public string Version { get; set; }
+    public required string Version { get; set; }
     
     internal CnpjResult ToCnpjResult()
     {
@@ -131,15 +133,20 @@ internal class SintegraCnpjDto
             Cep = Cep,
             Bairro = Bairro,
             Municipio = Municipio,
-            UF = Uf,
+            Uf = Uf,
             Email = Email,
             Telefone = Telefone,
             Situacao = Situacao,
             CapitalSocial = CapitalSocial,
-            Abertura = Abertura
+            Abertura = Abertura,
+            AtividadePrincipal = new CnaeResult()
+            {
+                Text = AtividadePrincipal[0].Text,
+                Code = AtividadePrincipal[0].Code
+            }
         };
 
-        if (AtividadePrincipal != null && AtividadePrincipal.Length > 0)
+        if (AtividadePrincipal.Length > 0)
         {
             var cnae = new CnaeResult
             {
@@ -151,13 +158,7 @@ internal class SintegraCnpjDto
 
         if (Qsa is { Length: > 0 })
         {
-            var socios = new List<string>();
-            foreach(var item in Qsa)
-            {
-                socios.Add(item.Nome);
-            }
-
-            obj.QuadroSocios = socios.ToArray();
+            obj.QuadroSocios = Qsa.Select(item => item.Nome).ToArray();
         }
 
         return obj;
@@ -168,68 +169,68 @@ internal class SintegraCnpjDto
 public class Ibge
 {
     [JsonProperty("codigo_municipio")]
-    public string CodigoMunicipio { get; set; }
+    public required string CodigoMunicipio { get; set; }
 
     [JsonProperty("codigo_uf")]
-    public string CodigoUf { get; set; }
+    public required string CodigoUf { get; set; }
 }
 
 public class Coordinates
 {
     [JsonProperty("latitude")]
-    public string Latitude { get; set; }
+    public required string Latitude { get; set; }
 
     [JsonProperty("longitude")]
-    public string Longitude { get; set; }
+    public required string Longitude { get; set; }
 }
 
 public class AtividadePrincipal
 {
     [JsonProperty("code")]
-    public string Code { get; set; }
+    public required string Code { get; set; }
 
     [JsonProperty("text")]
-    public string Text { get; set; }
+    public required string Text { get; set; }
 }
 
-public class AtividadesSecundarias
+public class AtividadesSecundaria
 {
     [JsonProperty("code")]
-    public string Code { get; set; }
+    public required string Code { get; set; }
 
     [JsonProperty("text")]
-    public string Text { get; set; }
+    public required string Text { get; set; }
 }
 
 public class Qsa
 {
     [JsonProperty("qual")]
-    public string Qual { get; set; }
+    public required string Qual { get; set; }
 
     [JsonProperty("qual_rep_legal")]
-    public string QualRepLegal { get; set; }
+    public required string QualRepLegal { get; set; }
 
     [JsonProperty("nome_rep_legal")]
-    public string NomeRepLegal { get; set; }
+    public required string NomeRepLegal { get; set; }
 
     [JsonProperty("pais_origem")]
-    public string PaisOrigem { get; set; }
+    public required string PaisOrigem { get; set; }
 
     [JsonProperty("nome")]
-    public string Nome { get; set; }
+    public required string Nome { get; set; }
 
     [JsonProperty("faixa_etaria")]
-    public object FaixaEtaria { get; set; }
+    public required object FaixaEtaria { get; set; }
 }
 
-public class CnpjsDoGrupo
+public class CnpjDoGrupo
 {
     [JsonProperty("cnpj")]
-    public string Cnpj { get; set; }
+    public required string Cnpj { get; set; }
 
     [JsonProperty("uf")]
-    public string Uf { get; set; }
+    public required string Uf { get; set; }
 
     [JsonProperty("tipo")]
-    public string Tipo { get; set; }
+    public required string Tipo { get; set; }
 }

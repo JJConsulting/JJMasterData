@@ -1,4 +1,5 @@
 using JJMasterData.Brasil.Configuration;
+using JJMasterData.Brasil.Services;
 using JJMasterData.Protheus.Configuration;
 using JJMasterData.Web.Extensions;
 using JJMasterData.WebEntryPoint.Authorization;
@@ -7,10 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
 var settingsPath = Path.Combine(root, "appsettings.json");
-
 builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
 
-builder.Services.AddJJMasterDataWeb(builder.Configuration).WithProtheusServices().WithCepPluginAction();
+builder.Services.AddJJMasterDataWeb(builder.Configuration)
+    .WithProtheusServices()
+    .WithCepPluginAction()
+    .WithHubDevCpfPluginAction()
+    .WithHubDevCnpjPluginAction();
 
 builder.Services.AddControllersWithViews().AddViewLocalization();
 

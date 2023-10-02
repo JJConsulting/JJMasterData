@@ -6,21 +6,21 @@ namespace JJMasterData.Brasil.Models;
 
 public class CepResult
 {
-    public string Logradouro { get; set; }
-    public string Complemento { get; set; }
-    public string Bairro { get; set; }
-    public string Localidade { get; set; }
-    public string Uf { get; set; }
-    public string Unidade { get; set; }
+    public required string Logradouro { get; set; }
+    public string? Complemento { get; set; }
+    public required string Bairro { get; set; }
+    public required string Localidade { get; set; }
+    public required string Uf { get; set; }
+    public string? Unidade { get; set; }
 
     public static CepResult FromJson(string json)
     {
-        return JsonConvert.DeserializeObject<CepResult>(json);
+        return JsonConvert.DeserializeObject<CepResult>(json)!;
     }
     
-    public Dictionary<string, string> ToDictionary()
+    public Dictionary<string, string?> ToDictionary()
     {
-        var dictionary = new Dictionary<string, string>
+        var dictionary = new Dictionary<string, string?>
         {
             { nameof(Logradouro), Logradouro },
             { nameof(Complemento), Complemento },

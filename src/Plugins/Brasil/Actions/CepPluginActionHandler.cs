@@ -16,7 +16,7 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
 {
     private ICepService CepService { get; }
     public Guid Id => GuidGenerator.FromValue(nameof(CepPluginActionHandler));
-    public string Title => "CEP";
+    public string Title => "Cep";
     public IEnumerable<string> FieldMapKeys
     {
         get
@@ -45,7 +45,7 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
     {
         var values = context.Values;
         
-        var cep = StringManager.ClearCpfCnpjChars(values[context.FieldName!].ToString());
+        var cep = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString());
 
         CepResult cepResult;
 

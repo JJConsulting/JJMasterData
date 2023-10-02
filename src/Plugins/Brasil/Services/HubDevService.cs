@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using JJMasterData.Brasil.Abstractions;
+using JJMasterData.Brasil.Configuration;
 using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Models;
 using Microsoft.Extensions.Options;
@@ -10,25 +11,25 @@ using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Brasil.Services;
 
-public class ServicesHubService : IReceitaFederalService
+public class HubDevService : IReceitaFederalService
 {
     private HttpClient HttpClient { get; }
-    private ServicesHubSettings Settings { get; }
+    private HubDevSettings Settings { get; }
     
     
-    public ServicesHubService(
+    public HubDevService(
         HttpClient httpClient,
-        IOptions<ServicesHubSettings> options)
+        IOptions<HubDevSettings> options)
     {
         HttpClient = httpClient;
         Settings = options.Value;
     }
     
-    public bool IsHttps { get; set; }
+    public bool IsHttps { get; set; } = true;
     
     public bool IgnoreDb { get; set; }
     
-    public async Task<T> Search<T>(string identifier, string endpoint)
+    public async Task<T> Search<T>(string endpoint, string identifier)
     {
         try
         {
@@ -37,12 +38,15 @@ public class ServicesHubService : IReceitaFederalService
         
             string protocol = IsHttps ? "https://" : "http://";
             string ignoreDb = IgnoreDb ? "&ignore_db=1" : "";
-            string url = $"{protocol}{Settings.Url}{endpoint}/{identifier}?token={Settings.Key}{ignoreDb}";
+            string url = $"{protocol}{Settings.Url}{endpoint}/?{endpoint}={identifier}&token={Settings.ApiKey}{ignoreDb}";
         
             var message = await HttpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<JObject>(content);
-            return result["result"]!.ToObject<T>();
+            var result = JsonConvert.DeserializeObject<JObject>(content, new JsonSerializerSettings()
+            {
+                DateFormatString = "dd/MM/yyyy"
+            });
+            return result!["result"]!.ToObject<T>()!;
         }
         catch (Exception ex)
         {
@@ -52,18 +56,18 @@ public class ServicesHubService : IReceitaFederalService
 
     public async Task<CnpjResult> SearchCnpjAsync(string cnpj)
     {
-        return await Search<CnpjResult>(cnpj, "cnpj");
+        return await Search<CnpjResult>("cnpj", cnpj);
     }
 
-    public async Task<CpfResult> SearchCpfAsync(string cpf, DateTime birthDate)
+    public async Task<CpfResult> SearchCpfAsync(string cpf, DateTime? birthDate)
     {
-        return await Search<CpfResult>(cpf, "cpf");
+        return await Search<CpfResult>("cpf", cpf);
     }
 
 
     public async Task<CepResult> SearchCepAsync(string cep)
     {
-        return await Search<CepResult>(cep, "cep");
+        return await Search<CepResult>("cep", cep);
     }
     
         

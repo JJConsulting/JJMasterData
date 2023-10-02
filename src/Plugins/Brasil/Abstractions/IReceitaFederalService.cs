@@ -12,5 +12,5 @@ public interface IReceitaFederalService : ICepService
     bool IgnoreDb { get; set; }
     bool IsHttps { get; set; }
     Task<CnpjResult> SearchCnpjAsync(string cnpj);
-    Task<CpfResult> SearchCpfAsync(string cpf, DateTime birthDate);
+    Task<CpfResult> SearchCpfAsync(string cpf, DateTime? birthDate = null);
 }

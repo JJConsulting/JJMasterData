@@ -7,6 +7,7 @@
         <LangVersion>11</LangVersion>
         <AssemblyName>JJMasterData.WebEntryPoint</AssemblyName>
         <RootNamespace>JJMasterData.WebEntryPoint</RootNamespace>
+        <UserSecretsId>f3a7ef0a-07c3-4eaa-95eb-7c578e67e286</UserSecretsId>
     </PropertyGroup>
     
     <ItemGroup>

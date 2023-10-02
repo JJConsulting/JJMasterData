@@ -1,5 +1,7 @@
-﻿namespace JJMasterData.Brasil.Models;
+﻿using System;
+using System.Collections.Generic;
 
+namespace JJMasterData.Brasil.Models;
 
 using Newtonsoft.Json;
 
@@ -9,95 +11,121 @@ public class CnpjResult
     /// Razão social.
     /// </summary>
     [JsonProperty("Nome")]
-    public string Nome { get; set; }
+    public required string Nome { get; set; }
 
     /// <summary>
     /// Nome fantasia.
     /// </summary>
     [JsonProperty("Fantasia")]
-    public string Fantasia { get; set; }
+    public required string Fantasia { get; set; }
 
     /// <summary>
     /// Endereço
     /// </summary>
     [JsonProperty("Logradouro")]
-    public string Logradouro { get; set; }
+    public required string Logradouro { get; set; }
 
     /// <summary>
     /// Número.
     /// </summary>
     [JsonProperty("Numero")]
-    public string Numero { get; set; }
+    public required string Numero { get; set; }
 
     /// <summary>
     /// Complemento.
     /// </summary>
     [JsonProperty("Complemento")]
-    public string Complemento { get; set; }
+    public required string Complemento { get; set; }
 
     /// <summary>
     /// CEP sem mascara no formato 00000000.
     /// </summary>
     [JsonProperty("Cep")]
-    public string Cep { get; set; }
+    public required string Cep { get; set; }
 
     /// <summary>
     /// Nome do Bairro.
     /// </summary>
     [JsonProperty("Bairro")]
-    public string Bairro { get; set; }
+    public required string Bairro { get; set; }
 
     /// <summary>
     /// Nome do Município.
     /// </summary>
     [JsonProperty("Municipio")]
-    public string Municipio { get; set; }
+    public required string Municipio { get; set; }
 
     /// <summary>
     /// Sigla da Unidade da Federação.
     /// </summary>
     [JsonProperty("UF")]
-    public string UF { get; set; }
+    public required string Uf { get; set; }
 
     /// <summary>
     /// E-Mail.
     /// </summary>
     [JsonProperty("Email")]
-    public string Email { get; set; }
+    public required string Email { get; set; }
 
     /// <summary>
     /// Telefone.
     /// </summary>
     [JsonProperty("Telefone")]
-    public string Telefone { get; set; }
+    public required string Telefone { get; set; }
 
     /// <summary>
     /// Situação.
     /// </summary>
     [JsonProperty("Situacao")]
-    public string Situacao { get; set; }
+    public required string Situacao { get; set; }
 
     /// <summary>
     /// CNAE
     /// </summary>
     [JsonProperty("Atividade_principal")]
-    public CnaeResult AtividadePrincipal { get; set; }
+    public required CnaeResult AtividadePrincipal { get; set; }
 
     /// <summary>
     /// Capital Social
     /// </summary>
     [JsonProperty("Capital_social")]
-    public string CapitalSocial { get; set; }
+    public required string CapitalSocial { get; set; }
 
     /// <summary>
     /// Quadro Sócios
     /// </summary>
     [JsonProperty("Quadro_socios")]
-    public string[] QuadroSocios { get; set; }
+    public string[]? QuadroSocios { get; set; }
 
     /// <summary>
     /// Data da Abertura
     /// </summary>
     [JsonProperty("Abertura")]
-    public string Abertura { get; set; }
+    public required DateTime Abertura { get; set; }
+    
+    public Dictionary<string, object> ToDictionary()
+    {
+        var dictionary = new Dictionary<string, object>
+        {
+            { nameof(Nome), Nome },
+            { nameof(Fantasia), Fantasia },
+            { nameof(Logradouro), Logradouro },
+            { nameof(Numero), Numero },
+            { nameof(Complemento), Complemento },
+            { nameof(Cep), Cep },
+            { nameof(Bairro), Bairro },
+            { nameof(Municipio), Municipio },
+            { nameof(Uf), Uf },
+            { nameof(Email), Email },
+            { nameof(Telefone), Telefone },
+            { nameof(Situacao), Situacao },
+            { nameof(AtividadePrincipal), AtividadePrincipal.ToDictionary() },
+            { nameof(CapitalSocial), CapitalSocial },
+            { nameof(QuadroSocios), QuadroSocios != null ? string.Join(", ", QuadroSocios) : "" },
+            { nameof(Abertura), Abertura }
+        };
+
+        return dictionary;
+    }
+
 }

@@ -5,46 +5,46 @@ using Newtonsoft.Json;
 internal class SintegraCpfDto
 {
     [JsonProperty("code")]
-    public string Code { get; set; }
+    public required string Code { get; set; }
 
     [JsonProperty("status")]
-    public string Status { get; set; }
+    public required string Status { get; set; }
 
     [JsonProperty("message")]
-    public string Message { get; set; }
+    public required string Message { get; set; }
 
     [JsonProperty("cpf")]
-    public string Cpf { get; set; }
+    public required string Cpf { get; set; }
 
     [JsonProperty("nome")]
-    public string Nome { get; set; }
+    public required string Nome { get; set; }
 
     [JsonProperty("data_nascimento")]
-    public string DataNascimento { get; set; }
+    public required string DataNascimento { get; set; }
 
     [JsonProperty("situacao_cadastral")]
-    public string SituacaoCadastral { get; set; }
+    public required string SituacaoCadastral { get; set; }
 
     [JsonProperty("data_inscricao")]
-    public string DataInscricao { get; set; }
+    public required string DataInscricao { get; set; }
 
     [JsonProperty("genero")]
-    public string Genero { get; set; }
+    public required string Genero { get; set; }
 
     [JsonProperty("uf")]
-    public string[] UF { get; set; }
+    public required string[] UF { get; set; }
 
     [JsonProperty("digito_verificador")]
-    public string DigitoVerificador { get; set; }
+    public required string DigitoVerificador { get; set; }
 
     [JsonProperty("comprovante")]
-    public string Comprovante { get; set; }
+    public required string Comprovante { get; set; }
 
     [JsonProperty("html")]
-    public string Html { get; set; }
+    public required string Html { get; set; }
 
     [JsonProperty("version")]
-    public string Version { get; set; }
+    public required string Version { get; set; }
 
     public CpfResult ToCpfResult()
     {
