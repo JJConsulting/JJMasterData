@@ -132,7 +132,10 @@ public class AuditLogService
         
         var origin = formElement.Fields[DicOrigin];
         origin.Component = FormComponent.ComboBox;
-        origin.DataItem!.ReplaceTextOnGrid = true;
+        origin.DataItem = new FormElementDataItem
+        {
+            ReplaceTextOnGrid = true
+        };
         foreach (int i in Enum.GetValues(typeof(DataContextSource)))
         {
             var item = new DataItemValue(i.ToString(), Enum.GetName(typeof(DataContextSource), i));
@@ -141,7 +144,11 @@ public class AuditLogService
 
         var action = formElement.Fields[DicAction];
         action.Component = FormComponent.ComboBox;
-        action.DataItem!.ReplaceTextOnGrid = true;
+        action.DataItem = new FormElementDataItem
+        {
+            ReplaceTextOnGrid = true
+        };
+        action.DataItem.ReplaceTextOnGrid = true;
         action.DataItem.ShowIcon = true;
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", IconType.Pencil, "#ffbf00"));
