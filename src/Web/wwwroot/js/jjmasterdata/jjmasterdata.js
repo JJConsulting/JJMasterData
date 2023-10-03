@@ -140,7 +140,7 @@ class ActionHelper {
     static hideActionModal(componentName) {
         const modal = new Modal();
         modal.modalId = componentName + "-modal";
-        modal.hide();
+        modal.remove();
     }
 }
 class AuditLogViewHelper {
@@ -1524,6 +1524,7 @@ class _Modal extends ModalBase {
                 if (onModalHidden) {
                     onModalHidden();
                 }
+                document.getElementById(this.modalId).remove();
             });
         }
         else {
@@ -1658,17 +1659,24 @@ class _LegacyModal extends ModalBase {
                 fetchUrl = options;
             }
             try {
-                const response = yield fetch(fetchUrl, fetchOptions);
-                if (response.ok) {
-                    const content = yield response.text();
-                    const modalHtml = this.createModalHtml(content, false);
-                    $(modalHtml).appendTo($("body"));
-                    this.setTitle(title);
-                    this.showModal();
-                }
-                else {
-                    console.error(`Failed to fetch content from URL: ${fetchUrl}`);
-                }
+                return yield fetch(fetchUrl, fetchOptions)
+                    .then((response) => __awaiter(this, void 0, void 0, function* () {
+                    var _a;
+                    if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
+                        return response.json();
+                    }
+                    else if (response.redirected) {
+                        window.open(response.url, '_blank').focus();
+                    }
+                    else {
+                        return response.text().then((htmlData) => {
+                            const modalHtml = this.createModalHtml(htmlData, false);
+                            $(modalHtml).appendTo($("body"));
+                            this.setTitle(title);
+                            this.showModal();
+                        });
+                    }
+                }));
             }
             catch (error) {
                 console.error("An error occurred while fetching content:", error);

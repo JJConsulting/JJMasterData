@@ -171,6 +171,6 @@ class ActionHelper {
     static hideActionModal(componentName:string){
         const modal = new Modal();
         modal.modalId = componentName + "-modal";
-        modal.hide();
+        modal.remove();
     }
 }

@@ -108,6 +108,7 @@ class _Modal extends ModalBase {
                 if(onModalHidden){
                     onModalHidden();
                 }
+                document.getElementById(this.modalId).remove();
             })
 
         } else {
@@ -272,16 +273,23 @@ class _LegacyModal extends ModalBase{
         }
         
         try {
-            const response = await fetch(fetchUrl, fetchOptions);
-            if (response.ok) {
-                const content = await response.text();
-                const modalHtml = this.createModalHtml(content, false); // Not using iframe
-                $(modalHtml).appendTo($("body"));
-                this.setTitle(title);
-                this.showModal();
-            } else {
-                console.error(`Failed to fetch content from URL: ${fetchUrl}`);
-            }
+            return await fetch(fetchUrl, fetchOptions)
+                .then( async response => {
+                    if (response.headers.get("content-type")?.includes("application/json")) {
+                        return response.json();
+                    }
+                    else if(response.redirected){
+                        window.open(response.url, '_blank').focus();
+                    }
+                    else {
+                        return response.text().then((htmlData)=>{
+                            const modalHtml = this.createModalHtml(htmlData, false); // Not using iframe
+                            $(modalHtml).appendTo($("body"));
+                            this.setTitle(title);
+                            this.showModal();
+                        });
+                    }
+                })
         } catch (error) {
             console.error("An error occurred while fetching content:", error);
         }

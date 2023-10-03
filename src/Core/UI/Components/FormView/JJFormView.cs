@@ -773,7 +773,7 @@ public class JJFormView : AsyncComponent
     {
         bool autoReloadFields;
         IDictionary<string, object?>? values;
-        if (PageState is PageState.Update)
+        if (PageState is PageState.Update && ComponentContext is not ComponentContext.Modal)
         {
             autoReloadFields = true;
             values = await GetFormValuesAsync();

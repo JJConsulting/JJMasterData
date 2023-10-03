@@ -106,19 +106,13 @@ public class FieldFormattingService
                 break;
             case FormComponent.Slider:
             case FormComponent.Number:
-
                 switch (type)
                 {
+                    case FieldType.Int when !field.IsPk:
                     case FieldType.Float:
                     {
                         return GetNumericValueAsString(field, value);
                     }
-                    case FieldType.Int when !field.IsPk:
-                        {
-                            if (int.TryParse(stringValue, out int intVal))
-                                stringValue = intVal.ToString();
-                            break;
-                        }
                 }
                 break;
             case FormComponent.Currency:

@@ -165,13 +165,9 @@ public static class Format
     public static string FormatCnpj_Cpf(string value)
     {
         value = StringManager.ClearCpfCnpjChars(value);
-        string sRet = "";
-        if (value.Trim().Length > 11)
-            sRet = FormatCnpj(value);
-        else
-            sRet = FormatCpf(value);
+        var formattedCnpf = value.Trim().Length > 11 ? FormatCnpj(value) : FormatCpf(value);
 
-        return sRet;
+        return formattedCnpf;
     }
 
     /// <summary>
@@ -179,13 +175,12 @@ public static class Format
     /// </summary>
     public static string FormatCep(string cep)
     {
-        string sCep = cep.Trim().Replace("-", "");
-        int nCep;
-        if (int.TryParse(sCep, out nCep))
+        var cepString = cep.Trim().Replace("-", "");
+        if (int.TryParse(cepString, out var numericCep))
         {
-            sCep = nCep.ToString("00000-000");
+            cepString = numericCep.ToString("00000-000");
         }
-        return sCep;
+        return cepString;
     }
 
     /// <summary>
