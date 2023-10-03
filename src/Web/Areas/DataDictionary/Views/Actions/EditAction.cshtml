@@ -1,6 +1,7 @@
 ﻿@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IOptions<JJMasterDataWebOptions> Options
 @using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
 @model  JJMasterData.Core.DataDictionary.Models.Actions.EditAction
 
 @{
@@ -24,10 +25,8 @@
         <div id="divEditAction" class="tab-pane fade">
           <div class="col-sm-3">
               <div class="@BootstrapHelper.FormGroup col-sm-2">
-                  <label class="@BootstrapHelper.Label">@StringLocalizer["Show as Modal"]</label>
-                  <div class="input-append">
-                      @Html.CheckBoxFor(model => model.ShowAsModal, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-                  </div>
+                  <label asp-for="ShowAsModal" class="@BootstrapHelper.Label">@StringLocalizer["Show as Modal"]</label>
+                  <checkbox for="ShowAsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
               </div>
           </div>
         </div>

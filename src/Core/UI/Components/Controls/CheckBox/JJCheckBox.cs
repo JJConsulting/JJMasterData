@@ -46,15 +46,21 @@ public class JJCheckBox : ControlBase
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        var html = new HtmlBuilder(HtmlTag.Div)
-            .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")
-            .WithCssClassIf(!Enabled, "disabled")
-            .Append(GetInputHtml());
+        var html = GetHtmlBuilder();
 
         var result = new RenderedComponentResult(html);
         
         return await Task.FromResult(result);
         
+    }
+
+    internal HtmlBuilder GetHtmlBuilder()
+    {
+        var html = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")
+            .WithCssClassIf(!Enabled, "disabled")
+            .Append(GetInputHtml());
+        return html;
     }
 
     private HtmlBuilder GetInputHtml()

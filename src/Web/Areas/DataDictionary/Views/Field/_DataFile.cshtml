@@ -64,28 +64,22 @@
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " for="chkViewGallery" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["View Gallery"]">@StringLocalizer["View Gallery"]</label>
-        <div class="input-append">
-            @Html.CheckBoxFor(model => model.DataFile!.ViewGallery, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-        </div>
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.ViewGallery">@StringLocalizer["View Gallery"]</label>
+        <checkbox for="DataFile!.ViewGallery" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " for="chkDragDrop" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Allow dragging files"]">@StringLocalizer["DragDrop"]</label>
-        <div class="input-append">
-            @Html.CheckBoxFor(model => model.DataFile!.DragDrop, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-        </div>
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.DragDrop" >@StringLocalizer["DragDrop"]</label>
+        <tooltip title="Allow dragging files"/>
+        <checkbox for="DataFile!.DragDrop" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " for="chkMultiplefile" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Allows you to upload multiple files"]">@StringLocalizer["MultipleFile"]</label>
-        <div class="input-append">
-            @Html.CheckBoxFor(model => model.DataFile!.MultipleFile, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-        </div>
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.MultipleFile" >@StringLocalizer["MultipleFile"]</label>
+        <checkbox for="DataFile!.MultipleFile" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " for="chkExportAsLink" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Export file name with download link"]">@StringLocalizer["ExportAsLink"]</label>
-        <div class="input-append">
-            @Html.CheckBoxFor(model => model.DataFile!.ExportAsLink, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-        </div>
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.ExportAsLink">@StringLocalizer["ExportAsLink"]</label>
+        <tooltip title="Export file name with download link"/>
+        <checkbox for="DataFile!.ExportAsLink" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
 
     <div class="col-sm-12">

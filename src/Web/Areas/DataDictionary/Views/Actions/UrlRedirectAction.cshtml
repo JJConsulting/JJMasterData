@@ -2,6 +2,7 @@
 @inject IOptions<JJMasterDataWebOptions> Options
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
 @model  JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction
 
 @{
@@ -30,10 +31,9 @@
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-1">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["Open the action inside a modal"]">@StringLocalizer["Modal"]</label>
-                    <div class="input-append">
-                        @Html.CheckBoxFor(model => model.IsModal, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-                    </div>
+                    <label asp-for="IsModal" class="@BootstrapHelper.Label">@StringLocalizer["Is Modal"]</label>
+                    <tooltip/> 
+                    <checkbox for="IsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-8">
@@ -43,16 +43,15 @@
                 
                 
                 <div class="@BootstrapHelper.FormGroup col-sm-1">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)"]">
+                    <label asp-for="IsIframe" class="@BootstrapHelper.Label">
                         @StringLocalizer["Iframe"]
                     </label>
-                    <div class="input-append">
-                    @Html.CheckBoxFor(model => model.IsIframe, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-                    </div>
+                    <tooltip title="If the redirect is in a modal will render a iframe in the body (not recommended in most cases)"/>
+                    <checkbox for="IsIframe" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label " for="cboPopUpSize" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Modal Size"]">@StringLocalizer["Modal Size"]</label>
+                    <label class="@BootstrapHelper.Label " asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
                     <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
                 </div>
 

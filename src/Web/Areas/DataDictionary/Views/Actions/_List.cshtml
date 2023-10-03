@@ -32,51 +32,68 @@
             <ul class="dropdown-menu">
                 <li>
                     <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                       onclick="@GetAddScript(typeof(UrlRedirectAction))">@StringLocalizer["Url Redirect"]</a>
+                       onclick="@GetAddScript(typeof(UrlRedirectAction))">
+                        @StringLocalizer["Url Redirect"]
+                    </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                       onclick="@GetAddScript(typeof(InternalAction))">@StringLocalizer["Internal Redirect"]</a>
+                       onclick="@GetAddScript(typeof(InternalAction))">
+                        @StringLocalizer["Internal Redirect"]
+                    </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                       onclick="@GetAddScript(typeof(SqlCommandAction))">@StringLocalizer["Sql Command"]</a>
+                       onclick="@GetAddScript(typeof(SqlCommandAction))">
+                        @StringLocalizer["Sql Command"]
+                    </a>
                 </li>
                 <li>
                     <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                       onclick="@GetAddScript(typeof(ScriptAction))">@StringLocalizer["JavaScript Script"]</a>
+                       onclick="@GetAddScript(typeof(ScriptAction))">
+                        @StringLocalizer["JavaScript Script"]
+                    </a>
                 </li>
                 @if (ActionPluginHandlers.Any())
-                {   <li><hr class="dropdown-divider"></li>
-                    <li><h6 class="dropdown-header">Plugins</h6></li>
+                {
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <h6 class="dropdown-header">Plugins</h6>
+                    </li>
                     @if (Model.Source is ActionSource.Field)
                     {
-                        @foreach (var plugin in ActionPluginHandlers.Where(p=> p is IPluginFieldActionHandler || p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
+                        @foreach (var plugin in ActionPluginHandlers.Where(p => p is IPluginFieldActionHandler || p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
                         {
                             @if (plugin is IPluginFieldActionHandler)
                             {
                                 <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                                   onclick="@GetAddScript(typeof(PluginFieldAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                                   onclick="@GetAddScript(typeof(PluginFieldAction), plugin.Id)">
+                                    @StringLocalizer[plugin.Title]
+                                </a>
                             }
                             else
                             {
                                 <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                                   onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                                   onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">
+                                    @StringLocalizer[plugin.Title]
+                                </a>
                             }
-
                         }
                     }
                     else
                     {
-                        @foreach (var plugin in ActionPluginHandlers.Where(p=> p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
+                        @foreach (var plugin in ActionPluginHandlers.Where(p => p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
                         {
                             <a class="dropdown-item dropdown-link" href="javascript: void(0);"
-                               onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">@StringLocalizer[plugin.Title]</a>
+                               onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">
+                                @StringLocalizer[plugin.Title]
+                            </a>
                         }
                     }
-   
                 }
-                
+
             </ul>
         </div>
     </div>
@@ -93,26 +110,31 @@
                             @action.Name
                             &nbsp;
                         </div>
-                        <div class=@BootstrapHelper.PullRight>
+                        <div class="@BootstrapHelper.PullRight d-flex align-content-center">
                             <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="@GetEditScript(action)">
                                 <span class="fa fa-pencil"></span>
                             </button>
                             @if (action.IsUserCreated)
                             {
-                                <button class="@BootstrapHelper.DefaultButton btn-small" style="margin-left:14px;" type="button"
+                                <button class="@BootstrapHelper.DefaultButton btn-small" style="margin-left:10px;" type="button"
                                         onclick="@GetDeleteScript(action)">
                                     <span class="fa fa-trash"></span>
                                 </button>
                             }
                             else if (action is not FormToolbarAction)
                             {
-                                <input type="checkbox"
-                                       @(action.IsVisible ? "checked=\"checked\"" : "")
-                                       data-toggle="toggle"
-                                       data-size="small"
-                                       data-on="On"
-                                       data-off="Off"
-                                       onchange="DataDictionaryUtils.toggleActionEnabled($(this).prop('checked'),'@GetUrlDisable(action)','@StringLocalizer["Unexpected error"]');">
+                                <div class="form-check form-switch form-switch-md" style="padding-left:0px">
+                                    <input type="checkbox"
+                                           @(action.IsVisible ? "checked=\"checked\"" : "")
+                                           style="margin-left:10px;"
+                                           data-toggle="toggle"
+                                           data-size="small"
+                                           data-on="On"
+                                           role="switch"
+                                           data-off="Off"
+                                           class="form-check-input align-self-center"
+                                           onchange="DataDictionaryUtils.toggleActionEnabled($(this).prop('checked'),'@GetUrlDisable(action)','@StringLocalizer["Unexpected error"]');">
+                                </div>
                             }
                         </div>
                     </div>

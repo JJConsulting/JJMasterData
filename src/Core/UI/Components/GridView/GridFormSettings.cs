@@ -42,10 +42,10 @@ internal class GridFormSettings
         if (int.TryParse(tableTotalPageButtons, out var totalPaggingButtons))
             gridSettings.TotalPaginationButtons = totalPaggingButtons;
 
-        gridSettings.ShowBorder = "1".Equals(tableBorder);
-        gridSettings.ShowRowStriped = "1".Equals(tableRowsStriped);
-        gridSettings.ShowRowHover = "1".Equals(tableRowHover);
-        gridSettings.IsHeaderFixed = "1".Equals(tableIsHeaderFixed);
+        gridSettings.ShowBorder = "true".Equals(tableBorder);
+        gridSettings.ShowRowStriped = "true".Equals(tableRowsStriped);
+        gridSettings.ShowRowHover = "true".Equals(tableRowHover);
+        gridSettings.IsHeaderFixed = "true".Equals(tableIsHeaderFixed);
 
         return gridSettings;
     }
@@ -178,16 +178,14 @@ internal class GridFormSettings
 
     private HtmlBuilder GetDataToggleElement(string name, bool isChecked)
     {
-        var input = new HtmlBuilder(HtmlTag.Input)
-            .WithAttribute("type", "checkbox")
-            .WithValue("1")
-            .WithCssClass("form-control")
-            .WithNameAndId(name)
-            .WithAttributeIf(isChecked, "checked", "checked")
-            .WithAttribute("data-toggle", "toggle")
-            .WithAttribute("data-on", _stringLocalizer["Yes"])
-            .WithAttribute("data-off", _stringLocalizer["No"]);
+        var checkbox = new JJCheckBox(_currentContext.Request.Form, _stringLocalizer)
+        {
+            Name = name,
+            IsChecked = isChecked,
+            IsSwitch = true,
+            SwitchSize = CheckBoxSwitchSize.Medium
+        };
 
-        return input;
+        return checkbox.GetHtmlBuilder();
     }
 }

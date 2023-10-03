@@ -275,18 +275,13 @@ internal class DataExportationSettings
             .Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass(_colSm);
-                div.Append(HtmlTag.Input, input =>
-                {
-                    input.WithAttribute("type", "checkbox");
-                    input.WithValue("1");
-                    input.WithCssClass("form-control");
-                    input.WithNameAndId($"{DataExportation.Name}{ExportOptions.ExportTableFirstLine}");
-                    input.WithAttribute("data-toggle", "toggle");
-                    input.WithAttribute("data-on", StringLocalizer["Yes"]);
-                    input.WithAttribute("data-off", StringLocalizer["No"]);
-                    if (DataExportation.ExportOptions.ExportFirstLine)
-                        input.WithAttribute("checked", "checked");
-                });
+                var exportFirstLineCheckbox = DataExportation.ComponentFactory.Controls.CheckBox.Create();
+                exportFirstLineCheckbox.Name = $"{DataExportation.Name}{ExportOptions.ExportTableFirstLine}";
+                exportFirstLineCheckbox.IsChecked = DataExportation.ExportOptions.ExportFirstLine;
+                exportFirstLineCheckbox.IsSwitch = true;
+                exportFirstLineCheckbox.SwitchSize = CheckBoxSwitchSize.Medium;
+                
+                div.Append(exportFirstLineCheckbox.GetHtmlBuilder());
             });
     }
 

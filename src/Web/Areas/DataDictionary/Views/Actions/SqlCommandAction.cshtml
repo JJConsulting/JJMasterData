@@ -2,6 +2,7 @@
 @inject IOptions<JJMasterDataWebOptions> Options
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Core.UI.Components
 @model JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction
 
 @{
@@ -71,10 +72,8 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="@BootstrapHelper.FormGroup col-sm-2">
-                                <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["Apply only selected lines"]">@StringLocalizer["Apply On Selected"]</label>
-                                <div class="input-append">
-                                    @Html.CheckBoxFor(model => model.ApplyOnSelected, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-                                </div>
+                                <label class="@BootstrapHelper.Label" asp-for="ApplyOnSelected">@StringLocalizer["Apply On Selected Lines"]</label>
+                                <checkbox for="ApplyOnSelected" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                             </div>
 
                             <div class="col-sm-10">

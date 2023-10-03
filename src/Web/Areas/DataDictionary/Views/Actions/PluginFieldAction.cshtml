@@ -2,6 +2,7 @@
 @using System.Collections.Immutable
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
 @model JJMasterData.Core.DataDictionary.Models.Actions.PluginFieldAction
 @inject IOptions<JJMasterDataWebOptions> Options
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
@@ -89,9 +90,7 @@
                     <div class="col-sm-12">
                         <label asp-for="AutoTriggerOnChange" class="form-label"></label>
                         <tooltip title="Trigger the action when the value of the field is changed."/>
-                        <div class="input-append">
-                            <input asp-for="AutoTriggerOnChange" class="form-control" data-toggle="toggle" data-on="Yes" data-off="No" data-size="small" type="checkbox"/>
-                        </div>
+                        <checkbox for="AutoTriggerOnChange" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                     </div>
                 </div>
                 

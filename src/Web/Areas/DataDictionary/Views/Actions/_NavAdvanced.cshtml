@@ -1,5 +1,6 @@
 ﻿@using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 @model JJMasterData.Core.DataDictionary.Models.Actions.BasicAction
@@ -38,36 +39,26 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label asp-for="ShowTitle" class="@BootstrapHelper.Label" >@StringLocalizer["Show Title"]</label>
-        <div class="input-append">
-            @Html.CheckBoxFor(model => model.ShowTitle, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-        </div>
+        <checkbox for="ShowTitle" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label class="@BootstrapHelper.Label" asp-for="ShowAsButton" >@StringLocalizer["Show As Button"]</label>
-        <div class="input-append">
-            @Html.CheckBoxFor(model => model.ShowAsButton, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-        </div>
+        <checkbox for="ShowAsButton" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label asp-for="IsDefaultOption" class="@BootstrapHelper.Label">@StringLocalizer["Default"]</label>
-        <div class="input-append">
-            @Html.CheckBoxFor(model => model.IsDefaultOption, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-        </div>
+        <checkbox for="IsDefaultOption" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label asp-for="IsGroup" class="@BootstrapHelper.Label">@StringLocalizer["Is Group"]</label>
-        <div class="input-append">
-            @Html.CheckBoxFor(model => model.IsGroup, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-        </div>
+        <checkbox for="IsGroup" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label asp-for="DividerLine" class="@BootstrapHelper.Label">@StringLocalizer["Divider Line"]</label>
         <tooltip title="Show a separator before this action"/>
-        <div class="input-append">
-            @Html.CheckBoxFor(model => model.DividerLine, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-        </div>
+        <checkbox for="DividerLine" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
     @if (ViewBag.ContextAction is ActionSource.FormToolbar)
     {

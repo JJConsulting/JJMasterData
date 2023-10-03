@@ -1195,7 +1195,9 @@ const listenAllEvents = (selectorPrefix = String()) => {
     $(selectorPrefix + ".selectpicker").selectpicker({
         iconBase: 'fa'
     });
-    $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
+    if (bootstrapVersion === 3) {
+        $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
+    }
     CalendarListener.listen(selectorPrefix);
     TextAreaListener.listenKeydown(selectorPrefix);
     SearchBoxListener.listenTypeahed(selectorPrefix);

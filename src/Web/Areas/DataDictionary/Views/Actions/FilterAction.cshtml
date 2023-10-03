@@ -1,6 +1,7 @@
 ﻿@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 @inject IOptions<JJMasterDataWebOptions> Options
 @using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
 @model  JJMasterData.Core.DataDictionary.Models.Actions.FilterAction
 
 @{
@@ -24,16 +25,12 @@
         <div id="divFilterAction" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["View in a collapsed panel"]">@StringLocalizer["ShowAsCollapse"]</label>
-                    <div class="input-append">
-                        @Html.CheckBoxFor(model => model.ShowAsCollapse, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-                    </div>
+                    <label class="@BootstrapHelper.Label">@StringLocalizer["ShowAsCollapse"]</label>
+                    <checkbox for="ShowAsCollapse" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["Display open dashboard by default"]">@StringLocalizer["ExpandedByDefault"]</label>
-                    <div class="input-append">
-                        @Html.CheckBoxFor(model => model.ExpandedByDefault, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-                    </div>
+                    <label class="@BootstrapHelper.Label" >@StringLocalizer["ExpandedByDefault"]</label>
+                    <checkbox for="ExpandedByDefault" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
                 <div class="col-sm-6">
                     <span class="text-info fa fa-info-circle"></span>
@@ -48,9 +45,7 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
                     <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="bottom" title="@StringLocalizer["Enable quick screen search"]">@StringLocalizer["EnableScreenSearch"]</label>
-                    <div class="input-append">
-                        @Html.CheckBoxFor(model => model.EnableScreenSearch, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-                    </div>
+                    <checkbox for="EnableScreenSearch" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
                 </div>

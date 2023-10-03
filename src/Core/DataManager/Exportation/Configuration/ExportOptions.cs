@@ -13,31 +13,22 @@ public class ExportOptions
     internal const string ExportAll = "_export_table_all";
     internal const string ExportDelimiter = "_export_table_delimiter";
 
-    public ExportFileExtension FileExtension { get; set; }
-    public bool ExportFirstLine { get; set; }
-    public bool ExportAllFields { get; set; }
-    public bool IsLandScape { get; set; }
-    public string Delimiter { get; set; }
+    public ExportFileExtension FileExtension { get; set; } = ExportFileExtension.CSV;
+    public bool ExportFirstLine { get; set; } = true;
+    public bool ExportAllFields { get; set; } = true;
+    public bool IsLandScape { get; set; } = false;
+    public string Delimiter { get; set; } = ";";
 
-    public ExportOptions()
-    {
-        FileExtension = ExportFileExtension.CSV;
-        ExportFirstLine = true;
-        ExportAllFields = true;
-        IsLandScape = false;
-        Delimiter = ";";
-    }
-
-    internal static ExportOptions LoadFromForm(IHttpContext currentContext, string componentName)
+    internal static ExportOptions LoadFromForm(IFormValues formValues, string componentName)
     {
         var expConfig = new ExportOptions();
-        if (currentContext.Request.Form[componentName + FileName] != null)
+        if (formValues[componentName + FileName] != null)
         {
-            expConfig.FileExtension = (ExportFileExtension)int.Parse(currentContext.Request.Form[componentName + FileName]);
-            expConfig.IsLandScape = "1".Equals(currentContext.Request.Form[componentName + TableOrientation]);
-            expConfig.ExportFirstLine = "1".Equals(currentContext.Request.Form[componentName + ExportTableFirstLine]);
-            expConfig.ExportAllFields = "1".Equals(currentContext.Request.Form[componentName + ExportAll]);
-            expConfig.Delimiter = currentContext.Request.Form[componentName + ExportDelimiter];
+            expConfig.FileExtension = (ExportFileExtension)int.Parse(formValues[componentName + FileName]);
+            expConfig.IsLandScape = "true".Equals(formValues[componentName + TableOrientation]);
+            expConfig.ExportFirstLine = "true".Equals(formValues[componentName + ExportTableFirstLine]);
+            expConfig.ExportAllFields = "true".Equals(formValues[componentName + ExportAll]);
+            expConfig.Delimiter = formValues[componentName + ExportDelimiter];
         }
 
         return expConfig;
