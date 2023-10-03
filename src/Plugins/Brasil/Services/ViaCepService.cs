@@ -28,7 +28,12 @@ public class ViaCepService : ICepService
              
              var response = await HttpClient.GetAsync(url);
              var content = await response.Content.ReadAsStringAsync();
-             return CepResult.FromJson(content);
+             var result =  CepResult.FromJson(content);
+
+             if (result.Erro)
+                 throw new ViaCepException("CEP inválido.");
+
+             return result;
          }
          catch (Exception ex)
          {

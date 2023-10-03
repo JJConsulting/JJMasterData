@@ -17,7 +17,20 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
     private ICepService CepService { get; }
     public Guid Id => GuidGenerator.FromValue(nameof(CepPluginActionHandler));
     public string Title => "Cep";
-    public IEnumerable<PluginConfigurationField>? ConfigurationFields => null;
+
+    public const string AllowEditingOnErrorFieldName = "AllowEditingOnError";
+    public IEnumerable<PluginConfigurationField>? ConfigurationFields
+    {
+        get
+        {
+            yield return new PluginConfigurationField
+            {
+                Name = AllowEditingOnErrorFieldName,
+                Label = "Permitir edição em CEPs não encontrados.",
+                Type = PluginConfigurationFieldType.Boolean
+            };
+        }
+    }
 
     public IEnumerable<string> FieldMapKeys
     {
@@ -57,7 +70,18 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
         }
         catch (ViaCepException)
         {
-            ClearCep(context);
+            if (context.ConfigurationMap[AllowEditingOnErrorFieldName] is not true)
+            {
+                ClearCep(context);
+                return PluginActionResult.Success();
+            }
+            
+            foreach (var parameter in context.FieldMap)
+            {
+                if (context.ActionContext.FormElement.Fields.Contains(parameter.Value))
+                    context.ActionContext.FormElement.Fields[parameter.Value].EnableExpression = "val:1";
+            }
+
             return PluginActionResult.Success();
         }
         

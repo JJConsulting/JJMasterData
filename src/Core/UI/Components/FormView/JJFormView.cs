@@ -732,6 +732,7 @@ public class JJFormView : AsyncComponent
                 return await pluginActionHandler.ExecuteActionAsync(new PluginActionContext
                 {
                     ActionContext = GetActionContext(pluginAction, formStateData),
+                    ConfigurationMap = pluginAction.ConfigurationMap
                 });
             case IPluginFieldActionHandler pluginFieldActionHandler:
                 return await pluginFieldActionHandler.ExecuteActionAsync(context: new PluginFieldActionContext
@@ -739,6 +740,7 @@ public class JJFormView : AsyncComponent
                     ActionContext = GetActionContext(pluginAction,
                         formStateData, fieldName),
                     FieldMap = ((PluginFieldAction)pluginAction).FieldMap,
+                    ConfigurationMap = pluginAction.ConfigurationMap
                 });
             default:
                 throw new JJMasterDataException("Invalid plugin handler");

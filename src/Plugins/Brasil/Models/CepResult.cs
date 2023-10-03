@@ -12,7 +12,10 @@ public class CepResult
     public required string Localidade { get; set; }
     public required string Uf { get; set; }
     public string? Unidade { get; set; }
-
+    
+    [JsonProperty("erro")]
+    internal bool Erro { get; set; }
+    
     public static CepResult FromJson(string json)
     {
         return JsonConvert.DeserializeObject<CepResult>(json)!;

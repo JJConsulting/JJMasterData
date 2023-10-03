@@ -50,6 +50,12 @@ public class CpfPluginActionHandler : IPluginFieldActionHandler
         catch (ReceitaFederalException)
         {
             ClearCpf(context);
+            
+            foreach (var parameter in context.FieldMap)
+            {
+                context.ActionContext.FormElement.Fields[parameter.Key].EnableExpression = "val:1";
+            }
+            
             return PluginActionResult.Success();
         }
         
