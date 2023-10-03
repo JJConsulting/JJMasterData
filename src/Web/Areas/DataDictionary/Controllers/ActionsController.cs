@@ -362,6 +362,7 @@ public class ActionsController : DataDictionaryController
         bool isActionSave,
         string? fieldName)
     {
+        SetPluginConfigurationMap(pluginAction.ConfigurationMap, pluginAction.PluginId);
         
         return await EditActionResult(elementName, pluginAction, context, isActionSave, originalName, fieldName);
     }
@@ -374,26 +375,48 @@ public class ActionsController : DataDictionaryController
         bool isActionSave,
         string? fieldName)
     {
-        pluginFieldAction.FieldMap = GetPluginFieldMap(pluginFieldAction.PluginId);
+        SetPluginConfigurationMap(pluginFieldAction.ConfigurationMap, pluginFieldAction.PluginId);
+        
+        SetPluginFieldMap(pluginFieldAction.FieldMap, pluginFieldAction.PluginId);
+        
         return await EditActionResult(elementName, pluginFieldAction, context, isActionSave, originalName, fieldName);
     }
 
-    private IDictionary<string, string> GetPluginFieldMap(Guid pluginId)
+    private void SetPluginConfigurationMap(IDictionary<string, object> configurationMap,
+        Guid pluginId)
+    {
+        var pluginHandler = _pluginHandlers.First(p => p.Id == pluginId);
+
+        if (pluginHandler.ConfigurationFields == null)
+            return;
+        
+        foreach (var field in pluginHandler.ConfigurationFields)
+        {
+            if (Request.Form.TryGetValue(field.Name, out var value))
+            {
+                var pluginField = pluginHandler.ConfigurationFields.First(f => f.Name == field.Name);
+
+                configurationMap[field.Name] = pluginField.Type switch
+                {
+                    PluginConfigurationFieldType.Boolean => value == "true",
+                    PluginConfigurationFieldType.Number => double.Parse(value.ToString()),
+                    _ => value.ToString()
+                };
+            }
+        }
+    }
+    
+    private void SetPluginFieldMap(IDictionary<string, string> fieldMap, Guid pluginId)
     {
         var pluginHandler = (IPluginFieldActionHandler)_pluginHandlers.First(p => p.Id == pluginId);
-
-        var map = new Dictionary<string, string>();
         
         foreach (var key in pluginHandler.FieldMapKeys)
         {
-
             if (Request.Form.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value))
             {
-                map[key] = value!;
+                fieldMap[key] = value!;
             }
         }
-
-        return map;
     }
 
     private async Task SaveAction(string elementName, BasicAction basicAction, ActionSource context,

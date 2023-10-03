@@ -1,0 +1,61 @@
+@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IEnumerable<IPluginHandler> Plugins
+
+@{
+    var plugin = Plugins.First(p => p.Id == Model.PluginId);
+}
+
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@model JJMasterData.Core.DataDictionary.Models.Actions.PluginAction
+
+
+<div class="container-fluid ">
+    <table class="table table-responsive table-hover table-striped">
+        <thead>
+        <tr>
+            <th>
+                @StringLocalizer["Plugin Key"]
+            </th>
+            <th>
+                @StringLocalizer["Value"]
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var pluginField in plugin.ConfigurationFields!)
+        {
+            <tr>
+                <td>
+                    <span>@pluginField.Name</span>
+                    @if (pluginField.Required)
+                    {
+                        <span style="color:red">*</span>
+                    }
+                </td>
+                <td>
+                    @{
+                        object? value = null;
+
+                        if (Model.ConfigurationMap.ContainsKey(pluginField.Name))
+                        {
+                            value = Model.ConfigurationMap[pluginField.Name];
+                        }
+                        
+                    }
+                    @if (pluginField.Type is PluginConfigurationFieldType.Boolean)
+                    {
+                        <checkbox name="@pluginField.Name" value="@(value is true)" switch="true"/>
+                    }
+                    else
+                    {
+                        <input name="@pluginField.Name"
+                               class="form-control" 
+                               value="@value"
+                               type="@(pluginField.Type is PluginConfigurationFieldType.Text ? "text" : "number")"/>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

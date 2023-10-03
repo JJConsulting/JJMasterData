@@ -1,4 +1,5 @@
 using JJMasterData.Brasil.Configuration;
+using JJMasterData.Core.UI;
 using JJMasterData.Protheus.Configuration;
 using JJMasterData.Web.Extensions;
 using JJMasterData.WebEntryPoint.Authorization;
@@ -24,7 +25,7 @@ builder.Services.AddAuthorization(options =>
         policy.AddRequirements(new AllowAnonymousAuthorizationRequirement());
     });
 });
-        
+
 var app = builder.Build();
 if (app.Environment.IsProduction())
 {

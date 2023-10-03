@@ -328,22 +328,25 @@ internal class DataPanelControl
         if (PageState != PageState.Filter) 
             return await control.GetHtmlBuilderAsync();
         
-        if (control is JJTextGroup textGroup)
+        switch (control)
         {
-            if (field.Filter.Type is not (FilterMode.MultValuesContain or FilterMode.MultValuesEqual))
+            case JJTextGroup when field.Filter.Type is not (FilterMode.MultValuesContain or FilterMode.MultValuesEqual):
                 return await control.GetHtmlBuilderAsync();
-            textGroup.Attributes.Add("data-role", "tagsinput");
-            textGroup.MaxLength = 0;
-        }
-        else if (control is JJComboBox comboBox)
-        {
-            if (field.Filter.IsRequired || field.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain)
-                comboBox.DataItem.FirstOption = FirstOptionMode.None;
-            else
-                comboBox.DataItem.FirstOption = FirstOptionMode.All;
+            case JJTextGroup textGroup:
+                textGroup.Attributes.Add("data-role", "tagsinput");
+                textGroup.MaxLength = 0;
+                break;
+            case JJComboBox comboBox:
+            {
+                if (field.Filter.IsRequired || field.Filter.Type is FilterMode.MultValuesEqual or FilterMode.MultValuesContain)
+                    comboBox.DataItem.FirstOption = FirstOptionMode.None;
+                else
+                    comboBox.DataItem.FirstOption = FirstOptionMode.All;
 
-            if (field.Filter.Type == FilterMode.MultValuesEqual)
-                comboBox.MultiSelect = true;
+                if (field.Filter.Type == FilterMode.MultValuesEqual)
+                    comboBox.MultiSelect = true;
+                break;
+            }
         }
 
         return await control.GetHtmlBuilderAsync();

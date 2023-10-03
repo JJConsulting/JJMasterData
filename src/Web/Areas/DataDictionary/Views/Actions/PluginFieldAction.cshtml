@@ -31,9 +31,15 @@
         <li id="nav-general" class="nav-item active">
             <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
         </li>
-        <li id="nav-plugin" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-plugin">@StringLocalizer["Plugin"]</a>
+        <li id="nav-field-map" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-field-map">@StringLocalizer["Field Map"]</a>
         </li>
+        @if (plugin.ConfigurationFields is not null)
+        {
+            <li id="nav-plugin" class="nav-item">
+                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-plugin-configuration">@StringLocalizer["Plugin Configuration"]</a>
+            </li>
+        }
         <li id="nav-advanced" class="nav-item">
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
         </li>
@@ -44,7 +50,7 @@
             <partial name="_NavGeneral" model="Model"/>
         </div>
 
-        <div id="div-plugin" class="tab-pane fade @BootstrapHelper.Show">
+        <div id="div-field-map" class="tab-pane fade @BootstrapHelper.Show">
             <div class="container-fluid ">
                 
                 <table class="table table-responsive table-hover table-striped">
@@ -66,7 +72,7 @@
                                     @pluginKey
                                 </td>
                                 <td>
-                                    @if (Model.FieldMap.TryGetValue(@pluginKey, out var value))
+                                    @if (Model.FieldMap.TryGetValue(pluginKey, out var value))
                                     {
                                         <combobox name="@pluginKey" form-element-data-item="dataItem" value="value"/>
                                     }
@@ -102,6 +108,15 @@
             </div>
         </div>
 
+        @if (plugin.ConfigurationFields is not null)
+        {
+            <div id="div-plugin-configuration" class="tab-pane fade @BootstrapHelper.Show">
+                <div class="container-fluid ">
+                    <partial name="_PluginConfiguration" model="Model"/>
+                </div>
+            </div>
+        }
+        
         <div id="div-advanced" class="tab-pane fade">
             <partial name="_NavAdvanced" model="Model"/>
         </div>

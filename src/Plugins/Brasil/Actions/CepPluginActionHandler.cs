@@ -17,6 +17,8 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
     private ICepService CepService { get; }
     public Guid Id => GuidGenerator.FromValue(nameof(CepPluginActionHandler));
     public string Title => "Cep";
+    public IEnumerable<PluginConfigurationField>? ConfigurationFields => null;
+
     public IEnumerable<string> FieldMapKeys
     {
         get

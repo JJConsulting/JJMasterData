@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Localization;
@@ -12,14 +13,16 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ActionsService : BaseService
 {
+    private readonly IEnumerable<IPluginHandler> _pluginHandlers;
 
     public ActionsService(
         IValidationDictionary validationDictionary, 
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IDataDictionaryRepository dataDictionaryRepository) 
+        IDataDictionaryRepository dataDictionaryRepository,
+        IEnumerable<IPluginHandler> pluginHandlers) 
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
-
+        _pluginHandlers = pluginHandlers;
     }
 
     public async Task<bool> DeleteActionAsync(string elementName, string actionName, ActionSource context, string fieldName = null)
@@ -193,12 +196,30 @@ public class ActionsService : BaseService
                     AddError(nameof(internalAction.ElementRedirect.ElementNameRedirect), StringLocalizer["Required [Entity Name] field"]);
                 break;
             }
-            case PluginFieldAction pluginFieldAction:
+            case PluginAction pluginAction:
             {
-                if (!formElement.Fields[fieldName!].AutoPostBack && pluginFieldAction.AutoTriggerOnChange)
+                var pluginHandler = _pluginHandlers.First(p => p.Id == pluginAction.PluginId);
+                if (pluginAction is PluginFieldAction pluginFieldAction)
                 {
-                    AddError(nameof(PluginFieldAction.AutoTriggerOnChange), StringLocalizer["To use [AutoTriggerOnChange], [AutoPostBack] must be enabled at your field."]);
+                    if (!formElement.Fields[fieldName!].AutoPostBack && pluginFieldAction.AutoTriggerOnChange)
+                    {
+                        AddError(nameof(PluginFieldAction.AutoTriggerOnChange), StringLocalizer["To use [AutoTriggerOnChange], [AutoPostBack] must be enabled at your field"]);
+                    }
                 }
+
+                if (pluginHandler.ConfigurationFields != null)
+                {
+                    foreach (var kvp in pluginAction.ConfigurationMap)
+                    {
+                        var pluginField = pluginHandler.ConfigurationFields.First(f => f.Name == kvp.Key);
+
+                        if (pluginField.Required && string.IsNullOrEmpty(pluginAction.ConfigurationMap[kvp.Key]?.ToString()))
+                        {
+                            AddError(nameof(PluginFieldAction.ConfigurationMap), StringLocalizer[$"[{kvp.Key} is required]"]);
+                        }
+                    }
+                }
+                
                 break;
             }
         }

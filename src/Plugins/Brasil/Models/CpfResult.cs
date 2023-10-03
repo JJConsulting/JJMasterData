@@ -14,15 +14,14 @@ public class CpfResult
 
     [JsonProperty("Comprovante_Emitido")]
     public required string ComprovanteEmitido { get; set; }
-
- 
+    
     public Dictionary<string, object> ToDictionary()
     {
         return new Dictionary<string, object>
         {
-            { "Nome_Da_Pf", NomeDaPf },
-            { "Situacao_Cadastral", SituacaoCadastral },
-            { "Comprovante_Emitido", ComprovanteEmitido }
+            { nameof(NomeDaPf), NomeDaPf },
+            { nameof(SituacaoCadastral), SituacaoCadastral },
+            { nameof(ComprovanteEmitido), ComprovanteEmitido }
         };
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
@@ -79,7 +80,7 @@ public class FormValuesService
                         value = null;
                     break;
                 case FormComponent.CheckBox:
-                    value ??= FormValues[$"{fieldName}_hidden"];
+                    value = StringManager.ParseBool(value);
                     break;
             }
 

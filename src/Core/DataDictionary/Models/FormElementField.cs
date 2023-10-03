@@ -22,6 +22,8 @@ public class FormElementField : ElementField
     public const string MinValueAttribute = "min";
     public const string MaxValueAttribute = "max";
     public const string StepAttribute = "step";
+    public const string IsSwitchAttribute = "is-switch";
+    
     [JsonProperty("component")] public FormComponent Component { get; set; }
 
     /// <remarks>
@@ -216,10 +218,10 @@ public class FormElementField : ElementField
     }
 
 
-    public string? GetAttr(string key)
+    public object? GetAttr(string key)
     {
         if (Attributes.TryGetValue(key, out var attribute))
-            return attribute.ToString();
+            return attribute;
         return string.Empty;
     }
 

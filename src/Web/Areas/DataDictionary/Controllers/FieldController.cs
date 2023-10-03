@@ -284,10 +284,13 @@ public class FieldController : DataDictionaryController
                 field.SetAttr(FormElementField.PopUpSizeAttribute, Request.Form["cboLkPopUpSize"].ToString());
                 field.SetAttr(FormElementField.PopUpTitleAttribute, Request.Form["txtLkPopUpTitle"].ToString());
                 break;
+            case FormComponent.CheckBox:
+                field.SetAttr(FormElementField.IsSwitchAttribute, Request.Form[FormElementField.IsSwitchAttribute] == "true");
+                break;
             case FormComponent.Date
                 or FormComponent.DateTime
                 or FormComponent.Hour:
-                field.SetAttr(FormElementField.AutocompletePickerAttribute, Request.Form[FormElementField.AutocompletePickerAttribute].ToString());
+                field.SetAttr(FormElementField.AutocompletePickerAttribute, Request.Form[FormElementField.AutocompletePickerAttribute] == "true");
                 break;
 
         }

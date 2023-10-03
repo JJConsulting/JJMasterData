@@ -107,7 +107,9 @@ public class ControlFactory
 
                 if (formStateData.PageState != PageState.List)
                     ((JJCheckBox)control).Text = field.LabelOrName;
-
+                
+                ((JJCheckBox)control).IsSwitch = field.Attributes[FormElementField.IsSwitchAttribute] is true;
+                
                 break;
             case FormComponent.TextArea:
                 control = Create<JJTextArea>(formElement, field, context);

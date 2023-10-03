@@ -14,7 +14,27 @@ public class ProtheusPluginActionHandler : IPluginActionHandler
     public Guid Id => GuidGenerator.FromValue(nameof(ProtheusPluginActionHandler));
     public string Title => "Protheus";
 
-    public IEnumerable<string> FieldMapKeys => new List<string>();
+    public IEnumerable<PluginConfigurationField>? ConfigurationFields
+    {
+        get
+        {
+            yield return new PluginConfigurationField()
+            {
+                Name = "ProcedureName",
+                Required = true
+            };
+            yield return new PluginConfigurationField()
+            {
+                Name = "ExampleBoolean",
+                Type = PluginConfigurationFieldType.Boolean
+            };
+            yield return new PluginConfigurationField()
+            {
+                Name = "ExampleNumeric",
+                Type = PluginConfigurationFieldType.Number
+            };
+        }
+    }
     public HtmlBuilder? AdditionalInformationHtml => null;
 
     public ProtheusPluginActionHandler(

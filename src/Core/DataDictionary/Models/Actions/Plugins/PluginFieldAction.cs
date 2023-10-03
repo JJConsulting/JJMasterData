@@ -8,5 +8,5 @@ public class PluginFieldAction : PluginAction
 {
     [DisplayName("Auto Trigger On Change")]
     public bool AutoTriggerOnChange { get; set; }
-    public IDictionary<string, string> FieldMap { get; set; } = new Dictionary<string,string>();
+    public IDictionary<string, string> FieldMap { get;  } = new Dictionary<string,string>();
 }

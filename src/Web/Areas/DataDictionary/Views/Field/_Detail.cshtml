@@ -2,6 +2,7 @@
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
@@ -99,21 +100,15 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-1 required">
                     <label class="@BootstrapHelper.Label " asp-for="IsRequired">@StringLocalizer["Required"]</label>
-                    <div class="input-append">
-                        @Html.CheckBoxFor(model => model.IsRequired, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-                    </div>
+                    <checkbox for="IsRequired" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-1 required">
                     <label class="@BootstrapHelper.Label " asp-for="IsPk">@StringLocalizer["PK"]</label>
-                    <div class="input-append">
-                        @Html.CheckBoxFor(model => model.IsPk, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-                    </div>
+                    <checkbox for="IsPk" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-1 required">
                     <label class="@BootstrapHelper.Label " asp-for="AutoNum">@StringLocalizer["Identity"]</label>
-                    <div class="input-append">
-                        @Html.CheckBoxFor(model => model.AutoNum, new { @class = "form-control", data_toggle = "toggle", data_on = "Yes", data_off = "No", data_size = "small" })
-                    </div>
+                    <checkbox for="AutoNum" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
                     <label class="@BootstrapHelper.Label " asp-for="HelpDescription">

@@ -17,9 +17,9 @@ public class CpfPluginActionHandler : IPluginFieldActionHandler
     private IReceitaFederalService ReceitaFederalService { get; }
     public Guid Id => GuidGenerator.FromValue(nameof(CpfPluginActionHandler));
     public string Title => "Cpf";
-    
-    public HtmlBuilder? AdditionalInformationHtml { get; }
 
+    public HtmlBuilder? AdditionalInformationHtml => null;
+    public IEnumerable<PluginConfigurationField>? ConfigurationFields => null;
     public IEnumerable<string> FieldMapKeys
     {
         get

@@ -20,9 +20,12 @@
         <li id="nav-general" class="nav-item active">
             <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
         </li>
-        <li id="nav-plugin" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-plugin">@StringLocalizer["Plugin"]</a>
-        </li>
+        @if (plugin.ConfigurationFields is not null)
+        {
+            <li id="nav-plugin" class="nav-item">
+                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-plugin-configuration">@StringLocalizer["Plugin Configuration"]</a>
+            </li>
+        }
         <li id="nav-advanced" class="nav-item">
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
         </li>
@@ -32,26 +35,27 @@
         <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
             <partial name="_NavGeneral" model="Model"/>
         </div>
-
-        <div id="div-plugin" class="tab-pane fade @BootstrapHelper.Show">
-            <div class="container-fluid ">
-                
-                <alert title="@plugin.Title" color="Info" icon="IconType.Plug">
-                    @if (plugin.AdditionalInformationHtml is null || !plugin.AdditionalInformationHtml.GetChildren().Any())
-                    {
-                        @Html.Raw(StringLocalizer["The developer has not provided additional information about this plugin."])
-                    }
-                    else
-                    {
-                        @Html.Raw(plugin.AdditionalInformationHtml)
-                    }
-                </alert>
+        @if (plugin.ConfigurationFields is not null)
+        {
+            <div id="div-plugin-configuration" class="tab-pane fade @BootstrapHelper.Show">
+                <div class="container-fluid ">
+                    <partial name="_PluginConfiguration" model="Model"/>
+                </div>
             </div>
-        </div>
-
+        }
         <div id="div-advanced" class="tab-pane fade">
             <partial name="_NavAdvanced" model="Model"/>
         </div>
+        <alert title="@plugin.Title" color="Info" icon="IconType.Plug">
+            @if (plugin.AdditionalInformationHtml is null || !plugin.AdditionalInformationHtml.GetChildren().Any())
+            {
+                @Html.Raw(StringLocalizer["The developer has not provided additional information about this plugin."])
+            }
+            else
+            {
+                @Html.Raw(plugin.AdditionalInformationHtml)
+            }
+        </alert>
 
     </div>
 

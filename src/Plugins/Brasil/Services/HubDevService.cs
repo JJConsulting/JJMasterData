@@ -36,9 +36,9 @@ public class HubDevService : IReceitaFederalService
             if (string.IsNullOrEmpty(identifier))
                 throw new ArgumentNullException(nameof(identifier));
         
-            string protocol = IsHttps ? "https://" : "http://";
-            string ignoreDb = IgnoreDb ? "&ignore_db=1" : "";
-            string url = $"{protocol}{Settings.Url}{endpoint}/?{endpoint}={identifier}&token={Settings.ApiKey}{ignoreDb}";
+            var protocol = IsHttps ? "https://" : "http://";
+            var ignoreDb = IgnoreDb ? "&ignore_db=1" : "";
+            var url = $"{protocol}{Settings.Url}{endpoint}/?{endpoint}={identifier}&token={Settings.ApiKey}{ignoreDb}";
         
             var message = await HttpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();

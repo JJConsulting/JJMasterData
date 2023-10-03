@@ -18,7 +18,7 @@ public class CnpjPluginActionHandler : IPluginFieldActionHandler
     public string Title => "Cnpj";
     
     public HtmlBuilder? AdditionalInformationHtml { get; }
-
+    public IEnumerable<PluginConfigurationField>? ConfigurationFields => null;
     public IEnumerable<string> FieldMapKeys
     {
         get

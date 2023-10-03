@@ -222,9 +222,12 @@ class CalendarListener {
 }
 class CheckboxHelper {
     static check(name, value) {
-        const checkbox = document.querySelector(`#${name}`);
+        const checkbox = document.querySelector(`#${name}-checkbox`);
         if (checkbox === null || checkbox === void 0 ? void 0 : checkbox.checked) {
-            document.querySelector(`#${name}-hidden`).value = value;
+            document.querySelector(`#${name}`).value = value;
+        }
+        else {
+            document.querySelector(`#${name}`).value = "false";
         }
     }
 }
