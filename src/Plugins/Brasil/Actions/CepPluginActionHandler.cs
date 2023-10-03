@@ -19,6 +19,9 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
     public string Title => "Cep";
 
     public const string AllowEditingOnErrorFieldName = "AllowEditingOnError";
+    public const string ShowErrorMessageFieldName = "ShowErrorMessage";
+    public const string ClearInvalidFieldsFieldName = "ClearInvalidFields";
+    
     public IEnumerable<PluginConfigurationField>? ConfigurationFields
     {
         get
@@ -26,7 +29,19 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
             yield return new PluginConfigurationField
             {
                 Name = AllowEditingOnErrorFieldName,
-                Label = "Permitir edição em CEPs não encontrados.",
+                Label = "Habilitar campos para edição quando o CEP não for encontrado.",
+                Type = PluginConfigurationFieldType.Boolean
+            };
+            yield return new PluginConfigurationField
+            {
+                Name = ShowErrorMessageFieldName,
+                Label = "Mostrar mensagem de erro quando o CEP não for encontrado.",
+                Type = PluginConfigurationFieldType.Boolean
+            };
+            yield return new PluginConfigurationField
+            {
+                Name = ClearInvalidFieldsFieldName,
+                Label = "Limpar campos de CEPs inválidos.",
                 Type = PluginConfigurationFieldType.Boolean
             };
         }
@@ -44,6 +59,7 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
             yield return nameof(CepResult.Unidade);
         }
     }
+    
     public HtmlBuilder AdditionalInformationHtml { get; } = new();
 
     private MessageBoxFactory MessageBoxFactory { get; }
@@ -53,8 +69,6 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
         CepService = cepService;
         MessageBoxFactory = htmlComponentFactory.MessageBox;
     }
-    
-    public bool CanCreate(ActionSource actionSource) => actionSource is ActionSource.Field;
     
     public async Task<PluginActionResult> ExecuteActionAsync(PluginFieldActionContext context)
     {
@@ -70,17 +84,20 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
         }
         catch (ViaCepException)
         {
-            if (context.ConfigurationMap[AllowEditingOnErrorFieldName] is not true)
-            {
-                ClearCep(context);
-                return PluginActionResult.Success();
-            }
+            if(context.ConfigurationMap[ClearInvalidFieldsFieldName] is true)
+                ClearCepFields(context);
             
-            foreach (var parameter in context.FieldMap)
+            if (context.ConfigurationMap[AllowEditingOnErrorFieldName] is true)
             {
-                if (context.ActionContext.FormElement.Fields.Contains(parameter.Value))
-                    context.ActionContext.FormElement.Fields[parameter.Value].EnableExpression = "val:1";
+                foreach (var parameter in context.FieldMap)
+                {
+                    if (context.ActionContext.FormElement.Fields.Contains(parameter.Value))
+                        context.ActionContext.FormElement.Fields[parameter.Value].EnableExpression = "val:1";
+                }
             }
+
+            if (context.ConfigurationMap[ShowErrorMessageFieldName] is true)
+                return PluginActionResult.Error("Erro", "CEP não encontrado.");
 
             return PluginActionResult.Success();
         }
@@ -93,7 +110,7 @@ public class CepPluginActionHandler : IPluginFieldActionHandler
         return PluginActionResult.Success();
     }
 
-    private static void ClearCep(PluginFieldActionContext context)
+    private static void ClearCepFields(PluginFieldActionContext context)
     {
         foreach (var parameter in context.FieldMap)
             context.Values[parameter.Value] = null;

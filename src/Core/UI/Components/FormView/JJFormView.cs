@@ -481,6 +481,8 @@ public class JJFormView : AsyncComponent
 
         var field = FormElement.Fields[fieldName];
 
+        var scripts = new HtmlBuilder();
+        
         foreach (var action in field.Actions)
         {
             if (action is not PluginFieldAction { AutoTriggerOnChange: true } pluginAction) 
@@ -489,11 +491,19 @@ public class JJFormView : AsyncComponent
             var result = await GetPluginActionResult(pluginAction, values, fieldName);
 
             if (result.JsCallback is not null)
-                return new JsonComponentResult(new {jsCallback = result.JsCallback});
+                scripts.AppendScript(result.JsCallback);
         }
         
         DataPanel.Values = values;
-        return await DataPanel.GetResultAsync();
+        
+        var dataPanelResult = await DataPanel.GetResultAsync();
+        
+        if (dataPanelResult is HtmlComponentResult htmlComponentResult)
+        {
+            htmlComponentResult.HtmlBuilder.Append(scripts);
+        }
+
+        return dataPanelResult;
     }
 
 
@@ -699,12 +709,14 @@ public class JJFormView : AsyncComponent
         
         var result = await GetPluginActionResult(formValues);
 
-        if (result.JsCallback is not null)
+        var formResult = await GetDefaultResult(formValues);
+
+        if (formResult is HtmlComponentResult htmlComponentResult)
         {
-            return new JsonComponentResult(new { jsCallback = result.JsCallback });
+            htmlComponentResult.HtmlBuilder.AppendScriptIf(!string.IsNullOrEmpty(result.JsCallback),result.JsCallback!);
         }
 
-        return await GetDefaultResult(formValues);
+        return formResult;
     }
 
     private async Task<PluginActionResult> GetPluginActionResult(IDictionary<string, object?> formValues)

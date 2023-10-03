@@ -13,7 +13,7 @@ class DataPanelHelper {
             url: urlBuilder.build(),
             success: data => {
                 if(typeof data === "string"){
-                    document.getElementById(componentName).outerHTML = data;
+                    HTMLHelper.setOuterHTML(componentName, data)
                     listenAllEvents("#" + componentName);
                     jjutil.gotoNextFocus(fieldName);
                 }

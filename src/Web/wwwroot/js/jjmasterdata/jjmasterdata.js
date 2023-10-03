@@ -770,7 +770,7 @@ class DataPanelHelper {
             url: urlBuilder.build(),
             success: data => {
                 if (typeof data === "string") {
-                    document.getElementById(componentName).outerHTML = data;
+                    HTMLHelper.setOuterHTML(componentName, data);
                     listenAllEvents("#" + componentName);
                     jjutil.gotoNextFocus(fieldName);
                 }
@@ -1169,21 +1169,31 @@ class GridViewSelectionHelper {
     }
 }
 class HTMLHelper {
+    static setOuterHTML(elementName, html) {
+        const targetElement = document.getElementById(elementName);
+        if (!targetElement) {
+            throw new Error(`Element not found: ${elementName}`);
+        }
+        targetElement.outerHTML = html;
+        this.makeScriptsExecutable(document.getElementById(elementName));
+    }
     static setInnerHTML(element, html) {
         const targetElement = typeof element === "string" ? document.getElementById(element) : element;
         if (!targetElement) {
             throw new Error(`Element not found: ${element}`);
         }
         targetElement.innerHTML = html;
-        Array.from(targetElement.querySelectorAll("script")).forEach((oldScriptElement) => {
+        this.makeScriptsExecutable(targetElement);
+    }
+    static makeScriptsExecutable(element) {
+        element.querySelectorAll("script").forEach(script => {
             var _a;
-            const newScriptElement = document.createElement("script");
-            Array.from(oldScriptElement.attributes).forEach((attr) => {
-                newScriptElement.setAttribute(attr.name, attr.value);
-            });
-            const scriptText = document.createTextNode(oldScriptElement.innerHTML);
-            newScriptElement.appendChild(scriptText);
-            (_a = oldScriptElement.parentNode) === null || _a === void 0 ? void 0 : _a.replaceChild(newScriptElement, oldScriptElement);
+            const clone = document.createElement("script");
+            for (const attr of script.attributes) {
+                clone.setAttribute(attr.name, attr.value);
+            }
+            clone.text = script.innerHTML;
+            (_a = script.parentNode) === null || _a === void 0 ? void 0 : _a.replaceChild(clone, script);
         });
     }
 }
@@ -1807,7 +1817,7 @@ function postFormValues(options) {
             options.error(error);
         }
         else {
-            console.error(error);
+            window.location.href = "/Error";
         }
     })
         .then(() => {
