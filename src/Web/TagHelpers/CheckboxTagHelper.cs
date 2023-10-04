@@ -35,7 +35,7 @@ public class CheckboxTagHelper : TagHelper
         CheckboxFactory = checkboxFactory;
     }
 
-    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var checkBox = CheckboxFactory.Create();
         checkBox.Name = Name ?? For?.Name ?? throw new JJMasterDataException("Either for or name attributes are required.");
@@ -50,14 +50,14 @@ public class CheckboxTagHelper : TagHelper
         }
 
         checkBox.IsSwitch = IsSwitch;
-        checkBox.SwitchSize = SwitchSize;
+        checkBox.SwitchSize = SwitchSize ?? CheckBoxSwitchSize.Medium;
         checkBox.Text = Label;
         
         Configure?.Invoke(checkBox);
         
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        var htmlBuilder = await checkBox.GetHtmlBuilderAsync();
+        var htmlBuilder = checkBox.GetHtmlBuilder();
         
         output.Content.SetHtmlContent(htmlBuilder.ToString());
     }

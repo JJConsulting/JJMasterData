@@ -166,7 +166,7 @@ public class FormElementFieldList : IList<FormElementField>
         return index;
     }
 
-    public bool TryGetField(string fieldName, out FormElementField? formElementField)
+    public bool TryGetField(string fieldName, out FormElementField formElementField)
     {
         if (Contains(fieldName))
         {
@@ -174,7 +174,7 @@ public class FormElementFieldList : IList<FormElementField>
             return true;
         }
 
-        formElementField = null;
+        formElementField = null!;
         return false;
     }
  

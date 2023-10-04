@@ -75,7 +75,10 @@ public class ControlFactory
 
         var control = Create(formElement, field, context);
         control.Enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formStateData);
-
+        
+        if (field.ReadOnlyExpression != null)
+            control.ReadOnly = await ExpressionsService.GetBoolValueAsync(field.ReadOnlyExpression, formStateData);
+        
         return control;
     }
 

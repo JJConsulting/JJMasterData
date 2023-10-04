@@ -141,11 +141,8 @@ public class FormElementField : ElementField
     public int NumberOfDecimalPlaces { get; set; }
 
     /// <summary>
-    /// Field grouper panel id
+    /// This id references a FormElementPanel
     /// </summary>
-    /// <remarks>
-    /// Id references a FormElementPanel
-    /// </remarks>
     [JsonProperty("panelId")]
     public int PanelId { get; set; }
 
@@ -157,7 +154,13 @@ public class FormElementField : ElementField
     /// </summary>
     [JsonProperty("internalNotes")]
     public string? InternalNotes { get; set; }
-
+    
+    /// <summary>
+    /// The field will be disabled but the value send to the server
+    /// </summary>
+    [JsonIgnore]
+    public string? ReadOnlyExpression { get; set; }
+    
     public FormElementField()
     {
         Component = FormComponent.Text;
@@ -231,5 +234,32 @@ public class FormElementField : ElementField
 
         if (string.IsNullOrEmpty(value?.ToString()))
             Attributes?.Remove(key);
+    }
+    
+    
+    /// <summary>
+    /// Set field visibility
+    /// </summary>
+    public void SetVisible(bool value)
+    {
+        VisibleExpression = value ? "val:1" : "val:0";
+    }
+
+    /// <summary>
+    /// Set if the field is enabled.
+    /// </summary>
+    /// <param name="value"></param>
+    public void SetEnabled(bool value)
+    {
+        EnableExpression = value ? "val:1" : "val:0";
+    }
+    
+    /// <summary>
+    /// Set if the field is enabled.
+    /// </summary>
+    /// <param name="value"></param>
+    public void SetReadOnly(bool value)
+    {
+        ReadOnlyExpression = value ? "val:1" : "val:0";
     }
 }

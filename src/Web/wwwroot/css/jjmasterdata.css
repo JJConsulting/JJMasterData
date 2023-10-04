@@ -668,3 +668,8 @@ button.dropdown-toggle.form-control {
     width: calc(4rem + 0.75rem);
     border-radius: 5rem;
 }
+
+input.form-control:read-only {
+    background-color: var(--bs-secondary-bg);
+    opacity: 1;
+}

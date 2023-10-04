@@ -133,12 +133,7 @@
 
                     <tooltip title="When changing the content, it reloads all form fields"/>
 
-                    @Html.DropDownListFor(modelItem => modelItem.AutoPostBack, new[]
-                    {
-                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
-                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
-                    },
-                        new { @class = "form-control form-select" })
+                    <checkbox for="AutoPostBack" switch="true"/>
                 </div>
 
                 @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider)
@@ -234,26 +229,14 @@
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " asp-for="Export">@StringLocalizer["Export"]</label>
                     <tooltip title="Allows you to export the field"/>
-
-                    @Html.DropDownListFor(modelItem => modelItem.Export, new[]
-                    {
-                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" },
-                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" }
-                    },
-                        new { @class = "form-control form-select" })
+                    <checkbox for="Export" switch="true"/>
                 </div>
+                
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " asp-for="ValidateRequest">@StringLocalizer["Validate Request"]</label>
-                    <tooltip title="Validates possibly dangerous values on request"/>
-
-                    @Html.DropDownListFor(modelItem => modelItem.ValidateRequest, new[]
-                    {
-                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" },
-                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" }
-                    },
-                        new { @class = "form-control form-select" })
+                    <tooltip title="Validates possibly dangerous values on request on .NET Framework 4.8"/>
+                    <checkbox for="ValidateRequest" switch="true"/>
                 </div>
-
             </div>
         </div>
     </div>

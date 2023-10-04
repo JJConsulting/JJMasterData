@@ -18,7 +18,34 @@ public class CnpjPluginActionHandler : IPluginFieldActionHandler
     public string Title => "Cnpj";
     
     public HtmlBuilder? AdditionalInformationHtml { get; }
-    public IEnumerable<PluginConfigurationField>? ConfigurationFields => null;
+    public const string AllowEditingOnErrorFieldName = "AllowEditingOnError";
+    public const string ShowErrorMessageFieldName = "ShowErrorMessage";
+    public const string ClearInvalidFieldsFieldName = "ClearInvalidFields";
+    
+    public IEnumerable<PluginConfigurationField>? ConfigurationFields
+    {
+        get
+        {
+            yield return new PluginConfigurationField
+            {
+                Name = AllowEditingOnErrorFieldName,
+                Label = "Habilitar campos para edição quando o CNPJ não for encontrado.",
+                Type = PluginConfigurationFieldType.Boolean
+            };
+            yield return new PluginConfigurationField
+            {
+                Name = ShowErrorMessageFieldName,
+                Label = "Mostrar mensagem de erro quando o CNPJ não for encontrado.",
+                Type = PluginConfigurationFieldType.Boolean
+            };
+            yield return new PluginConfigurationField
+            {
+                Name = ClearInvalidFieldsFieldName,
+                Label = "Limpar campos de CNPJs inválidos.",
+                Type = PluginConfigurationFieldType.Boolean
+            };
+        }
+    }
     public IEnumerable<string> FieldMapKeys
     {
         get
@@ -59,7 +86,21 @@ public class CnpjPluginActionHandler : IPluginFieldActionHandler
         }
         catch (ReceitaFederalException)
         {
-            ClearCnpj(context);
+            if(context.ConfigurationMap[ClearInvalidFieldsFieldName] is true)
+                ClearCnpj(context);
+            
+            if (context.ConfigurationMap[AllowEditingOnErrorFieldName] is true)
+            {
+                foreach (var parameter in context.FieldMap)
+                {
+                    if (context.ActionContext.FormElement.Fields.TryGetField(parameter.Value, out var field))
+                        field.SetReadOnly(true);
+                }
+            }
+
+            if (context.ConfigurationMap[ShowErrorMessageFieldName] is true)
+                return PluginActionResult.Error("Erro", "CEP não encontrado.");
+            
             return PluginActionResult.Success();
         }
         

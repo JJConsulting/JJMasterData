@@ -8,7 +8,7 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 public class PluginActionResult
 {
     public string? JsCallback { get; init; }
-
+    
     public static PluginActionResult Success()
     {
         return new PluginActionResult();

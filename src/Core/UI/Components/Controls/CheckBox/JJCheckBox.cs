@@ -54,7 +54,7 @@ public class JJCheckBox : ControlBase
         
     }
 
-    internal HtmlBuilder GetHtmlBuilder()
+    public HtmlBuilder GetHtmlBuilder()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.Version == 3 ? "form-check" : "checkbox")
