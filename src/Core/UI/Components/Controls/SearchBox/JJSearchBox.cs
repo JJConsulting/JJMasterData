@@ -74,7 +74,7 @@ public class JJSearchBox : ControlBase
         {
             if (AutoReloadFormFields && _text == null && Request.Form.ContainsFormValues())
             {
-                _text = Request.Form[Name];
+                _text = Request.Form[$"{Name}_text"];
             }
 
             return _text;

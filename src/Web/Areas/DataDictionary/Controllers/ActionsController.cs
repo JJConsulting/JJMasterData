@@ -144,7 +144,7 @@ public class ActionsController : DataDictionaryController
         
         ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
         
-        await PopulateViewBag(elementName, action, context);
+        await PopulateViewBag(elementName, action, context, fieldName);
         
         return View(action);
     }
