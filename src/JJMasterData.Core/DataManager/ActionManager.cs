@@ -232,6 +232,7 @@ internal class ActionManager
         {
             ToolTip = action.ToolTip,
             Text = action.Text,
+            Name = action.Name,
             IsGroup = action.IsGroup,
             IsDefaultOption = action.IsDefaultOption,
             DividerLine = action.DividerLine,
