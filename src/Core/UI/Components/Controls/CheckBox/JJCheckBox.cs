@@ -83,6 +83,10 @@ public class JJCheckBox : ControlBase
             {
                 Attributes["onchange"] = checkboxHelperScript;
             }
+
+            if (ReadOnly)
+                Attributes["onclick"] = "return false";
+            
             input.WithAttributes(Attributes)
                 .WithAttribute("type", "checkbox")
                 .WithNameAndId(Name +"-checkbox")

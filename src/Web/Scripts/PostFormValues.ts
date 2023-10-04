@@ -29,7 +29,7 @@ function postFormValues(options : PostFormValuesOptions) {
                 options.error(error)
             }
             else{
-                window.location.href = "/Error";
+                console.error(error);
             }
         })
         .then(() => {

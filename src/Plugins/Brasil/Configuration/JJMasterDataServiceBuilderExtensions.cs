@@ -49,7 +49,7 @@ public static class JJMasterDataServiceBuilderExtensions
         return builder;
     }
     
-    public static JJMasterDataServiceBuilder WithCepPluginAction(this JJMasterDataServiceBuilder builder)
+    public static JJMasterDataServiceBuilder WithCepActionPlugin(this JJMasterDataServiceBuilder builder)
     {
         builder.WithViaCep();
         builder.WithActionPlugin<CepPluginActionHandler>();
@@ -57,7 +57,7 @@ public static class JJMasterDataServiceBuilderExtensions
         return builder;
     }
     
-    public static JJMasterDataServiceBuilder WithCpfPluginAction<TReceitaFederalService>(this JJMasterDataServiceBuilder builder) where TReceitaFederalService : class, IReceitaFederalService
+    public static JJMasterDataServiceBuilder WithCpfActionPlugin<TReceitaFederalService>(this JJMasterDataServiceBuilder builder) where TReceitaFederalService : class, IReceitaFederalService
     {
         builder.WithReceitaFederalService<TReceitaFederalService>();
         builder.WithActionPlugin<CpfPluginActionHandler>();
@@ -65,7 +65,7 @@ public static class JJMasterDataServiceBuilderExtensions
         return builder;
     }
     
-    public static JJMasterDataServiceBuilder WithCnpjPluginAction<TReceitaFederalService>(this JJMasterDataServiceBuilder builder) where TReceitaFederalService : class, IReceitaFederalService
+    public static JJMasterDataServiceBuilder WithCnpjActionPlugin<TReceitaFederalService>(this JJMasterDataServiceBuilder builder) where TReceitaFederalService : class, IReceitaFederalService
     {
         builder.WithReceitaFederalService<TReceitaFederalService>();
         builder.WithActionPlugin<CnpjPluginActionHandler>();
@@ -74,17 +74,26 @@ public static class JJMasterDataServiceBuilderExtensions
     }
 
     
-    public static JJMasterDataServiceBuilder WithHubDevCpfPluginAction(this JJMasterDataServiceBuilder builder, Action<HubDevSettings>? configure = null)
+    public static JJMasterDataServiceBuilder WithHubDevCpfActionPlugin(this JJMasterDataServiceBuilder builder, Action<HubDevSettings>? configure = null)
     {
         builder.WithHubDev(configure);
-        builder.WithCpfPluginAction<HubDevService>();
+        builder.WithCpfActionPlugin<HubDevService>();
         return builder;
     }
     
-    public static JJMasterDataServiceBuilder WithHubDevCnpjPluginAction(this JJMasterDataServiceBuilder builder, Action<HubDevSettings>? configure = null)
+    public static JJMasterDataServiceBuilder WithHubDevCnpjActionPlugin(this JJMasterDataServiceBuilder builder, Action<HubDevSettings>? configure = null)
     {
         builder.WithHubDev(configure);
-        builder.WithCnpjPluginAction<HubDevService>();
+        builder.WithCnpjActionPlugin<HubDevService>();
+        
+        return builder;
+    }
+    
+    public static JJMasterDataServiceBuilder WithBrasilActionPlugins(this JJMasterDataServiceBuilder builder)
+    {
+        builder.WithHubDevCnpjActionPlugin();
+        builder.WithHubDevCpfActionPlugin();
+        builder.WithCepActionPlugin();
         
         return builder;
     }

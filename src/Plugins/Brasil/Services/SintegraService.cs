@@ -49,18 +49,15 @@ public class SintegraService : IReceitaFederalService
         }
     }
     
-    public async Task<CpfResult> SearchCpfAsync(string cpf, DateTime? birthDate)
+    public async Task<CpfResult> SearchCpfAsync(string cpf, DateTime birthDate)
     {
         try
         {
             if (string.IsNullOrEmpty(cpf))
                 throw new ArgumentNullException(nameof(cpf));
-
-            if (birthDate is null)
-                throw new ArgumentNullException(nameof(birthDate));
             
             cpf = StringManager.ClearCpfCnpjChars(cpf);
-            var date = birthDate.Value.ToString("dd/MM/yyyy");
+            var date = birthDate.ToString("dd/MM/yyyy");
             var protocol = IsHttps ? "https://" : "http://";
             var url = $"{protocol}{Settings.Url}?cpf={cpf}&data-nascimento={date}&token={Settings.ApiKey}&plugin=CPF";
             

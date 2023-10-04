@@ -70,6 +70,13 @@ public class FormValuesService
                         value = LookupService.GetSelectedValue(fieldName);
                         break;
                     }
+                case FormComponent.Date:
+                case FormComponent.DateTime:
+                    if (value is not null && !string.IsNullOrEmpty(value.ToString()))
+                        value = DateTime.Parse(value.ToString()!);
+                    else
+                        value = null;
+                    break;
                 case FormComponent.Slider:
                 case FormComponent.Currency:
                 case FormComponent.Number:

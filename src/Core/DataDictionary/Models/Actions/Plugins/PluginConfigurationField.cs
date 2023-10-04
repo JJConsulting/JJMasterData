@@ -17,5 +17,6 @@ public enum PluginConfigurationFieldType
 {
     Text,
     Number,
-    Boolean
+    Boolean,
+    FormElementField
 }

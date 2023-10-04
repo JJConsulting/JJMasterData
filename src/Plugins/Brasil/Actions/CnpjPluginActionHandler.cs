@@ -2,51 +2,25 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Brasil.Abstractions;
-using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Models;
 using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.UI.Html;
+
 
 namespace JJMasterData.Brasil.Actions;
 
-public class CnpjPluginActionHandler : IPluginFieldActionHandler
+public class CnpjPluginActionHandler : BrasilPluginActionHandler
 {
+    
     private IReceitaFederalService ReceitaFederalService { get; }
-    public Guid Id => GuidGenerator.FromValue(nameof(CnpjPluginActionHandler));
-    public string Title => "Cnpj";
+    public override Guid Id => GuidGenerator.FromValue(nameof(CnpjPluginActionHandler));
+    public override string Title => "Cnpj";
+    public override HtmlBuilder? AdditionalInformationHtml => null;
     
-    public HtmlBuilder? AdditionalInformationHtml { get; }
-    public const string AllowEditingOnErrorFieldName = "AllowEditingOnError";
-    public const string ShowErrorMessageFieldName = "ShowErrorMessage";
-    public const string ClearInvalidFieldsFieldName = "ClearInvalidFields";
-    
-    public IEnumerable<PluginConfigurationField>? ConfigurationFields
-    {
-        get
-        {
-            yield return new PluginConfigurationField
-            {
-                Name = AllowEditingOnErrorFieldName,
-                Label = "Habilitar campos para edição quando o CNPJ não for encontrado.",
-                Type = PluginConfigurationFieldType.Boolean
-            };
-            yield return new PluginConfigurationField
-            {
-                Name = ShowErrorMessageFieldName,
-                Label = "Mostrar mensagem de erro quando o CNPJ não for encontrado.",
-                Type = PluginConfigurationFieldType.Boolean
-            };
-            yield return new PluginConfigurationField
-            {
-                Name = ClearInvalidFieldsFieldName,
-                Label = "Limpar campos de CNPJs inválidos.",
-                Type = PluginConfigurationFieldType.Boolean
-            };
-        }
-    }
-    public IEnumerable<string> FieldMapKeys
+    protected override IEnumerable<string> CustomFieldMapKeys
     {
         get
         {
@@ -67,54 +41,19 @@ public class CnpjPluginActionHandler : IPluginFieldActionHandler
         }
     }
 
-    public CnpjPluginActionHandler(IReceitaFederalService receitaFederalService)
+    public CnpjPluginActionHandler(IReceitaFederalService receitaFederalService, ExpressionsService expressionsService) : base(expressionsService)
     {
         ReceitaFederalService = receitaFederalService;
     }
-    
-    public async Task<PluginActionResult> ExecuteActionAsync(PluginFieldActionContext context)
+
+    protected override async Task<Dictionary<string, object?>> GetResultAsync(PluginFieldActionContext context)
     {
         var values = context.Values;
         
         var cnpj = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString());
-
-        CnpjResult cnpjResult;
-
-        try
-        {
-            cnpjResult = await ReceitaFederalService.SearchCnpjAsync(cnpj);
-        }
-        catch (ReceitaFederalException)
-        {
-            if(context.ConfigurationMap[ClearInvalidFieldsFieldName] is true)
-                ClearCnpj(context);
-            
-            if (context.ConfigurationMap[AllowEditingOnErrorFieldName] is true)
-            {
-                foreach (var parameter in context.FieldMap)
-                {
-                    if (context.ActionContext.FormElement.Fields.TryGetField(parameter.Value, out var field))
-                        field.SetReadOnly(true);
-                }
-            }
-
-            if (context.ConfigurationMap[ShowErrorMessageFieldName] is true)
-                return PluginActionResult.Error("Erro", "CEP não encontrado.");
-            
-            return PluginActionResult.Success();
-        }
         
-        var cnpjDictionary = cnpjResult.ToDictionary();
-        
-        foreach (var parameter in context.FieldMap)
-            context.Values[parameter.Value] = cnpjDictionary[parameter.Key];
-        
-        return PluginActionResult.Success();
-    }
+        var cnpjResult = await ReceitaFederalService.SearchCnpjAsync(cnpj);
 
-    private static void ClearCnpj(PluginFieldActionContext context)
-    {
-        foreach (var parameter in context.FieldMap)
-            context.Values[parameter.Value] = null;
+        return cnpjResult.ToDictionary();
     }
 }

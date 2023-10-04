@@ -21,9 +21,9 @@ public class CepResult
         return JsonConvert.DeserializeObject<CepResult>(json)!;
     }
     
-    public Dictionary<string, string?> ToDictionary()
+    public Dictionary<string, object?> ToDictionary()
     {
-        var dictionary = new Dictionary<string, string?>
+        var dictionary = new Dictionary<string, object?>
         {
             { nameof(Logradouro), Logradouro },
             { nameof(Complemento), Complemento },

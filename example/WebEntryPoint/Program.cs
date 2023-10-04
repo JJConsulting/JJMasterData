@@ -12,9 +12,7 @@ builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange:
 
 builder.Services.AddJJMasterDataWeb(builder.Configuration)
     .WithProtheusServices()
-    .WithCepPluginAction()
-    .WithHubDevCpfPluginAction()
-    .WithHubDevCnpjPluginAction();
+    .WithBrasilActionPlugins();
 
 builder.Services.AddControllersWithViews().AddViewLocalization();
 

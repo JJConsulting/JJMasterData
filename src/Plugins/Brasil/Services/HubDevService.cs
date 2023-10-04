@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using JJMasterData.Brasil.Abstractions;
@@ -28,8 +30,8 @@ public class HubDevService : IReceitaFederalService
     public bool IsHttps { get; set; } = true;
     
     public bool IgnoreDb { get; set; }
-    
-    public async Task<T> Search<T>(string endpoint, string identifier)
+
+    private async Task<T> Search<T>(string endpoint, string identifier, Dictionary<string,string>? additionalParameters = null)
     {
         try
         {
@@ -39,7 +41,13 @@ public class HubDevService : IReceitaFederalService
             var protocol = IsHttps ? "https://" : "http://";
             var ignoreDb = IgnoreDb ? "&ignore_db=1" : "";
             var url = $"{protocol}{Settings.Url}{endpoint}/?{endpoint}={identifier}&token={Settings.ApiKey}{ignoreDb}";
-        
+            
+            if (additionalParameters is { Count: > 0 })
+            {
+                var additionalQueryString = string.Join("&", additionalParameters.Select(kv => $"{kv.Key}={kv.Value}"));
+                url = $"{url}&{additionalQueryString}";
+            }
+            
             var message = await HttpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<JObject>(content, new JsonSerializerSettings()
@@ -59,9 +67,12 @@ public class HubDevService : IReceitaFederalService
         return await Search<CnpjResult>("cnpj", cnpj);
     }
 
-    public async Task<CpfResult> SearchCpfAsync(string cpf, DateTime? birthDate)
+    public async Task<CpfResult> SearchCpfAsync(string cpf, DateTime birthDate)
     {
-        return await Search<CpfResult>("cpf", cpf);
+        return await Search<CpfResult>("cpf", cpf, new Dictionary<string, string>
+        {
+            {"data", birthDate.ToString("ddMMyyyy")}
+        });
     }
 
 
@@ -69,6 +80,4 @@ public class HubDevService : IReceitaFederalService
     {
         return await Search<CepResult>("cep", cep);
     }
-    
-        
 }

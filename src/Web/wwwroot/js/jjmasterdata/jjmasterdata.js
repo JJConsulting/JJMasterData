@@ -1817,7 +1817,7 @@ function postFormValues(options) {
             options.error(error);
         }
         else {
-            window.location.href = "/Error";
+            console.error(error);
         }
     })
         .then(() => {
