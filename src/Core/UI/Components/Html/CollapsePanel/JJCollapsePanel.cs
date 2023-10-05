@@ -76,7 +76,7 @@ public class JJCollapsePanel : HtmlComponent
     private HtmlBuilder GetAccordion()
     {
         var accordion = new HtmlBuilder(HtmlTag.Div)
-                .WithCssClass("accordion pb-1 mb-3")
+                .WithCssClass($"accordion accordion-{Color.ToString().ToLower()} pb-1 mb-3")
                 .WithAttribute("id", $"{Name}")
                 .Append(HtmlTag.Div, div =>
                 {

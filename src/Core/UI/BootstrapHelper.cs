@@ -31,12 +31,12 @@ public static class BootstrapHelper
             return $"panel panel-{className}";
         }
 
-        return $"card border-{className.Replace("default", "jjmasterdata")}";
+        return $"card border-{className.Replace("default", "jjmasterdata")} border-opacity-75";
     }
 
     public static string GetPanelHeading(string className) => Version switch
     {
-        >= 4 => $" card-header bg-{className.Replace("default", "jjmasterdata")}",
+        >= 4 => $" card-header bg-{className.Replace("default", "jjmasterdata")} bg-opacity-75",
         _ => " panel-heading"
     };
 

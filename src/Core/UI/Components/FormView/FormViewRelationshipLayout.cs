@@ -89,7 +89,7 @@ internal class FormViewRelationshipLayout
     {
         switch (relationship.Panel.Layout)
         {
-            case PanelLayout.Collapse or PanelLayout.Panel:
+            case PanelLayout.Collapse:
                 var collapse = new JJCollapsePanel(ParentFormView.CurrentContext.Request.Form)
                 {
                     Name = $"{relationship.ElementRelationship?.ChildElement ?? ParentFormView.Name}-collapse-panel",

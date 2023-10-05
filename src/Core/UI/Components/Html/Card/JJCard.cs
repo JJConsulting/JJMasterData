@@ -62,8 +62,10 @@ public class JJCard : HtmlComponent
             d.WithCssClass(BootstrapHelper.PanelBody);
             if (!string.IsNullOrEmpty(SubTitle))
             {
-                var title = new JJTitle();
-                title.SubTitle = SubTitle;
+                var title = new JJTitle
+                {
+                    SubTitle = SubTitle
+                };
                 d.Append(title.GetHtmlBlockquote());
             }
             d.Append(HtmlBuilderContent);

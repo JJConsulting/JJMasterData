@@ -673,3 +673,16 @@ input.form-control:read-only {
     background-color: var(--bs-secondary-bg);
     opacity: 1;
 }
+/*Custom accordion colors*/
+.accordion-success{
+    --bs-accordion-active-bg: var(--bs-success-bg-subtle)
+}
+.accordion-danger{
+    --bs-accordion-active-bg: var(--bs-danger-bg-subtle)
+}
+.accordion-warning{
+    --bs-accordion-active-bg: var(--bs-warning-bg-subtle)
+}
+.accordion-information{
+    --bs-accordion-active-bg: var(--bs-info-bg-subtle)
+}
