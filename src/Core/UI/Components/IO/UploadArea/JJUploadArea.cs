@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Localization;
@@ -51,11 +52,23 @@ public class JJUploadArea : AsyncComponent
     
     public string AbortLabel { get; set; } = "Stop";
     
-    public string ExtensionNotAllowedLabel { get; set; } = "is not allowed. Allowed extensions: ";
+    public string ExtensionNotAllowedLabel { get; set; } = "File type is not allowed. Allowed extensions: {0}";
     
-    public string SizeErrorLabel { get; set; } = "is not allowed. Allowed Max size: ";
-    
-    public string ImportLabel { get; set; } = "Click here, paste, or drag & drop Files";
+    public string SizeErrorLabel { get; set; } = "File is too big. Max file size: {0}";
+
+    public string GetImportLabel()
+    {
+        if (EnableDragDrop && !EnableCopyPaste)
+            return "Click here to upload or drag & drop files";
+
+        if (!EnableDragDrop && !EnableCopyPaste)
+            return "Click here to upload files";
+        
+        if (!EnableDragDrop && EnableCopyPaste)
+            return "Click here to upload or paste files";
+
+        return "Click here, paste or drag & drop files";
+    }
 
     public bool EnableDragDrop { get; set; } = true;
 
@@ -89,6 +102,7 @@ public class JJUploadArea : AsyncComponent
     private IEncryptionService EncryptionService { get; }
     
     private RouteContext? _routeContext;
+
     internal RouteContext RouteContext
     {
         get
@@ -162,20 +176,42 @@ public class JJUploadArea : AsyncComponent
         div.WithAttribute((string)"route-context", (string)EncryptionService.EncryptRouteContext(RouteContext));
         div.WithAttribute("allow-multiple-files", Multiple.ToString().ToLower());
         div.WithAttribute("query-string-params", GetQueryStringParams());
-        div.WithAttribute("max-file-size", MaxFileSize.ToString().ToLower());
+        div.WithAttribute("max-file-size", MaxFileSize.ToString());
         div.WithAttribute("allow-drag-drop", EnableDragDrop.ToString().ToLower());
         div.WithAttribute("allow-copy-paste", EnableCopyPaste.ToString().ToLower());
         div.WithAttribute("show-file-size", ShowFileSize.ToString().ToLower());
-        div.WithAttribute("allowed-types", AllowedTypes);     
+        div.WithAttribute("allowed-types", GetAllowedTypes());     
         div.WithAttribute("max-files", Multiple ? MaxFiles : 1);
         div.WithAttribute("parallel-uploads", ParallelUploads);
-        div.WithAttribute("drag-drop-label", StringLocalizer[ImportLabel]);
+        div.WithAttribute("drag-drop-label", StringLocalizer[GetImportLabel()]);
         div.WithAttribute("cancel-label", StringLocalizer[CancelLabel]);
         div.WithAttribute("abort-label", StringLocalizer[AbortLabel]);
-        div.WithAttribute("extension-not-allowed-label", StringLocalizer[ExtensionNotAllowedLabel]);
+        div.WithAttribute("extension-not-allowed-label", StringLocalizer[ExtensionNotAllowedLabel, AllowedTypes]);
         div.WithAttribute("file-size-error-label", StringLocalizer[SizeErrorLabel]);
         
         return div;
+    }
+
+    private string GetAllowedTypes()
+    {
+        if (string.IsNullOrEmpty(AllowedTypes) || AllowedTypes == "*")
+            return string.Empty;
+
+        var allowedTypes = new StringBuilder();
+        
+        foreach (var type in AllowedTypes.Split(','))
+        {
+            if(allowedTypes.Length > 0)
+                allowedTypes.Append(',');
+            
+            if (type.Trim().StartsWith("."))
+                allowedTypes.Append(type);
+
+            else
+                allowedTypes.Append("." + type);
+        }
+
+        return allowedTypes.ToString();
     }
 
     /// <summary>

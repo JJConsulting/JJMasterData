@@ -5,24 +5,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
 
 public class UploadAreaService 
 {
     private IHttpContext CurrentContext { get; }
+    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
     public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
     public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
 
-    public UploadAreaService(IHttpContext currentContext)
+    public UploadAreaService(IHttpContext currentContext, IStringLocalizer<JJMasterDataResources> stringLocalizer)
     {
         CurrentContext = currentContext;
+        StringLocalizer = stringLocalizer;
     }
     
     public async Task<UploadAreaResultDto> UploadFileAsync(FormFileContent formFile, string? allowedTypes = null)
@@ -100,7 +104,7 @@ public class UploadAreaService
         return formFile != null;
     }
 
-    private static void ValidateAllowedExtensions(string filename, string? allowedTypes)
+    private void ValidateAllowedExtensions(string filename, string? allowedTypes)
     {
         if (allowedTypes != null && !allowedTypes.Equals("*"))
             return;
@@ -160,7 +164,7 @@ public class UploadAreaService
 
         string ext = FileIO.GetFileNameExtension(filename);
         if (list.Contains(ext))
-            throw new JJMasterDataException("You cannot upload this file extension.");
+            throw new JJMasterDataException(StringLocalizer["You cannot upload system files"]);
 
     }
 }

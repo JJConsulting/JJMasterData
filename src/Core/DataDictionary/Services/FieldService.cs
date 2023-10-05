@@ -31,7 +31,6 @@ public class FieldService : BaseService
 
         if (field.DataFile != null)
         {
-            field.DataFile.MaxFileSize *= 1000000;
             field.DataFile.FolderPath = field.DataFile.FolderPath?.Trim();
         }
 

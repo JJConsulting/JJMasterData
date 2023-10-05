@@ -202,9 +202,7 @@ public class FieldController : DataDictionaryController
         {
             MaxFileSize = 2097152 //2mb
         };
-
-        field.DataFile.MaxFileSize /= 1000000;
-
+        
         //Refresh action
         if (formElement.Fields.Contains(field.Name))
             field.Actions = formElement.Fields[field.Name].Actions;

@@ -8,6 +8,7 @@
             maxFilesize: options.maxFileSize,
             uploadMultiple: options.allowMultipleFiles,
             method: "POST",
+            acceptedFiles: options.allowedTypes,
             maxFiles: options.maxFiles,
             dictDefaultMessage :options.dragDropLabel,
             dictFileTooBig: options.fileSizeErrorLabel,
@@ -35,12 +36,10 @@
 
         if (options.allowCopyPaste) {
             document.onpaste = function (event) {
-                const items = Array.from(event.clipboardData.items);
+                const items = Array.from(event.clipboardData.files);
                 items.forEach((item) => {
-                    if (item.kind === 'file') {
-                        //@ts-ignore
-                        dropzone.addFile(item.getAsFile());
-                    }
+                    //@ts-ignore
+                    dropzone.addFile(item);
                 });
             };
         }

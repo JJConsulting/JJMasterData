@@ -2089,10 +2089,6 @@
     <value>Cole linhas do Excel ou arraste e solte arquivos do tipo: {0}</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Paste or Drag &amp; Drop Files" xml:space="preserve">
-    <value>Cole ou arraste arquivos</value>
-    <comment>JJMasterDataCore</comment>
-  </data>
   <data name="Periods" xml:space="preserve">
     <value>Períodos</value>
     <comment>JJMasterDataCore</comment>
@@ -3438,5 +3434,20 @@
   </data>
   <data name="The developer has not provided additional information about this plugin." xml:space="preserve">
     <value>O desenvolvedor não trouxe nenhuma informação adicional sobre esse plugin.</value>
+  </data>
+  <data name="File type is not allowed. Allowed extensions: {0}" xml:space="preserve">
+    <value>Tipo de arquivo não permitido. Extensões permitidas: {0}</value>
+  </data>
+  <data name="Click here to upload or drag &amp; drop files" xml:space="preserve">
+    <value>Clique aqui para ou arraste arquivos</value>
+  </data>
+  <data name="Click here to upload files" xml:space="preserve">
+    <value>Clique aqui para fazer upload de arquivos</value>
+  </data>
+  <data name="Click here to upload or paste files" xml:space="preserve">
+    <value>Clique aqui para fazer upload ou cole arquivos</value>
+  </data>
+  <data name="Click here, paste or drag &amp; drop files" xml:space="preserve">
+    <value>Clique aqui, cole ou arraste arquivos</value>
   </data>
 </root>

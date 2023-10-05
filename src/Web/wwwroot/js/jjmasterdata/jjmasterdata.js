@@ -2101,6 +2101,7 @@ class UploadAreaListener {
             maxFilesize: options.maxFileSize,
             uploadMultiple: options.allowMultipleFiles,
             method: "POST",
+            acceptedFiles: options.allowedTypes,
             maxFiles: options.maxFiles,
             dictDefaultMessage: options.dragDropLabel,
             dictFileTooBig: options.fileSizeErrorLabel,
@@ -2125,11 +2126,9 @@ class UploadAreaListener {
         }
         if (options.allowCopyPaste) {
             document.onpaste = function (event) {
-                const items = Array.from(event.clipboardData.items);
+                const items = Array.from(event.clipboardData.files);
                 items.forEach((item) => {
-                    if (item.kind === 'file') {
-                        dropzone.addFile(item.getAsFile());
-                    }
+                    dropzone.addFile(item);
                 });
             };
         }
