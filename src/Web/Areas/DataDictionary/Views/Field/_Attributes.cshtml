@@ -72,7 +72,7 @@
     case FormComponent.Date:
     case FormComponent.DateTime:
     case FormComponent.Hour:
-        <div class="@BootstrapHelper.FormGroup col-sm-4">
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
             <label class="@BootstrapHelper.Label "
                 for="@FormElementField.AutocompletePickerAttribute">
                 @StringLocalizer["Autocomplete"]
@@ -82,6 +82,17 @@
                       switch="true"
                       switch-size="CheckBoxSwitchSize.Medium"
                       value="@(Model.GetAttr(FormElementField.AutocompletePickerAttribute) is true)"/>
+        </div>
+        
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
+            <label class="@BootstrapHelper.Label "
+                   for="@FormElementField.MultipleDates">
+                @StringLocalizer["Allow multiple dates"]
+            </label>
+            <checkbox name="@(FormElementField.MultipleDates)" 
+                      switch="true"
+                      switch-size="CheckBoxSwitchSize.Medium"
+                      value="@(Model.GetAttr(FormElementField.MultipleDates) is true)"/>
         </div>
         break;
 }

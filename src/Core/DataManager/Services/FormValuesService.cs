@@ -70,8 +70,8 @@ public class FormValuesService
                         value = LookupService.GetSelectedValue(fieldName);
                         break;
                     }
-                case FormComponent.Date:
-                case FormComponent.DateTime:
+                case FormComponent.Date when field.DataType is FieldType.DateTime or FieldType.DateTime2:
+                case FormComponent.DateTime when field.DataType is FieldType.DateTime or FieldType.DateTime2:
                     if (value is not null && !string.IsNullOrEmpty(value.ToString()))
                         value = DateTime.Parse(value.ToString()!);
                     else

@@ -291,6 +291,7 @@ public class FieldController : DataDictionaryController
                 or FormComponent.DateTime
                 or FormComponent.Hour:
                 field.SetAttr(FormElementField.AutocompletePickerAttribute, Request.Form[FormElementField.AutocompletePickerAttribute] == "true");
+                field.SetAttr(FormElementField.MultipleDates, Request.Form[FormElementField.MultipleDates] == "true");
                 break;
 
         }
