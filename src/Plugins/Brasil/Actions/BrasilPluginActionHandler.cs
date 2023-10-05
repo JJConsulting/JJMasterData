@@ -41,19 +41,6 @@ public abstract class BrasilPluginActionHandler : IPluginFieldActionHandler
     {
         get
         {
-            yield return new PluginConfigurationField
-            {
-                Name = AllowEditingOnErrorKey,
-                Label = $"Habilitar campos desabilitados para edição quando o {Title} não for encontrado.",
-                Type = PluginConfigurationFieldType.Boolean
-            };
-            yield return new PluginConfigurationField
-            {
-                Name = ShowErrorMessageKey,
-                Label = $"Mostrar mensagem de erro quando o {Title} não for encontrado.",
-                Type = PluginConfigurationFieldType.Boolean
-            };
-
             if (CustomConfigurationFields is not null)
             {
                 foreach (var field in CustomConfigurationFields)
@@ -61,6 +48,18 @@ public abstract class BrasilPluginActionHandler : IPluginFieldActionHandler
                     yield return field;
                 }
             }
+            yield return new PluginConfigurationField
+            {
+                Name = AllowEditingOnErrorKey,
+                Label = $"Habilitar campos desabilitados para edição quando o {Title.ToUpper()} não for encontrado.",
+                Type = PluginConfigurationFieldType.Boolean
+            };
+            yield return new PluginConfigurationField
+            {
+                Name = ShowErrorMessageKey,
+                Label = $"Mostrar mensagem de erro quando o {Title.ToUpper()} não for encontrado.",
+                Type = PluginConfigurationFieldType.Boolean
+            };
         }
     }
 

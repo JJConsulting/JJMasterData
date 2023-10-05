@@ -14,12 +14,6 @@ namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormElementDataItem 
 {
-    private DataAccessCommand? _command;
-    private IList<DataItemValue>? _items;
-    private DataElementMap? _elementMap;
-    /// <summary>
-    /// Tipo da origem dos dados
-    /// </summary>
     [JsonProperty("dataItemType")]
     public DataItemType DataItemType { get; set; }
 
@@ -28,32 +22,17 @@ public class FormElementDataItem
     /// 1) Id;
     /// 2) Description.
     /// </summary>
-    [DataMember(Name = "command")]
-    [RequiredIf(nameof(Items), null)]
-    public DataAccessCommand Command
-    {
-        get => _command ??= new DataAccessCommand();
-        set => _command = value;
-    }
+    [JsonProperty("command")]
+    public DataAccessCommand? Command { get; set; }
     
-    [DataMember(Name = "itens")]
-    [RequiredIf(nameof(Command), null)]
-    public IList<DataItemValue> Items
-    {
-        get => _items ??= new List<DataItemValue>();
-        set => _items = value;
-    }
-
-
+    [JsonProperty("itens")]
+    public IList<DataItemValue>? Items { get; set; }
+    
     /// <summary>
-    /// Mapeamento do dicionário
+    /// Relationship with another Element to recover values
     /// </summary>
     [JsonProperty("elementMap")]
-    public DataElementMap ElementMap
-    {
-        get => _elementMap ??= new DataElementMap();
-        set => _elementMap = value;
-    }
+    public DataElementMap? ElementMap { get; set; }
 
     /// <summary>
     /// Exibir texto (Todos) como primeira opção (Default = NONE)
@@ -92,12 +71,12 @@ public class FormElementDataItem
 
     public bool HasSqlExpression()
     {
-        if (string.IsNullOrEmpty(Command.Sql))
+        if (string.IsNullOrEmpty(Command?.Sql))
             return false;
 
-        string sql = Command.Sql;
-        sql = sql.Replace("{SearchId}", string.Empty);
-        sql = sql.Replace("{SearchText}", string.Empty);
-        return sql.Contains("{");
+        var sql = Command?.Sql;
+        sql = sql?.Replace("{SearchId}", string.Empty);
+        sql = sql?.Replace("{SearchText}", string.Empty);
+        return sql?.Contains("{") ?? false;
     }
 }

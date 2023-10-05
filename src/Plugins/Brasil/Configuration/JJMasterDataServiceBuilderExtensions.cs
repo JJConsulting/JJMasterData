@@ -13,9 +13,16 @@ namespace JJMasterData.Brasil.Configuration;
 
 public static class JJMasterDataServiceBuilderExtensions
 {
+    public static JJMasterDataServiceBuilder WithCepService<TService>(this JJMasterDataServiceBuilder builder) where TService : class, ICepService
+    {
+        builder.Services.AddScoped<ICepService, TService>();
+        return builder;
+    }
+
+    
     public static JJMasterDataServiceBuilder WithReceitaFederalService<TService>(this JJMasterDataServiceBuilder builder) where TService : class, IReceitaFederalService
     {
-        builder.Services.AddTransient<IReceitaFederalService, TService>();
+        builder.Services.AddScoped<IReceitaFederalService, TService>();
         return builder;
     }
     
@@ -26,7 +33,7 @@ public static class JJMasterDataServiceBuilderExtensions
         if (configure is not null)
             builder.Services.PostConfigure(configure);
         
-        builder.Services.AddTransient<IReceitaFederalService, SintegraService>();
+        builder.WithReceitaFederalService<SintegraService>();
         return builder;
     }
     
@@ -36,8 +43,8 @@ public static class JJMasterDataServiceBuilderExtensions
         
         if(configure is not null)
             builder.Services.PostConfigure(configure);
-        
-        builder.Services.AddTransient<IReceitaFederalService, HubDevService>();
+
+        builder.WithReceitaFederalService<HubDevService>();
         
         return builder;
     }
@@ -49,9 +56,9 @@ public static class JJMasterDataServiceBuilderExtensions
         return builder;
     }
     
-    public static JJMasterDataServiceBuilder WithCepActionPlugin(this JJMasterDataServiceBuilder builder)
+    public static JJMasterDataServiceBuilder WithCepActionPlugin<TCepService>(this JJMasterDataServiceBuilder builder) where TCepService : class, ICepService
     {
-        builder.WithViaCep();
+        builder.WithCepService<TCepService>();
         builder.WithActionPlugin<CepPluginActionHandler>();
         
         return builder;
@@ -89,11 +96,19 @@ public static class JJMasterDataServiceBuilderExtensions
         return builder;
     }
     
+    public static JJMasterDataServiceBuilder WithHubDevCepActionPlugin(this JJMasterDataServiceBuilder builder, Action<HubDevSettings>? configure = null)
+    {
+        builder.WithHubDev(configure);
+        builder.WithCepActionPlugin<HubDevService>();
+        
+        return builder;
+    }
+    
     public static JJMasterDataServiceBuilder WithBrasilActionPlugins(this JJMasterDataServiceBuilder builder)
     {
         builder.WithHubDevCnpjActionPlugin();
         builder.WithHubDevCpfActionPlugin();
-        builder.WithCepActionPlugin();
+        builder.WithHubDevCepActionPlugin();
         
         return builder;
     }

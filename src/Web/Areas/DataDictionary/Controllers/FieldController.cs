@@ -240,7 +240,9 @@ public class FieldController : DataDictionaryController
             return;
 
         ViewBag.ElementNameList = await _fieldService.GetElementListAsync();
-        ViewBag.ElementFieldList = await _fieldService.GetElementFieldListAsync(field);
+
+        field.DataItem.ElementMap ??= new DataElementMap();
+        ViewBag.ElementFieldList = await _fieldService.GetElementFieldListAsync(field.DataItem.ElementMap);
     }
     private void RecoverCustomAttibutes(ref FormElementField field)
     {

@@ -14,7 +14,7 @@ namespace JJMasterData.Brasil.Actions;
 
 public class CnpjPluginActionHandler : BrasilPluginActionHandler
 {
-    
+    private const string IgnoreDbFieldKey = "IgnoreDb";
     private IReceitaFederalService ReceitaFederalService { get; }
     public override Guid Id => GuidGenerator.FromValue(nameof(CnpjPluginActionHandler));
     public override string Title => "Cnpj";
@@ -40,6 +40,19 @@ public class CnpjPluginActionHandler : BrasilPluginActionHandler
             yield return nameof(CnpjResult.QuadroSocios);
         }
     }
+    
+    protected override IEnumerable<PluginConfigurationField> CustomConfigurationFields
+    {
+        get
+        {
+            yield return new PluginConfigurationField
+            {
+                Name = IgnoreDbFieldKey,
+                Label = "Quando habilitado, a busca é realizada diretamente na Receita Federal. Nessa modalidade de consulta, serão consumidos 3 créditos ao invés de somente 1.",
+                Type = PluginConfigurationFieldType.Boolean
+            };
+        }
+    }
 
     public CnpjPluginActionHandler(IReceitaFederalService receitaFederalService, ExpressionsService expressionsService) : base(expressionsService)
     {
@@ -51,6 +64,8 @@ public class CnpjPluginActionHandler : BrasilPluginActionHandler
         var values = context.Values;
         
         var cnpj = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString());
+        
+        ReceitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
         
         var cnpjResult = await ReceitaFederalService.SearchCnpjAsync(cnpj);
 

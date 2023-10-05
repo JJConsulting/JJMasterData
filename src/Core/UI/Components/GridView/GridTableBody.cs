@@ -126,7 +126,7 @@ internal class GridTableBody
                 HtmlBuilder cell;
                 if (field.DataItem is not null && field.DataItem.ShowIcon)
                 {
-                    var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,null,value).FirstOrDefaultAsync<DataItemValue>();
+                    var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,null,value).FirstOrDefaultAsync();
                     cell = new HtmlBuilder(HtmlTag.Div);
                     cell.AppendComponent(new JJIcon(dataItemValue.Icon,dataItemValue.IconColor ?? string.Empty));
                     cell.Append(HtmlTag.Span, span =>

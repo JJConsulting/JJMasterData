@@ -72,7 +72,7 @@ public class FieldService : BaseService
                 case DataItemType.ElementMap:
                     field.DataFile = null;
                     field.DataItem.Command = null;
-                    field.DataItem.Items?.Clear();
+                    field.DataItem.Items = null;
                     break;
                 case DataItemType.Manual:
                     field.DataFile = null;
@@ -82,7 +82,7 @@ public class FieldService : BaseService
                 case DataItemType.SqlCommand:
                     field.DataFile = null;
                     field.DataItem.ElementMap = null;
-                    field.DataItem.Items?.Clear();
+                    field.DataItem.Items = null;
                     break;
             }
         }
@@ -258,14 +258,14 @@ public class FieldService : BaseService
     {
         var dataItem = field.DataItem;
         
-        if (dataItem!.ElementMap == null)
+        var elementMap = dataItem?.ElementMap;
+
+        if (elementMap is null)
         {
-            AddError("ElementMap", StringLocalizer["Undefined mapping settings"]);
+            AddError(nameof(elementMap), $"{nameof(DataElementMap)} cannot be null.");
             return;
         }
         
-        var elementMap = dataItem.ElementMap;
-
         if (string.IsNullOrEmpty(elementMap.ElementName))
         {
             AddError(nameof(elementMap.ElementName), StringLocalizer["Required field [ElementName]"]);
@@ -409,25 +409,23 @@ public class FieldService : BaseService
         return nextField;
     }
 
-    public async Task<Dictionary<string, string>> GetElementFieldListAsync(FormElementField currentField)
+    public async Task<Dictionary<string, string>> GetElementFieldListAsync(DataElementMap elementMap)
     {
-        var dicFields = new Dictionary<string, string>();
-        dicFields.Add(string.Empty, StringLocalizer["--Select--"]);
+        var fields = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
 
-        var map = currentField.DataItem!.ElementMap;
-        if (string.IsNullOrEmpty(map.ElementName))
-            return dicFields;
+        if (string.IsNullOrEmpty(elementMap.ElementName))
+            return fields;
 
-        var dataEntry = await DataDictionaryRepository.GetFormElementAsync(map.ElementName);
+        var dataEntry = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
         if (dataEntry == null)
-            return dicFields;
+            return fields;
 
         foreach (var field in dataEntry.Fields)
         {
-            dicFields.Add(field.Name, field.Name);
+            fields.Add(field.Name, field.Name);
         }
 
-        return dicFields;
+        return fields;
     }
 
     public async Task<bool> CopyFieldAsync(FormElement formElement, FormElementField field)

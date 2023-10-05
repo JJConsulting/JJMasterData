@@ -7,6 +7,7 @@ using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Configuration;
 using JJMasterData.Brasil.Exceptions;
 using JJMasterData.Brasil.Models;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,14 +17,17 @@ namespace JJMasterData.Brasil.Services;
 public class HubDevService : IReceitaFederalService
 {
     private HttpClient HttpClient { get; }
+    private IMemoryCache MemoryCache { get; }
     private HubDevSettings Settings { get; }
     
     
     public HubDevService(
         HttpClient httpClient,
+        IMemoryCache memoryCache,
         IOptions<HubDevSettings> options)
     {
         HttpClient = httpClient;
+        MemoryCache = memoryCache;
         Settings = options.Value;
     }
     
@@ -37,7 +41,10 @@ public class HubDevService : IReceitaFederalService
         {
             if (string.IsNullOrEmpty(identifier))
                 throw new ArgumentNullException(nameof(identifier));
-        
+
+            if (MemoryCache.TryGetValue(identifier, out T cacheResult) && !IgnoreDb)
+                return cacheResult;
+            
             var protocol = IsHttps ? "https://" : "http://";
             var ignoreDb = IgnoreDb ? "&ignore_db=1" : "";
             var url = $"{protocol}{Settings.Url}{endpoint}/?{endpoint}={identifier}&token={Settings.ApiKey}{ignoreDb}";
@@ -50,11 +57,17 @@ public class HubDevService : IReceitaFederalService
             
             var message = await HttpClient.GetAsync(url);
             var content = await message.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<JObject>(content, new JsonSerializerSettings()
+            
+            var apiResult = JsonConvert.DeserializeObject<JObject>(content, new JsonSerializerSettings()
             {
                 DateFormatString = "dd/MM/yyyy"
             });
-            return result!["result"]!.ToObject<T>()!;
+            
+            var result = apiResult!["result"]!.ToObject<T>()!;
+
+            MemoryCache.Set<T>(identifier, result, TimeSpan.FromMinutes(30));
+
+            return result;
         }
         catch (Exception ex)
         {

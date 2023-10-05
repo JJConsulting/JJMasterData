@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
@@ -8,14 +9,15 @@ namespace JJMasterData.Core.DataDictionary.Models;
 public class DataElementMap
 {
     [JsonProperty("elementName")] 
+    [Required]
     public string ElementName { get; set; } = null!;
 
     [JsonProperty("fieldKey")]
     public string FieldId { get; set; } = null!;
 
     [JsonProperty("fieldDescription")]
-    public string FieldDescription { get; set; } = null!;
-
+    public string FieldDescription { get; set; }= null!;
+    
     [JsonProperty("iconId")] 
     public string? FieldIconId { get; set; }
     
@@ -31,11 +33,10 @@ public class DataElementMap
         {
             var filters = new Dictionary<string, object>();
             
-            if (MapFilters != null)
-            {
-                foreach (var item in MapFilters)
-                    filters.Add(item.FieldName, item.ExpressionValue);
-            }
+      
+            foreach (var item in MapFilters)
+                filters.Add(item.FieldName, item.ExpressionValue);
+            
 
                 
             return filters;

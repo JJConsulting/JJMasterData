@@ -16,8 +16,8 @@ public class CpfPluginActionHandler : BrasilPluginActionHandler
 {
     private IReceitaFederalService ReceitaFederalService { get; }
 
-    private const string BirthDateFieldKey = "BirthDath";
-    
+    private const string BirthDateFieldKey = "BirthDate";
+    private const string IgnoreDbFieldKey = "IgnoreDb";
     public override Guid Id => GuidGenerator.FromValue(nameof(CpfPluginActionHandler));
     public override string Title => "Cpf";
     public override HtmlBuilder? AdditionalInformationHtml => null;
@@ -42,6 +42,12 @@ public class CpfPluginActionHandler : BrasilPluginActionHandler
                 Required = true,
                 Type = PluginConfigurationFieldType.FormElementField
             };
+            yield return new PluginConfigurationField
+            {
+                Name = IgnoreDbFieldKey,
+                Label = "Quando habilitado, a busca é realizada diretamente na Receita Federal. Nessa modalidade de consulta, serão consumidos 3 créditos ao invés de somente 1.",
+                Type = PluginConfigurationFieldType.Boolean
+            };
         }
     }
 
@@ -59,10 +65,11 @@ public class CpfPluginActionHandler : BrasilPluginActionHandler
 
         if (birthDate is not DateTime birthDateTime)
             throw new ArgumentNullException(nameof(birthDate));
+
+        ReceitaFederalService.IgnoreDb = context.ConfigurationMap[IgnoreDbFieldKey] is true;
         
         var cpfResult = await ReceitaFederalService.SearchCpfAsync(cpf, birthDateTime);
 
         return cpfResult.ToDictionary();
     }
-    
 }
