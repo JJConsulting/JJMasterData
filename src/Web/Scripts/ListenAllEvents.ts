@@ -22,6 +22,11 @@
     //@ts-ignore
     Inputmask().mask(document.querySelectorAll("input"));
     
+    if(bootstrapVersion === 5){
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,{   trigger : 'hover'}))
+    }
+    
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&

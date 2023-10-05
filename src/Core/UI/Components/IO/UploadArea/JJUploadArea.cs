@@ -54,7 +54,7 @@ public class JJUploadArea : AsyncComponent
     
     public string ExtensionNotAllowedLabel { get; set; } = "File type is not allowed. Allowed extensions: {0}";
     
-    public string SizeErrorLabel { get; set; } = "File is too big. Max file size: {0}";
+    public string SizeErrorLabel { get; set; } = "File is too big. Max file size: {0} mb";
 
     public string GetImportLabel()
     {
@@ -187,7 +187,7 @@ public class JJUploadArea : AsyncComponent
         div.WithAttribute("cancel-label", StringLocalizer[CancelLabel]);
         div.WithAttribute("abort-label", StringLocalizer[AbortLabel]);
         div.WithAttribute("extension-not-allowed-label", StringLocalizer[ExtensionNotAllowedLabel, AllowedTypes]);
-        div.WithAttribute("file-size-error-label", StringLocalizer[SizeErrorLabel]);
+        div.WithAttribute("file-size-error-label", StringLocalizer[SizeErrorLabel, MaxFileSize]);
         
         return div;
     }

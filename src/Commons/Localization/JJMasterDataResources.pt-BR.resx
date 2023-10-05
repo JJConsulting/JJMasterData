@@ -3450,4 +3450,7 @@
   <data name="Click here, paste or drag &amp; drop files" xml:space="preserve">
     <value>Clique aqui, cole ou arraste arquivos</value>
   </data>
+  <data name="File is too big. Max file size: {0} mb" xml:space="preserve">
+    <value>Arquivo é muito grande. Tamanho máximo {0} mb</value>
+  </data>
 </root>
