@@ -8,50 +8,68 @@
     });
     
     $(prefixSelector + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
+
+    const datetimeInputs = document.querySelectorAll(prefixSelector + ".jjform-datetime");
+
+    datetimeInputs.forEach(function(div) {
+        //@ts-ignore
+        flatpickr(div, {
+            enableTime: true,
+            wrap: true,
+            allowInput: true,
+            altInput: false,
+            time_24hr: true,
+            mode: div.firstElementChild.getAttribute("multipledates") === "1" ? "multiple" : "single",
+            dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
+            onOpen: function(selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") === "1") {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode,
+        });
+    });
     
-    $(prefixSelector + ".jjform-datetime").flatpickr({
-        enableTime: true,
-        wrap: true,
-        allowInput: true,
-        altInput: false,
-        time_24hr: true,
-        dateFormat: localeCode === "pt" ? "d/m/Y H:i" : "m/d/Y H:i",
-        onOpen: function (selectedDates, dateStr, instance) {
-            if(instance.input.getAttribute("autocompletePicker") == 1){
-                instance.setDate(Date.now())
-            }
-        },
-        locale: localeCode
+    const dateInputs = document.querySelectorAll(prefixSelector + ".jjform-date");
+
+    dateInputs.forEach(function(div) {
+        //@ts-ignore
+        flatpickr(div, {
+            enableTime: false,
+            wrap: true,
+            allowInput: true,
+            altInput: false,
+            mode: div.firstElementChild.getAttribute("multipledates") === "1" ? "multiple" : "single",
+            dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
+            onOpen: function(selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") === "1") {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode,
+        });
     });
 
-    $(prefixSelector + ".jjform-date").flatpickr({
-        enableTime: false,
-        wrap: true,
-        allowInput: true,
-        altInput: false,
-        dateFormat: localeCode === "pt" ? "d/m/Y" : "m/d/Y",
-        onOpen: function (selectedDates, dateStr, instance) {
-            if(instance.input.getAttribute("autocompletePicker") == 1){
-                instance.setDate(Date.now())
-            }
-        },
-        locale: localeCode
-    });
-    
-    $(prefixSelector + ".jjform-hour").flatpickr({
-        enableTime: true,
-        wrap: true,
-        noCalendar: true,
-        allowInput: true,
-        altInput: false,
-        dateFormat: "H:i",
-        time_24hr: true,
-        onOpen: function (selectedDates, dateStr, instance) {
-            if(instance.input.getAttribute("autocompletePicker") == 1){
-                instance.setDate(Date.now())
-            }
-        },
-        locale: localeCode
+    const hourInputs = document.querySelectorAll(prefixSelector + ".jjform-hour");
+
+    hourInputs.forEach(function(div) {
+        //@ts-ignore
+        flatpickr(div, {
+            enableTime: true,
+            wrap: true,
+            noCalendar: true,
+            allowInput: true,
+            altInput: false,
+            dateFormat: "H:i",
+            mode: div.firstElementChild.getAttribute("multipledates") === "1" ? "multiple" : "single",
+            time_24hr: true,
+            onOpen: function(selectedDates, dateStr, instance) {
+                if (instance.input.getAttribute("autocompletePicker") == 1) {
+                    instance.setDate(Date.now());
+                }
+            },
+            locale: localeCode,
+        });
     });
 
     $(prefixSelector + ".jjdecimal").each(applyDecimalPlaces);

@@ -20,6 +20,7 @@ public class FormElementField : ElementField
     public const string PopUpSizeAttribute = "popupsize";
     public const string PopUpTitleAttribute = "popuptitle";
     public const string AutocompletePickerAttribute = "autocompletePicker";
+    public const string MultipleDates = "multipleDates";
     public const string StepAttribute = "step";
     
     private FormElementFieldActions? _actions;

@@ -56,8 +56,8 @@
     case FormComponent.Date:
     case FormComponent.DateTime:
     case FormComponent.Hour:
-        bool @checked = Model.GetAttr(FormElementField.AutocompletePickerAttribute) == "1";
-        <div class="@BootstrapHelper.FormGroup col-sm-4">
+        bool @checkedAutocomplete = Model.GetAttr(FormElementField.AutocompletePickerAttribute) == "1";
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
             <label
                 class="@BootstrapHelper.Label "
                 @BootstrapHelper.GetDataToggle("tooltip")
@@ -74,8 +74,29 @@
                    name="@FormElementField.AutocompletePickerAttribute"
                    maxlength="200"
                    value="1"
-                   @(@checked ? "checked" : string.Empty)
+                   @(@checkedAutocomplete ? "checked" : string.Empty)
                    type="checkbox">
         </div>
+        
+        bool checkedMultipleDates = Model.GetAttr(FormElementField.MultipleDates) == "1";
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
+            <label
+                class="@BootstrapHelper.Label "
+                for="@FormElementField.MultipleDates">
+                @Translate.Key("Allow multiple dates")
+            </label>
+            <br/>
+            <input class="form-control"
+                   data-toggle="toggle"
+                   data-on="@Translate.Key("Yes")"
+                   data-off="@Translate.Key("No")"
+                   id="@FormElementField.MultipleDates"
+                   name="@FormElementField.MultipleDates"
+                   maxlength="200"
+                   value="1"
+                   @(checkedMultipleDates ? "checked" : string.Empty)
+                   type="checkbox">
+        </div>
+        
         break;
 }
