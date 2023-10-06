@@ -5,7 +5,8 @@ namespace JJMasterData.WebEntryPoint.Authorization;
 
 public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizationRequirement>, IAuthorizationRequirement
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+    protected override Task HandleRequirementAsync(
+        AuthorizationHandlerContext context,
         IAuthorizationRequirement requirement)
     {
         var filterContext = context.Resource as DefaultHttpContext;
@@ -21,16 +22,15 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
         if (routeData.Values.TryGetValue("area", out var areaValue))
             area = areaValue!.ToString();
 
-        string? dictionaryName = null;
-        if (routeData.Values.TryGetValue("id", value: out var dictionaryNameValue))
-            dictionaryName = dictionaryNameValue!.ToString();
-
         if ("MasterData".Equals(area, StringComparison.InvariantCultureIgnoreCase))
         {
-            if (HasDictionaryAccess(dictionaryName, context.User))
+            if (routeData.Values.TryGetValue("id", out var elementName))
             {
-                context.Succeed(requirement);
-                return Task.CompletedTask;
+                if (CanAccessThisElement(elementName as string, context.User))
+                {
+                    context.Succeed(requirement);
+                    return Task.CompletedTask;
+                }
             }
         }
         else if ("DataDictionary".Equals(area, StringComparison.InvariantCultureIgnoreCase))
@@ -42,7 +42,7 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
         return Task.CompletedTask;
     }
 
-    private bool HasDictionaryAccess(string? dictionaryName, ClaimsPrincipal user)
+    private bool CanAccessThisElement(string? elementName, ClaimsPrincipal user)
     {
         // Code omitted for brevity
         return true;

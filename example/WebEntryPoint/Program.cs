@@ -1,8 +1,7 @@
 using JJMasterData.Brasil.Configuration;
-using JJMasterData.Core.UI;
 using JJMasterData.Protheus.Configuration;
 using JJMasterData.Web.Extensions;
-using JJMasterData.WebEntryPoint.Authorization;
+using ReportPortal.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,19 +9,19 @@ var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..",
 var settingsPath = Path.Combine(root, "appsettings.json");
 builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
 
+var authentication = builder.Configuration.GetValue<string>("Authentication");
+
 builder.Services.AddJJMasterDataWeb(builder.Configuration)
     .WithProtheusServices()
     .WithBrasilActionPlugins();
 
 builder.Services.AddControllersWithViews().AddViewLocalization();
 
-builder.Services.AddAuthorization(options =>
+
+if (authentication == "ReportPortal")
 {
-    options.AddPolicy("MasterDataPolicy", policy =>
-    {
-        policy.AddRequirements(new AllowAnonymousAuthorizationRequirement());
-    });
-});
+    builder.Services.AddAuthentication().WithReportPortal();
+}
 
 var app = builder.Build();
 if (app.Environment.IsProduction())
@@ -41,6 +40,10 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 app.UseJJMasterDataWeb();
-app.MapJJMasterData()
-    .RequireAuthorization("MasterDataPolicy");
+var mapJJMasterData = app.MapJJMasterData();
+if (authentication is not null)
+{
+    mapJJMasterData.RequireAuthorization();
+}
+
 app.Run();

@@ -22,4 +22,11 @@
     <ItemGroup>
         <InternalsVisibleTo Include="JJMasterData.Web.Test" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="ReportPortal.Auth">
+        <HintPath>ReportPortal.Auth.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+    
 </Project>
