@@ -14,7 +14,7 @@ using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Options;
 using JJMasterData.Web.Areas.DataDictionary.Services;
 using JJMasterData.Web.Options;
-using WebOptimizer;
+
 
 namespace JJMasterData.Web.Extensions;
 

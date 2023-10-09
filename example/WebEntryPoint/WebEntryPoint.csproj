@@ -27,10 +27,5 @@
         <HintPath>..\ReportPortalAuth\ReportPortal.Auth.dll</HintPath>
       </Reference>
     </ItemGroup>
-
-    <ItemGroup>
-        <Content Update="package.json" CopyToOutputDirectory="PreserveNewest"/>
-        <Content Update="package-lock.json" CopyToOutputDirectory="PreserveNewest"/>
-    </ItemGroup>
     
 </Project>
