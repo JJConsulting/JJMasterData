@@ -14,19 +14,19 @@ using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Options;
 using JJMasterData.Web.Areas.DataDictionary.Services;
 using JJMasterData.Web.Options;
+using WebOptimizer;
 
 namespace JJMasterData.Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    
     public static JJMasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
     {
         services.AddOptions<JJMasterDataWebOptions>();
         AddDefaultServices(services);
         return services.AddJJMasterDataCore();
     }
-    
+
     /// <summary>
     /// Adds all services you need to run a JJMasterData
     /// </summary>
@@ -37,14 +37,14 @@ public static class ServiceCollectionExtensions
         IConfiguration configuration)
     {
         AddDefaultServices(services);
-        
+
         services.ConfigureWritableOptions<JJMasterDataCommonsOptions>(
             configuration.GetJJMasterData());
         services.ConfigureWritableOptions<JJMasterDataCoreOptions>(
             configuration.GetJJMasterData());
         services.ConfigureWritableOptions<JJMasterDataWebOptions>(
             configuration.GetJJMasterData());
-        
+
         return services.AddJJMasterDataCore(configuration);
     }
 
@@ -75,15 +75,19 @@ public static class ServiceCollectionExtensions
         services.AddTransient<RazorPartialRendererService>();
         services.AddTransient<OptionsService>();
         services.AddTransient<LocalizationService>();
-        
+
+        services.AddWebOptimizer(options =>
+        {
+            options.AddBundles();
+        });
+
         services.AddHttpContextAccessor();
         services.AddSession();
         services.AddDistributedMemoryCache();
         services.AddRequestUrlCultureProvider();
         services.AddActionFilters();
     }
-
-
+    
     private static void AddRequestUrlCultureProvider(this IServiceCollection services,
         params CultureInfo[]? supportedCultures)
     {
@@ -124,6 +128,4 @@ public static class ServiceCollectionExtensions
             }));
         });
     }
-    
-
 }

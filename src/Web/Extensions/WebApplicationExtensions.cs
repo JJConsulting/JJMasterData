@@ -14,7 +14,7 @@ public static class WebApplicationExtensions
     {
         app.UseRequestLocalization();
         app.UseSession();
-
+        app.UseWebOptimizer();
 //Debug for typescript        
 #if DEBUG
         app.UseFileServer(new FileServerOptions

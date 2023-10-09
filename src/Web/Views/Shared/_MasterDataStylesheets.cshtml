@@ -1,41 +1,34 @@
 ﻿@using JJMasterData.Core.UI
 @inject IOptions<JJMasterDataWebOptions> Options
 
-<link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/all.min.css" />
-<link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-font-face.min.css" />
-<link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-shims.min.css" />
+   <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/all.min.css" />
+   <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-font-face.min.css" />
+   <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-shims.min.css" />
+<environment include="Development">
+   @if (!Options.Value.UseCustomBootstrap)
+   {
+       <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap.min.css"/>
+   }
+   @if (BootstrapHelper.Version == 3)
+   {
+       <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-toggle.min.css" />
+   }
+   <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-select.css" />
+   <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-tagsinput.css" />
+   <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/flatpickr/flatpickr.min.css">
+   <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/flatpickr/airbnb.css">
+   <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/highlightjs/ssms.min.css" />
+   <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/dropzone/dropzone.min.css" />
+   <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/jjmasterdata/jjmasterdata.css" />
+</environment>
 
-@switch (BootstrapHelper.Version)
-{
-    case 3:
-        @if (!Options.Value.UseCustomBootstrap)
-        {
-            <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap3/bootstrap.min.css" />
-            <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap3/bootstrap-theme.css?v=6" />
-        }
-        <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-toggle/bootstrap-toggle.min.css" />
-        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-select/bootstrap-select.min.css" />
-        break;
-    case 4:
-        @if (!Options.Value.UseCustomBootstrap)
-        {
-            <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap4/bootstrap.min.css"/>
-        }
-        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-select/bootstrap-select.min.css" />
-        <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-toggle/bootstrap4-toggle.min.css" />
-        break;
-    default:
-        @if (!Options.Value.UseCustomBootstrap)
-        {
-            <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap5/bootstrap.min.css"/>
-        }
-        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-select/bootstrap-select-bs5.min.css" />
-        break;
-}
-
-<link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.css" />
-<link rel="stylesheet" href="~/_content/JJMasterData.Web/css/flatpickr/flatpickr.min.css">
-<link rel="stylesheet" href="~/_content/JJMasterData.Web/css/flatpickr/airbnb.css">
-<link rel="stylesheet" href="~/_content/JJMasterData.Web/css/highlightjs/ssms.min.css" />
-<link rel="stylesheet" href="~/_content/JJMasterData.Web/css/dropzone/dropzone.min.css" />
-<link asp-append-version="true" rel="stylesheet" href="~/_content/JJMasterData.Web/css/jjmasterdata.css" />
+<environment exclude="Development">
+    @if (Options.Value.UseCustomBootstrap)
+    {
+        <link rel="stylesheet" href="/css/jjmasterdata.min.css"/>
+    }
+    else
+    {
+        <link rel="stylesheet" href="/css/jjmasterdata-with-bootstrap.min.css"/>
+    }
+</environment>

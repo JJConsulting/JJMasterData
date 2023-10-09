@@ -1,4 +1,5 @@
 using JJMasterData.Brasil.Configuration;
+using JJMasterData.Core.UI;
 using JJMasterData.Protheus.Configuration;
 using JJMasterData.Web.Extensions;
 using ReportPortal.Auth;
@@ -16,7 +17,6 @@ builder.Services.AddJJMasterDataWeb(builder.Configuration)
     .WithBrasilActionPlugins();
 
 builder.Services.AddControllersWithViews().AddViewLocalization();
-
 
 if (authentication == "ReportPortal")
 {
