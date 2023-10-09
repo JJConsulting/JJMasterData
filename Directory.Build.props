@@ -10,9 +10,7 @@
 		<Company>JJ Consulting</Company>
 		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageReleaseNotes>
-			 fixes: DataImportation upload and JJFormUpload GridView not refreshing
-		</PackageReleaseNotes>
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="../../JJMasterData.png">

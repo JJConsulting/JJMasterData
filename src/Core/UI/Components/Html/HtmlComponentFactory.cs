@@ -2,6 +2,7 @@
 
 using System;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -12,15 +13,18 @@ public class HtmlComponentFactory
 {
     private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
     private readonly IHttpContext _currentContext;
+    private readonly JJMasterDataUrlHelper _urlHelper;
     private readonly IServiceProvider _serviceProvider;
 
     public HtmlComponentFactory(
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IHttpContext currentContext,
+        JJMasterDataUrlHelper urlHelper,
         IServiceProvider serviceProvider)
     {
         _stringLocalizer = stringLocalizer;
         _currentContext = currentContext;
+        _urlHelper = urlHelper;
         _serviceProvider = serviceProvider;
     }
     

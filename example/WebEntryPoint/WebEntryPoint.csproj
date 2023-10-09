@@ -13,7 +13,6 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\Core\Core.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Brasil\Brasil.csproj" />
-      <ProjectReference Include="..\..\src\Plugins\MongoDB\MongoDB.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Pdf\Pdf.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Protheus\Protheus.csproj" />
       <ProjectReference Include="..\..\src\Web\Web.csproj" />
@@ -25,8 +24,13 @@
 
     <ItemGroup>
       <Reference Include="ReportPortal.Auth">
-        <HintPath>ReportPortal.Auth.dll</HintPath>
+        <HintPath>..\ReportPortalAuth\ReportPortal.Auth.dll</HintPath>
       </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="package.json" CopyToOutputDirectory="PreserveNewest"/>
+        <Content Update="package-lock.json" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
     
 </Project>

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Diagnostics.CodeAnalysis;
 using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
@@ -8,7 +9,7 @@ public class JJImage : HtmlComponent
 {
     public string Src { get; set; }
     public string? Title { get; set; }
-
+    
     internal JJImage(string src)
     {
         Src = src;

@@ -37,6 +37,10 @@ public class JJMasterDataUrlHelper
             baseUrl = JJMasterDataUrl;
         }
 
+        if (!baseUrl.EndsWith("/"))
+        {
+            baseUrl += "/";
+        }
 
         var valuesDictionary = new Dictionary<string, string?>();
         
