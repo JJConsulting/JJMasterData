@@ -5,11 +5,15 @@
    <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-font-face.min.css" />
    <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-shims.min.css" />
 <environment include="Development">
-   @if (!Options.Value.UseCustomBootstrap)
-   {
-       <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap.min.css"/>
-   }
-   @if (BootstrapHelper.Version == 3)
+    @if (Options.Value.UseCustomBootstrap)
+    {
+        <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath"/>
+    }
+    else
+    {
+        <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap.min.css"/>
+    }
+    @if (BootstrapHelper.Version == 3)
    {
        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-toggle.min.css" />
    }
@@ -25,6 +29,7 @@
 <environment exclude="Development">
     @if (Options.Value.UseCustomBootstrap)
     {
+        <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath"/>
         <link rel="stylesheet" href="~/css/jjmasterdata-bundle.min.css"/>
     }
     else

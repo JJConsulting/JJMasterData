@@ -14,6 +14,7 @@ using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Options;
 using JJMasterData.Web.Areas.DataDictionary.Services;
 using JJMasterData.Web.Options;
+using WebOptimizer;
 
 
 namespace JJMasterData.Web.Extensions;
@@ -50,7 +51,8 @@ public static class ServiceCollectionExtensions
 
     public static JJMasterDataServiceBuilder AddJJMasterDataWeb(
         this IServiceCollection services,
-        Action<JJMasterDataWebOptions> configureOptions)
+        Action<JJMasterDataWebOptions> configureOptions
+        )
     {
         var webOptions = new JJMasterDataWebOptions();
         services.Configure(configureOptions);
@@ -76,10 +78,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<OptionsService>();
         services.AddTransient<LocalizationService>();
 
-        services.AddWebOptimizer(options =>
-        {
-            options.AddBundles();
-        });
+        services.AddMasterDataWebOptimizer();
 
         services.AddHttpContextAccessor();
         services.AddSession();
@@ -87,7 +86,16 @@ public static class ServiceCollectionExtensions
         services.AddRequestUrlCultureProvider();
         services.AddActionFilters();
     }
-    
+
+    internal static void AddMasterDataWebOptimizer(this IServiceCollection services, Action<IAssetPipeline>? configure = null)
+    {
+        services.AddWebOptimizer(options =>
+        {
+            options.AddBundles();
+            configure?.Invoke(options);
+        });
+    }
+
     private static void AddRequestUrlCultureProvider(this IServiceCollection services,
         params CultureInfo[]? supportedCultures)
     {

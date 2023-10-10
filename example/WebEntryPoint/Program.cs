@@ -1,5 +1,4 @@
 using JJMasterData.Brasil.Configuration;
-using JJMasterData.Core.UI;
 using JJMasterData.Protheus.Configuration;
 using JJMasterData.Web.Extensions;
 using ReportPortal.Auth;
@@ -14,7 +13,11 @@ var authentication = builder.Configuration.GetValue<string>("Authentication");
 
 builder.Services.AddJJMasterDataWeb(builder.Configuration)
     .WithProtheusServices()
-    .WithBrasilActionPlugins();
+    .WithBrasilActionPlugins()
+    .WithWebOptimizer(options =>
+    {
+        options.AddCssBundle("/css/bootstrap.min.css", "css/bootstrap/bootstrap.css").MinifyCss();
+    });
 
 builder.Services.AddControllersWithViews().AddViewLocalization();
 

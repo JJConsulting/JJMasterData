@@ -13,7 +13,7 @@ public class JJMasterDataWebOptions : JJMasterDataCoreOptions
     /// Default value:_MasterDataLayout.Popup <br></br>
     /// </summary>
     public string ModalLayoutPath { get; set; } = "_MasterDataLayout.Modal";
-
+    
     /// <summary>
     /// Default value: false (Generate a link to the default bootstrap layout)
     /// </summary>
@@ -22,4 +22,6 @@ public class JJMasterDataWebOptions : JJMasterDataCoreOptions
     /// True = Bootstrap will not be added by default, and a custom bootstrap.css must be included
     /// </remarks>
     public bool UseCustomBootstrap { get; set; }
+    
+    public string? CustomBootstrapPath { get; set; }
 }
