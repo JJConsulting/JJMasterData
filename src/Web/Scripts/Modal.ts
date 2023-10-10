@@ -72,7 +72,6 @@ class _Modal extends ModalBase {
     }
     
     private getModalCssClass(){
-        console.log(this.modalSize);
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
     }
     
