@@ -1515,7 +1515,6 @@ class _Modal extends ModalBase {
         this.getBootstrapModal().hide();
     }
     getModalCssClass() {
-        console.log(this.modalSize);
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
     }
     createModalElement() {

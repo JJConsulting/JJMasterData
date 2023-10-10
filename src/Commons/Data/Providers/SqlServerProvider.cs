@@ -1214,7 +1214,7 @@ public class SqlServerProvider : BaseProvider
         {
             var field = new ElementField
             {
-                Name = (string)row["COLUMN_NAME"],
+                Name = row["COLUMN_NAME"].ToString()!.Replace(" ","_"),
                 Label = (string)row["COLUMN_NAME"],
                 Size = (int)row["LENGTH"],
                 AutoNum = ((string)row["TYPE_NAME"]).ToUpper().Contains("IDENTITY"),
