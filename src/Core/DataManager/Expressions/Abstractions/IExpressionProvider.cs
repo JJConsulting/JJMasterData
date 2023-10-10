@@ -5,6 +5,6 @@ namespace JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 public interface IExpressionProvider
 {
-    bool CanHandle(string expressionType);
+    string Prefix { get; }
     Task<object> EvaluateAsync(string expression, FormStateData formStateData);
 }

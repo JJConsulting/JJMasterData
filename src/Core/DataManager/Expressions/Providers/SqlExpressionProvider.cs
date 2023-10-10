@@ -17,7 +17,7 @@ public class SqlExpressionProvider : IExpressionProvider
         _expressionParser = expressionParser;
     }
 
-    public bool CanHandle(string expressionType) => expressionType == "sql";
+    public string Prefix => "sql";
 
     public async Task<object> EvaluateAsync(string expression, FormStateData formStateData)
     {

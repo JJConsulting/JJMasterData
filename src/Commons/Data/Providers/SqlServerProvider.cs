@@ -1218,7 +1218,7 @@ public class SqlServerProvider : BaseProvider
                 Label = (string)row["COLUMN_NAME"],
                 Size = (int)row["LENGTH"],
                 AutoNum = ((string)row["TYPE_NAME"]).ToUpper().Contains("IDENTITY"),
-                IsRequired = ((string)row["NULLABLE"]).Equals("0"),
+                IsRequired = row["NULLABLE"].ToString()?.Equals("0") ?? false,
                 DataType = GetDataType((string)row["TYPE_NAME"])
             };
 

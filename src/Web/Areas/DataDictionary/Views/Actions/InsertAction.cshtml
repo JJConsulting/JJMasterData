@@ -15,12 +15,14 @@
     {
         var comboBox = ComboBoxFactory.Create();
         comboBox.Name = "ElementNameToSelect";
-
+        comboBox.DataItem.FirstOption = FirstOptionMode.Choose;
+        comboBox.DataItem.Items = new List<DataItemValue>();
+        
         FormElement formElement = ViewBag.FormElement;
         
         foreach (var relationship in formElement.Relationships.GetElementRelationships())
         {
-            comboBox.DataItem.Items!.Add(new DataItemValue(relationship.ChildElement,relationship.ChildElement));
+            comboBox.DataItem.Items.Add(new DataItemValue(relationship.ChildElement,relationship.ChildElement));
         }
         
         comboBox.SelectedValue = formElement.Options.GridToolbarActions.InsertAction.ElementNameToSelect;

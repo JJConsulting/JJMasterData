@@ -16,8 +16,8 @@ public class ProtheusExpressionProvider : IExpressionProvider
         _protheusService = protheusService;
     }
 
-    public bool CanHandle(string expressionType) => expressionType == "protheus";
-
+    public string Prefix => "protheus";
+    
     public async Task<object> EvaluateAsync(string expression, FormStateData formStateData)
     {
         var exp = expression.Replace("\"", "").Replace("'", "").Split(',');

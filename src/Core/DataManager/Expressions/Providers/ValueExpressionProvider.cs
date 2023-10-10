@@ -13,7 +13,7 @@ public class ValueExpressionProvider : IExpressionProvider
         _expressionParser = expressionParser;
     }
 
-    public bool CanHandle(string expressionType) => expressionType == "val";
+    public string Prefix => "val";
 
     public async Task<object> EvaluateAsync(string expression, FormStateData formStateData)
     {

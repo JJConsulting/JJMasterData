@@ -54,7 +54,7 @@ public class ExpressionsService
             throw new ArgumentNullException(nameof(expression));
 
         var expressionType = expression.Split(':')[0];
-        var provider = ExpressionProviders.FirstOrDefault(p => p.CanHandle(expressionType));
+        var provider = ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType);
         if (provider == null)
         {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}.");
@@ -96,7 +96,7 @@ public class ExpressionsService
             throw new ArgumentNullException(nameof(field));
 
         var expressionType = expression.Split(':')[0];
-        var provider = ExpressionProviders.FirstOrDefault(p => p.CanHandle(expressionType));
+        var provider = ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType);
         if (provider == null)
         {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}");

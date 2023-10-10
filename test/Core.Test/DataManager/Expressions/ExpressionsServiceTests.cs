@@ -35,7 +35,7 @@ public class ExpressionsServiceTests
             new PageState()
         );
 
-        _expressionProviderMock.Setup(p => p.CanHandle(It.IsAny<string>())).Returns(true);
+        _expressionProviderMock.Setup(p => p.Prefix).Returns("exp");
         _expressionProviderMock.Setup(p => p.EvaluateAsync("sampleExpression", formStateData))
             .ReturnsAsync("ExpressionResult");
 
@@ -80,7 +80,7 @@ public class ExpressionsServiceTests
             new PageState()
         );
 
-        _expressionProviderMock.Setup(p => p.CanHandle(It.IsAny<string>())).Returns(true);
+        _expressionProviderMock.Setup(p => p.Prefix).Returns("exp");
         _expressionProviderMock.Setup(p => p.EvaluateAsync("sampleExpression", formStateData))
             .ReturnsAsync("true");
 
@@ -102,7 +102,7 @@ public class ExpressionsServiceTests
             new PageState()
         );
 
-        _expressionProviderMock.Setup(p => p.CanHandle(It.IsAny<string>())).Returns(true);
+        _expressionProviderMock.Setup(p => p.Prefix).Returns("exp");
         _expressionProviderMock.Setup(p => p.EvaluateAsync("sampleExpression", formStateData))
             .ReturnsAsync("TriggerExpressionResult");
 

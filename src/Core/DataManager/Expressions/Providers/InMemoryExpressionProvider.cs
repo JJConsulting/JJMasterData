@@ -13,8 +13,8 @@ public class InMemoryExpressionProvider : IExpressionProvider
     {
         _expressionParser = expressionParser;
     }
-
-    public bool CanHandle(string expressionType) => expressionType == "exp";
+    
+    public string Prefix => "exp";
 
     public async Task<object> EvaluateAsync(string expression, FormStateData formStateData)
     {
