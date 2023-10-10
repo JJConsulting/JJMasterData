@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -191,6 +192,8 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 5;
                 textGroup.GroupCssClass = "flatpickr date jjform-hour";
+                // textGroup.SetAttr("data-inputmask",
+                //     $"'alias': 'datetime','inputFormat': '[{Format.TimeFormat.ToLower()}]', 'displayFormat': '[{Format.TimeFormat.ToLower()}]','placeholder':''");
                 textGroup.SetAttr("data-input", "date");
                 break;
             case FormComponent.Date:
@@ -198,6 +201,8 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
                 textGroup.Actions.Add(GetDateAction());
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 10;
+                // textGroup.SetAttr("data-inputmask",
+                //     $"'alias': 'datetime','inputFormat': '[{Format.DateFormat.ToLower()}]','displayFormat': '[{Format.DateFormat.ToLower()}]',  'placeholder':''");
                 textGroup.SetAttr("data-input", "date");
                 break;
             case FormComponent.DateTime:
@@ -205,6 +210,8 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
                 textGroup.Actions.Add(GetDateAction());
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 19;
+                // textGroup.SetAttr("data-inputmask",
+                //     $"'alias': 'datetime','inputFormat': '[{Format.DateTimeFormat.ToLower()}]','displayFormat': '[{Format.DateTimeFormat.ToLower()}]', 'placeholder':''");
                 textGroup.SetAttr("data-input", "date");
                 break;
             default:

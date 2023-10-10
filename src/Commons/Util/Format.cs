@@ -9,6 +9,8 @@ public static class Format
     
     public static string DateFormat => DateTimeFormatInfo.CurrentInfo.ShortDatePattern;
 
+    public static string TimeFormat => DateTimeFormatInfo.CurrentInfo.LongTimePattern;
+    
     public static string DateTimeFormat => $"{DateFormat} {DateTimeFormatInfo.CurrentInfo.LongTimePattern}";
     public static string FormatTimeSpan(DateTime dtFrom, DateTime dtTo)
     {
