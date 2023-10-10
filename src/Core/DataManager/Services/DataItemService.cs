@@ -120,11 +120,12 @@ public class DataItemService
             
         foreach(var value in values)
         {
-            var item = new DataItemValue
-            {
-                Id = value[elementMap!.FieldId]?.ToString(),
-                Description = value[elementMap.FieldDescription]?.ToString(),
-            };
+            var item = new DataItemValue();
+            item.Id = value[elementMap!.FieldId]?.ToString();
+            
+            if (elementMap.FieldDescription != null) 
+                item.Description = value[elementMap.FieldDescription]?.ToString();
+            
             if (dataItem.ShowIcon)
             {
                 if (elementMap.FieldIconId != null)

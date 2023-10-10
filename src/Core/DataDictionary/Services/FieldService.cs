@@ -282,16 +282,16 @@ public class FieldService : BaseService
         var childField = childFormElement.Fields[elementMap.FieldId];
 
         if (field.DataType != childField.DataType)
-        {
             AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldId] DataType must be the same of your field."]);
-        }
         
+        if(dataItem.ShowIcon && elementMap.FieldIconId is null)
+            AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldIconId] is required."]);
         
         if (elementMap.FieldId.Equals(elementMap.FieldDescription))
             AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldDescription] can not be equal a [FieldId]"]);
         
         if (dataItem.ReplaceTextOnGrid && string.IsNullOrEmpty(elementMap.FieldDescription))
-            AddError(nameof(dataItem.ReplaceTextOnGrid), StringLocalizer["[ReplaceTextOnGrid] invalid fill a [FieldDescription]"]);
+            AddError(nameof(dataItem.ReplaceTextOnGrid), StringLocalizer["[ReplaceTextOnGrid] requires a [FieldDescription]"]);
     }
 
     private void ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile dataFile)

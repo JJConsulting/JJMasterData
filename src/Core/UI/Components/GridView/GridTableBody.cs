@@ -129,9 +129,9 @@ internal class GridTableBody
                     var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,null,value).FirstOrDefaultAsync();
                     cell = new HtmlBuilder(HtmlTag.Div);
                     cell.AppendComponent(new JJIcon(dataItemValue.Icon,dataItemValue.IconColor ?? string.Empty));
-                    cell.Append(HtmlTag.Span, span =>
+                    cell.AppendIf(dataItemValue.Description is not null && field.DataItem.ReplaceTextOnGrid, HtmlTag.Span, span =>
                     {
-                        span.AppendText(field.DataItem.ReplaceTextOnGrid ? dataItemValue.Description : dataItemValue.Id);
+                        span.AppendText(field.DataItem.ReplaceTextOnGrid ? dataItemValue.Description! : dataItemValue.Id);
                         span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
                     });
                 }

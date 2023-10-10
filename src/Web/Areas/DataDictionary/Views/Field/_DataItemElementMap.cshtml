@@ -5,7 +5,7 @@
 
 <collapse-panel title="@StringLocalizer["Element Map"]" expanded-by-default="true" icon="Map">
     <div class="row">
-        <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+        <div class="@BootstrapHelper.FormGroup col-sm-12 requ'ired">
             <label class="@BootstrapHelper.Label ">@StringLocalizer["ElementName"]</label>
             @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.ElementName,
                 new SelectList(ViewBag.ElementNameList, "Key", "Value"),
@@ -96,7 +96,7 @@
     function addElementMapFilter() {
         const form = document.forms[0]; 
         form.action = "@Url.Action("AddElementMapFilter", new { elementName = ViewBag.ElementName })";
-        form.requestSubmit();
+        form.submit();
     }
     
     function removeElementMapFilter(elementMapFieldName) {
@@ -108,7 +108,7 @@
         input.value = elementMapFieldName;
         form.appendChild(input);
         form.action = "@Url.Action("RemoveElementMapFilter", new { elementName = ViewBag.ElementName })";
-        form.requestSubmit();
+        form.submit();
     }
 
 </script>

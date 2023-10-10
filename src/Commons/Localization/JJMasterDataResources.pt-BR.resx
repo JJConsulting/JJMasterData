@@ -3414,7 +3414,7 @@
   <data name="[FieldDescription] can not be equal a [FieldKey]" xml:space="preserve">
     <value>[Descrição do Campo] não pode ser igual ao  [Campo Chave]</value>
   </data>
-  <data name="[ReplaceTextOnGrid] invalid fill a [FieldDescription]" xml:space="preserve">
+  <data name="[ReplaceTextOnGrid] requires a [FieldDescription]" xml:space="preserve">
     <value>[Substituir texto na grade] inválido, preencha a [Descrição do Campo]</value>
   </data>
   <data name="[FieldKey] DataType must be the same of your field." xml:space="preserve">

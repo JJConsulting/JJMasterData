@@ -14,7 +14,7 @@
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
         <label class="@BootstrapHelper.Label" >@StringLocalizer["Type"]</label>
         <select asp-for="DataItem!.DataItemType" 
-                asp-items="Enum.GetValues<DataItemType>().Select(d=> new SelectListItem(d.ToString(),d.ToString()))" onchange="this.form.requestSubmit();" class="form-control form-select">
+                asp-items="Enum.GetValues<DataItemType>().Select(d=> new SelectListItem(d.ToString(),d.ToString()))" onchange="this.form.submit();" class="form-control form-select">
         </select>
 
     </div>

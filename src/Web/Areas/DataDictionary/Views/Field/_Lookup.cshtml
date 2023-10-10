@@ -12,7 +12,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-3 required">
         <label class="@BootstrapHelper.Label" asp-for="DataItem!.DataItemType" >@StringLocalizer["Type"]</label>
-        <select asp-for="DataItem!.DataItemType" onchange="this.form.requestSubmit();" class="form-control form-select">
+        <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
             <option selected="selected" value="@((int)DataItemType.ElementMap)">@DataItemType.ElementMap.ToString()</option>
         </select>
     </div>

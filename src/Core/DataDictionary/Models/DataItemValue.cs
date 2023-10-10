@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using JetBrains.Annotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -11,8 +12,7 @@ public class DataItemValue
     [JsonProperty("id")]
     public string Id { get; set; }
 
-    [JsonProperty("description")]
-    public string Description { get; set; }
+    [JsonProperty("description")] [CanBeNull] public string Description { get; set; }
     
     [JsonProperty("icon")]
     public IconType Icon { get; set; }

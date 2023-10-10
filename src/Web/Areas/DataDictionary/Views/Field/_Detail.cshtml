@@ -22,7 +22,7 @@
         const url = `@Url.Action("Save", new { elementName = ViewBag.ElementName })`;
         const form = document.querySelector("form");
         form.action = url;
-        form.requestSubmit();
+        form.submit();
     }
     
     function copy() {
@@ -30,7 +30,7 @@
         const url = `@Url.Action("Copy", new { elementName = ViewBag.ElementName })`;
         const form = document.querySelector("form");
         form.action = url;
-        form.requestSubmit();
+        form.submit();
     }
     
     function showSuccess(fieldName) {
@@ -126,7 +126,7 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label " asp-for="Component">@StringLocalizer["Component"]</label>
-                    <select asp-for="Component" class="form-control form-select" onchange="this.form.requestSubmit();" asp-items="Html.GetEnumSelectList<FormComponent>()"></select>
+                    <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="Html.GetEnumSelectList<FormComponent>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " asp-for="AutoPostBack">@StringLocalizer["AutoPostBack"]</label>

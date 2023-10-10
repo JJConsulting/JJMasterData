@@ -101,7 +101,10 @@ public class LookupService
         if (string.IsNullOrEmpty(elementMap.FieldDescription))
             return fields[elementMap.FieldId]?.ToString();
 
-        return fields.Any() ? fields[elementMap.FieldDescription]?.ToString() : null;
+        if (elementMap.FieldDescription != null)
+            return fields.Any() ? fields[elementMap.FieldDescription]?.ToString() : null;
+
+        return null;
     }
     
     public string? GetSelectedValue(string componentName)

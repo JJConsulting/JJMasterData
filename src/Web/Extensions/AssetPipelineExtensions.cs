@@ -9,7 +9,7 @@ public static class AssetPipelineExtensions
     {
         var cssFiles = new[]
         {
-            "_content/JJMasterData.Web/css/bootstrap/bootstrap-select-bs5.min.css",
+            "_content/JJMasterData.Web/css/bootstrap/bootstrap-select.css",
             "_content/JJMasterData.Web/css/bootstrap/bootstrap-tagsinput.css",
             "_content/JJMasterData.Web/css/flatpickr/flatpickr.min.css",
             "_content/JJMasterData.Web/css/flatpickr/airbnb.css",
