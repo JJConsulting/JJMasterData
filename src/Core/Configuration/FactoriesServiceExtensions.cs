@@ -49,6 +49,7 @@ public static class FactoriesServiceExtensions
         services.AddScoped<IComponentFactory, ComponentFactory>();
         services.AddScoped<LinkButtonFactory>();
         services.AddScoped<ActionButtonFactory>();
+        services.AddScoped<TextGroupFactory>();
         
         return services;
     }

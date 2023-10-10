@@ -65,7 +65,7 @@ public class JJTextGroup : JJTextBox
         if (hasAddons)
             inputGroup.Append(GetHtmlAddons());
 
-        inputGroup.Append((HtmlBuilder)input);
+        inputGroup.Append(input);
 
         if (hasAction)
             AddActionsAt(inputGroup);
@@ -88,9 +88,11 @@ public class JJTextGroup : JJTextBox
             inputGroup.Append(builderGroup);
         }
 
-        var btnGroup = new JJLinkButtonGroup();
-        btnGroup.Actions = Actions;
-        btnGroup.ShowAsButton = true;
+        var btnGroup = new JJLinkButtonGroup
+        {
+            Actions = Actions,
+            ShowAsButton = true
+        };
 
         //Add builder Actions
         btnGroup.AddActionsAt(builderGroup);

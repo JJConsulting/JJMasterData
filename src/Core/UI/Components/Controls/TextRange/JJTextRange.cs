@@ -139,14 +139,14 @@ public class JJTextRange : ControlBase
         return GetjQueryFromToScript(now.ToShortDateString(), now.ToShortDateString(), IsTimeAware);
     }
 
-    private HtmlBuilder GetListItem(string label, string script)
+    private static HtmlBuilder GetListItem(string label, string script)
     {
         return new HtmlBuilder(HtmlTag.Li)
-            .WithCssClass("dropdown-item")
+            .WithAttribute("onclick", script)
             .Append(HtmlTag.A, a =>
             {
+                a.WithCssClass("dropdown-item");
                 a.WithAttribute("href", "#");
-                a.WithAttribute("onclick", script);
                 a.AppendText(label);
             });
     }
