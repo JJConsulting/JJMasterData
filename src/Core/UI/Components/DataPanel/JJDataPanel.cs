@@ -331,7 +331,8 @@ public class JJDataPanel : AsyncComponent
             IsIframe = urlRedirectAction.IsIframe,
             UrlRedirect = parsedUrl!,
             ModalTitle = urlRedirectAction.ModalTitle,
-            UrlAsModal = urlRedirectAction.IsModal
+            UrlAsModal = urlRedirectAction.IsModal,
+            ModalSize = urlRedirectAction.ModalSize
         };
         
         return new JsonComponentResult(model);

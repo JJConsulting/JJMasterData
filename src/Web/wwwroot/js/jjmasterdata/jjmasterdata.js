@@ -53,10 +53,10 @@ class ActionHelper {
             success: (data) => {
                 if (data.urlAsModal) {
                     if (data.isIframe) {
-                        defaultModal.showIframe(data.urlRedirect, data.modalTitle);
+                        defaultModal.showIframe(data.urlRedirect, data.modalTitle, data.modalSize);
                     }
                     else {
-                        defaultModal.showUrl(data.urlRedirect, data.modalTitle);
+                        defaultModal.showUrl(data.urlRedirect, data.modalTitle, data.modalSize);
                     }
                 }
                 else {
@@ -1473,11 +1473,11 @@ MessageBox.bootstrapVersion = 5;
 const messageBox = MessageBox;
 var ModalSize;
 (function (ModalSize) {
-    ModalSize[ModalSize["Default"] = 0] = "Default";
+    ModalSize[ModalSize["Fullscreen"] = 0] = "Fullscreen";
     ModalSize[ModalSize["ExtraLarge"] = 1] = "ExtraLarge";
     ModalSize[ModalSize["Large"] = 2] = "Large";
-    ModalSize[ModalSize["Small"] = 3] = "Small";
-    ModalSize[ModalSize["Fullscreen"] = 4] = "Fullscreen";
+    ModalSize[ModalSize["Default"] = 3] = "Default";
+    ModalSize[ModalSize["Small"] = 4] = "Small";
 })(ModalSize || (ModalSize = {}));
 class ModalUrlOptions {
 }
@@ -1515,6 +1515,7 @@ class _Modal extends ModalBase {
         this.getBootstrapModal().hide();
     }
     getModalCssClass() {
+        console.log(this.modalSize);
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
     }
     createModalElement() {
@@ -2254,6 +2255,8 @@ class UrlBuilder {
         }
         return this.url;
     }
+}
+class UrlRedirectModel {
 }
 var jjutil = (function () {
     return {

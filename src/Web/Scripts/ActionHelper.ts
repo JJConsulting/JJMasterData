@@ -56,13 +56,13 @@ class ActionHelper {
     private static executeUrlRedirect(url: string) {
         postFormValues({
             url: url,
-            success: (data) => {
+            success: (data: UrlRedirectModel) => {
                 if (data.urlAsModal) {
                     if(data.isIframe){
-                        defaultModal.showIframe(data.urlRedirect, data.modalTitle);
+                        defaultModal.showIframe(data.urlRedirect, data.modalTitle, data.modalSize);
                     } 
                     else{
-                        defaultModal.showUrl(data.urlRedirect, data.modalTitle);
+                        defaultModal.showUrl(data.urlRedirect, data.modalTitle, data.modalSize);
                     }
                 } else {
                     window.location.href = data.urlRedirect;

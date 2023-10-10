@@ -1,11 +1,10 @@
 ﻿enum ModalSize {
-    Default,
+    Fullscreen,
     ExtraLarge,
     Large,
-    Small,
-    Fullscreen
+    Default,
+    Small
 }
-
 class ModalUrlOptions{
     url: string
     requestOptions?: RequestInit
@@ -73,6 +72,7 @@ class _Modal extends ModalBase {
     }
     
     private getModalCssClass(){
+        console.log(this.modalSize);
         return this.modalSizeCssClass[ModalSize[this.modalSize]];
     }
     
