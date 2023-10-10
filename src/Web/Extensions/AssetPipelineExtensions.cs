@@ -19,12 +19,12 @@ public static class AssetPipelineExtensions
         };
 
         options.AddCssBundle(
-            "/css/jjmasterdata.min.css",
+            "/css/jjmasterdata-bundle.min.css",
             cssFiles
         );
 
         options.AddCssBundle(
-            "/css/jjmasterdata-with-bootstrap.min.css",
+            "/css/jjmasterdata-bundle-with-bootstrap.min.css",
             cssFiles.Prepend("_content/JJMasterData.Web/css/bootstrap/bootstrap.min.css").ToArray()
         );
 
@@ -54,7 +54,7 @@ public static class AssetPipelineExtensions
         bootstrap5JsFiles.Insert(13, "_content/JJMasterData.Web/js/bootstrap/bootstrap5/bootstrap.bundle.min.js");
 
         options.AddJavaScriptBundle(
-            "/js/jjmasterdata-bootstrap-5.min.js",
+            "/js/jjmasterdata-bundle-bootstrap-5.min.js",
             bootstrap5JsFiles.ToArray()
         ).MinifyJavaScript();
 
@@ -63,7 +63,7 @@ public static class AssetPipelineExtensions
         bootstrap3JsFiles.Insert(14, "_content/JJMasterData.Web/js/bootstrap-toggle/bootstrap-toggle.min.js");
 
         options.AddJavaScriptBundle(
-            "/js/jjmasterdata-bootstrap-3.min.js",
+            "/js/jjmasterdata-bundle-bootstrap-3.min.js",
             bootstrap3JsFiles.ToArray()
         );
     }

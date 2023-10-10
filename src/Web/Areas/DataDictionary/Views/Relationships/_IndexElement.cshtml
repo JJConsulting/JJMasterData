@@ -87,7 +87,5 @@
 
 @if (!Model.Relationships.Any())
 {
-    <alert color="Default" show-close-button="false">
-        @StringLocalizer["No relationships found."]
-    </alert>
+    <alert icon="IconType.TimesCircleO" title="@StringLocalizer["No relationships found."]" color="Default" show-close-button="false"/>
 }

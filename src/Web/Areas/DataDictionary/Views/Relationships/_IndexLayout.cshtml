@@ -6,6 +6,7 @@
 @model RelationshipsListViewModel
 
 @functions {
+
     private static string GetRelationshipIconCssClass(FormElementRelationship relationship)
     {
         if (relationship.IsParent)
@@ -16,7 +17,7 @@
             RelationshipViewType.View => "fa-eye",
             RelationshipViewType.Update => "fa-pencil",
             _ => "fa-ban"
-        };
+            };
     }
 
 }
@@ -45,13 +46,12 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <ul class="list-group jjsortable" id="sortable">
-            @if (Model.Relationships.Any())
-            {
-                @for (var index = 0; index < Model.Relationships.Count; index++)
+        @if (Model.Relationships.Any())
+        {
+            <ul class="list-group jjsortable" id="sortable">
+                @foreach (var relationship in Model.Relationships)
                 {
-                    var relationship = Model.Relationships[index];
-                    var id = Model.Relationships[index].ElementRelationship?.ChildElement ?? "parent";
+                    var id = relationship.ElementRelationship?.ChildElement ?? "parent";
                     var title = relationship.ElementRelationship?.ChildElement ?? Model.ElementName;
                     <li class="list-group-item" id="@id">
                         <div style="height: 33px;">
@@ -67,17 +67,11 @@
                         </div>
                     </li>
                 }
-            }
-            else
-            {
-                @if (!Model.Relationships.Any())
-                {
-                    <alert color="Default" show-close-button="false">
-                        @StringLocalizer["No relationships found."]
-                    </alert>
-                }
-            }
-        </ul>
-
+            </ul>
+        }
+        else
+        {
+            <alert icon="IconType.TimesCircleO" title="@StringLocalizer["No relationships found."]" color="Default" show-close-button="false"/>
+        }
     </div>
 </div>
