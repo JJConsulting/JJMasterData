@@ -15,6 +15,7 @@ public static class HttpServiceExtensions
         services.AddScoped<IHttpRequest, Http.AspNetCore.HttpRequestWrapper>();
         services.AddScoped<IQueryString, Http.AspNetCore.QueryStringWrapper>();  
         services.AddScoped<IFormValues, Http.AspNetCore.FormValuesWrapper>();  
+        services.AddScoped<IClaimsPrincipalAccessor, Http.AspNetCore.ClaimsPrincipalWrapper>();  
 #endif
         services.AddScoped<JJMasterDataUrlHelper>();
 
@@ -23,6 +24,7 @@ public static class HttpServiceExtensions
         services.AddScoped<IHttpRequest, Http.SystemWeb.SystemWebHttpRequestWrapper>();
         services.AddScoped<IQueryString, Http.SystemWeb.SystemWebQueryStringWrapper>();
         services.AddScoped<IFormValues, Http.SystemWeb.SystemWebFormValuesWrapper>();
+        services.AddScoped<IClaimsPrincipalAccessor, Http.SystemWeb.SystemWebClaimsPrincipalWrapper>();  
 #endif
 
 

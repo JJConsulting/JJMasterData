@@ -117,7 +117,7 @@ public class JJFormView : AsyncComponent
     /// Se a variavel não for atribuida diretamente,
     /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
-    private string? UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext.Session, UserValues);
+    private string? UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
 
     /// <summary>
     /// Configurações de importação

@@ -27,6 +27,8 @@ if (authentication == "ReportPortal")
 }
 
 var app = builder.Build();
+
+
 if (app.Environment.IsProduction())
 {
     app.UseHsts();
@@ -41,8 +43,13 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+if (authentication is not null)
+{
+    app.UseAuthentication();
+}
 app.UseAuthorization();
 app.UseJJMasterDataWeb();
+
 var mapJJMasterData = app.MapJJMasterData();
 if (authentication is not null)
 {

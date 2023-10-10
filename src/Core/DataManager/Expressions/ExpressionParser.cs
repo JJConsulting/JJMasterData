@@ -9,13 +9,13 @@ namespace JJMasterData.Core.DataManager.Expressions;
 
 public class ExpressionParser : IExpressionParser
 {
-    private IHttpRequest Request { get; }
-    private IHttpSession Session { get; }
+    private IHttpContext HttpContext { get; }
+    private IHttpRequest Request => HttpContext.Request;
+    private IHttpSession Session => HttpContext.Session;
     
-    public ExpressionParser(IHttpRequest request, IHttpSession session)
+    public ExpressionParser(IHttpContext httpContext)
     {
-        Request = request;
-        Session = session;
+        HttpContext = httpContext;
     }
     
     public string? ParseExpression(
@@ -63,6 +63,10 @@ public class ExpressionParser : IExpressionParser
             else if ("componentName".Equals(field.ToLower()))
             {
                 parsedValue = $"{Request["componentName"]}";
+            }
+            else if ("userid".Equals(field.ToLower()))
+            {
+                parsedValue = DataHelper.GetCurrentUserId(HttpContext,userValues!);
             }
             else if (Session?[field] != null)
             {

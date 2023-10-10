@@ -53,7 +53,7 @@ public class JJAuditLogView : AsyncComponent
     /// Se a variavel não for atribuida diretamente,
     /// o sistema tenta recuperar em UserValues ou nas variaveis de Sessão
     /// </remarks>
-    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext.Session, UserValues);
+    internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
 
     private IHttpContext CurrentContext { get; }
 

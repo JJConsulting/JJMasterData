@@ -13,9 +13,8 @@ public class ExpressionParserTests
 
     public ExpressionParserTests()
     {
-        var request = new Mock<IHttpRequest>();
-        var session = new Mock<IHttpSession>();
-        ExpressionParser = new ExpressionParser(request.Object,session.Object);
+        var httpContext = new Mock<IHttpContext>();
+        ExpressionParser = new ExpressionParser(httpContext.Object);
     }
     
     [Fact]

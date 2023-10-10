@@ -2,9 +2,7 @@ using System.Security.Claims;
 
 namespace JJMasterData.Core.Http.Abstractions;
 
-public interface IHttpContext
+public interface IClaimsPrincipalAccessor
 {
-    IHttpSession Session { get; }
-    IHttpRequest Request { get; }
     ClaimsPrincipal User { get; }
 }

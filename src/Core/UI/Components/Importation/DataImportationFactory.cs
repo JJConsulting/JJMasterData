@@ -86,7 +86,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
 
         var dataContext = new DataContext(HttpContext.Request, DataContextSource.Upload,
-            DataHelper.GetCurrentUserId(HttpContext.Session, null));
+            DataHelper.GetCurrentUserId(HttpContext, null));
 
         var formEvent = FormEventHandlerFactory.GetFormEvent(elementName);
         

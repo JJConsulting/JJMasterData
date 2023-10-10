@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Claims;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
@@ -13,14 +14,16 @@ namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string? GetCurrentUserId(IHttpSession session, IDictionary<string, object>? userValues)
+    public static string? GetCurrentUserId(IHttpContext context, IDictionary<string, object>? userValues)
     {
         if (userValues != null && userValues.TryGetValue("USERID", out var value))
         {
             return value.ToString();
         }
 
-        return session["USERID"];
+        var userId = context.Session["USERID"];
+
+        return userId ?? context.User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
     }
 
     public static IDictionary<string, object?> GetElementValues(Element element, IDictionary<string, object?> values)
