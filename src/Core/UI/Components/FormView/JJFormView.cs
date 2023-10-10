@@ -446,8 +446,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.SearchBox:
                 return await DataPanel.GetResultAsync();
             case ComponentContext.UrlRedirect:
-                return await DataPanel.GetUrlRedirectResult(
-                    CurrentActionMap!.GetAction<UrlRedirectAction>(FormElement));
+                return await DataPanel.GetUrlRedirectResult(CurrentActionMap);
             case ComponentContext.DataPanelReload:
                 return await GetReloadPanelResultAsync();
             case ComponentContext.DataExportation:

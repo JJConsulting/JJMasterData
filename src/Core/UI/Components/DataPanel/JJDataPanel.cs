@@ -319,9 +319,10 @@ public class JJDataPanel : AsyncComponent
         return await FieldsService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink);
     }
     
-    internal async Task<JsonComponentResult> GetUrlRedirectResult(UrlRedirectAction urlRedirectAction)
+    internal async Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)
     {
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement,PageState, true, FieldNamePrefix);
+        var urlRedirectAction = actionMap.GetAction<UrlRedirectAction>(FormElement);
+        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement,PageState,actionMap.PkFieldValues, true, FieldNamePrefix);
         var formStateData = new FormStateData(values, PageState);
         var parsedUrl = ExpressionsService.ParseExpression(urlRedirectAction.UrlRedirect, formStateData);
 
