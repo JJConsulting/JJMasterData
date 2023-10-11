@@ -46,7 +46,7 @@ public class FieldValuesService
         {
             if (formValues.TryGetValue(f.Name, out var value) && value != null)
             {
-                var val = ClearSpecialChars(f, value);
+                object val = ClearSpecialChars(f, value);
                 newValues.Add(f.Name, val);
             }
         }

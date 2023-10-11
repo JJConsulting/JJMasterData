@@ -242,7 +242,11 @@ class CodeMirrorWrapperOptions {
 }
 class CodeMirrorWrapper {
     static setupCodeMirror(elementId, options) {
-        const codeMirrorTextArea = CodeMirror.fromTextArea(document.querySelector("#" + elementId), {
+        const textArea = document.querySelector("#" + elementId);
+        if (!textArea)
+            return;
+        console.log("hola");
+        const codeMirrorTextArea = CodeMirror.fromTextArea(textArea, {
             mode: options.mode,
             indentWithTabs: true,
             smartIndent: true,
@@ -262,7 +266,7 @@ class CodeMirrorWrapper {
             };
         });
         codeMirrorTextArea.on("keyup", function (cm, event) {
-            if (!cm.state.completionActive && event.key === "\"") {
+            if (!cm.state.completionActive && event.key === options.hintKey) {
                 CodeMirror.commands.autocomplete(cm, CodeMirror.hint.hintList, { completeSingle: false });
             }
         });

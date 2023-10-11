@@ -8,16 +8,6 @@
     bool showImage = Model.DataItem!.ShowIcon;
 }
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-         CodeMirrorWrapper.setupCodeMirror("DataItem_Command_Sql","text/x-sql", {
-             mode: "text/x-sql",
-             hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
-             hintKey: '{'
-         });
-    });
-</script>
-
 <div id="divSqlCommand" >
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
         <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["PL-SQL Command"]">@StringLocalizer["Command.Sql"]</label>

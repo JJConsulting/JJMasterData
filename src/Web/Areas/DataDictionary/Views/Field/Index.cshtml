@@ -72,8 +72,40 @@
     <script src="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.js" type="text/javascript"></script>
     <script src="~/_content/JJMasterData.Web/js/codemirror/mode/sql.js" type="text/javascript"></script>
     <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js" type="text/javascript"></script>
-    <script src="~/_content/JJMasterData.Web/js/codemirror/addon/autorefresh/autorefresh.js" type="text/javascript"></script>
     <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js" type="text/javascript"></script>
+    
+    <script type="text/javascript">
+         function setupCodeMirror(){
+            CodeMirrorWrapper.setupCodeMirror("DataItem_Command_Sql",{
+                mode: "text/x-sql",
+                hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
+                hintKey: '{'
+            });
+         }
+            
+         function listenTabs (){
+            setupCodeMirror(); 
+            
+            const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]')
+            
+            if(!tabs)
+                return;
+            
+            tabs.forEach((tab)=>{
+                 tab.addEventListener('shown.bs.tab', () => {
+                     const codeMirrorElement = document.querySelector(".CodeMirror");
+                     if (codeMirrorElement){
+                         codeMirrorElement.CodeMirror.refresh();
+                     }
+                     else{
+                        setupCodeMirror();
+                     }
+                 })
+            })
+         }
+         
+         document.addEventListener("DOMContentLoaded",listenTabs)
+    </script>
     
     <script type="text/javascript">        
         document.addEventListener("DOMContentLoaded",function (){
@@ -177,11 +209,12 @@
             SpinnerOverlay.show()
             
             fetch(url).then((response)=>response.text()).then((html)=>{
-                document.querySelector("#field-details").innerHTML = html;
+                HTMLHelper.setInnerHTML("field-details",html)
+                
                 listenAllEvents("#field-details");
+                listenTabs();
                 saveTabState();
                 resizeContainer();
-                
                 SpinnerOverlay.hide()
             })
         }

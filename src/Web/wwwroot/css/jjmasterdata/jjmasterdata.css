@@ -669,10 +669,10 @@ button.dropdown-toggle.form-control {
     border-radius: 5rem;
 }
 
-input.form-control:read-only {
-    background-color: var(--bs-secondary-bg);
-    opacity: 1;
-}
+/*input.form-control:read-only {*/
+/*    background-color: var(--bs-secondary-bg);*/
+/*    opacity: 1;*/
+/*}*/
 /*Custom accordion colors*/
 .accordion-success{
     --bs-accordion-active-bg: var(--bs-success-bg-subtle)
