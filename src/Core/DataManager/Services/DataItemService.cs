@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -21,17 +23,20 @@ public class DataItemService
     private ExpressionsService ExpressionsService { get; }
     private IFormValues FormValues { get; }
     private ElementMapService ElementMapService { get; }
+    private ILogger<DataItemService> Logger { get; }
 
     public DataItemService(
         IEntityRepository entityRepository,
         ExpressionsService expressionsService,
         IFormValues formValues,
-        ElementMapService elementMapService)
+        ElementMapService elementMapService,
+        ILogger<DataItemService> logger)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
         FormValues = formValues;
         ElementMapService = elementMapService;
+        Logger = logger;
     }
 
     public async Task<string?> GetSelectedValueAsync(FormElementField field, FormStateData formStateData,
@@ -101,7 +106,7 @@ public class DataItemService
             }
             else if (searchText is not null)
             {
-                if (item.Description.Contains(searchText))
+                if (item.Description?.Contains(searchText) ?? false)
                 {
                     yield return item;
                 }
@@ -120,9 +125,11 @@ public class DataItemService
             
         foreach(var value in values)
         {
-            var item = new DataItemValue();
-            item.Id = value[elementMap!.FieldId]?.ToString();
-            
+            var item = new DataItemValue
+            {
+                Id = value[elementMap!.FieldId]?.ToString()
+            };
+
             if (elementMap.FieldDescription != null) 
                 item.Description = value[elementMap.FieldDescription]?.ToString();
             
@@ -149,9 +156,19 @@ public class DataItemService
     {
         var sql = GetSqlParsed(dataItem, formStateData, searchText, searchId);
 
-        var dictionary = await EntityRepository.GetDictionaryListAsync(new DataAccessCommand(sql!));
+        List<Dictionary<string, object?>> result;
+        
+        try
+        {
+             result = await EntityRepository.GetDictionaryListAsync(new DataAccessCommand(sql!));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error at DataItemService while recovering SqlCommand values");
+            throw;
+        }
 
-        foreach (var row in dictionary)
+        foreach (var row in result)
         {
             var item = new DataItemValue
             {

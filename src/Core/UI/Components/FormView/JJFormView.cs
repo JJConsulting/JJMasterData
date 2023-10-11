@@ -870,16 +870,19 @@ public class JJFormView : AsyncComponent
     {
         var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]);
         var html = new HtmlBuilder(HtmlTag.Div);
-        var formElement =
-            await DataDictionaryRepository.GetFormElementAsync(GridView.ToolBarActions.InsertAction.ElementNameToSelect);
-        var selectionValues = await EntityRepository.GetFieldsAsync(formElement, insertValues);
+        
+        var childElementName = GridView.ToolBarActions.InsertAction.ElementNameToSelect;
+        var childElement = await DataDictionaryRepository.GetFormElementAsync(childElementName);
+        
+        var selectionValues = await EntityRepository.GetFieldsAsync(childElement, insertValues);
+        
+        var mappedFkValues = DataHelper.GetRelationValues(FormElement, selectionValues, true);
+
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(formElement, selectionValues, PageState.Insert,
+            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, mappedFkValues!, PageState.Insert,
                 true);
-
-        var mappedFkValues = DataHelper.GetRelationValues(FormElement, values, true);
-
-        var errors = await InsertFormValuesAsync(mappedFkValues!, false);
+        
+        var errors = await InsertFormValuesAsync(values, false);
 
         if (errors.Count > 0)
         {
