@@ -57,6 +57,7 @@
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
                     <label>@StringLocalizer["Element Name To Select"]</label>
+                    <tooltip title="Only relationships will be shown here, because you need to map the foreign keys to be used at your SET procedure."/>
                     @Html.Raw(await GetInsertSelectionComboBoxHtml())
                 </div>
 

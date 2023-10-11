@@ -19,10 +19,10 @@ Complex element
 var builder = new HtmlBuilder(HtmlTag.Div)
     .WithNameAndId("id1")
     .WithCssClass("class1 class2")
-    .AppendElement(HtmlTag.H1, h1 =>
+    .Append(HtmlTag.H1, h1 =>
     {
         h1.AppendText("Simple Title"); 
-        h1.AppendElement(HtmlTag.Small, s =>
+        h1.Append(HtmlTag.Small, s =>
         {
             s.AppendText("This is a subtitle");
         });

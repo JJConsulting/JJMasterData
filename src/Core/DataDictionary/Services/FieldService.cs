@@ -219,7 +219,7 @@ public class FieldService : BaseService
             if (dataItem.ReplaceTextOnGrid && !dataItem.Command.Sql.Contains("{SearchId}"))
             {
                 AddError("Command.Sql", "{SearchId} is required at queries using ReplaceTextOnGrid. " +
-                                        "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj002.html\">JJ002</a> for more information.");
+                                        "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/search_id.html\">the docs</a> for more information.");
             }
         }
         else if (dataItem.DataItemType == DataItemType.Manual)

@@ -45,10 +45,10 @@
 - name: Errors
   href: errors/intro.md
   items:
-    - name: JJ001 - ConnectionString not found.
-      href: errors/jj001.md
-    - name: JJ002 - {search_id} is required at queries using ReplaceTextOnGrid.
-      href: errors/jj002.md
+    - name: ConnectionString not found.
+      href: errors/connection_string.md
+    - name: {SearchId} is required at queries using ReplaceTextOnGrid.
+      href: errors/search_id.md
 - name: Plugins
   items:
   - name: Hangfire

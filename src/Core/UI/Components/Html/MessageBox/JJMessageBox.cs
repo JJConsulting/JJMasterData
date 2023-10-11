@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Web;
 using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
@@ -26,14 +27,13 @@ public class JJMessageBox : HtmlComponent
         var html = new HtmlBuilder(HtmlTag.Script)
             .WithAttribute("type", "text/javascript")
             .WithAttribute("lang", "javascript")
-            .AppendText(GetDomContentLoadedScript());
+            .AppendText(GetShowScript());
 
         return html;
     }
 
     public string GetDomContentLoadedScript()
     {
-
         var showScript = GetShowScript();
         return $$"""
                  document.addEventListener('DOMContentLoaded', function() {
@@ -44,11 +44,12 @@ public class JJMessageBox : HtmlComponent
 
     public string GetShowScript()
     {
-        var message = Content?.Replace("<br>", "\\n").Replace("\r\n", string.Empty);
+        var title = HttpUtility.JavaScriptStringEncode(Title);
+        var message = HttpUtility.JavaScriptStringEncode(Content ?? string.Empty);
 
         var script = $"""
                       MessageBox.show(
-                                         '{Title}',
+                                         '{title}',
                                          '{message}',
                                          '{(int)Icon}',
                                          '{(int)Size}'

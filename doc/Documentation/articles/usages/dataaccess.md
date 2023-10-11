@@ -9,7 +9,7 @@ var cmd = new DataAccessCommand();
 cmd.Sql = "select id, name from table1 where group = @group";
 cmd.Paramneters.Add(new DataAccessCommand("@group", "G1"));
  
-DataTable dt = dataAccess.GetDataTable(cmd);
+DataTable dt = await dataAccess.GetDataTableAsync(cmd);
 ```
 
 ## How to execute a sequence of commands?
@@ -25,7 +25,7 @@ This example shows how to execute a sequence of commands:<br>
                 new("update table1 set ..."),
                 new("update table2 set ..."),
             };
-            dataAccess.SetCommand(commands);
+            await dataAccess.SetCommandAsync(commands);
         }
         catch (Exception ex)
         {

@@ -2,6 +2,10 @@
 
 By default a bootstrap.min.css is added, but you can modified it.<br>
 
+You have two options.
+
+## Using your own layout
+
 Setting `UseCustomBootstrap` to `true` the link from default `bootstrap.min.css` not will be generate in `_MasterDataStylesheets`.
 ```cs
 builder.Services.AddJJMasterDataWeb(o =>
@@ -15,10 +19,10 @@ builder.Services.AddJJMasterDataWeb(o =>
 In your project folder Views/Shared add the files:
 ```
 _MasterDataLayout.cshtml
-_MasterDataLayout.Popup.cshtml
+_MasterDataLayout.Modal.cshtml
 ```
 > [!TIP]
-> You can modified the layout name, setting the variables `JJMasterDataWeb.LayoutPath` and `JJMasterDataWeb.PopUpLayoutPath`
+> You can modified the layout name, setting the variables `JJMasterDataWeb.LayoutPath` and `JJMasterDataWeb.ModalLayoutPath`
 
 Inside this file put a your custom link with the .css file.<br>
 It'll look like this:
@@ -54,3 +58,5 @@ It'll look like this:
 </html>
 ```
 At runtime, the system will check if the `_MasterDataLayout.cshtml` & `_MasterDataLayout.PopUp.cshtml` (or your custom layouts path) exist, if so, it will use the layouts configured in that files.
+
+#

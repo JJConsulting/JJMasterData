@@ -36,8 +36,8 @@ public partial class DataAccess
                 var error = new StringBuilder();
                 error.AppendLine("Connection string not found in configuration file.");
                 error.AppendLine("Default connection name is [ConnectionString].");
-                error.AppendLine("Please check JJ001 for more information.");
-                error.Append("https://portal.jjconsulting.com.br/jjdoc/articles/errors/jj001.html");
+                error.AppendLine("Please check the docs for more information.");
+                error.Append("https://portal.jjconsulting.com.br/jjdoc/articles/errors/connection_string.html");
                 throw new DataAccessException(error.ToString());
             }
 

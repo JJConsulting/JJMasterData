@@ -17,7 +17,7 @@ public class SaveAction : FormToolbarAction
         Text = "Save";
         Location = FormToolbarActionLocation.Panel;
         ShowAsButton = true;
-        VisibleExpression = "val:1";
+        VisibleExpression = "exp: '{PageState}' <> 'VIEW'";
     }
 
     public FormEnterKey EnterKeyBehavior { get; set; }
