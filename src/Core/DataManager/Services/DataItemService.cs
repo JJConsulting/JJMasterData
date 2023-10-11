@@ -164,7 +164,7 @@ public class DataItemService
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error at DataItemService while recovering SqlCommand values");
+            Logger.LogError(ex, "Error at DataItemService while recovering SqlCommand values. Sql: {Sql}", sql);
             throw;
         }
 
@@ -173,7 +173,7 @@ public class DataItemService
             var item = new DataItemValue
             {
                 Id = row.ElementAt(0).Value?.ToString(),
-                Description = row.ElementAt(1).Value?.ToString()!.Trim()
+                Description = row.ElementAt(1).Value?.ToString()?.Trim()
             };
             if (dataItem.ShowIcon)
             {
@@ -181,7 +181,7 @@ public class DataItemService
                 item.IconColor = row.ElementAt(3).Value?.ToString();
             }
 
-            if (searchText == null || item.Description!.ToLower().Contains(searchText))
+            if (searchText == null || (item.Description?.ToLower().Contains(searchText) ?? false))
             {
                 yield return item;
             }

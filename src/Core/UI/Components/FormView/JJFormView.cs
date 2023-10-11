@@ -904,7 +904,7 @@ public class JJFormView : AsyncComponent
         {
             PageState = PageState.Update;
 
-            var result = await GetFormResult(new FormContext(mappedFkValues!, PageState), false);
+            var result = await GetFormResult(new FormContext(values, PageState), false);
 
             if (result is RenderedComponentResult renderedComponentResult)
             {
