@@ -11,6 +11,7 @@ using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -24,6 +25,7 @@ public class FormService
     private FieldValidationService FieldValidationService { get; }
 
     private AuditLogService AuditLogService { get; }
+    private ILogger<FormService> Logger { get; }
 
     public bool EnableErrorLinks { get; set; }
     
@@ -55,13 +57,16 @@ public class FormService
         ExpressionsService expressionsService,
         FormFileService formFileService,
         FieldValidationService fieldValidationService,
-        AuditLogService auditLogService)
+        AuditLogService auditLogService,
+        ILogger<FormService> logger
+        )
     {
         FieldValidationService = fieldValidationService;
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;
         FormFileService = formFileService;
         AuditLogService = auditLogService;
+        Logger = logger;
     }
 
     #endregion
@@ -101,6 +106,7 @@ public class FormService
         }
         catch (Exception e)
         {
+            Logger.LogError(e, "Error at {Method}", nameof(UpdateAsync));
             errors.Add("DbException", ExceptionManager.GetMessage(e));
         }
 
@@ -158,6 +164,7 @@ public class FormService
         }
         catch (Exception e)
         {
+            Logger.LogError(e, "Error at {Method}", nameof(InsertAsync));
             errors.Add("DbException", ExceptionManager.GetMessage(e));
         }
 
@@ -217,6 +224,7 @@ public class FormService
         }
         catch (Exception e)
         {
+            Logger.LogError(e, "Error at {Method}", nameof(InsertOrReplaceAsync));
             errors.Add("DbException", ExceptionManager.GetMessage(e));
         }
 
@@ -302,6 +310,7 @@ public class FormService
         }
         catch (Exception e)
         {
+            Logger.LogError(e, "Error at {Method}", nameof(DeleteAsync));
             errors.Add("DbException", ExceptionManager.GetMessage(e));
         }
 

@@ -84,6 +84,11 @@ public class ActionButtonFactory
                     actionContext.IsModal = editAction.ShowAsModal;
                 }
                 
+                if (gridTableAction is ViewAction viewAction)
+                {
+                    actionContext.IsModal = viewAction.ShowAsModal;
+                }
+                
                 button.OnClientClick = ActionScripts.GetFormActionScript(action, actionContext, ActionSource.GridTable);
                 break;
             default:

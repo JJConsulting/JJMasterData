@@ -6,43 +6,61 @@ JJSearchBox is a searchable combobox.
 
 ### SQL Query
 
-```csharp
-@{
-  var searchBox = new JJSearchBox
-   {
-     Name = "mySearchBox",
-     DataItem = new FormElementDataItem
-     {
-         Command = new("SELECT ID, DESCRIPTION FROM TABLE")
-     }
-   };
-}
-
-/// ...
-@Html.Raw(searchBox.GetHtml())
-/// ...
-```
-### Values
+### At your Controller
 
 ```csharp
-@{
-    var search = new JJSearchBox
+
+    private readonly IControlFactory<JJSearchBox> _searchBoxFactory;
+
+    public MyController(IControlFactory<JJSearchBox> searchBoxFactory)
     {
-        Name = "mySearchBox",
-        DataItem = new FormElementDataItem
+        _searchBoxFactory = searchBoxFactory;
+    }
+
+    ///You can also use IComponentFactory
+    public MyController(IComponentFactory componentFactory)
+    {
+        _searchBoxFactory = componentFactory.Controls.SearchBox;
+    }
+
+    public async Task<IActionResult> YourAction()
+    {
+        var searchBox = await _searchBoxFactory.Create();
+        
+        //You can use SQL queries
+        searchBox.DataItem = new FormElementDataItem
+         {
+             Command = new("SELECT ID, DESCRIPTION FROM TABLE")
+          }
+   
+        
+        //Or static values
+        searchBox.DataItem = new FormElementDataItem
         {
             Itens = new List<DataItemValue>
             {
                 new("ID","DESCRIPTION")
             }
-        }
-    };
-}
-/// ...
-@Html.Raw(search.GetHtml())
-/// ...
+        };
+        var result = await searchBox.GetResultAsync();
+        
+        /// Here we intercept your POST request to search your data.
+        if (searchBox.IsActionResult())
+            return searchBox.ToActionResult();
+        
+        var model = new Model(searchBox.Content);
+        return View("YourView",model);
+    }
+
+```
+### At your View
+
+```html
+    <h1>Hey, here is my dynamic searchBox:</h1>
+    @Html.Raw(Model.SearchBoxHtml)
 ```
 
 ## Customization
 
-You can check all properties from JJSearchBox at our [API Reference](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.WebComponents.JJSearchBox.html)
+You can check all properties from JJSearchBox at our [API Reference](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.UI.JJSearchBox.html)
+Also check [FormElementDataItem](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.DataDictionary.Models.FormElementDataItem.html)

@@ -5,7 +5,7 @@ Represents a clickable button.
 ## Usage
 
 ```html
-<jj-link-button 
+<link-button 
         icon="@Home" 
         url-action="http://www.jjconsulting.tech"
         text="JJ Consulting"/>

@@ -66,7 +66,7 @@ public static class DbLoggerElement
                     Name = options.MessageColumnName,
                     Label = "Message",
                     DataType = FieldType.Varchar,
-                    Size = 8000,
+                    Size = -1,
                     Filter =
                     {
                         Type = FilterMode.Contain

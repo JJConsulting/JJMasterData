@@ -4,6 +4,7 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Test.DataManager.Services;
 
@@ -18,26 +19,15 @@ public class FormServiceTests
     public async Task UpdateAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
         // Arrange
-        var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<ExpressionsService>();
-        var formFileServiceMock = new Mock<FormFileService>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>();
-        var auditLogServiceMock = new Mock<AuditLogService>();
-
-        var formService = new FormService(
-            entityRepositoryMock.Object,
-            expressionsServiceMock.Object,
-            formFileServiceMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object);
-
         var formElement = new FormElement();
         var values = new Dictionary<string, object>();
+        var formService = GetFormService(formElement,values);
+
+
         var dataContext = new DataContext();
 
         // Mock the FieldValidationService to return no errors
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Update, false))
-            .ReturnsAsync(new Dictionary<string, string>());
+
 
         // Act
         var result = await formService.UpdateAsync(formElement, values, dataContext);
@@ -47,31 +37,35 @@ public class FormServiceTests
         Assert.Empty(result.Errors);
     }
 
-    [Fact]
-    public async Task UpdateAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
+    private static FormService GetFormService(FormElement formElement, IDictionary<string,object> values)
     {
-        // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
         var expressionsServiceMock = new Mock<ExpressionsService>();
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>();
         var auditLogServiceMock = new Mock<AuditLogService>();
-
-        var formService = new FormService(
+        var loggerMock = new Mock<ILogger<FormService>>();
+        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Update, false))
+            .ReturnsAsync(new Dictionary<string, string>());
+        
+        return new FormService(
             entityRepositoryMock.Object,
             expressionsServiceMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object);
+            auditLogServiceMock.Object,
+            loggerMock.Object);
+    }
 
+    [Fact]
+    public async Task UpdateAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
+    {
+        // Arrange
         var formElement = new FormElement();
         var values = new Dictionary<string, object>();
+        var formService = GetFormService(formElement,values);
         var dataContext = new DataContext();
-
-        // Mock the FieldValidationService to return validation errors
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Update, false))
-            .ReturnsAsync(new Dictionary<string, string> { { "Field1", "Validation Error" } });
-
+        
         // Act
         var result = await formService.UpdateAsync(formElement, values, dataContext);
 
@@ -84,26 +78,10 @@ public class FormServiceTests
     public async Task InsertAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
         // Arrange
-        var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<ExpressionsService>();
-        var formFileServiceMock = new Mock<FormFileService>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>();
-        var auditLogServiceMock = new Mock<AuditLogService>();
-
-        var formService = new FormService(
-            entityRepositoryMock.Object,
-            expressionsServiceMock.Object,
-            formFileServiceMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object);
-
         var formElement = new FormElement();
         var values = new Dictionary<string, object>();
+        var formService = GetFormService(formElement,values);
         var dataContext = new DataContext();
-
-        // Mock the FieldValidationService to return no errors
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Insert, false))
-            .ReturnsAsync(new Dictionary<string, string>());
 
         // Act
         var result = await formService.InsertAsync(formElement, values, dataContext);
@@ -117,27 +95,11 @@ public class FormServiceTests
     public async Task InsertAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
     {
         // Arrange
-        var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<ExpressionsService>();
-        var formFileServiceMock = new Mock<FormFileService>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>();
-        var auditLogServiceMock = new Mock<AuditLogService>();
-
-        var formService = new FormService(
-            entityRepositoryMock.Object,
-            expressionsServiceMock.Object,
-            formFileServiceMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object);
-
         var formElement = new FormElement();
         var values = new Dictionary<string, object>();
+        var formService = GetFormService(formElement,values);
         var dataContext = new DataContext();
-
-        // Mock the FieldValidationService to return validation errors
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Insert, false))
-            .ReturnsAsync(new Dictionary<string, string> { { "Field1", "Validation Error" } });
-
+        
         // Act
         var result = await formService.InsertAsync(formElement, values, dataContext);
 
@@ -150,26 +112,10 @@ public class FormServiceTests
     public async Task InsertOrReplaceAsync_WithValidData_ReturnsFormLetterWithNoErrors()
     {
         // Arrange
-        var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<ExpressionsService>();
-        var formFileServiceMock = new Mock<FormFileService>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>();
-        var auditLogServiceMock = new Mock<AuditLogService>();
-
-        var formService = new FormService(
-            entityRepositoryMock.Object,
-            expressionsServiceMock.Object,
-            formFileServiceMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object);
-
         var formElement = new FormElement();
         var values = new Dictionary<string, object>();
+        var formService = GetFormService(formElement,values);
         var dataContext = new DataContext();
-
-        // Mock the FieldValidationService to return no errors
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Import, false))
-            .ReturnsAsync(new Dictionary<string, string>());
 
         // Act
         var result = await formService.InsertOrReplaceAsync(formElement, values, dataContext);
@@ -183,26 +129,10 @@ public class FormServiceTests
     public async Task InsertOrReplaceAsync_WithValidationErrors_ReturnsFormLetterWithErrors()
     {
         // Arrange
-        var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<ExpressionsService>();
-        var formFileServiceMock = new Mock<FormFileService>();
-        var fieldValidationServiceMock = new Mock<FieldValidationService>();
-        var auditLogServiceMock = new Mock<AuditLogService>();
-
-        var formService = new FormService(
-            entityRepositoryMock.Object,
-            expressionsServiceMock.Object,
-            formFileServiceMock.Object,
-            fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object);
-
         var formElement = new FormElement();
         var values = new Dictionary<string, object>();
+        var formService = GetFormService(formElement,values);
         var dataContext = new DataContext();
-
-        // Mock the FieldValidationService to return validation errors
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Import, false))
-            .ReturnsAsync(new Dictionary<string, string> { { "Field1", "Validation Error" } });
 
         // Act
         var result = await formService.InsertOrReplaceAsync(formElement, values, dataContext);
@@ -221,13 +151,14 @@ public class FormServiceTests
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>();
         var auditLogServiceMock = new Mock<AuditLogService>();
-
+        var loggerMock = new Mock<ILogger<FormService>>();
         var formService = new FormService(
             entityRepositoryMock.Object,
             expressionsServiceMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object);
+            auditLogServiceMock.Object,
+            loggerMock.Object);
 
         var formElement = new FormElement();
         var primaryKeys = new Dictionary<string, object>();
@@ -258,13 +189,13 @@ public class FormServiceTests
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>();
         var auditLogServiceMock = new Mock<AuditLogService>();
-
+        var loggerMock = new Mock<ILogger<FormService>>();
         var formService = new FormService(
             entityRepositoryMock.Object,
             expressionsServiceMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object);
+            auditLogServiceMock.Object,loggerMock.Object);
 
         var formElement = new FormElement();
         var primaryKeys = new Dictionary<string, object>();

@@ -4,16 +4,44 @@ JJFormView is the heart of the JJMasterData CRUDs.
 
 ## Usage
 
-At your Controller, create a JJFormView instance and use it as your Model or add it as a property to your ViewModel.
+At your Controller, create a JJFormView instance and use the result as your Model or add it as a property to your ViewModel.
+### At your Controller
 
 ```csharp
-    var formView = new JJFormView("YourDataDictionaryName")
+
+    private readonly IFormElementComponentFactory<JJFormView> _formViewFactory;
+
+    public MyController(IFormElementComponentFactory<JJFormView> formViewFactory)
+    {
+        _formViewFactory = formViewFactory;
+    }
+
+    ///You can also use IComponentFactory
+    public MyController(IComponentFactory componentFactory)
+    {
+        _formViewFactory = componentFactory.FormView;
+    }
+
+    public async Task<IActionResult> YourAction()
+    {
+        var formView = await _formViewFactory.CreateAsync("Your element name");
+
+        var result = await formView.GetResultAsync();
+        
+        /// Here we intercept any async POST request, like pagination and search boxes.
+        if (result.IsActionResult())
+            return result.ToActionResult();
+        
+        var model = new Model(result.Content);
+        return View("YourView",model);
+    }
 ```
 
-At your view, simply call GetHtmlString().
+### At your View
 
-```csharp
-    @Model.GetHtmlString()
+```html
+    <h1>Hey, here is my dynamic form:</h1>
+    @Html.Raw(Model.FormViewHtml)
 ```
 
 ## Customization
@@ -26,5 +54,5 @@ if you want to programmatically change your CRUD title, your can simply call:
     formView.FormElement.Fields["YOUR_FIELD"].VisibleExpression = "YourLogicHere"
 ```
 
-In a nutshell, use FormElement property to customize DataDictionary configurations, like your fields. 
-You can check all properties from FormView at our [API Reference](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.WebComponents.JJFormView.html)
+In a nutshell, use FormElement property to customize anything from the Data Dictionary, like your fields. 
+You can check all properties from FormView at our [API Reference](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.UI.JJFormView.html)

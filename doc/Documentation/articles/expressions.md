@@ -88,3 +88,7 @@ field.DefaultValue = "protheus:'http://10.0.0.6:8181/websales/jjmain.apw', 'u_vl
 
 > [!WARNING] 
 > For Protheus calls apply JJxFun patch and configure http connection in Protheus
+> 
+
+
+## 
