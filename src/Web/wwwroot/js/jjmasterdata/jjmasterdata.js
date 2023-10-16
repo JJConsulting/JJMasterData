@@ -285,6 +285,7 @@ class CodeMirrorWrapper {
                 CodeMirror.commands.autocomplete(cm, CodeMirror.hint.hintList, { completeSingle: false });
             }
         });
+        setTimeout(() => { codeMirrorTextArea.refresh(); }, 200);
     }
 }
 class CollapsePanelListener {
