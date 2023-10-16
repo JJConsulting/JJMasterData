@@ -62,21 +62,19 @@
     <div class="tab-content" style="margin-top: 20px;">
         <div id="div-general" class="tab-pane fade @Active("#div-general")">
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                <div class="@BootstrapHelper.FormGroup col-sm-3 required">
                     <label class="@BootstrapHelper.Label " asp-for="Name">@StringLocalizer["Field Name"]</label>
                     <tooltip title="Name of the field at your data source."/>
                     @Html.TextBoxFor(model => Model.Name, new { maxlength = "64", @class = "form-control" })
                     <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4">
+                <div class="@BootstrapHelper.FormGroup col-sm-3">
                     <label class="@BootstrapHelper.Label " asp-for="Label">@StringLocalizer["Label"]</label>
                     <tooltip title="Name of the field displayed at the form."/>
                     @Html.TextBoxFor(model => model.Label, new { @class = "form-control" })
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4">
-                    <label class="@BootstrapHelper.Label " asp-for="DefaultValue">@StringLocalizer["Default Value Expression"]</label>
-                    <tooltip title="Expression for a default value. Check expressions at the docs for more information."/>
-                    @Html.TextBoxFor(model => model.DefaultValue, new { @class = "form-control" })
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                    <expression for="DefaultValue" tooltip="Expression for a default value. Check expressions at the docs for more information."/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " asp-for="Filter.Type">@StringLocalizer["Filter"]</label>
@@ -197,22 +195,13 @@
         <div id="div-advanced" class="tab-pane fade @Active("#div-advanced")">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label " asp-for="VisibleExpression">@StringLocalizer["Visible Expression"]</label>
-                    <tooltip title="Boolean expression to show the field. Check expressions at the docs for more information."/>
-
-                    @Html.TextBoxFor(model => model.VisibleExpression, new { @class = "form-control" })
+                    <expression for="VisibleExpression" tooltip="Boolean expression to show the field. Check expressions at the docs for more information."/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label " asp-for="EnableExpression">@StringLocalizer["Enable Expression"]</label>
-                    <tooltip title="Boolean expression to enable the field. Check expressions at the docs for more information."/>
-
-                    @Html.TextBoxFor(model => model.EnableExpression, new { @class = "form-control" })
+                     <expression for="EnableExpression" tooltip="Boolean expression to enable the field. Check expressions at the docs for more information."/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <label class="@BootstrapHelper.Label " asp-for="TriggerExpression">@StringLocalizer["Trigger Expression"]</label>
-                    <tooltip title="Expression triggered whenever a field triggers a POST to the server. Check expressions at the docs for more information."/>
-
-                    @Html.TextBoxFor(model => model.TriggerExpression, new { @class = "form-control" })
+                    <expression for="TriggerExpression" tooltip="Expression triggered whenever a field triggers a POST to the server. Check expressions at the docs for more information."/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-4">
                     <label class="@BootstrapHelper.Label " asp-for="CssClass">@StringLocalizer["Css Class"]</label>

@@ -20,8 +20,6 @@ builder.Services.AddJJMasterDataWeb(builder.Configuration)
         options.AddCssBundle("/css/bootstrap.min.css", "css/bootstrap/bootstrap.css").MinifyCss();
     });
 
-builder.Services.AddControllersWithViews().AddViewLocalization();
-
 if (authentication == "ReportPortal")
 {
     builder.Services.AddAuthentication().WithReportPortal();

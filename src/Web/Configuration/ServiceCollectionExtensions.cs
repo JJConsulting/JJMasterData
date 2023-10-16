@@ -6,6 +6,7 @@ using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Web.Areas.DataDictionary.Services;
+using JJMasterData.Web.Binders;
 using JJMasterData.Web.Configuration.Options;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Models;
@@ -80,6 +81,11 @@ public static class ServiceCollectionExtensions
 
         services.AddMasterDataWebOptimizer();
 
+        services.AddControllersWithViews(options =>
+        {
+            options.ModelBinderProviders.Insert(0, new ExpressionModelBinderProvider());
+        }).AddViewLocalization();
+        
         services.AddHttpContextAccessor();
         services.AddSession();
         services.AddDistributedMemoryCache();

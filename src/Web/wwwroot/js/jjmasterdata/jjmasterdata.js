@@ -241,22 +241,37 @@ class CheckboxHelper {
 class CodeMirrorWrapperOptions {
 }
 class CodeMirrorWrapper {
+    static isCodeMirrorConfigured(elementId) {
+        const textArea = document.querySelector("#" + elementId);
+        return textArea.codeMirrorInstance != null;
+    }
     static setupCodeMirror(elementId, options) {
         const textArea = document.querySelector("#" + elementId);
         if (!textArea)
             return;
-        console.log("hola");
+        if (this.isCodeMirrorConfigured(elementId))
+            return;
         const codeMirrorTextArea = CodeMirror.fromTextArea(textArea, {
             mode: options.mode,
             indentWithTabs: true,
             smartIndent: true,
             lineNumbers: true,
             autofocus: true,
-            autoRefresh: true,
             autohint: true,
             extraKeys: { "Ctrl-Space": "autocomplete" }
         });
-        codeMirrorTextArea.setSize(null, 250);
+        if (options.singleLine) {
+            codeMirrorTextArea.setSize(null, 30);
+            codeMirrorTextArea.on("beforeChange", function (instance, change) {
+                const newText = change.text.join("").replace(/\n/g, "");
+                change.update(change.from, change.to, [newText]);
+                return true;
+            });
+        }
+        else {
+            codeMirrorTextArea.setSize(null, 250);
+        }
+        textArea.codeMirrorInstance = codeMirrorTextArea;
         CodeMirror.registerHelper('hint', 'hintList', function (_) {
             const cur = codeMirrorTextArea.getCursor();
             return {
@@ -2364,4 +2379,12 @@ function requestSubmitParentWindow() {
     window.parent.document.forms[0].requestSubmit();
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+function onDOMReady(callback) {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', callback);
+    }
+    else {
+        callback();
+    }
+}
 //# sourceMappingURL=jjmasterdata.js.map

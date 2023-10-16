@@ -31,15 +31,16 @@ public class FormElementField : ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("visibleExpression")]
+    [Expression]
     public string VisibleExpression { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("enableExpression")]
+    [Expression]
     public string EnableExpression { get; set; }
     
-
     /// <summary>
     /// Line counter, used to break the line in the form (row class)
     /// </summary>
@@ -130,6 +131,7 @@ public class FormElementField : ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("triggerExpression")]
+    [Expression]
     public string? TriggerExpression { get; set; }
 
     /// <summary>

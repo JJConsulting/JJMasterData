@@ -136,7 +136,7 @@ public partial class HtmlBuilder
     }
 
     /// <summary>
-    /// Append a hidden input to the Element tree.
+    /// Append a hidden input to the element tree.
     /// </summary>
     public HtmlBuilder AppendHiddenInput(string name, string value)
     {
@@ -149,7 +149,7 @@ public partial class HtmlBuilder
     }
 
     /// <summary>
-    /// Append a hidden input to the Element tree.
+    /// Append a hidden input to the element tree.
     /// </summary>
     public HtmlBuilder AppendHiddenInput(string name)
     {

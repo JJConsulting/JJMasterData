@@ -73,7 +73,7 @@
     <script src="~/_content/JJMasterData.Web/js/codemirror/mode/sql.js" type="text/javascript"></script>
     <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js" type="text/javascript"></script>
     <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js" type="text/javascript"></script>
-    
+
     <script type="text/javascript">
          function setupCodeMirror(){
             CodeMirrorWrapper.setupCodeMirror("DataItem_Command_Sql",{
@@ -93,9 +93,11 @@
             
             tabs.forEach((tab)=>{
                  tab.addEventListener('shown.bs.tab', () => {
-                     const codeMirrorElement = document.querySelector(".CodeMirror");
-                     if (codeMirrorElement){
-                         codeMirrorElement.CodeMirror.refresh();
+                     const codeMirrorElements = document.querySelectorAll(".CodeMirror");
+                     if (codeMirrorElements){
+                         codeMirrorElements.forEach(function (c){
+                             c.CodeMirror.refresh();
+                         })
                      }
                      else{
                         setupCodeMirror();

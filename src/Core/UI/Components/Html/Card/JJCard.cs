@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.DataDictionary.Models;
+﻿using JetBrains.Annotations;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
@@ -9,7 +10,7 @@ namespace JJMasterData.Core.UI.Components;
 public class JJCard : HtmlComponent
 {
     public string Title { get; set; }
-
+    
     public string SubTitle { get; set; }
 
     public PanelLayout Layout { get; set; }
@@ -22,7 +23,7 @@ public class JJCard : HtmlComponent
 
     internal JJCard()
     {
-        
+        HtmlBuilderContent = new HtmlBuilder();
     }
     
     internal override HtmlBuilder BuildHtml()

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using JJMasterData.Core.DataDictionary.Models;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
@@ -66,6 +67,7 @@ public class ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("defaultvalue")]
+    [Expression]
     public string? DefaultValue { get; set; }
 
     /// <summary>
