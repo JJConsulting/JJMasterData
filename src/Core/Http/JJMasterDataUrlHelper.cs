@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using JetBrains.Annotations;
+using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 

@@ -1,11 +1,11 @@
 ﻿using System;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
-using JJMasterData.Core.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

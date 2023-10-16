@@ -1,4 +1,5 @@
 ﻿@using JJMasterData.Core.UI
+@using JJMasterData.Web.Configuration.Options
 @inject IOptions<JJMasterDataWebOptions> Options
 
    <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/all.min.css" />
@@ -11,11 +12,11 @@
     }
     else
     {
-        <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap.min.css"/>
+        <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap.min.css" />
     }
     @if (BootstrapHelper.Version == 3)
    {
-       <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-toggle.min.css" />
+       <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-toggle.min.css"/>
    }
    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-select.css" />
    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-tagsinput.css" />
@@ -30,10 +31,10 @@
     @if (Options.Value.UseCustomBootstrap)
     {
         <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath"/>
-        <link rel="stylesheet" href="~/css/jjmasterdata-bundle.min.css"/>
+        <link rel="stylesheet" href="~/css/jjmasterdata-bundle.min.css" asp-append-version="true"/>
     }
     else
     {
-        <link rel="stylesheet" href="~/css/jjmasterdata-bundle-with-bootstrap.min.css"/>
+        <link rel="stylesheet" href="~/css/jjmasterdata-bundle-with-bootstrap.min.css" asp-append-version="true"/>
     }
 </environment>

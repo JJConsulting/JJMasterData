@@ -1,5 +1,6 @@
 using JJMasterData.Brasil.Configuration;
 using JJMasterData.Protheus.Configuration;
+using JJMasterData.Web.Configuration;
 using JJMasterData.Web.Extensions;
 using ReportPortal.Auth;
 

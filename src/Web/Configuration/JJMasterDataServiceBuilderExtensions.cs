@@ -2,7 +2,7 @@ using JJMasterData.Commons.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using WebOptimizer;
 
-namespace JJMasterData.Web.Extensions;
+namespace JJMasterData.Web.Configuration;
 
 public static class JJMasterDataServiceBuilderExtensions
 {

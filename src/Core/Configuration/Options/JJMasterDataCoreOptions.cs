@@ -4,7 +4,7 @@ using System.IO;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Util;
 
-namespace JJMasterData.Core.Options;
+namespace JJMasterData.Core.Configuration.Options;
 
 public class JJMasterDataCoreOptions : JJMasterDataCommonsOptions
 {

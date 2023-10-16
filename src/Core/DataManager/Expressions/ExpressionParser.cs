@@ -79,7 +79,7 @@ public class ExpressionParser
             if (parsedValue == null) 
                 continue;
 
-            if (addQuotationMarks)
+            if (addQuotationMarks && !double.TryParse(parsedValue, out _))
                 parsedValue = $"'{parsedValue}'";
             
             parsedExpression = parsedExpression.Replace($"{interval.Begin}{field}{interval.End}", parsedValue);

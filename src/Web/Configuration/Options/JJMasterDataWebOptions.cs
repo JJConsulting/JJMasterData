@@ -1,6 +1,6 @@
-using JJMasterData.Core.Options;
+using JJMasterData.Core.Configuration.Options;
 
-namespace JJMasterData.Web.Options;
+namespace JJMasterData.Web.Configuration.Options;
 
 public class JJMasterDataWebOptions : JJMasterDataCoreOptions
 {

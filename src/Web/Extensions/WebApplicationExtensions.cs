@@ -1,4 +1,4 @@
-using JJMasterData.Web.Options;
+using JJMasterData.Web.Configuration.Options;
 using Microsoft.AspNetCore.Builder;
 #if DEBUG
 using Microsoft.Extensions.FileProviders;

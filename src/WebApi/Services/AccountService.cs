@@ -3,7 +3,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Options;
 using JJMasterData.WebApi.Models;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -12,6 +11,7 @@ using System.Globalization;
 using System.Reflection;
 using JJMasterData.Commons.Security.Cryptography;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.Configuration.Options;
 
 namespace JJMasterData.WebApi.Services;
 
