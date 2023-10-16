@@ -7,9 +7,9 @@ namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
 public class InMemoryExpressionProvider : IExpressionProvider
 {
-    private readonly IExpressionParser _expressionParser;
+    private readonly ExpressionParser _expressionParser;
 
-    public InMemoryExpressionProvider(IExpressionParser expressionParser)
+    public InMemoryExpressionProvider(ExpressionParser expressionParser)
     {
         _expressionParser = expressionParser;
     }

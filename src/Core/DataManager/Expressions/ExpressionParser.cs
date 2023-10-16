@@ -1,13 +1,12 @@
 #nullable enable
 using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
 
-public class ExpressionParser : IExpressionParser
+public class ExpressionParser
 {
     private IHttpContext HttpContext { get; }
     private IHttpRequest Request => HttpContext.Request;

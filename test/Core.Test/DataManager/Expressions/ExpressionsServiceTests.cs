@@ -11,7 +11,7 @@ namespace JJMasterData.Core.Test.DataManager.Expressions;
 public class ExpressionsServiceTests
 {
     private readonly ExpressionsService _expressionsService;
-    private readonly Mock<IExpressionParser> _expressionParserMock = new();
+    private readonly Mock<ExpressionParser> _expressionParserMock = new();
     private readonly Mock<ILogger<ExpressionsService>> _loggerMock = new();
     private readonly Mock<IExpressionProvider> _expressionProviderMock = new();
 

@@ -6,9 +6,9 @@ namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
 public class ValueExpressionProvider : IExpressionProvider
 {
-    private readonly IExpressionParser _expressionParser;
+    private readonly ExpressionParser _expressionParser;
 
-    public ValueExpressionProvider(IExpressionParser expressionParser)
+    public ValueExpressionProvider(ExpressionParser expressionParser)
     {
         _expressionParser = expressionParser;
     }

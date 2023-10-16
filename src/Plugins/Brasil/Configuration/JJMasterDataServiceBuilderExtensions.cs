@@ -1,13 +1,10 @@
 ﻿using System;
 using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Actions;
-using JJMasterData.Brasil.Models;
 using JJMasterData.Brasil.Services;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Configuration;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace JJMasterData.Brasil.Configuration;
 

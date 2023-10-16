@@ -1,8 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Validations;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;

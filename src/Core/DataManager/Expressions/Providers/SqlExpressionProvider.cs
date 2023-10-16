@@ -9,9 +9,9 @@ namespace JJMasterData.Core.DataManager.Expressions.Providers;
 public class SqlExpressionProvider : IExpressionProvider
 {
     private readonly IEntityRepository _entityRepository;
-    private readonly IExpressionParser _expressionParser;
+    private readonly ExpressionParser _expressionParser;
 
-    public SqlExpressionProvider(IEntityRepository entityRepository, IExpressionParser expressionParser)
+    public SqlExpressionProvider(IEntityRepository entityRepository, ExpressionParser expressionParser)
     {
         _entityRepository = entityRepository;
         _expressionParser = expressionParser;

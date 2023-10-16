@@ -1,7 +1,5 @@
 #nullable enable
 
-using System.ComponentModel;
-
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 public class PluginConfigurationField

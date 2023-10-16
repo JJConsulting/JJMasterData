@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Models;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models.Actions;

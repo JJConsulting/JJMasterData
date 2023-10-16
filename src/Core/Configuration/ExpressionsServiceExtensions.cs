@@ -10,8 +10,8 @@ public static class ExpressionsServiceExtensions
 {
     public static IServiceCollection AddExpressionServices(this IServiceCollection services)
     {
-        services.AddTransient<ExpressionsService,ExpressionsService>();
-        services.AddTransient<IExpressionParser, ExpressionParser>();
+        services.AddTransient<ExpressionsService>();
+        services.AddTransient<ExpressionParser>();
 
         services.AddScoped<IExpressionProvider, ValueExpressionProvider>();
         services.AddScoped<IExpressionProvider, InMemoryExpressionProvider>();

@@ -1,12 +1,8 @@
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.ConsoleApp.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.Options;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.ConsoleApp.Services;

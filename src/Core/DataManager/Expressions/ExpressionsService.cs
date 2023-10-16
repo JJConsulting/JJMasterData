@@ -18,7 +18,7 @@ public class ExpressionsService
     #region "Properties"
 
     private IEnumerable<IExpressionProvider> ExpressionProviders { get; }
-    private IExpressionParser ExpressionParser { get; }
+    private ExpressionParser ExpressionParser { get; }
     private ILogger<ExpressionsService> Logger { get; }
 
     #endregion
@@ -27,7 +27,7 @@ public class ExpressionsService
 
     public ExpressionsService(
         IEnumerable<IExpressionProvider> expressionProviders,
-        IExpressionParser expressionParser,
+        ExpressionParser expressionParser,
         ILogger<ExpressionsService> logger)
     {
         ExpressionProviders = expressionProviders;
