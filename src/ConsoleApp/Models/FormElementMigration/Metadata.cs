@@ -69,16 +69,6 @@ public class Metadata
             Grid = Options.Grid
         };
 
-        foreach (var action in Options.GridActions.GetAll())
-        {
-            formElement.Options.GridTableActions.Add(action);
-        }
-        
-        foreach (var action in Options.ToolbarActions.GetAll())
-        {
-            formElement.Options.GridTableActions.Add(action);
-        }
-
         formElement.ApiOptions = new FormElementApiOptions
         {
             FormatType = ApiOptions.FormatType,
