@@ -31,11 +31,15 @@ public class ExpressionTagHelper : TagHelper
 
     [HtmlAttributeName("is-boolean")] 
     public bool IsBoolean { get; set; } = true;
-
+    
+    [HtmlAttributeName("icon")] 
+    public IconType? Icon { get; set; }
+    
     [ViewContext]
-    [HtmlAttributeNotBound] 
+    [HtmlAttributeNotBound]
     public ViewContext ViewContext { get; set; } = null!;
     
+
     public ExpressionTagHelper(
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IEnumerable<IExpressionProvider> expressionProviders,
@@ -57,7 +61,8 @@ public class ExpressionTagHelper : TagHelper
         
         var card = _cardFactory.Create();
         card.Layout = PanelLayout.Collapse;
-        card.Title = _stringLocalizer[name];
+        card.Icon = Icon;
+        card.Title = For.ModelExplorer.Metadata.GetDisplayName();
         card.HtmlBuilderContent.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("row");
@@ -166,7 +171,7 @@ public class ExpressionTagHelper : TagHelper
                     });
 
                     div.AppendScript(
-                        $"onDOMReady(()=>{{CodeMirrorWrapper.setupCodeMirror('{name}-ExpressionValue',{{mode: 'text/x-sql',singleLine:true, hintList: {codeMirrorHintList}, hintKey: '{{'}});}})");
+                        @$"onDOMReady(()=>{{CodeMirrorWrapper.setupCodeMirror('{name}-ExpressionValue',{{mode: 'text/x-sql',singleLine:true, hintList: {codeMirrorHintList}, hintKey: '{{'}});}})");
                 }
                 else
                 {

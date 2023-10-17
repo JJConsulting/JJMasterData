@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Services;
@@ -53,7 +54,7 @@ public static class ServiceCollectionExtensions
     public static JJMasterDataServiceBuilder AddJJMasterDataWeb(
         this IServiceCollection services,
         Action<JJMasterDataWebOptions> configureOptions
-        )
+    )
     {
         var webOptions = new JJMasterDataWebOptions();
         services.Configure(configureOptions);
@@ -82,10 +83,16 @@ public static class ServiceCollectionExtensions
         services.AddMasterDataWebOptimizer();
 
         services.AddControllersWithViews(options =>
-        {
-            options.ModelBinderProviders.Insert(0, new ExpressionModelBinderProvider());
-        }).AddViewLocalization();
-        
+            {
+                options.ModelBinderProviders.Insert(0, new ExpressionModelBinderProvider());
+            })
+            .AddViewLocalization()
+            .AddDataAnnotationsLocalization(options =>
+            {
+                options.DataAnnotationLocalizerProvider = (_, factory) =>
+                    factory.Create(typeof(JJMasterDataResources));
+            });
+
         services.AddHttpContextAccessor();
         services.AddSession();
         services.AddDistributedMemoryCache();
@@ -93,7 +100,8 @@ public static class ServiceCollectionExtensions
         services.AddActionFilters();
     }
 
-    internal static void AddMasterDataWebOptimizer(this IServiceCollection services, Action<IAssetPipeline>? configure = null)
+    internal static void AddMasterDataWebOptimizer(this IServiceCollection services,
+        Action<IAssetPipeline>? configure = null)
     {
         services.AddWebOptimizer(options =>
         {

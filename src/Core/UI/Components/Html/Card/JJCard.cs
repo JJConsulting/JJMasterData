@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Html;
 
@@ -20,6 +21,8 @@ public class JJCard : HtmlComponent
     public HtmlBuilder HtmlBuilderContent { get; set; }
 
     private bool HasTitle => !string.IsNullOrEmpty(Title) | !string.IsNullOrEmpty(SubTitle);
+    
+    public IconType? Icon { get; set; }
 
     internal JJCard()
     {
@@ -55,6 +58,12 @@ public class JJCard : HtmlComponent
         html.AppendIf(!string.IsNullOrEmpty(Title), HtmlTag.Div, header =>
         {
             header.WithCssClass(BootstrapHelper.GetPanelHeading(Color.ToString().ToLower()));
+            if (Icon is not null)
+            {
+                var icon = new JJIcon(Icon.Value);
+                icon.CssClass += $" {BootstrapHelper.MarginRight}-1";
+                header.AppendComponent(icon);
+            }
             header.AppendText(Title);
         });
 
@@ -82,6 +91,13 @@ public class JJCard : HtmlComponent
             .WithNameAndId(Name)
             .WithCssClass(CssClass);
 
+        if (Icon is not null)
+        {
+            var icon = new JJIcon(Icon.Value);
+            icon.CssClass += $" {BootstrapHelper.MarginRight}-1";
+            html.AppendComponent(icon);
+        }
+        
         if (HasTitle)
         {
             var title = new JJTitle
@@ -107,6 +123,14 @@ public class JJCard : HtmlComponent
 
         html.WithCssClass(BootstrapHelper.Version == 3 ? "well" : "card card-body bg-light");
 
+        
+        if (Icon is not null)
+        {
+            var icon = new JJIcon(Icon.Value);
+            icon.CssClass += $" {BootstrapHelper.MarginRight}-1";
+            html.AppendComponent(icon);
+        }
+        
         if (HasTitle)
         {
             var title = new JJTitle

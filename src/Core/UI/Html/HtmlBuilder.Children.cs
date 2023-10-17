@@ -181,7 +181,7 @@ public partial class HtmlBuilder
     }
 
     /// <summary>
-    /// Insert a JJ component as a child of caller builder.
+    /// Insert a HTMLComponent as a child of caller builder.
     /// </summary>
     public HtmlBuilder AppendComponent(HtmlComponent? component)
     {
