@@ -1,5 +1,6 @@
 using System.Web;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
@@ -28,6 +29,8 @@ public class ExpressionTagHelper : TagHelper
     [HtmlAttributeName("tooltip")]
     public string? Tooltip { get; set; }
 
+    [HtmlAttributeName("is-boolean")] 
+    public bool IsBoolean { get; set; } = true;
 
     [ViewContext]
     [HtmlAttributeNotBound] 
@@ -47,9 +50,9 @@ public class ExpressionTagHelper : TagHelper
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var name = For.Name;
-        var value = For.Model?.ToString();
-        var selectedExpressionType = value?.Split(':')[0];
-        var selectedExpressionValue = value?.Split(':')[1]  ?? string.Empty;
+        var modelValue = For.Model?.ToString();
+        var selectedExpressionType = modelValue?.Split(':')[0];
+        var selectedExpressionValue = modelValue?.Split(':')[1]  ?? string.Empty;
         string codeMirrorHintList = ViewContext.ViewBag.CodeMirrorHintList;
         
         var card = _cardFactory.Create();
@@ -58,59 +61,107 @@ public class ExpressionTagHelper : TagHelper
         card.HtmlBuilderContent.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("row");
-            div.Append(HtmlTag.Div, div =>
-            {
-                div.WithCssClass("col-sm-2");
-                div.Append(HtmlTag.Label, label =>
-                {
-                    label.WithCssClass("form-label");
-                    label.WithAttribute("for", name + "-ExpressionType");
-                    label.AppendText("Type");
-                });
-                
-                div.Append(HtmlTag.Select, select =>
-                {
-                    select.WithNameAndId( name + "-ExpressionType");
-                    select.WithCssClass("form-select");
+            div.Append(GetTypeSelect(name, selectedExpressionType));
 
-                    foreach (var provider in ExpressionProviders.Select(s => s.Prefix))
+            div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue, codeMirrorHintList));
+        });
+
+        var html = card.GetHtmlBuilder();
+
+        html.AppendScript($"listenExpressionType('{name}',{codeMirrorHintList}, '{(IsBoolean ? "true" : "false")}')");
+        
+        output.TagMode = TagMode.StartTagAndEndTag;
+        
+        output.Content.SetHtmlContent(html.ToString());
+    }
+
+    private HtmlBuilder GetTypeSelect(string? name, string? selectedExpressionType)
+    {
+        var div = new HtmlBuilder(HtmlTag.Div);
+        div.WithCssClass("col-sm-2");
+        div.Append(HtmlTag.Label, label =>
+        {
+            label.WithCssClass("form-label");
+            label.WithAttribute("for", name + "-ExpressionType");
+            label.AppendText("Type");
+        });
+
+        div.Append(HtmlTag.Select, select =>
+        {
+            select.WithNameAndId(name + "-ExpressionType");
+            select.WithCssClass("form-select");
+
+            foreach (var provider in ExpressionProviders.Select(s => s.Prefix))
+            {
+                select.Append(HtmlTag.Option, option =>
+                {
+                    if (selectedExpressionType == provider)
                     {
-                        select.Append(HtmlTag.Option, option =>
-                        {
-                            if (selectedExpressionType == provider)
-                            {
-                                option.WithAttribute("selected", "selected");
-                            }
-                            option.AppendText(provider);
-                        });
+                        option.WithAttribute("selected", "selected");
                     }
+
+                    option.AppendText(provider);
                 });
+            }
+        });
+        return div;
+    }
+
+    private HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType, string selectedExpressionValue, string codeMirrorHintList)
+    {
+        var div = new HtmlBuilder(HtmlTag.Div);
+      
+            div.WithCssClass("col-sm-10");
+            div.Append(HtmlTag.Label, label =>
+            {
+                label.WithCssClass("form-label");
+                label.WithAttribute("for", name + "-ExpressionValue");
+                label.AppendText("Expression");
             });
 
+            if (Tooltip is not null)
+            {
+                var icon = new JJIcon(IconType.QuestionCircle);
+                icon.CssClass += " help-description";
+                icon.Attributes["title"] = Tooltip;
+                icon.Attributes[BootstrapHelper.DataToggle] = "tooltip";
+                div.AppendComponent(icon);
+            }
+
             div.Append(HtmlTag.Div, div =>
             {
-                div.WithCssClass("col-sm-10");
-                div.Append(HtmlTag.Label, label =>
-                {
-                    label.WithCssClass("form-label");
-                    label.WithAttribute("for", name + "-ExpressionValue");
-                    label.AppendText("Expression");
-                });
-                
-                if (Tooltip is not null)
-                {
-                    var icon = new JJIcon(IconType.QuestionCircle);
-                    icon.CssClass += " help-description";
-                    icon.Attributes["title"] = Tooltip;
-                    icon.Attributes[BootstrapHelper.DataToggle] = "tooltip";
-                    div.AppendComponent(icon);
-                }
+                div.WithId(name + "-ExpressionValueEditor");
 
-                if (selectedExpressionType == "sql")
+
+                if ((selectedExpressionType == "val" || string.IsNullOrEmpty(selectedExpressionType)) && IsBoolean)
+                {
+                    div.Append(HtmlTag.Div, div =>
+                    {
+                        div.WithCssClass("form-switch form-switch-md form-check");
+                        div.Append(HtmlTag.Input, input =>
+                        {
+                            input.WithAttribute("hidden","hidden");
+                            input.WithNameAndId(name + "-ExpressionValue");
+                            input.WithValue(selectedExpressionValue);
+                        });
+                        div.Append(HtmlTag.Input, checkbox =>
+                        {
+                            checkbox.WithNameAndId(name + "-ExpressionValue-checkbox");
+                            checkbox.WithAttribute("type", "checkbox");
+                            checkbox.WithAttribute("role", "switch");
+                            checkbox.WithAttribute("onchange", $"CheckboxHelper.check('{name + "-ExpressionValue"}')");
+                            checkbox.WithAttributeIf(StringManager.ParseBool(selectedExpressionValue) ,"checked");
+                            checkbox.WithValue(selectedExpressionValue);
+                            checkbox.WithCssClass("form-check-input");
+                        });
+                        
+                    });
+                }
+                else if (selectedExpressionType is "sql" or "exp")
                 {
                     div.Append(HtmlTag.TextArea, textArea =>
                     {
-                        textArea.WithNameAndId( name + "-ExpressionValue");
+                        textArea.WithNameAndId(name + "-ExpressionValue");
                         textArea.AppendText(selectedExpressionValue);
                     });
 
@@ -118,26 +169,15 @@ public class ExpressionTagHelper : TagHelper
                         $"onDOMReady(()=>{{CodeMirrorWrapper.setupCodeMirror('{name}-ExpressionValue',{{mode: 'text/x-sql',singleLine:true, hintList: {codeMirrorHintList}, hintKey: '{{'}});}})");
                 }
                 else
-                {   
+                {
                     div.Append(HtmlTag.Input, input =>
                     {
-                        input.WithNameAndId( name + "-ExpressionValue");
+                        input.WithNameAndId(name + "-ExpressionValue");
                         input.WithValue(selectedExpressionValue);
                         input.WithCssClass("form-control");
                     });
-                    
                 }
-                
             });
-        });
-
-        var html = card.GetHtmlBuilder();
-
-        html.AppendScript($"listenExpressionType('{name}',{codeMirrorHintList})");
-        
-        output.TagMode = TagMode.StartTagAndEndTag;
-        
-        output.Content.SetHtmlContent(html.ToString());
+            return div;
     }
-    
 }

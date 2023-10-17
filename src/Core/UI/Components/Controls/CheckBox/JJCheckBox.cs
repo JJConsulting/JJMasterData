@@ -73,7 +73,7 @@ public class JJCheckBox : ControlBase
         
         div.Append(HtmlTag.Input, input =>
         {
-            var checkboxHelperScript = $"CheckboxHelper.check('{Name}', '{Value}')";
+            var checkboxHelperScript = $"CheckboxHelper.check('{Name}')";
             
             if (Attributes.ContainsKey("onchange"))
             {

@@ -228,10 +228,10 @@ class CalendarListener {
     }
 }
 class CheckboxHelper {
-    static check(name, value) {
+    static check(name) {
         const checkbox = document.querySelector(`#${name}-checkbox`);
         if (checkbox === null || checkbox === void 0 ? void 0 : checkbox.checked) {
-            document.querySelector(`#${name}`).value = value;
+            document.querySelector(`#${name}`).value = "true";
         }
         else {
             document.querySelector(`#${name}`).value = "false";
@@ -819,18 +819,38 @@ function applyDecimalPlaces() {
     else
         $(this).number(true, decimalPlaces);
 }
-function listenExpressionType(name, hintList) {
+function listenExpressionType(name, hintList, isBoolean) {
     document.getElementById(name + '-ExpressionType').addEventListener('change', function () {
         const selectedType = this.value;
         const expressionValueInput = document.getElementById(name + '-ExpressionValue');
-        if (selectedType === 'sql') {
+        const expressionValueEditor = document.getElementById(name + '-ExpressionValueEditor');
+        if (selectedType === 'sql' || selectedType == 'exp') {
             const textArea = document.createElement('textarea');
             textArea.setAttribute('name', name + '-ExpressionValue');
             textArea.setAttribute('id', name + '-ExpressionValue');
             textArea.setAttribute('class', 'form-control');
             textArea.innerText = expressionValueInput.value;
-            expressionValueInput.outerHTML = textArea.outerHTML;
+            expressionValueEditor.innerHTML = textArea.outerHTML;
             CodeMirrorWrapper.setupCodeMirror(name + '-ExpressionValue', { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
+        }
+        else if (selectedType === 'val' && isBoolean) {
+            const div = document.createElement('div');
+            div.classList.add('form-switch', 'form-switch-md', 'form-check');
+            const expressionValueInputName = name + '-ExpressionValue';
+            const input = document.createElement('input');
+            input.name = expressionValueInputName;
+            input.id = expressionValueInputName;
+            input.hidden = true;
+            const checkbox = document.createElement('input');
+            checkbox.name = name + '-ExpressionValue-checkbox';
+            checkbox.id = name + '-ExpressionValue-checkbox';
+            checkbox.type = 'checkbox';
+            checkbox.onchange = () => CheckboxHelper.check(expressionValueInputName);
+            checkbox.setAttribute('role', 'switch');
+            checkbox.classList.add('form-check-input');
+            div.appendChild(input);
+            div.appendChild(checkbox);
+            expressionValueEditor.innerHTML = div.outerHTML;
         }
         else {
             const input = document.createElement('input');
@@ -843,7 +863,7 @@ function listenExpressionType(name, hintList) {
                 expressionValueInput.codeMirrorInstance.setOption('mode', 'text/x-csrc');
                 expressionValueInput.codeMirrorInstance.getWrapperElement().parentNode.removeChild(expressionValueInput.codeMirrorInstance.getWrapperElement());
             }
-            expressionValueInput.outerHTML = input.outerHTML;
+            expressionValueEditor.innerHTML = input.outerHTML;
         }
     });
 }

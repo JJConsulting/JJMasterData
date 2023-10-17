@@ -1,16 +1,44 @@
-function listenExpressionType(name, hintList) {
+function listenExpressionType(name, hintList, isBoolean) {
     document.getElementById(name + '-ExpressionType').addEventListener('change', function () {
         const selectedType = (this as HTMLInputElement).value;
         const expressionValueInput = document.getElementById(name + '-ExpressionValue') as HTMLInputElement;
-        if (selectedType === 'sql') {
+        const expressionValueEditor = document.getElementById(name + '-ExpressionValueEditor') as HTMLInputElement;
+        
+        if (selectedType === 'sql' || selectedType == 'exp') {
             const textArea = document.createElement('textarea');
             textArea.setAttribute('name', name + '-ExpressionValue');
             textArea.setAttribute('id', name + '-ExpressionValue');
             textArea.setAttribute('class', 'form-control');
             textArea.innerText = expressionValueInput.value;
-            expressionValueInput.outerHTML = textArea.outerHTML;
+            expressionValueEditor.innerHTML = textArea.outerHTML;
             CodeMirrorWrapper.setupCodeMirror(name + '-ExpressionValue', { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
-        } else {
+        } 
+        else if(selectedType ==='val' && isBoolean){
+            const div = document.createElement('div');
+            div.classList.add('form-switch', 'form-switch-md', 'form-check');
+
+            
+            const expressionValueInputName = name + '-ExpressionValue';
+            
+            const input = document.createElement('input') as HTMLInputElement;
+            input.name = expressionValueInputName;
+            input.id = expressionValueInputName;
+            input.hidden = true;
+
+            const checkbox = document.createElement('input') as HTMLInputElement;
+            checkbox.name = name + '-ExpressionValue-checkbox';
+            checkbox.id = name + '-ExpressionValue-checkbox';
+            checkbox.type = 'checkbox';
+            checkbox.onchange = ()=>CheckboxHelper.check(expressionValueInputName);
+            checkbox.setAttribute('role', 'switch');
+            checkbox.classList.add('form-check-input');
+
+            div.appendChild(input);
+            div.appendChild(checkbox);
+
+            expressionValueEditor.innerHTML = div.outerHTML;
+        }
+        else {
             const input = document.createElement('input');
             input.setAttribute('type', 'text');
             input.setAttribute('class', 'form-control');
@@ -26,7 +54,7 @@ function listenExpressionType(name, hintList) {
                 expressionValueInput.codeMirrorInstance.getWrapperElement().parentNode.removeChild(expressionValueInput.codeMirrorInstance.getWrapperElement());
             }
 
-            expressionValueInput.outerHTML = input.outerHTML;
+            expressionValueEditor.innerHTML = input.outerHTML;
         }
     });
 }

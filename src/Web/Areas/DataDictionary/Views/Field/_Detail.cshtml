@@ -74,7 +74,7 @@
                     @Html.TextBoxFor(model => model.Label, new { @class = "form-control" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <expression for="DefaultValue" tooltip="Expression for a default value. Check expressions at the docs for more information."/>
+                    <expression for="DefaultValue" tooltip="Expression for a default value. Check expressions at the docs for more information." is-boolean="false"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " asp-for="Filter.Type">@StringLocalizer["Filter"]</label>
@@ -201,7 +201,7 @@
                      <expression for="EnableExpression" tooltip="Boolean expression to enable the field. Check expressions at the docs for more information."/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <expression for="TriggerExpression" tooltip="Expression triggered whenever a field triggers a POST to the server. Check expressions at the docs for more information."/>
+                    <expression for="TriggerExpression" tooltip="Expression triggered whenever a field triggers a POST to the server. Check expressions at the docs for more information." is-boolean="false"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-4">
                     <label class="@BootstrapHelper.Label " asp-for="CssClass">@StringLocalizer["Css Class"]</label>
