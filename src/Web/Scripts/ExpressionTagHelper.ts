@@ -23,20 +23,25 @@ function listenExpressionType(name, hintList, isBoolean) {
             const input = document.createElement('input') as HTMLInputElement;
             input.name = expressionValueInputName;
             input.id = expressionValueInputName;
-            input.hidden = true;
+            input.setAttribute("value","false")
+            input.setAttribute("hidden","hidden")
 
             const checkbox = document.createElement('input') as HTMLInputElement;
             checkbox.name = name + '-ExpressionValue-checkbox';
             checkbox.id = name + '-ExpressionValue-checkbox';
             checkbox.type = 'checkbox';
-            checkbox.onchange = ()=>CheckboxHelper.check(expressionValueInputName);
-            checkbox.setAttribute('role', 'switch');
+            checkbox.setAttribute("role", 'switch');
+            checkbox.setAttribute("value","false");
+            checkbox.setAttribute("onchange",`CheckboxHelper.check('${expressionValueInputName}')`)
             checkbox.classList.add('form-check-input');
-
+            
             div.appendChild(input);
             div.appendChild(checkbox);
-
+            
+            
             expressionValueEditor.innerHTML = div.outerHTML;
+            
+
         }
         else {
             const input = document.createElement('input');
