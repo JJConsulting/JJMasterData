@@ -6,10 +6,12 @@ using JJMasterData.ConsoleApp.CommandLine;
 using JJMasterData.ConsoleApp.Extensions;
 using JJMasterData.ConsoleApp.Services;
 using JJMasterData.ConsoleApp.Utils;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = Host.CreateDefaultBuilder(args)
+    .ConfigureHostConfiguration(c=>c.AddJsonFile("appsettings.json"))
     .ConfigureServices(services => services.AddJJMasterDataConsoleServices())
     .Build();
 

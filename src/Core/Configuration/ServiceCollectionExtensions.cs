@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
 {
     public static JJMasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services)
     {
-        services.AddOptions<JJMasterDataCommonsOptions>();
+        services.AddOptions<JJMasterDataCoreOptions>().BindConfiguration("JJMasterData");
         
         services.AddDefaultServices();
         

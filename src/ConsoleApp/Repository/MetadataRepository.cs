@@ -44,10 +44,16 @@ public class MetadataRepository
     {
         var list = new List<Metadata>();
         var entityParameters = new EntityParameters();
-        entityParameters.OrderBy.Set("name, type");
+        entityParameters.OrderBy.AddOrReplace("name", OrderByDirection.Asc);
+        entityParameters.OrderBy.AddOrReplace("type", OrderByDirection.Asc);
         if (sync.HasValue)
             entityParameters.Filters.Add("sync", (bool)sync ? "1" : "0");
         
+        MasterDataElement.Fields.Add(new ElementField
+        {
+            Name = "namefilter",
+            Filter = new ElementFilter(FilterMode.Contain)
+        });
         
         string currentName = "";
         var dt = _entityRepository.GetDictionaryListResultAsync(MasterDataElement,entityParameters, false).GetAwaiter().GetResult();
@@ -65,7 +71,8 @@ public class MetadataRepository
             }
 
             string json = row["json"].ToString();
-            switch (row["type"].ToString()!)
+            var type = row["type"].ToString()!;
+            switch (type)
             {
                 case "T":
                     currentParser!.Table = JsonConvert.DeserializeObject<Element>(json);

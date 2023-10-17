@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
     public static JJMasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services)
     {
         var builder = new JJMasterDataServiceBuilder(services);
-        services.AddOptions<JJMasterDataCommonsOptions>();
+        services.AddOptions<JJMasterDataCommonsOptions>().BindConfiguration("JJMasterData");
 
         services.AddJJMasterDataCommonsServices();
         
