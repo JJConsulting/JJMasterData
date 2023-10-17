@@ -50,6 +50,7 @@ public class ExpressionTagHelper : TagHelper
         var value = For.Model?.ToString();
         var selectedExpressionType = value?.Split(':')[0];
         var selectedExpressionValue = value?.Split(':')[1]  ?? string.Empty;
+        string codeMirrorHintList = ViewContext.ViewBag.CodeMirrorHintList;
         
         var card = _cardFactory.Create();
         card.Layout = PanelLayout.Collapse;
@@ -114,7 +115,7 @@ public class ExpressionTagHelper : TagHelper
                     });
 
                     div.AppendScript(
-                        $"onDOMReady(()=>{{CodeMirrorWrapper.setupCodeMirror('{name}-ExpressionValue',{{mode: 'text/x-sql',singleLine:true, hintList: {ViewContext.ViewBag.CodeMirrorHintList}, hintKey: '{{'}});}})");
+                        $"onDOMReady(()=>{{CodeMirrorWrapper.setupCodeMirror('{name}-ExpressionValue',{{mode: 'text/x-sql',singleLine:true, hintList: {codeMirrorHintList}, hintKey: '{{'}});}})");
                 }
                 else
                 {   
@@ -129,43 +130,14 @@ public class ExpressionTagHelper : TagHelper
                 
             });
         });
+
+        var html = card.GetHtmlBuilder();
+
+        html.AppendScript($"listenExpressionType('{name}',{codeMirrorHintList})");
         
-                
         output.TagMode = TagMode.StartTagAndEndTag;
         
-        output.Content.SetHtmlContent(card.GetHtml());
-        output.PostElement.SetHtmlContent(@$"
-    <script>
-    document.getElementById('{name}-ExpressionType').addEventListener('change', function () {{
-        const selectedType = this.value;
-        const expressionValueInput = document.getElementById('{name}-ExpressionValue');
-        if (selectedType === 'sql') {{
-            const textArea = document.createElement('textarea');
-            textArea.setAttribute('name', '{name}-ExpressionValue');
-            textArea.setAttribute('id', '{name}-ExpressionValue');
-            textArea.setAttribute('class', 'form-control');
-            textArea.innerText = expressionValueInput.value;
-            expressionValueInput.outerHTML = textArea.outerHTML;
-            CodeMirrorWrapper.setupCodeMirror('{name}-ExpressionValue', {{ mode: 'text/x-sql',singleLine:true, hintList: " + ViewContext.ViewBag.CodeMirrorHintList + @$", hintKey: '{{' }});
-        }} else {{
-            const input = document.createElement('input');
-            input.setAttribute('type', 'text');
-            input.setAttribute('class', 'form-control');
-            input.setAttribute('name', '{name}-ExpressionValue');
-            input.setAttribute('id', '{name}-ExpressionValue');
-            input.value = expressionValueInput.value;
-
-            if(expressionValueInput.codeMirrorInstance){{
-                expressionValueInput.codeMirrorInstance.setOption('mode', 'text/x-csrc');
-                expressionValueInput.codeMirrorInstance.getWrapperElement().parentNode.removeChild(expressionValueInput.codeMirrorInstance.getWrapperElement());
-            }}
-
-            expressionValueInput.outerHTML = input.outerHTML;
-           
-        }}
-    }});
-    </script>
-");
+        output.Content.SetHtmlContent(html.ToString());
     }
     
 }
