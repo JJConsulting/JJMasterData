@@ -2,6 +2,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace JJMasterData.Core.Test.DataManager.Expressions;
@@ -14,7 +15,8 @@ public class ExpressionParserTests
     public ExpressionParserTests()
     {
         var httpContext = new Mock<IHttpContext>();
-        ExpressionParser = new ExpressionParser(httpContext.Object);
+        var logger = new Mock<ILogger<ExpressionParser>>();
+        ExpressionParser = new ExpressionParser(httpContext.Object,logger.Object);
     }
     
     [Fact]

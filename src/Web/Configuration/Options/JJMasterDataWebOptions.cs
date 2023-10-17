@@ -24,4 +24,6 @@ public class JJMasterDataWebOptions : JJMasterDataCoreOptions
     public bool UseCustomBootstrap { get; set; }
     
     public string? CustomBootstrapPath { get; set; }
+    
+    public bool SupportNetFramework { get; set; }
 }

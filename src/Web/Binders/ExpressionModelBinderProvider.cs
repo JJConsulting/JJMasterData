@@ -15,7 +15,7 @@ public class ExpressionModelBinderProvider : IModelBinderProvider
         
         if (context.Metadata.PropertyName != null)
         {
-            var propertyInfo = context.Metadata.ContainerType?.GetProperty(context.Metadata.PropertyName);
+            var propertyInfo = context.Metadata.ContainerType?.GetProperties().FirstOrDefault(p=>p.Name == context.Metadata.PropertyName);
             
             var hasExpressionAttribute = propertyInfo?.GetCustomAttributes(typeof(ExpressionAttribute), false).Any() ?? false;
 

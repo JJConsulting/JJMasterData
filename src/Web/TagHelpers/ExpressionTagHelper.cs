@@ -96,16 +96,17 @@ public class ExpressionTagHelper : TagHelper
             select.WithNameAndId(name + "-ExpressionType");
             select.WithCssClass("form-select");
 
-            foreach (var provider in ExpressionProviders.Select(s => s.Prefix))
+            foreach (var provider in ExpressionProviders)
             {
                 select.Append(HtmlTag.Option, option =>
                 {
-                    if (selectedExpressionType == provider)
+                    if (selectedExpressionType == provider.Prefix)
                     {
                         option.WithAttribute("selected", "selected");
                     }
 
-                    option.AppendText(provider);
+                    option.WithValue(provider.Prefix);
+                    option.AppendText(provider.Title);
                 });
             }
         });

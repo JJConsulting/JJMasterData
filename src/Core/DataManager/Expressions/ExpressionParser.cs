@@ -2,6 +2,7 @@
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
@@ -9,12 +10,14 @@ namespace JJMasterData.Core.DataManager.Expressions;
 public class ExpressionParser
 {
     private IHttpContext HttpContext { get; }
+    private ILogger<ExpressionParser> Logger { get; }
     private IHttpRequest Request => HttpContext.Request;
     private IHttpSession Session => HttpContext.Session;
     
-    public ExpressionParser(IHttpContext httpContext)
+    public ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser> logger)
     {
         HttpContext = httpContext;
+        Logger = logger;
     }
     
     public string? ParseExpression(
@@ -85,6 +88,8 @@ public class ExpressionParser
             parsedExpression = parsedExpression.Replace($"{interval.Begin}{field}{interval.End}", parsedValue);
         }
 
+        Logger.LogDebug("Parsed expression: {ParsedExpression}", expression);
+        
         return parsedExpression;
     }
 }

@@ -15,7 +15,8 @@ public class InMemoryExpressionProvider : IExpressionProvider
     }
     
     public string Prefix => "exp";
-
+    public string Title => "Expression";
+    
     public async Task<object> EvaluateAsync(string expression, FormStateData formStateData)
     {
         var parsedExpression = _expressionParser.ParseExpression(expression, formStateData, true);

@@ -18,7 +18,7 @@ public class ProtheusExpressionProvider : IExpressionProvider
     }
 
     public string Prefix => "protheus";
-    
+    public string Title => "URL Protheus";
     public async Task<object> EvaluateAsync(string expression, FormStateData formStateData)
     {
         var exp = expression.Replace("\"", "").Replace("'", "").Split(',');
