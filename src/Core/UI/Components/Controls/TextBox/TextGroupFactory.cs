@@ -59,11 +59,11 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
 
         textGroup.Text = value?.ToString() ?? string.Empty;
 
-        if (formStateData.PageState == PageState.Filter)
+        if (formStateData.PageState is PageState.Filter)
             textGroup.Actions = textGroup.Actions.Where(a => a.ShowInFilter).ToList();
         else
             AddUserActions(formElement, field, context, textGroup).GetAwaiter().GetResult();
-
+        
         return textGroup;
     }
 
@@ -75,8 +75,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
                                 JJTextGroup textGroup)
     {
         var actions = field.Actions.GetAllSorted().FindAll(x => x.IsVisible);
-
-
+        
         foreach (var action in actions)
         {
             var actionContext = new ActionContext
@@ -89,6 +88,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
             };
 
             var link = await ActionButtonFactory.CreateFieldButtonAsync(action,actionContext);
+            
             textGroup.Actions.Add(link);
         }
     }
@@ -184,7 +184,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
                     "'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'");
                 break;
             case FormComponent.Hour:
-                var btn = GetDateAction();
+                var btn = GetDateAction(textGroup.Enabled);
                 btn.IconClass = "fa fa-clock";
                 textGroup.Actions.Add(btn);
 
@@ -197,7 +197,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
                 break;
             case FormComponent.Date:
                 textGroup.GroupCssClass = "flatpickr date jjform-date";
-                textGroup.Actions.Add(GetDateAction());
+                textGroup.Actions.Add(GetDateAction(textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 10;
                 // textGroup.SetAttr("data-inputmask",
@@ -206,7 +206,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
                 break;
             case FormComponent.DateTime:
                 textGroup.GroupCssClass = "flatpickr date jjform-datetime";
-                textGroup.Actions.Add(GetDateAction());
+                textGroup.Actions.Add(GetDateAction(textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 19;
                 // textGroup.SetAttr("data-inputmask",
@@ -221,13 +221,13 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
         textGroup.SetAttr("class", string.Join(" ", listClass));
     }
 
-    private JJLinkButton GetDateAction()
+    private JJLinkButton GetDateAction(bool isEnabled)
     {
         var btn = ActionButtonFactory.Create();
         btn.IconClass = $"fa fa-{BootstrapHelper.DateIcon}";
         btn.Tooltip = StringLocalizer["Calendar"];
         btn.ShowInFilter = true;
-
+        btn.Enabled = isEnabled;
         btn.SetAttr("data-toggle", "date");
         btn.SetAttr("tabindex", "-1");
         return btn;
