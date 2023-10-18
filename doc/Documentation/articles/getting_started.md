@@ -14,11 +14,8 @@ In your configuration file (normally appsettings.json), add a SQL Server connect
 ```json
 {
   "AllowedHosts": "*",
-  "ConnectionStrings": {
+  "JJMasterData": {
     "ConnectionString": "data source=localhost,1433;initial catalog=JJMasterData;Integrated Security=True"
-  },
-  "ConnectionProviders": {
-    "ConnectionString": "System.Data.SqlClient"
   }
 }
 ```

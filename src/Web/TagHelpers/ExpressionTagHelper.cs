@@ -39,7 +39,7 @@ public class ExpressionTagHelper : TagHelper
     [HtmlAttributeNotBound]
     public ViewContext ViewContext { get; set; } = null!;
     
-
+    
     public ExpressionTagHelper(
         IStringLocalizer<JJMasterDataResources> stringLocalizer,
         IEnumerable<IExpressionProvider> expressionProviders,
@@ -95,9 +95,12 @@ public class ExpressionTagHelper : TagHelper
         {
             select.WithNameAndId(name + "-ExpressionType");
             select.WithCssClass("form-select");
-
+            
             foreach (var provider in ExpressionProviders)
             {
+                if (IsBoolean && provider.Prefix != "val" && provider.Prefix != "exp")
+                    continue;
+                
                 select.Append(HtmlTag.Option, option =>
                 {
                     if (selectedExpressionType == provider.Prefix)

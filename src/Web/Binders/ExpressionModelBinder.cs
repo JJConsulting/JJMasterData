@@ -24,7 +24,7 @@ public class ExpressionModelBinder : IModelBinder
         }
         else
         {
-            bindingContext.Result = ModelBindingResult.Success(null);
+            bindingContext.Result = ModelBindingResult.Failed();
         }
 
         return Task.CompletedTask;

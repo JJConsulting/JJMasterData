@@ -14,13 +14,13 @@ public class FormUI
     /// Somente multiplos de 12
     /// </remarks>
     [JsonProperty("formCols")]
-    public int FormCols { get; set; }
+    public int FormCols { get; set; } = 1;
 
     /// <summary>
     /// Tipo de layout para renderizar os campos
     /// </summary>
     [JsonProperty("isVerticalLayout")]
-    public bool IsVerticalLayout { get; set; }
+    public bool IsVerticalLayout { get; set; } = true;
 
     /// <summary>
     /// Quando o painel estiver no modo de visualização
@@ -37,13 +37,5 @@ public class FormUI
     /// Default = DISABLED
     /// </summary>
     [JsonProperty("enterKey")]
-    public FormEnterKey EnterKey { get; set; }
-
-    public FormUI()
-    {
-        IsVerticalLayout = true;
-        FormCols = 1;
-        EnterKey = FormEnterKey.Disabled;
-    }
-
+    public FormEnterKey EnterKey { get; set; } = FormEnterKey.Disabled;
 }
