@@ -73,7 +73,7 @@ public class JJComboBox : ControlBase
 
         var values = await GetValuesAsync().ToListAsync();
 
-        if (ReadOnly)
+        if (ReadOnly && Enabled)
         {
             var combobox = new HtmlBuilder(HtmlTag.Div);
             combobox.AppendRange(GetReadOnlyInputs(values));

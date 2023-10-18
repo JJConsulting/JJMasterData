@@ -4,9 +4,15 @@ class CodeMirrorWrapperOptions{
     mode: string
     hintList: string
     hintKey: string
+    singleLine: boolean
 }
 
 class CodeMirrorWrapper{
+    private static isCodeMirrorConfigured(elementId) {
+        const textArea = document.querySelector("#"+elementId);
+        
+        return textArea.codeMirrorInstance != null;
+    }
     static setupCodeMirror(elementId: string, options: CodeMirrorWrapperOptions) {
         
         const textArea = document.querySelector("#"+elementId);
@@ -14,7 +20,8 @@ class CodeMirrorWrapper{
         if(!textArea)
             return;
         
-        console.log("hola")
+        if(this.isCodeMirrorConfigured(elementId))
+            return;
         
         const codeMirrorTextArea = CodeMirror.fromTextArea(textArea, {
             mode: options.mode,
@@ -22,12 +29,22 @@ class CodeMirrorWrapper{
             smartIndent: true,
             lineNumbers: true,
             autofocus: true,
-            autoRefresh: true,
             autohint: true,
             extraKeys: { "Ctrl-Space": "autocomplete" }
         });
-
-        codeMirrorTextArea.setSize(null, 250);
+        
+        if(options.singleLine){
+            codeMirrorTextArea.setSize(null, 30);
+            codeMirrorTextArea.on("beforeChange", function(instance, change) {
+                const newText = change.text.join("").replace(/\n/g, "");
+                change.update(change.from, change.to, [newText]);
+                return true;
+            });
+        }
+        else{
+            codeMirrorTextArea.setSize(null, 250);
+        }
+        textArea.codeMirrorInstance = codeMirrorTextArea;
         
         // @ts-ignore
         CodeMirror.registerHelper('hint', 'hintList', function (_) {
@@ -44,5 +61,7 @@ class CodeMirrorWrapper{
                 CodeMirror.commands.autocomplete(cm, CodeMirror.hint.hintList, { completeSingle: false });
             }
         });
+        
+        setTimeout(()=>{codeMirrorTextArea.refresh()},200)
     }
 }

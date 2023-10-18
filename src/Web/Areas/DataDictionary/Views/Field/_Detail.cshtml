@@ -4,8 +4,11 @@
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.UI.Components
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Web.Configuration.Options
+
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 @inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IOptions<JJMasterDataWebOptions> Options
 
 @{
     string currentTab = ViewBag.Tab ?? "#div-general";
@@ -40,13 +43,15 @@
             window.parent.document.querySelector('#current_field').value = fieldName;
         });
     }
-
-   
 </script>
 
 @Html.HiddenFor(model => Model.PanelId)
 <div class="container-fluid jjcontainer">
-
+    <div class="row">
+        <div class="col-sm-12">
+            @Html.Raw(ViewBag.Error)
+        </div>
+    </div>
     <ul id="field-nav" class="nav nav-tabs">
         <li class="nav-item" id="nav-general" @Active("#div-general")>
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-general" href="#div-general">@StringLocalizer["General"]</a>
@@ -61,69 +66,103 @@
 
     <div class="tab-content" style="margin-top: 20px;">
         <div id="div-general" class="tab-pane fade @Active("#div-general")">
-            <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <label class="@BootstrapHelper.Label " asp-for="Name">@StringLocalizer["Field Name"]</label>
-                    <tooltip title="Name of the field at your data source."/>
-                    @Html.TextBoxFor(model => Model.Name, new { maxlength = "64", @class = "form-control" })
-                    <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4">
-                    <label class="@BootstrapHelper.Label " asp-for="Label">@StringLocalizer["Label"]</label>
-                    <tooltip title="Name of the field displayed at the form."/>
-                    @Html.TextBoxFor(model => model.Label, new { @class = "form-control" })
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4">
-                    <label class="@BootstrapHelper.Label " asp-for="DefaultValue">@StringLocalizer["Default Value Expression"]</label>
-                    <tooltip title="Expression for a default value. Check expressions at the docs for more information."/>
-                    @Html.TextBoxFor(model => model.DefaultValue, new { @class = "form-control" })
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " asp-for="Filter.Type">@StringLocalizer["Filter"]</label>
-                    <select asp-for="Filter.Type" class="form-control form-select" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " asp-for="DataBehavior">@StringLocalizer["Data Behavior"]</label>
+                <div class="row">
 
-                    <tooltip title="Field behavior in relation to the database"/>
+                    <div class="@BootstrapHelper.FormGroup col-sm-5 required">
+                        <label class="@BootstrapHelper.Label " asp-for="Name">@StringLocalizer["Field Name"]</label>
+                        <tooltip title="Name of the field at your data source."/>
+                        @Html.TextBoxFor(model => Model.Name, new { maxlength = "64", @class = "form-control" })
+                        <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
+                    </div>
+                    <div class="@BootstrapHelper.FormGroup col-sm-7">
+                        <label class="@BootstrapHelper.Label " asp-for="Label">@StringLocalizer["Label"]</label>
+                        <tooltip title="Name of the field displayed at the form."/>
+                        @Html.TextBoxFor(model => model.Label, new { @class = "form-control" })
+                    </div>
+                </div>
 
-                    <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
+                <div class="row">
+                    <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+                        <label class="@BootstrapHelper.Label " asp-for="Filter.Type">@StringLocalizer["Filter"]</label>
+                        <select asp-for="Filter.Type" class="form-control form-select" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
+                    </div>
+                    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                        <label class="@BootstrapHelper.Label " asp-for="DataBehavior">@StringLocalizer["Data Behavior"]</label>
+
+                        <tooltip title="Field behavior in relation to the database"/>
+
+                        <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
+                    </div>
+                    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                        <label class="@BootstrapHelper.Label " asp-for="DataType">@StringLocalizer["Data Type"]</label>
+                        <select asp-for="DataType" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldType>().OrderBy(f => f.Text)"></select>
+                    </div>
+                    <div class="@BootstrapHelper.FormGroup col-sm-2">
+                        <label class="@BootstrapHelper.Label " asp-for="Size">@StringLocalizer["Size"]</label>
+                        <tooltip title="Field size. At SQL Server use -1 to use the MAX keyword."/>
+                        @Html.TextBoxFor(model => model.Size, new { @class = "form-control" })
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="row">
+                            <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                                                    <label class="@BootstrapHelper.Label " asp-for="IsRequired">@StringLocalizer["Required"]</label>
+                                                    <checkbox for="IsRequired" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                                                </div>
+                                                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                                                    <label class="@BootstrapHelper.Label " asp-for="IsPk">@StringLocalizer["PK"]</label>
+                                                    <checkbox for="IsPk" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                                                </div>
+                                                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                                                    <label class="@BootstrapHelper.Label " asp-for="AutoNum">@StringLocalizer["Identity"]</label>
+                                                    <checkbox for="AutoNum" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                                                </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " asp-for="DataType">@StringLocalizer["Data Type"]</label>
-                    <select asp-for="DataType" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldType>().OrderBy(f => f.Text)"></select>
+
+                <div class="row">
+                    <div class="@BootstrapHelper.FormGroup col-sm-12">
+                        <label class="@BootstrapHelper.Label " asp-for="HelpDescription">
+                            @StringLocalizer["Help Description"]
+                        </label>
+                        <tooltip title="The help text will be displayed like this on the form."/>
+                        @Html.TextBoxFor(model => model.HelpDescription, new { @class = "form-control" })
+                    </div>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2">
-                    <label class="@BootstrapHelper.Label " asp-for="Size">@StringLocalizer["Size"]</label>
-                    <tooltip title="Field size. At SQL Server use -1 to use the MAX keyword."/>
-                    @Html.TextBoxFor(model => model.Size, new { @class = "form-control" })
+
+                <div class="row">
+                    <div class="@BootstrapHelper.FormGroup col-sm-3">
+                        <label class="@BootstrapHelper.Label " asp-for="CssClass">@StringLocalizer["Css Class"]</label>
+                        <tooltip title="Class name (CSS) one to be assigned to object group rendering"/>
+
+                        @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
+                    </div>
+
+                    <div class="@BootstrapHelper.FormGroup col-sm-2">
+                        <label class="@BootstrapHelper.Label " asp-for="LineGroup">@StringLocalizer["Row Number"]</label>
+                        <tooltip title="Row number at the form, used to break the line in the form flex layout."/>
+
+                        @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
+                    </div>
+                    <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+                        <label class="@BootstrapHelper.Label " asp-for="Export">@StringLocalizer["Export"]</label>
+                        <tooltip title="Allows you to export the field"/>
+                        <checkbox for="Export" switch="true"/>
+                    </div>
+
+                    @if (Options.Value.SupportNetFramework)
+                    {
+                        <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                            <label class="@BootstrapHelper.Label " asp-for="ValidateRequest">@StringLocalizer["Validate Request"]</label>
+                            <tooltip title="Validates possibly dangerous values on request on .NET Framework 4.8"/>
+                            <checkbox for="ValidateRequest" switch="true"/>
+                        </div>
+                    }
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-1 required">
-                    <label class="@BootstrapHelper.Label " asp-for="IsRequired">@StringLocalizer["Required"]</label>
-                    <checkbox for="IsRequired" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-1 required">
-                    <label class="@BootstrapHelper.Label " asp-for="IsPk">@StringLocalizer["PK"]</label>
-                    <checkbox for="IsPk" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-1 required">
-                    <label class="@BootstrapHelper.Label " asp-for="AutoNum">@StringLocalizer["Identity"]</label>
-                    <checkbox for="AutoNum" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <label class="@BootstrapHelper.Label " asp-for="HelpDescription">
-                        @StringLocalizer["Help Description"]
-                    </label>
-                    <tooltip title="The help text will be displayed like this on the form."/>
-                    @Html.TextBoxFor(model => model.HelpDescription, new { @class = "form-control" })
-                </div>
+
             </div>
-
-        </div>
-
         <div id="div-component" class="tab-pane fade @Active("#div-component")">
             <div class="row">
-
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label " asp-for="Component">@StringLocalizer["Component"]</label>
                     <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="Html.GetEnumSelectList<FormComponent>()"></select>
@@ -149,12 +188,12 @@
             </div>
 
             @if (Model.Component is FormComponent.Text 
-                    or FormComponent.Email 
-                    or FormComponent.Number 
-                    or FormComponent.Cep 
-                    or FormComponent.Cnpj 
-                    or FormComponent.Cpf 
-                    or FormComponent.CnpjCpf)
+                or FormComponent.Email 
+                or FormComponent.Number 
+                or FormComponent.Cep 
+                or FormComponent.Cnpj 
+                or FormComponent.Cpf 
+                or FormComponent.CnpjCpf)
             {
                 if (ViewBag.OriginalName == null || ViewBag.OriginalName == "")
                 {
@@ -193,69 +232,23 @@
             }
 
         </div>
-
         <div id="div-advanced" class="tab-pane fade @Active("#div-advanced")">
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label " asp-for="VisibleExpression">@StringLocalizer["Visible Expression"]</label>
-                    <tooltip title="Boolean expression to show the field. Check expressions at the docs for more information."/>
-
-                    @Html.TextBoxFor(model => model.VisibleExpression, new { @class = "form-control" })
+                <div class="@BootstrapHelper.FormGroup col-sm-12">
+                    <expression for="DefaultValue" icon="IconType.Check" tooltip="Expression for a default value. Check expressions at the docs for more information." is-boolean="false"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <label class="@BootstrapHelper.Label " asp-for="EnableExpression">@StringLocalizer["Enable Expression"]</label>
-                    <tooltip title="Boolean expression to enable the field. Check expressions at the docs for more information."/>
-
-                    @Html.TextBoxFor(model => model.EnableExpression, new { @class = "form-control" })
+                    <expression for="VisibleExpression" icon="IconType.Eye" tooltip="Boolean expression to show the field. Check expressions at the docs for more information."/>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                    <expression for="EnableExpression" icon="IconType.Pencil" tooltip="Boolean expression to enable the field. Check expressions at the docs for more information."/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <label class="@BootstrapHelper.Label " asp-for="TriggerExpression">@StringLocalizer["Trigger Expression"]</label>
-                    <tooltip title="Expression triggered whenever a field triggers a POST to the server. Check expressions at the docs for more information."/>
-
-                    @Html.TextBoxFor(model => model.TriggerExpression, new { @class = "form-control" })
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-4">
-                    <label class="@BootstrapHelper.Label " asp-for="CssClass">@StringLocalizer["Css Class"]</label>
-                    <tooltip title="Class name (CSS) one to be assigned to object group rendering"/>
-
-                    @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2">
-                    <label class="@BootstrapHelper.Label " asp-for="LineGroup">@StringLocalizer["Group Line"]</label>
-                    <tooltip title="Row counter, used to break the line in the form (row class)"/>
-
-                    @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
-                </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " asp-for="Export">@StringLocalizer["Export"]</label>
-                    <tooltip title="Allows you to export the field"/>
-                    <checkbox for="Export" switch="true"/>
-                </div>
-                
-                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <label class="@BootstrapHelper.Label " asp-for="ValidateRequest">@StringLocalizer["Validate Request"]</label>
-                    <tooltip title="Validates possibly dangerous values on request on .NET Framework 4.8"/>
-                    <checkbox for="ValidateRequest" switch="true"/>
+                    <expression for="TriggerExpression" icon="IconType.Bolt" tooltip="Expression triggered whenever a field triggers a POST to the server. Check expressions at the docs for more information." is-boolean="false"/>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-sm-12">
-            @Html.Raw(ViewBag.Error)
-        </div>
-
-        <div class="col-sm-12">
-            <div id="div-success" class="alert alert-success alert-dismissible" role="alert" style="display:none">
-                <button type="button" class="@BootstrapHelper.Close" @BootstrapHelper.GetDataDismiss("alert") aria-label="Close">
-                    <span aria-hidden="true">@BootstrapHelper.CloseButtonTimes</span>
-                </button>
-                <strong>@StringLocalizer["Success!"]</strong> @StringLocalizer["Record saved successfully."]
-            </div>
-        </div>
-    </div>
-
     <div class="row">
         <div class="col-sm-12 jjtoolbar">
             @{
@@ -272,8 +265,9 @@
             }
         </div>
     </div>
-
 </div>
+
+
 
 @functions{
 

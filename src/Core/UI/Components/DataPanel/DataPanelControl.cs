@@ -316,15 +316,15 @@ internal class DataPanelControl
         control.Enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formStateData);
 
         if (BootstrapHelper.Version > 3 && Errors.ContainsKey(field.Name))
-        {
             control.CssClass = "is-invalid";
-        }
 
         if (field.AutoPostBack && PageState is PageState.Insert or PageState.Update)
-        {
             control.SetAttr("onchange", GetScriptReload(field));
-        }
 
+        if(control is JJTextGroup textGroup && PageState is PageState.View)
+            foreach (var textGroupAction in textGroup.Actions)
+                textGroupAction.Enabled = false;
+        
         if (PageState != PageState.Filter) 
             return await control.GetHtmlBuilderAsync();
         
@@ -332,9 +332,9 @@ internal class DataPanelControl
         {
             case JJTextGroup when field.Filter.Type is not (FilterMode.MultValuesContain or FilterMode.MultValuesEqual):
                 return await control.GetHtmlBuilderAsync();
-            case JJTextGroup textGroup:
-                textGroup.Attributes.Add("data-role", "tagsinput");
-                textGroup.MaxLength = 0;
+            case JJTextGroup:
+                control.Attributes.Add("data-role", "tagsinput");
+                control.MaxLength = 0;
                 break;
             case JJComboBox comboBox:
             {
@@ -357,7 +357,7 @@ internal class DataPanelControl
 
         var reloadPanelScript = Scripts.GetReloadPanelScript(field.Name);
         
-        //Workarround to trigger event on search component
+        //Workaround to trigger event on search component
         if (field.Component is not FormComponent.Search) 
             return reloadPanelScript;
         

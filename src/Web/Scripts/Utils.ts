@@ -138,3 +138,11 @@ function requestSubmitParentWindow() {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+function onDOMReady(callback) {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', callback);
+    } else {
+        callback();
+    }
+}

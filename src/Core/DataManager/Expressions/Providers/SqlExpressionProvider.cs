@@ -18,7 +18,8 @@ public class SqlExpressionProvider : IExpressionProvider
     }
 
     public string Prefix => "sql";
-
+    public string Title => "T-SQL";
+    
     public async Task<object> EvaluateAsync(string expression, FormStateData formStateData)
     {
         var parsedSql = _expressionParser.ParseExpression(expression, formStateData, false);

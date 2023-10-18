@@ -3,12 +3,9 @@
 ## What is a expression?
 Expression is a simple way to return a dynamic value.
 
-
 ## How it works?
 
 Expressions can return a boolean or a value at runtime<br>
- - Tipo [val] retorna um valor; 
- - Tipo [exp] retorna o resultado da expressão; 
 Example: <br>
 
 "val:1" Return true.
@@ -20,11 +17,10 @@ Example: <br>
 "exp:{pagestate} = 'LIST'" If a list return true<br>
 "exp:{pagestate} = 'UPDATE' AND {ID} = '1'" If update and a field value ID equals 1 return true<br>
 
-## What is the types of expressions?
+## What are the default expression providers?
 - Type [val:] returns a value; (1 or 0) (true or false) ("foo") etc..
-- Type [exp:] returns the result of the expression;
+- Type [exp:] returns the result of the expression from `DataTable.Compute`;
 - Type [sql:] returns the result of a sql command;
-- Type [protheus:] returns the result of a TOTVS ERP Protheus function;
 
 > [!TIP] 
 > Check if your field supports all expressions
@@ -37,16 +33,15 @@ Building an expression<br>
 
 
 **System keywords**<br>
-{pagestate} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
-<br>
-Form fields, UserValues ou Sessão = {FieldName}
-<br>
-{objname} = Name of the field that triggered the autopostback event
+- {PageState} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
+- {ComponentName} = Name of the component that triggered the AutoPostBack event
+- {UserId} = Identifier of the authenticated user
 
-1. UserValues (propriedade do objeto)
-2. Form Fields (Field Name)
+Dynamic values will be recovered in the following order:
+1. UserValues
+2. FormValues
 3. System keywords
-4. User Session
+4. UserSession
 
 
 ## Examples
@@ -75,6 +70,22 @@ var field = new ElementField();
 field.DefaultValue = "sql:select field2 from table1 where field1 = '{field1}'";
 ```
 
+## Implementing your own expression provider
+
+Implement the [IExpressionProvider](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.Expressions.Abstractions.IExpressionProvider.html) interface and add to your services your custom provider.
+
+```cs
+builder.Services.AddJJMasterDataWeb().WithExpressionProvider<TMyCustomProvider>();
+//or
+
+```
+
+## Protheus Plugin
+
+Add to your project:
+```cs
+    builder.Services.AddJJMasterDataWeb().WithProtheusServices();
+```
 Example using [protheus:] + "UrlProtheus", "NameFunction", "Parameters" <br>
 1. protheus:"http://localhost/jjmain.apw","u_test","";
 2. protheus:"http://localhost/jjmain.apw","u_test","{field1};parm2";

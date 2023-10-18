@@ -14,7 +14,7 @@ public class ValueExpressionProvider : IExpressionProvider
     }
 
     public string Prefix => "val";
-
+    public string Title => "Value";
     public async Task<object> EvaluateAsync(string expression, FormStateData formStateData)
     {
         if (expression.Contains("{"))

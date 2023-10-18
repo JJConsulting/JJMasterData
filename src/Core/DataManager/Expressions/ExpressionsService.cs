@@ -64,6 +64,7 @@ public class ExpressionsService
         
         try
         {
+            Logger.LogDebug("Executing expression: {Expression}", expression);
             result = await provider.EvaluateAsync(expression, formStateData);
         }
 

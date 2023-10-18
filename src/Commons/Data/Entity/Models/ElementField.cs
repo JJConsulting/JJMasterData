@@ -1,5 +1,8 @@
 ﻿#nullable enable
 
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using JJMasterData.Core.DataDictionary.Models;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
@@ -66,6 +69,8 @@ public class ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("defaultvalue")]
+    [Expression]
+    [Display(Name = "Default Value Expression")]
     public string? DefaultValue { get; set; }
 
     /// <summary>

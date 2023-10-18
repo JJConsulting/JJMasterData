@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using Newtonsoft.Json;
@@ -31,15 +32,18 @@ public class FormElementField : ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("visibleExpression")]
+    [Display(Name = "Visible Expression")]
+    [Expression]
     public string VisibleExpression { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("enableExpression")]
+    [Display(Name = "Enable Expression")]
+    [Expression]
     public string EnableExpression { get; set; }
     
-
     /// <summary>
     /// Line counter, used to break the line in the form (row class)
     /// </summary>
@@ -130,6 +134,8 @@ public class FormElementField : ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("triggerExpression")]
+    [Display(Name = "Trigger Expression")]
+    [Expression]
     public string? TriggerExpression { get; set; }
 
     /// <summary>

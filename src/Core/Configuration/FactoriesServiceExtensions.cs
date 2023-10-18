@@ -43,6 +43,7 @@ public static class FactoriesServiceExtensions
         services.AddScoped<IComponentFactory<JJUploadArea>, UploadAreaFactory>();
         services.AddScoped<IComponentFactory<JJCollapsePanel>, CollapsePanelFactory>();
         services.AddScoped<IComponentFactory<JJLinkButton>,LinkButtonFactory>();
+        services.AddScoped<IComponentFactory<JJCard>, CardFactory>();
         services.AddScoped<RouteContextFactory>();
         services.AddScoped<ValidationSummaryFactory>();
         services.AddScoped<HtmlComponentFactory>();

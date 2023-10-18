@@ -52,6 +52,7 @@ public class JJCollapsePanel : HtmlComponent
         Buttons = new List<JJLinkButton>();
         Color = PanelColor.Default;
         TitleIcon = null;
+        HtmlBuilderContent = new HtmlBuilder();
     }
 
     internal override HtmlBuilder BuildHtml()

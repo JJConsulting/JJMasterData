@@ -136,7 +136,7 @@ public partial class HtmlBuilder
     }
 
     /// <summary>
-    /// Append a hidden input to the Element tree.
+    /// Append a hidden input to the element tree.
     /// </summary>
     public HtmlBuilder AppendHiddenInput(string name, string value)
     {
@@ -149,7 +149,7 @@ public partial class HtmlBuilder
     }
 
     /// <summary>
-    /// Append a hidden input to the Element tree.
+    /// Append a hidden input to the element tree.
     /// </summary>
     public HtmlBuilder AppendHiddenInput(string name)
     {
@@ -181,7 +181,7 @@ public partial class HtmlBuilder
     }
 
     /// <summary>
-    /// Insert a JJ component as a child of caller builder.
+    /// Insert a HTMLComponent as a child of caller builder.
     /// </summary>
     public HtmlBuilder AppendComponent(HtmlComponent? component)
     {

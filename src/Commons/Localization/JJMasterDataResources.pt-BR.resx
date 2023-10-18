@@ -3453,4 +3453,7 @@
   <data name="File is too big. Max file size: {0} mb" xml:space="preserve">
     <value>Arquivo é muito grande. Tamanho máximo {0} mb</value>
   </data>
+  <data name="Default Value Expression" xml:space="preserve">
+    <value>Expressão do Valor Padrão</value>
+  </data>
 </root>

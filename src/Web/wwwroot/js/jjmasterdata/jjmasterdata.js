@@ -228,10 +228,10 @@ class CalendarListener {
     }
 }
 class CheckboxHelper {
-    static check(name, value) {
+    static check(name) {
         const checkbox = document.querySelector(`#${name}-checkbox`);
         if (checkbox === null || checkbox === void 0 ? void 0 : checkbox.checked) {
-            document.querySelector(`#${name}`).value = value;
+            document.querySelector(`#${name}`).value = "true";
         }
         else {
             document.querySelector(`#${name}`).value = "false";
@@ -241,22 +241,37 @@ class CheckboxHelper {
 class CodeMirrorWrapperOptions {
 }
 class CodeMirrorWrapper {
+    static isCodeMirrorConfigured(elementId) {
+        const textArea = document.querySelector("#" + elementId);
+        return textArea.codeMirrorInstance != null;
+    }
     static setupCodeMirror(elementId, options) {
         const textArea = document.querySelector("#" + elementId);
         if (!textArea)
             return;
-        console.log("hola");
+        if (this.isCodeMirrorConfigured(elementId))
+            return;
         const codeMirrorTextArea = CodeMirror.fromTextArea(textArea, {
             mode: options.mode,
             indentWithTabs: true,
             smartIndent: true,
             lineNumbers: true,
             autofocus: true,
-            autoRefresh: true,
             autohint: true,
             extraKeys: { "Ctrl-Space": "autocomplete" }
         });
-        codeMirrorTextArea.setSize(null, 250);
+        if (options.singleLine) {
+            codeMirrorTextArea.setSize(null, 30);
+            codeMirrorTextArea.on("beforeChange", function (instance, change) {
+                const newText = change.text.join("").replace(/\n/g, "");
+                change.update(change.from, change.to, [newText]);
+                return true;
+            });
+        }
+        else {
+            codeMirrorTextArea.setSize(null, 250);
+        }
+        textArea.codeMirrorInstance = codeMirrorTextArea;
         CodeMirror.registerHelper('hint', 'hintList', function (_) {
             const cur = codeMirrorTextArea.getCursor();
             return {
@@ -270,6 +285,7 @@ class CodeMirrorWrapper {
                 CodeMirror.commands.autocomplete(cm, CodeMirror.hint.hintList, { completeSingle: false });
             }
         });
+        setTimeout(() => { codeMirrorTextArea.refresh(); }, 200);
     }
 }
 class CollapsePanelListener {
@@ -802,6 +818,56 @@ function applyDecimalPlaces() {
         $(this).number(true, decimalPlaces, ",", ".");
     else
         $(this).number(true, decimalPlaces);
+}
+function listenExpressionType(name, hintList, isBoolean) {
+    document.getElementById(name + '-ExpressionType').addEventListener('change', function () {
+        const selectedType = this.value;
+        const expressionValueInput = document.getElementById(name + '-ExpressionValue');
+        const expressionValueEditor = document.getElementById(name + '-ExpressionValueEditor');
+        if (selectedType === 'sql' || selectedType == 'exp') {
+            const textArea = document.createElement('textarea');
+            textArea.setAttribute('name', name + '-ExpressionValue');
+            textArea.setAttribute('id', name + '-ExpressionValue');
+            textArea.setAttribute('class', 'form-control');
+            textArea.innerText = expressionValueInput.value;
+            expressionValueEditor.innerHTML = textArea.outerHTML;
+            CodeMirrorWrapper.setupCodeMirror(name + '-ExpressionValue', { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
+        }
+        else if (selectedType === 'val' && isBoolean) {
+            const div = document.createElement('div');
+            div.classList.add('form-switch', 'form-switch-md', 'form-check');
+            const expressionValueInputName = name + '-ExpressionValue';
+            const input = document.createElement('input');
+            input.name = expressionValueInputName;
+            input.id = expressionValueInputName;
+            input.setAttribute("value", "false");
+            input.setAttribute("hidden", "hidden");
+            const checkbox = document.createElement('input');
+            checkbox.name = name + '-ExpressionValue-checkbox';
+            checkbox.id = name + '-ExpressionValue-checkbox';
+            checkbox.type = 'checkbox';
+            checkbox.setAttribute("role", 'switch');
+            checkbox.setAttribute("value", "false");
+            checkbox.setAttribute("onchange", `CheckboxHelper.check('${expressionValueInputName}')`);
+            checkbox.classList.add('form-check-input');
+            div.appendChild(input);
+            div.appendChild(checkbox);
+            expressionValueEditor.innerHTML = div.outerHTML;
+        }
+        else {
+            const input = document.createElement('input');
+            input.setAttribute('type', 'text');
+            input.setAttribute('class', 'form-control');
+            input.setAttribute('name', name + '-ExpressionValue');
+            input.setAttribute('id', name + '-ExpressionValue');
+            input.value = expressionValueInput.value;
+            if (expressionValueInput.codeMirrorInstance) {
+                expressionValueInput.codeMirrorInstance.setOption('mode', 'text/x-csrc');
+                expressionValueInput.codeMirrorInstance.getWrapperElement().parentNode.removeChild(expressionValueInput.codeMirrorInstance.getWrapperElement());
+            }
+            expressionValueEditor.innerHTML = input.outerHTML;
+        }
+    });
 }
 class FeedbackIcon {
     static removeAllIcons(selector) {
@@ -2364,4 +2430,12 @@ function requestSubmitParentWindow() {
     window.parent.document.forms[0].requestSubmit();
 }
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+function onDOMReady(callback) {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', callback);
+    }
+    else {
+        callback();
+    }
+}
 //# sourceMappingURL=jjmasterdata.js.map
