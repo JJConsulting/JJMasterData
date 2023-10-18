@@ -30,6 +30,9 @@ public class CheckboxTagHelper : TagHelper
     [HtmlAttributeName("label")] 
     public string? Label { get; set; }
     
+    [HtmlAttributeName("onchange")] 
+    public string? OnChange { get; set; }
+    
     public CheckboxTagHelper(IControlFactory<JJCheckBox> checkboxFactory)
     {
         CheckboxFactory = checkboxFactory;
@@ -49,6 +52,11 @@ public class CheckboxTagHelper : TagHelper
             checkBox.IsChecked = IsChecked;
         }
 
+        if (OnChange is not null)
+        {
+            checkBox.Attributes["onchange"] = OnChange;
+        }
+        
         checkBox.IsSwitch = IsSwitch;
         checkBox.SwitchSize = SwitchSize ?? CheckBoxSwitchSize.Medium;
         checkBox.Text = Label;

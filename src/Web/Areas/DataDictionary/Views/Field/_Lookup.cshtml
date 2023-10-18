@@ -17,25 +17,15 @@
         </select>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divReplaceTextOnGrid">
-        <label asp-for="DataItem!.ReplaceTextOnGrid" class="@BootstrapHelper.Label">@StringLocalizer["Replace Text On Grid"]</label>
-        <tooltip title="Replace the field value with the description in the grid"></tooltip>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ReplaceTextOnGrid, new[]
-        {
-            new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" },
-            new SelectListItem { Text = StringLocalizer["No"], Value = "false" }
-        },
-            new { @class = "form-control form-select" })
+    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+        <label class="@BootstrapHelper.Label " asp-for="DataItem!.ReplaceTextOnGrid"></label>
+        <tooltip title="Replace the field value with the description in the grid"/>
+        <checkbox for="DataItem!.ReplaceTextOnGrid" switch="true"/>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-        <label class="@BootstrapHelper.Label" asp-for="DataItem!.ElementMap!.EnableElementActions"  >@StringLocalizer["Enable Element Actions"]</label>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.EnableElementActions, new[]
-        {
-            new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
-            new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
-        },
-            new { @class = "form-control form-select" })
+        <label class="@BootstrapHelper.Label " asp-for="DataItem!.ElementMap!.EnableElementActions"></label>
+        <checkbox for="DataItem!.ElementMap!.EnableElementActions" switch="true"/>
     </div>
     
     <partial name="_DataItemElementMap"/>

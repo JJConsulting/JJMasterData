@@ -1,5 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data;
 using Newtonsoft.Json;
 
@@ -48,12 +50,14 @@ public class FormElementDataItem
     /// criar um novo campo do tipo VIEWONLY para tratar o resultado na procedure
     /// </remarks>
     [JsonProperty("replacetextongrid")]
+    [Display(Name="Replace Text On Grid")]
     public bool ReplaceTextOnGrid { get; set; } = true;
 
     /// <remarks>
     /// Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.
     /// </remarks>
     [JsonProperty("enableMultiSelect")]
+    [Display(Name="Enable Multi Select")]
     public bool EnableMultiSelect { get; set; }
 
     /// <summary>
@@ -65,6 +69,7 @@ public class FormElementDataItem
     /// propriedade ReplaceTextOnGrid esta configurada para falso.
     /// </remarks>
     [JsonProperty("showimagelegend")]
+    [Display(Name="Show Icon")]
     public bool ShowIcon { get; set; }
 
     public bool HasSqlExpression()

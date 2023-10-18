@@ -20,14 +20,9 @@
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divReplaceTextOnGrid">
-        <label class="@BootstrapHelper.Label">@StringLocalizer["Replace Text On Grid"]</label>
-        <tooltip title="Replace the field value with the description in the grid"></tooltip>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ReplaceTextOnGrid, new[]
-        {
-            new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" },
-            new SelectListItem { Text = StringLocalizer["No"], Value = "false" }
-        },
-            new { @class = "form-control form-select" })
+        <label class="@BootstrapHelper.Label " asp-for="DataItem!.ReplaceTextOnGrid"></label>
+        <tooltip title="Replace the field value with the description in the grid"/>
+        <checkbox for="DataItem!.ReplaceTextOnGrid" switch="true"/>
     </div>
 
     @if (Model.Component is FormComponent.ComboBox)
@@ -38,26 +33,17 @@
         </div>
     }
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-        <label class="@BootstrapHelper.Label">@StringLocalizer["Show Icon"]</label>
-        <tooltip title="Display a FontAwesome icon alongside the options"/>
-        @Html.DropDownListFor(modelItem => modelItem.DataItem!.ShowIcon, new[]
-        {
-            new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
-            new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
-        },new { @class = "form-control form-select", onchange = "this.form.requestSubmit();" })
+            <label class="@BootstrapHelper.Label " asp-for="DataItem!.ShowIcon"></label>
+            <tooltip title="Display a FontAwesome icon alongside the options"/>
+            <checkbox for="DataItem!.ShowIcon" switch="true" onchange="this.form.requestSubmit();"/>
     </div>
     
     @if (Model.Component is FormComponent.ComboBox)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-            <label class="@BootstrapHelper.Label">
-                @StringLocalizer["Multiselect"]
-            </label>
+            <label class="@BootstrapHelper.Label " asp-for="DataItem!.EnableMultiSelect"></label>
             <tooltip title="Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table."/>
-            <select class="form-control form-select" asp-for="DataItem!.EnableMultiSelect">
-                <option value="true">@StringLocalizer["Yes"]</option>
-                <option value="false">@StringLocalizer["No"]</option>
-            </select>
+            <checkbox for="DataItem!.EnableMultiSelect" switch="true"/>
         </div>
     }
 

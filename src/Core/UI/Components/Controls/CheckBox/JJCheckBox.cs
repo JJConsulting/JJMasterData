@@ -73,11 +73,11 @@ public class JJCheckBox : ControlBase
         
         div.Append(HtmlTag.Input, input =>
         {
-            var checkboxHelperScript = $"CheckboxHelper.check('{Name}')";
+            var checkboxHelperScript = $"CheckboxHelper.check('{Name.Replace(".", "_")}');";
             
             if (Attributes.ContainsKey("onchange"))
             {
-                Attributes["onchange"] += checkboxHelperScript;
+                Attributes["onchange"] = checkboxHelperScript + Attributes["onchange"];
             }
             else
             {
@@ -86,10 +86,13 @@ public class JJCheckBox : ControlBase
 
             if (ReadOnly)
                 Attributes["onclick"] = "return false";
+
+            var checkBoxName = Name + "-checkbox";
             
             input.WithAttributes(Attributes)
                 .WithAttribute("type", "checkbox")
-                .WithNameAndId(Name +"-checkbox")
+                .WithName(checkBoxName)
+                .WithId(checkBoxName.Replace(".","_"))
                 .WithAttribute("value", Value)
                 .WithCssClass("form-check-input")
                 .WithAttributeIf(IsSwitch && BootstrapHelper.Version is 3,"data-toggle","toggle")
@@ -103,7 +106,13 @@ public class JJCheckBox : ControlBase
                 .WithAttributeIf(!Enabled, "disabled", "disabled");
         });
 
-        div.AppendHiddenInput($"{Name}", IsChecked ? Value : "false");
+        div.Append(HtmlTag.Input, input =>
+        {
+            input.WithAttribute("hidden", "hidden");
+            input.WithName(Name);
+            input.WithId(Name.Replace(".", "_"));
+            input.WithValue(IsChecked ? Value : "false");
+        });
 
         div.AppendIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
         {

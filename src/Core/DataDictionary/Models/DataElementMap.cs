@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
@@ -61,5 +62,6 @@ public class DataElementMap
 
 
     [JsonProperty("enableElementActions")]
+    [Display(Name = "Enable Element Actions")]
     public bool EnableElementActions { get; set; }
 }
