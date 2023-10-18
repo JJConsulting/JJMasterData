@@ -1,4 +1,5 @@
 ﻿@using JJMasterData.Core.UI
+@using JJMasterData.Web.Configuration.Options
 @inject IOptions<JJMasterDataWebOptions> Options
 
 @{
@@ -10,7 +11,7 @@
 <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-font-face.min.css" />
 <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-shims.min.css" />
 
-@if (Options.Value.EnableBundleAndMinification)
+@if (!Options.Value.EnableBundleAndMinification)
 {
     @if (Options.Value.UseCustomBootstrap)
     {

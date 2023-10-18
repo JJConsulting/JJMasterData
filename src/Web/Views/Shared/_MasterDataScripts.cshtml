@@ -1,10 +1,11 @@
 ﻿@using JJMasterData.Core.UI
-
+@using JJMasterData.Web.Configuration.Options
+@inject IOptions<JJMasterDataWebOptions> Options
 @{
     var areaName = ViewContext.RouteData.Values["area"] as string;
 }
 
-@if (Options.Value.EnableBundleAndMinification)
+@if (!Options.Value.EnableBundleAndMinification)
 {
       <script src="~/_content/JJMasterData.Web/js/jquery/jquery.js"></script>
     <script src="~/_content/JJMasterData.Web/js/jquery/jquery-form/jquery.form.js"></script>
