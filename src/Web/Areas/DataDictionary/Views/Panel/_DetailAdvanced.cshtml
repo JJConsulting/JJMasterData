@@ -6,17 +6,14 @@
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <label asp-for="VisibleExpression" class="@BootstrapHelper.Label" 
-               data-bs-toggle="tooltip" data-toggle="tooltip"
-               title="@StringLocalizer["Expression that returns a Boolean at runtime"]">@StringLocalizer["Visible Expression"]</label>
-        <input type="text" asp-for="VisibleExpression" class="form-control"/>
+        <expression for="VisibleExpression" icon="IconType.Eye" />
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <label asp-for="EnableExpression" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip" title="@StringLocalizer["Expression that returns a Boolean at runtime"]">@StringLocalizer["Enable Expression"]</label>
-         <input type="text" asp-for="EnableExpression" class="form-control"/>
+        <expression for="EnableExpression" icon="IconType.Pencil" />
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-4">
-        <label asp-for="CssClass" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip" title="@StringLocalizer["Class name (CSS) to be added when rendering the object group"]">@StringLocalizer["CssClass"]</label>
+        <label asp-for="CssClass" class="@BootstrapHelper.Label"></label>
+        <tooltip title="Class name (CSS) to be added when rendering the object group"/>
          <input type="text" asp-for="CssClass" class="form-control"/>
     </div>
 </div>

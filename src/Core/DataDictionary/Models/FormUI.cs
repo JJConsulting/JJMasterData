@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -30,6 +31,7 @@ public class FormUI
     /// Valor padrão falso
     /// </remarks>
     [JsonProperty("showViewModeAsStatic")]
+    [Display(Name = "Show View Mode as Static")]
     public bool ShowViewModeAsStatic { get; set; }
 
     /// <summary>

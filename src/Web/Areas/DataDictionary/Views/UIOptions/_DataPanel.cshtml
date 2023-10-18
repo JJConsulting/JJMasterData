@@ -29,14 +29,9 @@
     </div>
     
     <div class="col-sm-4">
-        <div class="checkbox">
-            <label for="ShowViewModeAsStatic">
-                @Html.CheckBox("ShowViewModeAsStatic", Model.Form.ShowViewModeAsStatic)
-                <b>@StringLocalizer["ShowViewModeAsStatic"]</b><br/>
-                @StringLocalizer["When the panel is not in preview mode "]
-                @StringLocalizer["remover as bordas dos campos exibindo como texto."]
-            </label>
-        </div>
+        <label class="@BootstrapHelper.Label" asp-for="Form.ShowViewModeAsStatic"></label>
+        <tooltip title="When the panel is in PageState.View show only the values without the components."/>
+        <checkbox for="Form.ShowViewModeAsStatic" switch="true"/>
     </div>
     
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">

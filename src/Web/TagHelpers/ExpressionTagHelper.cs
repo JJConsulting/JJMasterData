@@ -95,7 +95,7 @@ public class ExpressionTagHelper : TagHelper
 
         var html = card.GetHtmlBuilder();
 
-        html.AppendScript($"listenExpressionType('{name}',{codeMirrorHintList}, '{(IsBooleanExpression ? "true" : "false")}')");
+        html.AppendScript($"listenExpressionType('{name}',{codeMirrorHintList}, {(IsBooleanExpression ? "true" : "false")})");
         
         output.TagMode = TagMode.StartTagAndEndTag;
         

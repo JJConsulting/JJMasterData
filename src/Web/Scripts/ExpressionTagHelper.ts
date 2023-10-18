@@ -13,7 +13,7 @@ function listenExpressionType(name, hintList, isBoolean) {
             expressionValueEditor.innerHTML = textArea.outerHTML;
             CodeMirrorWrapper.setupCodeMirror(name + '-ExpressionValue', { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
         } 
-        else if(selectedType ==='val' && isBoolean){
+        else if(selectedType ==='val' && isBoolean === true){
             const div = document.createElement('div');
             div.classList.add('form-switch', 'form-switch-md', 'form-check');
 

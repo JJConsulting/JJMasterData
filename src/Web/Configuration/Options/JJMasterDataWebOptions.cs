@@ -26,4 +26,5 @@ public class JJMasterDataWebOptions : JJMasterDataCoreOptions
     public string? CustomBootstrapPath { get; set; }
     
     public bool SupportNetFramework { get; set; }
+    public bool EnableBundleAndMinification { get; set; }
 }
