@@ -24,8 +24,17 @@ public class ExpressionTagHelper : TagHelper
     private readonly IComponentFactory<JJCard> _cardFactory;
 
     [HtmlAttributeName("for")]
-    public ModelExpression For { get; set; } = null!;
+    public ModelExpression? For { get; set; }
+    
+    [HtmlAttributeName("name")]
+    public string? Name { get; set; }
 
+    [HtmlAttributeName("value")]
+    public string? Value { get; set; }
+    
+    [HtmlAttributeName("title")]
+    public string? Title { get; set; }
+    
     [HtmlAttributeName("tooltip")]
     public string? Tooltip { get; set; }
 
@@ -53,8 +62,8 @@ public class ExpressionTagHelper : TagHelper
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
-        var name = For.Name;
-        var modelValue = For.Model?.ToString();
+        var name = For?.Name ?? Name ?? throw new ArgumentException("For or Name properties are required.");
+        var modelValue = For?.Model?.ToString() ?? Value;
         var selectedExpressionType = modelValue?.Split(':')[0];
         var selectedExpressionValue = modelValue?.Split(':')[1]  ?? string.Empty;
         string codeMirrorHintList = ViewContext.ViewBag.CodeMirrorHintList;
@@ -62,7 +71,7 @@ public class ExpressionTagHelper : TagHelper
         var card = _cardFactory.Create();
         card.Layout = PanelLayout.Collapse;
         card.Icon = Icon;
-        card.Title = For.ModelExplorer.Metadata.GetDisplayName();
+        card.Title = For?.ModelExplorer.Metadata.GetDisplayName();
         card.HtmlBuilderContent.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("row");

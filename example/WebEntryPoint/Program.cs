@@ -40,7 +40,6 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 app.UseRouting();
 if (authentication is not null)
 {

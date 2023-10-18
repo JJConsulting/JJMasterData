@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using JJMasterData.Commons.Data.Entity.Models;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
@@ -85,6 +87,8 @@ public abstract class BasicAction
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("enableExpression")]
+    [Display(Name = "Enable Expression")]
+    [Expression]
     public string EnableExpression { get; set; }
 
     /// <summary>
@@ -97,6 +101,8 @@ public abstract class BasicAction
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("visibleExpression")]
+    [Display(Name = "Visible Expression")]
+    [Expression]
     public string VisibleExpression { get; set; }
 
     /// <summary>

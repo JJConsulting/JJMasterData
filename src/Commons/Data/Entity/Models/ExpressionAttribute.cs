@@ -1,8 +1,8 @@
 using System;
 
-namespace JJMasterData.Core.DataDictionary.Models;
+namespace JJMasterData.Commons.Data.Entity.Models;
 
-[AttributeUsage(AttributeTargets.Property)]
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
 public class ExpressionAttribute : Attribute
 {
     

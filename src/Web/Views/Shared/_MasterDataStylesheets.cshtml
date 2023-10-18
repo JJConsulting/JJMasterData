@@ -2,7 +2,12 @@
 @using JJMasterData.Web.Configuration.Options
 @inject IOptions<JJMasterDataWebOptions> Options
 
-   <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/all.min.css" />
+@{
+    var areaName = ViewContext.RouteData.Values["area"] as string;
+}
+
+
+<link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/all.min.css" />
    <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-font-face.min.css" />
    <link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-shims.min.css" />
 <environment include="Development">
@@ -24,7 +29,14 @@
    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/flatpickr/airbnb.css">
    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/highlightjs/ssms.min.css" />
    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/dropzone/dropzone.min.css" />
-   <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/jjmasterdata/jjmasterdata.css" />
+    
+    @if (areaName is "DataDictionary")
+    {
+        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/codemirror/codemirror.css"  />
+        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/codemirror/show-hint.css"  />
+    }
+    
+    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/jjmasterdata/jjmasterdata.css" />
 </environment>
 
 <environment exclude="Development">

@@ -448,41 +448,16 @@ public class ActionsController : DataDictionaryController
         ViewBag.ContextAction = context;
         ViewBag.MenuId = "Actions";
         ViewBag.FieldName = fieldName!;
+        var formElement = await _actionsService.GetFormElementAsync(elementName);
+        ViewBag.FormElement = formElement;
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(_actionsService.GetAutocompleteHintsList(formElement, includeAdditionalHints:false));
 
-        switch (basicAction)
+        if (basicAction is InternalAction internalAction)
         {
-            case SqlCommandAction _:
-            case ImportAction _:
-            case InsertAction _:
-            {
-                var formElement = await _actionsService.GetFormElementAsync(elementName);
-                ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(_actionsService.GetAutocompleteHintsList(formElement));
-                ViewBag.FormElement = formElement;
-                break;
-            }
-            
-            case PluginAction _:
-            {
-                var formElement = await _actionsService.GetFormElementAsync(elementName);
-                ViewBag.CodeMirrorHintList = _actionsService.GetAutocompleteHintsList(formElement, includeAdditionalHints:false).ToList();
-                ViewBag.FormElement = formElement;
-                break;
-            }
-            
-            case ExportAction _:
-            {
-                var formElement = await _actionsService.GetFormElementAsync(elementName);
-                ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(_actionsService.GetAutocompleteHintsList(formElement));
-                break;
-            }
-            case InternalAction internalAction:
-            {
-                ViewBag.ElementNameList = await _actionsService.GetElementListAsync();
-                ViewBag.InternalFieldList = await _actionsService.GetFieldList(elementName);
-                var elementNameRedirect = internalAction.ElementRedirect.ElementNameRedirect;
-                ViewBag.RedirectFieldList = await _actionsService.GetFieldList(elementNameRedirect);
-                break;
-            }
+            ViewBag.ElementNameList = await _actionsService.GetElementListAsync();
+            ViewBag.InternalFieldList = await _actionsService.GetFieldList(elementName);
+            var elementNameRedirect = internalAction.ElementRedirect.ElementNameRedirect;
+            ViewBag.RedirectFieldList = await _actionsService.GetFieldList(elementNameRedirect);
         }
     }
     

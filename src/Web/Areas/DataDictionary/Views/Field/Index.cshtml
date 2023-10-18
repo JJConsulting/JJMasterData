@@ -63,16 +63,7 @@
 
 }
 
-
-<link href="~/_content/JJMasterData.Web/css/codemirror/codemirror.css" rel="stylesheet" />
-<link href="~/_content/JJMasterData.Web/css/codemirror/show-hint.css" rel="stylesheet" />
-
-
 @section Scripts{
-    <script src="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.js" type="text/javascript"></script>
-    <script src="~/_content/JJMasterData.Web/js/codemirror/mode/sql.js" type="text/javascript"></script>
-    <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js" type="text/javascript"></script>
-    <script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js" type="text/javascript"></script>
 
     <script type="text/javascript">
          function setupCodeMirror(){
@@ -232,8 +223,7 @@
             });
         }
     </script>
-
-    }
+}
 
     <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 

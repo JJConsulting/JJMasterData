@@ -4,14 +4,6 @@
 @using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.ProcessOptions
 
-<link href="~/_content/JJMasterData.Web/css/codemirror/codemirror.css" rel="stylesheet" />
-<link href="~/_content/JJMasterData.Web/css/codemirror/show-hint.css" rel="stylesheet" />
-
-<script src="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.js" type="text/javascript"></script>
-<script src="~/_content/JJMasterData.Web/js/codemirror/mode/sql.js" type="text/javascript"></script>
-<script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js" type="text/javascript"></script>
-<script src="~/_content/JJMasterData.Web/js/codemirror/addon/autorefresh/autorefresh.js" type="text/javascript"></script>
-<script src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js" type="text/javascript"></script>
 
 <script lang="javascript" type="text/javascript">
     document.addEventListener("DOMContentLoaded",()=>{
@@ -19,7 +11,7 @@
         CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandAfterProcess',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'});
 
         $("#cboSqlEvent").change(function () {
-            var selectedVal = $("#cboSqlEvent").selectpicker('val');
+            const selectedVal = $("#cboSqlEvent").selectpicker('val');
             if (selectedVal == "1") {
                 $("#divCommandBefore").css("display", "");
                 $("#divCommandAfter").css("display", "none");

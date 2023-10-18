@@ -15,7 +15,9 @@ public static class AssetPipelineExtensions
             "_content/JJMasterData.Web/css/flatpickr/airbnb.css",
             "_content/JJMasterData.Web/css/highlightjs/ssms.min.css",
             "_content/JJMasterData.Web/css/dropzone/dropzone.min.css",
-            "_content/JJMasterData.Web/css/jjmasterdata/jjmasterdata.css"
+            "_content/JJMasterData.Web/css/dropzone/dropzone.min.css",
+            "_content/JJMasterData.Web/css/codemirror/codemirror.min.css",
+            "_content/JJMasterData.Web/css/codemirror/show-hint.css"
         };
 
         options.AddCssBundle(
@@ -27,7 +29,7 @@ public static class AssetPipelineExtensions
             "/css/jjmasterdata-bundle-with-bootstrap.min.css",
             cssFiles.Prepend("_content/JJMasterData.Web/css/bootstrap/bootstrap.min.css").ToArray()
         );
-
+        
         var commonJsFiles = new[]
         {
             "_content/JJMasterData.Web/js/jquery/jquery.js",
@@ -47,6 +49,10 @@ public static class AssetPipelineExtensions
             "_content/JJMasterData.Web/js/bootstrap/bootstrap-typeahead/bootstrap-typeahead.min.js",
             "_content/JJMasterData.Web/js/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.min.js",
             "_content/JJMasterData.Web/js/dropzone/dropzone.min.js",
+            "_content/JJMasterData.Web/js/codemirror/lib/codemirror.js",
+            "_content/JJMasterData.Web/js/codemirror/mode/sql.js",
+            "_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js",
+            "_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js",
             "_content/JJMasterData.Web/js/jjmasterdata/jjmasterdata.js"
         };
 

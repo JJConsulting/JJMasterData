@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
@@ -156,7 +157,7 @@ public class FieldController : DataDictionaryController
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field, string mapField, string mapExpressionValue)
+    public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field, string mapField, [Expression] string mapExpressionValue)
     {
         var elementMapFilter = new DataElementMapFilter
         {

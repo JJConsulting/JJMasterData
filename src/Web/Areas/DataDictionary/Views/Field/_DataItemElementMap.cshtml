@@ -5,7 +5,7 @@
 
 <collapse-panel title="@StringLocalizer["Element Map"]" expanded-by-default="true" icon="Map">
     <div class="row">
-        <div class="@BootstrapHelper.FormGroup col-sm-12 requ'ired">
+        <div class="@BootstrapHelper.FormGroup col-sm-12 required">
             <label class="@BootstrapHelper.Label ">@StringLocalizer["ElementName"]</label>
             @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.ElementName,
                 new SelectList(ViewBag.ElementNameList, "Key", "Value"),
@@ -45,23 +45,15 @@
 
 <collapse-panel title="@StringLocalizer["Filters"]" expanded-by-default="false" icon="Filter">
     <div class="row">
-        <div class="@BootstrapHelper.FormGroup col-sm-4">
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
             <label class="@BootstrapHelper.Label">@StringLocalizer["Field"]</label>
             @Html.DropDownList("mapField",
                 new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                 new { @class = "form-control" })
         </div>
-        <div class="@BootstrapHelper.FormGroup col-sm-5">
-            <label class="@BootstrapHelper.Label">@StringLocalizer["Filter Expression"]</label>
-            <tooltip title="Check the docs for more information about expressions."/>
-            <div class="input-group">
-                <input type="text" class="form-control" id="mapExpressionValue" name="mapExpressionValue"/>
-                <span class="input-group-btn" style="padding-left: 10px;">
-                    <button class="@BootstrapHelper.DefaultButton btn-small" onclick="addElementMapFilter();">
-                        <span class="fa fa-plus-square-o"></span>&nbsp;@StringLocalizer["Add"]
-                    </button>
-                </span>
-            </div>
+        <div class="@BootstrapHelper.FormGroup col-sm-10">
+            <expression name="mapExpressionValue" title="Filter Expression" icon="IconType.Filter" is-boolean="false"/>
+            <link-button css-class="btn-small" text="Add" icon="CheckSquareO" on-client-click="addElementMapFilter();"/>
         </div>
     </div>
     <div class="row">
