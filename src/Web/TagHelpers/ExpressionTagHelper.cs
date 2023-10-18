@@ -1,4 +1,5 @@
 using System.Web;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
@@ -19,10 +20,11 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class ExpressionTagHelper : TagHelper
 {
-    private IEnumerable<IExpressionProvider> ExpressionProviders { get; }
+    private readonly IEnumerable<IExpressionProvider> _expressionProviders;
     private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
     private readonly IComponentFactory<JJCard> _cardFactory;
-
+    private bool? _isBooleanExpression;
+    
     [HtmlAttributeName("for")]
     public ModelExpression? For { get; set; }
     
@@ -37,10 +39,21 @@ public class ExpressionTagHelper : TagHelper
     
     [HtmlAttributeName("tooltip")]
     public string? Tooltip { get; set; }
-
-    [HtmlAttributeName("is-boolean")] 
-    public bool IsBoolean { get; set; } = true;
     
+    private bool IsBooleanExpression
+    {
+        get
+        {
+            _isBooleanExpression ??= For
+                ?.Metadata
+                ?.ContainerType
+                ?.GetProperty(For.Metadata.PropertyName!)
+                ?.IsDefined(typeof(BooleanExpressionAttribute), inherit: true) is true;
+
+            return _isBooleanExpression.Value;
+        }
+    }
+
     [HtmlAttributeName("icon")] 
     public IconType? Icon { get; set; }
     
@@ -55,7 +68,7 @@ public class ExpressionTagHelper : TagHelper
         ExpressionParser expressionParser,
         IComponentFactory<JJCard> cardFactory)
     {
-        ExpressionProviders = expressionProviders;
+        _expressionProviders = expressionProviders;
         _stringLocalizer = stringLocalizer;
         _cardFactory = cardFactory;
     }
@@ -82,7 +95,7 @@ public class ExpressionTagHelper : TagHelper
 
         var html = card.GetHtmlBuilder();
 
-        html.AppendScript($"listenExpressionType('{name}',{codeMirrorHintList}, '{(IsBoolean ? "true" : "false")}')");
+        html.AppendScript($"listenExpressionType('{name}',{codeMirrorHintList}, '{(IsBooleanExpression ? "true" : "false")}')");
         
         output.TagMode = TagMode.StartTagAndEndTag;
         
@@ -105,9 +118,9 @@ public class ExpressionTagHelper : TagHelper
             select.WithNameAndId(name + "-ExpressionType");
             select.WithCssClass("form-select");
             
-            foreach (var provider in ExpressionProviders)
+            foreach (var provider in _expressionProviders)
             {
-                if (IsBoolean && provider.Prefix != "val" && provider.Prefix != "exp")
+                if (IsBooleanExpression && provider is not IBooleanExpressionProvider)
                     continue;
                 
                 select.Append(HtmlTag.Option, option =>
@@ -149,9 +162,8 @@ public class ExpressionTagHelper : TagHelper
             div.Append(HtmlTag.Div, div =>
             {
                 div.WithId(name + "-ExpressionValueEditor");
-
-
-                if ((selectedExpressionType == "val" || string.IsNullOrEmpty(selectedExpressionType)) && IsBoolean)
+                
+                if ((selectedExpressionType == "val" || string.IsNullOrEmpty(selectedExpressionType)) && IsBooleanExpression)
                 {
                     div.Append(HtmlTag.Div, div =>
                     {

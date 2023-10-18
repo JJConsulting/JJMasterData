@@ -156,7 +156,7 @@ public class JJGridView : AsyncComponent
         var formData = new FormStateData(defaultValues, UserValues, PageState.List);
         foreach (var f in FormElement.Fields.Where(f=>f.DataBehavior is not FieldBehavior.Virtual))
         {
-            bool isVisible = await ExpressionsService.GetBoolValueAsync(f.VisibleExpression, formData);
+            bool isVisible =  ExpressionsService.GetBoolValue(f.VisibleExpression, formData);
             if (isVisible)
                 yield return f;
         }
@@ -609,7 +609,7 @@ public class JJGridView : AsyncComponent
             var fieldName = CurrentContext.Request.QueryString["fieldName"];
             var field = FormElement.Fields[fieldName];
             var formStateData = new FormStateData(await GetCurrentFilterAsync(), UserValues, PageState.Filter);
-            var jjSearchBox = await ComponentFactory.Controls.CreateAsync(FormElement,field, formStateData, Name) as JJSearchBox;
+            var jjSearchBox = ComponentFactory.Controls.Create(FormElement,field, formStateData, Name) as JJSearchBox;
             jjSearchBox!.Name = fieldName;
             return await jjSearchBox.GetItemsResult();
         }
@@ -940,7 +940,7 @@ public class JJGridView : AsyncComponent
     {
         var action = ConfigAction;
         var formData = await GetFormStateDataAsync();
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
+        bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formData);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
@@ -974,7 +974,7 @@ public class JJGridView : AsyncComponent
     {
         var action = ExportAction;
         var formData = await GetFormStateDataAsync();
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
+        bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formData);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
@@ -991,7 +991,7 @@ public class JJGridView : AsyncComponent
     {
         var action = LegendAction;
         var formData = await GetFormStateDataAsync();
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formData);
+        bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formData);
 
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
@@ -1291,7 +1291,7 @@ public class JJGridView : AsyncComponent
     /// Key = Field name
     /// Value = Message
     /// </returns>
-    public async Task<IDictionary<string, object>> ValidateGridFieldsAsync(List<IDictionary<string, object?>> values)
+    public IDictionary<string, object> ValidateGridFields(List<IDictionary<string, object?>> values)
     {
         if (values == null)
             throw new ArgumentNullException(nameof(values));
@@ -1304,8 +1304,8 @@ public class JJGridView : AsyncComponent
             var formData = new FormStateData(row, UserValues, PageState.List);
             foreach (var field in FormElement.Fields)
             {
-                bool enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formData);
-                bool visible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
+                bool enabled = ExpressionsService.GetBoolValue(field.EnableExpression, formData);
+                bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
                 if (enabled && visible && field.DataBehavior is not FieldBehavior.ViewOnly)
                 {
                     string? val = string.Empty;

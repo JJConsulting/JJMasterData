@@ -373,8 +373,8 @@ public class MasterApiService
         {
             var formValues = new FormValues
             {
-                Enable = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formData),
-                Visible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData)
+                Enable = ExpressionsService.GetBoolValue(field.EnableExpression, formData),
+                Visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData)
             };
 
             if (newValues != null && newValues.TryGetValue(field.Name, out var newvalue))

@@ -39,7 +39,7 @@ internal class GridFilter
         var filterAction = GridView.FilterAction;
         var formData = await GridView.GetFormStateDataAsync();
         var filterHtml = new HtmlBuilder(HtmlTag.Div).WithId(Name);
-        bool isVisible = await GridView.ExpressionsService.GetBoolValueAsync(filterAction.VisibleExpression, formData);
+        bool isVisible = GridView.ExpressionsService.GetBoolValue(filterAction.VisibleExpression, formData);
 
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
@@ -364,13 +364,13 @@ internal class GridFilter
                             value = "0";
                         break;
                     case FormComponent.Search:
-                        var search = (JJSearchBox)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement,f, new(values,GridView.UserValues, PageState.Filter),Name,value);
+                        var search = (JJSearchBox) GridView.ComponentFactory.Controls.Create(GridView.FormElement,f, new(values,GridView.UserValues, PageState.Filter),Name,value);
                         search.Name = name;
                         search.AutoReloadFormFields = true;
                         value = await search.GetSelectedValueAsync();
                         break;
                     case FormComponent.Lookup:
-                        var lookup = (JJLookup)await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement,f, new(values,GridView.UserValues, PageState.Filter),Name, value);
+                        var lookup = (JJLookup) GridView.ComponentFactory.Controls.Create(GridView.FormElement,f, new(values,GridView.UserValues, PageState.Filter),Name, value);
                         lookup.Name = name;
                         lookup.AutoReloadFormFields = true;
                         value = lookup.SelectedValue;

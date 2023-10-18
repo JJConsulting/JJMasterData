@@ -804,7 +804,7 @@ public class JJFormView : AsyncComponent
         var insertAction = GridView.ToolBarActions.InsertAction;
         var formData = new FormStateData(RelationValues!, UserValues, PageState.List);
 
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(insertAction.VisibleExpression, formData);
+        bool isVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression, formData);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Insert action is not enabled"]);
 
@@ -1070,7 +1070,7 @@ public class JJFormView : AsyncComponent
             var html = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues);
 
             if (actionMap?.PkFieldValues != null)
-                html.AppendComponent(await GetAuditLogBottomBar(actionMap.PkFieldValues!));
+                html.AppendComponent(await GetAuditLogBottomBar());
 
             PageState = PageState.AuditLog;
             return new ContentComponentResult(html);
@@ -1086,7 +1086,7 @@ public class JJFormView : AsyncComponent
     {
         var action = GridView.ImportAction;
         var formStateData = await GridView.GetFormStateDataAsync();
-        bool isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formStateData);
+        bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formStateData);
         if (!isVisible)
             throw new UnauthorizedAccessException(StringLocalizer["Import action not enabled"]);
 
@@ -1100,8 +1100,7 @@ public class JJFormView : AsyncComponent
         DataImportation.UserValues = UserValues;
         DataImportation.BackButton.OnClientClick = "DataImportationModal.getInstance().hide()";
         DataImportation.ProcessOptions = action.ProcessOptions;
-        DataImportation.EnableAuditLog =
-            await ExpressionsService.GetBoolValueAsync(
+        DataImportation.EnableAuditLog =ExpressionsService.GetBoolValue(
                 GridView.ToolBarActions.AuditLogGridToolbarAction.VisibleExpression, formStateData);
 
         var result = await DataImportation.GetResultAsync();
@@ -1123,7 +1122,7 @@ public class JJFormView : AsyncComponent
     {
         var (values, errors, pageState) = formContext;
 
-        var visibleRelationships = await GetVisibleRelationships(values, pageState);
+        var visibleRelationships = GetVisibleRelationships(values, pageState);
 
         var parentPanel = DataPanel;
         parentPanel.PageState = pageState;
@@ -1211,17 +1210,16 @@ public class JJFormView : AsyncComponent
         return new RenderedComponentResult(panelHtml);
     }
 
-    private async Task<List<FormElementRelationship>> GetVisibleRelationships(IDictionary<string, object?> values,
+    private List<FormElementRelationship> GetVisibleRelationships(IDictionary<string, object?> values,
         PageState pageState)
     {
-        var visibleRelationships = await FormElement
+        var visibleRelationships = FormElement
             .Relationships
-            .ToAsyncEnumerable()
             .Where(r => r.ViewType != RelationshipViewType.None || r.IsParent)
-            .WhereAwait(async r =>
-                await ExpressionsService.GetBoolValueAsync(r.Panel.VisibleExpression,
+            .Where( r =>
+                 ExpressionsService.GetBoolValue(r.Panel.VisibleExpression,
                     new FormStateData(values, pageState)))
-            .ToListAsync();
+            .ToList();
         return visibleRelationships;
     }
 
@@ -1303,10 +1301,10 @@ public class JJFormView : AsyncComponent
         return toolbarActions.ToList();
     }
 
-    private async Task<JJToolbar> GetAuditLogBottomBar(IDictionary<string, object?> values)
+    private async Task<JJToolbar> GetAuditLogBottomBar()
     {
         var hideAuditLogButton =
-            await ComponentFactory.ActionButton.CreateFormToolbarButtonAsync(
+            await ComponentFactory.ActionButton.CreateFormToolbarButton(
                 FormElement.Options.FormToolbarActions.BackAction, this);
 
         var toolbar = new JJToolbar
@@ -1334,7 +1332,7 @@ public class JJFormView : AsyncComponent
             var factory = ComponentFactory.ActionButton;
 
 
-            var linkButton = await factory.CreateFormToolbarButtonAsync(action, this);
+            var linkButton = await factory.CreateFormToolbarButton(action, this);
             toolbar.Items.Add(linkButton.GetHtmlBuilder());
         }
 
@@ -1349,7 +1347,7 @@ public class JJFormView : AsyncComponent
             {
                 btnGroup.ShowAsButton = groupedAction.ShowAsButton;
                 var factory = ComponentFactory.ActionButton;
-                var linkButton = await factory.CreateFormToolbarButtonAsync(groupedAction, this);
+                var linkButton = await factory.CreateFormToolbarButton(groupedAction, this);
                 btnGroup.Actions.Add(linkButton);
             }
 
@@ -1422,11 +1420,11 @@ public class JJFormView : AsyncComponent
         return values;
     }
 
-    public async Task<IDictionary<string, string>> ValidateFieldsAsync(IDictionary<string, object> values,
+    public IDictionary<string, string> ValidateFields(IDictionary<string, object> values,
         PageState pageState)
     {
         DataPanel.Values = values;
-        var errors = await DataPanel.ValidateFieldsAsync(values, pageState);
+        var errors = DataPanel.ValidateFields(values, pageState);
         return errors;
     }
 
@@ -1486,7 +1484,7 @@ public class JJFormView : AsyncComponent
     {
         var auditLogAction = FormElement.Options.GridToolbarActions.AuditLogGridToolbarAction;
         var formStateData = await GetFormStateDataAsync();
-        return await ExpressionsService.GetBoolValueAsync(auditLogAction.VisibleExpression, formStateData);
+        return ExpressionsService.GetBoolValue(auditLogAction.VisibleExpression, formStateData);
     }
 
     internal void DisableActionsAtViewMode()

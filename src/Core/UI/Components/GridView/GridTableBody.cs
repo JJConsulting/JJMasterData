@@ -73,7 +73,7 @@ internal class GridTableBody
         var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
-        var onClickScript = await GetOnClickScript(formStateData, defaultAction);
+        var onClickScript = GetOnClickScript(formStateData, defaultAction);
 
         if (GridView.EnableMultiSelect)
         {
@@ -197,7 +197,7 @@ internal class GridTableBody
             value = value1.ToString();
         }
 
-        var control = await GridView.ComponentFactory.Controls.CreateAsync(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List), value);
+        var control = GridView.ComponentFactory.Controls.Create(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List), value);
         control.Name = name;
         control.Attributes.Add("nRowId", index.ToString());
         control.CssClass = field.Name;
@@ -248,7 +248,7 @@ internal class GridTableBody
         foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
         {
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
-            var linkButton = await factory.CreateGridTableButtonAsync(groupedAction, GridView, formStateData);
+            var linkButton = factory.CreateGridTableButton(groupedAction, GridView, formStateData);
 
             if (OnRenderAction != null || OnRenderActionAsync != null)
             {
@@ -277,7 +277,7 @@ internal class GridTableBody
         {
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("table-action");
-            var link =  await factory.CreateGridTableButtonAsync(action, GridView, formStateData);
+            var link =  factory.CreateGridTableButton(action, GridView, formStateData);
             if (OnRenderAction is not null || OnRenderActionAsync is not null)
             {
                 var args = new ActionEventArgs(action, link, formStateData.Values);
@@ -369,14 +369,14 @@ internal class GridTableBody
         return checkBox;
     }
 
-    private async Task<string> GetOnClickScript(FormStateData formStateData, BasicAction defaultAction)
+    private string GetOnClickScript(FormStateData formStateData, BasicAction defaultAction)
     {
         if (GridView.EnableEditMode || defaultAction == null)
             return string.Empty;
 
         var factory = GridView.ComponentFactory.ActionButton;
         
-        var actionButton =  await factory.CreateGridTableButtonAsync(defaultAction, GridView, formStateData);
+        var actionButton = factory.CreateGridTableButton(defaultAction, GridView, formStateData);
 
         if (OnRenderAction != null)
         {

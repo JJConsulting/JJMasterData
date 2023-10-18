@@ -7,5 +7,4 @@ public interface IExpressionProvider
 {
     string Prefix { get; }
     string Title { get; }
-    Task<object> EvaluateAsync(string expression, FormStateData formStateData);
 }

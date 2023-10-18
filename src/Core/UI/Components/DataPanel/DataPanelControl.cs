@@ -106,7 +106,7 @@ internal class DataPanelControl
         var formData = new FormStateData(Values, UserValues, PageState);
         foreach (var field in fields)
         {
-            bool visible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
+            bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
                 continue;
 
@@ -230,7 +230,7 @@ internal class DataPanelControl
             }
 
             //Visible expression
-            bool visible = await ExpressionsService.GetBoolValueAsync(f.VisibleExpression, formData);
+            bool visible = ExpressionsService.GetBoolValue(f.VisibleExpression, formData);
             if (!visible)
                 continue;
 
@@ -308,12 +308,12 @@ internal class DataPanelControl
     private async Task<HtmlBuilder> GetControlField(FormElementField field, object? value)
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
-        var control = await ComponentFactory.Controls.CreateAsync(FormElement, field, formStateData, ParentComponentName, value);
+        var control = ComponentFactory.Controls.Create(FormElement, field, formStateData, ParentComponentName, value);
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
             control.Name = FieldNamePrefix + field.Name;
 
-        control.Enabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formStateData);
+        control.Enabled = ExpressionsService.GetBoolValue(field.EnableExpression, formStateData);
 
         if (BootstrapHelper.Version > 3 && Errors.ContainsKey(field.Name))
             control.CssClass = "is-invalid";

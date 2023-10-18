@@ -19,7 +19,7 @@ internal class DataPanelExpressionScripts
         DataPanel = dataPanel;
     }
 
-    public async Task<string> GetHtmlFormScript()
+    public string GetHtmlFormScript()
     {
         var script = new StringBuilder();
         var listFieldsExp = FormElement.Fields.ToList().FindAll(x => x.EnableExpression.StartsWith("exp:"));
@@ -41,7 +41,7 @@ internal class DataPanelExpressionScripts
             if (list.Count == 0)
                 continue;
 
-            exp = await ParseExpression(exp, list);
+            exp = ExecuteExpression(exp, list);
 
             string selector = string.Join(",", list.Select(x => $"'#{x}'"));
             script.Append('\t');
@@ -83,7 +83,7 @@ internal class DataPanelExpressionScripts
         return script.ToString();
     }
 
-    private async Task<string> ParseExpression(string exp, List<string> list)
+    private string ExecuteExpression(string exp, List<string> list)
     {
         var formData = new FormStateData(DataPanel.Values, DataPanel.UserValues, DataPanel.PageState);
         foreach (string fieldName in list)
@@ -108,7 +108,7 @@ internal class DataPanelExpressionScripts
                 //Campos ocultos
                 if (field != null)
                 {
-                    bool visible = await DataPanel.ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
+                    bool visible = DataPanel.ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
                     if (!visible)
                     {
                         val = $"'{panelValue}'";

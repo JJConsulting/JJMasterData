@@ -88,7 +88,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
         foreach (var row in DataSource)
         {
             bool isFirst = true;
-            foreach (var field in await GetVisibleFieldsAsync())
+            foreach (var field in VisibleFields)
             {
                 if (isFirst)
                     isFirst = false;
@@ -134,7 +134,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
     private async Task GenerateHeader(System.IO.TextWriter sw)
     {
         bool isFirst = true;
-        foreach (var field in await GetVisibleFieldsAsync())
+        foreach (var field in VisibleFields)
         {
             if (isFirst)
                 isFirst = false;

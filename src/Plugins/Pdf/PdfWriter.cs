@@ -100,13 +100,13 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         var paragraph = new Paragraph("\n");
         document.Add(paragraph);
 
-        var fields = await GetVisibleFieldsAsync();
+        var fields = VisibleFields;
         
         var table = new Table(fields.Count, true);
         table.UseAllAvailableWidth();
         document.Add(table);
 
-        await GenerateHeaderAsync(table);
+        GenerateHeader(table);
         await GenerateBody(table, token);
 
         table.Complete();
@@ -114,9 +114,9 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
         pdf.Close();
     }
 
-    private async Task GenerateHeaderAsync(Table table)
+    private void GenerateHeader(Table table)
     {
-        var fields = await GetVisibleFieldsAsync();
+        var fields = VisibleFields;
         foreach (var field in fields)
         {
             Cell cell = new();
@@ -172,13 +172,13 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
 
     private async Task GenerateRows(Table table, CancellationToken token)
     {
-        foreach (Dictionary<string,object> row in DataSource)
+        foreach (var row in DataSource)
         {
             var scolor = (ShowRowStriped && (ProcessReporter.TotalProcessed % 2) == 0) ? "white" : "#f2fdff";
             var wcolor = WebColors.GetRGBColor(scolor);
             table.SetBackgroundColor(wcolor);
-            var fields = await GetVisibleFieldsAsync();
-            foreach (FormElementField field in fields)
+            var fields = VisibleFields;
+            foreach (var field in fields)
             {
                 var cell = await CreateCellAsync(row, field);
                 table.AddCell(cell);

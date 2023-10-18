@@ -13,12 +13,12 @@ public class ExpressionsServiceTests
     private readonly ExpressionsService _expressionsService;
     private readonly Mock<ExpressionParser> _expressionParserMock = new();
     private readonly Mock<ILogger<ExpressionsService>> _loggerMock = new();
-    private readonly Mock<IExpressionProvider> _expressionProviderMock = new();
+    private readonly Mock<IAsyncExpressionProvider> _expressionProviderMock = new();
 
     public ExpressionsServiceTests()
     {
         _expressionsService = new ExpressionsService(
-            new List<IExpressionProvider> { _expressionProviderMock.Object },
+            new List<IAsyncExpressionProvider> { _expressionProviderMock.Object },
             _expressionParserMock.Object,
             _loggerMock.Object
         );
@@ -70,7 +70,7 @@ public class ExpressionsServiceTests
     }
 
     [Fact]
-    public async Task GetBoolValueAsync_ShouldReturnBooleanValue()
+    public bool GetBoolValue_ShouldReturnBooleanValue()
     {
         // Arrange
         var expression = "sampleExpression";
@@ -85,10 +85,12 @@ public class ExpressionsServiceTests
             .ReturnsAsync("true");
 
         // Act
-        var result = await _expressionsService.GetBoolValueAsync(expression, formStateData);
+        var result = _expressionsService.GetBoolValue(expression, formStateData);
 
         // Assert
         Assert.True(result);
+
+        return result;
     }
 
     [Fact]

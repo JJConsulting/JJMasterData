@@ -67,10 +67,10 @@ public class FieldValuesService
         var formState = new FormStateData(formValues, state);
         foreach (var e in list)
         {
-            string? val = await ExpressionsService.GetDefaultValueAsync(e, formState);
-            if (val != null && !string.IsNullOrEmpty(val))
+            var defaultValue = await ExpressionsService.GetDefaultValueAsync(e, formState);
+            if (defaultValue is not null && !string.IsNullOrEmpty(defaultValue.ToString()))
             {
-                filters.Add(e.Name, val);
+                filters.Add(e.Name, defaultValue);
             }
         }
 
@@ -119,7 +119,7 @@ public class FieldValuesService
         var formState = new FormStateData(formValues, pageState);
         foreach (var e in listFields)
         {
-            string? val = await ExpressionsService.GetTriggerValueAsync(e, formState);
+            object? val = await ExpressionsService.GetTriggerValueAsync(e, formState);
             if (val != null)
             {
                 formValues[e.Name] = val;

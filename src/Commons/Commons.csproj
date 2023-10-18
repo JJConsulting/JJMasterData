@@ -44,6 +44,12 @@
 	  </Compile>
 	  <Compile Remove="Tasks\BackgroundTaskScheduler.cs" />
 	  <Compile Remove="Tasks\BackgroundTaskList.cs" />
+	  <Compile Update="Data\Entity\Models\BooleanExpressionAttribute.cs">
+	    <DependentUpon>ExpressionAttribute.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="Data\Entity\Models\AsyncExpressionAttribute.cs">
+	    <DependentUpon>ExpressionAttribute.cs</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Security\" />

@@ -44,31 +44,34 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     private ILogger<DataExportationWriterBase> Logger { get; }
 
 
-    protected async Task<List<FormElementField>> GetVisibleFieldsAsync()
+    protected List<FormElementField> VisibleFields
     {
-        if (_fields != null)
-            return _fields;
-        if (Configuration.ExportAllFields)
+        get
         {
-            _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
-        }
-
-        else
-        {
-            var defaultValues = new Dictionary<string, object>();
-            var formData = new FormStateData(defaultValues, PageState.Import);
-            _fields = new List<FormElementField>();
-
-            foreach (var field in FormElement.Fields)
+            if (_fields != null)
+                return _fields;
+            if (Configuration.ExportAllFields)
             {
-                if (field.Export && await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData))
+                _fields = FormElement.Fields.ToList().FindAll(x => x.Export);
+            }
+
+            else
+            {
+                var defaultValues = new Dictionary<string, object>();
+                var formData = new FormStateData(defaultValues, PageState.Import);
+                _fields = new List<FormElementField>();
+
+                foreach (var field in FormElement.Fields)
                 {
-                    _fields.Add(field);
+                    if (field.Export && ExpressionsService.GetBoolValue(field.VisibleExpression, formData))
+                    {
+                        _fields.Add(field);
+                    }
                 }
             }
-        }
 
-        return _fields;
+            return _fields;
+        }
     }
 
     public ProcessOptions ProcessOptions { get; set; }

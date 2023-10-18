@@ -24,7 +24,7 @@ public class FieldValidationService
         Localizer = localizer;
     }
 
-    public async Task<IDictionary<string, string>> ValidateFieldsAsync(
+    public IDictionary<string, string> ValidateFields(
         FormElement formElement, 
         IDictionary<string, object> formValues, 
         PageState pageState, 
@@ -40,11 +40,11 @@ public class FieldValidationService
         var formState = new FormStateData(formValues, pageState);
         foreach (var field in formElement.Fields)
         {
-            var isVisible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formState);
+            var isVisible = ExpressionsService.GetBoolValue(field.VisibleExpression, formState);
             if (!isVisible)
                 continue;
 
-            var isEnabled = await ExpressionsService.GetBoolValueAsync(field.EnableExpression, formState);
+            var isEnabled = ExpressionsService.GetBoolValue(field.EnableExpression, formState);
             if (!isEnabled)
                 continue;
 

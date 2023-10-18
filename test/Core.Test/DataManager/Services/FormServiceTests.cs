@@ -45,8 +45,8 @@ public class FormServiceTests
         var fieldValidationServiceMock = new Mock<FieldValidationService>();
         var auditLogServiceMock = new Mock<AuditLogService>();
         var loggerMock = new Mock<ILogger<FormService>>();
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFieldsAsync(formElement, values, PageState.Update, false))
-            .ReturnsAsync(new Dictionary<string, string>());
+        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFields(formElement, values, PageState.Update, false))
+            .Returns(new Dictionary<string, string>());
         
         return new FormService(
             entityRepositoryMock.Object,
@@ -165,8 +165,8 @@ public class FormServiceTests
         var dataContext = new DataContext();
 
         // Mock the FieldValidationService to return no errors
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, false))
-            .ReturnsAsync(new Dictionary<string, string>());
+        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFields(formElement, primaryKeys, PageState.Delete, false))
+            .Returns(new Dictionary<string, string>());
 
         // Mock EntityRepository to return a positive number of rows affected
         entityRepositoryMock.Setup(er => er.DeleteAsync(formElement, primaryKeys)).ReturnsAsync(1);
@@ -202,8 +202,8 @@ public class FormServiceTests
         var dataContext = new DataContext();
 
         // Mock the FieldValidationService to return validation errors
-        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFieldsAsync(formElement, primaryKeys, PageState.Delete, false))
-            .ReturnsAsync(new Dictionary<string, string> { { "Field1", "Validation Error" } });
+        fieldValidationServiceMock.Setup(fvs => fvs.ValidateFields(formElement, primaryKeys, PageState.Delete, false))
+            .Returns(new Dictionary<string, string> { { "Field1", "Validation Error" } });
 
         // Act
         var result = await formService.DeleteAsync(formElement, primaryKeys, dataContext);

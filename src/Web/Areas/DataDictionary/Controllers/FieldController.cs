@@ -157,7 +157,7 @@ public class FieldController : DataDictionaryController
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field, string mapField, [Expression] string mapExpressionValue)
+    public async Task<IActionResult> AddElementMapFilter(string elementName, FormElementField field, string mapField, [BooleanExpression] string mapExpressionValue)
     {
         var elementMapFilter = new DataElementMapFilter
         {

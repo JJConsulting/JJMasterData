@@ -62,13 +62,13 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
         if (formStateData.PageState is PageState.Filter)
             textGroup.Actions = textGroup.Actions.Where(a => a.ShowInFilter).ToList();
         else
-            AddUserActions(formElement, field, context, textGroup).GetAwaiter().GetResult();
+            AddUserActions(formElement, field, context, textGroup);
         
         return textGroup;
     }
 
 
-    private async Task AddUserActions(
+    private void AddUserActions(
                                 FormElement formElement,
                                 FormElementField field,
                                 ControlContext controlContext, 
@@ -87,7 +87,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
                 ParentComponentName = controlContext.ParentComponentName
             };
 
-            var link = await ActionButtonFactory.CreateFieldButtonAsync(action,actionContext);
+            var link = ActionButtonFactory.CreateFieldButton(action,actionContext);
             
             textGroup.Actions.Add(link);
         }

@@ -20,7 +20,7 @@ public class ExpressionModelBinderProvider : IModelBinderProvider
             .Metadata
             .ContainerType
             .GetProperty(context.Metadata.PropertyName)
-            ?.IsDefined(typeof(ExpressionAttribute)) is true;
+            ?.IsDefined(typeof(ExpressionAttribute), inherit: true) is true;
 
         return hasExpressionAttribute ? new BinderTypeModelBinder(typeof(ExpressionModelBinder)) : null;
     }

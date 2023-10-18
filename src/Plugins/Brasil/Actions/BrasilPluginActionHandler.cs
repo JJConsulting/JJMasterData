@@ -76,14 +76,13 @@ public abstract class BrasilPluginActionHandler : IPluginFieldActionHandler
             context.Values[parameter.Value] = null;
     }
 
-    private async Task<PluginActionResult> OnResultFound(PluginFieldActionContext context, IDictionary<string,object?> result)
+    private PluginActionResult OnResultFound(PluginFieldActionContext context, IDictionary<string,object?> result)
     {
         foreach (var parameter in context.FieldMap)
         {
             if (context.ActionContext.FormElement.Fields.TryGetField(parameter.Value, out var field))
             {
-                var isEnabled =
-                    await ExpressionsService.GetBoolValueAsync(field.EnableExpression, context.ActionContext.FormStateData);
+                var isEnabled = ExpressionsService.GetBoolValue(field.EnableExpression, context.ActionContext.FormStateData);
 
                 if (!isEnabled)
                 {
@@ -138,6 +137,6 @@ public abstract class BrasilPluginActionHandler : IPluginFieldActionHandler
             return OnResultNotFound(context);
         }
         
-        return await OnResultFound(context, result);
+        return OnResultFound(context, result);
     }
 }

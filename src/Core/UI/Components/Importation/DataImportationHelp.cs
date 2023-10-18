@@ -43,7 +43,7 @@ internal class DataImportationHelp
 
     private async Task<HtmlBuilder> GetHtmlContent()
     {
-        var list = await GetListImportedField();
+        var list = GetImportedFieldList();
         var html = new HtmlBuilder(HtmlTag.Div)
             .Append(HtmlTag.Div, row =>
             {
@@ -306,7 +306,7 @@ internal class DataImportationHelp
         return btnBack;
     }
 
-    private async Task<List<FormElementField>> GetListImportedField()
+    private List<FormElementField> GetImportedFieldList()
     {
         if (DataImportation.FormElement == null)
             throw new ArgumentException(nameof(FormElement));
@@ -316,7 +316,7 @@ internal class DataImportationHelp
         var list = new List<FormElementField>();
         foreach (var field in DataImportation.FormElement.Fields)
         {
-            bool visible = await DataImportation.ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
+            bool visible = DataImportation.ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }

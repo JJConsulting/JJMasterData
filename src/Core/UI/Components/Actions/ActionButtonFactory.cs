@@ -60,17 +60,17 @@ public class ActionButtonFactory
         return button;
     }
 
-    private async Task<JJLinkButton> CreateAsync(BasicAction action, FormStateData formStateData)
+    private JJLinkButton Create(BasicAction action, FormStateData formStateData)
     {
-        var isVisible = await ExpressionsService.GetBoolValueAsync(action.VisibleExpression, formStateData);
-        var isEnabled = await ExpressionsService.GetBoolValueAsync(action.EnableExpression, formStateData);
+        var isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formStateData);
+        var isEnabled = ExpressionsService.GetBoolValue(action.EnableExpression, formStateData);
         return Create(action, isVisible, isEnabled);
     }
 
-    public async Task<JJLinkButton> CreateGridTableButtonAsync(BasicAction action, JJGridView gridView, FormStateData formStateData)
+    public JJLinkButton CreateGridTableButton(BasicAction action, JJGridView gridView, FormStateData formStateData)
     {
         var actionContext = gridView.GetActionContext(action, formStateData);
-        var button = await CreateAsync(action, actionContext.FormStateData);
+        var button = Create(action, actionContext.FormStateData);
 
         switch (action)
         {
@@ -99,10 +99,10 @@ public class ActionButtonFactory
         return button;
     }
 
-    public async Task<JJLinkButton> CreateGridToolbarButtonAsync(BasicAction action, JJGridView gridView, FormStateData formStateData)
+    public JJLinkButton CreateGridToolbarButton(BasicAction action, JJGridView gridView, FormStateData formStateData)
     {
         var actionContext = gridView.GetActionContext(action, formStateData);
-        var button = await CreateAsync(action, formStateData);
+        var button = Create(action, formStateData);
 
         if (action is UserCreatedAction userCreatedAction)
         {
@@ -164,10 +164,10 @@ public class ActionButtonFactory
         return button;
     }
 
-    public async Task<JJLinkButton> CreateFormToolbarButtonAsync(BasicAction action, JJFormView formView)
+    public async Task<JJLinkButton> CreateFormToolbarButton(BasicAction action, JJFormView formView)
     {
         var actionContext = await formView.GetActionContextAsync(action);
-        var button = await CreateAsync(action, actionContext.FormStateData);
+        var button = Create(action, actionContext.FormStateData);
 
         if (action is UserCreatedAction userCreatedAction)
         {
@@ -218,9 +218,9 @@ public class ActionButtonFactory
         return button;
     }
 
-    public async Task<JJLinkButton> CreateFieldButtonAsync(BasicAction action, ActionContext actionContext)
+    public JJLinkButton CreateFieldButton(BasicAction action, ActionContext actionContext)
     {
-        var button = await CreateAsync(action, actionContext.FormStateData);
+        var button = Create(action, actionContext.FormStateData);
 
         if (action is UserCreatedAction userCreatedAction)
         {

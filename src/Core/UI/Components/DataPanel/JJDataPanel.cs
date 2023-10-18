@@ -244,7 +244,7 @@ public class JJDataPanel : AsyncComponent
         
         var panelGroup = new DataPanelLayout(this);
         await html.AppendRangeAsync(panelGroup.GetHtmlPanelList());
-        html.AppendScript(await GetHtmlFormScript());
+        html.AppendScript(GetHtmlFormScript());
 
         return html;
     }
@@ -255,7 +255,7 @@ public class JJDataPanel : AsyncComponent
         return EncryptionService.EncryptStringWithUrlEscape(pkval);
     }
 
-    private async Task<string> GetHtmlFormScript()
+    private string GetHtmlFormScript()
     {
         var script = new StringBuilder();
         script.AppendLine("$(document).ready(function () { ");
@@ -269,7 +269,7 @@ public class JJDataPanel : AsyncComponent
         if (!listField.Exists(x => x.AutoPostBack))
         {
             var dataPanelScript = new DataPanelExpressionScripts(this);
-            script.AppendLine(await dataPanelScript.GetHtmlFormScript());
+            script.AppendLine( dataPanelScript.GetHtmlFormScript());
         }
 
         script.AppendLine("});");
@@ -302,9 +302,9 @@ public class JJDataPanel : AsyncComponent
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public async Task<IDictionary<string, string>> ValidateFieldsAsync(IDictionary<string, object> values, PageState pageState)
+    public IDictionary<string, string> ValidateFields(IDictionary<string, object> values, PageState pageState)
     {
-        return await ValidateFieldsAsync(values, pageState, true);
+        return ValidateFields(values, pageState, true);
     }
 
     /// <summary>
@@ -314,9 +314,9 @@ public class JJDataPanel : AsyncComponent
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public async Task<IDictionary<string, string>> ValidateFieldsAsync(IDictionary<string, object> values, PageState pageState, bool enableErrorLink)
+    public IDictionary<string, string> ValidateFields(IDictionary<string, object> values, PageState pageState, bool enableErrorLink)
     {
-        return await FieldsService.ValidateFieldsAsync(FormElement, values, pageState, enableErrorLink);
+        return FieldsService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }
     
     internal async Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)

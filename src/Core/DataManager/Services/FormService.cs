@@ -81,7 +81,7 @@ public class FormService
     /// <param name="dataContext"></param>
     public async Task<FormLetter> UpdateAsync(FormElement formElement, IDictionary<string, object> values, DataContext dataContext)
     {
-        var errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Update, EnableErrorLinks);
+        var errors =  FieldValidationService.ValidateFields(formElement, values, PageState.Update, EnableErrorLinks);
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdate != null || OnBeforeUpdateAsync != null)
@@ -118,7 +118,7 @@ public class FormService
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
-        if (await IsAuditLogEnabled(formElement, PageState.Update, values))
+        if (IsAuditLogEnabled(formElement, PageState.Update, values))
             await AuditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
 
         if (OnAfterUpdate != null || OnAfterUpdateAsync != null)
@@ -139,7 +139,7 @@ public class FormService
     {
         IDictionary<string, string> errors;
         if (validateFields)
-            errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Insert, EnableErrorLinks);
+            errors = FieldValidationService.ValidateFields(formElement, values, PageState.Insert, EnableErrorLinks);
         else
             errors = new Dictionary<string, string>();
 
@@ -174,7 +174,7 @@ public class FormService
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
-        if (await IsAuditLogEnabled(formElement, PageState.Insert, values))
+        if (IsAuditLogEnabled(formElement, PageState.Insert, values))
             await AuditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
 
         if (OnAfterInsert == null && OnAfterInsertAsync == null) 
@@ -201,7 +201,7 @@ public class FormService
     /// <param name="dataContext"></param>
     public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement, IDictionary<string, object> values, DataContext dataContext)
     {
-        var errors = await FieldValidationService.ValidateFieldsAsync(formElement, values, PageState.Import, EnableErrorLinks);
+        var errors = FieldValidationService.ValidateFields(formElement, values, PageState.Import, EnableErrorLinks);
         var result = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImport != null || OnBeforeImportAsync != null)
@@ -231,7 +231,7 @@ public class FormService
         if (errors.Count > 0)
             return result;
 
-        if (await IsAuditLogEnabled(formElement, PageState.Import, values))
+        if (IsAuditLogEnabled(formElement, PageState.Import, values))
             await AuditLogService.LogAsync(formElement, dataContext, values, result.Result);
 
         if ((OnAfterInsert != null || OnAfterInsertAsync != null) && result.Result == CommandOperation.Insert)
@@ -320,7 +320,7 @@ public class FormService
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.DeleteFiles(formElement, primaryKeys);
 
-        if (await IsAuditLogEnabled(formElement, PageState.Delete, primaryKeys))
+        if (IsAuditLogEnabled(formElement, PageState.Delete, primaryKeys))
             await AuditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDelete != null || OnAfterDeleteAsync != null)
@@ -429,11 +429,11 @@ public class FormService
         return method!.DeclaringType != typeof(FormEventHandlerBase);
     }
 
-    private async Task<bool> IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string, object> formValues)
+    private bool IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string, object> formValues)
     {
         var formState = new FormStateData(formValues, pageState);
         var auditLogExpression = formElement.Options.GridToolbarActions.AuditLogGridToolbarAction.EnableExpression;
-        var isEnabled = await ExpressionsService.GetBoolValueAsync(auditLogExpression, formState);
+        var isEnabled = ExpressionsService.GetBoolValue(auditLogExpression, formState);
         return isEnabled;
     }
 

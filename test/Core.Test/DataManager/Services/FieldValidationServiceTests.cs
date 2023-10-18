@@ -15,7 +15,7 @@ using Xunit;
 public class FieldValidationServiceTests
 {
     [Fact]
-    public async Task ValidateFieldsAsync_NullFormValues_ThrowsArgumentNullException()
+    public void ValidateFields_NullFormValues_ThrowsArgumentNullException()
     {
         // Arrange
         var expressionsServiceMock = new Mock<ExpressionsService>();
@@ -23,16 +23,16 @@ public class FieldValidationServiceTests
         var service = new FieldValidationService(expressionsServiceMock.Object, localizerMock.Object);
 
         // Act and Assert
-        await Assert.ThrowsAsync<ArgumentNullException>(() => service.ValidateFieldsAsync(null, new Dictionary<string, object>(), new PageState(), true));
+        Assert.Throws<ArgumentNullException>(() => service.ValidateFields(null, new Dictionary<string, object>(), new PageState(), true));
     }
 
     [Fact]
-    public async Task ValidateFieldsAsync_InvalidField_ReturnsError()
+    public async Task ValidateFields_InvalidField_ReturnsError()
     {
         // Arrange
         var expressionsServiceMock = new Mock<ExpressionsService>();
-        expressionsServiceMock.Setup(e => e.GetBoolValueAsync(It.IsAny<string>(), It.IsAny<FormStateData>()))
-                             .ReturnsAsync(false);
+        expressionsServiceMock.Setup(e => e.GetBoolValue(It.IsAny<string>(), It.IsAny<FormStateData>()))
+                             .Returns(false);
 
         var localizerMock = new Mock<IStringLocalizer<JJMasterDataResources>>();
         var service = new FieldValidationService(expressionsServiceMock.Object, localizerMock.Object);
@@ -42,7 +42,7 @@ public class FieldValidationServiceTests
         var pageState = new PageState();
 
         // Act
-        var result = await service.ValidateFieldsAsync(formElement, formValues, pageState, true);
+        var result = service.ValidateFields(formElement, formValues, pageState, true);
 
         // Assert
         Assert.Empty(result);

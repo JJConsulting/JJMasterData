@@ -37,7 +37,7 @@ public class ExpressionsService
 
     #endregion
     
-    public async Task<string?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
+    public async Task<object?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
     {
         return await GetExpressionValueAsync(field.DefaultValue, field, formStateData);
     }
@@ -48,14 +48,13 @@ public class ExpressionsService
         return ExpressionParser.ParseExpression(expression, formStateData, addQuotationMarks, interval);
     }
 
-    public async Task<bool> GetBoolValueAsync(string expression, FormStateData formStateData)
+    public bool GetBoolValue(string expression, FormStateData formStateData)
     {
         if (string.IsNullOrEmpty(expression))
             throw new ArgumentNullException(nameof(expression));
 
         var expressionType = expression.Split(':')[0];
-        var provider = ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType);
-        if (provider == null)
+        if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IBooleanExpressionProvider) is not IBooleanExpressionProvider provider)
         {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}.");
         }
@@ -65,7 +64,7 @@ public class ExpressionsService
         try
         {
             Logger.LogDebug("Executing expression: {Expression}", expression);
-            result = await provider.EvaluateAsync(expression, formStateData);
+            result = provider.Evaluate(expression, formStateData);
         }
 
         catch (Exception ex)
@@ -80,12 +79,12 @@ public class ExpressionsService
         return ParseBool(result);
     }
 
-    public async Task<string?> GetTriggerValueAsync(FormElementField field, FormStateData formStateData)
+    public async Task<object?> GetTriggerValueAsync(FormElementField field, FormStateData formStateData)
     {
         return await GetExpressionValueAsync(field.TriggerExpression, field, formStateData);
     }
 
-    private async Task<string?> GetExpressionValueAsync(
+    private async Task<object?> GetExpressionValueAsync(
         string? expression,
         ElementField field,
         FormStateData formStateData)
@@ -97,8 +96,7 @@ public class ExpressionsService
             throw new ArgumentNullException(nameof(field));
 
         var expressionType = expression.Split(':')[0];
-        var provider = ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType);
-        if (provider == null)
+        if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IAsyncExpressionProvider) is not IAsyncExpressionProvider provider)
         {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}");
         }

@@ -9,10 +9,10 @@
     @if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsUserCreated))
     {
         <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-            <expression for="VisibleExpression" icon="IconType.Eye" is-boolean="true" tooltip="Boolean expression to show the action. Check expressions at the docs for more information"/>
+            <expression for="VisibleExpression" icon="IconType.Eye" tooltip="Boolean expression to show the action. Check expressions at the docs for more information"/>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-6 required">
-            <expression for="EnableExpression" icon="IconType.Pencil" is-boolean="true" tooltip="Boolean expression to enable the action. Check expressions at the docs for more information"/>
+            <expression for="EnableExpression" icon="IconType.Pencil" tooltip="Boolean expression to enable the action. Check expressions at the docs for more information"/>
         </div>
     }
 </div>

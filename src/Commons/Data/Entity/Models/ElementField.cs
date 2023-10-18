@@ -68,7 +68,7 @@ public class ElementField
     /// [See expressions](../articles/expressions.md)
     /// </remarks>
     [JsonProperty("defaultvalue")]
-    [Expression]
+    [AsyncExpression]
     [Display(Name = "Default Value Expression")]
     public string? DefaultValue { get; set; }
 

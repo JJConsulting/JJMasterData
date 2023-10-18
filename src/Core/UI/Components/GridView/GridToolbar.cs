@@ -35,7 +35,7 @@ internal class GridToolbar
         
         foreach (var action in actions)
         {
-            var linkButton = await actionButtonFactory.CreateGridToolbarButtonAsync(action, GridView,formStateData);
+            var linkButton = actionButtonFactory.CreateGridToolbarButton(action, GridView,formStateData);
             if (!linkButton.Visible)
                 continue;
 

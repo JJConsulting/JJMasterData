@@ -134,7 +134,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
         foreach (var row in DataSource)
         {
             await sw.WriteAsync("\t\t\t<tr>");
-            foreach (var field in await GetVisibleFieldsAsync())
+            foreach (var field in VisibleFields)
             {
                 string value = await CreateCell(row, field);
 
@@ -209,7 +209,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
     private async Task GenerateHeader(StreamWriter sw)
     {
         await sw.WriteLineAsync("\t\t\t<tr>");
-        foreach (var field in await GetVisibleFieldsAsync())
+        foreach (var field in VisibleFields)
         {
             string thStyle = "";
             if (field.DataType is FieldType.Float or FieldType.Int)

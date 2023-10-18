@@ -137,7 +137,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
         Thread.CurrentThread.CurrentCulture = Culture;
 
         //recuperando campos a serem importados
-        var listField = await GetListImportedField();
+        var listField = GetListImportedField();
 
         string[] stringSeparators = { "\r\n" };
         string[] rows = RawData.Split(stringSeparators, StringSplitOptions.None);
@@ -249,7 +249,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
     /// <summary>
     /// Lista de campos a serem importados
     /// </summary>
-    private async Task<List<FormElementField>> GetListImportedField()
+    private List<FormElementField> GetListImportedField()
     {
         if (FormElement == null)
             throw new ArgumentException(nameof(FormElement));
@@ -259,7 +259,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
         var list = new List<FormElementField>();
         foreach (var field in FormElement.Fields)
         {
-            bool visible = await ExpressionsService.GetBoolValueAsync(field.VisibleExpression, formData);
+            bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }

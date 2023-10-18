@@ -115,7 +115,7 @@ internal class DataPanelLayout
 
     private async Task<HtmlBuilder> GetHtmlPanelGroup(FormElementPanel panel)
     {
-        var isVisible = await IsVisible(panel);
+        var isVisible = IsVisible(panel);
         if (!isVisible)
             return null;
 
@@ -157,7 +157,7 @@ internal class DataPanelLayout
             return null;
         
         
-        if (panel != null && !await IsEnabled(panel) || PageState is PageState.View)
+        if (panel != null && !IsEnabled(panel) || PageState is PageState.View)
         {
             foreach (var field in fields)
                 field.EnableExpression = "val:0";
@@ -171,17 +171,17 @@ internal class DataPanelLayout
         return html;
     }
 
-    private async Task<bool> IsEnabled(FormElementPanel panel)
+    private bool IsEnabled(FormElementPanel panel)
     {
-        bool panelEnable = await DataPanelControl.ExpressionsService.GetBoolValueAsync(
+        bool panelEnable = DataPanelControl.ExpressionsService.GetBoolValue(
             panel.EnableExpression, DataPanelControl.FormState);
 
         return panelEnable;
     }
 
-    private async Task<bool> IsVisible(FormElementPanel panel)
+    private bool IsVisible(FormElementPanel panel)
     {
-        bool panelEnable = await DataPanelControl.ExpressionsService.GetBoolValueAsync(
+        bool panelEnable = DataPanelControl.ExpressionsService.GetBoolValue(
             panel.VisibleExpression, DataPanelControl.FormState);
 
         return panelEnable;
