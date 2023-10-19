@@ -2,6 +2,8 @@ using JJMasterData.Brasil.Configuration;
 using JJMasterData.Protheus.Configuration;
 using JJMasterData.Web.Configuration;
 using JJMasterData.Web.Extensions;
+using Microsoft.AspNetCore.ResponseCompression;
+using NUglify.Css;
 using ReportPortal.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,12 +14,22 @@ builder.Configuration.AddJsonFile(settingsPath, optional: true, reloadOnChange: 
 
 var authentication = builder.Configuration.GetValue<string>("Authentication");
 
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+
 builder.Services.AddJJMasterDataWeb(builder.Configuration)
     .WithProtheusServices()
     .WithBrasilActionPlugins()
     .WithWebOptimizer(options =>
     {
-        options.AddCssBundle("/css/bootstrap.min.css", "css/bootstrap/bootstrap.css").MinifyCss();
+        options.AddCssBundle("/css/bootstrap.min.css", "css/bootstrap/bootstrap.css").MinifyCss(new CssSettings
+        {
+            CommentMode = CssComment.None
+        });
     });
 
 if (authentication == "ReportPortal")
@@ -27,6 +39,7 @@ if (authentication == "ReportPortal")
 
 var app = builder.Build();
 
+app.UseResponseCompression();
 
 if (app.Environment.IsProduction())
 {

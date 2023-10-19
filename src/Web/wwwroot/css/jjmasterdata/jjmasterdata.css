@@ -669,20 +669,54 @@ button.dropdown-toggle.form-control {
     border-radius: 5rem;
 }
 
-/*input.form-control:read-only {*/
-/*    background-color: var(--bs-secondary-bg);*/
-/*    opacity: 1;*/
-/*}*/
+input.form-control:read-only {
+    background-color: var(--bs-secondary-bg);
+    opacity: 1;
+}
+
 /*Custom accordion colors*/
+.accordion{
+    /*--bs-accordion-btn-active-icon: var(--bs-secondary-color)*/
+}
+
+.accordion-default{
+    --bs-accordion-active-bg: var(--bs-tertiary-bg);
+    --bs-accordion-btn-active: var(--bs-secondary);
+    --bs-accordion-btn-color:var(--bs-primary);
+    --bs-accordion-btn-focus-box-shadow: var(--bs-secondary-bg-subtle)
+}
+.accordion-primary{
+    --bs-accordion-active-bg:var(--bs-primary-bg-subtle);
+    --bs-accordion-btn-color:var(--bs-primary);
+    --bs-accordion-btn-active: var(--bs-primary-bg-subtle);
+    --bs-accordion-btn-bg: var(--bs-primary-bg-subtle);
+    --bs-accordion-btn-focus-box-shadow: var(--bs-primary-border-subtle)
+}
 .accordion-success{
-    --bs-accordion-active-bg: var(--bs-success-bg-subtle)
+    --bs-accordion-active-bg:var(--bs-success-bg-subtle);
+    --bs-accordion-btn-color:var(--bs-success);
+    --bs-accordion-btn-active: var(--bs-success-bg-subtle);
+    --bs-accordion-btn-bg: var(--bs-success-bg-subtle);
+    --bs-accordion-btn-focus-box-shadow: var(--bs-success-border-subtle)
 }
 .accordion-danger{
-    --bs-accordion-active-bg: var(--bs-danger-bg-subtle)
+    --bs-accordion-active-bg:var(--bs-danger-bg-subtle);
+    --bs-accordion-btn-color:var(--bs-danger);
+    --bs-accordion-btn-active: var(--bs-danger-bg-subtle);
+    --bs-accordion-btn-bg: var(--bs-danger-bg-subtle);
+    --bs-accordion-btn-focus-box-shadow: var(--bs-danger-border-subtle)
 }
 .accordion-warning{
-    --bs-accordion-active-bg: var(--bs-warning-bg-subtle)
+    --bs-accordion-active-bg:var(--bs-warning-bg-subtle);
+    --bs-accordion-btn-color:var(--bs-warning);
+    --bs-accordion-btn-active: var(--bs-warning-bg-subtle);
+    --bs-accordion-btn-bg: var(--bs-warning-bg-subtle);
+    --bs-accordion-btn-focus-box-shadow: var(--bs-warning-border-subtle)
 }
 .accordion-information{
-    --bs-accordion-active-bg: var(--bs-info-bg-subtle)
+    --bs-accordion-active-bg:var(--bs-info-bg-subtle);
+    --bs-accordion-btn-color:var(--bs-info);
+    --bs-accordion-btn-active: var(--bs-info-bg-subtle);
+    --bs-accordion-btn-bg: var(--bs-info-bg-subtle);
+    --bs-accordion-btn-focus-box-shadow: var(--bs-info-border-subtle)
 }

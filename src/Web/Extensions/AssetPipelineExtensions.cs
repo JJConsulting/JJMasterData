@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using NUglify.Css;
+using NUglify.JavaScript;
 using WebOptimizer;
 
 namespace JJMasterData.Web.Extensions;
@@ -7,35 +9,18 @@ public static class AssetPipelineExtensions
 {
     public static void AddBundles(this IAssetPipeline options)
     {
-        var cssFiles = new[]
+        BundleAndMinifyCssFiles(options);
+
+        BundleAndMinifyJsFiles(options);
+    }
+
+    private static void BundleAndMinifyJsFiles(IAssetPipeline options)
+    {
+        var jsSettings = new CodeSettings
         {
-            "_content/JJMasterData.Web/css/bootstrap/bootstrap-select.css",
-            "_content/JJMasterData.Web/css/bootstrap/bootstrap-tagsinput.css",
-            "_content/JJMasterData.Web/css/flatpickr/flatpickr.min.css",
-            "_content/JJMasterData.Web/css/flatpickr/airbnb.css",
-            "_content/JJMasterData.Web/css/highlightjs/ssms.min.css",
-            "_content/JJMasterData.Web/css/dropzone/dropzone.min.css",
-            "_content/JJMasterData.Web/css/dropzone/dropzone.min.css"
+            PreserveImportantComments = false
         };
 
-        options.AddCssBundle(
-            "/css/jjmasterdata-bundle.min.css",
-            cssFiles.ToArray()
-        );
-
-        options.AddCssBundle(
-            "/css/jjmasterdata-bundle-with-bootstrap.min.css",
-            cssFiles.Prepend("_content/JJMasterData.Web/css/bootstrap/bootstrap.min.css").ToArray()
-        );
-
-        var codeMirrorCssFiles = new[]
-        {
-            "_content/JJMasterData.Web/css/codemirror/codemirror.min.css",
-            "_content/JJMasterData.Web/css/codemirror/show-hint.css"
-        };
-
-        options.AddCssBundle("_content/JJMasterData.Web/css/code-mirror-bundle.min.css", codeMirrorCssFiles);
-        
         var commonJsFiles = new[]
         {
             "_content/JJMasterData.Web/js/jquery/jquery.js",
@@ -64,16 +49,16 @@ public static class AssetPipelineExtensions
         options.AddJavaScriptBundle(
             "/js/jjmasterdata-bundle-bootstrap-5.min.js",
             bootstrap5JsFiles.ToArray()
-        ).MinifyJavaScript();
+        ).MinifyJavaScript(jsSettings);
 
         var bootstrap3JsFiles = commonJsFiles.ToList();
         bootstrap3JsFiles.Insert(13, "_content/JJMasterData.Web/js/bootstrap3/bootstrap.min.js");
         bootstrap3JsFiles.Insert(14, "_content/JJMasterData.Web/js/bootstrap-toggle/bootstrap-toggle.min.js");
-
+        
         options.AddJavaScriptBundle(
             "/js/jjmasterdata-bundle-bootstrap-3.min.js",
             bootstrap3JsFiles.ToArray()
-        );
+        ).MinifyJavaScript(jsSettings);
 
         var codeMirrorJsFiles = new[]
         {
@@ -82,11 +67,47 @@ public static class AssetPipelineExtensions
             "_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js",
             "_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js",
         };
-        
+
         options.AddJavaScriptBundle(
             "/js/code-mirror-bundle-min.js",
             codeMirrorJsFiles
-        ).MinifyJavaScript();
+        ).MinifyJavaScript(jsSettings);
+    }
 
+    private static void BundleAndMinifyCssFiles(IAssetPipeline options)
+    {
+        var cssSettings = new CssSettings
+        {
+            CommentMode = CssComment.None
+        };
+        
+        var cssFiles = new[]
+        {
+            "_content/JJMasterData.Web/css/bootstrap/bootstrap-select.css",
+            "_content/JJMasterData.Web/css/bootstrap/bootstrap-tagsinput.css",
+            "_content/JJMasterData.Web/css/flatpickr/flatpickr.min.css",
+            "_content/JJMasterData.Web/css/flatpickr/airbnb.css",
+            "_content/JJMasterData.Web/css/highlightjs/ssms.min.css",
+            "_content/JJMasterData.Web/css/dropzone/dropzone.min.css",
+            "_content/JJMasterData.Web/css/jjmasterdata/jjmasterdata.css"
+        };
+
+        options.AddCssBundle(
+            "/css/jjmasterdata-bundle.min.css",
+            cssFiles.ToArray()
+        ).MinifyCss(cssSettings);
+
+        options.AddCssBundle(
+            "/css/jjmasterdata-bundle-with-bootstrap.min.css",
+            cssFiles.Prepend("_content/JJMasterData.Web/css/bootstrap/bootstrap.min.css").ToArray()
+        ).MinifyCss(cssSettings);
+
+        var codeMirrorCssFiles = new[]
+        {
+            "_content/JJMasterData.Web/css/codemirror/codemirror.css",
+            "_content/JJMasterData.Web/css/codemirror/show-hint.css"
+        };
+
+        options.AddCssBundle("/css/code-mirror-bundle.min.css", codeMirrorCssFiles).MinifyCss(cssSettings);
     }
 }

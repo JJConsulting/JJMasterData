@@ -7,7 +7,7 @@
 
 @if (!Options.Value.EnableBundleAndMinification)
 {
-      <script src="~/_content/JJMasterData.Web/js/jquery/jquery.js"></script>
+    <script src="~/_content/JJMasterData.Web/js/jquery/jquery.js"></script>
     <script src="~/_content/JJMasterData.Web/js/jquery/jquery-form/jquery.form.js"></script>
     <script src="~/_content/JJMasterData.Web/js/jquery/jquery-number/jquery.number.min.js"></script>
     <script src="~/_content/JJMasterData.Web/js/jquery/jquery-ui/jquery-ui.min.js"></script>
@@ -23,7 +23,7 @@
     }
     <script src="~/_content/JJMasterData.Web/js/jquery/jquery-validation/jquery.validate.min.js"></script>
     <script src="~/_content/JJMasterData.Web/js/jquery/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-    
+
     @switch (BootstrapHelper.Version)
     {
         case 3:
@@ -49,12 +49,12 @@
 
     @if (areaName is "DataDictionary")
     {
-        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.js" ></script>
-        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/codemirror/mode/sql.js" ></script>
-        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js" ></script>
-        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js" ></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/codemirror/lib/codemirror.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/codemirror/mode/sql.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/show-hint.js"></script>
+        <script type="text/javascript" src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js"></script>
     }
-    
+
     <script asp-append-version="true" type="text/javascript" src="~/_content/JJMasterData.Web/js/jjmasterdata/jjmasterdata.js"></script>
 }
 else
