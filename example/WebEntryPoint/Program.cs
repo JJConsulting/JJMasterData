@@ -26,10 +26,12 @@ builder.Services.AddJJMasterDataWeb(builder.Configuration)
     .WithBrasilActionPlugins()
     .WithWebOptimizer(options =>
     {
-        options.AddCssBundle("/css/bootstrap.min.css", "css/bootstrap/bootstrap.css").MinifyCss(new CssSettings
+        var cssSettings = new CssSettings
         {
             CommentMode = CssComment.None
-        });
+        };
+        options.AddCssBundle("/css/bootstrap-black.min.css", "css/bootstrap/black/bootstrap.css").MinifyCss(cssSettings);
+        options.AddCssBundle("/css/bootstrap-orange.min.css", "css/bootstrap/black/bootstrap.css").MinifyCss(cssSettings);
     });
 
 if (authentication == "ReportPortal")
