@@ -54,9 +54,9 @@ public class ExpressionParser
             {
                 parsedValue = $"{state}";
             }
-            else if (values != null && values.TryGetValue(field, out var objVal))
+            else if (values != null && values.TryGetValue(field, out var objVal) && !string.IsNullOrEmpty(objVal?.ToString()))
             {
-                parsedValue = objVal != null ? $"{objVal}" : "";
+                parsedValue = objVal != null ? $"{objVal}" : string.Empty;
             }
             else if ("objname".Equals(field.ToLower()))
             {
