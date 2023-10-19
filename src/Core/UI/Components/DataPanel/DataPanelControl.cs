@@ -45,6 +45,9 @@ internal class DataPanelControl
 
 
     private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
+    
+    private bool IsSummaryMode => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
+    
     internal ExpressionsService ExpressionsService { get; }
     private FieldsService FieldsService { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -162,7 +165,15 @@ internal class DataPanelControl
                 htmlField.WithCssClass("jjborder-static");
 
             if (field.Component != FormComponent.CheckBox)
-                htmlField.AppendComponent(ComponentFactory.Html.Label.Create(field));
+            {
+                var label = ComponentFactory.Html.Label.Create(field);
+
+                if (IsViewModeAsStatic)
+                    label.CssClass += "fw-bold";
+                
+                htmlField.AppendComponent(label);
+            }
+                
 
             if (IsViewModeAsStatic)
                 htmlField.Append(await GetStaticField(field));
@@ -297,8 +308,7 @@ internal class DataPanelControl
 
     private async Task<HtmlBuilder> GetStaticField(FormElementField f)
     {
-        var tag = BootstrapHelper.Version == 3 ? HtmlTag.P : HtmlTag.Span;
-        var html = new HtmlBuilder(tag)
+        var html = new HtmlBuilder(HtmlTag.P)
             .WithCssClass("form-control-static")
             .AppendText(await FieldsService.FormatGridValueAsync(f, Values, UserValues));
 

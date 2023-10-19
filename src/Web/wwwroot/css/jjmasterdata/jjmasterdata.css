@@ -225,7 +225,6 @@ a.disabled {
     margin: 5px;
 }
 
-
 @media (min-width: 768px) {
     .table-responsive {
         overflow: visible;
@@ -727,4 +726,11 @@ input.form-control:read-only {
     --bs-accordion-btn-active: var(--bs-info-bg-subtle);
     --bs-accordion-btn-bg: var(--bs-info-bg-subtle);
     --bs-accordion-active-color: var(--bs-info-text-emphasis);
+}
+
+.form-control-static {
+    min-height: 30px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    margin-bottom: 0;
 }
