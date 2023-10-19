@@ -22,9 +22,12 @@ public class LogController : DataDictionaryController
     private IEntityRepository EntityRepository { get; }
     private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
 
-    public LogController(IFormElementComponentFactory<JJFormView> formViewFactory,
-        LoggerFormElementFactory loggerFormElementFactory, IEntityRepository entityRepository,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer, IOptions<DbLoggerOptions> options)
+    public LogController(
+        IFormElementComponentFactory<JJFormView> formViewFactory,
+        LoggerFormElementFactory loggerFormElementFactory, 
+        IEntityRepository entityRepository,
+        IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+        IOptions<DbLoggerOptions> options)
     {
         FormViewFactory = formViewFactory;
         LoggerFormElementFactory = loggerFormElementFactory;
