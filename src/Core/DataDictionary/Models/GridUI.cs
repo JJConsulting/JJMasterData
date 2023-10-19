@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -16,20 +17,23 @@ public class GridUI
     /// Se o TotalPerPage for zero a paginação não será exibida
     /// </remarks>
     [JsonProperty("totalPerPage")]
-    public int TotalPerPage { get; set; }
+    [Display(Name = "Total Records Per Page")]
+    public int TotalPerPage { get; set; } = 5;
 
     /// <summary>
     /// Total de botões na paginação 
     /// (Default = 5)
     /// </summary>
     [JsonProperty("totalPaggingButton")]
-    public int TotalPaggingButton { get; set; }
+    [Display(Name = "Total Pagination Buttons")]
+    public int TotalPaggingButton { get; set; } = 5;
 
     /// <summary>
     /// Exibi borda na grid 
     /// (Default = false)
     /// </summary>
     [JsonProperty("showBorder")]
+    [Display(Name = "Show Border")]
     public bool ShowBorder { get; set; }
 
     /// <summary>
@@ -37,32 +41,37 @@ public class GridUI
     /// (Default = true)
     /// </summary>*
     [JsonProperty("showRowStriped")]
-    public bool ShowRowStriped { get; set; }
+    [Display(Name = "Show Rows Striped")]
+    public bool ShowRowStriped { get; set; } = true;
 
     /// <summary>
     /// Alterar a cor da linha ao passar o mouse 
     /// (Default = true)
     /// </summary>
     [JsonProperty("showRowHover")]
-    public bool ShowRowHover { get; set; }
+    [Display(Name = "Show Row Hover")]
+    public bool ShowRowHover { get; set; } = true;
 
     /// <summary>
     /// Quantidade total de registros existentes no banco
     /// </summary>
     [JsonProperty("totalReg")]
+    [Display(Name = "Total Of Records")]
     public int TotalOfRecords { get; set; }
 
     /// <summary>
     /// Exibir título no cabeçalho da página
     /// </summary>
     [JsonProperty("showTitle")]
-    public bool ShowTitle { get; set; }
+    [Display(Name = "Show Title")]
+    public bool ShowTitle { get; set; } = true;
 
     /// <summary>
     /// Exibir toolbar (Default = true) 
     /// </summary>
     [JsonProperty("showToolbar")]
-    public bool ShowToolBar { get; set; }
+    [Display(Name = "Show Toolbar")]
+    public bool ShowToolBar { get; set; } = true;
 
     /// <summary>
     /// Habilita Ordenação das colunas (Default = true)
@@ -72,13 +81,15 @@ public class GridUI
     /// Mesmo quando configurado como falso, a grid respeita a propriedade CurrentOrder
     /// </remarks>
     [JsonProperty("enableSorting")]
-    public bool EnableSorting { get; set; }
+    [Display(Name = "Enable Sorting")]
+    public bool EnableSorting { get; set; } = true;
 
     /// <summary>
     /// Permite selecionar multiplas linhas na Grid 
     /// habilitando um checkbox na primeira coluna. (Defaut = false)
     /// </summary>
     [JsonProperty("enableMultSelect")]
+    [Display(Name = "Enable Multiselect")]
     public bool EnableMultSelect { get; set; }
 
     /// <summary>
@@ -90,6 +101,7 @@ public class GridUI
     /// A propriedade [Name] é utilizada para compor o nome da variável de sessão.
     /// </remarks>
     [JsonProperty("maintainValuesOnLoad")]
+    [Display(Name = "Maintain Values On Load")]
     public bool MaintainValuesOnLoad { get; set; }
 
     /// <summary>
@@ -101,7 +113,8 @@ public class GridUI
     /// Para alterar o texto da mensagem veja o método EmptyDataText
     /// </remarks>
     [JsonProperty("showHeaderWhenEmpty")]
-    public bool ShowHeaderWhenEmpty { get; set; }
+    [Display(Name = "Show Header When Empty")]
+    public bool ShowHeaderWhenEmpty { get; set; } = true;
 
     /// <summary>
     /// Obtém ou define o texto a ser exibido na linha de dados vazia quando um controle JJGridView não contém registros.
@@ -111,7 +124,8 @@ public class GridUI
     /// <para/>
     /// </remarks>
     [JsonProperty("emptyDataText")]
-    public string EmptyDataText { get; set; }
+    [Display(Name = "Empty Data Text")]
+    public string EmptyDataText { get; set; } = "There is no record to display";
 
     /// <summary>
     /// Exibe os controles de paginação (Default = true) 
@@ -129,28 +143,13 @@ public class GridUI
     /// Se a propriedade TotalRecords for igual zero a paginação não será exibida.
     /// </remarks>
     [JsonProperty("showPagging")]
-    public bool ShowPagging { get; set; }
+    [Display(Name = "Show Pagging Buttons")]
+    public bool ShowPagging { get; set; } = true;
 
     /// <summary>
     /// Fixar o cabeçalho da grid ao realizar Scroll (Default = false)
     /// </summary>
     [JsonProperty("headerFixed")]
+    [Display(Name = "Header Fixed At Scroll")]
     public bool HeaderFixed { get; set; }
-
-
-    public GridUI()
-    {
-        TotalPerPage = 5;
-        TotalPaggingButton = 5;
-        ShowBorder = false;
-        ShowRowStriped = true;
-        ShowRowHover = true;
-        ShowTitle = true;
-        ShowToolBar = true;
-        EnableSorting = true;
-        ShowHeaderWhenEmpty = true;
-        ShowPagging = true;
-        EmptyDataText = "There is no record to display";
-
-    }
 }

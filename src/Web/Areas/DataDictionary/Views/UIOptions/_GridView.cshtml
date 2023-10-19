@@ -1,138 +1,79 @@
 @using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.FormElementOptions
-@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_ShowTitle">
-                    @Html.CheckBoxFor(model => Model.Grid.ShowTitle)
-                    <b>ShowTitle</b><br/>
-                    @StringLocalizer["Show title in page header"]
-                </label>
-            </div>
-        </div>
-        
-        <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_EnableSorting">
-                    @Html.CheckBoxFor(model => Model.Grid.EnableSorting)
-                    <b>@StringLocalizer["EnableSorting"]</b><br/>
-                    @StringLocalizer["Enable Column Sorting"]
-                </label>
-            </div>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowTitle"></label>
+            <checkbox for="Grid.ShowTitle" switch="true"/>
         </div>
 
         <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_EnableMultSelect">
-                    @Html.CheckBoxFor(model => Model.Grid.EnableMultSelect)
-                    <b>@StringLocalizer["Enable MultSelect"]</b><br/>
-                    @StringLocalizer["Allows you to select multiple lines in the grid"]
-                </label>
-            </div>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.EnableSorting"></label>
+            <checkbox for="Grid.EnableSorting" switch="true"/>
         </div>
 
         <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_MaintainValuesOnLoad">
-                    @Html.CheckBoxFor(model => Model.Grid.MaintainValuesOnLoad)
-                    <b>@StringLocalizer["MaintainValuesOnLoad"]</b><br/>
-                    @StringLocalizer["Maintains grid filters, order and pagination"]
-                </label>
-            </div>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.EnableMultSelect"></label>
+            <tooltip title="Allows you to select multiple lines in the grid"/>
+            <checkbox for="Grid.EnableMultSelect" switch="true"/>
         </div>
 
         <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_ShowRowHover">
-                    @Html.CheckBoxFor(model => Model.Grid.ShowRowHover)
-                    <b>@StringLocalizer["ShowRowHover"]</b><br/>
-                    @StringLocalizer["Change a line color on mouseover"]
-                </label>
-            </div>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.MaintainValuesOnLoad"></label>
+            <tooltip title="Maintains grid filters, order, and pagination"/>
+            <checkbox for="Grid.MaintainValuesOnLoad" switch="true"/>
         </div>
 
         <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_ShowRowStriped">
-                    @Html.CheckBoxFor(model => Model.Grid.ShowRowStriped)
-                    <b>@StringLocalizer["ShowRowStriped"]</b><br/>
-                    @StringLocalizer["display zebra columns"]
-                </label>
-            </div>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowRowHover"></label>
+            <tooltip title="Change the line color on mouseover"/>
+            <checkbox for="Grid.ShowRowHover" switch="true"/>
         </div>
 
         <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_ShowBorder">
-                    @Html.CheckBoxFor(model => Model.Grid.ShowBorder)
-                    <b>@StringLocalizer["ShowBorder"]</b><br/>
-                    @StringLocalizer["Show border on grid"]
-                </label>
-            </div>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowRowStriped"></label>
+            <tooltip title="Display zebra columns"/>
+            <checkbox for="Grid.ShowRowStriped" switch="true"/>
         </div>
 
         <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_ShowToolBar">
-                    @Html.CheckBoxFor(model => Model.Grid.ShowToolBar)
-                    <b>@StringLocalizer["ShowToolbar"]</b><br/>
-                    @StringLocalizer["Show ToolBar on grid"]
-                </label>
-            </div>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowBorder"></label>
+            <checkbox for="Grid.ShowBorder" switch="true"/>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowToolBar"></label>
+            <checkbox for="Grid.ShowToolBar" switch="true"/>
         </div>
     </div>
 
     <div class="row">
         <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_ShowPagging">
-                    @Html.CheckBoxFor(model => Model.Grid.ShowPagging)
-                    <b>@StringLocalizer["ShowPagging"]</b><br/>
-                    @StringLocalizer["Displays paging controls"]
-                </label>
-            </div>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.HeaderFixed"></label>
+            <checkbox for="Grid.HeaderFixed" switch="true"/>
         </div>
-
         <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Total Records per page"]">@StringLocalizer["TotalPerPage"]</label>
-            @Html.TextBoxFor(model => Model.Grid.TotalPerPage, new { text = "5", @class = "form-control", width = "90px" })
-        </div>
-
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Total buttons on paging"]">@StringLocalizer["TotalPaggingButton"]</label>
-            @Html.TextBoxFor(model => Model.Grid.TotalPaggingButton, new { text = "5", @class = "form-control", width = "90px", style = "margin-botton:10px" })
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowHeaderWhenEmpty"></label>
+            <checkbox for="Grid.ShowHeaderWhenEmpty" switch="true"/>
         </div>
     </div>
-
+    
     <div class="row">
         <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_ShowHeaderWhenEmpty">
-                    @Html.CheckBoxFor(model => Model.Grid.ShowHeaderWhenEmpty)
-                    <b>@StringLocalizer["ShowHeaderWhenEmpty"]</b><br/>
-                    @StringLocalizer["Indicates whether the gridview header will be visible when there is no data"]
-                </label>
-            </div>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowPagging"></label>
+            <input asp-for="Grid.TotalPerPage" class="form-control"/>
         </div>
 
         <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Text applied when there are no records to be applied"]">@StringLocalizer["EmptyDataText"]</label>
-            @Html.TextBoxFor(model => Model.Grid.EmptyDataText, new { text = "There is no record to apply", @class = "form-control" })
+            <label class="@BootstrapHelper.Label" asp-for="Grid.TotalPaggingButton" title="Total buttons on paging"></label>
+            <input asp-for="Grid.TotalPaggingButton" class="form-control">
         </div>
-    </div>
 
-    <div class="row">
         <div class="col-sm-4">
-            <div class="checkbox">
-                <label for="Grid_HeaderFixed">
-                    @Html.CheckBoxFor(model => Model.Grid.HeaderFixed)
-                    <b>@StringLocalizer["Header Fixed"]</b><br/>
-                    @StringLocalizer["Fix the grid header when scrolling"]
-                </label>
-            </div>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.EmptyDataText"></label>
+            <tooltip title="Text shown when there are no records to be applied"/>
+            <input asp-for="Grid.EmptyDataText" class="form-control"/>
         </div>
     </div>
 </div>

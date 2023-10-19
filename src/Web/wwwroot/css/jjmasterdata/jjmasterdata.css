@@ -687,7 +687,6 @@ input.form-control:read-only {
     --bs-accordion-active: var( --bs-body-color);
     --bs-accordion-active-color: var( --bs-body-color);
     --bs-accordion-btn-color:var( --bs-body-color);
-    /*--bs-accordion-btn-focus-box-shadow: var(--bs-secondary-bg-subtle)*/
 }
 .accordion-primary{
     --bs-accordion-active-bg:var(--bs-primary-bg-subtle);
@@ -696,7 +695,6 @@ input.form-control:read-only {
     --bs-accordion-btn-active: var(--bs-primary-bg-subtle);
     --bs-accordion-active-color: var( --bs-primary-text-emphasis);
     --bs-accordion-btn-bg: var(--bs-primary-bg-subtle);
-    /*--bs-accordion-btn-focus-box-shadow: var(--bs-primary-border-subtle)*/
 }
 .accordion-success{
     --bs-accordion-active-bg:var(--bs-success-bg-subtle);
@@ -705,7 +703,6 @@ input.form-control:read-only {
     --bs-accordion-btn-active: var(--bs-success-bg-subtle);
     --bs-accordion-active-color: var(--bs-success-text-emphasis);
     --bs-accordion-btn-bg: var(--bs-success-bg-subtle);
-    /*--bs-accordion-btn-focus-box-shadow: var(--bs-success-border-subtle)*/
 }
 .accordion-danger{
     --bs-accordion-active-bg:var(--bs-danger-bg-subtle);
@@ -714,7 +711,6 @@ input.form-control:read-only {
     --bs-accordion-btn-active: var(--bs-danger-bg-subtle);
     --bs-accordion-active-color: var(--bs-danger-text-emphasis);
     --bs-accordion-btn-bg: var(--bs-danger-bg-subtle);
-    /*--bs-accordion-btn-focus-box-shadow: var(--bs-danger-border-subtle)*/
 }
 .accordion-warning{
     --bs-accordion-active-bg:var(--bs-warning-bg-subtle);
@@ -723,14 +719,12 @@ input.form-control:read-only {
     --bs-accordion-btn-active: var(--bs-warning-bg-subtle);
     --bs-accordion-active-color: var(--bs-warning-text-emphasis);
     --bs-accordion-btn-bg: var(--bs-warning-bg-subtle);
-    /*--bs-accordion-btn-focus-box-shadow: var(--bs-warning-border-subtle)*/
 }
-.accordion-information{
+.accordion-info{
     --bs-accordion-active-bg:var(--bs-info-bg-subtle);
     --bs-accordion-active: var(--bs-info-text-emphasis);
     --bs-accordion-btn-color:var(--bs-info-text-emphasis);
     --bs-accordion-btn-active: var(--bs-info-bg-subtle);
     --bs-accordion-btn-bg: var(--bs-info-bg-subtle);
     --bs-accordion-active-color: var(--bs-info-text-emphasis);
-    /*--bs-accordion-btn-focus-box-shadow: var(--bs-info-border-subtle)*/
 }
