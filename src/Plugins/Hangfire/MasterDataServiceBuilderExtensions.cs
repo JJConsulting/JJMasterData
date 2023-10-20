@@ -1,9 +1,9 @@
 ﻿using JJMasterData.Commons.Configuration;
 
 namespace JJMasterData.Hangfire;
-public static class Extensions
+public static class MasterDataServiceBuilderExtensions
 {
-    public static JJMasterDataServiceBuilder WithHangfire(this JJMasterDataServiceBuilder builder)
+    public static MasterDataServiceBuilder WithHangfire(this MasterDataServiceBuilder builder)
     {
         builder.WithBackgroundTask<BackgroundTaskManager>();
         return builder;

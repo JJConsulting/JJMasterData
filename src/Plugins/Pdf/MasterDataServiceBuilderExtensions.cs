@@ -2,9 +2,9 @@
 using JJMasterData.Core.Configuration;
 
 namespace JJMasterData.Pdf;
-public static class Extensions
+public static class MasterDataServiceBuilderExtensions
 {
-    public static JJMasterDataServiceBuilder WithPdfExportation(this JJMasterDataServiceBuilder builder)
+    public static MasterDataServiceBuilder WithPdfExportation(this MasterDataServiceBuilder builder)
     {
         return builder.WithPdfExportation<PdfWriter>();
     }

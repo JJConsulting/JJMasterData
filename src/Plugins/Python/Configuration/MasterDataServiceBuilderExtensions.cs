@@ -7,11 +7,11 @@ using JJMasterData.Python.FormEvents;
 using JJMasterData.Python.Models;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace JJMasterData.Python.Extensions;
-public static class Extensions
+namespace JJMasterData.Python.Configuration;
+public static class MasterDataServiceBuilderExtensions
 {
 
-    public static JJMasterDataServiceBuilder WithPythonFormEventResolver(this JJMasterDataServiceBuilder builder, Action<PythonFormEventOptions>? configure = null)
+    public static MasterDataServiceBuilder WithPythonFormEventResolver(this MasterDataServiceBuilder builder, Action<PythonFormEventOptions>? configure = null)
     {
         if(configure != null)
             builder.Services.Configure(configure);

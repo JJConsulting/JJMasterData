@@ -9,11 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Bson.Serialization;
 
-namespace JJMasterData.MongoDB.Extensions;
+namespace JJMasterData.MongoDB.Configuration;
 
-public static class JJServiceBuilderExtensions
+public static class MasterDataServiceBuilderExtensions
 {
-    public static JJMasterDataServiceBuilder WithMongoDbDataDictionary(this JJMasterDataServiceBuilder builder)
+    public static MasterDataServiceBuilder WithMongoDbDataDictionary(this MasterDataServiceBuilder builder)
     {
         ConfigureMappers();
         builder.Services.AddOptions<JJMasterDataMongoDBOptions>().BindConfiguration("JJMasterData:MongoDB");
@@ -21,7 +21,7 @@ public static class JJServiceBuilderExtensions
         return builder;
     }
     
-    public static JJMasterDataServiceBuilder WithMongoDbDataDictionary(this JJMasterDataServiceBuilder builder, Action<JJMasterDataMongoDBOptions> options)
+    public static MasterDataServiceBuilder WithMongoDbDataDictionary(this MasterDataServiceBuilder builder, Action<JJMasterDataMongoDBOptions> options)
     {
         ConfigureMappers();
         builder.Services.Configure(options);
@@ -29,7 +29,7 @@ public static class JJServiceBuilderExtensions
         return builder;
     }
 
-    public static JJMasterDataServiceBuilder WithMongoDbDataDictionary(this JJMasterDataServiceBuilder builder, IConfiguration configuration)
+    public static MasterDataServiceBuilder WithMongoDbDataDictionary(this MasterDataServiceBuilder builder, IConfiguration configuration)
     {
         ConfigureMappers();
         builder.Services.AddOptions<JJMasterDataMongoDBOptions>().Bind(configuration);
