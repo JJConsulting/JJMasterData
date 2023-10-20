@@ -1,18 +1,14 @@
-using JJMasterData.Brasil.Configuration;
-using JJMasterData.Protheus.Configuration;
+// This is a debug and example purposes Program.cs
+
 using JJMasterData.Web.Configuration;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.ResponseCompression;
-using NUglify.Css;
-using ReportPortal.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
 var settingsPath = Path.Combine(root, "appsettings.json");
 builder.Configuration.AddJsonFile(settingsPath, optional: true, reloadOnChange: true);
-
-var authentication = builder.Configuration.GetValue<string>("Authentication");
 
 builder.Services.AddResponseCompression(options =>
 {
@@ -21,23 +17,7 @@ builder.Services.AddResponseCompression(options =>
     options.Providers.Add<GzipCompressionProvider>();
 });
 
-builder.Services.AddJJMasterDataWeb(builder.Configuration)
-    .WithProtheusServices()
-    .WithBrasilActionPlugins()
-    .WithWebOptimizer(options =>
-    {
-        var cssSettings = new CssSettings
-        {
-            CommentMode = CssComment.None
-        };
-        options.AddCssBundle("/css/bootstrap-black.min.css", "css/bootstrap/black/bootstrap.css").MinifyCss(cssSettings);
-        options.AddCssBundle("/css/bootstrap-orange.min.css", "css/bootstrap/black/bootstrap.css").MinifyCss(cssSettings);
-    });
-
-if (authentication == "ReportPortal")
-{
-    builder.Services.AddAuthentication().WithReportPortal();
-}
+builder.Services.AddJJMasterDataWeb(builder.Configuration);
 
 var app = builder.Build();
 
@@ -56,17 +36,9 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
-if (authentication is not null)
-{
-    app.UseAuthentication();
-}
-app.UseAuthorization();
 app.UseJJMasterDataWeb();
 
-var mapJJMasterData = app.MapJJMasterData();
-if (authentication is not null)
-{
-    mapJJMasterData.RequireAuthorization();
-}
+//Here you can also app.MapJJMasterData().RequireAuthorization();
+app.MapJJMasterData();
 
 app.Run();

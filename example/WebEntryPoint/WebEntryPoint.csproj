@@ -14,18 +14,11 @@
       <ProjectReference Include="..\..\src\Core\Core.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Brasil\Brasil.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Pdf\Pdf.csproj" />
-      <ProjectReference Include="..\..\src\Plugins\Protheus\Protheus.csproj" />
       <ProjectReference Include="..\..\src\Web\Web.csproj" />
     </ItemGroup>
 
     <ItemGroup>
         <InternalsVisibleTo Include="JJMasterData.Web.Test" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Reference Include="ReportPortal.Auth">
-        <HintPath>..\ReportPortalAuth\ReportPortal.Auth.dll</HintPath>
-      </Reference>
     </ItemGroup>
     
 </Project>

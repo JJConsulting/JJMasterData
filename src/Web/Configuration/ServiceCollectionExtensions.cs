@@ -80,7 +80,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<OptionsService>();
         services.AddTransient<LocalizationService>();
 
-        services.AddMasterDataWebOptimizer();
+        services.AddJJMasterDataWebOptimizer();
 
         services.AddControllersWithViews(options =>
             {
@@ -100,7 +100,7 @@ public static class ServiceCollectionExtensions
         services.AddActionFilters();
     }
 
-    internal static void AddMasterDataWebOptimizer(this IServiceCollection services,
+    internal static void AddJJMasterDataWebOptimizer(this IServiceCollection services,
         Action<IAssetPipeline>? configure = null)
     {
         services.AddWebOptimizer(options =>
