@@ -4,9 +4,9 @@ using WebOptimizer;
 
 namespace JJMasterData.Web.Configuration;
 
-public static class JJMasterDataServiceBuilderExtensions
+public static class MasterDataServiceBuilderExtensions
 {
-    public static JJMasterDataServiceBuilder WithWebOptimizer(this JJMasterDataServiceBuilder serviceBuilder, Action<IAssetPipeline> configure)
+    public static MasterDataServiceBuilder WithWebOptimizer(this MasterDataServiceBuilder serviceBuilder, Action<IAssetPipeline> configure)
     {
         var services = serviceBuilder.Services;
 

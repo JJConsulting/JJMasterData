@@ -17,7 +17,7 @@ public static class Log
 
     static Log()
     {
-        _logger = StaticServiceLocator.Provider.GetRequiredService<ILogger<JJMasterDataServiceBuilder>>();
+        _logger = StaticServiceLocator.Provider.GetRequiredService<ILogger<ServiceProvider>>();
     }
 
     public static void Configure(ILogger logger)

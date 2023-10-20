@@ -23,7 +23,7 @@ namespace JJMasterData.Web.Configuration;
 
 public static class ServiceCollectionExtensions
 {
-    public static JJMasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
+    public static MasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
     {
         services.AddOptions<JJMasterDataWebOptions>();
         AddDefaultServices(services);
@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="configuration"></param>
-    public static JJMasterDataServiceBuilder AddJJMasterDataWeb(
+    public static MasterDataServiceBuilder AddJJMasterDataWeb(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
         return services.AddJJMasterDataCore(configuration);
     }
 
-    public static JJMasterDataServiceBuilder AddJJMasterDataWeb(
+    public static MasterDataServiceBuilder AddJJMasterDataWeb(
         this IServiceCollection services,
         Action<JJMasterDataWebOptions> configureOptions
     )

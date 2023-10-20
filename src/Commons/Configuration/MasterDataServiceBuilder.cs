@@ -12,22 +12,22 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Configuration;
 
-public class JJMasterDataServiceBuilder
+public class MasterDataServiceBuilder
 {
     public IServiceCollection Services { get; }
 
-    public JJMasterDataServiceBuilder(IServiceCollection services)
+    public MasterDataServiceBuilder(IServiceCollection services)
     {
         Services = services;
     }
     
-    public JJMasterDataServiceBuilder WithBackgroundTask<T>() where T : class, IBackgroundTaskManager
+    public MasterDataServiceBuilder WithBackgroundTask<T>() where T : class, IBackgroundTaskManager
     {
         Services.Replace(ServiceDescriptor.Transient<IBackgroundTaskManager, T>());
         return this;
     }
 
-    public JJMasterDataServiceBuilder WithEntityRepository(string connectionString, DataAccessProvider provider)
+    public MasterDataServiceBuilder WithEntityRepository(string connectionString, DataAccessProvider provider)
     {
         return WithEntityRepository(serviceProvider =>
         {
@@ -39,7 +39,7 @@ public class JJMasterDataServiceBuilder
         });
     }
 
-    public JJMasterDataServiceBuilder WithEntityRepository(
+    public MasterDataServiceBuilder WithEntityRepository(
         Func<IServiceProvider, IEntityRepository> implementationFactory)
     {
         Services.Replace(ServiceDescriptor.Transient(implementationFactory));

@@ -13,7 +13,7 @@ namespace JJMasterData.Core.Configuration;
 
 public static class ServiceCollectionExtensions
 {
-    public static JJMasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services)
+    public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services)
     {
         services.AddOptions<JJMasterDataCoreOptions>().BindConfiguration("JJMasterData");
         
@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
         return services.AddJJMasterDataCommons();
     }
 
-    public static JJMasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
+    public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
         Action<JJMasterDataCoreOptions> configureCore, IConfiguration loggingConfiguration = null)
     {
         var coreOptions = new JJMasterDataCoreOptions();
@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
         }
     }
 
-    public static JJMasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfiguration configuration)
+    public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JJMasterDataCoreOptions>(configuration.GetJJMasterData());
         

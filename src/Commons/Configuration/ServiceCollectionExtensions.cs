@@ -18,9 +18,9 @@ namespace JJMasterData.Commons.Configuration;
 
 public static class ServiceCollectionExtensions
 {
-    public static JJMasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services)
+    public static MasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services)
     {
-        var builder = new JJMasterDataServiceBuilder(services);
+        var builder = new MasterDataServiceBuilder(services);
         services.AddOptions<JJMasterDataCommonsOptions>().BindConfiguration("JJMasterData");
 
         services.AddJJMasterDataCommonsServices();
@@ -28,9 +28,9 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    public static JJMasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, IConfiguration configuration)
+    public static MasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, IConfiguration configuration)
     {
-        var builder = new JJMasterDataServiceBuilder(services);
+        var builder = new MasterDataServiceBuilder(services);
 
         builder.Services.Configure<JJMasterDataCommonsOptions>(configuration.GetJJMasterData());
         
@@ -39,9 +39,9 @@ public static class ServiceCollectionExtensions
         return builder;
     }
 
-    public static JJMasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, Action<JJMasterDataCommonsOptions> configure, IConfiguration loggingConfiguration = null)
+    public static MasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, Action<JJMasterDataCommonsOptions> configure, IConfiguration loggingConfiguration = null)
     {
-        var builder = new JJMasterDataServiceBuilder(services);
+        var builder = new MasterDataServiceBuilder(services);
 
         services.AddJJMasterDataCommonsServices(loggingConfiguration);
         services.Configure(configure);
