@@ -94,17 +94,6 @@
                         <checkbox for="AutoTriggerOnChange" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                     </div>
                 </div>
-                
-                <alert title="@plugin.Title" color="Info" icon="IconType.Plug">
-                    @if (plugin.AdditionalInformationHtml is null || !plugin.AdditionalInformationHtml.GetChildren().Any())
-                    {
-                        @Html.Raw(StringLocalizer["The developer has not provided additional information about this plugin."])
-                    }
-                    else
-                    {
-                        @Html.Raw(plugin.AdditionalInformationHtml)
-                    }
-                </alert>
             </div>
         </div>
 

@@ -4,10 +4,11 @@
 @using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.FormElementOptions
 
-
 <div class="row">
     <div class="col-sm-4">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Number of columns where fields will be rendered by default"]">@StringLocalizer["FormCols"]</label>
+        <label class="@BootstrapHelper.Label"  asp-for="Form.FormCols"></label>
+        <tooltip title="Number of columns where fields will be rendered by default"/>
+        
         @Html.DropDownListFor(model => Model.Form.FormCols, new[]
         {
             new SelectListItem { Text = StringLocalizer["1 (one column)"], Value = "1" },
@@ -20,12 +21,8 @@
     </div>
     
     <div class="col-sm-4">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Horizontal label layout on left side of field, vertical label layout above field"]">@StringLocalizer["LayoutFields"]</label>
-        @Html.DropDownListFor(model => Model.Form.IsVerticalLayout, new[]
-        {
-            new SelectListItem { Text = StringLocalizer["VERTICAL"], Value = "true" },
-            new SelectListItem { Text = StringLocalizer["HORIZONTAL"], Value = "false" }
-        }, new { @class = "form-control"})
+       <label class="@BootstrapHelper.Label" asp-for="Form.IsVerticalLayout"></label>
+       <checkbox for="Form.IsVerticalLayout" switch="true"/>
     </div>
     
     <div class="col-sm-4">
@@ -35,7 +32,8 @@
     </div>
     
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <label class="@BootstrapHelper.Label " for="FormEnterKey" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Behavior of the Enter key on the form"]">@StringLocalizer["EnterKey"]</label>
+        <label class="@BootstrapHelper.Label " asp-for="Form.EnterKey"></label>
+        <tooltip title="Behavior of the Enter key on the form"></tooltip>
         <select asp-for="Form.EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
     </div>
 </div>

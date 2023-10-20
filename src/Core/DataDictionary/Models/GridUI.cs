@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using JJMasterData.Core.UI.Components;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
@@ -152,4 +153,8 @@ public class GridUI
     [JsonProperty("headerFixed")]
     [Display(Name = "Header Fixed At Scroll")]
     public bool HeaderFixed { get; set; }
+
+    [JsonProperty("useVerticalLayoutAtFilter")]
+    [Display(Name = "Use Vertical Layout At Filter")]
+    public bool UseVerticalLayoutAtFilter { get; set; } 
 }

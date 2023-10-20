@@ -19,7 +19,9 @@ public class JJTextRange : ControlBase
     public FieldType FieldType { get; set; }
     private bool EnableDatePeriods => FieldType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2;
     private bool IsTimeAware => FieldType is FieldType.DateTime or FieldType.DateTime2;
-
+    
+    public bool IsVerticalLayout { get; set; }
+    
     public JJTextRange(IFormValues formValues, IControlFactory<JJTextGroup> textBoxGroupFactory,IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(formValues)
     {
         TextBoxGroupFactory = textBoxGroupFactory;
@@ -33,7 +35,7 @@ public class JJTextRange : ControlBase
         div.WithAttributes(Attributes);
         await div.AppendAsync(HtmlTag.Div, async div =>
         {
-            div.WithCssClass("col-sm-3");
+            div.WithCssClass(IsVerticalLayout ? "col-sm-5" : "col-sm-3");
 
             FromField.Name = $"{Name}_from";
             FromField.Enabled = Enabled;
@@ -42,7 +44,7 @@ public class JJTextRange : ControlBase
         });
         await div.AppendAsync(HtmlTag.Div, async div =>
         {
-            div.WithCssClass("col-sm-3");
+            div.WithCssClass(IsVerticalLayout ? "col-sm-5" : "col-sm-3");
 
             ToField.Name = $"{Name}_to";
             ToField.Enabled = Enabled;
@@ -51,13 +53,13 @@ public class JJTextRange : ControlBase
         });
         div.Append(HtmlTag.Div, div =>
         {
-            div.WithCssClass("col-sm-4");
+            div.WithCssClass(IsVerticalLayout ? "col-sm-2" : "col-sm-4");
             div.AppendIf(EnableDatePeriods, GetDatePeriodsHtmlElement);
         });
 
         var result = new RenderedComponentResult(div);
 
-        return await Task.FromResult(result);
+        return result;
     }
 
     private HtmlBuilder GetDatePeriodsHtmlElement()

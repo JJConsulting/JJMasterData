@@ -59,9 +59,6 @@
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li>
-                        <h6 class="dropdown-header">Plugins</h6>
-                    </li>
                     @if (Model.Source is ActionSource.Field)
                     {
                         @foreach (var plugin in ActionPluginHandlers.Where(p => p is IPluginFieldActionHandler || p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))

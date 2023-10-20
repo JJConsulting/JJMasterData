@@ -20,9 +20,4 @@ public interface IPluginHandler
     /// </summary>
     public IEnumerable<PluginConfigurationField>? ConfigurationFields { get; }
     
-    /// <summary>
-    /// Optional information about the plugin that will be shown to the developer.
-    /// </summary>
-    public HtmlBuilder? AdditionalInformationHtml { get; }
-    
 }

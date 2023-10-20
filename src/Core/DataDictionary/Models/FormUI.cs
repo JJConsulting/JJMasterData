@@ -8,19 +8,19 @@ public class FormUI
 {
         
     /// <summary>
-    /// Número de colunas onde os campos serão renderizados
-    /// Default 1
+    /// Number of columns at the form to be rendered
+    /// Default value: 1
     /// </summary>
     /// <remarks>
-    /// Somente multiplos de 12
+    /// Only multiple of twelve are supported
     /// </remarks>
     [JsonProperty("formCols")]
+    [Display(Name = "Form Columns")]
     public int FormCols { get; set; } = 1;
-
-    /// <summary>
-    /// Tipo de layout para renderizar os campos
-    /// </summary>
+    
+    
     [JsonProperty("isVerticalLayout")]
+    [Display(Name = "Use Vertical Layout")]
     public bool IsVerticalLayout { get; set; } = true;
 
     /// <summary>
@@ -39,5 +39,6 @@ public class FormUI
     /// Default = DISABLED
     /// </summary>
     [JsonProperty("enterKey")]
+    [Display(Name = "Enter Key Behavior")]
     public FormEnterKey EnterKey { get; set; } = FormEnterKey.Disabled;
 }

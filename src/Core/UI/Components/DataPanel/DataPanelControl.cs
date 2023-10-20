@@ -9,6 +9,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.UI.Components.TextRange;
 using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
@@ -74,7 +75,7 @@ internal class DataPanelControl
         FormElement = gridView.FormElement;
         FormUI = new FormUI
         {
-            IsVerticalLayout = false
+            IsVerticalLayout = gridView.FormElement.Options.Grid.UseVerticalLayoutAtFilter
         };
         EncryptionService = gridView.EncryptionService;
         Errors = new Dictionary<string, string>();
@@ -126,7 +127,6 @@ internal class DataPanelControl
                 }
             }
 
-
             if (lineGroup != field.LineGroup)
             {
                 lineGroup = field.LineGroup;
@@ -138,6 +138,12 @@ internal class DataPanelControl
             var htmlField = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.FormGroup);
 
+            if (IsRange(field, PageState))
+            {
+                htmlField.WithCssClass("row");
+                htmlField.WithCssClass(field.CssClass);
+            }
+            
             row?.Append(htmlField);
 
             string fieldClass;
@@ -178,7 +184,7 @@ internal class DataPanelControl
             if (IsViewModeAsStatic)
                 htmlField.Append(await GetStaticField(field));
             else
-                htmlField.Append(await GetControlField(field, value));
+                htmlField.Append(await GetControlFieldHtml(field, value));
         }
 
         return html;
@@ -289,14 +295,14 @@ internal class DataPanelControl
 
             if (IsRange(f, PageState))
             {
-                row?.Append(await GetControlField(f, value));
+                row?.Append(await GetControlFieldHtml(f, value));
             }
             else
             {
                 await row?.AppendAsync(HtmlTag.Div, async col =>
                 {
                     col.WithCssClass(colClass);
-                    col.Append(IsViewModeAsStatic ? await GetStaticField(f) : await GetControlField(f, value));
+                    col.Append(IsViewModeAsStatic ? await GetStaticField(f) : await GetControlFieldHtml(f, value));
                 })!;
             }
 
@@ -315,7 +321,7 @@ internal class DataPanelControl
         return html;
     }
 
-    private async Task<HtmlBuilder> GetControlField(FormElementField field, object? value)
+    private async Task<HtmlBuilder> GetControlFieldHtml(FormElementField field, object? value)
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var control = ComponentFactory.Controls.Create(FormElement, field, formStateData, ParentComponentName, value);
@@ -340,6 +346,9 @@ internal class DataPanelControl
         
         switch (control)
         {
+            case JJTextRange range:
+                range.IsVerticalLayout = FormUI.IsVerticalLayout;
+                break;
             case JJTextGroup when field.Filter.Type is not (FilterMode.MultValuesContain or FilterMode.MultValuesEqual):
                 return await control.GetHtmlBuilderAsync();
             case JJTextGroup:
@@ -364,7 +373,6 @@ internal class DataPanelControl
 
     private string GetScriptReload(FormElementField field)
     {
-
         var reloadPanelScript = Scripts.GetReloadPanelScript(field.Name);
         
         //Workaround to trigger event on search component
