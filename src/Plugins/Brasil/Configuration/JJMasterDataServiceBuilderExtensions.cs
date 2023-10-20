@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Net.Http;
 using JJMasterData.Brasil.Abstractions;
 using JJMasterData.Brasil.Actions;
 using JJMasterData.Brasil.Services;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Brasil.Configuration;
 
@@ -103,6 +105,7 @@ public static class JJMasterDataServiceBuilderExtensions
     
     public static JJMasterDataServiceBuilder WithBrasilActionPlugins(this JJMasterDataServiceBuilder builder)
     {
+        builder.Services.TryAddSingleton<HttpClient>();
         builder.WithHubDevCnpjActionPlugin();
         builder.WithHubDevCpfActionPlugin();
         builder.WithHubDevCepActionPlugin();
