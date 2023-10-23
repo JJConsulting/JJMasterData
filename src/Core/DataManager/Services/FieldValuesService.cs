@@ -60,17 +60,17 @@ public class FieldValuesService
     public async Task<IDictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState state)
     {
         var filters = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-        var list = formElement.Fields
+        var fieldsWithDefaultValue = formElement.Fields
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.DefaultValue));
 
         var formState = new FormStateData(formValues, state);
-        foreach (var e in list)
+        foreach (var field in fieldsWithDefaultValue)
         {
-            var defaultValue = await ExpressionsService.GetDefaultValueAsync(e, formState);
+            var defaultValue = await ExpressionsService.GetDefaultValueAsync(field, formState);
             if (defaultValue is not null && !string.IsNullOrEmpty(defaultValue.ToString()))
             {
-                filters.Add(e.Name, defaultValue);
+                filters.Add(field.Name, defaultValue);
             }
         }
 
@@ -112,17 +112,17 @@ public class FieldValuesService
 
     private async Task ApplyTriggerValues(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState)
     {
-        var listFields = formElement.Fields
+        var fieldList = formElement.Fields
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.TriggerExpression));
 
         var formState = new FormStateData(formValues, pageState);
-        foreach (var e in listFields)
+        foreach (var field in fieldList)
         {
-            object? val = await ExpressionsService.GetTriggerValueAsync(e, formState);
-            if (val != null)
+            object? value = await ExpressionsService.GetTriggerValueAsync(field, formState);
+            if (value != null)
             {
-                formValues[e.Name] = val;
+                formValues[field.Name] = value;
             }
         }
     }

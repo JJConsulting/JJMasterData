@@ -27,8 +27,8 @@ internal class SqlExpressionProvider : IAsyncExpressionProvider
         var parsedSql = _expressionParser.ParseExpression(expression, formStateData);
         if (parsedSql == null)
             return null;
-        var obj = await _entityRepository.GetResultAsync(new DataAccessCommand(parsedSql));
-        return obj?.ToString() ?? null;
+        var result = await _entityRepository.GetResultAsync(new DataAccessCommand(parsedSql));
+        return result?.ToString() ?? null;
 
     }
 }

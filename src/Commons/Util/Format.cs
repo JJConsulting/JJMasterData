@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Commons.Util;
 
@@ -25,71 +26,71 @@ public static class Format
     /// <returns>Texto com a hora</returns>
     public static string FormatTimeSpan(TimeSpan ts)
     {
-        StringBuilder sLog = new StringBuilder();
+        var timeSpanResult = new StringBuilder();
         if (ts.Days == 1)
         {
-            sLog.Append(ts.Days);
-            sLog.Append(" dia");
+            timeSpanResult.Append(ts.Days);
+            timeSpanResult.Append(" dia");
         }
         else if (ts.Days > 1)
         {
-            sLog.Append(ts.Days);
-            sLog.Append(" dias");
+            timeSpanResult.Append(ts.Days);
+            timeSpanResult.Append(" dias");
         }
 
         int horas = ts.Hours;
         if (horas == 1)
         {
-            if (sLog.Length > 0)
-                sLog.Append(" e ");
+            if (timeSpanResult.Length > 0)
+                timeSpanResult.Append(" e ");
 
-            sLog.Append(ts.Hours);
-            sLog.Append(" hora");
+            timeSpanResult.Append(ts.Hours);
+            timeSpanResult.Append(" hora");
         }
         else if (horas > 1)
         {
-            if (sLog.Length > 0)
-                sLog.Append(" e ");
+            if (timeSpanResult.Length > 0)
+                timeSpanResult.Append(" e ");
 
-            sLog.Append(horas);
-            sLog.Append(" horas");
+            timeSpanResult.Append(horas);
+            timeSpanResult.Append(" horas");
         }
 
-        int minutes = ts.Minutes;
+        var minutes = ts.Minutes;
         if (minutes == 1)
         {
-            if (sLog.Length > 0)
-                sLog.Append(" e ");
+            if (timeSpanResult.Length > 0)
+                timeSpanResult.Append(" e ");
 
-            sLog.Append(ts.Minutes);
-            sLog.Append(" minuto");
+            timeSpanResult.Append(ts.Minutes);
+            timeSpanResult.Append(" minuto");
         }
         else if (minutes > 1)
         {
-            if (sLog.Length > 0)
-                sLog.Append(" e ");
+            if (timeSpanResult.Length > 0)
+                timeSpanResult.Append(" e ");
 
-            sLog.Append(minutes);
-            sLog.Append(" minutos");
+            timeSpanResult.Append(minutes);
+            timeSpanResult.Append(" minutos");
         }
 
         int seconds = ts.Seconds;
         if (seconds > 0)
         {
-            if (sLog.Length > 0)
-                sLog.Append(" e ");
+            if (timeSpanResult.Length > 0)
+                timeSpanResult.Append(" e ");
 
-            sLog.Append(seconds);
-            sLog.Append(" segundos");
+            timeSpanResult.Append(seconds);
+            timeSpanResult.Append(" segundos");
         }
         
-        if (sLog.Length == 0)
+        if (timeSpanResult.Length == 0)
         {
-            sLog.Append(ts.TotalMilliseconds.ToString("N2"));
-            sLog.Append(" Milissegundos");
+            timeSpanResult.Append(ts.TotalMilliseconds.ToString("N2"));
+            timeSpanResult.Append(" Milissegundos");
         }
         
-        return sLog.ToString();
+        return timeSpanResult.ToString();
     }
 
     /// <summary>

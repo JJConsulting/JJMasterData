@@ -109,10 +109,10 @@ public static class DataHelper
     }
     
     
-    public static IDictionary<string, object> GetRelationValues(FormElement formElement, IDictionary<string, object?> values, bool usePkColumnName = false)
+    public static IDictionary<string, object> GetRelationValues(Element element, IDictionary<string, object?> values, bool usePkColumnName = false)
     {
         var foreignKeys = new Dictionary<string, object>();
-        var relationships = formElement.Relationships.GetElementRelationships();
+        var relationships = element.Relationships;
 
         foreach (var entry in values)
         {

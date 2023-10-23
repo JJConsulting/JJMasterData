@@ -107,6 +107,7 @@ public class FormValuesService
         string? fieldPrefix = null)
     {
         var dbValues = await GetDbValues(formElement);
+        
         return await GetFormValuesWithMergedValuesAsync(formElement, pageState, dbValues, autoReloadFormFields, fieldPrefix);
     }
 
@@ -138,9 +139,17 @@ public class FormValuesService
     {
         string encryptedPkValues = FormValues[
             $"data-panel-pk-values-{element.Name}"];
-        
+
         if (string.IsNullOrEmpty(encryptedPkValues))
-            return null;
+        {
+            var encryptedFkValues = FormValues[
+                $"form-view-relation-values-{element.Name}"];
+
+            if (!string.IsNullOrEmpty(encryptedFkValues))
+            {
+                return EncryptionService.DecryptDictionary(encryptedFkValues)!;
+            }
+        }
 
         string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');

@@ -236,7 +236,7 @@ public class JJFormView : AsyncComponent
             if (_currentActionMap != null)
                 return _currentActionMap;
 
-            string encryptedActionMap = CurrentContext.Request.Form[$"form-view-action-map-{Name.ToLower()}"];
+            string encryptedActionMap = CurrentContext.Request.Form[$"form-view-action-map-{Name}"];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
@@ -655,7 +655,7 @@ public class JJFormView : AsyncComponent
         html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
         html.AppendHiddenInput($"form-view-action-map-{Name}",
             EncryptionService.EncryptActionMap(CurrentActionMap));
-        html.AppendHiddenInput($"form-view-relation-values-{Name}",
+        html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
             EncryptionService.EncryptDictionary(RelationValues));
     }
 
@@ -1466,7 +1466,7 @@ public class JJFormView : AsyncComponent
 
     public IDictionary<string, object> GetRelationValuesFromForm()
     {
-        var encryptedRelationValues = CurrentContext.Request.Form[$"form-view-relation-values-{Name}"];
+        var encryptedRelationValues = CurrentContext.Request.Form[$"form-view-relation-values-{FormElement.Name}"];
 
         if (encryptedRelationValues is null)
             return new Dictionary<string, object>();

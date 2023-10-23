@@ -9,7 +9,7 @@ public class FieldsService
 {
     private FieldFormattingService FieldFormattingService { get; }
     private FieldValidationService FieldValidationService { get; }
-    private FieldValuesService  FieldValuesService { get; }
+    private FieldValuesService FieldValuesService { get; }
     
     public FieldsService(
         FieldFormattingService fieldFormattingService,
