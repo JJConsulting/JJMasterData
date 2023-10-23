@@ -124,7 +124,7 @@ class GridViewHelper {
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
-    static async refreshGrid(componentName: string, routeContext: string, reloadListeners = false) {
+    static refreshGrid(componentName: string, routeContext: string, reloadListeners = false) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
 
