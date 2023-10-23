@@ -688,9 +688,19 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetPluginActionResult()
     {
         var formValues = await GetFormValuesAsync();
-        
-        var result = await GetPluginActionResult(formValues);
 
+
+        PluginActionResult result;
+        
+        try
+        {
+            result = await GetPluginActionResult(formValues);
+        }
+        catch (Exception exception)
+        {
+            result = PluginActionResult.Error(StringLocalizer["Error"], exception.Message);
+        }
+        
         var formResult = await GetDefaultResult(formValues);
 
         if (formResult is HtmlComponentResult htmlComponentResult)

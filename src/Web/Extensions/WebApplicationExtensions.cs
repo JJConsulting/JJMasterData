@@ -23,10 +23,10 @@ public static class WebApplicationExtensions
             RequestPath = new PathString("/Scripts"),
         });
 #endif
+        app.UseStaticFiles();
         
         app.UseWebOptimizer();
-        
-        app.UseStaticFiles();
+
         
         app.UseDefaultFiles();
 

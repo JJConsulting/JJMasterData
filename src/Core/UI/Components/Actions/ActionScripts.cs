@@ -86,9 +86,10 @@ public class ActionScripts
             $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
     }
 
-    public string GetFormActionScript(BasicAction action, ActionContext actionContext, ActionSource actionSource, bool encode = true)
+    public string GetFormActionScript(ActionContext actionContext, ActionSource actionSource, bool encode = true)
     {
         var formElement = actionContext.FormElement;
+        var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
@@ -125,26 +126,28 @@ public class ActionScripts
     
 
     internal string GetUserActionScript(
-        UserCreatedAction userCreatedAction,
         ActionContext actionContext,
         ActionSource actionSource)
     {
         var formStateData = actionContext.FormStateData;
 
+        var userCreatedAction = actionContext.Action as UserCreatedAction;
+        
         return userCreatedAction switch
         {
             UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
-            SqlCommandAction => GetSqlCommandScript(userCreatedAction, actionContext, actionSource),
+            SqlCommandAction => GetSqlCommandScript(actionContext, actionSource),
             ScriptAction jsAction => HttpUtility.HtmlAttributeEncode(ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData) ?? string.Empty),
             InternalAction internalAction => GetInternalUrlScript(internalAction, formStateData.Values),
-            _ => GetFormActionScript(userCreatedAction, actionContext, actionSource)
+            _ => GetFormActionScript(actionContext, actionSource)
         };
     }
 
 
 
-    public string GetSqlCommandScript(BasicAction action, ActionContext actionContext, ActionSource actionSource)
+    public string GetSqlCommandScript(ActionContext actionContext, ActionSource actionSource)
     {
+        var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         

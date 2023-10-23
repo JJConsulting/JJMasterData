@@ -65,7 +65,7 @@ public class JJMessageBox : HtmlComponent
             script += $", '{Button2Label}', ()=>{{{Button2JsCallback}}}";
         }
 
-        script += ")";
+        script += ");";
     
         return script;
     }

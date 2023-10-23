@@ -33,8 +33,10 @@ public class DataAccessParameter
     /// Field size. For numbers is optional.
     /// </summary>
     [JsonProperty("size")]
-    public int Size { get; set; }
+    public int? Size { get; set; }
 
+    public bool IsNullable { get; set; } = true;
+    
     [JsonProperty("direction")] public ParameterDirection Direction { get; set; } = ParameterDirection.Input;
 
     public DataAccessParameter()

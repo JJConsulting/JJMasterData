@@ -686,10 +686,10 @@ public partial class DataAccess
         dbParameter.Value = parameter.Value ?? DBNull.Value;
         dbParameter.ParameterName = parameter.Name;
         dbParameter.Direction = parameter.Direction;
-        dbParameter.IsNullable = true;
+        dbParameter.IsNullable = parameter.IsNullable;
 
-        if (parameter.Size > 0)
-            dbParameter.Size = parameter.Size;
+        if (parameter.Size is not null)
+            dbParameter.Size = parameter.Size.Value;
 
         return dbParameter;
     }

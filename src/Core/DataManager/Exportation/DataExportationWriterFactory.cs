@@ -18,6 +18,7 @@ public class DataExportationWriterFactory
     public DataExportationWriterFactory(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
+        
     }
     
     private IPdfWriter? GetPdfWriter()
