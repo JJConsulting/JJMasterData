@@ -734,3 +734,7 @@ input.form-control:read-only {
     padding-bottom: 7px;
     margin-bottom: 0;
 }
+
+.pagination{
+    overflow-x: scroll
+}
