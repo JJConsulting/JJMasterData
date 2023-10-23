@@ -1098,7 +1098,7 @@ class GridViewHelper {
         modal.modalId = componentName + "-sort-modal";
         modal.hide();
         this.clearCurrentFormAction(componentName);
-        GridViewHelper.refreshGrid(componentName, routeContext, true);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static clearCurrentFormAction(componentName) {
         const currentFormAction = document.querySelector("#form-view-action-map-" + componentName);
@@ -1119,7 +1119,7 @@ class GridViewHelper {
         this.setCurrentGridPage(componentName, currentPage);
         this.clearCurrentGridAction(componentName);
         this.clearCurrentFormAction(componentName);
-        GridViewHelper.refreshGrid(componentName, routeContext, true);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static refresh(componentName, routeContext) {
         this.setCurrentGridPage(componentName, String());
@@ -1127,7 +1127,7 @@ class GridViewHelper {
         this.clearCurrentFormAction(componentName);
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
-    static refreshGrid(componentName, routeContext, reloadListeners = false) {
+    static refreshGrid(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         postFormValues({
@@ -1137,9 +1137,7 @@ class GridViewHelper {
                 const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
                 if (gridViewTableElement) {
                     gridViewTableElement.outerHTML = data;
-                    if (reloadListeners) {
-                        listenAllEvents("#" + componentName);
-                    }
+                    listenAllEvents("#" + componentName);
                     if (filterActionElement) {
                         filterActionElement.value = "";
                     }

@@ -83,7 +83,7 @@ class GridViewHelper {
         modal.hide();
         
         this.clearCurrentFormAction(componentName);
-        GridViewHelper.refreshGrid(componentName, routeContext, true);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
 
@@ -113,7 +113,7 @@ class GridViewHelper {
         this.clearCurrentGridAction(componentName)
         this.clearCurrentFormAction(componentName)
 
-        GridViewHelper.refreshGrid(componentName, routeContext, true);
+        GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
 
@@ -124,7 +124,7 @@ class GridViewHelper {
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
-    static refreshGrid(componentName: string, routeContext: string, reloadListeners = false) {
+    static refreshGrid(componentName: string, routeContext: string) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
 
@@ -136,9 +136,9 @@ class GridViewHelper {
 
                 if (gridViewTableElement) {
                     gridViewTableElement.outerHTML = data;
-                    if (reloadListeners) {
-                        listenAllEvents("#" + componentName);
-                    }
+                    
+                    listenAllEvents("#" + componentName);
+                    
                     if(filterActionElement){
                         filterActionElement.value = "";
                     }
