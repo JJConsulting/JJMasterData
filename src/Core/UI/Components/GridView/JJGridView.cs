@@ -698,7 +698,7 @@ public class JJGridView : AsyncComponent
         {
             var gridPagination = new GridPagination(this);
 
-            html.Append(gridPagination.GetHtmlElement());
+            html.Append(gridPagination.GetHtmlBuilder());
         }
         
         if (ShowToolbar)

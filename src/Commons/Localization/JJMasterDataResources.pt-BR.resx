@@ -1229,8 +1229,8 @@
     <value>Os filtros realizados na tela anterior serão considerados na exportação</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="First record" xml:space="preserve">
-    <value>Primeiro registro</value>
+  <data name="First page" xml:space="preserve">
+    <value>Primeira página</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="FirstOption" xml:space="preserve">
@@ -1737,8 +1737,8 @@
     <value>Mês Passado</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Last record" xml:space="preserve">
-    <value>Último registro</value>
+  <data name="Last page" xml:space="preserve">
+    <value>Última página</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Last three months" xml:space="preserve">

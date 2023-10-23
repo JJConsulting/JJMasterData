@@ -1119,7 +1119,7 @@ class GridViewHelper {
         this.setCurrentGridPage(componentName, currentPage);
         this.clearCurrentGridAction(componentName);
         this.clearCurrentFormAction(componentName);
-        GridViewHelper.refreshGrid(componentName, routeContext);
+        GridViewHelper.refreshGrid(componentName, routeContext, true);
     }
     static refresh(componentName, routeContext) {
         this.setCurrentGridPage(componentName, String());
@@ -1128,36 +1128,38 @@ class GridViewHelper {
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static refreshGrid(componentName, routeContext, reloadListeners = false) {
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", routeContext);
-        postFormValues({
-            url: urlBuilder.build(),
-            success: function (data) {
-                const gridViewTableElement = document.querySelector("#grid-view-table-" + componentName);
-                const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
-                if (gridViewTableElement) {
-                    gridViewTableElement.outerHTML = data;
-                    if (reloadListeners) {
-                        listenAllEvents("#" + componentName);
+        return __awaiter(this, void 0, void 0, function* () {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", routeContext);
+            postFormValues({
+                url: urlBuilder.build(),
+                success: function (data) {
+                    const gridViewTableElement = document.querySelector("#grid-view-table-" + componentName);
+                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
+                    if (gridViewTableElement) {
+                        gridViewTableElement.outerHTML = data;
+                        if (reloadListeners) {
+                            listenAllEvents("#" + componentName);
+                        }
+                        if (filterActionElement) {
+                            filterActionElement.value = "";
+                        }
                     }
+                    else {
+                        console.error("One or both of the elements were not found.");
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                    const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
                     if (filterActionElement) {
                         filterActionElement.value = "";
                     }
+                    else {
+                        console.error("Filter action element was not found.");
+                    }
                 }
-                else {
-                    console.error("One or both of the elements were not found.");
-                }
-            },
-            error: function (error) {
-                console.error(error);
-                const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
-                if (filterActionElement) {
-                    filterActionElement.value = "";
-                }
-                else {
-                    console.error("Filter action element was not found.");
-                }
-            }
+            });
         });
     }
 }

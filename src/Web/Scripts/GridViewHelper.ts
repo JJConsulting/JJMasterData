@@ -113,7 +113,7 @@ class GridViewHelper {
         this.clearCurrentGridAction(componentName)
         this.clearCurrentFormAction(componentName)
 
-        GridViewHelper.refreshGrid(componentName, routeContext);
+        GridViewHelper.refreshGrid(componentName, routeContext, true);
     }
 
 
@@ -124,7 +124,7 @@ class GridViewHelper {
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
 
-    static refreshGrid(componentName: string, routeContext: string, reloadListeners = false) {
+    static async refreshGrid(componentName: string, routeContext: string, reloadListeners = false) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
 
