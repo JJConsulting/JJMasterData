@@ -6,7 +6,7 @@ public static class Commands
 {
     public static Command GetFormElementMigrationCommand(Action handler)
     {
-        var command = new Command("migration", "Update a Saturn DataDictionary to Sun version.");
+        var command = new Command("form-element-migration", "Update a Saturn DataDictionary to Sun version.");
         command.SetHandler(handler);
         return command;
     }
@@ -27,6 +27,13 @@ public static class Commands
     {
         var command = new Command("import", "Normally used at CI pipelines, import data dictionaries from a folder and store at the database.");
         command.SetHandler(handler);
+        return command;
+    }
+
+    public static Command GetSqlExpressionsMigrationCommand(Action action)
+    {
+        var command = new Command("expressions-migration", "Add single quotation marks to expressions.");
+        command.SetHandler(action);
         return command;
     }
 }

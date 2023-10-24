@@ -21,7 +21,7 @@ internal class InMemoryExpressionProvider : IBooleanExpressionProvider, IAsyncEx
 
     public bool Evaluate(string expression, IDictionary<string,object?> parsedValues)
     {
-        var replacedExpression= ExpressionHelper.ReplaceExpression(expression, parsedValues, true);
+        var replacedExpression= ExpressionHelper.ReplaceExpression(expression, parsedValues);
         return StringManager.ParseBool(EvaluateObject(replacedExpression));
     }
     

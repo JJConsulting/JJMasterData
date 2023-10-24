@@ -44,13 +44,12 @@ public class ExpressionsService
 
     public string? ParseExpression(
         string? expression, 
-        FormStateData formStateData, 
-        bool addQuotationMarks = false)
+        FormStateData formStateData)
     {
         var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
 
         if (expression != null) 
-            return ExpressionHelper.ReplaceExpression(expression, parsedValues, addQuotationMarks);
+            return ExpressionHelper.ReplaceExpression(expression, parsedValues);
 
         return null;
     }

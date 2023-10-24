@@ -26,7 +26,7 @@ public class MetadataRepository
         {
             if (_masterDataElement == null)
             {
-                string tableName = _options.Value.DataDictionaryTableName;
+                var tableName = _options.Value.DataDictionaryTableName;
                 _masterDataElement = DataDictionaryStructure.GetElement(tableName);
             }
             return _masterDataElement;
@@ -156,7 +156,7 @@ public class MetadataRepository
         foreach (var action in dicParser.Options.GridActions.GetAll()
                      .Where(action => action is UrlRedirectAction or InternalAction or ScriptAction or SqlCommandAction))
         {
-            //=action.IsUserCreated = true;
+            //action.IsUserCreated = true;
         }
 
         foreach (var action in dicParser.Options.ToolbarActions

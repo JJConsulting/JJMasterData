@@ -16,7 +16,8 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<MetadataRepository>();
         services.AddTransient<FormElementMigrationService>();
-
+        services.AddTransient<ExpressionsMigrationService>();
+        
         services.AddTransient<ImportService>();
         
         services.AddTransient<JsonSchemaService>();

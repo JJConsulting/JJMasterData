@@ -50,7 +50,7 @@ public class ElementMapService
             foreach (var filter in elementMap.Filters)
             {
                 var filterParsed =
-                    ExpressionsService.ParseExpression(filter.Value.ToString(), formStateData, false) ?? string.Empty;
+                    ExpressionsService.ParseExpression(filter.Value.ToString(), formStateData) ?? string.Empty;
                 filters[filter.Key] = filterParsed;
             }
         }

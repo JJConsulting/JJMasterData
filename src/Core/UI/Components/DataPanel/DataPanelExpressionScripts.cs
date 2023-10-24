@@ -27,8 +27,8 @@ internal class DataPanelExpressionScripts
         foreach (var f in listFieldsExp)
         {
             string exp = f.EnableExpression.Replace("exp:", "");
-            exp = exp.Replace("{pagestate}", $"'{DataPanel.PageState.ToString()}'");
-            exp = exp.Replace("{PAGESTATE}", $"'{DataPanel.PageState.ToString()}'");
+            exp = exp.Replace("'{PageState}'", $"'{DataPanel.PageState.ToString()}'");
+            exp = exp.Replace("'{PageState}'", $"'{DataPanel.PageState.ToString()}'");
             exp = exp
                 .Replace(" and ", " && ")
                 .Replace(" or ", " || ")

@@ -84,7 +84,7 @@ public class LookupParameters
         {
             foreach (var filter in Filters)
             {
-                string filterParsed = expressionsService.ParseExpression(filter.Value.ToString(), formStateData, false);
+                string filterParsed = expressionsService.ParseExpression(filter.Value.ToString(), formStateData);
                 queryString.Append('&');
                 queryString.Append(filter.Key);
                 queryString.Append('=');

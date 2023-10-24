@@ -3,28 +3,31 @@ using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.ConsoleApp.Repository;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.ConsoleApp.Services;
 
 public class FormElementMigrationService
 {
-    private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private MetadataRepository MetadataRepository { get; }
+    private ExpressionsMigrationService ExpressionsMigrationService { get; }
+    private ILogger<FormElementMigrationService> Logger { get; }
     private DataAccess DataAccess { get; }
     private string TableName => Options.DataDictionaryTableName;
     private JJMasterDataCoreOptions Options { get; }
     public FormElementMigrationService(
-        IEntityRepository entityRepository, 
         IDataDictionaryRepository dataDictionaryRepository, 
         MetadataRepository metadataRepository,
-        IOptions<JJMasterDataCoreOptions> options
-        )
+        IOptions<JJMasterDataCoreOptions> options,
+        ExpressionsMigrationService expressionsMigrationService,
+        ILogger<FormElementMigrationService> logger)
     {
-        EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
         MetadataRepository = metadataRepository;
+        ExpressionsMigrationService = expressionsMigrationService;
+        Logger = logger;
         DataAccess = new DataAccess(options.Value.ConnectionString, DataAccessProvider.SqlServer);
         Options = options.Value;
     }
@@ -32,6 +35,15 @@ public class FormElementMigrationService
     public void Migrate()
     {
         var start = DateTime.Now;
+        
+        var containsLegacyType = DataAccess.GetResult($"SELECT [type] from {TableName} where [type] <> 'F'");
+
+        if (containsLegacyType is null)
+        {
+            Logger.LogInformation("✅ DataDictionary is already migrated");
+            return;
+        }
+        
         var databaseDictionaries = MetadataRepository.GetMetadataList();
         
         DataAccess.SetCommand($"DROP TABLE {TableName}");
@@ -40,7 +52,7 @@ public class FormElementMigrationService
         
         DataDictionaryRepository.CreateStructureIfNotExistsAsync().GetAwaiter().GetResult();
         
-        Console.WriteLine($@"✅ Re-created {TableName} and all related stored procedures.");
+        Logger.LogInformation("\u2705 Re-created {TableName} and all related stored procedures", TableName);
         
         foreach (var metadata in databaseDictionaries)
         {
@@ -55,7 +67,7 @@ public class FormElementMigrationService
             }
             
             DataDictionaryRepository.InsertOrReplaceAsync(formElement).GetAwaiter().GetResult();
-            Console.WriteLine($@"✅ {formElement.Name}");
+            Logger.LogInformation("\u2705 {FormElementName}", formElement.Name);
         }
 
         DataAccess.SetCommand($"delete from {TableName} where type <> 'F'");
@@ -68,7 +80,7 @@ public class FormElementMigrationService
                               WHERE [json] LIKE '%{search_id}%';
                               """);
         
-        Console.WriteLine($@"✅ Replaced {{search_id}} to {{SearchId}} in all elements.");
+        Logger.LogInformation("✅ Replaced {{search_id}} to {{SearchId}} in all elements");
         
         DataAccess.SetCommand($$"""
                                 UPDATE {{TableName}}
@@ -78,20 +90,21 @@ public class FormElementMigrationService
                                 WHERE [json] LIKE '%{search_text}%';
                                 """);
         
-        Console.WriteLine($@"✅ Replaced {{search_text}} to {{SearchText}} in all elements.");
+        Logger.LogInformation(@"✅ Replaced {{search_text}} to {{SearchText}} in all elements");
         
         DataAccess.SetCommand($$"""
                                 UPDATE {{TableName}}
                                 SET [json] = REPLACE([json],
                                     '{objname}',
-                                    '{ComponentName}')
-                                WHERE [json] LIKE '%{objid}%';
+                                    '{FieldName}')
+                                WHERE [json] LIKE '%{objname}%';
                                 """);
         
-        Console.WriteLine($@"✅ Replaced {{objname}} to {{ComponentName}} in all elements.");
+        Console.WriteLine(@"✅ Replaced {{objname}} to {{FieldName}} in all elements");
         
         Console.WriteLine($@"Process started: {start}");
         Console.WriteLine($@"Process finished: {DateTime.Now}");
-        Console.ReadLine();
+        
+        ExpressionsMigrationService.Migrate();
     }
 }

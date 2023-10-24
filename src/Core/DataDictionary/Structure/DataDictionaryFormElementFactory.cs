@@ -56,11 +56,11 @@ public class DataDictionaryFormElementFactory
 
     private void ConfigureFields(FormElement formElement)
     {
-        formElement.Fields[DataDictionaryStructure.Name].VisibleExpression = "exp:{PageState} <> 'FILTER'";
+        formElement.Fields[DataDictionaryStructure.Name].VisibleExpression = "exp:'{PageState}' <> 'FILTER'";
         formElement.Fields[DataDictionaryStructure.Type].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.Owner].VisibleExpression= "val:0";
         formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.Text;
-        formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: {PageState} = 'FILTER'";
+        formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: '{PageState}' = 'FILTER'";
         formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["Filter for any data inside the structure of the metadata"];
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Fields[DataDictionaryStructure.EnableApi].VisibleExpression = "val:0";
@@ -86,7 +86,7 @@ public class DataDictionaryFormElementFactory
             Icon = IconType.Pencil,
             Name = "tools",
             Tooltip = StringLocalizer["Field Maintenance"],
-            EnableExpression = "exp:'T' <> {type}",
+            EnableExpression = "exp:'T' <> '{type}'",
             IsDefaultOption = true
         };
         formElement.Options.GridTableActions.Add(acTools);
@@ -96,7 +96,7 @@ public class DataDictionaryFormElementFactory
             Icon = IconType.Eye,
             Name = "preview",
             Text = StringLocalizer["Preview"],
-            EnableExpression = "exp:'T' <> {type}",
+            EnableExpression = "exp:'T' <> '{type}'",
             IsGroup = true
         };
         formElement.Options.GridTableActions.Add(renderBtn);
@@ -106,7 +106,7 @@ public class DataDictionaryFormElementFactory
             Icon = IconType.FilesO,
             Name = "duplicate",
             Text = StringLocalizer["Duplicate"],
-            EnableExpression = "exp:'T' <> {type}",
+            EnableExpression = "exp:'T' <> '{type}'",
             IsGroup = true
         };
         formElement.Options.GridTableActions.Add(btnDuplicate);

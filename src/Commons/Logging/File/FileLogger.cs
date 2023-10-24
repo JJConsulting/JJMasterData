@@ -46,7 +46,7 @@ internal class FileLogger : ILogger
         if (!IsEnabled(logLevel))
             return;
 
-        var message = new LogEntry<TState>(logLevel, eventId, state!, exception, (s, e) => formatter(s, e));
+        var message = new LogEntry<TState>(logLevel, eventId, state!, exception, formatter);
         var record = GetLogRecord(message, _options.CurrentValue.Formatting);
         _buffer.Enqueue(record.ToCharArray());
     }

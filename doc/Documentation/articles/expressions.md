@@ -14,8 +14,13 @@ Example: <br>
 <br>
 "exp:1=1" Return true.
 <br>
-"exp:{pagestate} = 'LIST'" If a list return true<br>
-"exp:{pagestate} = 'UPDATE' AND {ID} = '1'" If update and a field value ID equals 1 return true<br>
+"exp:'{pagestate}' = 'LIST'" If a list return true<br>
+"exp:'{pagestate}' = 'UPDATE' AND '{ID}' = '1'" If update and a field value ID equals 1 return true<br>
+
+**Don't forget to add single quotes, if your value is a string or can be null, because it will be replaced at runtime** 
+
+In the Data Dictionary UI, the expression editor is simplified like this:
+//TODO: Add image
 
 ## What are the default expression providers?
 - Type [val:] returns a value; (1 or 0) (true or false) ("foo") etc..
@@ -23,8 +28,10 @@ Example: <br>
 - Type [sql:] returns the result of a sql command;
 
 > [!TIP] 
-> Check if your field supports all expressions
+> Check if your field supports all expressions checking the attributes
 
+> [!TIP]
+> SQL Expression values will be replaced with a SQL variable to prevent SQL injection atacks
 
 ## How to do it?
 Building an expression<br>
@@ -35,14 +42,13 @@ Building an expression<br>
 **System keywords**<br>
 - {PageState} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
 - {ComponentName} = Name of the component that triggered the AutoPostBack event
-- {UserId} = Identifier of the authenticated user
+- {UserId} = Identifier of the authenticated user, can be recovered from UserValues, Session or Claims
 
 Dynamic values will be recovered in the following order:
 1. UserValues
 2. FormValues
 3. System keywords
 4. UserSession
-
 
 ## Examples
 
@@ -55,7 +61,7 @@ field.DefaultValue = "val:test";
 ```
 
 Example using [exp:] + expression<br>
-1. exp:{field1};
+1. exp:'{field1}';
 2. exp:({field1} + 10) * {field2};
 ```cs
 var field = new ElementField();
@@ -67,17 +73,16 @@ Example using [sql:] + query<br>
 2. sql:select count(*) from table1;
 ```cs
 var field = new ElementField();
+//In the runtime this will be replaced with select field2 from table1 where field1 = @field1
 field.DefaultValue = "sql:select field2 from table1 where field1 = '{field1}'";
 ```
 
 ## Implementing your own expression provider
 
 Implement the [IExpressionProvider](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.Expressions.Abstractions.IExpressionProvider.html) interface and add to your services your custom provider.
-
+You can implement both [IBooleanExpressionProvider] (used at visible and enable expressions) or [IAsyncExpressionProvider] (used at triggers and default values.)
 ```cs
 builder.Services.AddJJMasterDataWeb().WithExpressionProvider<TMyCustomProvider>();
-//or
-
 ```
 
 ## Protheus Plugin
@@ -100,6 +105,5 @@ field.DefaultValue = "protheus:'http://10.0.0.6:8181/websales/jjmain.apw', 'u_vl
 > [!WARNING] 
 > For Protheus calls apply JJxFun patch and configure http connection in Protheus
 > 
-
 
 ## 

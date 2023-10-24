@@ -2,6 +2,7 @@
 using System.CommandLine.Builder;
 using System.CommandLine.Help;
 using System.CommandLine.Parsing;
+using JJMasterData.Commons.Logging;
 using JJMasterData.ConsoleApp.CommandLine;
 using JJMasterData.ConsoleApp.Extensions;
 using JJMasterData.ConsoleApp.Services;
@@ -11,8 +12,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = Host.CreateDefaultBuilder(args)
-    .ConfigureHostConfiguration(c=>c.AddJsonFile("appsettings.json"))
-    .ConfigureServices(services => services.AddJJMasterDataConsoleServices())
+    .ConfigureHostConfiguration(c=>
+    {
+        c.AddJsonFile("appsettings.json");
+        c.AddUserSecrets("f3a7ef0a-07c3-4eaa-95eb-7c578e67e286");
+    })
+    .ConfigureServices(services =>
+    {
+        services.AddJJMasterDataConsoleServices();
+        services.AddLogging(opt =>
+        {
+            opt.AddFileLoggerProvider();
+        });
+    })
     .Build();
 
 
@@ -21,6 +33,11 @@ var rootCommand = new RootCommand("JJMasterData CLI. To learn more visit https:/
     Commands.GetFormElementMigrationCommand(() =>
     {
         var service = host.Services.GetRequiredService<FormElementMigrationService>();
+        service.Migrate();
+    }),
+    Commands.GetSqlExpressionsMigrationCommand(() =>
+    {
+        var service = host.Services.GetRequiredService<ExpressionsMigrationService>();
         service.Migrate();
     }),
     Commands.GetImportCommand(() =>
@@ -34,7 +51,7 @@ var rootCommand = new RootCommand("JJMasterData CLI. To learn more visit https:/
         service.GenerateJsonSchema(schemaName);
     })
 };
-
+host.Start();
 
 var parser = new CommandLineBuilder(rootCommand)
     .UseDefaults()

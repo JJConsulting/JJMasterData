@@ -63,7 +63,7 @@ internal class GridSqlCommandAction
         foreach (var row in selectedRows)
         {
             var formData = new FormStateData(row, _gridView.UserValues, PageState.List);
-            var sql = _gridView.ExpressionsService.ParseExpression(sqlCommandAction.CommandSql, formData, false);
+            var sql = _gridView.ExpressionsService.ParseExpression(sqlCommandAction.CommandSql, formData);
             commandList.Add(new DataAccessCommand(sql!));
         }
 

@@ -48,15 +48,11 @@ public class ExpressionParser
             }
             else if (values != null && values.TryGetValue(field, out var objVal) && !string.IsNullOrEmpty(objVal?.ToString()))
             {
-                parsedValue = objVal != null ? $"{objVal}" : string.Empty;
+                parsedValue = $"{objVal}";
             }
-            else if ("objname".Equals(field.ToLower()))
+            else if ("fieldName".Equals(field.ToLower()))
             {
-                parsedValue = $"{Request["componentName"]}";
-            }
-            else if ("componentName".Equals(field.ToLower()))
-            {
-                parsedValue = $"{Request["componentName"]}";
+                parsedValue = $"{Request.QueryString["fieldName"]}";
             }
             else if ("userid".Equals(field.ToLower()))
             {

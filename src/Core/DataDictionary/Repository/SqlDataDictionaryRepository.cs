@@ -32,7 +32,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         if (apiEnabled.HasValue)
             filters.Add(DataDictionaryStructure.EnableApi, apiEnabled);
 
-        filters[DataDictionaryStructure.Name] = "F";
+        filters[DataDictionaryStructure.Type] = "F";
 
         var orderBy = new OrderByData();
         orderBy.AddOrReplace(DataDictionaryStructure.Name, OrderByDirection.Asc);

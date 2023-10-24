@@ -151,7 +151,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
-            var parsedSql = ExpressionsService.ParseExpression(ProcessOptions.CommandBeforeProcess, formData, false);
+            var parsedSql = ExpressionsService.ParseExpression(ProcessOptions.CommandBeforeProcess, formData);
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql));
         }
 
@@ -214,7 +214,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
-            string parsedSql = ExpressionsService.ParseExpression(ProcessOptions.CommandAfterProcess, formData, false);
+            string parsedSql = ExpressionsService.ParseExpression(ProcessOptions.CommandAfterProcess, formData);
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
         }
 

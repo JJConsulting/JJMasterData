@@ -27,7 +27,7 @@ internal class SqlExpressionProvider : IAsyncExpressionProvider
         var command = GetParsedDataAccessCommand(expression, parsedValues);
 
         var result = await _entityRepository.GetResultAsync(command);
-        
+            
         return result?.ToString() ?? null;
     }
 
@@ -35,16 +35,14 @@ internal class SqlExpressionProvider : IAsyncExpressionProvider
     {
         var command = new DataAccessCommand();
 
-        foreach (var kvp in parsedValues)
+        foreach (var keyValuePair in parsedValues)
         {
-            var parameterName = $"@{kvp.Key}";
+            var parameterName = $"@{keyValuePair.Key}";
 
-            expression = expression.Replace($"'{ExpressionHelper.Begin}{kvp.Key}{ExpressionHelper.End}'", parameterName);
-            expression = expression.Replace($"{ExpressionHelper.Begin}{kvp.Key}{ExpressionHelper.End}", parameterName);
+            expression = expression.Replace($"'{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}'", parameterName);
+            expression = expression.Replace($"{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}", parameterName);
 
-            var value = kvp.Value;
-
-            command.AddParameter(parameterName, value, GetDbTypeFromObject(value));
+            command.AddParameter(parameterName, keyValuePair.Value, GetDbTypeFromObject(keyValuePair.Value));
         }
 
         command.Sql = expression;
