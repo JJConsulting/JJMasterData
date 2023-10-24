@@ -46,8 +46,8 @@ public class FieldValuesService
         {
             if (formValues.TryGetValue(f.Name, out var value) && value != null)
             {
-                object val = ClearSpecialChars(f, value);
-                newValues.Add(f.Name, val);
+                object valueWithoutSpecialCharacters = ClearSpecialChars(f, value);
+                newValues.Add(f.Name, valueWithoutSpecialCharacters);
             }
         }
 
@@ -101,8 +101,7 @@ public class FieldValuesService
             }
             else
             {
-                if ((formValues[d.Key] == null || string.IsNullOrEmpty(formValues[d.Key]?.ToString()))
-                    && replaceNullValues)
+                if ((formValues[d.Key] == null || string.IsNullOrEmpty(formValues[d.Key]?.ToString())) && replaceNullValues)
                 {
                     formValues[d.Key] = d.Value;
                 }

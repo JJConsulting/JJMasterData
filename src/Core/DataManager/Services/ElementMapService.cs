@@ -49,14 +49,14 @@ public class ElementMapService
         {
             foreach (var filter in elementMap.Filters)
             {
-                string? filterParsed =
-                    ExpressionsService.ParseExpression(filter.Value?.ToString(), formStateData, false);
-                filters[filter.Key] = StringManager.ClearText(filterParsed);
+                var filterParsed =
+                    ExpressionsService.ParseExpression(filter.Value.ToString(), formStateData, false) ?? string.Empty;
+                filters[filter.Key] = filterParsed;
             }
         }
         else
         {
-            filters[elementMap.FieldId] = StringManager.ClearText(value?.ToString());
+            filters[elementMap.FieldId] = value?.ToString()!;
         }
        
         return filters;

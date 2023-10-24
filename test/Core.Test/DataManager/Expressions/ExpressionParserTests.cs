@@ -7,75 +7,74 @@ using Moq;
 
 namespace JJMasterData.Core.Test.DataManager.Expressions;
 
-
 public class ExpressionParserTests
 {
-    private ExpressionParser ExpressionParser { get; }
-
-    public ExpressionParserTests()
-    {
-        var httpContext = new Mock<IHttpContext>();
-        var logger = new Mock<ILogger<ExpressionParser>>();
-        ExpressionParser = new ExpressionParser(httpContext.Object,logger.Object);
-    }
-    
     [Fact]
-    public void ParseExpression_NoIntervalSpecified_ReplacesFields()
+    public void ParseExpression_WithNullExpression_ShouldReturnEmptyDictionary()
     {
         // Arrange
-        var request = new Mock<IHttpRequest>();
-        request.Setup(r => r["componentName"]).Returns("ComponentNameValue");
-        var formStateData = new FormStateData
-        {
-            UserValues = new Dictionary<string, object?>
-            {
-                {
-                    "userField", "UserFieldValue"
-                }
-            },
-            Values = new Dictionary<string, object?>()
-            {
-                {"formValue","FormValue"}
-            },
-            PageState = (PageState)0
-        };
+        var parser = new ExpressionParser(MockHttpContext(), MockLogger());
 
         // Act
-        var result = ExpressionParser.ParseExpression("Test:{userField} {formValue}", formStateData, true);
-
-        // Assert
-        Assert.Equal("'UserFieldValue' 'FormValue'", result);
-    }
-
-    [Fact]
-    public void ParseExpression_WithIntervalSpecified_ReplacesFields()
-    {
-        // Arrange
-        var request = new Mock<IHttpRequest>();
-        request.Setup(r => r["componentName"]).Returns("ComponentNameValue");
-        var formStateData = new FormStateData
+        var result = parser.ParseExpression(null, new FormStateData()
         {
-            UserValues = new Dictionary<string, object?>
-            {
-                {
-                    "userField", "UserFieldValue"
-                }
-            },
-            Values = new Dictionary<string, object?>()
-            {
-                {"formValue","FormValue"}
-            },
-            PageState = (PageState)0
-        };
-
-        // Act
-        var result = ExpressionParser.ParseExpression("Test:[userField] [formValue]", formStateData, false, new ExpressionParserInterval()
-        {
-            Begin = '[',
-            End = ']'
+            Values = new Dictionary<string, object?>(),
+            UserValues = new Dictionary<string, object?>(),
+            PageState = PageState.List
         });
 
         // Assert
-        Assert.Equal("UserFieldValue FormValue", result);
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void ParseExpression_WithFieldInUserValues_ShouldReturnExpectedValue()
+    {
+        // Arrange
+        var httpContext = MockHttpContext();
+        var userValues = new Dictionary<string, object?> { { "Name", "Gustavo" } };
+        var formStateData = new FormStateData { UserValues = userValues,  Values = new Dictionary<string, object?>(), PageState = PageState.List };
+        var parser = new ExpressionParser(httpContext, MockLogger());
+
+        // Act
+        var result = parser.ParseExpression("{Name}", formStateData);
+
+        // Assert
+        Assert.Single(result);
+        Assert.Equal("Gustavo", result["Name"]);
+    }
+
+
+    [Fact]
+    public void ParseExpression_WithUnknownField_ShouldReturnEmptyValue()
+    {
+        // Arrange
+        var parser = new ExpressionParser(MockHttpContext(), MockLogger());
+
+        // Act
+        var result = parser.ParseExpression("{UnknownField}", new FormStateData()
+        {
+            Values = new Dictionary<string, object?>(),
+            UserValues = new Dictionary<string, object?>(),
+            PageState = PageState.List
+        });
+
+        // Assert
+        Assert.Single(result);
+        Assert.Empty(result["UnknownField"].ToString());
+    }
+
+    // Add more test cases to cover other scenarios
+    // ...
+
+    private IHttpContext MockHttpContext()
+    {
+        var mockHttpContext = new Mock<IHttpContext>();
+        return mockHttpContext.Object;
+    }
+
+    private ILogger<ExpressionParser> MockLogger()
+    {
+        return new Mock<ILogger<ExpressionParser>>().Object;
     }
 }

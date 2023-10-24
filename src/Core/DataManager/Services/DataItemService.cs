@@ -11,6 +11,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -20,20 +21,20 @@ namespace JJMasterData.Core.DataManager.Services;
 public class DataItemService 
 {
     private IEntityRepository EntityRepository { get; }
-    private ExpressionsService ExpressionsService { get; }
+    private ExpressionParser ExpressionParser { get; }
     private IFormValues FormValues { get; }
     private ElementMapService ElementMapService { get; }
     private ILogger<DataItemService> Logger { get; }
 
     public DataItemService(
         IEntityRepository entityRepository,
-        ExpressionsService expressionsService,
+        ExpressionParser expressionParser,
         IFormValues formValues,
         ElementMapService elementMapService,
         ILogger<DataItemService> logger)
     {
         EntityRepository = entityRepository;
-        ExpressionsService = expressionsService;
+        ExpressionParser = expressionParser;
         FormValues = formValues;
         ElementMapService = elementMapService;
         Logger = logger;
@@ -154,17 +155,17 @@ public class DataItemService
         string? searchId,
         string? searchText)
     {
-        var sql = GetSqlParsed(dataItem, formStateData, searchText, searchId);
-
+        var command = GetDataItemCommand(dataItem, formStateData, searchText, searchId);
+        
         List<Dictionary<string, object?>> result;
         
         try
         {
-             result = await EntityRepository.GetDictionaryListAsync(new DataAccessCommand(sql!));
+             result = await EntityRepository.GetDictionaryListAsync(command);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error at DataItemService while recovering SqlCommand values. Sql: {Sql}", sql);
+            Logger.LogError(ex, "Error at DataItemService while recovering SqlCommand values. Sql: {Sql}", command?.Sql);
             throw;
         }
 
@@ -188,7 +189,7 @@ public class DataItemService
         }
     }
 
-    private string? GetSqlParsed(FormElementDataItem dataItem, FormStateData formStateData, string? searchText,
+    private DataAccessCommand GetDataItemCommand(FormElementDataItem dataItem, FormStateData formStateData, string? searchText,
         string? searchId)
     {
         var sql = dataItem.Command!.Sql;
@@ -197,18 +198,18 @@ public class DataItemService
             if (searchId != null)
             {
                 if (formStateData.UserValues != null && !formStateData.UserValues.ContainsKey("SearchId"))
-                    formStateData.UserValues.Add("SearchId", StringManager.ClearText(searchId));
+                    formStateData.UserValues.Add("SearchId", searchId);
             }
 
             if (searchText != null)
             {
                 if (formStateData.UserValues != null && !formStateData.UserValues.ContainsKey("SearchText"))
-                    formStateData.UserValues.Add("SearchText", StringManager.ClearText(searchText));
+                    formStateData.UserValues.Add("SearchText", searchText);
             }
-
-            sql = ExpressionsService.ParseExpression(sql, formStateData, false);
         }
 
-        return sql;
+        var parsedValues = ExpressionParser.ParseExpression(sql, formStateData);
+
+        return SqlExpressionProvider.GetParsedDataAccessCommand(sql, parsedValues);
     }
 }

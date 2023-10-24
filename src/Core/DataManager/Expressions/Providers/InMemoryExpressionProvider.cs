@@ -1,40 +1,33 @@
 #nullable enable
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
 internal class InMemoryExpressionProvider : IBooleanExpressionProvider, IAsyncExpressionProvider
 {
-    private readonly ExpressionParser _expressionParser;
-
-    public InMemoryExpressionProvider(ExpressionParser expressionParser)
-    {
-        _expressionParser = expressionParser;
-    }
-    
     public string Prefix => "exp";
     public string Title => "Expression";
-    private object EvaluateObject(string expression, FormStateData formStateData)
+    private static object EvaluateObject(string replacedExpression)
     {
-        var parsedExpression = _expressionParser.ParseExpression(expression, formStateData, true);
-
         using var dt = new DataTable();
-        var result = dt.Compute(parsedExpression, string.Empty).ToString()!;
+        var result = dt.Compute(replacedExpression, string.Empty).ToString();
 
-        return result;
+        return result!;
     }
 
-    public bool Evaluate(string expression, FormStateData formStateData)
+    public bool Evaluate(string expression, IDictionary<string,object?> parsedValues)
     {
-        return StringManager.ParseBool(EvaluateObject(expression, formStateData));
+        var replacedExpression= ExpressionHelper.ReplaceExpression(expression, parsedValues, true);
+        return StringManager.ParseBool(EvaluateObject(replacedExpression));
     }
     
-    public async Task<object?> EvaluateAsync(string expression, FormStateData formStateData)
+    public async Task<object?> EvaluateAsync(string expression, IDictionary<string,object?> parsedValues)
     {
-        return await Task.FromResult(EvaluateObject(expression, formStateData));
+        var replacedExpression= ExpressionHelper.ReplaceExpression(expression, parsedValues);
+        return await Task.FromResult(EvaluateObject(replacedExpression));
     }
 }

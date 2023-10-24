@@ -409,7 +409,7 @@ public class MasterApiService
         {
             var field = metadata.Fields[entry.Key];
             if (!filters.ContainsKey(entry.Key))
-                filters.Add(field.Name, StringManager.ClearText(entry.Value.ToString()!));
+                filters.Add(field.Name, entry.Value.ToString()!);
         }
 
         return filters;
@@ -430,7 +430,7 @@ public class MasterApiService
                     continue;
 
                 string? value = _httpContext.Request.Query[key];
-                filters.Add(formElement.Fields[key].Name, StringManager.ClearText(value));
+                filters.Add(formElement.Fields[key].Name, value!);
             }
         }
 

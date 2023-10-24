@@ -987,7 +987,7 @@ public class SqlServerProvider : BaseProvider
                 {
                     valueFrom = parameters.Filters[$"{field.Name}_from"];
                     if (valueFrom != null)
-                        valueFrom = StringManager.ClearText(valueFrom.ToString());
+                        valueFrom = valueFrom.ToString();
                 }
                 var fromParameter = new DataAccessParameter
                 {
@@ -1004,22 +1004,23 @@ public class SqlServerProvider : BaseProvider
                     parameters.Filters[$"{field.Name}_to"] != null)
                 {
                     valueTo = parameters.Filters[$"{field.Name}_to"];
-                    if (valueTo != null)
-                        valueTo = StringManager.ClearText(valueTo.ToString());
+                    valueTo = valueTo?.ToString();
                 }
-                var pTo = new DataAccessParameter();
-                pTo.Direction = ParameterDirection.Input;
-                pTo.Type = GetDbType(field.DataType);
-                pTo.Size = field.Size;
-                pTo.Name = $"{field.Name}_to";
-                pTo.Value = valueTo;
-                command.Parameters.Add(pTo);
+                var toParameter = new DataAccessParameter
+                {
+                    Direction = ParameterDirection.Input,
+                    Type = GetDbType(field.DataType),
+                    Size = field.Size,
+                    Name = $"{field.Name}_to",
+                    Value = valueTo
+                };
+                command.Parameters.Add(toParameter);
             }
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
-                object value = GetElementValue(field, parameters.Filters);
+                var value = GetElementValue(field, parameters.Filters);
                 if (value != DBNull.Value)
-                    value = StringManager.ClearText(value.ToString());
+                    value = value.ToString();
 
                 var dbType = GetDbType(field.DataType);
                 var parameter = new DataAccessParameter
@@ -1180,10 +1181,7 @@ public class SqlServerProvider : BaseProvider
         if (databaseType.Equals("text"))
             return FieldType.Text;
 
-        if (databaseType.Equals("ntext"))
-            return FieldType.NText;
-
-        return FieldType.NVarchar;
+        return databaseType.Equals("ntext") ? FieldType.NText : FieldType.NVarchar;
     }
     
     public override async Task<Element> GetElementFromTableAsync(string tableName)

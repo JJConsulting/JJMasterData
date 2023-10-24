@@ -1,38 +1,33 @@
 #nullable enable
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
 internal class ValueExpressionProvider : IAsyncExpressionProvider, IBooleanExpressionProvider
 {
-    private readonly ExpressionParser _expressionParser;
-
-    public ValueExpressionProvider(ExpressionParser expressionParser)
-    {
-        _expressionParser = expressionParser;
-    }
-
     public string Prefix => "val";
     public string Title => "Value";
 
-    private object? EvalutateObject(string expression, FormStateData formStateData)
+    private static object EvalutateObject(string expression, IDictionary<string,object?> parsedValues)
     {
-        if (expression.Contains("{"))
-            return _expressionParser.ParseExpression(expression, formStateData);
+        if (expression.Contains(ExpressionHelper.Begin.ToString()))
+        {
+            return ExpressionHelper.ReplaceExpression(expression, parsedValues);
+        }
         
         return expression.Replace("val:", string.Empty).Trim();
     }
     
-    public bool Evaluate(string expression, FormStateData formStateData)
+    public bool Evaluate(string expression, IDictionary<string,object?> parsedValues)
     {
-        return StringManager.ParseBool(EvalutateObject(expression,formStateData));
+        return StringManager.ParseBool(EvalutateObject(expression,parsedValues));
     }
 
-    public async Task<object?> EvaluateAsync(string expression, FormStateData formStateData)
+    public async Task<object?> EvaluateAsync(string expression, IDictionary<string,object?> parsedValues)
     {
-        return await Task.FromResult(EvalutateObject(expression, formStateData));
+        return await Task.FromResult(EvalutateObject(expression, parsedValues));
     }
 }

@@ -42,10 +42,17 @@ public class ExpressionsService
         return await GetExpressionValueAsync(field.DefaultValue, field, formStateData);
     }
 
-    public string? ParseExpression(string? expression, FormStateData formStateData, bool addQuotationMarks = false,
-        ExpressionParserInterval? interval = null)
+    public string? ParseExpression(
+        string? expression, 
+        FormStateData formStateData, 
+        bool addQuotationMarks = false)
     {
-        return ExpressionParser.ParseExpression(expression, formStateData, addQuotationMarks, interval);
+        var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
+
+        if (expression != null) 
+            return ExpressionHelper.ReplaceExpression(expression, parsedValues, addQuotationMarks);
+
+        return null;
     }
 
     public bool GetBoolValue(string expression, FormStateData formStateData)
@@ -64,7 +71,11 @@ public class ExpressionsService
         try
         {
             Logger.LogDebug("Executing expression: {Expression}", expression);
-            result = provider.Evaluate(expression, formStateData);
+
+            var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
+            var parsedExpression = expression.Split(':')[1];
+            
+            result = provider.Evaluate(parsedExpression, parsedValues);
         }
 
         catch (Exception ex)
@@ -102,7 +113,10 @@ public class ExpressionsService
         }
         try
         {
-            var result = await provider.EvaluateAsync(expression, formStateData);
+            var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
+            var parsedExpression = expression.Split(':')[1];
+            var result = await provider.EvaluateAsync(parsedExpression, parsedValues);
+            
             return result?.ToString();
         }
 

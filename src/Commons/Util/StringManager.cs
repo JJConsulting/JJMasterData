@@ -42,6 +42,7 @@ public static class StringManager
     /// <remarks>
     /// Author: Lucio Pelinson 21-05-2012
     /// </remarks>
+    [Obsolete("This don't prevent SQL injection.")]
     public static string ClearText(string? input)
     {
         if (input == null)
@@ -108,24 +109,24 @@ public static class StringManager
     
     public static string ClearCpfCnpjChars(string value)
     {
-        string sRet = ClearText(value);
-        sRet = sRet.Replace("-", "");
-        sRet = sRet.Replace("/", "");
-        sRet = sRet.Replace(".", "");
+        string cnpf = value;
+        cnpf = cnpf.Replace("-", "");
+        cnpf = cnpf.Replace("/", "");
+        cnpf = cnpf.Replace(".", "");
 
-        return sRet;
+        return cnpf;
     }
     
     public static string ClearTelChars(string value)
     {
-        string sRet = ClearText(value);
-        sRet = sRet.Replace("(", "");
-        sRet = sRet.Replace(")", "");
-        sRet = sRet.Replace("-", "");
-        sRet = sRet.Replace(".", "");
-        sRet = sRet.Replace(" ", "");
+        string phone = value;
+        phone = phone.Replace("(", "");
+        phone = phone.Replace(")", "");
+        phone = phone.Replace("-", "");
+        phone = phone.Replace(".", "");
+        phone = phone.Replace(" ", "");
             
-        return sRet;
+        return phone;
     }
 
     /// <summary>

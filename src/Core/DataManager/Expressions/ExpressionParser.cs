@@ -1,11 +1,11 @@
 #nullable enable
+using System.Collections.Generic;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
-
 
 public class ExpressionParser
 {
@@ -20,25 +20,17 @@ public class ExpressionParser
         Logger = logger;
     }
     
-    public string? ParseExpression(
+    public IDictionary<string,object?> ParseExpression(
         string? expression,
-        FormStateData formStateData,
-        bool addQuotationMarks = false,
-        ExpressionParserInterval? interval = null)
+        FormStateData formStateData)
     {
-        if (expression is null)
-            return null;
 
-        var parsedExpression = expression;
+        var result = new Dictionary<string, object?>();
         
-        if (expression.Contains(":"))
-        {
-            parsedExpression = expression.Split(':')[1];
-        }
-
-        interval ??= new ExpressionParserInterval();
-
-        var valueList = StringManager.FindValuesByInterval(expression, interval.Begin, interval.End);
+        if (expression is null)
+            return result;
+        
+        var valueList = StringManager.FindValuesByInterval(expression, ExpressionHelper.Begin, ExpressionHelper.End);
         var userValues = formStateData.UserValues;
         var state = formStateData.PageState;
         var values = formStateData.Values;
@@ -78,19 +70,13 @@ public class ExpressionParser
             {
                 parsedValue = string.Empty;
             }
-
-            if (parsedValue == null) 
-                continue;
-
-            if (addQuotationMarks && !double.TryParse(parsedValue, out _))
-                parsedValue = $"'{parsedValue}'";
             
-            parsedExpression = parsedExpression.Replace($"{interval.Begin}{field}{interval.End}", parsedValue);
+            result[field] = parsedValue;
+            
+            Logger.LogDebug("Added parsed value to {Field}: {ParsedValue}", field, parsedValue);
         }
-
-        Logger.LogDebug("Parsed expression: {ParsedExpression}", expression);
         
-        return parsedExpression;
+        return result;
     }
 }
 
