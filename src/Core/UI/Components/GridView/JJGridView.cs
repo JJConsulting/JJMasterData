@@ -624,7 +624,7 @@ public class JJGridView : AsyncComponent
         {
             div.WithAttribute("id", $"grid-view-{Name}");
 
-            div.AppendIf(ShowTitle, (Func<HtmlBuilder>)GetTitle(await GetDefaultValuesAsync()).GetHtmlBuilder);
+            div.AppendIf(ShowTitle, GetTitle(await GetDefaultValuesAsync()).GetHtmlBuilder);
 
             if (FilterAction.IsVisible)
             {
