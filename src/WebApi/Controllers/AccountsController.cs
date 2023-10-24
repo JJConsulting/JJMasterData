@@ -7,7 +7,6 @@ namespace JJMasterData.WebApi.Controllers;
 [ApiController]
 public class AccountsController : ControllerBase
 {
-
     private readonly AccountService Service;
 
     public AccountsController(AccountService service)
@@ -32,7 +31,7 @@ public class AccountsController : ControllerBase
         if (form == null)
             throw new ArgumentNullException(nameof(form));
 
-        UserAccessInfo info = Service.Login(form.User, form.Password, form.AppId);
+        var info = Service.Login(form.User, form.Password, form.AppId);
 
         if (!info.IsValid)
             return Unauthorized();

@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Plugins\Swagger.AspNetCore\Swagger.AspNetCore.csproj" />
   </ItemGroup>
 
+
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="jjmasterdata.json" /></VisualStudio></ProjectExtensions>
 
 </Project>

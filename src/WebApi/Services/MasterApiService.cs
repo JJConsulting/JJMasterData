@@ -21,7 +21,6 @@ namespace JJMasterData.WebApi.Services;
 public class MasterApiService
 {
     private readonly HttpContext _httpContext;
-    private AccountService AccountService { get; }
     private ExpressionsService ExpressionsService { get; }
     private IHttpContext HttpContext { get; }
     private DataItemService DataItemService { get; }
@@ -32,7 +31,6 @@ public class MasterApiService
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
     public MasterApiService(
-        AccountService accountService,
         ExpressionsService expressionsService,
         IHttpContextAccessor httpContextAccessor,
         IHttpContext httpContext,
@@ -45,7 +43,6 @@ public class MasterApiService
         )
     {
         _httpContext = httpContextAccessor.HttpContext!;
-        AccountService = accountService;
         ExpressionsService = expressionsService;
         HttpContext = httpContext;
         DataItemService = dataItemService;
@@ -453,20 +450,6 @@ public class MasterApiService
 
         return filters;
     }
-
-    private string GetUserId()
-    {
-        var tokenInfo = AccountService.GetTokenInfo(_httpContext.User.Claims.FirstOrDefault()?.Value);
-        if (tokenInfo == null)
-            throw new UnauthorizedAccessException("Invalid Token");
-
-        string? userId = tokenInfo.UserId;
-        if (string.IsNullOrEmpty(userId))
-            throw new UnauthorizedAccessException("Invalid User");
-
-        return userId;
-    }
-
 
     private DataContext GetDataContext()
     {

@@ -3,7 +3,7 @@ using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Configuration;
 using JJMasterData.WebApi.Handlers;
 using JJMasterData.Swagger.AspNetCore;
-using JJMasterData.WebApi.Extensions;
+using JJMasterData.WebApi.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;

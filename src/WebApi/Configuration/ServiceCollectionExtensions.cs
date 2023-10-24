@@ -1,6 +1,6 @@
 using JJMasterData.WebApi.Services;
 
-namespace JJMasterData.WebApi.Extensions;
+namespace JJMasterData.WebApi.Configuration;
 
 public static class ServiceCollectionExtensions
 {
