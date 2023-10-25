@@ -18,11 +18,11 @@ public class ExpressionsMigrationService
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private ILogger<ExpressionsMigrationService> Logger { get; }
-    private JJMasterDataCoreOptions Options { get; }
+    private MasterDataCoreOptions Options { get; }
     public ExpressionsMigrationService(
         IEntityRepository entityRepository, 
         IDataDictionaryRepository dataDictionaryRepository,
-        IOptions<JJMasterDataCoreOptions> options,
+        IOptions<MasterDataCoreOptions> options,
         ILogger<ExpressionsMigrationService> logger
         )
     {

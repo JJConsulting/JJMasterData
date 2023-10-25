@@ -21,7 +21,7 @@ public class OracleProvider : BaseProvider
     public override DataAccessProvider DataAccessProvider => DataAccessProvider.Oracle;
     public override string VariablePrefix => "p_";
 
-    public OracleProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
+    public OracleProvider(DataAccess dataAccess, MasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
     {
     }
 

@@ -10,7 +10,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class UIOptionsService : BaseService
 {
-    public UIOptionsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public UIOptionsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<MasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
     }

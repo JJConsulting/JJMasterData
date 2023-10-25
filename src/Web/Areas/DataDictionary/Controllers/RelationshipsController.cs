@@ -11,12 +11,12 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class RelationshipsController : DataDictionaryController
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private readonly RelationshipsService _relationshipsService;
 
     #region Index
 
-    public RelationshipsController(RelationshipsService relationshipsService,IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public RelationshipsController(RelationshipsService relationshipsService,IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
         _relationshipsService = relationshipsService;

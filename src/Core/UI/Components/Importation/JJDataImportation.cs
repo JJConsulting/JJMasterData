@@ -97,7 +97,7 @@ public class JJDataImportation : ProcessComponent
         DataImportationWorkerFactory dataImportationWorkerFactory,
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer) 
+        IStringLocalizer<MasterDataResources> stringLocalizer) 
         : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService, stringLocalizer)
     {
         CurrentContext = currentContext;

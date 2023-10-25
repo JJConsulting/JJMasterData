@@ -10,9 +10,9 @@ namespace JJMasterData.Swagger.AspNetCore;
 
 internal class DataDictionaryOperationFactory
 {
-    internal FormElement FormElement { get; set; }
-    internal FormElementApiOptions Options { get; set; }
-    internal string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
+    private FormElement FormElement { get; set; }
+    private FormElementApiOptions Options { get; set; }
+    private string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
     internal DataDictionaryOperationFactory(FormElement formElement, FormElementApiOptions options)
     {
         FormElement = formElement;
@@ -871,7 +871,7 @@ internal class DataDictionaryOperationFactory
         var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
         return GetPrimaryKeysNames(pkFields);
     }
-    public string GetPrimaryKeysNames(List<FormElementField> pkFields)
+    public static string GetPrimaryKeysNames(List<FormElementField> pkFields)
     {
         string nameFields = string.Empty;
         foreach (var field in pkFields)

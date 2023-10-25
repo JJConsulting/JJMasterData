@@ -1,4 +1,4 @@
-﻿@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
 @using JJMasterData.Core.UI
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel
 
@@ -18,17 +18,17 @@
        @Html.TextBoxFor(model => model.FormElement.TableName, Model.HtmlAttributes)
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
-        <label asp-for="FormElement.CustomProcNameGet" class=" col-form-label form-label">
+        <label asp-for="FormElement.ReadProcedureName" class=" col-form-label form-label">
             @StringLocalizer["Get Procedure Name"]
             <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@StringLocalizer["Name for the procedure used to recover data."]"></span>
         </label>
-        @Html.TextBoxFor(model => model.FormElement.CustomProcNameGet, Model.HtmlAttributes)
+        @Html.TextBoxFor(model => model.FormElement.ReadProcedureName, Model.HtmlAttributes)
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6 ">
-        <label asp-for="FormElement.CustomProcNameGet" class=" col-form-label form-label">
+        <label asp-for="FormElement.ReadProcedureName" class=" col-form-label form-label">
             @StringLocalizer["Set Procedure Name"]
             <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@StringLocalizer["Name for the procedure used to write data."]"></span>
         </label>
-       @Html.TextBoxFor(model => model.FormElement.CustomProcNameSet, Model.HtmlAttributes)
+       @Html.TextBoxFor(model => model.FormElement.WriteProcedureName, Model.HtmlAttributes)
     </div>
 </div>

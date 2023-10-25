@@ -98,7 +98,7 @@ public class JJUploadArea : AsyncComponent
     private IHttpContext CurrentContext { get; }
     private UploadAreaService UploadAreaService { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private IEncryptionService EncryptionService { get; }
     
     private RouteContext? _routeContext;
@@ -122,7 +122,7 @@ public class JJUploadArea : AsyncComponent
         UploadAreaService uploadAreaService,
         JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         Name = "upload-area";
         CurrentContext = currentContext;

@@ -11,7 +11,7 @@ public class DataImportationWorkerFactory
 {
     public ILoggerFactory LoggerFactory { get; }
 
-    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    public IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     public FieldValuesService FieldValuesService { get; }
 
@@ -23,7 +23,7 @@ public class DataImportationWorkerFactory
 
     public DataImportationWorkerFactory(FormService formService, ExpressionsService expressionsService,
         IEntityRepository entityRepository, FieldValuesService fieldValuesService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
+        IStringLocalizer<MasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
     {
         FormService = formService;
         ExpressionsService = expressionsService;

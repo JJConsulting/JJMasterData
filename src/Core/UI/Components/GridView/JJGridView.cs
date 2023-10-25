@@ -519,7 +519,7 @@ public class JJGridView : AsyncComponent
     internal FieldsService FieldsService { get; }
     internal ExpressionsService ExpressionsService { get; }
 
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
 
@@ -541,7 +541,7 @@ public class JJGridView : AsyncComponent
         ExpressionsService expressionsService,
         FieldsService fieldsService,
         FormValuesService formValuesService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory)
     {
         Name = $"{ComponentNameGenerator.Create(formElement.Name)}-grid-view";

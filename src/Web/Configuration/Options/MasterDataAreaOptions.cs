@@ -1,6 +1,6 @@
 namespace JJMasterData.Web.Configuration.Options;
 
-public class JJMasterDataAreaOptions
+public class MasterDataAreaOptions
 {
     /// <summary>
     /// The first route path before the Areas from the JJMasterData.Web Razor Class Library. If <see cref="EnableCultureProvider"/> is set to true, will be added after {culture}.

@@ -7,7 +7,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJLabel : HtmlComponent
 {
-    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
     public string Tooltip { get; set; }
 
     public string LabelFor
@@ -20,7 +20,7 @@ public class JJLabel : HtmlComponent
     public string RequiredText { get; set; }
     public bool IsRequired { get; set; }
 
-    internal JJLabel(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    internal JJLabel(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         _stringLocalizer = stringLocalizer;
         RequiredText = stringLocalizer["Required"];

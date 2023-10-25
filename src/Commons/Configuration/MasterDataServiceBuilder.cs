@@ -32,7 +32,7 @@ public class MasterDataServiceBuilder
         return WithEntityRepository(serviceProvider =>
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            var options = serviceProvider.GetRequiredService<IOptions<JJMasterDataCommonsOptions>>();
+            var options = serviceProvider.GetRequiredService<IOptions<MasterDataCommonsOptions>>();
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             return new EntityRepository(configuration.GetConnectionString(connectionString), provider, options,
                 loggerFactory);

@@ -1,8 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Html
 @using JJMasterData.Core.UI.Components
 @using JJMasterData.Core.UI
+@using JJMasterData.Core.DataDictionary.Models
 
-@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IComponentFactory ComponentFactory
 
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.DataDictionaryViewModel;
@@ -119,8 +120,8 @@
                         </a>
                     </li>
                     <li class="@NavItem("Api") @(BootstrapHelper.Version >= 5 ? "me-auto" : string.Empty)">
-                        <a class="nav-link @ActiveBs5("Api")" href="@Url.Action("Index", "Api", new { elementName = Model.ElementName })">
-                            <span class="fa fa-globe" aria-selected="@AriaSelected("Api")"></span>&nbsp;@StringLocalizer["API"]
+                        <a class="nav-link @ActiveBs5("WebApi")" href="@Url.Action("Index", "Api", new { elementName = Model.ElementName })">
+                            <span class="fa fa-globe" aria-selected="@AriaSelected("WebApi")"></span>&nbsp;@StringLocalizer["WebApi"]
                         </a>
                     </li>
                     @if (BootstrapHelper.Version >= 5)

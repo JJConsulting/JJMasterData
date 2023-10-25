@@ -12,7 +12,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class PanelService : BaseService
 {
-    public PanelService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public PanelService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<MasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
     }

@@ -9,10 +9,10 @@ namespace JJMasterData.Core.UI.Components;
 internal class CheckBoxFactory : IControlFactory<JJCheckBox>
 {
     private IFormValues FormValues { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
 
-    public CheckBoxFactory(IFormValues formValues, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public CheckBoxFactory(IFormValues formValues, IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         FormValues = formValues;
         StringLocalizer = stringLocalizer;

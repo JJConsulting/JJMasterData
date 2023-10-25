@@ -8,6 +8,8 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.WebApi.Models;
 using Microsoft.Extensions.Localization;
 
@@ -15,35 +17,37 @@ namespace JJMasterData.WebApi.Services;
 
 public class DictionariesService
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private ILogger<DictionariesService> Logger { get; }
-    private IEntityRepository _entityRepository;
-    private IDataDictionaryRepository _dataDictionaryRepository;
-
+    private readonly IEntityRepository _entityRepository;
+    private readonly IDataDictionaryRepository _dataDictionaryRepository;
+    private readonly IHttpContext _httpContext;
     public DictionariesService(
         IDataDictionaryRepository dataDictionaryRepository,
         IEntityRepository entityRepository,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        IHttpContext httpContext,
         ILogger<DictionariesService> logger)
     {
         StringLocalizer = stringLocalizer;
         Logger = logger;
         _dataDictionaryRepository = dataDictionaryRepository;
         _entityRepository = entityRepository;
+        _httpContext = httpContext;
     }
 
     /// <summary>
     /// Analisa uma lista de elementos retornando quantos registros precisam ser sincronizados
     /// </summary>
-    /// <param name="userId">Id do Usuários</param>
     /// <param name="listSync">Lista de elementos</param>
     /// <param name="showLogInfo">Grava log detalhado de cada operação</param>
     /// <param name="maxRecordsAllowed">
     /// Numero máximo de registros permitidos, 
     /// se ultrapassar esse numero uma exeção será disparada
     /// </param>
-    public async Task<DicSyncInfo> GetSyncInfoAsync(string userId, DicSyncParam[] listSync, bool showLogInfo, long maxRecordsAllowed = 0)
+    public async Task<DicSyncInfo> GetSyncInfoAsync(DicSyncParam[] listSync, bool showLogInfo, long maxRecordsAllowed = 0)
     {
+        var userId = DataHelper.GetCurrentUserId(_httpContext, null!);
         if (listSync == null)
             throw new ArgumentNullException(nameof(listSync));
 
@@ -62,7 +66,7 @@ public class DictionariesService
             var dStartObj = DateTime.Now;
             var dictionary = dictionaries.First(x => x.Name.Equals(os.Name));
             if (dictionary == null)
-                throw new JJMasterDataException($"Dictionary {os.Name} not found or not configured for sync");
+                throw new JJMasterDataException($"Element {os.Name} not found or not configured for sync");
 
             var filters = GetSyncInfoFilter(userId, dictionary, os.Filters);
             var info = new DicSyncInfoElement

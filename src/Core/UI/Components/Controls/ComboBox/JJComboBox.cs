@@ -22,7 +22,7 @@ public class JJComboBox : ControlBase
     private string? _selectedValue;
 
     private ExpressionsService ExpressionsService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private DataItemService DataItemService { get; }
     internal ILogger<JJComboBox> Logger { get; }
     internal FormStateData FormStateData { get; set; }
@@ -52,7 +52,7 @@ public class JJComboBox : ControlBase
         IFormValues formValues,
         DataItemService dataItemService,
         ExpressionsService expressionsService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<JJComboBox> logger) : base(formValues)
     {
         DataItemService = dataItemService;

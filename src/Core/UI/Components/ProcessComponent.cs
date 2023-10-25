@@ -61,7 +61,7 @@ public abstract class ProcessComponent : AsyncComponent
     internal IBackgroundTaskManager BackgroundTaskManager { get; }
     private ILogger<ProcessComponent> Logger { get; }
     internal IEncryptionService EncryptionService { get; }
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     protected ProcessComponent(
         IHttpContext currentContext,
@@ -71,7 +71,7 @@ public abstract class ProcessComponent : AsyncComponent
         IBackgroundTaskManager backgroundTaskManager,
         ILogger<ProcessComponent> logger,
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
         ExpressionsService = expressionsService;

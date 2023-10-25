@@ -19,7 +19,7 @@ namespace JJMasterData.Commons.Configuration.Options;
 /// </code>
 /// </example>
 /// </summary>
-public class JJMasterDataCommonsOptions
+public class MasterDataCommonsOptions
 {
 
     public string ConnectionString { get; set; } = null!;
@@ -50,8 +50,8 @@ public class JJMasterDataCommonsOptions
 
     public string GetReadProcedureName(Element element)
     {
-        if (!string.IsNullOrEmpty(element.CustomProcNameGet))
-            return element.CustomProcNameGet;
+        if (!string.IsNullOrEmpty(element.ReadProcedureName))
+            return element.ReadProcedureName;
 
         string tableName = element.TableName;
 
@@ -60,8 +60,8 @@ public class JJMasterDataCommonsOptions
 
     public string GetWriteProcedureName(Element element)
     {
-        if (!string.IsNullOrEmpty(element.CustomProcNameSet))
-            return element.CustomProcNameSet;
+        if (!string.IsNullOrEmpty(element.WriteProcedureName))
+            return element.WriteProcedureName;
 
         string tableName = element.TableName;
 

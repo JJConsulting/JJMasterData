@@ -56,7 +56,7 @@ public class FileIO
     /// <returns></returns>
     public static string GetApplicationPath()
     {
-        return JJMasterDataCommonsOptions.IsNetFramework ? AppDomain.CurrentDomain.BaseDirectory : Environment.CurrentDirectory;
+        return MasterDataCommonsOptions.IsNetFramework ? AppDomain.CurrentDomain.BaseDirectory : Environment.CurrentDirectory;
     }
 
 

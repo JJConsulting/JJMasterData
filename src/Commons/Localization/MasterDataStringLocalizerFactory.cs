@@ -7,18 +7,18 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Localization;
 
-public class JJMasterDataStringLocalizerFactory : IStringLocalizerFactory
+public class MasterDataStringLocalizerFactory : IStringLocalizerFactory
 {
     private ResourceManagerStringLocalizerFactory ResourceManagerStringLocalizerFactory { get; }
     private IEntityRepository EntityRepository { get; }
     private IMemoryCache Cache { get; }
-    private IOptions<JJMasterDataCommonsOptions> Options { get; }
+    private IOptions<MasterDataCommonsOptions> Options { get; }
 
-    public JJMasterDataStringLocalizerFactory(
+    public MasterDataStringLocalizerFactory(
         ResourceManagerStringLocalizerFactory resourceManagerStringLocalizerFactory,
         IEntityRepository entityRepository,
         IMemoryCache cache,
-        IOptions<JJMasterDataCommonsOptions> options)
+        IOptions<MasterDataCommonsOptions> options)
     {
         ResourceManagerStringLocalizerFactory = resourceManagerStringLocalizerFactory;
         EntityRepository = entityRepository;

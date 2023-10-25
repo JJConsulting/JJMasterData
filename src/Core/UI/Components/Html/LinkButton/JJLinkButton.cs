@@ -10,7 +10,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJLinkButton : HtmlComponent
 {
-    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
 
     private JJSpinner _spinner;
 
@@ -69,7 +69,7 @@ public class JJLinkButton : HtmlComponent
 
     internal bool ShowInFilter { get; set; }
 
-    internal JJLinkButton(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    internal JJLinkButton(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         _stringLocalizer = stringLocalizer;
     }

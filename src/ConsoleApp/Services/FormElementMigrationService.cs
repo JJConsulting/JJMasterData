@@ -16,11 +16,11 @@ public class FormElementMigrationService
     private ILogger<FormElementMigrationService> Logger { get; }
     private DataAccess DataAccess { get; }
     private string TableName => Options.DataDictionaryTableName;
-    private JJMasterDataCoreOptions Options { get; }
+    private MasterDataCoreOptions Options { get; }
     public FormElementMigrationService(
         IDataDictionaryRepository dataDictionaryRepository, 
         MetadataRepository metadataRepository,
-        IOptions<JJMasterDataCoreOptions> options,
+        IOptions<MasterDataCoreOptions> options,
         ExpressionsMigrationService expressionsMigrationService,
         ILogger<FormElementMigrationService> logger)
     {

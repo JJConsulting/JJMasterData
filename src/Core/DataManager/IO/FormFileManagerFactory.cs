@@ -8,10 +8,10 @@ namespace JJMasterData.Core.DataManager.IO;
 public class FormFileManagerFactory
 {
     private IHttpContext HttpContext { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
-    public FormFileManagerFactory(IHttpContext httpContext, IStringLocalizer<JJMasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
+    public FormFileManagerFactory(IHttpContext httpContext, IStringLocalizer<MasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
     {
         HttpContext = httpContext;
         StringLocalizer = stringLocalizer;

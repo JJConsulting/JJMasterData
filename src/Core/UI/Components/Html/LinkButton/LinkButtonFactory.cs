@@ -5,11 +5,11 @@ namespace JJMasterData.Core.UI.Components;
 
 public class LinkButtonFactory : IComponentFactory<JJLinkButton>
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
   
     
     public LinkButtonFactory(
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
     }

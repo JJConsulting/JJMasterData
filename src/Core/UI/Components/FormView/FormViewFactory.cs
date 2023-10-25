@@ -26,8 +26,8 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     private IEncryptionService EncryptionService { get; }
     private FieldValuesService FieldValuesService { get; }
     private ExpressionsService ExpressionsService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private IOptions<JJMasterDataCoreOptions> Options { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private IOptions<MasterDataCoreOptions> Options { get; }
     private IEnumerable<IPluginHandler> PluginHandlers { get; }
     private IComponentFactory Factory { get; }
     private IFormEventHandlerFactory FormEventHandlerFactory { get; }
@@ -42,8 +42,8 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
         IEnumerable<IPluginHandler> pluginHandlers,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IOptions<JJMasterDataCoreOptions> options,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        IOptions<MasterDataCoreOptions> options,
         IComponentFactory factory,
         IFormEventHandlerFactory formEventHandlerFactory
     )

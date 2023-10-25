@@ -17,7 +17,7 @@ public class FieldService : BaseService
     public FieldService(
         IValidationDictionary validationDictionary, 
         IDataDictionaryRepository dataDictionaryRepository,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
 

@@ -11,7 +11,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class GridFormSettings
 {
     private readonly IHttpContext _currentContext;
-    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
 
     private const string TableTotalPerPage = "grid-view-table-regperpage";
     private const string TableTotalPaginationButtons = "grid-view-table-totalpagebuttons";
@@ -20,7 +20,7 @@ internal class GridFormSettings
     private const string TableRowHover = "grid-view-table-rowhover";
     private const string TableIsHeaderFixed = "grid-view-table-header-fixed";
 
-    public GridFormSettings(IHttpContext currentContext, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public GridFormSettings(IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         _currentContext = currentContext;
         _stringLocalizer = stringLocalizer;

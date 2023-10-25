@@ -37,7 +37,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
     private ILoggerFactory LoggerFactory { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
 
     public DataImportationFactory(
@@ -53,7 +53,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         DataImportationWorkerFactory dataImportationWorkerFactory,
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         DataDictionaryRepository = dataDictionaryRepository;
         EntityRepository = entityRepository;

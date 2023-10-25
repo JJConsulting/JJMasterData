@@ -20,7 +20,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     private readonly IEntityRepository _entityRepository;
     internal Element MasterDataElement { get; }
 
-    public SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options)
+    public SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options)
     {
         _entityRepository = entityRepository;
         MasterDataElement = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);

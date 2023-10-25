@@ -32,6 +32,8 @@ public class CheckboxTagHelper : TagHelper
     
     [HtmlAttributeName("onchange")] 
     public string? OnChange { get; set; }
+
+    public bool Enabled { get; set; } = true;
     
     public CheckboxTagHelper(IControlFactory<JJCheckBox> checkboxFactory)
     {
@@ -42,7 +44,7 @@ public class CheckboxTagHelper : TagHelper
     {
         var checkBox = CheckboxFactory.Create();
         checkBox.Name = Name ?? For?.Name ?? throw new JJMasterDataException("Either for or name attributes are required.");
-
+        checkBox.Enabled = Enabled;
         if (For is not null)
         {
             checkBox.IsChecked = For?.Model is true;

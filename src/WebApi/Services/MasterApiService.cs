@@ -26,7 +26,7 @@ public class MasterApiService
     private DataItemService DataItemService { get; }
     private FormService FormService { get; }
     private FieldsService FieldsService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
@@ -39,7 +39,7 @@ public class MasterApiService
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         FieldsService fieldsService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer
+        IStringLocalizer<MasterDataResources> stringLocalizer
         )
     {
         _httpContext = httpContextAccessor.HttpContext!;
@@ -449,6 +449,11 @@ public class MasterApiService
         }
 
         return filters;
+    }
+
+    private string GetUserId()
+    {
+        return DataHelper.GetCurrentUserId(HttpContext, null)!;
     }
 
     private DataContext GetDataContext()

@@ -41,8 +41,8 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
 
     public ExcelWriter(
         ExpressionsService expressionsService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IOptions<JJMasterDataCoreOptions> options, 
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        IOptions<MasterDataCoreOptions> options, 
         ControlFactory controlFactory,
         ILoggerFactory loggerFactory, 
         IEntityRepository entityRepository,

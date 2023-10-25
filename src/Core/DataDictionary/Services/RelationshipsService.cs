@@ -17,7 +17,7 @@ public class RelationshipsService : BaseService
     public RelationshipsService(
         IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         PanelService panelService)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {

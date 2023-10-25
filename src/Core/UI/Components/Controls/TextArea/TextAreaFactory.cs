@@ -9,9 +9,9 @@ namespace JJMasterData.Core.UI.Components;
 internal class TextAreaFactory : IControlFactory<JJTextArea>
 {
     private IFormValues FormValues { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
-    public TextAreaFactory(IFormValues formValues, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public TextAreaFactory(IFormValues formValues, IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         FormValues = formValues;
 

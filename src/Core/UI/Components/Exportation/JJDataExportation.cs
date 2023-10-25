@@ -59,7 +59,7 @@ public class JJDataExportation : ProcessComponent
     public bool ShowBorder { get; set; }
 
     public bool ShowRowStriped { get; set; }
-    internal JJMasterDataCoreOptions MasterDataOptions { get; }
+    internal MasterDataCoreOptions MasterDataOptions { get; }
 
     internal DataExportationScripts Scripts => _dataExportationScripts ??= new DataExportationScripts(this);
     internal IComponentFactory ComponentFactory { get; }
@@ -73,9 +73,9 @@ public class JJDataExportation : ProcessComponent
         IEntityRepository entityRepository,
         ExpressionsService expressionsService,
         FieldsService fieldsService,
-        IOptions<JJMasterDataCoreOptions> masterDataOptions,
+        IOptions<MasterDataCoreOptions> masterDataOptions,
         IBackgroundTaskManager backgroundTaskManager, 
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory,
         ILoggerFactory loggerFactory,
         IHttpContext currentContext,

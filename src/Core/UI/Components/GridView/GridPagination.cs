@@ -11,7 +11,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class GridPagination
 {
     private JJGridView GridView { get;  }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get;  }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get;  }
     private int _totalPages;
     private int _totalButtons;
     private int _startButtonIndex;

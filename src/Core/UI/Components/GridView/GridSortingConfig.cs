@@ -20,7 +20,7 @@ internal class GridSortingConfig
 
     private readonly GridScripts _gridScripts;
     private readonly IComponentFactory _componentFactory;
-    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
     
     public GridSortingConfig(JJGridView grid)
     {

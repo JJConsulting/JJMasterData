@@ -9,9 +9,9 @@ namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class LocalizationFormElementFactory
 {
-    private JJMasterDataCommonsOptions Options { get; }
+    private MasterDataCommonsOptions Options { get; }
 
-    public LocalizationFormElementFactory(IOptions<JJMasterDataCommonsOptions> options)
+    public LocalizationFormElementFactory(IOptions<MasterDataCommonsOptions> options)
     {
         Options = options.Value;
     }
@@ -20,7 +20,7 @@ public class LocalizationFormElementFactory
     {
         var supportedCultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = JJMasterDataStringLocalizerElement.GetElement(Options);
+        var element = MasterDataStringLocalizerElement.GetElement(Options);
         
         var formElement = new FormElement(element)
         {

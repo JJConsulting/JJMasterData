@@ -2,7 +2,7 @@ using JJMasterData.Core.Configuration.Options;
 
 namespace JJMasterData.Web.Configuration.Options;
 
-public class JJMasterDataWebOptions : JJMasterDataCoreOptions
+public class MasterDataWebOptions : MasterDataCoreOptions
 {
     /// <summary>
     /// Default value: _MasterDataLayout <br></br>

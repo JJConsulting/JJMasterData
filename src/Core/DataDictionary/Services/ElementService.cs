@@ -30,13 +30,13 @@ public class ElementService : BaseService
     private DataDictionaryFormElementFactory DataDictionaryFormElementFactory { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private readonly IEntityRepository _entityRepository;
-    private readonly JJMasterDataCoreOptions _options;
+    private readonly MasterDataCoreOptions _options;
 
     public ElementService(
         IFormElementComponentFactory<JJFormView> formViewFactory,
         IValidationDictionary validationDictionary,
-        IOptions<JJMasterDataCoreOptions> options,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IOptions<MasterDataCoreOptions> options,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IEntityRepository entityRepository,
         IEncryptionService encryptionService,
         IDataDictionaryRepository dataDictionaryRepository,
@@ -71,8 +71,8 @@ public class ElementService : BaseService
             {
                 TableName = tableName,
                 Name = GetElementName(tableName),
-                CustomProcNameGet = _options.GetReadProcedureName(tableName),
-                CustomProcNameSet = _options.GetWriteProcedureName(tableName)
+                ReadProcedureName = _options.GetReadProcedureName(tableName),
+                WriteProcedureName = _options.GetWriteProcedureName(tableName)
             };
         }
 

@@ -21,14 +21,14 @@ public class LookupController : MasterDataController
     private FormValuesService FormValuesService { get; }
     private IEncryptionService EncryptionService { get; }
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     public LookupController(
         LookupService lookupService,
         FormValuesService formValuesService,
         IEncryptionService encryptionService,
         IFormElementComponentFactory<JJFormView> formViewFactory,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer
+        IStringLocalizer<MasterDataResources> stringLocalizer
         )
     {
         LookupService = lookupService;

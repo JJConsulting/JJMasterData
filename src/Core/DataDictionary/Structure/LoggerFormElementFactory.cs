@@ -13,11 +13,11 @@ namespace JJMasterData.Core.DataDictionary.Structure;
 public class LoggerFormElementFactory
 {
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private DbLoggerOptions Options { get; }
     public string ElementName { get; }
 
-    public LoggerFormElementFactory(IOptions<DbLoggerOptions> options,JJMasterDataUrlHelper urlHelper, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public LoggerFormElementFactory(IOptions<DbLoggerOptions> options,JJMasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         UrlHelper = urlHelper;
         StringLocalizer = stringLocalizer;

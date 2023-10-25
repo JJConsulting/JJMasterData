@@ -6,9 +6,9 @@ namespace JJMasterData.Core.UI.Components;
 
 public class ValidationSummaryFactory : IComponentFactory<JJValidationSummary>
 {
-    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
 
-    public ValidationSummaryFactory(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public ValidationSummaryFactory(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         _stringLocalizer = stringLocalizer;
     }

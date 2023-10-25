@@ -7,7 +7,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class DataExportationLog
 {
     private DataExportationScripts Scripts { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     public DataExportationLog(JJDataExportation dataExportation)
     {

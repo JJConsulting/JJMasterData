@@ -18,7 +18,7 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private IComponentFactory ComponentFactory { get; }
     private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     public AuditLogViewFactory(
         IHttpContext httpContext,
@@ -27,7 +27,7 @@ internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView
         IDataDictionaryRepository dataDictionaryRepository,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         HttpContext = httpContext;
         EntityRepository = entityRepository;

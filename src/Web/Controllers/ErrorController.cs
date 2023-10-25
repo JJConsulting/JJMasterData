@@ -12,7 +12,7 @@ public class ErrorController : Controller
 {
     [Route("/Error")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Index([FromQuery]int? statusCode, [FromServices] ILogger<ErrorController>? logger, [FromServices] IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public IActionResult Index([FromQuery]int? statusCode, [FromServices] ILogger<ErrorController>? logger, [FromServices] IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         var exceptionHandler =
             HttpContext.Features.Get<IExceptionHandlerPathFeature>();

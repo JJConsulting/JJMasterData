@@ -21,7 +21,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
     private FormValuesService FormValuesService { get; }
     private ExpressionsService ExpressionsService { get; }
     private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private IGridEventHandlerFactory GridEventHandlerFactory { get; }
     private IComponentFactory ComponentFactory { get; }
     private IEntityRepository EntityRepository { get; }
@@ -37,7 +37,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         ExpressionsService expressionsService,
         FieldsService fieldsService,
         FormValuesService formValuesService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IGridEventHandlerFactory gridEventHandlerFactory,
         IComponentFactory componentFactory)
     {

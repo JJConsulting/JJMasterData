@@ -16,12 +16,12 @@ public abstract class BaseService
     private readonly IValidationDictionary _validationDictionary;
 
     public IDataDictionaryRepository DataDictionaryRepository { get; }
-    protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    protected IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     protected BaseService(
         IValidationDictionary validationDictionary, 
         IDataDictionaryRepository dataDictionaryRepository,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer
+        IStringLocalizer<MasterDataResources> stringLocalizer
         )
     {
         _validationDictionary = validationDictionary;

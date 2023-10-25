@@ -13,12 +13,12 @@ namespace JJMasterData.Web.Areas.DataDictionary.Services;
 
 public class OptionsService : BaseService
 {
-    internal IWritableOptions<JJMasterDataWebOptions>? JJMasterDataWritableOptions { get; }
+    internal IWritableOptions<MasterDataWebOptions>? JJMasterDataWritableOptions { get; }
 
     public OptionsService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
-        IWritableOptions<JJMasterDataWebOptions>? masterDataWritableOptions = null)
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        IWritableOptions<MasterDataWebOptions>? masterDataWritableOptions = null)
         : base(validationDictionary, dataDictionaryRepository, stringLocalizer)
     {
         JJMasterDataWritableOptions = masterDataWritableOptions;

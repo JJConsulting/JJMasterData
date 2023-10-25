@@ -26,7 +26,7 @@ internal class GridFilter
     private JJGridView GridView { get; set; }
 
     private IHttpContext CurrentContext => GridView.CurrentContext;
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer => GridView.StringLocalizer;
+    private IStringLocalizer<MasterDataResources> StringLocalizer => GridView.StringLocalizer;
     public string Name => GridView.Name + "-filter";
 
     public GridFilter(JJGridView grid)

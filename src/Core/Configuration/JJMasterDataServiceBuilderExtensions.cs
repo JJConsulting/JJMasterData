@@ -65,12 +65,12 @@ public static class MasterDataServiceBuilderExtensions
         return WithDataDictionaryRepository(builder,serviceProvider =>
         {
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            var options = serviceProvider.GetRequiredService<IOptions<JJMasterDataCommonsOptions>>();
+            var options = serviceProvider.GetRequiredService<IOptions<MasterDataCommonsOptions>>();
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             var entityRepository = new EntityRepository(configuration.GetConnectionString(connectionString),provider, options,loggerFactory);
             
             return new SqlDataDictionaryRepository(entityRepository,
-                serviceProvider.GetRequiredService<IOptions<JJMasterDataCoreOptions>>());
+                serviceProvider.GetRequiredService<IOptions<MasterDataCoreOptions>>());
         });
     }
     

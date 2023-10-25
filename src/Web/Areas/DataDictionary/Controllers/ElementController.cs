@@ -13,7 +13,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class ElementController : DataDictionaryController
 {
-    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
     private readonly ElementService _elementService;
     private readonly ClassGenerationService _classGenerationService;
     private readonly ScriptsService _scriptsService;
@@ -24,7 +24,7 @@ public class ElementController : DataDictionaryController
         ClassGenerationService classGenerationService,
         ScriptsService scriptsService,
         IComponentFactory<JJUploadArea> uploadAreaFactory,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         _stringLocalizer = stringLocalizer;
         _elementService = elementService;

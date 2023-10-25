@@ -1,4 +1,4 @@
-﻿@inject IStringLocalizer<JJMasterDataResources> StringLocalizer
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
 @using JJMasterData.Core.UI
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ApiViewModel
 
@@ -122,8 +122,8 @@
                     @Html.TextBox("FormatType", Model.MetadataApiOptions.FormatType, new { @class = "form-control", disabled = "disabled" })
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-                    <label class="@BootstrapHelper.Label " for="IsSync" @BootstrapHelper.GetDataToggle("tooltip") title="Utilizado no sincronismo?">@StringLocalizer["Sync"]</label>
-                    @Html.TextBox("IsSync", Model.IsSync ? StringLocalizer["Yes"] : StringLocalizer["No"], new { @class = "form-control", disabled = "disabled" })
+                     <label class="@BootstrapHelper.Label" asp-for="IsSync"></label>
+                     <checkbox for="IsSync" switch="true" enabled="false"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3" id="divMode" style="visibility:@(Model.IsSync ? "visible":"hidden")">
                     <label class="@BootstrapHelper.Label " for="Mode" @BootstrapHelper.GetDataToggle("tooltip") title="Modo do sincronismo">@StringLocalizer["Mode"]</label>

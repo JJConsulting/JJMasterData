@@ -15,7 +15,7 @@ public class EntityService : BaseService
     public EntityService(
         IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
 
@@ -33,10 +33,10 @@ public class EntityService : BaseService
             AddError("TableName", StringLocalizer["Required table name field"]);
 
     
-        if (!string.IsNullOrEmpty(formElement.CustomProcNameGet) &&
-            !string.IsNullOrEmpty(formElement.CustomProcNameSet))
+        if (!string.IsNullOrEmpty(formElement.ReadProcedureName) &&
+            !string.IsNullOrEmpty(formElement.WriteProcedureName))
         { 
-            if (formElement.CustomProcNameGet.ToLower().Equals(formElement.CustomProcNameSet.ToLower()))
+            if (formElement.ReadProcedureName.ToLower().Equals(formElement.WriteProcedureName.ToLower()))
             {
                 AddError("CustomProcNameGet", StringLocalizer["Procedure names cannot be identical"]);
             }
@@ -59,8 +59,8 @@ public class EntityService : BaseService
 
             dicParser.Name = formElement.Name;
             dicParser.TableName = formElement.TableName;
-            dicParser.CustomProcNameGet = formElement.CustomProcNameGet;
-            dicParser.CustomProcNameSet = formElement.CustomProcNameSet;
+            dicParser.ReadProcedureName = formElement.ReadProcedureName;
+            dicParser.WriteProcedureName = formElement.WriteProcedureName;
             dicParser.Info = formElement.Info;
             dicParser.Title = formElement.Title;
             dicParser.SubTitle = formElement.SubTitle;

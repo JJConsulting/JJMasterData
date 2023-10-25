@@ -19,7 +19,7 @@ public class FieldValidationServiceTests
     {
         // Arrange
         var expressionsServiceMock = new Mock<ExpressionsService>();
-        var localizerMock = new Mock<IStringLocalizer<JJMasterDataResources>>();
+        var localizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
         var service = new FieldValidationService(expressionsServiceMock.Object, localizerMock.Object);
 
         // Act and Assert
@@ -34,7 +34,7 @@ public class FieldValidationServiceTests
         expressionsServiceMock.Setup(e => e.GetBoolValue(It.IsAny<string>(), It.IsAny<FormStateData>()))
                              .Returns(false);
 
-        var localizerMock = new Mock<IStringLocalizer<JJMasterDataResources>>();
+        var localizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
         var service = new FieldValidationService(expressionsServiceMock.Object, localizerMock.Object);
 
         var formElement = new FormElement();
@@ -54,7 +54,7 @@ public class FieldValidationServiceTests
     {
         // Arrange
         var expressionsServiceMock = new Mock<ExpressionsService>();
-        var localizerMock = new Mock<IStringLocalizer<JJMasterDataResources>>();
+        var localizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
         localizerMock.Setup(l => l["{0} field is required", It.IsAny<string>()]).Returns(new LocalizedString("Field is required","Field is required"));
 
         var service = new FieldValidationService(expressionsServiceMock.Object, localizerMock.Object);

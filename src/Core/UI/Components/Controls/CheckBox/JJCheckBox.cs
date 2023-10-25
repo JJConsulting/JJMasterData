@@ -9,7 +9,7 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJCheckBox : ControlBase
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private bool? _isChecked;
 
     /// <remarks>
@@ -35,7 +35,7 @@ public class JJCheckBox : ControlBase
 
     public CheckBoxSwitchSize? SwitchSize { get; set; }
     
-    public JJCheckBox(IFormValues formValues, IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(formValues)
+    public JJCheckBox(IFormValues formValues, IStringLocalizer<MasterDataResources> stringLocalizer) : base(formValues)
     {
         StringLocalizer = stringLocalizer;
         Visible = true;

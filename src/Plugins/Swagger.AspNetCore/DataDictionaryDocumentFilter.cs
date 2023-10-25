@@ -3,6 +3,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Swagger.AspNetCore;
 
@@ -10,17 +11,18 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
 {
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
-    public DataDictionaryDocumentFilter(IDataDictionaryRepository dataDictionaryRepository)
+    public DataDictionaryDocumentFilter(IServiceProvider serviceProvider)
     {
-        _dataDictionaryRepository = dataDictionaryRepository;
+        using var scope = serviceProvider.CreateScope();
+        _dataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
     }
     
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
         document.Info.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        var dictionaries = _dataDictionaryRepository.GetFormElementListAsync(true).GetAwaiter().GetResult();
+        var formElements = _dataDictionaryRepository.GetFormElementListAsync(true).GetAwaiter().GetResult();
 
-        foreach (var formElement in dictionaries)
+        foreach (var formElement in formElements)
         {
 
             var defaultPathItem = new DataDictionaryPathItem($"/MasterApi/{formElement.Name}");

@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
 {
     public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services)
     {
-        services.AddOptions<JJMasterDataCoreOptions>().BindConfiguration("JJMasterData");
+        services.AddOptions<MasterDataCoreOptions>().BindConfiguration("JJMasterData");
         
         services.AddDefaultServices();
         
@@ -23,9 +23,9 @@ public static class ServiceCollectionExtensions
     }
 
     public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
-        Action<JJMasterDataCoreOptions> configureCore, IConfiguration loggingConfiguration = null)
+        Action<MasterDataCoreOptions> configureCore, IConfiguration loggingConfiguration = null)
     {
-        var coreOptions = new JJMasterDataCoreOptions();
+        var coreOptions = new MasterDataCoreOptions();
 
         configureCore(coreOptions);
 
@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
         services.AddDefaultServices();
         return services.AddJJMasterDataCommons(ConfigureJJMasterDataCommonsOptions, loggingConfiguration);
 
-        void ConfigureJJMasterDataCommonsOptions(JJMasterDataCommonsOptions options)
+        void ConfigureJJMasterDataCommonsOptions(MasterDataCommonsOptions options)
         {
             options.ConnectionString = coreOptions.ConnectionString;
             options.ConnectionProvider = coreOptions.ConnectionProvider;
@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
 
     public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<JJMasterDataCoreOptions>(configuration.GetJJMasterData());
+        services.Configure<MasterDataCoreOptions>(configuration.GetJJMasterData());
         
         services.AddDefaultServices();
         
