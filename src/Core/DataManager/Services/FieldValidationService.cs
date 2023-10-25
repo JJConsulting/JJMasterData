@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Validations;

@@ -1,9 +1,7 @@
-using JJMasterData.Commons.Configuration;
 using JJMasterData.ConsoleApp.Repository;
 using JJMasterData.ConsoleApp.Services;
 using JJMasterData.ConsoleApp.Writers;
 using JJMasterData.Core.Configuration;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.ConsoleApp.Extensions;

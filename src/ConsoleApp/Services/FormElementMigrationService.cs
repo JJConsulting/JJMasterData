@@ -1,5 +1,4 @@
 using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.ConsoleApp.Repository;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;

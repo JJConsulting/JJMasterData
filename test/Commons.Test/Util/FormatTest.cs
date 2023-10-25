@@ -1,5 +1,4 @@
-﻿using System.Data;
-using JJMasterData.Commons.Util;
+﻿using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Test.Util;
 

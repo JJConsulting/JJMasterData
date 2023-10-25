@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using JJMasterData.Core.UI.Components;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
