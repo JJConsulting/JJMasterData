@@ -34,7 +34,7 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
 
         return (await formElementQuery.FirstAsync()).FormElement;
     }
-    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? sync = null)
+    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiSync = null)
     {
         var formElements = await _formElementCollection.FindAsync(_ => true);
 

@@ -56,7 +56,7 @@ public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
         return list;
     }
 
-    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiEnabled = null)
+    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiSync = null)
     {
         var result = GetMetadataList();
         return await Task.FromResult(result);

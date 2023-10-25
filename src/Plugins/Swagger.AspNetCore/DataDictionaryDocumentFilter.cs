@@ -20,7 +20,7 @@ public class DataDictionaryDocumentFilter : IDocumentFilter
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
         document.Info.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        var formElements = _dataDictionaryRepository.GetFormElementListAsync(true).GetAwaiter().GetResult();
+        var formElements = _dataDictionaryRepository.GetFormElementListAsync().GetAwaiter().GetResult();
 
         foreach (var formElement in formElements)
         {

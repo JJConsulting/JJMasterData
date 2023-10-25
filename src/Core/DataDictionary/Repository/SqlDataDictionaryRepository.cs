@@ -26,11 +26,11 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         MasterDataElement = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
     }
 
-    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiEnabled = null)
+    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiSync = null)
     {
         var filters = new Dictionary<string, object?>();
-        if (apiEnabled.HasValue)
-            filters.Add(DataDictionaryStructure.EnableApi, apiEnabled);
+        if (apiSync.HasValue)
+            filters.Add(DataDictionaryStructure.EnableApi, apiSync);
 
         filters[DataDictionaryStructure.Type] = "F";
 

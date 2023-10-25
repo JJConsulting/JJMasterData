@@ -6,7 +6,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 public class ApiViewModel : DataDictionaryViewModel
 {
-    [Display(Name = "Enable WebApi")]
+    [Display(Name = "Enable Synchronism")]
     public bool IsSync { get; set; }
     public SyncMode Mode { get; set; }
     public List<ElementField>? Fields { get; set; } 

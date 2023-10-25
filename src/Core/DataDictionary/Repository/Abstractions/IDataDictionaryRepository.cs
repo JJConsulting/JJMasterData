@@ -13,7 +13,7 @@ public interface IDataDictionaryRepository
 {
     Task CreateStructureIfNotExistsAsync();
     Task<FormElement> GetFormElementAsync(string elementName);
-    Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiEnabled = null);
+    Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiSync = null);
     IAsyncEnumerable<string> GetNameListAsync();
     Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderByData, int recordsPerPage, int currentPage);
     Task<bool> ExistsAsync(string elementName);

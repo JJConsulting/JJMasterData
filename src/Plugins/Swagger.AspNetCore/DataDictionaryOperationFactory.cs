@@ -20,7 +20,7 @@ internal class DataDictionaryOperationFactory
     }
     internal OpenApiOperation Get()
     {
-        string nameFields = GetPrimaryKeysNames();
+        var nameFields = GetPrimaryKeysNames();
         var operation = new OpenApiOperation
         {
             Summary = "Get a specific record",
@@ -168,7 +168,7 @@ internal class DataDictionaryOperationFactory
 
         var fields = FormElement.Fields.ToList().FindAll(x => !x.IsPk & x.Filter.Type != FilterMode.None);
 
-        foreach (FormElementField field in fields)
+        foreach (var field in fields)
         {
             string fieldName = Options.GetFieldNameParsed(field.Name);
             string description = $"Filter available. ({field.Filter.Type.ToString().ToLower()})";
