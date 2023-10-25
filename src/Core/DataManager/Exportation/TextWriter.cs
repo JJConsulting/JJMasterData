@@ -148,8 +148,8 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
     }
 
     public TextWriter(ExpressionsService expressionsService, 
-        IStringLocalizer<JJMasterDataResources> stringLocalizer, 
-        IOptions<JJMasterDataCoreOptions> options, 
+        IStringLocalizer<MasterDataResources> stringLocalizer, 
+        IOptions<MasterDataCoreOptions> options, 
         ControlFactory controlFactory, 
         ILoggerFactory logger, 
         IEntityRepository entityRepository) : base(expressionsService, 

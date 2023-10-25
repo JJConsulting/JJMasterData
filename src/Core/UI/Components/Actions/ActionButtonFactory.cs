@@ -20,7 +20,7 @@ public class ActionButtonFactory
   
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private ActionScripts ActionScripts => _actionScripts ??= new ActionScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
     
     public ActionButtonFactory(
@@ -28,7 +28,7 @@ public class ActionButtonFactory
         ExpressionsService expressionsService,
         JJMasterDataUrlHelper urlHelper, 
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         LinkButtonFactory = linkButtonFactory;
         ExpressionsService = expressionsService;

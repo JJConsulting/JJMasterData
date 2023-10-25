@@ -42,7 +42,7 @@ public class FormFileManager
     /// </remarks>
     public string FolderPath { get; set; }
 
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     
     private ILogger<FormFileManager> Logger { get; }
     
@@ -55,7 +55,7 @@ public class FormFileManager
     public FormFileManager(
         string memoryFilesSessionName,
         IHttpContext httpContext,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+        IStringLocalizer<MasterDataResources> stringLocalizer, 
         ILogger<FormFileManager> logger)
     {
         HttpContext = httpContext;

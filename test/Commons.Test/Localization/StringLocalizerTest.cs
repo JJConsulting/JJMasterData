@@ -22,17 +22,17 @@ public class StringLocalizerTest
         var resourceManagerStringLocalizerFactory = new ResourceManagerStringLocalizerFactory(localizationOptions.Object,logger.Object);
         var entityRepository = new Mock<IEntityRepository>();
         var cache = new Mock<IMemoryCache>();
-        var options = new Mock<IOptions<JJMasterDataCommonsOptions>>();
+        var options = new Mock<IOptions<MasterDataCommonsOptions>>();
 
         // Act
-        var stringLocalizerFactory = new JJMasterDataStringLocalizerFactory(
+        var stringLocalizerFactory = new MasterDataStringLocalizerFactory(
             resourceManagerStringLocalizerFactory,
             entityRepository.Object,
             cache.Object,
             options.Object);
 
         // Assert
-        var stringLocalizer = stringLocalizerFactory.Create(typeof(JJMasterDataResources));
+        var stringLocalizer = stringLocalizerFactory.Create(typeof(MasterDataResources));
         Assert.NotNull(stringLocalizer);
 
         Thread.CurrentThread.CurrentCulture = new CultureInfo("pt-br");

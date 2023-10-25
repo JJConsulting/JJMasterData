@@ -13,13 +13,13 @@ internal class TextFileFactory : IControlFactory<JJTextFile>
     private IComponentFactory ComponentFactory { get; }
     
     private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     public TextFileFactory(
         IHttpRequest request,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         Request = request;
         ComponentFactory = componentFactory;

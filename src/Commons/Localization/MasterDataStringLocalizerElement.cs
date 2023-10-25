@@ -3,16 +3,16 @@ using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Localization;
 
-public static class JJMasterDataStringLocalizerElement
+public static class MasterDataStringLocalizerElement
 {
-    public static Element GetElement(JJMasterDataCommonsOptions options)
+    public static Element GetElement(MasterDataCommonsOptions options)
     {
         var element = new Element
         {
             Name = options.LocalizationTableName,
             TableName = options.LocalizationTableName,
-            CustomProcNameGet = options.GetReadProcedureName(options.LocalizationTableName),
-            CustomProcNameSet = options.GetWriteProcedureName(options.LocalizationTableName),
+            ReadProcedureName = options.GetReadProcedureName(options.LocalizationTableName),
+            WriteProcedureName = options.GetWriteProcedureName(options.LocalizationTableName),
             Info = "Resources"
         };
 

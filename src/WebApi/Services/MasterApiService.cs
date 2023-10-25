@@ -21,18 +21,16 @@ namespace JJMasterData.WebApi.Services;
 public class MasterApiService
 {
     private readonly HttpContext _httpContext;
-    private AccountService AccountService { get; }
     private ExpressionsService ExpressionsService { get; }
     private IHttpContext HttpContext { get; }
     private DataItemService DataItemService { get; }
     private FormService FormService { get; }
     private FieldsService FieldsService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
     public MasterApiService(
-        AccountService accountService,
         ExpressionsService expressionsService,
         IHttpContextAccessor httpContextAccessor,
         IHttpContext httpContext,
@@ -41,11 +39,10 @@ public class MasterApiService
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         FieldsService fieldsService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer
+        IStringLocalizer<MasterDataResources> stringLocalizer
         )
     {
         _httpContext = httpContextAccessor.HttpContext!;
-        AccountService = accountService;
         ExpressionsService = expressionsService;
         HttpContext = httpContext;
         DataItemService = dataItemService;
@@ -456,17 +453,8 @@ public class MasterApiService
 
     private string GetUserId()
     {
-        var tokenInfo = AccountService.GetTokenInfo(_httpContext.User.Claims.FirstOrDefault()?.Value);
-        if (tokenInfo == null)
-            throw new UnauthorizedAccessException("Invalid Token");
-
-        string? userId = tokenInfo.UserId;
-        if (string.IsNullOrEmpty(userId))
-            throw new UnauthorizedAccessException("Invalid User");
-
-        return userId;
+        return DataHelper.GetCurrentUserId(HttpContext, null)!;
     }
-
 
     private DataContext GetDataContext()
     {

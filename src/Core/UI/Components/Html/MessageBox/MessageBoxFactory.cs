@@ -7,9 +7,9 @@ namespace JJMasterData.Core.UI.Components;
 
 public class MessageBoxFactory : IComponentFactory<JJMessageBox>
 {
-    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    public IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
-    public MessageBoxFactory(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public MessageBoxFactory(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
     }

@@ -3456,4 +3456,7 @@
   <data name="Default Value Expression" xml:space="preserve">
     <value>Expressão do Valor Padrão</value>
   </data>
+  <data name="Enable Synchronism" xml:space="preserve">
+    <value>Habilitar Sincronismo</value>
+  </data>
 </root>

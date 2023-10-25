@@ -17,7 +17,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class DataImportationHelp
 {
     public JJDataImportation DataImportation { get; private set; }
-    public IStringLocalizer<JJMasterDataResources> StringLocalizer { get; private set; }
+    public IStringLocalizer<MasterDataResources> StringLocalizer { get; private set; }
     internal DataImportationHelp(JJDataImportation dataImportation)
     {
         DataImportation = dataImportation;

@@ -77,7 +77,7 @@ public class JJAuditLogView : AsyncComponent
     }
 
     public FormElement FormElement { get; private set; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     internal IEntityRepository EntityRepository { get; }
 
@@ -88,7 +88,7 @@ public class JJAuditLogView : AsyncComponent
         AuditLogService auditLogService,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         Name = $"{ComponentNameGenerator.Create(formElement.Name)}-audit-log-view";
         _componentFactory = componentFactory;

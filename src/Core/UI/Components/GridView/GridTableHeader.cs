@@ -13,7 +13,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class GridTableHeader
 {
     private JJGridView GridView { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     public GridTableHeader(JJGridView gridView)
     {
         GridView = gridView;

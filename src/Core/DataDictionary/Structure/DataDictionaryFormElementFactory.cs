@@ -14,14 +14,14 @@ namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class DataDictionaryFormElementFactory 
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private IHttpContext HttpContext { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
-    private readonly JJMasterDataCoreOptions _options;
+    private readonly MasterDataCoreOptions _options;
 
     public DataDictionaryFormElementFactory(
-        IOptions<JJMasterDataCoreOptions> options,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IOptions<MasterDataCoreOptions> options,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IHttpContext httpContext,
         JJMasterDataUrlHelper urlHelper
     )

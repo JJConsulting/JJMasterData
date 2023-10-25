@@ -11,7 +11,7 @@ namespace JJMasterData.Core.UI.Components.TextRange;
 public class JJTextRange : ControlBase
 {
     private IControlFactory<JJTextGroup> TextBoxGroupFactory { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     internal ControlBase FromField { get; set; }
     internal ControlBase ToField { get; set; }
@@ -22,7 +22,7 @@ public class JJTextRange : ControlBase
     
     public bool IsVerticalLayout { get; set; }
     
-    public JJTextRange(IFormValues formValues, IControlFactory<JJTextGroup> textBoxGroupFactory,IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(formValues)
+    public JJTextRange(IFormValues formValues, IControlFactory<JJTextGroup> textBoxGroupFactory,IStringLocalizer<MasterDataResources> stringLocalizer) : base(formValues)
     {
         TextBoxGroupFactory = textBoxGroupFactory;
         StringLocalizer = stringLocalizer;

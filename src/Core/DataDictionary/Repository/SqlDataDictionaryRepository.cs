@@ -20,17 +20,17 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     private readonly IEntityRepository _entityRepository;
     internal Element MasterDataElement { get; }
 
-    public SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options)
+    public SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options)
     {
         _entityRepository = entityRepository;
         MasterDataElement = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
     }
 
-    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiEnabled = null)
+    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiSync = null)
     {
         var filters = new Dictionary<string, object?>();
-        if (apiEnabled.HasValue)
-            filters.Add(DataDictionaryStructure.EnableApi, apiEnabled);
+        if (apiSync.HasValue)
+            filters.Add(DataDictionaryStructure.EnableApi, apiSync);
 
         filters[DataDictionaryStructure.Type] = "F";
 

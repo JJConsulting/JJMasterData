@@ -32,10 +32,10 @@ public class AuditLogService
 
     private static bool _hasAuditLogTable;
     private IEntityRepository EntityRepository { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private JJMasterDataCoreOptions Options { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private MasterDataCoreOptions Options { get; }
 
-    public AuditLogService(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public AuditLogService(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options, IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         EntityRepository = entityRepository;
         StringLocalizer = stringLocalizer;
@@ -103,8 +103,8 @@ public class AuditLogService
         string tableName = Options.AuditLogTableName;
         var element = new Element(tableName, StringLocalizer["Audit Log"])
         {
-            CustomProcNameGet = Options.GetReadProcedureName(tableName),
-            CustomProcNameSet = Options.GetWriteProcedureName(tableName)
+            ReadProcedureName = Options.GetReadProcedureName(tableName),
+            WriteProcedureName = Options.GetWriteProcedureName(tableName)
         };
         element.Fields.AddPk(DicId, "Id", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DicName, "Dictionary Name", FieldType.NVarchar, 64, true, FilterMode.Equal);

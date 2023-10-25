@@ -15,11 +15,11 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Localization;
 
-public sealed class JJMasterDataStringLocalizer<TResourceSource> : IStringLocalizer<TResourceSource>
+public sealed class MasterDataStringLocalizer<TResourceSource> : IStringLocalizer<TResourceSource>
 {
     private readonly IStringLocalizer _localizer;
     
-    public JJMasterDataStringLocalizer(IStringLocalizerFactory factory)
+    public MasterDataStringLocalizer(IStringLocalizerFactory factory)
     {
         if (factory == null)
         {
@@ -46,7 +46,7 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
     private ResourceManagerStringLocalizer ResourceManagerStringLocalizer { get; }
     private IEntityRepository EntityRepository { get; }
     private IMemoryCache Cache { get; }
-    private JJMasterDataCommonsOptions Options { get; }
+    private MasterDataCommonsOptions Options { get; }
 
     private string ResourceName { get; }
     
@@ -55,7 +55,7 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
         ResourceManagerStringLocalizer resourcesStringLocalizer,
         IEntityRepository entityRepository, 
         IMemoryCache cache,
-        IOptions<JJMasterDataCommonsOptions> options)
+        IOptions<MasterDataCommonsOptions> options)
     {
         ResourceName = resourceName;
         ResourceManagerStringLocalizer = resourcesStringLocalizer;
@@ -122,7 +122,7 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
     {
         string culture = Thread.CurrentThread.CurrentCulture.Name;
 
-        var element = JJMasterDataStringLocalizerElement.GetElement(Options);
+        var element = MasterDataStringLocalizerElement.GetElement(Options);
 
         var tableExists = await EntityRepository.TableExistsAsync(element.TableName);
         

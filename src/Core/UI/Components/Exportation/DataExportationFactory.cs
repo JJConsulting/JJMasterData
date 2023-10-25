@@ -25,13 +25,13 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
     private IDataDictionaryRepository DataDictionaryRepository { get; }
     private ExpressionsService ExpressionsService { get; }
     private FieldsService FieldsService { get; }
-    private IOptions<JJMasterDataCoreOptions> Options { get; }
+    private IOptions<MasterDataCoreOptions> Options { get; }
     private IBackgroundTaskManager BackgroundTaskManager { get; }
     private IHttpContext HttpContext { get; }
     
     private IComponentFactory ComponentFactory { get; }
     private DataExportationWriterFactory DataExportationWriterFactory { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
     public DataExportationFactory(
@@ -39,10 +39,10 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
         IDataDictionaryRepository dataDictionaryRepository,
         ExpressionsService expressionsService,
         FieldsService fieldsService,
-        IOptions<JJMasterDataCoreOptions> options,
+        IOptions<MasterDataCoreOptions> options,
         IBackgroundTaskManager backgroundTaskManager,
         IHttpContext httpContext,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory,
         IComponentFactory componentFactory,
         JJMasterDataUrlHelper urlHelper,

@@ -15,7 +15,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class DataExportationSettings
 {
     private JJDataExportation DataExportation { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     private readonly string _colSm = BootstrapHelper.Version > 3 ? "col-sm-2" : "col-sm-4";
     private readonly string _bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;

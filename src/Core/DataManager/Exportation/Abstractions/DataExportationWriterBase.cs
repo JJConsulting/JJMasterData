@@ -36,8 +36,8 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     private List<FormElementField> _fields;
 
     private ExpressionsService ExpressionsService { get; }
-    protected IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
-    private IOptions<JJMasterDataCoreOptions> Options { get; }
+    protected IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private IOptions<MasterDataCoreOptions> Options { get; }
     
     public ControlFactory ControlFactory { get; }
 
@@ -155,8 +155,8 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
     protected DataExportationWriterBase(
         ExpressionsService expressionsService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer, 
-        IOptions<JJMasterDataCoreOptions> options,
+        IStringLocalizer<MasterDataResources> stringLocalizer, 
+        IOptions<MasterDataCoreOptions> options,
         ControlFactory controlFactory, 
         ILogger<DataExportationWriterBase> logger)
     {

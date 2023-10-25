@@ -17,7 +17,7 @@ public class ActionsService : BaseService
 
     public ActionsService(
         IValidationDictionary validationDictionary, 
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IDataDictionaryRepository dataDictionaryRepository,
         IEnumerable<IPluginHandler> pluginHandlers) 
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)

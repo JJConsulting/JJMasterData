@@ -10,7 +10,7 @@ internal class UploadViewFactory : IComponentFactory<JJUploadView>
 {
     public ILoggerFactory LoggerFactory { get; }
     private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private IHttpContext CurrentContext { get; }
     private IComponentFactory ComponentFactory { get; }
     
@@ -18,7 +18,7 @@ internal class UploadViewFactory : IComponentFactory<JJUploadView>
         IHttpContext currentContext,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {
         CurrentContext = currentContext;

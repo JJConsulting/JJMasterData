@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 
@@ -5,6 +6,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 public class ApiViewModel : DataDictionaryViewModel
 {
+    [Display(Name = "Enable Synchronism")]
     public bool IsSync { get; set; }
     public SyncMode Mode { get; set; }
     public List<ElementField>? Fields { get; set; } 

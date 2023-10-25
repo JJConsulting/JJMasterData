@@ -14,7 +14,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class DataImportationLog
 {
     internal DataImportationReporter Reporter { get; private set; }
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     internal IHttpContext CurrentContext { get; }
     internal DataImportationLog(JJDataImportation dataImportation)
     {

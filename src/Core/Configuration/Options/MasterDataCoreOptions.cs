@@ -6,7 +6,7 @@ using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.Configuration.Options;
 
-public class JJMasterDataCoreOptions : JJMasterDataCommonsOptions
+public class MasterDataCoreOptions : MasterDataCommonsOptions
 {
     /// <summary>
     /// Default value: tb_masterdata

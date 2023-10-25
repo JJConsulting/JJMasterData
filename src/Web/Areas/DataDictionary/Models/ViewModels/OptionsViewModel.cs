@@ -7,7 +7,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 public class OptionsViewModel
 {
     public ConnectionString ConnectionString { get; set; }
-    public JJMasterDataCommonsOptions? Options { get; set; } 
+    public MasterDataCommonsOptions? Options { get; set; } 
     public bool IsFullscreen { get; set; }
     public string? FilePath { get; set; }
     public DataAccessProvider ConnectionProvider { get; set; }

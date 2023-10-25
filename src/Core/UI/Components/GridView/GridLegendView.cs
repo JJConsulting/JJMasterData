@@ -10,7 +10,7 @@ namespace JJMasterData.Core.UI.Components;
 internal class GridLegendView 
 {
     private IControlFactory<JJComboBox> ComboBoxFactory { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     public bool ShowAsModal { get; set; }
     
     public required string Name { get; init; }
@@ -18,7 +18,7 @@ internal class GridLegendView
 
     #region "Constructors"
 
-    public GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         ComboBoxFactory = comboBoxFactory;
         StringLocalizer = stringLocalizer;

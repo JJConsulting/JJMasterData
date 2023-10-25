@@ -15,12 +15,8 @@ namespace JJMasterData.WebApi.Test.Controllers;
 [CollectionDefinition("MasterApiController", DisableParallelization = true)]
 public class MasterApiControllerTest
 {
-    private readonly MasterApiController _controller;
-    public MasterApiControllerTest()
-    {
-        _controller = new MasterApiController(new Mock<MasterApiService>().Object);
-    }
-    
+    private readonly MasterApiController _controller = new(new Mock<MasterApiService>().Object);
+
     [Order(4)]
     [Theory]
     [InlineData("ApiTestDictionary","1")]

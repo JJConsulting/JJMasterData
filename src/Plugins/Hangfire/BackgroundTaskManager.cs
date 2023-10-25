@@ -12,10 +12,10 @@ namespace JJMasterData.Hangfire;
 public sealed class BackgroundTaskManager : IBackgroundTaskManager
 {
     private readonly List<TaskWrapper> _tasks = new();
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     
 
-    public BackgroundTaskManager(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public BackgroundTaskManager(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         StringLocalizer = stringLocalizer;
     }

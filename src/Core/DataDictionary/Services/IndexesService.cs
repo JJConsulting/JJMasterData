@@ -11,7 +11,7 @@ public class IndexesService : BaseService
     public IndexesService(
         IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
     }

@@ -14,14 +14,14 @@ internal class ComboBoxFactory : IControlFactory<JJComboBox>
     private IFormValues FormValues { get; }
     private DataItemService DataItemService { get; }
     private ExpressionsService ExpressionsService { get; }
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
     public ComboBoxFactory(
         IFormValues formValues, 
         DataItemService dataItemService,
         ExpressionsService expressionsService, 
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     {
         FormValues = formValues;

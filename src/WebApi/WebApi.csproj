@@ -10,6 +10,7 @@
     <RootNamespace>JJMasterData.WebApi</RootNamespace>
     <PackageId>JJMasterData.WebApi</PackageId>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <OutputType>library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +24,7 @@
     <ProjectReference Include="..\Plugins\Swagger.AspNetCore\Swagger.AspNetCore.csproj" />
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="jjmasterdata.json" /></VisualStudio></ProjectExtensions>
-
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\css\dark-swagger.css" />
+  </ItemGroup>
 </Project>

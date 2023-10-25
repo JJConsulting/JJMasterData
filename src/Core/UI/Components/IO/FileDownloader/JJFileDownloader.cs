@@ -22,7 +22,7 @@ public class JJFileDownloader : HtmlComponent
     public string FilePath { get; set; }
     public bool IsExternalLink { get; set; }
     internal IHttpContext CurrentContext { get; }
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     internal JJMasterDataUrlHelper UrlHelper { get; }
     internal ILogger<JJFileDownloader> Logger { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -31,7 +31,7 @@ public class JJFileDownloader : HtmlComponent
         IHttpContext currentContext,
         JJMasterDataUrlHelper urlHelper, 
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<JJFileDownloader> logger)
     {
         CurrentContext = currentContext;

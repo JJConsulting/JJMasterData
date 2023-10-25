@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.WebApi.Controllers;
 
-[Authorize]
+// [Authorize]
 [ApiController]
 [Route("masterApi/{elementName}")]
 public class MasterApiController : ControllerBase

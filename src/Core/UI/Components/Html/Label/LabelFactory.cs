@@ -7,9 +7,9 @@ namespace JJMasterData.Core.UI.Components;
 
 public class LabelFactory :  IComponentFactory<JJLabel>
 {
-    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
 
-    public LabelFactory(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public LabelFactory(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         _stringLocalizer = stringLocalizer;
     }

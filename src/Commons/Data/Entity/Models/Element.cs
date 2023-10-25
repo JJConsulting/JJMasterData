@@ -4,66 +4,38 @@ using Newtonsoft.Json;
 namespace JJMasterData.Commons.Data.Entity.Models;
 
 /// <summary> 
-/// Elemento base com a estrutura basica da tabela
+/// Represents a database element.
 /// </summary>
-/// <remarks>2017-03-22 JJTeam</remarks>
+/// <remarks>
+/// Created at 2017-03-22 by JJTeam
+/// </remarks>
 public class Element
 {
-    /// <summary>
-    /// Dictionary Name
-    /// </summary>
     [JsonProperty("name")]
     public string Name { get; set; }
-
-    /// <summary>
-    /// Table information
-    /// </summary>
+    
     [JsonProperty("info")]
     public string Info { get; set; }
-
-    /// <summary>
-    /// Field List
-    /// </summary>
+    
     [JsonProperty("fields")]
     public ElementFieldList Fields { get; set; }
-
-    /// <summary>
-    /// Index List
-    /// </summary>
+    
     [JsonProperty("indexes")]
     public List<ElementIndex> Indexes { get; set; }
-
-    /// <summary>
-    /// Relationships List
-    /// </summary>
+    
     [JsonProperty("relations")]
     public List<ElementRelationship> Relationships { get; set; }
-
-    /// <summary>
-    /// Table Name
-    /// </summary>
+    
     [JsonProperty("tableName")]
     public string TableName { get; set; }
 
-    /// <summary>
-    /// Custom name for recording procedure
-    /// </summary>
+
     [JsonProperty("customprocnameget")]
-    public string CustomProcNameGet { get; set; }
-
-    /// <summary>
-    /// Custom name for read procedure
-    /// </summary>
+    public string ReadProcedureName { get; set; }
+    
     [JsonProperty("customprocnameset")]
-    public string CustomProcNameSet { get; set; }
-
-    /// <summary>
-    /// Send dictionary between applications
-    /// </summary>
-    /// <remarks>
-    /// Enable sync for the app.
-    /// <para></para>Default = true
-    /// </remarks>
+    public string WriteProcedureName { get; set; }
+    
     [JsonProperty("sync")]
     public bool EnableApi { get; set; }
 

@@ -25,7 +25,7 @@ public class SqlServerProvider : BaseProvider
     public override DataAccessProvider DataAccessProvider => DataAccessProvider.SqlServer;
 
 
-    public SqlServerProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
+    public SqlServerProvider(DataAccess dataAccess, MasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
     {
     }
 

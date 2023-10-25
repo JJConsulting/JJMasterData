@@ -14,7 +14,7 @@ public class EncryptionService : IEncryptionService
 
     public EncryptionService(
         IEncryptionAlgorithm encryptionAlgorithm,
-        IOptions<JJMasterDataCommonsOptions> options)
+        IOptions<MasterDataCommonsOptions> options)
     {
         _encryptionAlgorithm = encryptionAlgorithm;
         _secretKey = options.Value.SecretKey;

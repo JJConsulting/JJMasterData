@@ -10,9 +10,9 @@ namespace JJMasterData.Swagger.AspNetCore;
 
 internal class DataDictionaryOperationFactory
 {
-    internal FormElement FormElement { get; set; }
-    internal FormElementApiOptions Options { get; set; }
-    internal string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
+    private FormElement FormElement { get; set; }
+    private FormElementApiOptions Options { get; set; }
+    private string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
     internal DataDictionaryOperationFactory(FormElement formElement, FormElementApiOptions options)
     {
         FormElement = formElement;
@@ -20,7 +20,7 @@ internal class DataDictionaryOperationFactory
     }
     internal OpenApiOperation Get()
     {
-        string nameFields = GetPrimaryKeysNames();
+        var nameFields = GetPrimaryKeysNames();
         var operation = new OpenApiOperation
         {
             Summary = "Get a specific record",
@@ -168,7 +168,7 @@ internal class DataDictionaryOperationFactory
 
         var fields = FormElement.Fields.ToList().FindAll(x => !x.IsPk & x.Filter.Type != FilterMode.None);
 
-        foreach (FormElementField field in fields)
+        foreach (var field in fields)
         {
             string fieldName = Options.GetFieldNameParsed(field.Name);
             string description = $"Filter available. ({field.Filter.Type.ToString().ToLower()})";
@@ -871,7 +871,7 @@ internal class DataDictionaryOperationFactory
         var pkFields = FormElement.Fields.ToList().FindAll(x => x.IsPk);
         return GetPrimaryKeysNames(pkFields);
     }
-    public string GetPrimaryKeysNames(List<FormElementField> pkFields)
+    public static string GetPrimaryKeysNames(List<FormElementField> pkFields)
     {
         string nameFields = string.Empty;
         foreach (var field in pkFields)

@@ -18,12 +18,12 @@ namespace JJMasterData.Commons.Data.Entity.Repository;
 public class EntityRepository : IEntityRepository
 {
     private ILoggerFactory LoggerFactory { get; }
-    private JJMasterDataCommonsOptions Options { get; }
+    private MasterDataCommonsOptions Options { get; }
     private DataAccess DataAccess { get; }
     private BaseProvider Provider { get; }
     
     [ActivatorUtilitiesConstructor]
-    public EntityRepository(IOptions<JJMasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
+    public EntityRepository(IOptions<MasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
     {
         LoggerFactory = loggerFactory;
         var connectionString = options.Value.ConnectionString;
@@ -33,7 +33,7 @@ public class EntityRepository : IEntityRepository
         Provider = GetProvider();
     }
     
-    public EntityRepository(string connectionString, DataAccessProvider provider, IOptions<JJMasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
+    public EntityRepository(string connectionString, DataAccessProvider provider, IOptions<MasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
     {
         DataAccess = new DataAccess(connectionString, provider);
         Options = options.Value;

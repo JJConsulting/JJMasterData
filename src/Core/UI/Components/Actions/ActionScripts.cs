@@ -16,7 +16,7 @@ namespace JJMasterData.Core.UI.Components;
 public class ActionScripts
 {
     private ExpressionsService ExpressionsService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private JJMasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
 
@@ -24,7 +24,7 @@ public class ActionScripts
         ExpressionsService expressionsService,
         JJMasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer)
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;

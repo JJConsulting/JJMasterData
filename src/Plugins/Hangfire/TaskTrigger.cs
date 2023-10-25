@@ -17,9 +17,9 @@ namespace JJMasterData.Hangfire;
 internal class TaskTrigger
 {
     private BackgroundTaskManager BackgroundTaskManager { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
-    public TaskTrigger(BackgroundTaskManager backgroundTaskManager, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public TaskTrigger(BackgroundTaskManager backgroundTaskManager, IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         BackgroundTaskManager = backgroundTaskManager;
         StringLocalizer = stringLocalizer;

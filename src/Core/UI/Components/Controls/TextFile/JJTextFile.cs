@@ -23,7 +23,7 @@ public class JJTextFile : ControlBase
     private IHttpRequest Request { get; }
     private IComponentFactory ComponentFactory { get; }
     internal IEncryptionService EncryptionService { get; }
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     
 
 
@@ -104,7 +104,7 @@ public class JJTextFile : ControlBase
     public JJTextFile(
         IHttpRequest request,
         IComponentFactory componentFactory,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+        IStringLocalizer<MasterDataResources> stringLocalizer, 
         IEncryptionService encryptionService) : base(request.Form)
     {
         Request = request;

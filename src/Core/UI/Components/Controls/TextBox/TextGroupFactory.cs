@@ -15,13 +15,13 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
 {
     private IFormValues FormValues { get; }
     private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private ActionButtonFactory ActionButtonFactory { get; }
 
     public TextGroupFactory(
          IFormValues formValues, 
                           IEncryptionService encryptionService,
-                          IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+                          IStringLocalizer<MasterDataResources> stringLocalizer, 
                           ActionButtonFactory actionButtonFactory)
     {
         FormValues = formValues;

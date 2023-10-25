@@ -30,7 +30,7 @@ public class Cript
     /// </summary>
     public static string Cript64(string value)
     {
-        return Cript64(value, StaticServiceLocator.Provider.GetRequiredService<IOptions<JJMasterDataCommonsOptions>>().Value.SecretKey);
+        return Cript64(value, StaticServiceLocator.Provider.GetRequiredService<IOptions<MasterDataCommonsOptions>>().Value.SecretKey);
     }
 
     public static string Cript64(string value, string secretKey)
@@ -50,7 +50,7 @@ public class Cript
     /// </summary>
     public static string Descript64(string value)
     {
-        return Descript64(value, StaticServiceLocator.Provider.GetRequiredService<IOptions<JJMasterDataCommonsOptions>>().Value.SecretKey);
+        return Descript64(value, StaticServiceLocator.Provider.GetRequiredService<IOptions<MasterDataCommonsOptions>>().Value.SecretKey);
     }
 
     public static string Descript64(string value, string secretKey)

@@ -17,12 +17,12 @@ namespace JJMasterData.Commons.Data.Providers;
 public abstract class BaseProvider
 {
     internal DataAccess DataAccess { get; set; }
-    protected JJMasterDataCommonsOptions Options { get; }
+    protected MasterDataCommonsOptions Options { get; }
     private ILoggerFactory LoggerFactory { get; }
     
     public abstract DataAccessProvider DataAccessProvider { get; }
     
-    protected BaseProvider(DataAccess dataAccess, JJMasterDataCommonsOptions options, ILoggerFactory loggerFactory)
+    protected BaseProvider(DataAccess dataAccess, MasterDataCommonsOptions options, ILoggerFactory loggerFactory)
     {
         DataAccess = dataAccess;
         Options = options;

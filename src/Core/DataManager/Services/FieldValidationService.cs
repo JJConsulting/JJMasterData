@@ -16,9 +16,9 @@ namespace JJMasterData.Core.DataManager.Services;
 public class FieldValidationService
 {
     private ExpressionsService ExpressionsService { get; }
-    private IStringLocalizer<JJMasterDataResources> Localizer { get; }
+    private IStringLocalizer<MasterDataResources> Localizer { get; }
 
-    public FieldValidationService(ExpressionsService expressionsService, IStringLocalizer<JJMasterDataResources> localizer)
+    public FieldValidationService(ExpressionsService expressionsService, IStringLocalizer<MasterDataResources> localizer)
     {
         ExpressionsService = expressionsService;
         Localizer = localizer;

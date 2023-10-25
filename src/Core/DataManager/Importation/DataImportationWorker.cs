@@ -49,7 +49,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
     
     internal FieldValuesService FieldValuesService { get; }
 
-    internal IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     internal ILogger<DataImportationWorker> Logger { get; }
 
@@ -61,7 +61,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
         ExpressionsService expressionsService, 
         IEntityRepository entityRepository, 
         FieldValuesService fieldValuesService,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<DataImportationWorker> logger)
     {
         FormElement = context.FormElement;

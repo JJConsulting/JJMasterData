@@ -93,7 +93,7 @@ public static class StringManager
     /// <returns>
     /// Good Morning, Good Afternoon or Good Night. i18n supported.
     /// </returns>
-    public static string GetGreeting(IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public static string GetGreeting(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         var now = DateTime.Now;
         string greeting;

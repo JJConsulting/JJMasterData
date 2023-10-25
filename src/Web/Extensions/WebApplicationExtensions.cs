@@ -36,9 +36,9 @@ public static class WebApplicationExtensions
     /// <summary>
     /// Adds endpoints for JJMasterData Pages to the <see cref="WebApplication"/>.
     /// </summary>
-    public static ControllerActionEndpointConventionBuilder MapJJMasterData(this WebApplication app, Action<JJMasterDataAreaOptions>? configure = null)
+    public static ControllerActionEndpointConventionBuilder MapJJMasterData(this WebApplication app, Action<MasterDataAreaOptions>? configure = null)
     {
-        var options = new JJMasterDataAreaOptions();
+        var options = new MasterDataAreaOptions();
 
         configure?.Invoke(options);
 

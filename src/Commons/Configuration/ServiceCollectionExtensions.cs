@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
     public static MasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services)
     {
         var builder = new MasterDataServiceBuilder(services);
-        services.AddOptions<JJMasterDataCommonsOptions>().BindConfiguration("JJMasterData");
+        services.AddOptions<MasterDataCommonsOptions>().BindConfiguration("JJMasterData");
 
         services.AddJJMasterDataCommonsServices();
         
@@ -32,14 +32,14 @@ public static class ServiceCollectionExtensions
     {
         var builder = new MasterDataServiceBuilder(services);
 
-        builder.Services.Configure<JJMasterDataCommonsOptions>(configuration.GetJJMasterData());
+        builder.Services.Configure<MasterDataCommonsOptions>(configuration.GetJJMasterData());
         
         services.AddJJMasterDataCommonsServices(configuration);
 
         return builder;
     }
 
-    public static MasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, Action<JJMasterDataCommonsOptions> configure, IConfiguration loggingConfiguration = null)
+    public static MasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services, Action<MasterDataCommonsOptions> configure, IConfiguration loggingConfiguration = null)
     {
         var builder = new MasterDataServiceBuilder(services);
 
@@ -54,8 +54,8 @@ public static class ServiceCollectionExtensions
         services.AddLocalization();
         services.AddMemoryCache();
         services.AddSingleton<ResourceManagerStringLocalizerFactory>();
-        services.AddSingleton<IStringLocalizerFactory, JJMasterDataStringLocalizerFactory>();
-        services.Add(new ServiceDescriptor(typeof(IStringLocalizer<>), typeof(JJMasterDataStringLocalizer<>), ServiceLifetime.Transient));
+        services.AddSingleton<IStringLocalizerFactory, MasterDataStringLocalizerFactory>();
+        services.Add(new ServiceDescriptor(typeof(IStringLocalizer<>), typeof(MasterDataStringLocalizer<>), ServiceLifetime.Transient));
         services.AddLogging(builder =>
         {
             if (configuration != null)

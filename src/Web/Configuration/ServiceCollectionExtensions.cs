@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
 {
     public static MasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
     {
-        services.AddOptions<JJMasterDataWebOptions>();
+        services.AddOptions<MasterDataWebOptions>();
         AddDefaultServices(services);
         return services.AddJJMasterDataCore();
     }
@@ -41,11 +41,11 @@ public static class ServiceCollectionExtensions
     {
         AddDefaultServices(services);
 
-        services.ConfigureWritableOptions<JJMasterDataCommonsOptions>(
+        services.ConfigureWritableOptions<MasterDataCommonsOptions>(
             configuration.GetJJMasterData());
-        services.ConfigureWritableOptions<JJMasterDataCoreOptions>(
+        services.ConfigureWritableOptions<MasterDataCoreOptions>(
             configuration.GetJJMasterData());
-        services.ConfigureWritableOptions<JJMasterDataWebOptions>(
+        services.ConfigureWritableOptions<MasterDataWebOptions>(
             configuration.GetJJMasterData());
 
         return services.AddJJMasterDataCore(configuration);
@@ -53,17 +53,17 @@ public static class ServiceCollectionExtensions
 
     public static MasterDataServiceBuilder AddJJMasterDataWeb(
         this IServiceCollection services,
-        Action<JJMasterDataWebOptions> configureOptions
+        Action<MasterDataWebOptions> configureOptions
     )
     {
-        var webOptions = new JJMasterDataWebOptions();
+        var webOptions = new MasterDataWebOptions();
         services.Configure(configureOptions);
 
         AddDefaultServices(services);
 
         return services.AddJJMasterDataCore(ConfigureJJMasterDataCoreOptions);
 
-        void ConfigureJJMasterDataCoreOptions(JJMasterDataCoreOptions options)
+        void ConfigureJJMasterDataCoreOptions(MasterDataCoreOptions options)
         {
             options.ExportationFolderPath = webOptions.ExportationFolderPath;
             options.AuditLogTableName = webOptions.AuditLogTableName;
@@ -90,7 +90,7 @@ public static class ServiceCollectionExtensions
             .AddDataAnnotationsLocalization(options =>
             {
                 options.DataAnnotationLocalizerProvider = (_, factory) =>
-                    factory.Create(typeof(JJMasterDataResources));
+                    factory.Create(typeof(MasterDataResources));
             });
 
         services.AddHttpContextAccessor();

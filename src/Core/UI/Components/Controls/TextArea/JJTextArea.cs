@@ -8,10 +8,10 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJTextArea : ControlBase
 {
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     public int Rows { get; set; }
 
-    public JJTextArea(IFormValues formValues,IStringLocalizer<JJMasterDataResources> stringLocalizer) : base(formValues)
+    public JJTextArea(IFormValues formValues,IStringLocalizer<MasterDataResources> stringLocalizer) : base(formValues)
     {
         StringLocalizer = stringLocalizer;
         Attributes.Add("class", "form-control");

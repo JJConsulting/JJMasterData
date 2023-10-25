@@ -17,8 +17,7 @@ public class DictionariesControllerTest
     {
         var dataDictionaryRepository = new Mock<IDataDictionaryRepository>().Object;
         var dictionariesService = new Mock<DictionariesService>().Object;
-        var accountsService = new Mock<AccountService>().Object;
-        _controller = new DictionariesController(accountsService,dictionariesService, dataDictionaryRepository);
+        _controller = new DictionariesController(dictionariesService, dataDictionaryRepository);
     }
     
     [Fact]

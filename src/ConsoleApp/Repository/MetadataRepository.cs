@@ -17,7 +17,7 @@ namespace JJMasterData.ConsoleApp.Repository;
 public class MetadataRepository
 {
     private readonly IEntityRepository _entityRepository;
-    private readonly IOptions<JJMasterDataCoreOptions> _options;
+    private readonly IOptions<MasterDataCoreOptions> _options;
     private Element _masterDataElement;
 
     internal Element MasterDataElement
@@ -33,7 +33,7 @@ public class MetadataRepository
         }
     }
  
-    public MetadataRepository(IEntityRepository entityRepository, IOptions<JJMasterDataCoreOptions> options)
+    public MetadataRepository(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options)
     {
         _entityRepository = entityRepository;
         _options = options;

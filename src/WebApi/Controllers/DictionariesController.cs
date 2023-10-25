@@ -12,16 +12,12 @@ namespace JJMasterData.WebApi.Controllers;
 [ApiController]
 public class DictionariesController : ControllerBase
 {
-    private AccountService AccountService { get; }
     private readonly DictionariesService _dictionariesService;
     private readonly IDataDictionaryRepository _dataDictionaryRepository;
 
-    public DictionariesController(
-        AccountService accountService,
-        DictionariesService dictionariesService, 
+    public DictionariesController(DictionariesService dictionariesService, 
                                   IDataDictionaryRepository dataDictionaryRepository)
     {
-        AccountService = accountService;
         _dictionariesService = dictionariesService;
         _dataDictionaryRepository = dataDictionaryRepository;
     }
@@ -76,11 +72,6 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/count")]
     public async Task<ActionResult<DicSyncInfo>> Count([FromBody]DicSyncParam[] param)
     {
-        var userid = AccountService.GetTokenInfo(HttpContext.User.Claims.First().Value)?.UserId;
-
-        if (userid == null)
-            return Unauthorized();
-
-        return await _dictionariesService.GetSyncInfoAsync(userid, param, Debugger.IsAttached);
+        return await _dictionariesService.GetSyncInfoAsync(param, Debugger.IsAttached);
     }
 }

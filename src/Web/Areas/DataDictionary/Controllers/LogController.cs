@@ -20,13 +20,13 @@ public class LogController : DataDictionaryController
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
     private LoggerFormElementFactory LoggerFormElementFactory { get; }
     private IEntityRepository EntityRepository { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     public LogController(
         IFormElementComponentFactory<JJFormView> formViewFactory,
         LoggerFormElementFactory loggerFormElementFactory, 
         IEntityRepository entityRepository,
-        IStringLocalizer<JJMasterDataResources> stringLocalizer, 
+        IStringLocalizer<MasterDataResources> stringLocalizer, 
         IOptions<DbLoggerOptions> options)
     {
         FormViewFactory = formViewFactory;

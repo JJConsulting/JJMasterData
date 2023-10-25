@@ -21,7 +21,7 @@ namespace JJMasterData.Web.TagHelpers;
 public class ExpressionTagHelper : TagHelper
 {
     private readonly IEnumerable<IExpressionProvider> _expressionProviders;
-    private readonly IStringLocalizer<JJMasterDataResources> _stringLocalizer;
+    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
     private readonly IComponentFactory<JJCard> _cardFactory;
     private bool? _isBooleanExpression;
     
@@ -63,7 +63,7 @@ public class ExpressionTagHelper : TagHelper
     
     
     public ExpressionTagHelper(
-        IStringLocalizer<JJMasterDataResources> stringLocalizer,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IEnumerable<IExpressionProvider> expressionProviders,
         ExpressionParser expressionParser,
         IComponentFactory<JJCard> cardFactory)

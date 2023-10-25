@@ -19,11 +19,11 @@ namespace JJMasterData.Core.DataManager.Services;
 public class UploadAreaService 
 {
     private IHttpContext CurrentContext { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
     public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
 
-    public UploadAreaService(IHttpContext currentContext, IStringLocalizer<JJMasterDataResources> stringLocalizer)
+    public UploadAreaService(IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         CurrentContext = currentContext;
         StringLocalizer = stringLocalizer;

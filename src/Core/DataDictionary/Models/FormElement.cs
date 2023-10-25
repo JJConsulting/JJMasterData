@@ -59,8 +59,8 @@ public class FormElement : Element
         Indexes = element.Indexes;
         base.Relationships = element.Relationships;
         Relationships = new FormElementRelationshipList(base.Relationships);
-        CustomProcNameGet = element.CustomProcNameGet;
-        CustomProcNameSet = element.CustomProcNameSet;
+        ReadProcedureName = element.ReadProcedureName;
+        WriteProcedureName = element.WriteProcedureName;
         EnableApi = element.EnableApi;
         SyncMode = element.SyncMode;
         Title = element.Name;

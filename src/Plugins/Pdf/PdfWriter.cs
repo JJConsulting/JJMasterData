@@ -53,8 +53,8 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
     
     
     public PdfWriter(ExpressionsService expressionsService, 
-                     IStringLocalizer<JJMasterDataResources> stringLocalizer, 
-                     IOptions<JJMasterDataCoreOptions> options, 
+                     IStringLocalizer<MasterDataResources> stringLocalizer, 
+                     IOptions<MasterDataCoreOptions> options, 
                      DataItemService dataItemService,
                      ILogger<PdfWriter> logger, 
                      IEntityRepository entityRepository, 

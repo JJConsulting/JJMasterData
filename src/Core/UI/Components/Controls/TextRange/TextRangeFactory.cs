@@ -9,11 +9,11 @@ internal class TextRangeFactory : IControlFactory<JJTextRange>
 {
 
     private IHttpContext HttpContext { get; }
-    private IStringLocalizer<JJMasterDataResources> StringLocalizer { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private TextGroupFactory TextGroupFactory { get; }
 
     public TextRangeFactory(IHttpContext httpContext,
-                            IStringLocalizer<JJMasterDataResources> stringLocalizer,
+                            IStringLocalizer<MasterDataResources> stringLocalizer,
                             TextGroupFactory textGroupFactory)
     {
         HttpContext = httpContext;
