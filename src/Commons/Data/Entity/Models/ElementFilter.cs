@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
@@ -12,6 +13,7 @@ public class ElementFilter
     /// Filter type
     /// </summary>
     [JsonProperty("type")]
+    [Display(Name = "Filter Mode")]
     public FilterMode Type { get; set; }
 
     /// <summary>

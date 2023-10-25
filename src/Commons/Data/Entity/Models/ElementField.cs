@@ -25,12 +25,14 @@ public class ElementField
     /// in the column name to indicate the data order.
     /// </remarks>
     [JsonProperty("fieldname")]
+    [Display(Name = "Name")]
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// Description on the form
     /// </summary>
     [JsonProperty("label")]
+    [Display(Name = "Label")]
     public string? Label { get; set; }
 
     [JsonIgnore]
@@ -41,6 +43,7 @@ public class ElementField
     /// Default NVARCHAR
     /// </summary>
     [JsonProperty("datatype")]
+    [Display(Name = "Data Type")]
     public FieldType DataType { get; set; } = FieldType.Varchar;
 
     /// <summary>
@@ -53,6 +56,7 @@ public class ElementField
     /// Filed Size
     /// </summary>
     [JsonProperty("size")]
+    [Display(Name = "Size")]
     public int Size { get; set; }
 
     /// <summary>
@@ -87,6 +91,7 @@ public class ElementField
     /// Auto Numerical (Identity) (Default=false)
     /// </summary>
     [JsonProperty("autonum")]
+    [Display(Name = "Identity")]
     public bool AutoNum { get; set; }
 
     /// <summary>
@@ -99,6 +104,7 @@ public class ElementField
     /// <para/>VIRTUAL  = Ignored in database operations
     /// </remarks>
     [JsonProperty("databehavior")]
+    [Display(Name = "Data Behavior")]
     public FieldBehavior DataBehavior { get; set; } = FieldBehavior.Real;
 
     /// <summary>

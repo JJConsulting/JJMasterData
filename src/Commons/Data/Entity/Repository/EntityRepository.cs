@@ -86,11 +86,11 @@ public class EntityRepository : IEntityRepository
         return await DataAccess.GetDictionaryAsync(command);
     }
 
-    public async Task<IDictionary<string, object?>> GetFieldsAsync(Element metadata, IDictionary<string, object> primaryKeys)
+    public async Task<IDictionary<string, object?>> GetFieldsAsync(Element element, IDictionary<string, object> primaryKeys)
     {
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = Provider.GetReadCommand(metadata,new EntityParameters()
+        var cmd = Provider.GetReadCommand(element,new EntityParameters
         {
             Filters = primaryKeys!
         },totalOfRecords);

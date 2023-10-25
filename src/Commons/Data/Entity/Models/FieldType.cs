@@ -1,4 +1,7 @@
-﻿namespace JJMasterData.Commons.Data.Entity.Models;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace JJMasterData.Commons.Data.Entity.Models;
 
 /// <summary>
 /// Specifies the type of data in the database
@@ -14,5 +17,8 @@ public enum FieldType
     Text = 7,
     Varchar = 8,
     DateTime2 = 9,
-    Bit = 10
+    [Display(Name="Boolean")]
+    Bit = 10,
+    [Display(Name="Guid")]
+    UniqueIdentifier = 11
 }

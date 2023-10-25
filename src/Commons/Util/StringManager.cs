@@ -17,7 +17,7 @@ public static class StringManager
         if (value == null)
             return false;
 
-        string? stringValue = value.ToString();
+        var stringValue = value.ToString();
         
         if (string.IsNullOrWhiteSpace(stringValue))
             return false;
@@ -27,11 +27,7 @@ public static class StringManager
         return stringValue switch
         {
             "true" => true,
-            "t" => true,
             "1" => true,
-            "yes" => true,
-            "y" => true,
-            "s" => true,
             _ => false,
         };
     }

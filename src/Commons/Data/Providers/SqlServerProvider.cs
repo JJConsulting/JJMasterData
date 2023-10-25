@@ -22,7 +22,7 @@ public class SqlServerProvider : BaseProvider
     private const string DeleteInitial = "E";
     private const char Tab = '\t';
     public override string VariablePrefix => "@";
-    public override DataAccessProvider DataAccessProvider => DataAccessProvider.SqlServer;
+    public virtual DataAccessProvider DataAccessProvider => DataAccessProvider.SqlServer;
 
 
     public SqlServerProvider(DataAccess dataAccess, MasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
@@ -139,6 +139,12 @@ public class SqlServerProvider : BaseProvider
     {
         var sql = new StringBuilder();
         sql.Append(field.DataType.ToString());
+
+        if (field.DataType is FieldType.UniqueIdentifier && field.AutoNum)
+        {
+            sql.Append(" DEFAULT (newsequentialid())");
+        }
+        
         if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
         {
             sql.Append(" (");
@@ -181,7 +187,7 @@ public class SqlServerProvider : BaseProvider
                     {
                         if (!listContraint.Contains(contraintName + counter))
                         {
-                            contraintName = contraintName + counter;
+                            contraintName += counter;
                             listContraint.Add(contraintName);
                             hasContraint = false;
                         }
@@ -252,15 +258,13 @@ public class SqlServerProvider : BaseProvider
         if (element.Fields == null || element.Fields.Count == 0)
             throw new ArgumentNullException(nameof(Element.Fields));
 
-        StringBuilder sql = new StringBuilder();
+        var sql = new StringBuilder();
 
         bool updateScript = HasUpdateFields(element);
         string procedureFinalName = Options.GetWriteProcedureName(element);
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
-
-        sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
-
-        sql.Append("CREATE PROCEDURE [");
+        
+        sql.Append("CREATE OR ALTER PROCEDURE [");
         sql.Append(procedureFinalName);
         sql.AppendLine("] ");
         sql.AppendLine("@action varchar(1), ");
@@ -269,18 +273,24 @@ public class SqlServerProvider : BaseProvider
             .ToList()
             .FindAll(x => x.DataBehavior == FieldBehavior.Real);
 
-        foreach (var f in fields)
+        foreach (var field in fields)
         {
             sql.Append("@");
-            sql.Append(f.Name);
+            sql.Append(field.Name);
             sql.Append(" ");
-            sql.Append(f.DataType);
-            if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+            sql.Append(field.DataType);
+            if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
             {
                 sql.Append("(");
-                sql.Append(f.Size == -1 ? "MAX" : f.Size);
+                sql.Append(field.Size == -1 ? "MAX" : field.Size);
                 sql.Append(")");
             }
+
+            if (!field.IsRequired)
+            {
+                sql.Append(" = NULL");
+            }
+            
             sql.AppendLine(", ");
 
         }
@@ -369,7 +379,30 @@ public class SqlServerProvider : BaseProvider
             sql.Append(f.Name);
         }
         sql.AppendLine(")");
-        sql.Append(Tab).Append(Tab);
+        sql.AppendLine();
+        
+        var autonumericFields = pks.FindAll(x => x.AutoNum);
+        
+        if(autonumericFields.Any())
+        {
+            sql.Append(Tab,2);
+            sql.Append("OUTPUT ");
+        }
+
+        for (var i = 0; i < autonumericFields.Count; i++)
+        {
+            var fieldName = autonumericFields[i].Name;
+
+            if (i > 0)
+            {
+                sql.Append(",");
+            }
+            
+            sql.Append("Inserted." + fieldName);
+        }
+
+        sql.AppendLine();
+        sql.Append(Tab,2);
         sql.AppendLine("VALUES (");
 
         isFirst = true;
@@ -387,16 +420,6 @@ public class SqlServerProvider : BaseProvider
         sql.AppendLine(")");
         sql.Append(Tab).Append(Tab);
         sql.AppendLine("SET @RET = 0; ");
-
-        var autonum = pks.FindAll(x => x.AutoNum);
-        foreach (var f in autonum)
-        {
-            sql.Append(Tab);
-            sql.Append("SELECT @@IDENTITY AS ");
-            sql.Append(f.Name);
-            sql.AppendLine(";");
-            break;
-        }
 
         sql.Append(Tab);
         sql.AppendLine("END ");
@@ -522,12 +545,8 @@ public class SqlServerProvider : BaseProvider
 
         var sql = new StringBuilder();
         string procedureFinalName = Options.GetReadProcedureName(element);
-
-        //Se exisitir apaga
-        sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
-
-        //Criando proc
-        sql.Append("CREATE PROCEDURE [");
+        
+        sql.Append("CREATE OR ALTER PROCEDURE [");
         sql.Append(procedureFinalName);
         sql.AppendLine("] ");
         sql.AppendLine("@orderby NVARCHAR(MAX), ");
@@ -813,11 +832,11 @@ public class SqlServerProvider : BaseProvider
                                 sql.Append(f.Name);
                                 sql.AppendLine(")");
                             }
-                            else if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2)
+                            else if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2 or FieldType.UniqueIdentifier)
                             {
                                 sql.Append(" = ' + CHAR(39) + CAST(@");
                                 sql.Append(f.Name);
-                                sql.AppendLine(" AS VARCHAR) +  CHAR(39)");
+                                sql.AppendLine(" AS VARCHAR(MAX)) +  CHAR(39)");
                             }
                             else
                             {
@@ -986,8 +1005,7 @@ public class SqlServerProvider : BaseProvider
                     parameters.Filters[$"{field.Name}_from"] != null)
                 {
                     valueFrom = parameters.Filters[$"{field.Name}_from"];
-                    if (valueFrom != null)
-                        valueFrom = valueFrom.ToString();
+                    valueFrom = valueFrom?.ToString();
                 }
                 var fromParameter = new DataAccessParameter
                 {
@@ -1019,8 +1037,6 @@ public class SqlServerProvider : BaseProvider
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
                 var value = GetElementValue(field, parameters.Filters);
-                if (value != DBNull.Value)
-                    value = value.ToString();
 
                 var dbType = GetDbType(field.DataType);
                 var parameter = new DataAccessParameter
@@ -1043,86 +1059,66 @@ public class SqlServerProvider : BaseProvider
 
     private DataAccessCommand GetWriteCommand(string action, Element element, IDictionary<string,object?> values)
     {
-        DataAccessCommand cmd = new DataAccessCommand
+        var writeCommand = new DataAccessCommand
         {
             CmdType = CommandType.StoredProcedure,
             Sql = Options.GetWriteProcedureName(element)
         };
-        cmd.Parameters.Add(new DataAccessParameter("@action", action, DbType.String, 1));
+        writeCommand.Parameters.Add(new DataAccessParameter("@action", action, DbType.String, 1));
 
         var fields = element.Fields
             .ToList()
             .FindAll(x => x.DataBehavior == FieldBehavior.Real);
 
-        foreach (var f in fields)
+        foreach (var field in fields)
         {
-            object value = GetElementValue(f, values);
-            var param = new DataAccessParameter();
-            param.Name = $"@{f.Name}";
-            param.Size = f.Size;
-            param.Value = value;
-            param.Type = GetDbType(f.DataType);
-            cmd.Parameters.Add(param);
+            var value = GetElementValue(field, values);
+            var parameter = new DataAccessParameter
+            {
+                Name = $"@{field.Name}",
+                Size = field.Size,
+                Value = value,
+                Type = GetDbType(field.DataType)
+            };
+            writeCommand.Parameters.Add(parameter);
         }
 
-        var pRet = new DataAccessParameter();
-        pRet.Direction = ParameterDirection.Output;
-        pRet.Name = "@RET";
-        pRet.Value = 0;
-        pRet.Type = DbType.Int32;
-        cmd.Parameters.Add(pRet);
+        var resultParameter = new DataAccessParameter
+        {
+            Direction = ParameterDirection.Output,
+            Name = "@RET",
+            Value = 0,
+            Type = DbType.Int32
+        };
+        writeCommand.Parameters.Add(resultParameter);
 
-        return cmd;
+        return writeCommand;
     }
 
 
-    private static object GetElementValue(ElementField f, IDictionary<string,object?> values)
+    private static object GetElementValue(ElementField field, IDictionary<string,object?> values)
     {
-        if (!values.ContainsKey(f.Name)) 
+        if (!values.ContainsKey(field.Name)) 
             return DBNull.Value;
         
-        object? value = values[f.Name];
+        var value = values[field.Name];
+        
         if (value == null)
             return DBNull.Value;
-        
-        if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
-            string.IsNullOrEmpty(value.ToString()))
-        {
-            return DBNull.Value;
-        }
 
-        if (f.DataType is FieldType.Bit)
-            return StringManager.ParseBool(values[f.Name]);
-        
-        return value;
+        return field.DataType switch
+        {
+            FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int when
+                string.IsNullOrEmpty(value.ToString()) => DBNull.Value,
+            FieldType.UniqueIdentifier => Guid.Parse(value.ToString()!),
+            FieldType.Bit => StringManager.ParseBool(values[field.Name]),
+            _ => value
+        };
     }
 
     private static bool HasUpdateFields(Element element)
     {
         return element.Fields.Any(f => !f.IsPk && f.DataBehavior == FieldBehavior.Real);
-    }
-
-    private static string GetSqlDropIfExists(string objname)
-    {
-        StringBuilder sSql = new StringBuilder();
-        sSql.AppendLine("IF  EXISTS (SELECT * ");
-        sSql.Append(Tab).Append(Tab).Append(Tab);
-        sSql.AppendLine("FROM sys.objects ");
-        sSql.Append(Tab).Append(Tab).Append(Tab);
-        sSql.Append("WHERE object_id = OBJECT_ID(N'[");
-        sSql.Append(objname);
-        sSql.AppendLine("]') ");
-        sSql.Append(Tab).Append(Tab).Append(Tab);
-        sSql.AppendLine("AND type in (N'P', N'PC'))");
-        sSql.AppendLine("BEGIN");
-        sSql.Append(Tab);
-        sSql.Append("DROP PROCEDURE [");
-        sSql.Append(objname);
-        sSql.AppendLine("]");
-        sSql.AppendLine("END");
-        sSql.AppendLine("GO");
-
-        return sSql.ToString();
     }
 
     private static DbType GetDbType(FieldType dataType)
@@ -1135,6 +1131,7 @@ public class SqlServerProvider : BaseProvider
             FieldType.Float => DbType.Double,
             FieldType.Int => DbType.Int32,
             FieldType.Bit => DbType.Boolean,
+            FieldType.UniqueIdentifier => DbType.Guid,
             _ => DbType.String
         };
     }

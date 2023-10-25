@@ -16,7 +16,7 @@ public class ProviderSQLite : BaseProvider
 {
     private const string Tab = "\t";
     public override string VariablePrefix => "@";
-    public override DataAccessProvider DataAccessProvider => DataAccessProvider.SqLite;
+    public virtual DataAccessProvider DataAccessProvider => DataAccessProvider.SqLite;
 
     public ProviderSQLite(DataAccess dataAccess, MasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
     {

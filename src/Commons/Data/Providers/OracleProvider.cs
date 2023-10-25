@@ -18,7 +18,7 @@ public class OracleProvider : BaseProvider
     private const string Update = "A";
     private const string Delete = "E";
     private const string Tab = "\t";
-    public override DataAccessProvider DataAccessProvider => DataAccessProvider.Oracle;
+    public virtual DataAccessProvider DataAccessProvider => DataAccessProvider.Oracle;
     public override string VariablePrefix => "p_";
 
     public OracleProvider(DataAccess dataAccess, MasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)

@@ -432,7 +432,7 @@ public class FormService
     private bool IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string, object> formValues)
     {
         var formState = new FormStateData(formValues, pageState);
-        var auditLogExpression = formElement.Options.GridToolbarActions.AuditLogGridToolbarAction.EnableExpression;
+        var auditLogExpression = formElement.Options.GridToolbarActions.AuditLogGridToolbarAction.VisibleExpression;
         var isEnabled = ExpressionsService.GetBoolValue(auditLogExpression, formState);
         return isEnabled;
     }

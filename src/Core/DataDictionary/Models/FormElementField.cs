@@ -68,18 +68,21 @@ public class FormElementField : ElementField
     /// </code>
     /// </remarks>
     [JsonProperty("lineGroup")]
+    [Display(Name = "Line Group")]
     public int LineGroup { get; set; }
 
     /// <summary>
     /// Class name (CSS) to be appended in object group rendering
     /// </summary>
     [JsonProperty("cssClass")]
+    [Display(Name = "Css Class")]
     public string? CssClass { get; set; }
 
     /// <summary>
     /// Help text will be displayed next to the label
     /// </summary>
     [JsonProperty("helpDescription")]
+    [Display(Name = "Help Description")]
     public string? HelpDescription { get; set; }
 
     /// <summary>
@@ -105,6 +108,7 @@ public class FormElementField : ElementField
     /// Allows exporting the field (Default=true)
     /// </summary>
     [JsonProperty("export")]
+    [Display(Name = "Enable Exportation")]
     public bool Export { get; set; }
 
     /// <summary>
@@ -115,6 +119,7 @@ public class FormElementField : ElementField
     /// httpRuntime requestValidationMode="4.5" ... 
     /// </remarks>
     [JsonProperty("validateRequest")]
+    [Display(Name = "Validate Request")]
     public bool ValidateRequest { get; set; }
 
     /// <summary>
@@ -128,6 +133,7 @@ public class FormElementField : ElementField
     /// "SELECT ID, DESCR FROM TB_FOO WHERE TPVEND = {campo_tpvend}"
     /// </remarks>
     [JsonProperty("autoPostBack")]
+    [Display(Name = "Auto Reload Form Fields")]
     public bool AutoPostBack { get; set; }
 
     /// <remarks>
@@ -145,6 +151,7 @@ public class FormElementField : ElementField
     /// Property valid only for numeric types
     /// </remarks>
     [JsonProperty("numberOfDecimalPlaces")]
+    [Display(Name = "Number of Decimal Places")]
     public int NumberOfDecimalPlaces { get; set; }
 
     /// <summary>

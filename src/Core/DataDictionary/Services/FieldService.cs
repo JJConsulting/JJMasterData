@@ -114,9 +114,12 @@ public class FieldService : BaseService
             AddError(nameof(field.Filter.Type),
                 StringLocalizer["MULTVALUES filters are only allowed for text type fields"]);
         }
-        
 
-        if (field.AutoNum && field.DataType != FieldType.Int)
+
+        var isNotIdentity = field.AutoNum && field.DataType is not FieldType.Int &&
+                            field.DataType is not FieldType.UniqueIdentifier;
+        
+        if (isNotIdentity)
             AddError(nameof(field.AutoNum),
                 StringLocalizer[
                     "Field with AutoNum (auto increment) must be of data type int, unencrypted and required"]);

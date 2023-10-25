@@ -132,7 +132,7 @@ public interface IEntityRepository
     
     Task<IDictionary<string, object?>> GetFieldsAsync(DataAccessCommand command);
     
-    Task<IDictionary<string, object?>> GetFieldsAsync(Element metadata, IDictionary<string, object> primaryKeys);
+    Task<IDictionary<string, object?>> GetFieldsAsync(Element element, IDictionary<string, object> primaryKeys);
     
     Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command);
     

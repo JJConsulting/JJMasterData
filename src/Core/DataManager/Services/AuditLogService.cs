@@ -44,7 +44,7 @@ public class AuditLogService
 
     public async Task LogAsync(Element element,DataContext dataContext, IDictionary<string, object> formValues, CommandOperation action)
     {
-        var values = new Dictionary<string, object>()
+        var values = new Dictionary<string, object>
         {
             { DicName, element.Name },
             { DicKey, GetKey(element, formValues) },

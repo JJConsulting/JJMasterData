@@ -19,9 +19,7 @@ public abstract class BaseProvider
     internal DataAccess DataAccess { get; set; }
     protected MasterDataCommonsOptions Options { get; }
     private ILoggerFactory LoggerFactory { get; }
-    
-    public abstract DataAccessProvider DataAccessProvider { get; }
-    
+
     protected BaseProvider(DataAccess dataAccess, MasterDataCommonsOptions options, ILoggerFactory loggerFactory)
     {
         DataAccess = dataAccess;
@@ -74,19 +72,19 @@ public abstract class BaseProvider
     private static CommandOperation GetCommandOperation(Element element, IDictionary<string,object?> values, DataAccessCommand command,
         CommandOperation commandType, IDictionary<string, object?>? newFields)
     {
-        var ret = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
+        var resultParameter = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
 
-        if (ret.Value != DBNull.Value)
+        if (resultParameter.Value != DBNull.Value)
         {
-            if (!int.TryParse(ret.Value.ToString(), out var nret))
+            if (!int.TryParse(resultParameter.Value.ToString(), out var commandOperation))
             {
-                string err = "Element";
+                var err = "Element";
                 err += $" {element.Name}";
                 err += ": " + "Invalid return of @RET variable in procedure";
                 throw new JJMasterDataException(err);
             }
 
-            commandType = (CommandOperation)nret;
+            commandType = (CommandOperation)commandOperation;
         }
 
         if (newFields == null)
@@ -150,8 +148,11 @@ public abstract class BaseProvider
     {
         var sqlScripts = new StringBuilder();
         sqlScripts.AppendLine(GetCreateTableScript(element));
+        sqlScripts.AppendLine("GO");
         sqlScripts.AppendLine(GetWriteProcedureScript(element));
+        sqlScripts.AppendLine("GO");
         sqlScripts.AppendLine(GetReadProcedureScript(element));
+        sqlScripts.AppendLine("GO");
         return sqlScripts.ToString();
     }
     
