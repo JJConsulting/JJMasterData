@@ -1,5 +1,7 @@
 using System;
 using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
@@ -71,7 +73,15 @@ public static class ServiceCollectionExtensions
             }
         });
 
+        services.AddScoped<DataAccess>();
+        
+        services.AddTransient<SqlServerReadProcedureScripts>();
+        services.AddTransient<SqlServerWriteProcedureScripts>();
+        services.AddTransient<SqlServerScripts>();
+        
+        services.AddTransient<EntityProviderBase, SqlServerProvider>();
         services.AddTransient<IEntityRepository, EntityRepository>();
+        
         services.AddTransient<IEncryptionAlgorithm, AesEncryptionAlgorithm>();
         services.AddTransient<IEncryptionService,EncryptionService>();
 

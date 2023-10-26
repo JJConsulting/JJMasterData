@@ -9,16 +9,17 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Commons.Data.Providers;
+namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class ProviderSQLite : BaseProvider
+public class SQLiteProvider : EntityProviderBase
 {
     private const string Tab = "\t";
     public override string VariablePrefix => "@";
-    public virtual DataAccessProvider DataAccessProvider => DataAccessProvider.SqLite;
 
-    public ProviderSQLite(DataAccess dataAccess, MasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
+    public SQLiteProvider(DataAccess dataAccess, IOptions<MasterDataCommonsOptions> options,
+        ILoggerFactory loggerFactory) : base(dataAccess, options, loggerFactory)
     {
     }
 
@@ -135,6 +136,7 @@ public class ProviderSQLite : BaseProvider
                     sSql.Append(Tab);
                     sSql.Append(index.Columns[i]);
                 }
+
                 sSql.AppendLine("");
                 sSql.Append(Tab);
                 sSql.AppendLine(")");
@@ -147,7 +149,7 @@ public class ProviderSQLite : BaseProvider
         return sSql.ToString();
     }
 
-    
+
     // ReSharper disable once UnusedMember.Local
     private string GetRelationshipsScript(Element element)
     {
@@ -176,6 +178,7 @@ public class ProviderSQLite : BaseProvider
                             listConstraint.Add(constraintName);
                             hasContraint = false;
                         }
+
                         nCount++;
                     }
                 }
@@ -197,6 +200,7 @@ public class ProviderSQLite : BaseProvider
                     sSql.Append(r.Columns[rc].FkColumn);
                     sSql.Append("]");
                 }
+
                 sSql.AppendLine(")");
                 sSql.Append(Tab);
                 sSql.Append("REFERENCES ");
@@ -211,6 +215,7 @@ public class ProviderSQLite : BaseProvider
                     sSql.Append(r.Columns[rc].PkColumn);
                     sSql.Append("]");
                 }
+
                 sSql.Append(")");
 
                 if (r.UpdateOnCascade)
@@ -250,27 +255,28 @@ public class ProviderSQLite : BaseProvider
         throw new NotImplementedException();
     }
 
-    public override DataAccessCommand GetInsertCommand(Element element, IDictionary<string,object?> values)
+    public override DataAccessCommand GetInsertCommand(Element element, IDictionary<string, object?> values)
     {
         return GetScriptInsert(element, values, false);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary<string,object?> values)
+    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary<string, object?> values)
     {
         return GetScriptUpdate(element, values);
     }
 
-    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> filters)
+    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary<string, object> filters)
     {
         return GetScriptDelete(element, filters);
     }
 
-    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values)
+    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string, object?> values)
     {
         return GetScriptInsert(element, values, true);
     }
 
-    public override DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters, DataAccessParameter totalOfRecordsParameter)
+    public override DataAccessCommand GetReadCommand(Element element, EntityParameters entityParameters,
+        DataAccessParameter totalOfRecordsParameter)
     {
         var (filters, orderBy, currentPage, recordsPerPage) = entityParameters;
         var isFirst = true;
@@ -296,7 +302,6 @@ public class ProviderSQLite : BaseProvider
             sqlScript.Append(filter.Key);
             sqlScript.Append(" = ");
             sqlScript.AppendLine("?");
-
         }
 
         if (!string.IsNullOrEmpty(orderBy.ToQueryParameter()))
@@ -336,7 +341,7 @@ public class ProviderSQLite : BaseProvider
         return command;
     }
 
-    private DataAccessCommand GetScriptInsert(Element element, IDictionary<string,object?> values, bool isReplace)
+    private DataAccessCommand GetScriptInsert(Element element, IDictionary<string, object?> values, bool isReplace)
     {
         var fields = element.Fields
             .ToList()
@@ -362,6 +367,7 @@ public class ProviderSQLite : BaseProvider
 
             sSql.Append(c.Name);
         }
+
         sSql.Append(")");
         sSql.Append(" VALUES (");
         isFirst = true;
@@ -373,8 +379,8 @@ public class ProviderSQLite : BaseProvider
                 sSql.AppendLine(",");
 
             sSql.Append("?");
-
         }
+
         sSql.Append(")");
 
         DataAccessCommand cmd = new DataAccessCommand();
@@ -395,7 +401,7 @@ public class ProviderSQLite : BaseProvider
         return cmd;
     }
 
-    private DataAccessCommand GetScriptUpdate(Element element, IDictionary<string,object?> values)
+    private DataAccessCommand GetScriptUpdate(Element element, IDictionary<string, object?> values)
     {
         var fields = element.Fields
             .ToList()
@@ -464,10 +470,9 @@ public class ProviderSQLite : BaseProvider
         }
 
         return cmd;
-
     }
 
-    private DataAccessCommand GetScriptDelete(Element element, IDictionary<string,object> values)
+    private DataAccessCommand GetScriptDelete(Element element, IDictionary<string, object> values)
     {
         var fields = element.Fields
             .ToList()
@@ -521,17 +526,17 @@ public class ProviderSQLite : BaseProvider
         return cmd;
     }
 
-    private static object GetElementValue(ElementField f, IDictionary<string,object?> values)
+    private static object GetElementValue(ElementField f, IDictionary<string, object?> values)
     {
-        if (!values.ContainsKey(f.Name)) 
+        if (!values.ContainsKey(f.Name))
             return DBNull.Value;
-        
+
         object? val = values[f.Name];
         if (val == null)
         {
             return DBNull.Value;
         }
-                
+
         if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int &&
             string.IsNullOrEmpty(val.ToString()))
         {
@@ -562,11 +567,12 @@ public class ProviderSQLite : BaseProvider
                 t = DbType.Int32;
                 break;
         }
+
         return t;
     }
 
     // ReSharper disable once UnusedMember.Local
-    private DataAccessCommand GetScriptCount(Element element, IDictionary<string,object?> filters)
+    private DataAccessCommand GetScriptCount(Element element, IDictionary<string, object?> filters)
     {
         var fields = element.Fields
             .ToList()
@@ -620,7 +626,7 @@ public class ProviderSQLite : BaseProvider
         return cmd;
     }
 
-  
+
     public override string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
         throw new NotImplementedException();

@@ -12,17 +12,17 @@ using JJMasterData.Commons.Exceptions;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 
-namespace JJMasterData.Commons.Data.Providers;
+namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class PlainTextReader
 {
     private ILogger<PlainTextReader> Logger { get; }
-    private readonly BaseProvider _provider;
+    private readonly EntityProviderBase _provider;
     public bool ShowLogInfo { get; init; }
     public string Delimiter { get; init; }
 
 
-    public PlainTextReader(BaseProvider provider, ILogger<PlainTextReader> logger)
+    public PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReader> logger)
     {
         Logger = logger;
         _provider = provider;

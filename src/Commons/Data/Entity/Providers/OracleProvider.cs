@@ -9,19 +9,19 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Commons.Data.Providers;
+namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class OracleProvider : BaseProvider
+public class OracleProvider : EntityProviderBase
 {
     private const string Insert = "I";
     private const string Update = "A";
     private const string Delete = "E";
     private const string Tab = "\t";
-    public virtual DataAccessProvider DataAccessProvider => DataAccessProvider.Oracle;
     public override string VariablePrefix => "p_";
 
-    public OracleProvider(DataAccess dataAccess, MasterDataCommonsOptions options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
+    public OracleProvider(DataAccess dataAccess, IOptions<MasterDataCommonsOptions> options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
     {
     }
 

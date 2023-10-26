@@ -1,20 +1,22 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.Db;
 
 internal class DbLoggerBackgroundService : LoggerBackgroundService<DbLoggerBuffer>
 {
-    private readonly IEntityRepository _entityRepository;
+    public readonly IServiceProvider _serviceProvider;
     private readonly IOptionsMonitor<DbLoggerOptions> _options;
     
     private bool TableExists { get; set; }
     
-    public DbLoggerBackgroundService(DbLoggerBuffer loggerBuffer, IOptionsMonitor<DbLoggerOptions> optionsMonitor, IEntityRepository entityRepository) : base(loggerBuffer)
+    public DbLoggerBackgroundService(DbLoggerBuffer loggerBuffer, IOptionsMonitor<DbLoggerOptions> optionsMonitor,IServiceProvider serviceProvider) : base(loggerBuffer)
     {
-        _entityRepository = entityRepository;
+        _serviceProvider = serviceProvider;
         _options = optionsMonitor;
     }
 
@@ -27,17 +29,19 @@ internal class DbLoggerBackgroundService : LoggerBackgroundService<DbLoggerBuffe
         var dbValues = dbEntry.ToDictionary(options);
         
         var element = DbLoggerElement.GetInstance(options);
-        
+
+        using var scope = _serviceProvider.CreateScope();
+        var entityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
         if (!TableExists)
         {
-            if (!await _entityRepository.TableExistsAsync(options.TableName))
+            if (!await entityRepository.TableExistsAsync(options.TableName))
             {
-                await _entityRepository.CreateDataModelAsync(element);
+                await entityRepository.CreateDataModelAsync(element);
             }
 
             TableExists = true;
         }
     
-        await _entityRepository.InsertAsync(element, dbValues);
+        await entityRepository.InsertAsync(element, dbValues);
     }
 }

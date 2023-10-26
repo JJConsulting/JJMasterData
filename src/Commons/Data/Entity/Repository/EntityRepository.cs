@@ -1,56 +1,27 @@
 ﻿#nullable enable
 
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Data.Providers;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
 public class EntityRepository : IEntityRepository
 {
     private ILoggerFactory LoggerFactory { get; }
-    private MasterDataCommonsOptions Options { get; }
     private DataAccess DataAccess { get; }
-    private BaseProvider Provider { get; }
-    
-    [ActivatorUtilitiesConstructor]
-    public EntityRepository(IOptions<MasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
-    {
-        LoggerFactory = loggerFactory;
-        var connectionString = options.Value.ConnectionString;
-        var connectionProvider = options.Value.ConnectionProvider;
-        DataAccess = new DataAccess(connectionString, connectionProvider);
-        Options = options.Value;
-        Provider = GetProvider();
-    }
-    
-    public EntityRepository(string connectionString, DataAccessProvider provider, IOptions<MasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
-    {
-        DataAccess = new DataAccess(connectionString, provider);
-        Options = options.Value;
-        LoggerFactory = loggerFactory;
-        Provider = GetProvider();
-    }
+    private EntityProviderBase Provider { get; }
 
-    private BaseProvider GetProvider()
+    public EntityRepository(DataAccess dataAccess, ILoggerFactory loggerFactory, EntityProviderBase provider)
     {
-        return DataAccess.ConnectionProvider switch
-        {
-            DataAccessProvider.SqlServer => new SqlServerProvider(DataAccess, Options,LoggerFactory),
-            DataAccessProvider.Oracle => new OracleProvider(DataAccess, Options,LoggerFactory),
-            DataAccessProvider.OracleNetCore => new OracleProvider(DataAccess, Options,LoggerFactory),
-            DataAccessProvider.SqLite => new ProviderSQLite(DataAccess, Options,LoggerFactory),
-            _ => throw new InvalidOperationException($"Invalid data provider. [{DataAccess.ConnectionProvider}]")
-        };
+        LoggerFactory = loggerFactory;
+        DataAccess = dataAccess;
+        Provider = provider;
     }
 
     public async Task<int> DeleteAsync(Element element, IDictionary<string,object> filters) => await Provider.DeleteAsync(element, filters);

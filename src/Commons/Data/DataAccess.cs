@@ -7,9 +7,11 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data;
 
@@ -152,12 +154,11 @@ public partial class DataAccess
     /// Initialize with a IConfiguration instance.
     /// </summary>
     [ActivatorUtilitiesConstructor]
-    public DataAccess(IConfiguration configuration)
+    public DataAccess(IOptions<MasterDataCommonsOptions> options)
     {
-        ConnectionString = configuration.GetConnectionString("ConnectionString");
-        ConnectionProvider = configuration.GetSection("ConnectionProviders")
-                                 .GetValue<DataAccessProvider?>("ConnectionString") ??
-                             DataAccessProvider.SqlServer;
+        var optionsValue = options.Value;
+        ConnectionString = optionsValue.ConnectionString;
+        ConnectionProvider = optionsValue.ConnectionProvider;
     }
 
     public DbConnection GetConnection()
@@ -707,5 +708,4 @@ public partial class DataAccess
 
         return command;
     }
-
 }

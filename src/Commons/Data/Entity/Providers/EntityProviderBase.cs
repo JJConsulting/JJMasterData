@@ -1,29 +1,30 @@
 ﻿#nullable enable
 
-using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data.Entity.Repository;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Exceptions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace JJMasterData.Commons.Data.Providers;
+namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public abstract class BaseProvider
+public abstract class EntityProviderBase
 {
     internal DataAccess DataAccess { get; set; }
     protected MasterDataCommonsOptions Options { get; }
     private ILoggerFactory LoggerFactory { get; }
 
-    protected BaseProvider(DataAccess dataAccess, MasterDataCommonsOptions options, ILoggerFactory loggerFactory)
+    protected EntityProviderBase(DataAccess dataAccess, IOptions<MasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
     {
         DataAccess = dataAccess;
-        Options = options;
+        Options = options.Value;
         LoggerFactory = loggerFactory;
     }
     

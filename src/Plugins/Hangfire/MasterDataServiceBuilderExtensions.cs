@@ -5,7 +5,7 @@ public static class MasterDataServiceBuilderExtensions
 {
     public static MasterDataServiceBuilder WithHangfire(this MasterDataServiceBuilder builder)
     {
-        builder.WithBackgroundTask<BackgroundTaskManager>();
+        builder.WithBackgroundTaskManager<BackgroundTaskManager>();
         return builder;
     }
 }

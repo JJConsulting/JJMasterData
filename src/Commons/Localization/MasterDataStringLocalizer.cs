@@ -41,7 +41,7 @@ public sealed class MasterDataStringLocalizer<TResourceSource> : IStringLocalize
 }
 
 
-public class JJMasterDataStringLocalizer : IStringLocalizer
+public class MasterDataStringLocalizer : IStringLocalizer
 {
     private ResourceManagerStringLocalizer ResourceManagerStringLocalizer { get; }
     private IEntityRepository EntityRepository { get; }
@@ -50,7 +50,7 @@ public class JJMasterDataStringLocalizer : IStringLocalizer
 
     private string ResourceName { get; }
     
-    public JJMasterDataStringLocalizer(
+    public MasterDataStringLocalizer(
         string resourceName,
         ResourceManagerStringLocalizer resourcesStringLocalizer,
         IEntityRepository entityRepository, 

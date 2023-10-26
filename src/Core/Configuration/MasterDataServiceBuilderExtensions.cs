@@ -5,6 +5,7 @@ using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository;
@@ -62,16 +63,9 @@ public static class MasterDataServiceBuilderExtensions
 
     public static MasterDataServiceBuilder WithDatabaseDataDictionary(this MasterDataServiceBuilder builder, string connectionString, DataAccessProvider provider)
     {
-        return WithDataDictionaryRepository(builder,serviceProvider =>
-        {
-            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            var options = serviceProvider.GetRequiredService<IOptions<MasterDataCommonsOptions>>();
-            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            var entityRepository = new EntityRepository(configuration.GetConnectionString(connectionString),provider, options,loggerFactory);
-            
-            return new SqlDataDictionaryRepository(entityRepository,
-                serviceProvider.GetRequiredService<IOptions<MasterDataCoreOptions>>());
-        });
+        builder.WithEntityProvider(connectionString,provider);
+        return WithDataDictionaryRepository(builder,serviceProvider => new SqlDataDictionaryRepository(serviceProvider.GetRequiredService<IEntityRepository>(),
+            serviceProvider.GetRequiredService<IOptions<MasterDataCoreOptions>>()));
     }
     
     public static MasterDataServiceBuilder WithFileSystemDataDictionary(this MasterDataServiceBuilder builder)

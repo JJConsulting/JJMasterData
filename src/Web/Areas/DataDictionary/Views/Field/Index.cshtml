@@ -1,8 +1,8 @@
 ﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
-@using JJMasterData.Commons.Data.Providers
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.UI.Components
+@using JJMasterData.Commons.Data.Entity.Providers
 
 @inject IComponentFactory ComponentFactory 
 
@@ -271,7 +271,7 @@
                                                 <span>@label</span>
                                                 <span> - </span>
                                             }
-                                            <small>@SqlServerProvider.GetFieldDataTypeScript(field)</small>
+                                            <small>@SqlServerScriptsBase.GetFieldDataTypeScript(field)</small>
                                         </div>
                                         <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
                                         </div>
