@@ -8,10 +8,9 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class SqlServerReadProcedureScripts
+public class SqlServerReadProcedureScripts : SqlServerScriptsBase
 {
     private MasterDataCommonsOptions Options { get; }
-    private const char Tab = '\t';
 
     public SqlServerReadProcedureScripts(IOptions<MasterDataCommonsOptions> options)
     {
@@ -36,27 +35,26 @@ public class SqlServerReadProcedureScripts
         sql.Append("CREATE OR ALTER PROCEDURE [");
         sql.Append(procedureFinalName);
         sql.AppendLine("] ");
-        GetReadProcedureFieldsDefinition(sql, fields);
+        sql.AppendLine(GetParameters(fields, addMasterDataParameters: true));
         sql.AppendLine("AS ");
         sql.AppendLine("BEGIN ");
         sql.Append(Tab);
-        sql.AppendLine("DECLARE @sqlcolumn   NVARCHAR(MAX)");
+        sql.AppendLine("DECLARE @sqlColumn   NVARCHAR(MAX)");
         sql.Append(Tab);
-        sql.AppendLine("DECLARE @sqltable    NVARCHAR(MAX)");
+        sql.AppendLine("DECLARE @sqlTable    NVARCHAR(MAX)");
         sql.Append(Tab);
-        sql.AppendLine("DECLARE @sqlcond     NVARCHAR(MAX)");
+        sql.AppendLine("DECLARE @sqlWhere     NVARCHAR(MAX)");
         sql.Append(Tab);
-        sql.AppendLine("DECLARE @sqlorder    NVARCHAR(MAX)");
+        sql.AppendLine("DECLARE @sqlOrderBy    NVARCHAR(MAX)");
         sql.Append(Tab);
-        sql.AppendLine("DECLARE @sqloffset   NVARCHAR(MAX)");
+        sql.AppendLine("DECLARE @sqlOffset   NVARCHAR(MAX)");
         sql.Append(Tab);
         sql.AppendLine("DECLARE @query       NVARCHAR(MAX)");
         sql.Append(Tab);
 
-        if (fields.Exists(x => x.Filter.Type == FilterMode.MultValuesContain ||
-                               x.Filter.Type == FilterMode.MultValuesEqual))
+        if (fields.Exists(f => f.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual))
         {
-            sql.AppendLine("DECLARE @likein      NVARCHAR(MAX)");
+            sql.AppendLine("DECLARE @sqlLikeIn      NVARCHAR(MAX)");
             sql.Append(Tab);
         }
 
@@ -66,17 +64,17 @@ public class SqlServerReadProcedureScripts
         sql.Append(Tab);
         sql.AppendLine("--COLUMNS");
         sql.Append(Tab);
-        sql.AppendLine("SET @sqlcolumn = '");
+        sql.AppendLine("SET @sqlColumn = '");
 
         int index = 1;
-        foreach (var f in fields)
+        foreach (var field in fields)
         {
             sql.Append(Tab).Append(Tab);
             sql.Append("");
-            if (f.DataBehavior == FieldBehavior.ViewOnly)
+            if (field.DataBehavior == FieldBehavior.ViewOnly)
             {
                 sql.Append("NULL AS ");
-                sql.Append(f.Name);
+                sql.Append(field.Name);
                 if (index != fields.Count)
                     sql.Append(", ");
 
@@ -84,7 +82,7 @@ public class SqlServerReadProcedureScripts
             }
             else
             {
-                sql.Append(f.Name);
+                sql.Append(field.Name);
 
                 sql.AppendLine(index != fields.Count ? ", " : "");
             }
@@ -98,7 +96,7 @@ public class SqlServerReadProcedureScripts
         sql.Append(Tab);
         sql.AppendLine("--TABLES");
         sql.Append(Tab);
-        sql.Append("SET @sqltable = 'FROM ");
+        sql.Append("SET @sqlTable = 'FROM ");
         sql.Append(element.TableName);
         sql.AppendLine(" WITH (NOLOCK)'");
         sql.AppendLine("");
@@ -106,57 +104,58 @@ public class SqlServerReadProcedureScripts
         sql.Append(Tab);
         sql.AppendLine("--CONDITIONALS");
         sql.Append(Tab);
-        sql.AppendLine("SET @sqlcond = ' WHERE 1=1 '");
+        sql.AppendLine("SET @sqlWhere = ' WHERE 1=1 '");
 
-        foreach (var f in fields)
+        foreach (var field in fields)
         {
-            if (f.Filter.Type != FilterMode.None || f.IsPk)
+            if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
-                if (f.DataBehavior == FieldBehavior.ViewOnly)
+                if (field.DataBehavior == FieldBehavior.ViewOnly)
                 {
                     sql.AppendLine("");
                     sql.Append(Tab);
                     sql.AppendLine("/*");
                     sql.Append("TODO: FILTER ");
-                    sql.AppendLine(f.Name);
+                    sql.AppendLine(field.Name);
                 }
             }
 
-            switch (f.Filter.Type)
+            switch (field.Filter.Type)
             {
                 case FilterMode.Range:
                 {
                     sql.AppendLine("");
 
-                    if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2)
+                    if (field.DataType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2)
                     {
                         sql.Append(Tab);
                         sql.Append("IF @");
-                        sql.Append(f.Name);
+                        sql.Append(field.Name);
                         sql.AppendLine("_from IS NOT NULL");
-                        sql.Append(Tab).Append(Tab);
-                        sql.Append("SET @sqlcond = @sqlcond + ' AND CONVERT(DATE, ");
-                        sql.Append(f.Name);
-                        sql.Append(") BETWEEN ' + CHAR(39) + CONVERT(VARCHAR(10), @");
-                        sql.Append(f.Name);
-                        sql.Append("_from, 112) + CHAR(39) + ' AND ' + CHAR(39) + CONVERT(VARCHAR(10), @");
-                        sql.Append(f.Name);
-                        sql.AppendLine("_to, 112) + CHAR(39)");
+                        sql.Append(Tab,2);
+                        sql.Append("SET @sqlWhere = @sqlWhere + ' AND CONVERT(DATE, ");
+                        sql.Append(field.Name);
+                        sql.Append(") BETWEEN CONVERT(VARCHAR(10), @");
+                        sql.Append(field.Name);
+                        sql.Append("_from, 112) AND CONVERT(VARCHAR(10), @");
+                        sql.Append(field.Name);
+                        sql.AppendLine("_to, 112) '");
                     }
                     else
                     {
                         sql.Append(Tab);
                         sql.Append("IF @");
-                        sql.Append(f.Name);
+                        sql.Append(field.Name);
                         sql.AppendLine("_from IS NOT NULL");
-                        sql.Append(Tab).Append(Tab);
-                        sql.Append("SET @sqlcond = @sqlcond + ' AND ");
-                        sql.Append(f.Name);
-                        sql.Append(" BETWEEN ' + CHAR(39) + @");
-                        sql.Append(f.Name);
-                        sql.Append("_from + CHAR(39) + ' AND ' + CHAR(39) + @");
-                        sql.Append(f.Name);
-                        sql.AppendLine(" + CHAR(39)");
+                        sql.Append(Tab,2);
+                        sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
+                        sql.Append(field.Name);
+                        sql.Append(" BETWEEN ' @");
+                        sql.Append(field.Name);
+                        sql.Append("_from AND  @");
+                        sql.Append(field.Name);
+                        sql.AppendLine("_TO");
+                        sql.AppendLine("'");
                     }
 
                     break;
@@ -165,48 +164,46 @@ public class SqlServerReadProcedureScripts
                     sql.AppendLine("");
                     sql.Append(Tab);
                     sql.Append("IF @");
-                    sql.Append(f.Name);
+                    sql.Append(field.Name);
                     sql.AppendLine(" IS NOT NULL");
                     sql.Append(Tab).Append(Tab);
-                    sql.Append("SET @sqlcond = @sqlcond + ' AND ");
-                    sql.Append(f.Name);
-                    sql.Append(" LIKE ' + CHAR(39) + '%' + @");
-                    sql.Append(f.Name);
-                    sql.AppendLine(" +  '%' + CHAR(39)");
+                    sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
+                    sql.Append(field.Name);
+                    sql.Append($" LIKE  ''%'' + @{field.Name} + ''%'' '");
                     break;
                 case FilterMode.MultValuesContain:
                     sql.AppendLine("");
                     sql.Append(Tab);
                     sql.Append("IF @");
-                    sql.Append(f.Name);
+                    sql.Append(field.Name);
                     sql.AppendLine(" IS NOT NULL");
                     sql.Append(Tab);
                     sql.AppendLine("BEGIN");
                     sql.Append(Tab, 2);
-                    sql.AppendLine("SET @likein = ' AND ( '");
+                    sql.AppendLine("SET @sqlLikeIn = ' AND ( '");
                     sql.Append(Tab, 2);
-                    sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", f.Name);
+                    sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", field.Name);
                     sql.AppendLine("");
                     sql.Append(Tab, 2);
                     sql.AppendLine("BEGIN");
                     sql.Append(Tab, 3);
                     sql.AppendFormat(
-                        "SET @likein = @likein + '{0} LIKE ' + CHAR(39) + '%' + SUBSTRING(@{0}, 1, CHARINDEX(',', @{0}) -1) + '%' + CHAR(39);",
-                        f.Name);
+                        "SET @ = @sqlLikeIn + '{0} LIKE ' + CHAR(39) + '%' + SUBSTRING(@{0}, 1, CHARINDEX(',', @{0}) -1) + '%' + CHAR(39);",
+                        field.Name);
                     sql.AppendLine("");
                     sql.Append(Tab, 3);
-                    sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", f.Name);
+                    sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", field.Name);
                     sql.AppendLine("");
                     sql.Append(Tab, 3);
-                    sql.AppendLine("SET @likein = @likein + ' OR ';");
+                    sql.AppendLine("SET @sqlLikeIn = @sqlLikeIn + ' OR ';");
                     sql.Append(Tab, 2);
                     sql.AppendLine("END");
                     sql.Append(Tab, 2);
                     sql.AppendFormat(
-                        "SET @likein = @likein  + '{0} LIKE ' + CHAR(39) + '%' + @{0} + '%' + CHAR(39) + ' ) '", f.Name);
+                        "SET @sqlLikeIn = @sqlLikeIn  + '{0} LIKE ' + CHAR(39) + '%' + @{0} + '%' + CHAR(39) + ' ) '", field.Name);
                     sql.AppendLine("");
                     sql.Append(Tab, 2);
-                    sql.AppendLine("SET @sqlcond = @sqlcond + @likein");
+                    sql.AppendLine("SET @sqlWhere = @sqlWhere + @sqlLikeIn");
                     sql.Append(Tab);
                     sql.AppendLine("END");
                     break;
@@ -214,77 +211,59 @@ public class SqlServerReadProcedureScripts
                     sql.AppendLine("");
                     sql.Append(Tab);
                     sql.Append("IF @");
-                    sql.Append(f.Name);
+                    sql.Append(field.Name);
                     sql.AppendLine(" IS NOT NULL");
                     sql.Append(Tab);
                     sql.AppendLine("BEGIN");
                     sql.Append(Tab, 2);
-                    sql.AppendFormat("SET @likein = ' AND {0} IN ('", f.Name);
+                    sql.Append($"SET @sqlLikeIn = ' AND {field.Name} IN ('");
                     sql.AppendLine("");
                     sql.Append(Tab, 2);
-                    sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", f.Name);
+                    sql.Append($"WHILE CHARINDEX(',', @{field.Name}) <> 0");
                     sql.AppendLine("");
                     sql.Append(Tab, 2);
                     sql.AppendLine("BEGIN");
                     sql.Append(Tab, 3);
                     sql.AppendFormat(
-                        "SET @likein = @likein + CHAR(39) + SUBSTRING(@{0},1,CHARINDEX(',',@{0}) -1) + CHAR(39);", f.Name);
+                        "SET @sqlLikeIn = @sqlLikeIn + CHAR(39) + SUBSTRING(@{0},1,CHARINDEX(',',@{0}) -1) + CHAR(39);", field.Name);
                     sql.AppendLine("");
                     sql.Append(Tab, 3);
-                    sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", f.Name);
-                    sql.AppendLine("");
+                    sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", field.Name);
+                    sql.AppendLine();
                     sql.Append(Tab, 3);
-                    sql.AppendLine("SET @likein = @likein + ', ';");
+                    sql.AppendLine("SET @sqlLikeIn = @sqlLikeIn + ', ';");
                     sql.Append(Tab, 2);
                     sql.AppendLine("END");
                     sql.Append(Tab, 2);
-                    sql.AppendFormat("SET @likein = @likein + CHAR(39) + @{0} + CHAR(39) + ') '", f.Name);
+                    sql.AppendFormat("SET @sqlLikeIn = @sqlLikeIn + CHAR(39) + @{0} + CHAR(39) + ') '", field.Name);
                     sql.AppendLine("");
                     sql.Append(Tab, 2);
-                    sql.AppendLine("SET @sqlcond = @sqlcond + @likein");
+                    sql.AppendLine("SET @sqlWhere = @sqlWhere + @sqlLikeIn");
                     sql.Append(Tab);
                     sql.AppendLine("END");
                     break;
                 default:
                 {
-                    if (f.Filter.Type == FilterMode.Equal || f.IsPk)
+                    if (field.Filter.Type == FilterMode.Equal || field.IsPk)
                     {
                         sql.AppendLine("");
                         sql.Append(Tab);
                         sql.Append("IF @");
-                        sql.Append(f.Name);
+                        sql.Append(field.Name);
                         sql.AppendLine(" IS NOT NULL");
                         sql.Append(Tab).Append(Tab);
-                        sql.Append("SET @sqlcond = @sqlcond + ' AND ");
-                        sql.Append(f.Name);
-
-                        if (f.DataType is FieldType.Int or FieldType.Float or FieldType.Bit)
-                        {
-                            sql.Append(" = ' + CONVERT(VARCHAR, @");
-                            sql.Append(f.Name);
-                            sql.AppendLine(")");
-                        }
-                        else if (f.DataType is FieldType.Date or FieldType.DateTime or FieldType.DateTime2
-                                 or FieldType.UniqueIdentifier)
-                        {
-                            sql.Append(" = ' + CHAR(39) + CAST(@");
-                            sql.Append(f.Name);
-                            sql.AppendLine(" AS VARCHAR(MAX)) +  CHAR(39)");
-                        }
-                        else
-                        {
-                            sql.Append(" = ' + CHAR(39) + @");
-                            sql.Append(f.Name);
-                            sql.AppendLine(" +  CHAR(39)");
-                        }
+                        sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
+                        sql.Append($"{field.Name} = @{field.Name}'");
                     }
 
                     break;
                 }
             }
 
-            if (f.Filter.Type == FilterMode.None && !f.IsPk) continue;
-            if (f.DataBehavior != FieldBehavior.ViewOnly) continue;
+            if (field.Filter.Type == FilterMode.None && !field.IsPk) 
+                continue;
+            if (field.DataBehavior != FieldBehavior.ViewOnly) 
+                continue;
 
             sql.Append(Tab);
             sql.AppendLine("*/");
@@ -292,18 +271,18 @@ public class SqlServerReadProcedureScripts
 
         sql.AppendLine("");
         sql.Append(Tab);
-        sql.AppendLine("--ORDER");
+        sql.AppendLine("--ORDER BY");
         sql.Append(Tab);
         var listPk = fields.FindAll(x => x.IsPk);
         if (listPk.Count == 0)
         {
-            sql.Append("SET @sqlorder  = ' ORDER BY ");
+            sql.Append("SET @sqlOrderBy  = ' ORDER BY ");
             sql.Append(fields[0].Name);
             sql.AppendLine("'");
         }
         else
         {
-            sql.Append("SET @sqlorder  = ' ORDER BY ");
+            sql.Append("SET @sqlOrderBy  = ' ORDER BY ");
             sql.Append(listPk[0].Name);
             sql.AppendLine("'");
         }
@@ -314,30 +293,37 @@ public class SqlServerReadProcedureScripts
         sql.AppendLine("BEGIN");
         sql.Append(Tab);
         sql.Append(Tab);
-        sql.AppendLine("SET @sqlorder  = ' ORDER BY ' + @orderby");
+        sql.AppendLine("SET @sqlOrderBy  = ' ORDER BY @orderby'");
         sql.Append(Tab);
         sql.AppendLine("END");
         sql.AppendLine("");
 
         sql.Append(Tab);
-        sql.AppendLine("--PAGING");
+        sql.AppendLine("--PAGINATION");
         sql.Append(Tab);
-        sql.AppendLine("SET @sqloffset = ' '");
+
+        sql.AppendLine("IF @pag < 1");
+        sql.Append(Tab,2);
+        sql.Append("SET @pag = 1");
+        sql.AppendLine();
         sql.Append(Tab);
-        sql.AppendLine("SET @sqloffset = @sqloffset + 'OFFSET ('");
+        sql.AppendLine("SET @sqlOffset = ' '");
         sql.Append(Tab);
-        sql.AppendLine("SET @sqloffset = @sqloffset + RTRIM(CONVERT(VARCHAR(10), @pag - 1))");
+        sql.AppendLine("SET @sqlOffset = @sqlOffset + ' OFFSET ('");
         sql.Append(Tab);
-        sql.AppendLine("SET @sqloffset = @sqloffset + ' * '");
+        sql.AppendLine("SET @sqlOffset = @sqlOffset + '(@pag - 1)'");
         sql.Append(Tab);
-        sql.AppendLine("SET @sqloffset = @sqloffset + RTRIM(CONVERT(VARCHAR(10), @regporpag))");
+        sql.AppendLine("SET @sqlOffset = @sqlOffset + ' * '");
         sql.Append(Tab);
-        sql.AppendLine("SET @sqloffset = @sqloffset + ') ROWS FETCH NEXT '");
+        sql.AppendLine("SET @sqlOffset = @sqlOffset + '@regporpag'");
         sql.Append(Tab);
-        sql.AppendLine("SET @sqloffset = @sqloffset + RTRIM(CONVERT(VARCHAR(10), @regporpag))");
+        sql.AppendLine("SET @sqlOffset = @sqlOffset + ') ROWS FETCH NEXT '");
         sql.Append(Tab);
-        sql.AppendLine("SET @sqloffset = @sqloffset + ' ROWS ONLY '");
+        sql.AppendLine("SET @sqlOffset = @sqlOffset + '@regporpag'");
+        sql.Append(Tab);
+        sql.AppendLine("SET @sqlOffset = @sqlOffset + ' ROWS ONLY '");
         sql.AppendLine("");
+
 
 
         sql.Append(Tab);
@@ -346,94 +332,171 @@ public class SqlServerReadProcedureScripts
         sql.AppendLine("IF @qtdtotal is null or @qtdtotal = 0");
         sql.Append(Tab);
         sql.AppendLine("BEGIN");
-        sql.Append(Tab).Append(Tab);
+        sql.Append(Tab,2);
         sql.AppendLine("SET @qtdtotal = 0;");
-        sql.Append(Tab).Append(Tab);
-        sql.AppendLine("SET @query = N'SELECT @count = COUNT(*) ' + @sqltable + @sqlcond");
-        sql.Append(Tab).Append(Tab);
-        sql.AppendLine("EXECUTE sp_executesql @query, N'@count int output', @count = @qtdtotal output");
+        sql.Append(Tab,2);
+        sql.AppendLine("SET @query = N'SELECT @count = COUNT(*) ' + @sqlTable + @sqlWhere");
+        sql.Append(Tab,2);
+        sql.AppendLine("EXECUTE sp_executesql @query,");
+        sql.Append(Tab,2);
+        sql.Append("N'");
+        sql.Append(GetParameters(fields, addMasterDataParameters: false, tabLevel: 2));
+        sql.Append(Tab,2);
+        sql.Append("@count int output',");
+        sql.AppendLine();
+        sql.Append(Tab,2);
+        sql.Append(GetFilterParametersScript(fields, tabCount: 2));
+        sql.Append("@count = @qtdtotal output");
+        sql.AppendLine();
         sql.Append(Tab);
         sql.AppendLine("END");
-        sql.AppendLine("");
+        sql.AppendLine();
 
         sql.Append(Tab);
         sql.AppendLine("--DATASET RESULT");
         sql.Append(Tab);
 
-        sql.AppendLine("SET @query = N'SELECT ' + @sqlcolumn + @sqltable + @sqlcond + @sqlorder + @sqloffset");
+        sql.AppendLine("SET @query = N'SELECT ' + @sqlColumn + @sqlTable + @sqlWhere + @sqlOrderBy + @sqlOffset");
         sql.Append(Tab);
-        sql.AppendLine("EXECUTE sp_executesql @query ");
+        sql.AppendLine("EXECUTE sp_executesql @query,");
         sql.Append(Tab);
-        sql.AppendLine("--PRINT(@query)");
-
-        sql.AppendLine("");
+        sql.Append("N'");
+        sql.Append(GetParameters(fields, addMasterDataParameters: true, tabLevel: 1));
+        sql.Append("'");
+        sql.Append(",");
+        sql.AppendLine();
+        sql.Append(Tab);
+        sql.Append("@orderby,");
+        sql.AppendLine();
+        sql.Append(Tab);
+        sql.Append(GetFilterParametersScript(fields));
+        sql.AppendLine("@regporpag,");
+        sql.Append(Tab);
+        sql.AppendLine("@pag,");
+        sql.Append(Tab);
+        sql.AppendLine("@qtdtotal");
+        sql.Append(Tab);
+        sql.AppendLine();
         sql.AppendLine("END");
 
         return sql.ToString();
     }
-        private static void GetReadProcedureFieldsDefinition(StringBuilder sql, List<ElementField> fields)
+
+    private static string GetFilterParametersScript(IEnumerable<ElementField> fields, int tabCount = 1)
     {
-        sql.AppendLine("@orderby NVARCHAR(MAX), ");
-
-        foreach (var f in fields)
+        StringBuilder sql = new();
+        foreach (var field in fields.Where(IsFilter))
         {
-            if (f.Filter.Type == FilterMode.Range)
+            if (field.Filter.Type is FilterMode.Range)
             {
-                sql.Append("@");
-                sql.Append(f.Name);
-                sql.Append("_from ");
-                sql.Append(f.DataType.ToString());
-                if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
-                {
-                    sql.Append("(");
-                    sql.Append(f.Size == -1 ? "MAX" : f.Size);
-                    sql.Append(")");
-                }
-
-                sql.AppendLine(",");
-                sql.Append("@");
-                sql.Append(f.Name);
-                sql.Append("_to ");
-                sql.Append(f.DataType.ToString());
-                if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
-                {
-                    sql.Append("(");
-                    sql.Append(f.Size == -1 ? "MAX" : f.Size);
-                    sql.Append(") ");
-                }
-
-                sql.AppendLine(",");
+                sql.AppendLine($"@{field.Name}_from,");
+                sql.Append(Tab, tabCount);
+                sql.AppendLine($"@{field.Name}_to,");
+                sql.Append(Tab, tabCount);
             }
-            else if (f.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
+            else
             {
-                sql.Append("@");
-                sql.Append(f.Name);
-                sql.Append(" ");
-                sql.Append(f.DataType.ToString());
-                sql.AppendLine("(MAX),");
+                sql.AppendLine($"@{field.Name},");
+                sql.Append(Tab, tabCount);
             }
-            else if (f.Filter.Type != FilterMode.None || f.IsPk)
+        }
+
+        return sql.ToString();
+    }
+
+    private static bool IsFilter(ElementField field)
+    {
+        return field.Filter.Type != FilterMode.None || field.IsPk;
+    }
+
+    private static string GetParameters(List<ElementField> fields, bool addMasterDataParameters, int tabLevel = 0)
+    {
+        var sql = new StringBuilder();
+        if (addMasterDataParameters)
+        {
+            sql.AppendLine("@orderby NVARCHAR(MAX), ");
+            sql.Append(Tab, tabLevel);
+        }
+
+        foreach (var field in fields)
+        {
+            switch (field.Filter.Type)
             {
-                sql.Append("@");
-                sql.Append(f.Name);
-                sql.Append(" ");
-                sql.Append(f.DataType.ToString());
-                if (f.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+                case FilterMode.Range:
                 {
-                    sql.Append("(");
-                    sql.Append(f.Size == -1 ? "MAX" : f.Size);
-                    sql.AppendLine("), ");
+                    sql.Append("@");
+                    sql.Append(field.Name);
+                    sql.Append("_from ");
+                    sql.Append(field.DataType.ToString());
+                    if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+                    {
+                        sql.Append("(");
+                        sql.Append(field.Size == -1 ? "MAX" : field.Size);
+                        sql.Append(")");
+                    }
+
+                    sql.AppendLine(",");
+                    sql.Append(Tab, tabLevel);
+                    sql.Append("@");
+                    sql.Append(field.Name);
+                    sql.Append("_to ");
+                    sql.Append(field.DataType.ToString());
+                    if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+                    {
+                        sql.Append("(");
+                        sql.Append(field.Size == -1 ? "MAX" : field.Size);
+                        sql.Append(") ");
+                    }
+                    sql.AppendLine(",");
+                    break;
                 }
-                else
+                case FilterMode.MultValuesContain or FilterMode.MultValuesEqual:
+                    sql.Append("@");
+                    sql.Append(field.Name);
+                    sql.Append(" ");
+                    sql.Append(field.DataType.ToString());
+                    sql.AppendLine("(MAX),");
+                    sql.Append(Tab, tabLevel);
+                    break;
+                default:
                 {
-                    sql.AppendLine(", ");
+                    if (IsFilter(field))
+                    {
+                        sql.Append("@");
+                        sql.Append(field.Name);
+                        sql.Append(" ");
+                        sql.Append(field.DataType.ToString());
+                        if (field.DataType is FieldType.Varchar or FieldType.NVarchar or FieldType.DateTime2)
+                        {
+                            sql.Append("(");
+                            sql.Append(field.Size == -1 ? "MAX" : field.Size);
+                            sql.AppendLine("), ");
+                            sql.Append(Tab, tabLevel);
+                        }
+                        else
+                        {
+                            sql.AppendLine(", ");
+                            sql.Append(Tab, tabLevel);
+                        }
+                    }
+
+                    break;
                 }
             }
         }
 
-        sql.AppendLine("@regporpag INT, ");
-        sql.AppendLine("@pag INT, ");
-        sql.AppendLine("@qtdtotal INT OUTPUT ");
+        if (addMasterDataParameters)
+        {       
+            sql.Append(Tab, tabLevel);
+            sql.AppendLine("@regporpag INT, ");
+            sql.Append(Tab, tabLevel);
+            sql.AppendLine("@pag INT, ");
+            sql.Append(Tab, tabLevel);
+            sql.Append("@qtdtotal INT OUTPUT ");
+        }
+
+
+        return sql.ToString();
     }
 
 }

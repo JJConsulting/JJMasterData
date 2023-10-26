@@ -27,7 +27,7 @@ public abstract class SqlServerScriptsBase
         if (field.IsRequired)
             sql.Append(" NOT NULL");
 
-        if (field.AutoNum)
+        if (field.AutoNum && field.DataType is not FieldType.UniqueIdentifier)
             sql.Append(" IDENTITY ");
 
         return sql.ToString();

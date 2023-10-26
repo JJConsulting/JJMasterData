@@ -20,15 +20,15 @@ public class StringLocalizerTest
         var localizationOptions = new Mock<IOptions<LocalizationOptions>>();
         var logger = new Mock<ILoggerFactory>();
         var resourceManagerStringLocalizerFactory = new ResourceManagerStringLocalizerFactory(localizationOptions.Object,logger.Object);
-        var entityRepository = new Mock<IEntityRepository>();
+        var entityRepository = new Mock<IServiceProvider>();
         var cache = new Mock<IMemoryCache>();
         var options = new Mock<IOptions<MasterDataCommonsOptions>>();
-
+        
         // Act
         var stringLocalizerFactory = new MasterDataStringLocalizerFactory(
             resourceManagerStringLocalizerFactory,
-            entityRepository.Object,
             cache.Object,
+            entityRepository.Object,
             options.Object);
 
         // Assert
