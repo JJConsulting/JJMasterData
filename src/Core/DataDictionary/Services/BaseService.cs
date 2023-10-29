@@ -98,7 +98,7 @@ public abstract class BaseService
         if (includeAdditionalHints)
         {
             yield return "PageState";
-            yield return "ComponentName";
+            yield return "FieldName";
             yield return "UserId";
             yield return "SearchId";
             yield return "SearchText";

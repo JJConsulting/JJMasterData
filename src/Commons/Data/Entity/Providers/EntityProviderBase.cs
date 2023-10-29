@@ -39,7 +39,6 @@ public abstract class EntityProviderBase
     public abstract DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> primaryKeys);
     public abstract DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter);
     protected abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values);
-   
     
     public async Task InsertAsync(Element element, IDictionary<string,object?> values)
     {
@@ -59,7 +58,6 @@ public abstract class EntityProviderBase
         return numberRowsAffected;
     }
     
-    
     public async Task<CommandOperation> SetValuesAsync(Element element, IDictionary<string,object?> values)
     {
         const CommandOperation commandType = CommandOperation.None;
@@ -68,8 +66,7 @@ public abstract class EntityProviderBase
 
         return GetCommandOperation(element, values, command, commandType, newFields);
     }
-
-
+    
     private static CommandOperation GetCommandOperation(Element element, IDictionary<string,object?> values, DataAccessCommand command,
         CommandOperation commandType, IDictionary<string, object?>? newFields)
     {
@@ -99,7 +96,6 @@ public abstract class EntityProviderBase
         return commandType;
     }
     
-    
     public async Task<CommandOperation> SetValuesAsync(Element element, IDictionary<string,object?> values, bool ignoreResults)
     {
         if (ignoreResults)
@@ -128,9 +124,9 @@ public abstract class EntityProviderBase
 
         var totalParameter = new DataAccessParameter($"{VariablePrefix}qtdtotal", recoverTotalOfRecords ? 0 : -1, DbType.Int32, 0, ParameterDirection.InputOutput);
         
-        var cmd = GetReadCommand(element, entityParameters, totalParameter);
+        var command = GetReadCommand(element, entityParameters, totalParameter);
         
-        var list = await DataAccess.GetDictionaryListAsync(cmd);
+        var list = await DataAccess.GetDictionaryListAsync(command);
 
         int totalRecords = 0;
         
@@ -150,10 +146,19 @@ public abstract class EntityProviderBase
         var sqlScripts = new StringBuilder();
         sqlScripts.AppendLine(GetCreateTableScript(element));
         sqlScripts.AppendLine("GO");
-        sqlScripts.AppendLine(GetWriteProcedureScript(element));
-        sqlScripts.AppendLine("GO");
-        sqlScripts.AppendLine(GetReadProcedureScript(element));
-        sqlScripts.AppendLine("GO");
+        
+        if (element.UseReadProcedure)
+        {   
+            sqlScripts.AppendLine(GetReadProcedureScript(element));
+            sqlScripts.AppendLine("GO");
+        }
+
+        if (element.UseWriteProcedure)
+        {
+            sqlScripts.AppendLine(GetWriteProcedureScript(element));
+            sqlScripts.AppendLine("GO");
+        }
+
         return sqlScripts.ToString();
     }
     
@@ -197,7 +202,6 @@ public abstract class EntityProviderBase
         return true;
     }
     
-    
     private async Task<CommandOperation> SetValuesNoResultAsync(Element element, IDictionary<string,object?> values)
     {
         const CommandOperation result = CommandOperation.None;
@@ -225,5 +229,4 @@ public abstract class EntityProviderBase
 
         return ret;
     }
-    
 }

@@ -5,6 +5,7 @@ using System.Text;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
@@ -27,7 +28,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
 
         var fields = element.Fields
             .ToList()
-            .FindAll(x => x.DataBehavior != FieldBehavior.Virtual);
+            .FindAll(f => f.DataBehavior is not FieldBehavior.Virtual);
 
         var sql = new StringBuilder();
         string procedureFinalName = Options.GetReadProcedureName(element);
@@ -38,6 +39,15 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         sql.AppendLine(GetParameters(fields, addMasterDataParameters: true));
         sql.AppendLine("AS ");
         sql.AppendLine("BEGIN ");
+        sql.Append(GetReadScript(element, fields));
+        sql.AppendLine("END");
+
+        return sql.ToString();
+    }
+
+    internal static string GetReadScript(Element element, List<ElementField> fields)
+    {
+        var sql = new StringBuilder();
         sql.Append(Tab);
         sql.AppendLine("DECLARE @sqlColumn   NVARCHAR(MAX)");
         sql.Append(Tab);
@@ -132,7 +142,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
                         sql.Append("IF @");
                         sql.Append(field.Name);
                         sql.AppendLine("_from IS NOT NULL");
-                        sql.Append(Tab,2);
+                        sql.Append(Tab, 2);
                         sql.Append("SET @sqlWhere = @sqlWhere + ' AND CONVERT(DATE, ");
                         sql.Append(field.Name);
                         sql.Append(") BETWEEN CONVERT(VARCHAR(10), @");
@@ -147,7 +157,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
                         sql.Append("IF @");
                         sql.Append(field.Name);
                         sql.AppendLine("_from IS NOT NULL");
-                        sql.Append(Tab,2);
+                        sql.Append(Tab, 2);
                         sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
                         sql.Append(field.Name);
                         sql.Append(" BETWEEN ' @");
@@ -166,81 +176,36 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
                     sql.Append("IF @");
                     sql.Append(field.Name);
                     sql.AppendLine(" IS NOT NULL");
-                    sql.Append(Tab).Append(Tab);
+                    sql.Append(Tab, 2);
                     sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
                     sql.Append(field.Name);
                     sql.Append($" LIKE  ''%'' + @{field.Name} + ''%'' '");
                     break;
                 case FilterMode.MultValuesContain:
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab);
                     sql.Append("IF @");
                     sql.Append(field.Name);
                     sql.AppendLine(" IS NOT NULL");
-                    sql.Append(Tab);
-                    sql.AppendLine("BEGIN");
-                    sql.Append(Tab, 2);
-                    sql.AppendLine("SET @sqlLikeIn = ' AND ( '");
-                    sql.Append(Tab, 2);
-                    sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", field.Name);
-                    sql.AppendLine("");
-                    sql.Append(Tab, 2);
-                    sql.AppendLine("BEGIN");
-                    sql.Append(Tab, 3);
-                    sql.AppendFormat(
-                        "SET @ = @sqlLikeIn + '{0} LIKE ' + CHAR(39) + '%' + SUBSTRING(@{0}, 1, CHARINDEX(',', @{0}) -1) + '%' + CHAR(39);",
-                        field.Name);
-                    sql.AppendLine("");
-                    sql.Append(Tab, 3);
-                    sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", field.Name);
-                    sql.AppendLine("");
-                    sql.Append(Tab, 3);
-                    sql.AppendLine("SET @sqlLikeIn = @sqlLikeIn + ' OR ';");
-                    sql.Append(Tab, 2);
-                    sql.AppendLine("END");
-                    sql.Append(Tab, 2);
-                    sql.AppendFormat(
-                        "SET @sqlLikeIn = @sqlLikeIn  + '{0} LIKE ' + CHAR(39) + '%' + @{0} + '%' + CHAR(39) + ' ) '", field.Name);
-                    sql.AppendLine("");
-                    sql.Append(Tab, 2);
-                    sql.AppendLine("SET @sqlWhere = @sqlWhere + @sqlLikeIn");
-                    sql.Append(Tab);
-                    sql.AppendLine("END");
+                    sql.Append(Tab,2);
+                    sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
+                    sql.Append($"""
+                                       EXISTS (
+                                           SELECT 1
+                                           FROM STRING_SPLIT(@{field.Name}, '','') AS s
+                                           WHERE {field.Name} LIKE ''%'' + s.value + ''%''
+                                        )'
+                               """);
                     break;
                 case FilterMode.MultValuesEqual:
-                    sql.AppendLine("");
+                    sql.AppendLine();
                     sql.Append(Tab);
                     sql.Append("IF @");
                     sql.Append(field.Name);
                     sql.AppendLine(" IS NOT NULL");
-                    sql.Append(Tab);
-                    sql.AppendLine("BEGIN");
-                    sql.Append(Tab, 2);
-                    sql.Append($"SET @sqlLikeIn = ' AND {field.Name} IN ('");
-                    sql.AppendLine("");
-                    sql.Append(Tab, 2);
-                    sql.Append($"WHILE CHARINDEX(',', @{field.Name}) <> 0");
-                    sql.AppendLine("");
-                    sql.Append(Tab, 2);
-                    sql.AppendLine("BEGIN");
-                    sql.Append(Tab, 3);
-                    sql.AppendFormat(
-                        "SET @sqlLikeIn = @sqlLikeIn + CHAR(39) + SUBSTRING(@{0},1,CHARINDEX(',',@{0}) -1) + CHAR(39);", field.Name);
-                    sql.AppendLine("");
-                    sql.Append(Tab, 3);
-                    sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", field.Name);
-                    sql.AppendLine();
-                    sql.Append(Tab, 3);
-                    sql.AppendLine("SET @sqlLikeIn = @sqlLikeIn + ', ';");
-                    sql.Append(Tab, 2);
-                    sql.AppendLine("END");
-                    sql.Append(Tab, 2);
-                    sql.AppendFormat("SET @sqlLikeIn = @sqlLikeIn + CHAR(39) + @{0} + CHAR(39) + ') '", field.Name);
-                    sql.AppendLine("");
-                    sql.Append(Tab, 2);
-                    sql.AppendLine("SET @sqlWhere = @sqlWhere + @sqlLikeIn");
-                    sql.Append(Tab);
-                    sql.AppendLine("END");
+                    sql.Append(Tab,2);
+                    sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
+                    sql.Append($"CHARINDEX({field.Name}, @{field.Name}) > 0'");
                     break;
                 default:
                 {
@@ -251,7 +216,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
                         sql.Append("IF @");
                         sql.Append(field.Name);
                         sql.AppendLine(" IS NOT NULL");
-                        sql.Append(Tab).Append(Tab);
+                        sql.Append(Tab,2);
                         sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
                         sql.Append($"{field.Name} = @{field.Name}'");
                     }
@@ -260,9 +225,9 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
                 }
             }
 
-            if (field.Filter.Type == FilterMode.None && !field.IsPk) 
+            if (field.Filter.Type == FilterMode.None && !field.IsPk)
                 continue;
-            if (field.DataBehavior != FieldBehavior.ViewOnly) 
+            if (field.DataBehavior != FieldBehavior.ViewOnly)
                 continue;
 
             sql.Append(Tab);
@@ -303,7 +268,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         sql.Append(Tab);
 
         sql.AppendLine("IF @pag < 1");
-        sql.Append(Tab,2);
+        sql.Append(Tab, 2);
         sql.Append("SET @pag = 1");
         sql.AppendLine();
         sql.Append(Tab);
@@ -325,26 +290,25 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         sql.AppendLine("");
 
 
-
         sql.Append(Tab);
         sql.AppendLine("--TOTAL OF RECORDS");
         sql.Append(Tab);
         sql.AppendLine("IF @qtdtotal is null or @qtdtotal = 0");
         sql.Append(Tab);
         sql.AppendLine("BEGIN");
-        sql.Append(Tab,2);
+        sql.Append(Tab, 2);
         sql.AppendLine("SET @qtdtotal = 0;");
-        sql.Append(Tab,2);
+        sql.Append(Tab, 2);
         sql.AppendLine("SET @query = N'SELECT @count = COUNT(*) ' + @sqlTable + @sqlWhere");
-        sql.Append(Tab,2);
+        sql.Append(Tab, 2);
         sql.AppendLine("EXECUTE sp_executesql @query,");
-        sql.Append(Tab,2);
+        sql.Append(Tab, 2);
         sql.Append("N'");
         sql.Append(GetParameters(fields, addMasterDataParameters: false, tabLevel: 2));
-        sql.Append(Tab,2);
+        sql.Append(Tab, 2);
         sql.Append("@count int output',");
         sql.AppendLine();
-        sql.Append(Tab,2);
+        sql.Append(Tab, 2);
         sql.Append(GetFilterParametersScript(fields, tabCount: 2));
         sql.Append("@count = @qtdtotal output");
         sql.AppendLine();
@@ -377,7 +341,6 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         sql.AppendLine("@qtdtotal");
         sql.Append(Tab);
         sql.AppendLine();
-        sql.AppendLine("END");
 
         return sql.ToString();
     }
@@ -448,6 +411,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
                         sql.Append(") ");
                     }
                     sql.AppendLine(",");
+                    sql.Append(Tab, tabLevel);
                     break;
                 }
                 case FilterMode.MultValuesContain or FilterMode.MultValuesEqual:

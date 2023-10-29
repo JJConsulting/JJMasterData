@@ -321,7 +321,7 @@ public class SQLiteProvider : EntityProviderBase
 
         DataAccessCommand command = new DataAccessCommand
         {
-            CmdType = CommandType.Text,
+            Type = CommandType.Text,
             Sql = sqlScript.ToString(),
             Parameters = new List<DataAccessParameter>()
         };
@@ -384,7 +384,7 @@ public class SQLiteProvider : EntityProviderBase
         sSql.Append(")");
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = CommandType.Text;
+        cmd.Type = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -453,7 +453,7 @@ public class SQLiteProvider : EntityProviderBase
 
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = CommandType.Text;
+        cmd.Type = CommandType.Text;
         cmd.Sql = sSql.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -506,7 +506,7 @@ public class SQLiteProvider : EntityProviderBase
         }
 
         var cmd = new DataAccessCommand();
-        cmd.CmdType = CommandType.Text;
+        cmd.Type = CommandType.Text;
         cmd.Sql = sqlScript.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 
@@ -607,7 +607,7 @@ public class SQLiteProvider : EntityProviderBase
         }
 
         DataAccessCommand cmd = new DataAccessCommand();
-        cmd.CmdType = CommandType.Text;
+        cmd.Type = CommandType.Text;
         cmd.Sql = sqlScript.ToString();
         cmd.Parameters = new List<DataAccessParameter>();
 

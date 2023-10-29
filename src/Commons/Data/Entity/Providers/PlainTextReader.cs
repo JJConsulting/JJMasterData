@@ -73,7 +73,7 @@ public class PlainTextReader
                 dbCmd.Parameters.Add(oPar);
             }
 
-            dbCmd.CommandType = cmd.CmdType;
+            dbCmd.CommandType = cmd.Type;
             dbCmd.CommandText = cmd.Sql;
             dbCmd.Connection = conn;
             dbCmd.CommandTimeout = dataAccess.TimeOut;

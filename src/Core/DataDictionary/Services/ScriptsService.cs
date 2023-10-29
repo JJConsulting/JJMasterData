@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
@@ -17,17 +18,14 @@ public class ScriptsService
         _entityRepository = entityRepository;
         _dataDictionaryRepository = dataDictionaryRepository;
     }
-    public async Task<List<string>> GetScriptsListAsync(string id)
+    public async Task<List<string>> GetScriptsListAsync(FormElement formElement)
     {
-        var formElement = await _dataDictionaryRepository.GetFormElementAsync(id);
-        Element element = formElement;
-        
         var listScripts = new List<string>
         {
-            _entityRepository.GetScriptCreateTable(element),
-            _entityRepository.GetScriptReadProcedure(element),
-            _entityRepository.GetScriptWriteProcedure(element),
-            await _entityRepository.GetAlterTableScriptAsync(element),
+            _entityRepository.GetScriptCreateTable(formElement),
+            formElement.UseReadProcedure ? _entityRepository.GetScriptReadProcedure(formElement) : null,
+            formElement.UseWriteProcedure ? _entityRepository.GetScriptWriteProcedure(formElement) : null,
+            await _entityRepository.GetAlterTableScriptAsync(formElement),
         };
 
         return listScripts;

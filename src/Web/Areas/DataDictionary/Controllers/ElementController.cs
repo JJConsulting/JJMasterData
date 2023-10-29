@@ -2,6 +2,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
@@ -17,12 +18,14 @@ public class ElementController : DataDictionaryController
     private readonly ElementService _elementService;
     private readonly ClassGenerationService _classGenerationService;
     private readonly ScriptsService _scriptsService;
+    private readonly IEntityRepository _entityRepository;
     private readonly IComponentFactory<JJUploadArea> _uploadAreaFactory;
 
     public ElementController(
         ElementService elementService,
         ClassGenerationService classGenerationService,
         ScriptsService scriptsService,
+        IEntityRepository entityRepository,
         IComponentFactory<JJUploadArea> uploadAreaFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
@@ -30,6 +33,7 @@ public class ElementController : DataDictionaryController
         _elementService = elementService;
         _classGenerationService = classGenerationService;
         _scriptsService = scriptsService;
+        _entityRepository = entityRepository;
         _uploadAreaFactory = uploadAreaFactory;
     }
 
@@ -136,15 +140,17 @@ public class ElementController : DataDictionaryController
 
     public async Task<IActionResult> Scripts(string elementName)
     {
-        var scripts = await _scriptsService.GetScriptsListAsync(elementName);
-
+        var formElement = await _elementService.GetFormElementAsync(elementName);
+        var scripts = await _scriptsService.GetScriptsListAsync(formElement);
+        var tableExists = await _entityRepository.TableExistsAsync(formElement.TableName);
         var model = new ElementScriptsViewModel
         {
             ElementName = elementName,
-            CreateTableScript = scripts[0]!,
-            WriteProcedureScript = scripts[2]!,
-            ReadProcedureScript = scripts[1]!,
-            AlterTableScript = scripts[3]
+            CreateTableScript = scripts[0],
+            WriteProcedureScript = scripts[2],
+            ReadProcedureScript = scripts[1],
+            AlterTableScript = scripts[3],
+            TableExists = tableExists
         };
 
         return View(model);

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
@@ -9,8 +10,16 @@ namespace JJMasterData.Commons.Data;
 
 public class DataAccessCommand
 {
+    [Obsolete("Please use Type property")]
+    [JsonIgnore]
+    public CommandType CmdType
+    {
+        get => Type;
+        set => Type = value;
+    }
+    
     [JsonProperty("cmdType")]
-    public CommandType CmdType { get; set; }
+    public CommandType Type { get; set; }
 
     [JsonProperty("sql")]
     public string Sql { get; set; }
@@ -22,7 +31,7 @@ public class DataAccessCommand
     public DataAccessCommand()
     {
         Sql = string.Empty;
-        CmdType = CommandType.Text;
+        Type = CommandType.Text;
         Parameters = new List<DataAccessParameter>();
     }
 
@@ -36,12 +45,12 @@ public class DataAccessCommand
     {
         Sql = sql;
         Parameters = parameters;
-        CmdType = CommandType.Text;
+        Type = CommandType.Text;
     }
 
     public DataAccessCommand(string sql, List<DataAccessParameter> parameters, CommandType type) : this(sql,parameters)
     {
-        CmdType = type;
+        Type = type;
     }
 
     public void AddParameter(string name, object? value, DbType dbType)

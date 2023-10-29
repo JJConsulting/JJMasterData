@@ -5,28 +5,14 @@
 
 
 <div class="row">
-    <div class="@BootstrapHelper.FormGroup col-sm-4">
-        <label asp-for="FormElement.Title"
-               class=" col-form-label form-label"
-               data-bs-toggle="tooltip"
-               aria-label="@StringLocalizer["Supports runtime values from fields. Example: Order {OrderId}"]">
-            @StringLocalizer["Title"]
-            <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@StringLocalizer["Supports runtime values. Example: Order {OrderId}"]"></span>
-        </label>
+    <div class="@BootstrapHelper.FormGroup col-sm-6">
+        <label asp-for="FormElement.Title" class="col-form-label form-label"></label>
+        <tooltip title="Supports runtime values. Example: Order {OrderId}"/>
         @Html.TextBoxFor(model => model.FormElement.Title, Model.HtmlAttributes)
     </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-8">
-        <label asp-for="FormElement.SubTitle" class=" col-form-label form-label">
-            @StringLocalizer["SubTitle"]
-            <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@StringLocalizer["Supports runtime from fields. Example: {CustomerName}"]"></span>
-        </label>
+    <div class="@BootstrapHelper.FormGroup col-sm-6">
+        <label asp-for="FormElement.SubTitle" class="col-form-label form-label"></label>
+        <tooltip title="Supports runtime from fields. Example: {CustomerName}"/>
         @Html.TextBoxFor(model => model.FormElement.SubTitle, Model.HtmlAttributes)
-    </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-12">
-        <label asp-for="FormElement.Info" class=" col-form-label form-label">
-            @StringLocalizer["Info"]
-            <span class="fa fa-question-circle help-description" data-bs-toggle="tooltip" title="@StringLocalizer["Developer only information about the data dictionary."]"></span>
-        </label>
-        @Html.TextBoxFor(model => model.FormElement.Info, Model.HtmlAttributes)
     </div>
 </div>

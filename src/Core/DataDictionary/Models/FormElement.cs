@@ -17,9 +17,11 @@ public class FormElement : Element
     internal string? ParentName { get; set; } 
     
     [JsonProperty]
+    [Display(Name = "Title")]
     public string? Title { get; set; }
 
     [JsonProperty]
+    [Display(Name = "SubTitle")]
     public string? SubTitle { get; set; }
     
     [Required]

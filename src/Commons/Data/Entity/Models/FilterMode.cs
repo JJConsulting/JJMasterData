@@ -9,6 +9,7 @@ public enum FilterMode
     Equal = 2,
     Contain = 3,
     Range = 4,
+    
     MultValuesContain = 5,
     MultValuesEqual = 6
 }

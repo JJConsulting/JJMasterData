@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Configuration.Options;
@@ -29,10 +30,8 @@ public class SqlServerWriteProcedureScripts : SqlServerScriptsBase
             throw new ArgumentNullException(nameof(Element.Fields));
 
         var sql = new StringBuilder();
-
-        bool updateScript = HasUpdateFields(element);
+        
         string procedureFinalName = Options.GetWriteProcedureName(element);
-        var pks = element.Fields.ToList().FindAll(x => x.IsPk);
 
         sql.Append("CREATE OR ALTER PROCEDURE [");
         sql.Append(procedureFinalName);
@@ -40,8 +39,8 @@ public class SqlServerWriteProcedureScripts : SqlServerScriptsBase
         sql.AppendLine("@action varchar(1), ");
 
         var fields = element.Fields
-            .ToList()
-            .FindAll(x => x.DataBehavior == FieldBehavior.Real);
+            .Where(f => f.DataBehavior is FieldBehavior.Real)
+            .ToList();
 
         foreach (var field in fields)
         {
@@ -67,6 +66,18 @@ public class SqlServerWriteProcedureScripts : SqlServerScriptsBase
         sql.AppendLine("@RET INT OUTPUT ");
         sql.AppendLine("AS ");
         sql.AppendLine("BEGIN ");
+        sql.Append(GetWriteScript(element, fields));
+        sql.AppendLine("END ");
+        sql.AppendLine("GO ");
+
+        return sql.ToString();
+    }
+
+    internal static string GetWriteScript(Element element, IReadOnlyCollection<ElementField> fields)
+    {
+        var sql = new StringBuilder();
+        var pks = element.Fields.ToList().FindAll(x => x.IsPk);
+        bool updateScript = HasUpdateFields(element);
         sql.Append(Tab);
         sql.AppendLine("DECLARE @TYPEACTION VARCHAR(1) ");
         sql.Append(Tab);
@@ -300,8 +311,6 @@ public class SqlServerWriteProcedureScripts : SqlServerScriptsBase
         sql.Append(Tab);
         sql.AppendLine("END ");
         sql.AppendLine(" ");
-        sql.AppendLine("END ");
-        sql.AppendLine("GO ");
 
         return sql.ToString();
     }

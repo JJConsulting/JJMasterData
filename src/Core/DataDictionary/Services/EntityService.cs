@@ -47,32 +47,34 @@ public class EntityService : BaseService
     }
 
 
-    public async Task<FormElement> EditEntityAsync(FormElement formElement, string entityName)
+    public async Task<FormElement> EditEntityAsync(FormElement entity, string entityName)
     {
-        var isValid = await ValidateEntity(formElement, entityName);
+        var isValid = await ValidateEntity(entity, entityName);
         if (!isValid)
             return null;
         
         try
         {
-            var dicParser = await DataDictionaryRepository.GetFormElementAsync(entityName);
+            var formElement = await DataDictionaryRepository.GetFormElementAsync(entityName);
 
-            dicParser.Name = formElement.Name;
-            dicParser.TableName = formElement.TableName;
-            dicParser.ReadProcedureName = formElement.ReadProcedureName;
-            dicParser.WriteProcedureName = formElement.WriteProcedureName;
-            dicParser.Info = formElement.Info;
-            dicParser.Title = formElement.Title;
-            dicParser.SubTitle = formElement.SubTitle;
-
+            formElement.Name = entity.Name;
+            formElement.TableName = entity.TableName;
+            formElement.ReadProcedureName = entity.ReadProcedureName;
+            formElement.WriteProcedureName = entity.WriteProcedureName;
+            formElement.Info = entity.Info;
+            formElement.Title = entity.Title;
+            formElement.SubTitle = entity.SubTitle;
+            formElement.UseReadProcedure = entity.UseReadProcedure;
+            formElement.UseWriteProcedure = entity.UseWriteProcedure;
+            
             if (!entityName.Equals(formElement.Name))
             {
                 await DataDictionaryRepository.DeleteAsync(entityName);
-                await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
+                await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
             }
             else
             {
-                await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
+                await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
             }
 
             return formElement;

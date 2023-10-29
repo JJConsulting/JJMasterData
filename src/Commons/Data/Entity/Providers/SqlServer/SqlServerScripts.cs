@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
@@ -9,7 +11,8 @@ public class SqlServerScripts
 
     private SqlServerWriteProcedureScripts WriteProcedureScripts { get; }
 
-    public SqlServerScripts(SqlServerReadProcedureScripts sqlServerReadProcedureScripts,
+    public SqlServerScripts(
+        SqlServerReadProcedureScripts sqlServerReadProcedureScripts,
         SqlServerWriteProcedureScripts writeProcedureScripts)
     {
         ReadProcedureScripts = sqlServerReadProcedureScripts;
@@ -25,13 +28,31 @@ public class SqlServerScripts
     {
         return WriteProcedureScripts.GetWriteProcedureScript(element);
     }
+    
+    public string GetWriteScript(Element element)
+    {
+        var fields = element.Fields
+            .ToList()
+            .FindAll(x => x.DataBehavior is FieldBehavior.Real);
+        return SqlServerWriteProcedureScripts.GetWriteScript(element, fields);
+    }
 
+    public string GetReadScript(Element element)
+    {
+
+        var fields = element.Fields
+            .ToList()
+            .FindAll(f => f.DataBehavior is not FieldBehavior.Virtual);
+        
+        return SqlServerReadProcedureScripts.GetReadScript(element, fields);
+    }
+    
     public static string GetCreateTableScript(Element element)
     {
         return SqlServerCreateTableScripts.GetCreateTableScript(element);
     }
 
-    public string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
+    public static string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)
     {
         return SqlServerAlterTableScripts.GetAlterTableScript(element, fields);
     }

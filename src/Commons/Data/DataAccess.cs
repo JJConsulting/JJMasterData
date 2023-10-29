@@ -668,7 +668,7 @@ public partial class DataAccess
         if (dbCommand == null)
             throw new ArgumentNullException(nameof(dbCommand));
 
-        dbCommand.CommandType = command.CmdType;
+        dbCommand.CommandType = command.Type;
         dbCommand.CommandText = command.Sql;
         dbCommand.CommandTimeout = TimeOut;
         foreach (var parameter in command.Parameters)

@@ -10,6 +10,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -17,27 +18,30 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerProvider : EntityProviderBase
 {
-    public SqlServerScripts SqlServerScripts { get; }
+    private SqlServerScripts SqlServerScripts { get; }
+    private IMemoryCache MemoryCache { get; }
     private const string InsertInitial = "I";
     private const string UpdateInitial = "A";
     private const string DeleteInitial = "E";
 
     public override string VariablePrefix => "@";
 
-    public SqlServerProvider(DataAccess dataAccess,SqlServerScripts sqlServerScripts, IOptions<MasterDataCommonsOptions> options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
+    public SqlServerProvider(
+        DataAccess dataAccess,
+        SqlServerScripts sqlServerScripts, 
+        IMemoryCache memoryCache,
+        IOptions<MasterDataCommonsOptions> options, 
+        ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
     {
         SqlServerScripts = sqlServerScripts;
+        MemoryCache = memoryCache;
     }
 
     public override string GetCreateTableScript(Element element)
     {
         return SqlServerScripts.GetCreateTableScript(element);
     }
-
-
-
-
-
+    
     public override string GetWriteProcedureScript(Element element)
     {
         return SqlServerScripts.GetWriteProcedureScript(element);
@@ -75,10 +79,30 @@ public class SqlServerProvider : EntityProviderBase
 
     public override DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter)
     {
-       var command = new DataAccessCommand
+        string sql;
+
+        if (element.UseReadProcedure)
         {
-            CmdType = CommandType.StoredProcedure,
-            Sql = Options.GetReadProcedureName(element),
+            sql = Options.GetReadProcedureName(element);
+        }
+        else
+        {
+            var cacheKey = $"{element.Name}_ReadScript";
+            if (MemoryCache.TryGetValue(cacheKey, out string readScript))
+            {
+                sql = readScript;
+            }
+            else
+            {
+                sql = SqlServerScripts.GetReadScript(element);
+                MemoryCache.Set(cacheKey, sql);
+            }
+        }
+        
+        var readCommand = new DataAccessCommand
+        {
+            Type = element.UseReadProcedure ? CommandType.StoredProcedure : CommandType.Text,
+            Sql = sql,
             Parameters = new List<DataAccessParameter>
             {
                 new("@orderby", parameters.OrderBy.ToQueryParameter()),
@@ -106,7 +130,7 @@ public class SqlServerProvider : EntityProviderBase
                     Name = $"{field.Name}_from",
                     Value = valueFrom
                 };
-                command.Parameters.Add(fromParameter);
+                readCommand.Parameters.Add(fromParameter);
 
                 object? valueTo = DBNull.Value;
                 if (parameters.Filters.ContainsKey($"{field.Name}_to") &&
@@ -123,7 +147,7 @@ public class SqlServerProvider : EntityProviderBase
                     Name = $"{field.Name}_to",
                     Value = valueTo
                 };
-                command.Parameters.Add(toParameter);
+                readCommand.Parameters.Add(toParameter);
             }
             else if (field.Filter.Type != FilterMode.None || field.IsPk)
             {
@@ -138,22 +162,41 @@ public class SqlServerProvider : EntityProviderBase
                     Name = field.Name,
                     Value = value
                 };
-                command.Parameters.Add(parameter);
+                readCommand.Parameters.Add(parameter);
             }
         }
 
-        command.Parameters.Add(totalOfRecordsParameter);
+        readCommand.Parameters.Add(totalOfRecordsParameter);
 
-        return command;
+        return readCommand;
     }
 
 
     private DataAccessCommand GetWriteCommand(string action, Element element, IDictionary<string,object?> values)
     {
+        string sql;
+
+        if (element.UseWriteProcedure)
+        {
+            sql = Options.GetWriteProcedureName(element);
+        }
+        else
+        {
+            var cacheKey = $"{element.Name}_WriteScript";
+            if (MemoryCache.TryGetValue(cacheKey, out string writeScript))
+            {
+                sql = writeScript;
+            }
+            else
+            {
+                sql = SqlServerScripts.GetWriteScript(element);
+                MemoryCache.Set(cacheKey, sql);
+            }
+        }
         var writeCommand = new DataAccessCommand
         {
-            CmdType = CommandType.StoredProcedure,
-            Sql = Options.GetWriteProcedureName(element)
+            Type = element.UseWriteProcedure ? CommandType.StoredProcedure : CommandType.Text,
+            Sql = sql
         };
         writeCommand.Parameters.Add(new DataAccessParameter("@action", action, DbType.String, 1));
 
@@ -185,8 +228,7 @@ public class SqlServerProvider : EntityProviderBase
 
         return writeCommand;
     }
-
-
+    
     private static object GetElementValue(ElementField field, IDictionary<string,object?> values)
     {
         if (!values.ContainsKey(field.Name)) 
@@ -282,7 +324,7 @@ public class SqlServerProvider : EntityProviderBase
 
         var cmdFields = new DataAccessCommand
         {
-            CmdType = CommandType.StoredProcedure,
+            Type = CommandType.StoredProcedure,
             Sql = "sp_columns"
         };
         cmdFields.Parameters.Add(new DataAccessParameter("@table_name", tableName));
@@ -309,7 +351,7 @@ public class SqlServerProvider : EntityProviderBase
         //Primary Keys
         var cmdPks = new DataAccessCommand
         {
-            CmdType = CommandType.StoredProcedure,
+            Type = CommandType.StoredProcedure,
             Sql = "sp_pkeys"
         };
 

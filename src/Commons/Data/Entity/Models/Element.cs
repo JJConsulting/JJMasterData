@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
@@ -12,6 +13,7 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 public class Element
 {
     [JsonProperty("name")]
+    [Display(Name = "Element Name")]
     public string Name { get; set; }
     
     [JsonProperty("info")]
@@ -27,13 +29,23 @@ public class Element
     public List<ElementRelationship> Relationships { get; set; }
     
     [JsonProperty("tableName")]
+    [Display(Name = "Table Name")]
     public string TableName { get; set; }
 
-
+    [JsonProperty("useReadProcedure")] 
+    [Display(Name = "Use Read Procedure")]
+    public bool UseReadProcedure { get; set; }
+    
     [JsonProperty("customprocnameget")]
+    [Display(Name = "Read Procedure Name")]
     public string ReadProcedureName { get; set; }
     
+    [JsonProperty("useWriteProcedure")] 
+    [Display(Name = "Use Write Procedure")]
+    public bool UseWriteProcedure { get; set; }
+    
     [JsonProperty("customprocnameset")]
+    [Display(Name = "Write Procedure Name")]
     public string WriteProcedureName { get; set; }
     
     [JsonProperty("sync")]

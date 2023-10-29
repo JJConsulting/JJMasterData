@@ -2,6 +2,7 @@
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using Microsoft.IdentityModel.Tokens
 @using JJMasterData.Core.UI
+@using JJMasterData.Core.DataDictionary.Models
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IOptions<MasterDataWebOptions> Options
 @model ElementScriptsViewModel
@@ -25,7 +26,7 @@
 
 @functions{
 
-    void ScriptCode(string script)
+    void ScriptCode(string? script)
     {
         <div class="jjrelative">
             <div class="bs-clipboard">
@@ -52,20 +53,48 @@
 
 <div class="row">
     <div class="col-sm-12">
-        <button class="@BootstrapHelper.DefaultButton" type="button" value="ExecuteProcedures" onclick="executeScripts(this.value)">
-            <span class="fa fa-play"></span>
-            <span>&nbsp; @StringLocalizer["Execute Stored Procedures"]</span>
-        </button>
-
-        <button class="@BootstrapHelper.DefaultButton" type="button" value="ExecuteCreateDataModel" onclick="executeScripts(this.value)">
-            <span class="fa fa-forward"></span>
-            <span>&nbsp; @StringLocalizer["Execute Create Table & Stored Procedures"]</span>
-        </button>
+        @if (Model.UseReadProcedure || Model.UseWriteProcedure)
+        {
+            <button class="@BootstrapHelper.DefaultButton" type="button" value="ExecuteProcedures" onclick="executeScripts(this.value)">
+                <span class="@IconType.SolidScroll.GetCssClass()"></span>
+                @if (Model is { UseReadProcedure: true, UseWriteProcedure: false })
+                {
+                    <span>&nbsp; @StringLocalizer["Create or Alter Read Procedure"]</span>
+                }
+                else if (Model is { UseWriteProcedure: true, UseReadProcedure: false })
+                {
+                    <span>&nbsp; @StringLocalizer["Create or Alter Write Procedure"]</span>
+                }
+                else
+                {
+                    <span>&nbsp; @StringLocalizer["Create or Alter All Stored Procedures"]</span>
+                }
+            </button>
+        }
+        
+        @if (!Model.TableExists)
+        {
+            <button class="@BootstrapHelper.DefaultButton" type="button" value="ExecuteCreateDataModel" onclick="executeScripts(this.value)">
+                <span class="@IconType.Table.GetCssClass()"></span>
+                @if (Model is { UseReadProcedure: true, UseWriteProcedure: false })
+                {
+                    <span>&nbsp; @StringLocalizer["Create Table And Read Procedure"]</span>
+                }
+                else if (Model is { UseWriteProcedure: true, UseReadProcedure: false })
+                {
+                    <span>&nbsp; @StringLocalizer["Create Table And Write Procedure"]</span>
+                }
+                else
+                {
+                    <span>&nbsp; @StringLocalizer["Create Table And All Stored Procedures"]</span>
+                }
+            </button>
+        }
         
         @if (!Model.AlterTableScript.IsNullOrEmpty())
         {
             <button class="@BootstrapHelper.DefaultButton" type="button" value="ExecuteAlterTable" onclick="executeScripts(this.value)">
-            <span class="fa-solid fa-border-top-left"></span>
+                <span class="fa-solid fa-border-top-left"></span>
                 <span>&nbsp; @StringLocalizer["Execute Alter Table"]</span>
             </button>
         }
@@ -77,22 +106,29 @@
     <li class="nav-item @(BootstrapHelper.Version == 3 ? "active" : string.Empty)" @GetIdBs3("Table")>
         <a @GetIdBs4("Table") class="nav-link @(BootstrapHelper.Version > 3 ? "active" : string.Empty)" @BootstrapHelper.GetDataToggle("tab") href="#divTable">@StringLocalizer["Table"]</a>
     </li>
-    <li class="nav-item" @GetIdBs3("ProcGet")>
-        <a @GetIdBs4("ProcGet") class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divProcGet">
-            @StringLocalizer["Read Procedure"]
-        </a>
-    </li>
-    <li class="nav-item" @GetIdBs3("ProcSet")>
-        <a @GetIdBs4("ProcSet") class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divProcSet">
-            @StringLocalizer["Write Procedure"]
-        </a>
-    </li>
-      @if (!Model.AlterTableScript.IsNullOrEmpty())
-        {
-             <a @GetIdBs4("AlterTable") class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAlterTable">
-                @StringLocalizer["Alter Table"]
+    @if (Model.UseReadProcedure)
+    {
+        <li class="nav-item" @GetIdBs3("ProcGet")>
+            <a @GetIdBs4("ProcGet") class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divProcGet">
+                @StringLocalizer["Read Procedure"]
             </a>
-        }
+        </li>
+    }
+    @if(Model.UseWriteProcedure)
+    {
+        
+        <li class="nav-item" @GetIdBs3("ProcSet")>
+            <a @GetIdBs4("ProcSet") class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divProcSet">
+                @StringLocalizer["Write Procedure"]
+            </a>
+        </li>
+    }
+    @if (!Model.AlterTableScript.IsNullOrEmpty())
+    {
+         <a @GetIdBs4("AlterTable") class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divAlterTable">
+            @StringLocalizer["Alter Table"]
+        </a>
+    }
 </ul>
 
 <div class="tab-content">
@@ -102,16 +138,23 @@
             ScriptCode(Model.CreateTableScript);
         }
     </div>
-    <div id="divProcGet" class="tab-pane fade">
-       @{
-            ScriptCode(Model.ReadProcedureScript);
-        }
-    </div>
-    <div id="divProcSet" class="tab-pane fade">
-        @{
-            ScriptCode(Model.WriteProcedureScript);
-        }
-    </div>
+    
+    @if (Model.UseReadProcedure)
+    {
+        <div id="divProcGet" class="tab-pane fade">
+            @{
+                ScriptCode(Model.ReadProcedureScript);
+            }
+        </div>
+    }
+    @if(Model.UseWriteProcedure)
+    {
+        <div id="divProcSet" class="tab-pane fade">
+            @{
+                ScriptCode(Model.WriteProcedureScript);
+            }
+        </div>
+    }
          
     @if (Model.AlterTableScript is not null)
     {
@@ -131,11 +174,22 @@
     
         function copyAll(obj) {
             let textVal = document.querySelector("#divTable pre").textContent.trim();
-            textVal += "\r\n";
-            textVal += document.querySelector("#divProcGet pre").textContent.trim();
-            textVal += "\r\n";
-            textVal += document.querySelector("#divProcSet pre").textContent.trim();
-        
+            
+            @if (Model.UseReadProcedure)
+            {
+                <text>
+                    textVal += "\r\n";
+                    textVal += document.querySelector("#divProcGet pre").textContent.trim();
+                </text>
+            }
+            @if (Model.UseWriteProcedure)
+            {
+                <text>
+                    textVal += "\r\n";
+                    textVal += document.querySelector("#divProcSet pre").textContent.trim();
+                </text>
+            }
+
             copyText(textVal);
         }
         
