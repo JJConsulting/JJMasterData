@@ -258,7 +258,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         sql.AppendLine("BEGIN");
         sql.Append(Tab);
         sql.Append(Tab);
-        sql.AppendLine("SET @sqlOrderBy  = ' ORDER BY @orderby'");
+        sql.AppendLine("SET @sqlOrderBy  = ' ORDER BY ' + @orderby");
         sql.Append(Tab);
         sql.AppendLine("END");
         sql.AppendLine("");
