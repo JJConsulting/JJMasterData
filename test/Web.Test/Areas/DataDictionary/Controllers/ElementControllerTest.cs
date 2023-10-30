@@ -1,6 +1,7 @@
 ﻿using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using Microsoft.VisualBasic.FileIO;
 using Moq;
 using Xunit.Extensions.Ordering;
 
@@ -49,7 +50,7 @@ public class ElementControllerTest : IClassFixture<JJMasterDataWebExampleAppFact
         var dataAccess = _dataAccessMock.Object;
         var provider = _entityRepositoryMock.Object;
         
-        string script = provider.GetScriptCreateTable(element);
+        string script = provider.GetCreateTableScript(element);
 
         if (dataAccess.TableExists(element.TableName))
             dataAccess.SetCommand($"DROP TABLE {element.TableName}");
