@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Html
 @using JJMasterData.Core.UI.Components
 @using JJMasterData.Core.UI
+@using JJMasterData.Core.DataDictionary.Models
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IComponentFactory ComponentFactory
@@ -161,17 +162,17 @@
         <ul class="dropdown-menu">
             <li onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
                 <a class="dropdown-item" href="#">
-                    <span class="fa fa-play-circle fa-fw fa-lg"></span> @StringLocalizer["Get Scripts"]
+                    <span class="@IconType.SolidScroll.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["Database Scripts"]
                 </a>
             </li>
             <li onclick="defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Class Source Code"]',1);">
                 <a class="dropdown-item" href="#">
-                    <span class="fa-regular fa-file-code fa-fw fa-lg"></span> @StringLocalizer["Get C# Class"]
+                    <span class="@IconType.SolidFileCode.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["C# Class"]
                 </a>
             </li>
             <li onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })', '_blank').focus();">
                 <a class="dropdown-item" href="#">
-                    <span class="fa fa-eye fa-fw fa-lg"></span> @StringLocalizer["Preview"]
+                    <span class="fa-solid fa-eye fa-fw fa-lg"></span> @StringLocalizer["Render"]
                 </a>
             </li>
             <li role="separator" class="@(BootstrapHelper.Version > 3 ? " divider" : "dropdown-divider")"></li>

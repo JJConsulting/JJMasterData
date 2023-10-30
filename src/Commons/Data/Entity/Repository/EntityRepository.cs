@@ -71,11 +71,11 @@ public class EntityRepository : IEntityRepository
 
     public async Task CreateDataModelAsync(Element element) => await Provider.CreateDataModelAsync(element);
 
-    ///<inheritdoc cref="IEntityRepository.GetScriptCreateTable(Element)"/>
-    public string GetScriptCreateTable(Element element) => Provider.GetCreateTableScript(element);
+    ///<inheritdoc cref="IEntityRepository.GetCreateTableScript"/>
+    public string GetCreateTableScript(Element element) => Provider.GetCreateTableScript(element);
 
-    ///<inheritdoc cref="IEntityRepository.GetScriptWriteProcedure(Element)"/>
-    public string? GetScriptWriteProcedure(Element element) => Provider.GetWriteProcedureScript(element);
+    ///<inheritdoc cref="IEntityRepository.GetWriteProcedureScript"/>
+    public string? GetWriteProcedureScript(Element element) => Provider.GetWriteProcedureScript(element);
 
     public async Task<string> GetAlterTableScriptAsync(Element element)
     {
@@ -97,7 +97,7 @@ public class EntityRepository : IEntityRepository
         }
     }
     
-    public string? GetScriptReadProcedure(Element element) => Provider.GetReadProcedureScript(element);
+    public string? GetReadProcedureScript(Element element) => Provider.GetReadProcedureScript(element);
     
 
     public async Task<string> GetListFieldsAsTextAsync(Element element, EntityParameters? parameters = null, bool showLogInfo = false,

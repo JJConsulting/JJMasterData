@@ -81,20 +81,19 @@ public interface IEntityRepository
     /// <summary>
     /// Build a structure script to create table
     /// </summary>
-    public string GetScriptCreateTable(Element element);
+    public string GetCreateTableScript(Element element);
 
     /// <summary>
     /// Build a structure script to procedure of get
     /// </summary>
-    public string? GetScriptReadProcedure(Element element);
+    public string? GetReadProcedureScript(Element element);
 
     /// <summary>
     /// Build a structure script to procedure of set
     /// </summary>
-    public string? GetScriptWriteProcedure(Element element);
+    public string? GetWriteProcedureScript(Element element);
     
     public Task<string> GetAlterTableScriptAsync(Element element);
-
     
     /// <summary>
     /// Build a element from a existing table

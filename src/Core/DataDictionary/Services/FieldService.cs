@@ -6,21 +6,23 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class FieldService : BaseService
 {
-
-
+    private readonly IMemoryCache _memoryCache;
+    
     public FieldService(
         IValidationDictionary validationDictionary, 
         IDataDictionaryRepository dataDictionaryRepository,
+        IMemoryCache memoryCache,
         IStringLocalizer<MasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
-
+        _memoryCache = memoryCache;
     }
 
     public async Task<bool> SaveFieldAsync(string elementName, FormElementField field, string originalName)
@@ -55,9 +57,16 @@ public class FieldService : BaseService
         }
 
         formElement.Fields[field.Name] = field;
-        
-        if(IsValid)
+
+        if (IsValid)
+        {
             await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
+            if (!formElement.UseReadProcedure)
+                _memoryCache.Remove(formElement.Name + "_ReadScript");
+            if (!formElement.UseWriteProcedure)
+                _memoryCache.Remove(formElement.Name + "_WriteScript");
+        }
+            
 
         return IsValid;
     }

@@ -76,7 +76,7 @@ public class SqlServerProvider : EntityProviderBase
     {
         return SqlServerScripts.GetAlterTableScript(element, fields);
     }
-
+    
     public override DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter)
     {
         string sql;

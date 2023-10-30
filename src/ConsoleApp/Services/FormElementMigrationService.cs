@@ -56,6 +56,9 @@ public class FormElementMigrationService
         foreach (var metadata in databaseDictionaries)
         {
             var formElement = metadata.GetFormElement();
+
+            formElement.UseReadProcedure = true;
+            formElement.UseWriteProcedure = true;
             
             foreach (var field in formElement.Fields)
             {

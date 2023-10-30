@@ -141,15 +141,13 @@ public class ElementController : DataDictionaryController
     public async Task<IActionResult> Scripts(string elementName)
     {
         var formElement = await _elementService.GetFormElementAsync(elementName);
-        var scripts = await _scriptsService.GetScriptsListAsync(formElement);
+        var scripts = await _scriptsService.GetScriptsAsync(formElement);
         var tableExists = await _entityRepository.TableExistsAsync(formElement.TableName);
+        
         var model = new ElementScriptsViewModel
         {
             ElementName = elementName,
-            CreateTableScript = scripts[0],
-            WriteProcedureScript = scripts[2],
-            ReadProcedureScript = scripts[1],
-            AlterTableScript = scripts[3],
+            Scripts = scripts,
             TableExists = tableExists
         };
 
