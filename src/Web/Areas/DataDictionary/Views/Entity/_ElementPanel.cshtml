@@ -18,7 +18,7 @@
         <label asp-for="FormElement.UseReadProcedure" class=" col-form-label form-label"></label>
         <checkbox for="FormElement.UseReadProcedure" enabled="!Model.ReadOnly" switch="true"/>
     </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-5">
+    <div class="@BootstrapHelper.FormGroup col-sm-5" id="read-procedure-name-div">
         <label asp-for="FormElement.ReadProcedureName" class=" col-form-label form-label"></label>
         <tooltip title="Name for the procedure used to read data."/>
         @Html.TextBoxFor(model => model.FormElement.ReadProcedureName, Model.HtmlAttributes)
@@ -27,13 +27,13 @@
         <label asp-for="FormElement.UseWriteProcedure" class=" col-form-label form-label"></label>
         <checkbox for="FormElement.UseWriteProcedure" enabled="!Model.ReadOnly" switch="true"/>
     </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-5">
+    <div class="@BootstrapHelper.FormGroup col-sm-5" id="write-procedure-name-div">
         <label asp-for="FormElement.WriteProcedureName" class=" col-form-label form-label">
         </label>
         <tooltip title="Name for the procedure used to write data."/>
         @Html.TextBoxFor(model => model.FormElement.WriteProcedureName, Model.HtmlAttributes)
     </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-12">
+    <div class="@BootstrapHelper.FormGroup col-sm-5 flex-grow-1">
         <label asp-for="FormElement.Info" class=" col-form-label form-label">
         </label>
         <tooltip title="Developer only information about the data dictionary."/>
@@ -42,19 +42,29 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const useStoredProceduresCheckbox = document.getElementById('FormElement_UseStoredProcedures-checkbox');
-        const storedProceduresFields = document.querySelector('#stored-procedures-fields');
-
-        function toggleStoredProceduresFields() {
-            if (useStoredProceduresCheckbox.checked) {
-                storedProceduresFields.style.display = 'block';
+        const useReadProcedureCheckbox = document.getElementById('FormElement_UseReadProcedure-checkbox');
+        const readProcedureDiv = document.querySelector('#read-procedure-name-div');
+        const useWriteProcedureCheckbox = document.getElementById('FormElement_UseWriteProcedure-checkbox'); // Changed ID
+    
+        function toggleProcedure(checkbox, div) {
+            if (checkbox.checked) {
+                div.style.display = 'block';
             } else {
-                storedProceduresFields.style.display = 'none';
+                div.style.display = 'none';
             }
         }
-
-        toggleStoredProceduresFields();
-
-        useStoredProceduresCheckbox.addEventListener('change', toggleStoredProceduresFields);
+    
+        toggleProcedure(useReadProcedureCheckbox, readProcedureDiv);
+        useReadProcedureCheckbox.addEventListener('change', function () {
+            toggleProcedure(useReadProcedureCheckbox, readProcedureDiv);
+        });
+    
+        const writeProcedureDiv = document.querySelector('#write-procedure-name-div');
+        
+        toggleProcedure(useWriteProcedureCheckbox, writeProcedureDiv);
+        useWriteProcedureCheckbox.addEventListener('change', function () {
+            toggleProcedure(useWriteProcedureCheckbox, writeProcedureDiv);
+        });
     });
+
 </script>
