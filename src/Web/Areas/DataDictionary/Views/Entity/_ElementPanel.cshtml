@@ -20,7 +20,7 @@
             <div class="input-group-text">
                 <input asp-for="FormElement.UseReadProcedure" data-bs-placement="right" data-bs-toggle="tooltip" title="@StringLocalizer["Enable Read Procedure"]"  disabled="disabled" class="form-check-input mt-0" type="checkbox" aria-label="Enable Read Procedure">
             </div>
-           @Html.TextBoxFor(model => model.FormElement.ReadProcedureName, Model.HtmlAttributes)
+            @Html.TextBoxFor(model => model.FormElement.ReadProcedureName, Model.HtmlAttributes)
         </div>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6 ">
@@ -29,7 +29,7 @@
             <div class="input-group-text">
                 <input asp-for="FormElement.UseWriteProcedure" data-bs-placement="right" data-bs-toggle="tooltip" title="@StringLocalizer["Enable Write Procedure"]" disabled="disabled" class="form-check-input mt-0" type="checkbox" aria-label="Enable Write Procedure">
             </div>
-           @Html.TextBoxFor(model => model.FormElement.WriteProcedureName, Model.HtmlAttributes)
+            @Html.TextBoxFor(model => model.FormElement.WriteProcedureName, Model.HtmlAttributes)
         </div>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-5 flex-grow-1">
@@ -39,7 +39,10 @@
         @Html.TextBoxFor(model => model.FormElement.Info, Model.HtmlAttributes)
     </div>
 </div>
-<script>
+
+@if (!Model.ReadOnly)
+{
+    <script>
     document.addEventListener('DOMContentLoaded', function () {
         const useReadProcedureCheckbox = document.getElementById('FormElement_UseReadProcedure');
         const useWriteProcedureCheckbox = document.getElementById('FormElement_UseWriteProcedure'); 
@@ -62,5 +65,5 @@
             toggleProcedure(useWriteProcedureCheckbox, writeProcedureName);
         });
     });
-
-</script>
+   </script>
+}
