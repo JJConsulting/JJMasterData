@@ -16,14 +16,14 @@ public class DataDictionaryFormElementFactory
 {
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private IHttpContext HttpContext { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    private MasterDataUrlHelper UrlHelper { get; }
     private readonly MasterDataCoreOptions _options;
 
     public DataDictionaryFormElementFactory(
         IOptions<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IHttpContext httpContext,
-        JJMasterDataUrlHelper urlHelper
+        MasterDataUrlHelper urlHelper
     )
     {
         StringLocalizer = stringLocalizer;

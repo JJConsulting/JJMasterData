@@ -34,7 +34,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
 
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
 
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    private MasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
     private ILoggerFactory LoggerFactory { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }

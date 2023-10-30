@@ -20,19 +20,19 @@ public class ApiService : BaseService
 
     public async Task<bool> SetFormElementWithApiValidation(FormElement formElement)
     {
-        if (ValidateApi(formElement))
+        if (ValidateWebApi(formElement))
             await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
 
         return IsValid;
     }
 
-    public bool ValidateApi(FormElement formElement)
+    private bool ValidateWebApi(FormElement formElement)
     {
         var hasApiGetEnabled = formElement.ApiOptions is { EnableGetDetail: true, EnableGetAll: true };
 
-        if (formElement.ApiOptions.EnableGetAll && !hasApiGetEnabled)
+        if (formElement.EnableSynchronism && !hasApiGetEnabled)
         {
-            AddError("Api", StringLocalizer["To enable sync the get APIs must be enabled."]);
+            AddError(nameof(formElement.EnableSynchronism), StringLocalizer["To enable synchronism, the GET endpoints must be enabled."]);
         }
 
         return IsValid;

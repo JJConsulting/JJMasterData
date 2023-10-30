@@ -49,7 +49,7 @@ public class Element
     public string WriteProcedureName { get; set; }
     
     [JsonProperty("sync")]
-    public bool EnableApi { get; set; }
+    public bool EnableSynchronism { get; set; }
 
     /// <summary>
     /// Works online or offline on synchronized devices
@@ -59,15 +59,15 @@ public class Element
     /// <para>Default = SyncMode.Online</para>
     /// </remarks>
     [JsonProperty("mode")]
-    public SyncMode SyncMode { get; set; }
+    public SynchronismMode SynchronismMode { get; set; }
 
     public Element()
     {
         Fields = new ElementFieldList();
         Indexes = new List<ElementIndex>();
         Relationships = new List<ElementRelationship>();
-        SyncMode = SyncMode.Online;
-        EnableApi = false;
+        SynchronismMode = SynchronismMode.Online;
+        EnableSynchronism = false;
     }
 
     public Element(string name) : this()

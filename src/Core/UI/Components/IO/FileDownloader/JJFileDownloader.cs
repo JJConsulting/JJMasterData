@@ -23,13 +23,13 @@ public class JJFileDownloader : HtmlComponent
     public bool IsExternalLink { get; set; }
     internal IHttpContext CurrentContext { get; }
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    internal JJMasterDataUrlHelper UrlHelper { get; }
+    internal MasterDataUrlHelper UrlHelper { get; }
     internal ILogger<JJFileDownloader> Logger { get; }
     internal IEncryptionService EncryptionService { get; }
     
     public JJFileDownloader(
         IHttpContext currentContext,
-        JJMasterDataUrlHelper urlHelper, 
+        MasterDataUrlHelper urlHelper, 
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<JJFileDownloader> logger)
@@ -136,7 +136,7 @@ public class JJFileDownloader : HtmlComponent
         return UrlHelper.GetUrl("Download", "File", "MasterData", new {filePath = encryptedFilePath});
     }
     
-    internal string GetDownloadUrl(JJMasterDataUrlHelper urlHelper,string filePath)
+    internal string GetDownloadUrl(MasterDataUrlHelper urlHelper,string filePath)
     {
         var encryptedFilePath = EncryptionService.EncryptStringWithUrlEscape(filePath);
 

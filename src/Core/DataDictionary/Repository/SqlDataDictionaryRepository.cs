@@ -109,7 +109,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             { DataDictionaryStructure.Type, "F" },
             { DataDictionaryStructure.Owner, null },
             { DataDictionaryStructure.Json, jsonForm },
-            { DataDictionaryStructure.EnableApi, formElement.EnableApi },
+            { DataDictionaryStructure.EnableApi, formElement.EnableSynchronism },
             { DataDictionaryStructure.LastModified, dNow }
         };
 

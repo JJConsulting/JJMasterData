@@ -63,8 +63,8 @@ public class FormElement : Element
         Relationships = new FormElementRelationshipList(base.Relationships);
         ReadProcedureName = element.ReadProcedureName;
         WriteProcedureName = element.WriteProcedureName;
-        EnableApi = element.EnableApi;
-        SyncMode = element.SyncMode;
+        EnableSynchronism = element.EnableSynchronism;
+        SynchronismMode = element.SynchronismMode;
         Title = element.Name;
         SubTitle = element.Info;
 

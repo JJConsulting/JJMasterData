@@ -2801,8 +2801,8 @@
     <value>Para incluir ou atualizar registros em massa selecione um arquivo do tipo</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="To enable sync the get APIs must be enabled." xml:space="preserve">
-    <value>Para ativar a sincronização, as APIs de obtenção devem ser ativadas.</value>
+  <data name="To enable synchronism, the GET endpoints must be enabled." xml:space="preserve">
+    <value>Para ativar o sincronismo, os endpoints de GET devem ser habilitados.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="To keep up with the ever-changing malicious software, we frequently update file types without permission." xml:space="preserve">

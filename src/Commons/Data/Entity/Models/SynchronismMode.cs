@@ -3,7 +3,7 @@
 /// <summary>
 /// Sync mode
 /// </summary>
-public enum SyncMode
+public enum SynchronismMode
 {
     Offline = 0,
     Online = 1

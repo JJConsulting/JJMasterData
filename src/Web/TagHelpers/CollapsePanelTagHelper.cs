@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
@@ -16,6 +17,7 @@ public class CollapsePanelTagHelper : TagHelper
     public string? Title { get; set; }
     
     [HtmlAttributeName("partial")]
+    [AspMvcPartialView]
     public string? Partial { get; set; }
 
     [HtmlAttributeName("model")]

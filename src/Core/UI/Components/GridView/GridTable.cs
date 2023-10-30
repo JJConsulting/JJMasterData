@@ -39,7 +39,7 @@ internal class GridTable
         table.WithCssClassIf(Settings.ShowBorder, "table-bordered");
         table.WithCssClassIf(Settings.IsResponsive, "table-hover");
         table.WithCssClassIf(Settings.ShowRowStriped, "table-striped");
-        table.WithCssClassIf(Settings.IsHeaderFixed, "table-fix-head");
+        table.WithCssClassIf(Settings.IsHeaderFixed, "table-fixed-header");
 
         table.Append(await Header.GetHtmlBuilderAsync());
         table.Append(await Body.GetHtmlBuilderAsync());

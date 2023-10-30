@@ -42,7 +42,7 @@ public class FormElementInfo
         Name = formElement.Name;
         TableName =formElement.TableName;
         Info = formElement.Info;
-        EnableApi = formElement.EnableApi;
+        EnableApi = formElement.EnableSynchronism;
         Modified = modified;
     }
 

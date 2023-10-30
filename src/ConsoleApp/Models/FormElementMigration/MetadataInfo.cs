@@ -30,7 +30,7 @@ public class MetadataInfo
         Name = metadata.Table.Name;
         TableName = metadata.Table.TableName;
         Info = metadata.Table.Info;
-        Sync = metadata.Table.EnableApi ? "1" : "0";
+        Sync = metadata.Table.EnableSynchronism ? "1" : "0";
         Modified = modified;
     }
     

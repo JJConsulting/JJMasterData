@@ -120,7 +120,7 @@
                         </a>
                     </li>
                     <li class="@NavItem("Api") @(BootstrapHelper.Version >= 5 ? "me-auto" : string.Empty)">
-                        <a class="nav-link @ActiveBs5("WebApi")" href="@Url.Action("Index", "Api", new { elementName = Model.ElementName })">
+                        <a class="nav-link @ActiveBs5("Api")" href="@Url.Action("Index", "Api", new { elementName = Model.ElementName })">
                             <span class="fa fa-globe" aria-selected="@AriaSelected("WebApi")"></span>&nbsp;@StringLocalizer["WebApi"]
                         </a>
                     </li>

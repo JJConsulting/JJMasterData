@@ -17,12 +17,12 @@ public class ActionScripts
 {
     private ExpressionsService ExpressionsService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    private MasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
 
     public ActionScripts(
         ExpressionsService expressionsService,
-        JJMasterDataUrlHelper urlHelper,
+        MasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {

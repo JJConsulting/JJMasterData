@@ -118,7 +118,7 @@ public class MetadataRepository
         if (dicParser.ApiOptions == null)
         {
             dicParser.ApiOptions = new MetadataApiOptions();
-            if (dicParser.Table.EnableApi)
+            if (dicParser.Table.EnableSynchronism)
             {
                 dicParser.ApiOptions.EnableGetAll = true;
                 dicParser.ApiOptions.EnableGetDetail = true;

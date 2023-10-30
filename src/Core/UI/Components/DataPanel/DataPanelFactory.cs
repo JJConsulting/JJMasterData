@@ -20,7 +20,7 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
     private FormValuesService FormValuesService { get; }
     private ExpressionsService ExpressionsService { get; }
     private IComponentFactory ComponentFactory { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    private MasterDataUrlHelper UrlHelper { get; }
 
     public DataPanelFactory(IEntityRepository entityRepository, 
         IDataDictionaryRepository dataDictionaryRepository,
@@ -30,7 +30,7 @@ internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
         FormValuesService formValuesService, 
         ExpressionsService expressionsService,
         IComponentFactory componentFactory,
-        JJMasterDataUrlHelper urlHelper)
+        MasterDataUrlHelper urlHelper)
     {
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;

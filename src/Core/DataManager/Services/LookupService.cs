@@ -23,7 +23,7 @@ public class LookupService
     private ExpressionsService ExpressionsService { get; }
     private IEncryptionService EncryptionService { get; }
     private ElementMapService ElementMapService { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    private MasterDataUrlHelper UrlHelper { get; }
 
     public LookupService(
         IFormValues formValues,
@@ -32,7 +32,7 @@ public class LookupService
         ExpressionsService expressionsService,
         IEncryptionService encryptionService,
         ElementMapService elementMapService,
-        JJMasterDataUrlHelper urlHelper)
+        MasterDataUrlHelper urlHelper)
     {
         FormValues = formValues;
         DataDictionaryRepository = dataDictionaryRepository;

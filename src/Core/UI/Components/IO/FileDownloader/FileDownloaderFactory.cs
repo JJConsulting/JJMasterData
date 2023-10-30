@@ -10,14 +10,14 @@ namespace JJMasterData.Core.UI.Components;
 internal class FileDownloaderFactory : IComponentFactory<JJFileDownloader>
 {
     private IHttpContext HttpContext { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    private MasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
 
     public FileDownloaderFactory(
         IHttpContext httpContext, 
-        JJMasterDataUrlHelper urlHelper,
+        MasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory

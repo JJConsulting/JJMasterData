@@ -3,7 +3,7 @@
 /// <summary>
 /// Tipo de filtro na Grid
 /// </summary>
-public enum ApiJsonFormat
+public enum ApiJsonFormatting
 {
     Default = 0,
     Lowercase = 1

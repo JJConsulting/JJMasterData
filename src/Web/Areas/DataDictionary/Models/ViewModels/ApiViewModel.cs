@@ -7,10 +7,12 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 public class ApiViewModel : DataDictionaryViewModel
 {
     [Display(Name = "Enable Synchronism")]
-    public bool IsSync { get; set; }
-    public SyncMode Mode { get; set; }
-    public List<ElementField>? Fields { get; set; } 
-    public FormElementApiOptions MetadataApiOptions { get; set; } = null!;
+    public bool EnableSynchronism { get; set; }
+    
+    [Display(Name = "Mode")]
+    public SynchronismMode SynchronismMode { get; set; }
+    public List<ElementField>? ElementFields { get; set; } 
+    public FormElementApiOptions ApiOptions { get; set; } = null!;
     
     // ReSharper disable once UnusedMember.Global
     // Reason: Used for model binding.

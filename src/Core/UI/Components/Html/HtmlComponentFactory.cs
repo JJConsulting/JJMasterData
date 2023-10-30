@@ -13,13 +13,13 @@ public class HtmlComponentFactory
 {
     private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
     private readonly IHttpContext _currentContext;
-    private readonly JJMasterDataUrlHelper _urlHelper;
+    private readonly MasterDataUrlHelper _urlHelper;
     private readonly IServiceProvider _serviceProvider;
 
     public HtmlComponentFactory(
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IHttpContext currentContext,
-        JJMasterDataUrlHelper urlHelper,
+        MasterDataUrlHelper urlHelper,
         IServiceProvider serviceProvider)
     {
         _stringLocalizer = stringLocalizer;

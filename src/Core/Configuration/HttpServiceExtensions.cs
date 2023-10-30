@@ -17,7 +17,7 @@ public static class HttpServiceExtensions
         services.AddScoped<IFormValues, Http.AspNetCore.FormValuesWrapper>();  
         services.AddScoped<IClaimsPrincipalAccessor, Http.AspNetCore.ClaimsPrincipalWrapper>();  
 #endif
-        services.AddScoped<JJMasterDataUrlHelper>();
+        services.AddScoped<MasterDataUrlHelper>();
 
 #if NETFRAMEWORK
         services.AddScoped<IHttpSession, Http.SystemWeb.SystemWebHttpSessionWrapper>();

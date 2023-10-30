@@ -33,8 +33,8 @@ public class Metadata
             Panels = Form.Panels,
             Info = Table.Info,
             Indexes = Table.Indexes,
-            EnableApi = Table.EnableApi,
-            SyncMode = Table.SyncMode,
+            EnableSynchronism = Table.EnableSynchronism,
+            SynchronismMode = Table.SynchronismMode,
         };
 
         foreach (var item in Form.FormFields)
@@ -71,7 +71,7 @@ public class Metadata
 
         formElement.ApiOptions = new FormElementApiOptions
         {
-            FormatType = ApiOptions.FormatType,
+            JsonFormatting = ApiOptions.FormatType,
             EnableAdd = ApiOptions.EnableAdd,
             EnableGetAll = ApiOptions.EnableGetAll,
             EnableDel = ApiOptions.EnableDel,

@@ -34,14 +34,15 @@ public class ApiController : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> Edit(ApiViewModel apiViewModel)
     {
-        var dic = await _apiService.DataDictionaryRepository.GetFormElementAsync( apiViewModel.ElementName);
-        dic.ApiOptions = apiViewModel.MetadataApiOptions;
-        dic.EnableApi = apiViewModel.IsSync;
-        dic.SyncMode = apiViewModel.Mode;
+        var formElement = await _apiService.DataDictionaryRepository.GetFormElementAsync( apiViewModel.ElementName);
+        formElement.ApiOptions = apiViewModel.ApiOptions;
+        formElement.EnableSynchronism = apiViewModel.EnableSynchronism;
+        formElement.SynchronismMode = apiViewModel.SynchronismMode;
 
-        if (await _apiService.SetFormElementWithApiValidation(dic))
+        if (await _apiService.SetFormElementWithApiValidation(formElement))
             return RedirectToAction("Index", new { elementName =  apiViewModel.ElementName });
-        var model = PopulateViewModel(dic);
+        
+        var model = PopulateViewModel(formElement);
         model.ValidationSummary = _apiService.GetValidationSummary();
         return View(model);
 
@@ -50,10 +51,10 @@ public class ApiController : DataDictionaryController
     {
         var model = new ApiViewModel(elementName:metadata.Name, menuId:"Api")
         {
-            MetadataApiOptions = metadata.ApiOptions,
-            Mode = metadata.SyncMode,
-            IsSync = metadata.EnableApi,
-            Fields = new List<ElementField>(metadata.Fields.ToList().FindAll(
+            ApiOptions = metadata.ApiOptions,
+            SynchronismMode = metadata.SynchronismMode,
+            EnableSynchronism = metadata.EnableSynchronism,
+            ElementFields = new List<ElementField>(metadata.Fields.ToList().FindAll(
                 x => (x.IsPk | x.Filter.Type != FilterMode.None) &
                      x.DataType != FieldType.DateTime &
                      x.DataType != FieldType.DateTime2 &

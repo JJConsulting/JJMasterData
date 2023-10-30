@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
@@ -46,18 +47,20 @@ public class FormElementApiOptions
     /// Json Format
     /// </summary>
     [JsonProperty("formatType")]
-    public ApiJsonFormat FormatType { get; set; }
+    [Display(Name = "Json Formatting")]
+    public ApiJsonFormatting JsonFormatting { get; set; }
 
     /// <summary>
     /// Always apply UserId (from login) as filter or on set
     /// </summary>
     [JsonProperty("applyUserIdOn")]
+    [Display(Name = "Apply User Id On")]
     public string? ApplyUserIdOn { get; set; }
 
 
     public FormElementApiOptions()
     {
-        FormatType = ApiJsonFormat.Lowercase;
+        JsonFormatting = ApiJsonFormatting.Lowercase;
     }
 
     /// <summary>
@@ -65,7 +68,7 @@ public class FormElementApiOptions
     /// </summary>
     public string GetFieldNameParsed(string fieldName)
     {
-        return FormatType == ApiJsonFormat.Lowercase ? fieldName.ToLower() : fieldName;
+        return JsonFormatting == ApiJsonFormatting.Lowercase ? fieldName.ToLower() : fieldName;
     }
     
     public bool HasSetMethod()

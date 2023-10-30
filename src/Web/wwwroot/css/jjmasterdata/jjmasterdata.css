@@ -80,26 +80,25 @@
         margin-left: 3px;
     }
 
-.table .jjgrid-action {
+.table .tr-hover-action {
     cursor: pointer;
 }
-
-    .table .jjgrid-action:hover td:first-child:before {
+    .table .tr-hover-action:hover td:first-child:before {
         font-family: 'FontAwesome';
         content: "\f142";
         position: absolute;
-        left: 0px;
+        left: 0;
         font-size: 1.25em;
     }
 
 
 /* Table Head Fixed Style  */
 
-table.table-fix-head {
+table.table-fixed-header {
     border-collapse: collapse;
 }
 
-    table.table-fix-head th {
+    table.table-fixed-header th {
         position: -webkit-sticky;
         position: sticky;
         top: 0;
@@ -108,7 +107,7 @@ table.table-fix-head {
         background: #eee;
     }
 
-        table.table-fix-head th[scope=row] {
+        table.table-fixed-header th[scope=row] {
             position: -webkit-sticky;
             position: sticky;
             left: 0;
@@ -116,16 +115,16 @@ table.table-fix-head {
             vertical-align: top;
         }
 
-    table.table-fix-head:nth-of-type(2) th:not([scope=row]):first-child {
+    table.table-fixed-header:nth-of-type(2) th:not([scope=row]):first-child {
         left: 0;
         z-index: 3;
     }
 
-.table-fix-head th[scope=row] + td {
+.table-fixed-header th[scope=row] + td {
     min-width: 24em;
 }
 
-.table-fix-head th[scope=row] {
+.table-fixed-header th[scope=row] {
     min-width: 20em;
 }
 

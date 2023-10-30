@@ -103,7 +103,7 @@ public class JJDataPanel : AsyncComponent
     public IEntityRepository EntityRepository { get; }
     internal IHttpContext CurrentContext { get; }
     internal IEncryptionService EncryptionService { get; }
-    internal JJMasterDataUrlHelper UrlHelper { get; }
+    internal MasterDataUrlHelper UrlHelper { get; }
     internal FieldsService FieldsService { get; }
     internal FormValuesService FormValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
@@ -121,7 +121,7 @@ public class JJDataPanel : AsyncComponent
         FieldsService = StaticServiceLocator.Provider.GetScopedDependentService<FieldsService>();
         FormValuesService = StaticServiceLocator.Provider.GetScopedDependentService<FormValuesService>();
         ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<ExpressionsService>();
-        UrlHelper = StaticServiceLocator.Provider.GetScopedDependentService<JJMasterDataUrlHelper>();
+        UrlHelper = StaticServiceLocator.Provider.GetScopedDependentService<MasterDataUrlHelper>();
         
         Values = new Dictionary<string, object>();
         Errors =  new Dictionary<string, string>();
@@ -152,7 +152,7 @@ public class JJDataPanel : AsyncComponent
         IEntityRepository entityRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
-        JJMasterDataUrlHelper urlHelper,
+        MasterDataUrlHelper urlHelper,
         FieldsService fieldsService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
@@ -178,7 +178,7 @@ public class JJDataPanel : AsyncComponent
         IEntityRepository entityRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
-        JJMasterDataUrlHelper urlHelper,
+        MasterDataUrlHelper urlHelper,
         FieldsService fieldsService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,

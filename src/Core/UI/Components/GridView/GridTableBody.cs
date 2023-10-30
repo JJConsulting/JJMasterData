@@ -54,17 +54,17 @@ internal class GridTableBody
 
     internal async Task<HtmlBuilder> GetRowHtml(IDictionary<string,object> row, int index)
     {
-        var html = new HtmlBuilder(HtmlTag.Tr);
+        var tr = new HtmlBuilder(HtmlTag.Tr);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
 
-        html.WithAttribute("id", $"row{index}");
-        bool enableGridAction = !GridView.EnableEditMode && (defaultAction != null || GridView.EnableMultiSelect);
-        html.WithCssClassIf(enableGridAction, "jjgrid-action");
+        tr.WithAttribute("id", $"row{index}");
+        var enableGridAction = !GridView.EnableEditMode && (defaultAction != null || GridView.EnableMultiSelect);
+        tr.WithCssClassIf(enableGridAction, "tr-hover-action");
 
-        await html.AppendRangeAsync(GetTdHtmlList(row, index));
+        await tr.AppendRangeAsync(GetTdHtmlList(row, index));
 
-        return html;
+        return tr;
     }
 
     internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(IDictionary<string,object> row, int index)

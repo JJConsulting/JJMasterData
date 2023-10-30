@@ -28,7 +28,7 @@ public class ElementService : BaseService
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
     private IEncryptionService EncryptionService { get; }
     private DataDictionaryFormElementFactory DataDictionaryFormElementFactory { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    private MasterDataUrlHelper UrlHelper { get; }
     private readonly IEntityRepository _entityRepository;
     private readonly MasterDataCoreOptions _options;
 
@@ -41,7 +41,7 @@ public class ElementService : BaseService
         IEncryptionService encryptionService,
         IDataDictionaryRepository dataDictionaryRepository,
         DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
-        JJMasterDataUrlHelper urlHelper
+        MasterDataUrlHelper urlHelper
         )
         : base(validationDictionary, dataDictionaryRepository, stringLocalizer)
     {

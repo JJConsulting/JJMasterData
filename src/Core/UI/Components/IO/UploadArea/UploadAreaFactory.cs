@@ -11,14 +11,14 @@ internal class UploadAreaFactory : IComponentFactory<JJUploadArea>
 {
     private IHttpContext HttpContext { get; }
     private UploadAreaService UploadAreaService { get; }
-    private JJMasterDataUrlHelper UrlHelper { get; }
+    private MasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
 
     public UploadAreaFactory(
         IHttpContext httpContext,
         UploadAreaService uploadAreaService, 
-        JJMasterDataUrlHelper urlHelper,
+        MasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
