@@ -305,7 +305,6 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         sql.Append(Tab, 2);
         sql.Append("N'");
         sql.Append(GetParameters(fields, addMasterDataParameters: false, tabLevel: 2));
-        sql.Append(Tab, 2);
         sql.Append("@count int output',");
         sql.AppendLine();
         sql.Append(Tab, 2);
@@ -450,15 +449,13 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         }
 
         if (addMasterDataParameters)
-        {       
-            sql.Append(Tab, tabLevel);
+        {
             sql.AppendLine("@regporpag INT, ");
             sql.Append(Tab, tabLevel);
             sql.AppendLine("@pag INT, ");
             sql.Append(Tab, tabLevel);
             sql.Append("@qtdtotal INT OUTPUT ");
         }
-
 
         return sql.ToString();
     }

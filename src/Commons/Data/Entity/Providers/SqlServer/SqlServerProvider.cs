@@ -18,12 +18,12 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerProvider : EntityProviderBase
 {
+    private readonly TimeSpan _cacheExpiration = new (4, 0, 0);
     private SqlServerScripts SqlServerScripts { get; }
     private IMemoryCache MemoryCache { get; }
     private const string InsertInitial = "I";
     private const string UpdateInitial = "A";
     private const string DeleteInitial = "E";
-
     public override string VariablePrefix => "@";
 
     public SqlServerProvider(
@@ -95,7 +95,7 @@ public class SqlServerProvider : EntityProviderBase
             else
             {
                 sql = SqlServerScripts.GetReadScript(element);
-                MemoryCache.Set(cacheKey, sql);
+                MemoryCache.Set(cacheKey, sql, _cacheExpiration);
             }
         }
         
@@ -190,7 +190,7 @@ public class SqlServerProvider : EntityProviderBase
             else
             {
                 sql = SqlServerScripts.GetWriteScript(element);
-                MemoryCache.Set(cacheKey, sql);
+                MemoryCache.Set(cacheKey, sql, _cacheExpiration);
             }
         }
         var writeCommand = new DataAccessCommand

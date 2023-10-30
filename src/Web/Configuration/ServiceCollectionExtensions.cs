@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
 {
     public static MasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
     {
-        services.AddOptions<MasterDataWebOptions>();
+        services.AddOptions<MasterDataWebOptions>().BindConfiguration("JJMasterData");
         AddDefaultServices(services);
         return services.AddJJMasterDataCore();
     }
