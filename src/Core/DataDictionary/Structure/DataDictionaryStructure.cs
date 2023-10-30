@@ -31,6 +31,7 @@ public class DataDictionaryStructure
         element.Fields.Add(Owner, "Owner", FieldType.NVarchar, 64, false, FilterMode.None);
         element.Fields.Add(LastModified, "Last Modified", FieldType.DateTime, 15, true, FilterMode.Range);
         element.Fields.Add(EnableApi, "Enable API", FieldType.Bit, 1, false, FilterMode.Equal);
+        
         return element;
     }
 }

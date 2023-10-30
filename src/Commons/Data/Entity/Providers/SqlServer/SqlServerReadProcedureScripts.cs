@@ -261,7 +261,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         sql.AppendLine("SET @sqlOrderBy  = ' ORDER BY ' + @orderby");
         sql.Append(Tab);
         sql.AppendLine("END");
-        sql.AppendLine("");
+        sql.AppendLine();
 
         sql.Append(Tab);
         sql.AppendLine("--PAGINATION");
@@ -329,7 +329,6 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         sql.Append(",");
         sql.AppendLine();
         sql.Append(Tab);
-        sql.Append("@orderby,");
         sql.AppendLine();
         sql.Append(Tab);
         sql.Append(GetFilterParametersScript(fields));
@@ -374,11 +373,6 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
     private static string GetParameters(List<ElementField> fields, bool addMasterDataParameters, int tabLevel = 0)
     {
         var sql = new StringBuilder();
-        if (addMasterDataParameters)
-        {
-            sql.AppendLine("@orderby NVARCHAR(MAX), ");
-            sql.Append(Tab, tabLevel);
-        }
 
         foreach (var field in fields)
         {

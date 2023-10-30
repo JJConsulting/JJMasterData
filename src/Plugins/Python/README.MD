@@ -2,41 +2,36 @@
 
 A plugin to enable Python support at certain features of JJMasterData.
 
-## Data Dictionary Actions
+## Setup
 
 At your startup, add the following line:
 ```python
-builder.Services.AddJJMasterDataWeb().WithPythonEngine()
+builder.Services.AddJJMasterDataWeb().WithPythonEvents()
 ```
-Now you can execute Python actions at your form.
+The following IConfiguration keys are possible:
 
 ## FormEvents
 
-To use FormEvents with Python, dda python file with your element name and implement a class with the same name. Add the JJMasterData folder (coming soon to pip)
-to enable autocomplete features.
-Specify the path on the services setup.
-
-```csharp
-builder.Services.AddJJMasterDataWeb()
-        .WithPythonFormEventResolver(options => options.ScriptsPath = "../../example/JJMasterData.WebExample/FormEvents/Python");
-```
+To use FormEvents with Python, the Python file with your element name and implement a class with the same name.
 
 ```py
-from JJMasterData.Core.FormEvents.Abstractions import BaseFormEvent
-from JJMasterData.Core.FormEvents.Args import *
+from JJMasterData.Core.Events.Abstractions import FormEventHandlerBase
+from JJMasterData.Core.Events.Args import *
 
-class Example(BaseFormEvent):
+# Your class name AND file name, must be the same from your ElementName
+class MyElementName(FormEventHandlerBase):
+    def OnFormElementLoad(self, sender, args: FormElementLoadEventArgs):
+        args.FormElement.Title = "My Title Changed in Python"
 
     def OnBeforeInsert(self, sender, args: FormBeforeActionEventArgs):
         if int(args.Values["NumericField"]) < 0:
             args.Errors["NumericField"] = "Value needs to be greater than 0"
 
-    def OnMetadataLoad(self, sender, args: MetadataLoadEventArgs):
-        args.Metadata.Form.SubTitle = "Hello from IronPython runtime."
+
 ```
 
 > [!TIP]
-> Since IronPython runs on the CLR and does not use Reflection as our default implementation, higher performance is expected.
+> Since IronPython runs on the CLR, you can edit your Python files without re-compiling your app.
 
 ## How to use .NET Code ?
 
@@ -53,7 +48,7 @@ clr.AddReference("JJMasterData.Commons")
 import System
 import JJMasterData.Commons.Dao
     
-data_access_instance = System.Activator.CreateInstance(JJMasterData.Commons.Dao.DataAccess)
+data_access_instance = System.Activator.CreateInstance(JJMasterData.Commons.Data.DataAccess)
     
 get_fields = lambda sql : dict(data_access_instance.GetFields(sql))
     
@@ -72,3 +67,5 @@ for row in data_table.Rows:
     # do stuff with your str(row["COLUMN"])
 
 ```
+> [!TIP]
+> This is for demonstration purposes only, use async code to access your database.

@@ -3,20 +3,32 @@
 using System;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Events.Abstractions;
-using JJMasterData.Python.FormEvents;
-using JJMasterData.Python.Models;
+using JJMasterData.Core.UI.Events.Abstractions;
+using JJMasterData.Python.Configuration.Options;
+using JJMasterData.Python.Engine;
+using JJMasterData.Python.Events;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Scripting.Hosting;
 
 namespace JJMasterData.Python.Configuration;
 public static class MasterDataServiceBuilderExtensions
 {
-
-    public static MasterDataServiceBuilder WithPythonFormEventResolver(this MasterDataServiceBuilder builder, Action<PythonFormEventOptions>? configure = null)
+    public static MasterDataServiceBuilder WithPythonEvents(this MasterDataServiceBuilder builder, Action<PythonEngineOptions>? configure = null)
     {
-        if(configure != null)
-            builder.Services.Configure(configure);
+        builder.Services.AddOptions<PythonEngineOptions>().BindConfiguration("JJMasterData:Python");
         
-        builder.Services.AddTransient<IFormEventHandlerFactory,PythonFormEventHandlerFactory>();
+        if(configure != null)
+            builder.Services.PostConfigure(configure);
+    
+        builder.Services.AddScoped<IFormEventHandlerFactory,PythonEventHandlerFactory>();
+        builder.Services.AddScoped<IGridEventHandlerFactory,PythonEventHandlerFactory>();
+
+        builder.Services.AddSingleton<ScriptEngine>(svp =>
+        {
+            var additionalPaths = svp.GetRequiredService<IOptions<PythonEngineOptions>>().Value.AdditionalScriptsPaths;
+            return PythonEngineFactory.CreateScriptEngine(additionalPaths);
+        });
         
         return builder;
     }
