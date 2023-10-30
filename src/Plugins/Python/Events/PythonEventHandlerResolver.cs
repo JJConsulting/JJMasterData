@@ -4,19 +4,17 @@ using System.Linq;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.UI.Events.Abstractions;
 using JJMasterData.Python.Configuration.Options;
-using JJMasterData.Python.Engine;
 using Microsoft.Extensions.Options;
 using Microsoft.Scripting.Hosting;
 
 namespace JJMasterData.Python.Events;
 
-    
-public class PythonEventHandlerFactory : IFormEventHandlerFactory, IGridEventHandlerFactory
+public class PythonEventHandlerResolver : IFormEventHandlerResolver, IGridEventHandlerResolver
 {
     private ScriptEngine ScriptEngine { get; }
-    private string ScriptsPath { get; }
+    private string? ScriptsPath { get; }
     
-    public PythonEventHandlerFactory(ScriptEngine scriptEngine,IOptions<PythonEngineOptions> options)
+    public PythonEventHandlerResolver(ScriptEngine scriptEngine,IOptions<PythonEngineOptions> options)
     {
         ScriptEngine = scriptEngine;
         ScriptsPath = options.Value.ElementScriptsPath;
@@ -24,31 +22,29 @@ public class PythonEventHandlerFactory : IFormEventHandlerFactory, IGridEventHan
     
     private T? Get<T>(string elementName)
     {
+        if (ScriptsPath is null)
+            return default;
+        
         var file = Directory
             .GetFiles(ScriptsPath, $"{elementName}.py", SearchOption.AllDirectories)
             .FirstOrDefault();
 
-        if (file is not null)
-        {
-            var source = ScriptEngine.CreateScriptSourceFromFile(file);
+        if (file is null)
+            return default;
+        
+        var source = ScriptEngine.CreateScriptSourceFromFile(file);
 
-            var compiled = source.Compile();
-            compiled.Execute();
+        var compiled = source.Compile();
+        compiled.Execute();
 
-            var elementHandlerType = compiled.DefaultScope.GetVariable(elementName);
+        var elementHandlerType = compiled.DefaultScope.GetVariable(elementName);
 
-            var eventHandlerInstance = compiled.Engine.Operations.CreateInstance(elementHandlerType);
+        var eventHandlerInstance = compiled.Engine.Operations.CreateInstance(elementHandlerType);
 
-            if (eventHandlerInstance is T handler)
-            {
-                return handler;
-            }
-        }
-
-        return default;
+        return eventHandlerInstance is not T handler ? default : handler;
     }
 
-    public IFormEventHandler? GetFormEvent(string elementName)
+    public IFormEventHandler? GetFormEventHandler(string elementName)
     {
         return Get<IFormEventHandler>(elementName);
     }

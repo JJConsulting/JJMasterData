@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace JJMasterData.Core.Events.Abstractions;
 
-public class EventHandlerFactoryBase<TEventHandler> where TEventHandler : IEventHandler
+public class EventHandlerResolverBase<TEventHandler> where TEventHandler : IEventHandler
 {
     private IEnumerable<TEventHandler> EventHandlers { get; }
 
-    protected EventHandlerFactoryBase(IEnumerable<TEventHandler> eventHandlers)
+    protected EventHandlerResolverBase(IEnumerable<TEventHandler> eventHandlers)
     {
         EventHandlers = eventHandlers;
     }

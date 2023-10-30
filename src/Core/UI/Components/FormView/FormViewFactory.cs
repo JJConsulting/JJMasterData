@@ -30,7 +30,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     private IOptions<MasterDataCoreOptions> Options { get; }
     private IEnumerable<IPluginHandler> PluginHandlers { get; }
     private IComponentFactory Factory { get; }
-    private IFormEventHandlerFactory FormEventHandlerFactory { get; }
+    private IFormEventHandlerResolver FormEventHandlerResolver { get; }
 
     
     public FormViewFactory(
@@ -45,7 +45,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptions<MasterDataCoreOptions> options,
         IComponentFactory factory,
-        IFormEventHandlerFactory formEventHandlerFactory
+        IFormEventHandlerResolver formEventHandlerResolver
     )
     {
         CurrentContext = currentContext;
@@ -58,7 +58,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
         StringLocalizer = stringLocalizer;
         Options = options;
         Factory = factory;
-        FormEventHandlerFactory = formEventHandlerFactory;
+        FormEventHandlerResolver = formEventHandlerResolver;
         PluginHandlers = pluginHandlers;
     }
 
@@ -95,7 +95,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
 
     private void SetFormEventHandler(JJFormView formView, FormElement formElement)
     {
-        var formEventHandler = FormEventHandlerFactory.GetFormEvent(formElement.Name);
+        var formEventHandler = FormEventHandlerResolver.GetFormEventHandler(formElement.Name);
         formView.FormService.AddFormEventHandler(formEventHandler);
 
         formEventHandler?.OnFormElementLoad(this, new FormElementLoadEventArgs(formElement));
@@ -103,7 +103,7 @@ internal class FormViewFactory : IFormElementComponentFactory<JJFormView>
     
     internal async Task SetFormEventHandlerAsync(JJFormView formView, FormElement formElement)
     {
-        var formEventHandler = FormEventHandlerFactory.GetFormEvent(formElement.Name);
+        var formEventHandler = FormEventHandlerResolver.GetFormEventHandler(formElement.Name);
         formView.FormService.AddFormEventHandler(formEventHandler);
 
         if (formEventHandler != null)

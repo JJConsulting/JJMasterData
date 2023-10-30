@@ -1,6 +1,6 @@
 namespace JJMasterData.Core.UI.Events.Abstractions;
 
-public interface IGridEventHandlerFactory
+public interface IGridEventHandlerResolver
 {
     IGridEventHandler GetGridEventHandler(string elementName);
 }

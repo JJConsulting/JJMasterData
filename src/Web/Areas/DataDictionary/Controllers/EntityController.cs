@@ -8,11 +8,11 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class EntityController : DataDictionaryController
 {
     private readonly EntityService _entityService;
-    private readonly IFormEventHandlerFactory? _resolver;
-    public EntityController(EntityService entityService, IFormEventHandlerFactory? resolver = null)
+    private readonly IFormEventHandlerResolver? _formEventHandlerFactory;
+    public EntityController(EntityService entityService, IFormEventHandlerResolver? formEventHandlerFactory = null)
     {
         _entityService = entityService;
-        _resolver = resolver;
+        _formEventHandlerFactory = formEventHandlerFactory;
     }
 
     public async Task<IActionResult> Index(string elementName)
@@ -48,7 +48,7 @@ public class EntityController : DataDictionaryController
         var viewModel = new EntityViewModel(menuId:"Entity", elementName:elementName)
         {
             FormElement = await _entityService.GetFormElementAsync(elementName),
-            FormEvent = _resolver?.GetFormEvent(elementName),
+            FormEvent = _formEventHandlerFactory?.GetFormEventHandler(elementName),
             ReadOnly = readOnly
         };
 

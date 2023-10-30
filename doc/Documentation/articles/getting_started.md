@@ -57,7 +57,7 @@ In `Fields` menu Add 3 fields:
  - **FirstName** nvarchar 50 (Not Null)
  - **Age** int
 
-Click on menu "More/Get Scripts" and then "Run All"<br>
+Click on menu "More/Database Scripts" and then "Create Table And Stored Procedures"<br>
 The table and procedure will be created in the database.
 ![Person Scripts.png](../media/PersonScripts.png)
 

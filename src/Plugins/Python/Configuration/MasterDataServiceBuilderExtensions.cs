@@ -21,8 +21,8 @@ public static class MasterDataServiceBuilderExtensions
         if(configure != null)
             builder.Services.PostConfigure(configure);
     
-        builder.Services.AddScoped<IFormEventHandlerFactory,PythonEventHandlerFactory>();
-        builder.Services.AddScoped<IGridEventHandlerFactory,PythonEventHandlerFactory>();
+        builder.Services.AddScoped<IFormEventHandlerResolver,PythonEventHandlerResolver>();
+        builder.Services.AddScoped<IGridEventHandlerResolver,PythonEventHandlerResolver>();
 
         builder.Services.AddSingleton<ScriptEngine>(svp =>
         {

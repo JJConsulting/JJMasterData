@@ -95,7 +95,7 @@ public class DataDictionaryFormElementFactory
         {
             Icon = IconType.Eye,
             Name = "preview",
-            Text = StringLocalizer["Preview"],
+            Text = StringLocalizer["Render"],
             EnableExpression = "exp:'T' <> '{type}'",
             IsGroup = true
         };

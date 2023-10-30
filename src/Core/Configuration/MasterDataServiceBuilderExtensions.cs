@@ -30,9 +30,9 @@ public static class MasterDataServiceBuilderExtensions
         return builder;
     }
     
-    public static MasterDataServiceBuilder WithFormEventHandlerFactory<T>(this MasterDataServiceBuilder builder) where  T: class, IFormEventHandlerFactory
+    public static MasterDataServiceBuilder WithFormEventHandlerFactory<T>(this MasterDataServiceBuilder builder) where  T: class, IFormEventHandlerResolver
     {
-        builder.Services.Replace(ServiceDescriptor.Transient<IFormEventHandlerFactory, T>());
+        builder.Services.Replace(ServiceDescriptor.Transient<IFormEventHandlerResolver, T>());
 
         return builder;
     }

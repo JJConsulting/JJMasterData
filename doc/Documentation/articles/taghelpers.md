@@ -14,16 +14,7 @@ At `_ViewImports.cshtml`
 ```
 At your Razor page
 
-### Example 1
-```html
-<jj-formview element-name="ElementName"/>
-```
-In the example above the html of an entire CRUD is generated at runtime, 
-where "ElementName" is the name of the preconfigured data dictionary.
-
-<br>
-
-### Example 2
+### Example
 ```html
  <jj-title title="My title" subtitle="Foo"/>
 ```

@@ -22,7 +22,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
     private ExpressionsService ExpressionsService { get; }
     private IEncryptionService EncryptionService { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private IGridEventHandlerFactory GridEventHandlerFactory { get; }
+    private IGridEventHandlerResolver GridEventHandlerResolver { get; }
     private IComponentFactory ComponentFactory { get; }
     private IEntityRepository EntityRepository { get; }
     private IDataDictionaryRepository DataDictionaryRepository { get; }
@@ -38,7 +38,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         FieldsService fieldsService,
         FormValuesService formValuesService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
-        IGridEventHandlerFactory gridEventHandlerFactory,
+        IGridEventHandlerResolver gridEventHandlerResolver,
         IComponentFactory componentFactory)
     {
         CurrentContext = currentContext;
@@ -47,7 +47,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         ExpressionsService = expressionsService;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
-        GridEventHandlerFactory = gridEventHandlerFactory;
+        GridEventHandlerResolver = gridEventHandlerResolver;
         ComponentFactory = componentFactory;
         EntityRepository = entityRepository;
         DataDictionaryRepository = dataDictionaryRepository;
@@ -69,7 +69,7 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
             StringLocalizer,
             ComponentFactory);
 
-        var eventHandler = GridEventHandlerFactory.GetGridEventHandler(formElement.Name);
+        var eventHandler = GridEventHandlerResolver.GetGridEventHandler(formElement.Name);
         
         SetGridOptions(gridView, formElement.Options);
         

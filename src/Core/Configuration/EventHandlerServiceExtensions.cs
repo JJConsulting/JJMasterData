@@ -14,8 +14,8 @@ public static class EventHandlerServiceExtensions
 {
     public static IServiceCollection AddEventHandlers(this IServiceCollection services)
     {
-        services.AddScoped<IFormEventHandlerFactory,FormEventHandlerFactory>();
-        services.AddScoped<IGridEventHandlerFactory,GridEventHandlerFactory>();
+        services.AddScoped<IFormEventHandlerResolver,FormEventHandlerResolver>();
+        services.AddScoped<IGridEventHandlerResolver,GridEventHandlerResolver>();
 
         services.AddEventHandlers<IFormEventHandler>();
         services.AddEventHandlers<IGridEventHandler>();

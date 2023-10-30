@@ -22,9 +22,6 @@
         }
       ],
       "dest": "lib",
-      "properties": {
-        "TargetFramework": "net6.0"
-      },
       "namespaceLayout":"nested",
       "disableGitFeatures": false,
       "disableDefaultFilter": false
@@ -80,7 +77,7 @@
       "_disableSideFilter":true,
       "_appTitle": "JJMasterData",
       "_appLogoPath": "logo.png",
-      "_appFooter": "Saturn Version - 3.1",
+      "_appFooter": "Sun Version - 4.0.x",
       "_copyrightFooter":"2023 JJConsulting. All rights reserved."
     },
     "globalMetadataFiles": [],

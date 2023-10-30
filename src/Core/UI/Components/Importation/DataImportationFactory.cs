@@ -28,7 +28,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
     private FieldsService FieldsService { get; }
     private IBackgroundTaskManager BackgroundTaskManager { get; }
     private FormService FormService { get; }
-    private IFormEventHandlerFactory FormEventHandlerFactory { get; }
+    private IFormEventHandlerResolver FormEventHandlerResolver { get; }
     private IHttpContext HttpContext { get; }
     private IComponentFactory ComponentFactory { get; }
 
@@ -47,7 +47,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         IBackgroundTaskManager backgroundTaskManager,
         FormService formService,
         FieldsService fieldsService,
-        IFormEventHandlerFactory formEventHandlerFactory,
+        IFormEventHandlerResolver formEventHandlerResolver,
         IHttpContext httpContext,
         IComponentFactory componentFactory,
         DataImportationWorkerFactory dataImportationWorkerFactory,
@@ -61,7 +61,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         FieldsService = fieldsService;
         BackgroundTaskManager = backgroundTaskManager;
         FormService = formService;
-        FormEventHandlerFactory = formEventHandlerFactory;
+        FormEventHandlerResolver = formEventHandlerResolver;
         HttpContext = httpContext;
         ComponentFactory = componentFactory;
         DataImportationWorkerFactory = dataImportationWorkerFactory;
@@ -88,7 +88,7 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         var dataContext = new DataContext(HttpContext.Request, DataContextSource.Upload,
             DataHelper.GetCurrentUserId(HttpContext, null));
 
-        var formEvent = FormEventHandlerFactory.GetFormEvent(elementName);
+        var formEvent = FormEventHandlerResolver.GetFormEventHandler(elementName);
         
         var dataImp = Create(formElement);
         

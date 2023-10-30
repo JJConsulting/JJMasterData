@@ -4,9 +4,9 @@ using JJMasterData.Core.UI.Events.Abstractions;
 
 namespace JJMasterData.Core.UI.Events;
 
-public class GridEventHandlerFactory : EventHandlerFactoryBase<IGridEventHandler>, IGridEventHandlerFactory
+public class GridEventHandlerResolver : EventHandlerResolverBase<IGridEventHandler>, IGridEventHandlerResolver
 {
-    public GridEventHandlerFactory(IEnumerable<IGridEventHandler> eventHandlers) : base(eventHandlers)
+    public GridEventHandlerResolver(IEnumerable<IGridEventHandler> eventHandlers) : base(eventHandlers)
     {
     }
     

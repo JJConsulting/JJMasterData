@@ -2,7 +2,7 @@
 
 JJMasterData supports legacy .NET Framework systems, including ASP.NET WebForms and MVC5.
 
-## Differences from .NET 6
+## Differences from .NET 8
 
 - JJMasterData.Web is not supported, we recommend starting a [incremental migration](https://devblogs.microsoft.com/dotnet/incremental-asp-net-to-asp-net-core-migration/)
 and use the DataDictionary Razor Class Library in a external website. 
