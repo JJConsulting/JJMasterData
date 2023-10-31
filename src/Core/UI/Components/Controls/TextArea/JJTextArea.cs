@@ -20,6 +20,13 @@ public class JJTextArea : ControlBase
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
+        var html = GetHtmlBuilder();
+
+        return await Task.FromResult(new RenderedComponentResult(html));
+    }
+
+    public HtmlBuilder GetHtmlBuilder()
+    {
         var html = new HtmlBuilder(HtmlTag.TextArea)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
@@ -35,8 +42,6 @@ public class JJTextArea : ControlBase
             .WithAttributeIf(!Enabled, "disabled", "disabled")
             .AppendText(Text);
 
-        var result = new RenderedComponentResult(html);
-        
-        return await Task.FromResult(result);
+        return html;
     }
 }

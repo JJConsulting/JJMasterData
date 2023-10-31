@@ -27,4 +27,6 @@ public class MasterDataWebOptions : MasterDataCoreOptions
     
     public bool SupportNetFramework { get; set; }
     public bool EnableBundleAndMinification { get; set; }
+
+    public List<string> CustomScriptsPaths { get;  } = new();
 }

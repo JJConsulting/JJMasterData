@@ -6,7 +6,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <OutputType>Library</OutputType>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-        <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Product>JJMasterData.Web - Saturn Version</Product>
         <Description>JJMasterData is a codeless CRUD Generator from database metadata. This package contains the Data Dictionary Razor Class Library with all necessary packages.</Description>
@@ -16,6 +15,10 @@
         <PackageId>JJMasterData.Web</PackageId>
         <LangVersion>11</LangVersion>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
     </PropertyGroup>
     
     <ItemGroup>
@@ -34,7 +37,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
-
+    
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
         <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="6.0.7" />
         <EmbeddedResource Include="Scripts\**\*.ts" />

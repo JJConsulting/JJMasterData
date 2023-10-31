@@ -72,3 +72,8 @@ else
             break;
     }
 }
+
+@foreach (var customScriptPath in Options.Value.CustomScriptsPaths)
+{
+    <script type="text/javascript" src="@customScriptPath" asp-append-version="true"></script>
+}
