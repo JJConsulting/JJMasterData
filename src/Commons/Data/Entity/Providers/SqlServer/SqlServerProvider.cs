@@ -103,7 +103,7 @@ public class SqlServerProvider : EntityProviderBase
         {
             Type = element.UseReadProcedure ? CommandType.StoredProcedure : CommandType.Text,
             Sql = sql,
-            Parameters = new List<DataAccessParameter>
+            Parameters = 
             {
                 new("@orderby", parameters.OrderBy.ToQueryParameter()),
                 new("@regporpag", parameters.RecordsPerPage),

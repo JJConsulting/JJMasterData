@@ -323,7 +323,6 @@ public class SQLiteProvider : EntityProviderBase
         {
             Type = CommandType.Text,
             Sql = sqlScript.ToString(),
-            Parameters = new List<DataAccessParameter>()
         };
 
         foreach (var filter in filters)
@@ -383,10 +382,11 @@ public class SQLiteProvider : EntityProviderBase
 
         sSql.Append(")");
 
-        DataAccessCommand cmd = new DataAccessCommand();
-        cmd.Type = CommandType.Text;
-        cmd.Sql = sSql.ToString();
-        cmd.Parameters = new List<DataAccessParameter>();
+        var cmd = new DataAccessCommand()
+        {
+            Type = CommandType.Text,
+            Sql = sSql.ToString()
+        };
 
         foreach (var f in fields)
         {
@@ -452,10 +452,11 @@ public class SQLiteProvider : EntityProviderBase
         }
 
 
-        DataAccessCommand cmd = new DataAccessCommand();
-        cmd.Type = CommandType.Text;
-        cmd.Sql = sSql.ToString();
-        cmd.Parameters = new List<DataAccessParameter>();
+        var cmd = new DataAccessCommand
+        {
+            Type = CommandType.Text,
+            Sql = sSql.ToString()
+        };
 
         foreach (var f in fields)
         {
@@ -505,10 +506,11 @@ public class SQLiteProvider : EntityProviderBase
             }
         }
 
-        var cmd = new DataAccessCommand();
-        cmd.Type = CommandType.Text;
-        cmd.Sql = sqlScript.ToString();
-        cmd.Parameters = new List<DataAccessParameter>();
+        var cmd = new DataAccessCommand
+        {
+            Type = CommandType.Text,
+            Sql = sqlScript.ToString()
+        };
 
         foreach (var f in fields)
         {
@@ -609,7 +611,6 @@ public class SQLiteProvider : EntityProviderBase
         DataAccessCommand cmd = new DataAccessCommand();
         cmd.Type = CommandType.Text;
         cmd.Sql = sqlScript.ToString();
-        cmd.Parameters = new List<DataAccessParameter>();
 
         foreach (var f in fields)
         {

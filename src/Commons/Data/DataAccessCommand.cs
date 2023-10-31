@@ -15,7 +15,7 @@ public class DataAccessCommand
     public CommandType CmdType
     {
         get => Type;
-        set => Type = value;
+        init => Type = value;
     }
     
     [JsonProperty("cmdType")]
@@ -25,7 +25,7 @@ public class DataAccessCommand
     public string Sql { get; set; }
 
     [JsonProperty("parameters")]
-    public List<DataAccessParameter> Parameters { get; set; }
+    public List<DataAccessParameter> Parameters { get; }
 
     [SetsRequiredMembers]
     public DataAccessCommand()

@@ -826,7 +826,6 @@ public class OracleProvider : EntityProviderBase
         var cmd = new DataAccessCommand();
         cmd.Type = CommandType.StoredProcedure;
         cmd.Sql = Options.GetWriteProcedureName(element);
-        cmd.Parameters = new List<DataAccessParameter>();
         cmd.Parameters.Add(new DataAccessParameter($"{VariablePrefix}action", action, DbType.String, 1));
 
         var fields = element.Fields
@@ -865,7 +864,7 @@ public class OracleProvider : EntityProviderBase
         {
             Type = CommandType.StoredProcedure,
             Sql = Options.GetReadProcedureName(element),
-            Parameters = new List<DataAccessParameter>
+            Parameters =
             {
                 new($"{VariablePrefix}orderby", orderBy.ToQueryParameter()),
                 new($"{VariablePrefix}regporpag", recordsPerPage),

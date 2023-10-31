@@ -18,7 +18,12 @@
         <label asp-for="FormElement.ReadProcedureName" class=" col-form-label form-label"></label>
         <div class="input-group mb-3">
             <div class="input-group-text">
-                <input asp-for="FormElement.UseReadProcedure" data-bs-placement="right" data-bs-toggle="tooltip" title="@StringLocalizer["Enable Read Procedure"]"  disabled="disabled" class="form-check-input mt-0" type="checkbox" aria-label="Enable Read Procedure">
+                <input asp-for="FormElement.UseReadProcedure" data-bs-placement="right" 
+                       data-bs-toggle="tooltip" 
+                       title="@StringLocalizer["Enable Read Procedure"]"  
+                       disabled="disabled" 
+                       class="form-check-input mt-0" 
+                       type="checkbox" aria-label="Enable Read Procedure">
             </div>
             @Html.TextBoxFor(model => model.FormElement.ReadProcedureName, Model.HtmlAttributes)
         </div>
@@ -27,7 +32,14 @@
         <label asp-for="FormElement.WriteProcedureName" class=" col-form-label form-label"></label>
         <div class="input-group mb-3">
             <div class="input-group-text">
-                <input asp-for="FormElement.UseWriteProcedure" data-bs-placement="right" data-bs-toggle="tooltip" title="@StringLocalizer["Enable Write Procedure"]" disabled="disabled" class="form-check-input mt-0" type="checkbox" aria-label="Enable Write Procedure">
+                <input asp-for="FormElement.UseWriteProcedure" 
+                       data-bs-placement="right" 
+                       data-bs-toggle="tooltip" 
+                       title="@StringLocalizer["Enable Write Procedure"]" 
+                       disabled="disabled" 
+                       class="form-check-input mt-0" 
+                       type="checkbox" 
+                       aria-label="Enable Write Procedure">
             </div>
             @Html.TextBoxFor(model => model.FormElement.WriteProcedureName, Model.HtmlAttributes)
         </div>
@@ -47,11 +59,14 @@
         const useReadProcedureCheckbox = document.getElementById('FormElement_UseReadProcedure');
         const useWriteProcedureCheckbox = document.getElementById('FormElement_UseWriteProcedure'); 
         
+        useReadProcedureCheckbox.disabled = false;
+        useWriteProcedureCheckbox.disabled = false;
+        
         const writeProcedureName = document.getElementById('FormElement_WriteProcedureName'); 
         const readProcedureName = document.getElementById('FormElement_ReadProcedureName'); 
         
         function toggleProcedure(checkbox, input) {
-            input.disabled = !checkbox.checked;
+            input.readOnly = !checkbox.checked;
         }
     
         toggleProcedure(useReadProcedureCheckbox, readProcedureName);
