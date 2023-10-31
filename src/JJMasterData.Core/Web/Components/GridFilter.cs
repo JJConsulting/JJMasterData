@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Globalization;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity;
 using JJMasterData.Commons.Extensions;
@@ -314,10 +315,13 @@ internal class GridFilter
                 string sfrom = CurrentContext.Request.Form(name + "_from");
                 if (values == null && sfrom != null)
                     values = new Hashtable();
-
+                
                 if (!string.IsNullOrEmpty(sfrom))
                 {
-                    values.Add(f.Name + "_from", sfrom);
+                    if(double.TryParse(sfrom, NumberStyles.Number, CultureInfo.InvariantCulture, out var numericFrom))
+                        values.Add(f.Name + "_from",numericFrom);
+                    else
+                        values.Add(f.Name + "_from", sfrom);
                 }
 
                 string sto = CurrentContext.Request.Form(name + "_to");
@@ -328,8 +332,11 @@ internal class GridFilter
                         if (DateTime.TryParse(sto, out var dto))
                             sto = dto.ToShortDateString() + " " + DateTime.MaxValue.ToLongTimeString();
                     }
-
-                    values.Add(f.Name + "_to", sto);
+                    
+                    if(double.TryParse(sto, NumberStyles.Number, CultureInfo.InvariantCulture, out var numericTo))
+                        values.Add(f.Name + "_to",numericTo);
+                    else
+                        values.Add(f.Name + "_to", sto);
                 }
 
             }
