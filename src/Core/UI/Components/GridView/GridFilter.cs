@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -29,9 +30,9 @@ internal class GridFilter
     private IStringLocalizer<MasterDataResources> StringLocalizer => GridView.StringLocalizer;
     public string Name => GridView.Name + "-filter";
 
-    public GridFilter(JJGridView grid)
+    public GridFilter(JJGridView gridView)
     {
-        GridView = grid;
+        GridView = gridView;
     }
     
     internal async Task<HtmlBuilder> GetFilterHtml()
@@ -57,13 +58,13 @@ internal class GridFilter
     /// Recupera o filtro atual da grid
     /// </summary>
     /// <returns></returns>
-    public async Task<IDictionary<string, object>> GetCurrentFilter()
+    public async Task<IDictionary<string, object>> GetCurrentFilterAsync()
     {
         if (_currentFilter is { Count: > 0 })
             return _currentFilter;
 
-        //Ação é capturada aqui, pois o usuário pode chamar o metodo as antes do GetHtml
-        string currentFilterAction = CurrentContext.Request.Form[$"grid-view-filter-action-{GridView.Name}"];
+        //Action is captured here, because the user can call GetCurrentFilterAsync before GetResultAsync()
+        var currentFilterAction = CurrentContext.Request.Form[$"grid-view-filter-action-{GridView.Name}"];
         switch (currentFilterAction)
         {
             case FilterActionName:
@@ -175,7 +176,7 @@ internal class GridFilter
         if (fields.Count == 0)
             return new HtmlBuilder(string.Empty);
         
-        var values = await GetCurrentFilter();
+        var values = await GetCurrentFilterAsync();
 
         var dataPanelControl = new DataPanelControl(GridView, values)
         {
@@ -301,7 +302,24 @@ internal class GridFilter
         return html;
     }
 
-    public async Task<IDictionary<string, object>> GetFilterFormValues()
+    private static object ParseFilterValue(FormElementField field,string value)
+    {
+        var fieldType = field.DataType;
+        var component = field.Component;
+        
+        if (double.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var numericValue))
+            return numericValue;
+    
+        if (fieldType is FieldType.DateTime or FieldType.DateTime2 && component == FormComponent.Date)
+        {
+            return DateTime.TryParse(value, out var dateTime) ?
+                $"{dateTime.ToShortDateString()} {DateTime.MaxValue.ToLongTimeString()}" : null;
+        }
+    
+        return value;
+    }
+    
+    private async Task<IDictionary<string, object>> GetFilterFormValues()
     {
         if (GridView.FormElement == null)
             throw new NullReferenceException(nameof(GridView.FormElement));
@@ -312,46 +330,36 @@ internal class GridFilter
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
-            values = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson);
+            values = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson)!;
         }
 
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);
-        foreach (var f in fieldsFilter)
+
+        foreach (var field in fieldsFilter)
         {
-            string name = $"{FilterFieldPrefix}{f.Name}";
+            var name = $"{FilterFieldPrefix}{field.Name}";
 
-            if (f.Filter.Type == FilterMode.Range)
+            if (field.Filter.Type == FilterMode.Range)
             {
-                string sfrom = CurrentContext.Request.Form[$"{name}_from"];
-                if (values == null && sfrom != null)
-                    values = new Dictionary<string, object>();
-
-                if (!string.IsNullOrEmpty(sfrom))
+                var fromStringValue = CurrentContext.Request.Form[$"{name}_from"];
+                if (!string.IsNullOrEmpty(fromStringValue))
                 {
-                    values.Add($"{f.Name}_from", sfrom);
+                    object fromValue = ParseFilterValue(field,fromStringValue);
+                    values.Add($"{field.Name}_from", fromValue);
                 }
 
-                string sto = CurrentContext.Request.Form[$"{name}_to"];
-                if (!string.IsNullOrEmpty(sto))
+                var toStringValue = CurrentContext.Request.Form[$"{name}_to"];
+                if (!string.IsNullOrEmpty(toStringValue))
                 {
-                    if (f.DataType is FieldType.DateTime or FieldType.DateTime2 && f.Component == FormComponent.Date)
-                    {
-                        if (DateTime.TryParse(sto, out var dto))
-                            sto = $"{dto.ToShortDateString()} {DateTime.MaxValue.ToLongTimeString()}";
-                    }
-
-                    values.Add($"{f.Name}_to", sto);
+                    object toValue = ParseFilterValue(field, toStringValue);
+                    values.Add($"{field.Name}_to", toValue);
                 }
-
             }
             else
             {
                 object value = CurrentContext.Request.Form[name];
 
-                if (values == null && CurrentContext.Request.Form[name] != null)
-                    values = new Dictionary<string, object>();
-
-                switch (f.Component)
+                switch (field.Component)
                 {
                     case FormComponent.Cnpj:
                     case FormComponent.Cpf:
@@ -364,23 +372,25 @@ internal class GridFilter
                             value = "0";
                         break;
                     case FormComponent.Search:
-                        var search = (JJSearchBox) GridView.ComponentFactory.Controls.Create(GridView.FormElement,f, new(values,GridView.UserValues, PageState.Filter),Name,value);
+                        var search = (JJSearchBox)GridView.ComponentFactory.Controls.Create(GridView.FormElement,field, new(values,GridView.UserValues, PageState.Filter),Name,value);
                         search.Name = name;
                         search.AutoReloadFormFields = true;
                         value = await search.GetSelectedValueAsync();
                         break;
                     case FormComponent.Lookup:
-                        var lookup = (JJLookup) GridView.ComponentFactory.Controls.Create(GridView.FormElement,f, new(values,GridView.UserValues, PageState.Filter),Name, value);
+                        var lookup = (JJLookup)GridView.ComponentFactory.Controls.Create(GridView.FormElement,field, new(values,GridView.UserValues, PageState.Filter),Name, value);
                         lookup.Name = name;
                         lookup.AutoReloadFormFields = true;
-                        value = lookup.SelectedValue;
+                        value = lookup.SelectedValue?.ToString();
+                        break;
+                    default:
+                        value = ParseFilterValue(field, value?.ToString());
                         break;
                 }
 
                 if (!string.IsNullOrEmpty(value?.ToString()))
                 {
-                    values ??= new Dictionary<string, object>();
-                    values[f.Name] = value;
+                    values[field.Name] = value;
                 }
             }
         }
@@ -436,7 +446,7 @@ internal class GridFilter
         if (GridView.FormElement == null)
             throw new NullReferenceException(nameof(GridView.FormElement));
 
-        foreach (var item in await GetCurrentFilter())
+        foreach (var item in await GetCurrentFilterAsync())
         {
             if (string.IsNullOrEmpty(item.Value.ToString()))
                 continue;

@@ -37,7 +37,7 @@ public class Element
     public bool UseReadProcedure { get; set; }
     
     [JsonProperty("customprocnameget")]
-    [Display(Name = "Read Procedure Name")]
+    [Display(Name = "Read Procedure")]
     public string ReadProcedureName { get; set; }
     
     [JsonProperty("useWriteProcedure")] 
@@ -45,7 +45,7 @@ public class Element
     public bool UseWriteProcedure { get; set; }
     
     [JsonProperty("customprocnameset")]
-    [Display(Name = "Write Procedure Name")]
+    [Display(Name = "Write Procedure")]
     public string WriteProcedureName { get; set; }
     
     [JsonProperty("sync")]

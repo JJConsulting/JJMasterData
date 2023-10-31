@@ -645,7 +645,7 @@ public class JJGridView : AsyncComponent
 
     public async Task<IDictionary<string, object?>> GetCurrentFilterAsync()
     {
-        return await Filter.GetCurrentFilter();
+        return await Filter.GetCurrentFilterAsync();
     }
 
 
