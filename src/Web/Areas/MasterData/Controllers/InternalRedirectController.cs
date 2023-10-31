@@ -64,15 +64,14 @@ public class InternalRedirectController : MasterDataController
                 if (userId != null)
                     panel.SetUserValues("USERID", userId);
 
+                await panel.LoadValuesFromPkAsync(RelationValues);
+                
                 var result = await panel.GetResultAsync();
 
                 if (result.IsActionResult())
                     return result.ToActionResult();
-
-
-                await panel.LoadValuesFromPkAsync(RelationValues);
-
                 model = new(panel.FormElement.Title ?? panel.Name,result.Content!, false);
+                
                 break;
             }
             case RelationshipViewType.Update:
@@ -80,14 +79,17 @@ public class InternalRedirectController : MasterDataController
                 var panel = await ComponentFactory.DataPanel.CreateAsync(_elementName);
                 panel.PageState = PageState.Update;
 
+                await panel.LoadValuesFromPkAsync(RelationValues);
+                
                 var result = await panel.GetResultAsync();
 
                 if (userId != null)
                     panel.SetUserValues("USERID", userId);
-
-                await panel.LoadValuesFromPkAsync(RelationValues);
-
-                model = new(panel.FormElement.Title ?? panel.Name,result.Content!, true);
+                
+                if (result is not RenderedComponentResult)
+                    return result.ToActionResult();
+                
+                model = new(panel.FormElement.Title ?? panel.Name,result.Content, true);
                 break;
             }
             default:

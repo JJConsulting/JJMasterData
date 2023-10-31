@@ -46,12 +46,12 @@ public class ActionScripts
         @params.Append("&viewtype=");
         @params.Append((int)elementRedirect.ViewType);
 
-        foreach (var r in elementRedirect.RelationFields)
+        foreach (var field in elementRedirect.RelationFields)
         {
-            if (formValues.TryGetValue(r.InternalField, out var value))
+            if (formValues.TryGetValue(field.InternalField, out var value))
             {
                 @params.Append("&");
-                @params.Append(r.RedirectField);
+                @params.Append(field.RedirectField);
                 @params.Append("=");
                 @params.Append(value);
             }

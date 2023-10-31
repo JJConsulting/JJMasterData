@@ -11,18 +11,11 @@ public class FormActionRedirect
     public string ElementNameRedirect { get; set; }
 
     [JsonProperty("entityReferences")]
-    public List<FormActionRelationField> RelationFields { get; set; }
+    public List<FormActionRelationField> RelationFields { get; } = new();
 
     [JsonProperty("viewType")]
     public RelationshipViewType ViewType { get; set; }
 
     [JsonProperty("popupSize")]
     public ModalSize ModalSize { get; set; }
-    
-    public FormActionRedirect()
-    {
-        RelationFields = new List<FormActionRelationField>();
-    }
-
-        
 }

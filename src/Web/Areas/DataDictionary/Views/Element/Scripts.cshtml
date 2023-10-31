@@ -83,6 +83,10 @@
                 {
                     <span>&nbsp; @StringLocalizer["Create Table And Write Procedure"]</span>
                 }
+                else if (Model is { Scripts: { UseWriteProcedure: false, UseReadProcedure: false } })
+                {
+                    <span>&nbsp; @StringLocalizer["Create Table"]</span>
+                }
                 else
                 {
                     <span>&nbsp; @StringLocalizer["Create Table And All Stored Procedures"]</span>
