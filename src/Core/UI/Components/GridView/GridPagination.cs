@@ -3,6 +3,7 @@
 using System;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
@@ -30,6 +31,22 @@ internal class GridPagination
         _startButtonIndex = (int)Math.Floor((GridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
         _endButtonIndex = _startButtonIndex + _totalButtons;
 
+        
+//         <div class="col-sm-9">
+//              <div class="row">
+//  			<div class="col-sm-10">
+//  			<ul class="pagination">
+//               </ul>
+// </div>
+//   <div class="col-sm-2">
+// <div class="input-group mb-3">
+//   <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+//   <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
+// </div>
+// </div>
+// 		</div>
+//             </div>
+        
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClassIf(BootstrapHelper.Version > 3, "container-fluid p-0")
             .Append(HtmlTag.Div, div =>
@@ -38,15 +55,43 @@ internal class GridPagination
                 div.Append(HtmlTag.Div, div =>
                 {
                     div.WithCssClass("col-sm-9");
-                    div.Append(GetPaginationHtmlElement());
+                    div.Append(HtmlTag.Div, div =>
+                    {
+                        div.WithCssClass("row");
+                        div.Append(HtmlTag.Div, div =>
+                        {
+                            div.WithCssClass("col-sm-10");
+                            div.Append(GetPaginationHtmlBuilder());
+                        });
+                        // div.Append(HtmlTag.Div, div =>
+                        //{
+                       //     div.WithCssClass("col-sm-2");
+                        //    div.Append(GetJumpToPageHtmlBuilder());
+                       // });
+                    });
                 });
-                div.Append(GetTotalRecordsHtmlElement());
+                div.Append(GetTotalRecordsHtmlBuilder());
             });
 
         return html;
     }
 
-    private HtmlBuilder GetPaginationHtmlElement()
+    private HtmlBuilder GetJumpToPageHtmlBuilder()
+    {
+        var textGroup = GridView.ComponentFactory.Controls.TextGroup.Create();
+        textGroup.Name = GridView.Name + "-jump-to-page-input";
+        textGroup.InputType = InputType.Number;
+        textGroup.Actions.Add(new JJLinkButton(GridView.StringLocalizer)
+        {
+            ShowAsButton = true,
+            Icon = IconType.SolidArrowRightArrowLeft,
+            OnClientClick = GridView.Scripts.GetJumpToPageScript()
+        });
+
+        return textGroup.GetHtmlBuilder();
+    }
+
+    private HtmlBuilder GetPaginationHtmlBuilder()
     {
         var ul = new HtmlBuilder(HtmlTag.Ul);
         ul.WithCssClass("pagination");
@@ -68,7 +113,7 @@ internal class GridPagination
         if (_endButtonIndex <= _totalPages)
         {
             ul.Append(GetPageButton(_endButtonIndex, IconType.AngleRight,
-                $"{_totalPages} {StringLocalizer["pages"]}"));
+                StringLocalizer["Next page"]));
             ul.Append(GetPageButton(_totalPages, IconType.AngleDoubleRight, StringLocalizer["Last page"]));
         }
 
@@ -99,7 +144,7 @@ internal class GridPagination
         return li;
     }
     
-    private HtmlBuilder GetTotalRecordsHtmlElement()
+    private HtmlBuilder GetTotalRecordsHtmlBuilder()
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass($"col-sm-3 {BootstrapHelper.TextRight}");
@@ -134,14 +179,19 @@ internal class GridPagination
                 label.Append(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText($"{GridView.TotalOfRecords:N0}");
+                    span.AppendText(StringLocalizer["{0} records",GridView.TotalOfRecords]);
                 });
             }
+
+            label.Append(HtmlTag.Br);
+
+            if(_endButtonIndex <= _totalPages)
+                label.AppendText(StringLocalizer["{0} pages",_totalPages]);
         });
 
         div.AppendIf(GridView.EnableMultiSelect, HtmlTag.Br);
         div.AppendIf(GridView.EnableMultiSelect, GetEnableMultSelectTotalRecords);
-        
+
         return div;
     }
 

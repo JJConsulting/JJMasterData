@@ -108,15 +108,24 @@ class GridViewHelper {
             currentGridAction.value = "";
     }
     
-    static paginate(componentName, routeContext, currentPage) {
+    static paginate(componentName, routeContext, currentPage: number) {
         this.setCurrentGridPage(componentName,currentPage);
         this.clearCurrentGridAction(componentName)
         this.clearCurrentFormAction(componentName)
 
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
+    
+    static jumpToPage(componentName, routeContext) {
+        const jumpToPageInput = document.querySelector<HTMLInputElement>("#" + componentName + "-jump-to-page-input");
 
-
+        const numericPage = Number(jumpToPageInput.value)
+        
+        if(!isNaN(numericPage)){
+            this.paginate(componentName,routeContext, numericPage)
+        }
+    }
+    
     static refresh(componentName: string, routeContext: string) {
         this.setCurrentGridPage(componentName,String());
         this.clearCurrentGridAction(componentName)

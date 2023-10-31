@@ -34,6 +34,12 @@ public class GridScripts
         return $"GridViewHelper.paginate('{_gridView.Name}', '{encryptedRouteContext}', {page})";
     }
 
+    public string GetJumpToPageScript()
+    {
+        var encryptedRouteContext = GetEncryptedRouteContext();
+        return $"GridViewHelper.jumpToPage('{_gridView.Name}','{encryptedRouteContext}')";
+    }
+    
     private string GetEncryptedRouteContext(ComponentContext componentContext = ComponentContext.GridViewReload)
     {
         var routeContext = RouteContext.FromFormElement(_gridView.FormElement, componentContext);

@@ -8,16 +8,10 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJTextGroup : JJTextBox
 {
-    private List<JJLinkButton> _actions;
-
     /// <summary>
     /// Actions of input
     /// </summary>
-    public List<JJLinkButton> Actions
-    {
-        get => _actions ??= new List<JJLinkButton>();
-        set => _actions = value;
-    }
+    public List<JJLinkButton> Actions { get; } = new();
 
     /// <summary>
     /// Text info on left of component
@@ -30,8 +24,15 @@ public class JJTextGroup : JJTextBox
     public JJTextGroup(IFormValues formValues) :  base(formValues)
     {
     }
-
+    
     protected override async Task<ComponentResult> BuildResultAsync()
+    {
+        var inputGroup = GetHtmlBuilder();
+
+        return await Task.FromResult(new RenderedComponentResult(inputGroup));
+    }
+
+    public override HtmlBuilder GetHtmlBuilder()
     {
         var defaultAction = Actions.Find(x => x.IsDefaultOption && x.Visible);
         if (!Enabled)
@@ -43,14 +44,14 @@ public class JJTextGroup : JJTextBox
             }
         }
 
-        var baseResult = (RenderedComponentResult)await base.BuildResultAsync();
-        var input =  baseResult.HtmlBuilder;
-        bool hasAction = Actions.ToList().Exists(x => x.Visible);
-        bool hasAddons = Addons != null;
+        var input = base.GetHtmlBuilder();
+        var hasAction = Actions.ToList().Exists(x => x.Visible);
+        var hasAddons = Addons != null;
 
         if (!hasAction && !hasAddons)
-            return new RenderedComponentResult(input);
-
+        {
+            return input;
+        }
 
         if (defaultAction is { Enabled: true })
         {
@@ -69,8 +70,8 @@ public class JJTextGroup : JJTextBox
 
         if (hasAction)
             AddActionsAt(inputGroup);
-
-        return new RenderedComponentResult(inputGroup);
+        
+        return inputGroup;
     }
 
     private void AddActionsAt(HtmlBuilder inputGroup)

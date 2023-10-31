@@ -59,7 +59,7 @@ internal class TextGroupFactory : IControlFactory<JJTextGroup>
         textGroup.Text = value?.ToString() ?? string.Empty;
 
         if (formStateData.PageState is PageState.Filter)
-            textGroup.Actions = textGroup.Actions.Where(a => a.ShowInFilter).ToList();
+            textGroup.Actions.AddRange(textGroup.Actions.Where(a => a.ShowInFilter));
         else
             AddUserActions(formElement, field, context, textGroup);
         

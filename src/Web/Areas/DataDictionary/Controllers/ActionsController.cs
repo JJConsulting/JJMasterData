@@ -382,7 +382,7 @@ public class ActionsController : DataDictionaryController
         return await EditActionResult(elementName, pluginFieldAction, context, isActionSave, originalName, fieldName);
     }
 
-    private void SetPluginConfigurationMap(IDictionary<string, object> configurationMap,
+    private void SetPluginConfigurationMap(IDictionary<string, object?> configurationMap,
         Guid pluginId)
     {
         var pluginHandler = _pluginHandlers.First(p => p.Id == pluginId);

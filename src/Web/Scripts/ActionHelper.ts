@@ -122,14 +122,18 @@ class ActionHelper {
 
             const modal = new Modal();
             modal.modalId = componentName + "-modal";
-
+            
+            SpinnerOverlay.show();
+            
             modal.showUrl({
                 url: urlBuilder.build(), requestOptions: {
                     method: "POST",
                     body: new FormData(document.querySelector("form"))
                 }
             }, modalTitle).then(function (data) {
-                
+
+                SpinnerOverlay.hide();
+
                 listenAllEvents("#" + modal.modalId + " ")    
                 
                 if (typeof data === "object") {

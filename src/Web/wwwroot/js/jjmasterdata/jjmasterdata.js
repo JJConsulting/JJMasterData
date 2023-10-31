@@ -97,12 +97,14 @@ class ActionHelper {
             urlBuilder.addQueryParameter("routeContext", modalRouteContext);
             const modal = new Modal();
             modal.modalId = componentName + "-modal";
+            SpinnerOverlay.show();
             modal.showUrl({
                 url: urlBuilder.build(), requestOptions: {
                     method: "POST",
                     body: new FormData(document.querySelector("form"))
                 }
             }, modalTitle).then(function (data) {
+                SpinnerOverlay.hide();
                 listenAllEvents("#" + modal.modalId + " ");
                 if (typeof data === "object") {
                     if (data.closeModal) {
@@ -1120,6 +1122,13 @@ class GridViewHelper {
         this.clearCurrentGridAction(componentName);
         this.clearCurrentFormAction(componentName);
         GridViewHelper.refreshGrid(componentName, routeContext);
+    }
+    static jumpToPage(componentName, routeContext) {
+        const jumpToPageInput = document.querySelector("#" + componentName + "-jump-to-page-input");
+        const numericPage = Number(jumpToPageInput.value);
+        if (!isNaN(numericPage)) {
+            this.paginate(componentName, routeContext, numericPage);
+        }
     }
     static refresh(componentName, routeContext) {
         this.setCurrentGridPage(componentName, String());

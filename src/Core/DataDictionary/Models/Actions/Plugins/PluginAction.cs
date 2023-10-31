@@ -9,7 +9,7 @@ public class PluginAction : UserCreatedAction
 {
     public required Guid PluginId { get; init; }
     
-    public IDictionary<string, object> ConfigurationMap { get; } = new Dictionary<string,object>();
+    public IDictionary<string, object?> ConfigurationMap { get; } = new Dictionary<string,object?>();
     
     public PluginAction()
     {

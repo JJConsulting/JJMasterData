@@ -44,7 +44,15 @@ public class JJTextBox : ControlBase
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        
+        var html = GetHtmlBuilder();
+
+        var result = new RenderedComponentResult(html);
+
+        return await Task.FromResult(result);
+    }
+
+    public virtual HtmlBuilder GetHtmlBuilder()
+    {
         string inputType = InputType.ToString().ToLower();
         if (NumberOfDecimalPlaces > 0)
         {
@@ -69,9 +77,6 @@ public class JJTextBox : ControlBase
             .WithAttributeIfNotEmpty("value", Text)
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
             .WithAttributeIf(!Enabled, "disabled", "disabled");
-
-        var result = new RenderedComponentResult(html);
-
-        return await Task.FromResult(result);
+        return html;
     }
 }

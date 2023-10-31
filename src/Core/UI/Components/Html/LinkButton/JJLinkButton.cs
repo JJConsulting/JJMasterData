@@ -1,4 +1,6 @@
 ﻿using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
@@ -49,6 +51,11 @@ public class JJLinkButton : HtmlComponent
     public bool DividerLine { get; set; }
     
     public bool Enabled { get; set; } = true;
+
+    public IconType Icon
+    {
+        set => IconClass = value.GetCssClass();
+    }
 
     /// <remarks>
     /// FontAwesome 2022 icon class.
@@ -104,7 +111,6 @@ public class JJLinkButton : HtmlComponent
         html.WithAttributes(Attributes);
         html.WithToolTip(_stringLocalizer[Tooltip]);
         html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick);
-        html.WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton);
         html.WithCssClassIf(!Enabled, "disabled");
 
         if (icon != null)
@@ -137,7 +143,7 @@ public class JJLinkButton : HtmlComponent
             cssClass = cssClass.Replace("float-end", "pull-right");
         }
 
-        if (Type != LinkButtonType.Link | ShowAsButton)
+        if (Type != LinkButtonType.Link || ShowAsButton)
         {
             if (!cssClass.Contains("btn ") &&
                 !cssClass.Contains(" btn") &&

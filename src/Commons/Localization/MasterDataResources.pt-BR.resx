@@ -3459,4 +3459,10 @@
   <data name="Enable Synchronism" xml:space="preserve">
     <value>Habilitar Sincronismo</value>
   </data>
+  <data name="{0} records" xml:space="preserve">
+    <value>{0} registros</value>
+  </data>
+  <data name="{0} pages" xml:space="preserve">
+    <value>{0} páginas</value>
+  </data>
 </root>
