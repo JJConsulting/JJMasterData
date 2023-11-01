@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -35,21 +36,15 @@ internal class GridPagination
             .Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass("row justify-content-between");
-                div.Append(HtmlTag.Div, div =>
+                div.AppendDiv(div =>
                 {
                     div.WithCssClass("col-sm-9");
-                    div.Append(HtmlTag.Div, div =>
+                    div.AppendDiv(div =>
                     {
                         div.WithCssClass("d-flex");
                         div.AppendDiv(div =>
                         {
                             div.Append(GetPaginationHtmlBuilder());
-                        });
-                        var showJumpToPage = _endButtonIndex <= _totalPages || _startButtonIndex > _totalButtons;
-                        div.AppendIf(showJumpToPage,HtmlTag.Div,div =>
-                        {
-                            div.WithCssClass(BootstrapHelper.MarginLeft + "-1");
-                            div.Append(GetJumpToPageHtmlBuilder());
                         });
                     });
                 });
@@ -57,25 +52,6 @@ internal class GridPagination
             });
 
         return html;
-    }
-
-    private HtmlBuilder GetJumpToPageHtmlBuilder()
-    {
-        var textGroup = GridView.ComponentFactory.Controls.TextGroup.Create();
-        textGroup.Name = GridView.Name + "-jump-to-page-input";
-        textGroup.MinValue = 1;
-        textGroup.MaxValue = _totalPages;
-        textGroup.InputType = InputType.Number;
-        textGroup.GroupCssClass += " pagination-input";
-        textGroup.Actions.Add(new JJLinkButton(GridView.StringLocalizer)
-        {
-            ShowAsButton = true,
-            Icon = IconType.Search,
-            Tooltip = StringLocalizer["Jump to page..."],
-            OnClientClick = GridView.Scripts.GetJumpToPageScript()
-        });
-
-        return textGroup.GetHtmlBuilder();
     }
 
     private HtmlBuilder GetPaginationHtmlBuilder()
@@ -104,9 +80,53 @@ internal class GridPagination
             ul.Append(GetPageButton(_totalPages, IconType.AngleDoubleRight, StringLocalizer["Last page"]));
         }
 
+        var showJumpToPage = _endButtonIndex <= _totalPages || _startButtonIndex > _totalButtons;
+        
+        if (showJumpToPage)
+        {
+            ul.AppendRange(GetJumpToPageButtons());
+        }
+        
         return ul;
     }
 
+    private IEnumerable<HtmlBuilder> GetJumpToPageButtons()
+    {
+        var jumpToPageName = GridView.Name + "-jump-to-page-input";
+        var textBox = GridView.ComponentFactory.Controls.TextGroup.Create();
+        
+        textBox.Name = jumpToPageName;
+        textBox.MinValue = 1;
+        textBox.MaxValue = _totalPages;
+        textBox.InputType = InputType.Number;
+        
+        textBox.Attributes["style"] = "display:none";
+        
+        textBox.Attributes["onchange"] = GridView.Scripts.GetJumpToPageScript();
+        textBox.PlaceHolder = StringLocalizer["Jump to page..."];
+        textBox.CssClass += " pagination-jump-to-page-input";
+
+
+        yield return new HtmlBuilder(HtmlTag.Li)
+            .WithCssClass("page-item")
+            .Append(textBox.GetHtmlBuilder())
+            .AppendDiv(div =>
+            {
+                div.WithCssClass("invalid-feedback");
+                div.AppendText(StringLocalizer["Page must be between 1 and {0}.", _totalPages]);
+            });
+
+        yield return new HtmlBuilder(HtmlTag.Li)
+            .WithCssClass("page-item")
+            .Append(new JJLinkButton(GridView.StringLocalizer)
+            {
+                ShowAsButton = true,
+                Icon = IconType.SolidMagnifyingGlassArrowRight,
+                CssClass = "pagination-jump-to-page-button",
+                OnClientClick = $"GridViewHelper.showJumpToPage('{jumpToPageName}')"
+            }.GetHtmlBuilder());
+    }
+    
     private HtmlBuilder GetPageButton(int page, IconType? icon = null, string? tooltip = null)
     {
         var li = new HtmlBuilder(HtmlTag.Li)

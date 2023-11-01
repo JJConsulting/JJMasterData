@@ -738,6 +738,11 @@ input.form-control:read-only {
     overflow-x: scroll;
 }
 
-.pagination-input{
-    width: 45%;
+.pagination-jump-to-page-input{
+    border-radius: 0;
+}
+
+.pagination-jump-to-page-button{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }

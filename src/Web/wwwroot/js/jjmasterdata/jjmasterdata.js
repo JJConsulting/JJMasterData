@@ -1126,9 +1126,16 @@ class GridViewHelper {
     static jumpToPage(componentName, routeContext) {
         const jumpToPageInput = document.querySelector("#" + componentName + "-jump-to-page-input");
         const numericPage = Number(jumpToPageInput.value);
-        if (!isNaN(numericPage)) {
-            this.paginate(componentName, routeContext, numericPage);
+        if (isNaN(numericPage) || numericPage <= 0 || numericPage > Number(jumpToPageInput.max)) {
+            jumpToPageInput.classList.add("is-invalid");
+            return;
         }
+        this.paginate(componentName, routeContext, numericPage);
+    }
+    static showJumpToPage(jumpToPageName) {
+        const jumpToPageInput = $("#" + jumpToPageName);
+        jumpToPageInput.val(null);
+        jumpToPageInput.animate({ width: 'toggle' });
     }
     static refresh(componentName, routeContext) {
         this.setCurrentGridPage(componentName, String());

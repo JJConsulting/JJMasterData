@@ -22,7 +22,7 @@ public static class WritableOptionsExtensions
 
             if (configuration is IConfigurationBuilder builder)
             {
-                var source = (JsonConfigurationSource)builder.Sources.LastOrDefault(s=>s is JsonConfigurationSource);
+                var source = (JsonConfigurationSource)builder.Sources.FirstOrDefault(s=>s is JsonConfigurationSource);
 
                 if (source?.FileProvider is PhysicalFileProvider physicalFileProvider)
                 {

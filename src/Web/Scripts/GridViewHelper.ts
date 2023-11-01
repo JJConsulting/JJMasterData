@@ -121,9 +121,20 @@ class GridViewHelper {
 
         const numericPage = Number(jumpToPageInput.value)
         
-        if(!isNaN(numericPage)){
-            this.paginate(componentName,routeContext, numericPage)
+        if(isNaN(numericPage) || numericPage <= 0 || numericPage > Number(jumpToPageInput.max)){
+            jumpToPageInput.classList.add("is-invalid")
+            return;
         }
+        
+        this.paginate(componentName,routeContext, numericPage)
+    }
+    
+    static showJumpToPage(jumpToPageName: string){
+        const jumpToPageInput = $("#" + jumpToPageName);
+        
+        jumpToPageInput.val(null);
+        
+        jumpToPageInput.animate({width: 'toggle'});
     }
     
     static refresh(componentName: string, routeContext: string) {
