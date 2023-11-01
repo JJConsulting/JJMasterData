@@ -53,7 +53,7 @@ public class FormElementInfo
             Info = (string)dictionary[DataDictionaryStructure.Info]!,
             Modified = (DateTime)dictionary[DataDictionaryStructure.LastModified]!,
             Name = (string)dictionary[DataDictionaryStructure.Name]!,
-            EnableApi = dictionary[DataDictionaryStructure.EnableApi] as bool? ?? false,
+            EnableApi = dictionary[DataDictionaryStructure.EnableSynchronism] as bool? ?? false,
             TableName = (string)dictionary[DataDictionaryStructure.TableName]!
         };
     }
@@ -66,7 +66,7 @@ public class FormElementInfo
             { DataDictionaryStructure.Type, "F"},
             { DataDictionaryStructure.LastModified, Modified },
             { DataDictionaryStructure.Name, Name },
-            { DataDictionaryStructure.EnableApi, EnableApi },
+            { DataDictionaryStructure.EnableSynchronism, EnableApi },
             { DataDictionaryStructure.TableName,TableName }
         };
     }

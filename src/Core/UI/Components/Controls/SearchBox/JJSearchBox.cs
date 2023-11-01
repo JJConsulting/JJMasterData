@@ -366,12 +366,11 @@ public class JJSearchBox : ControlBase
 
     private async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
-        string componentName = Request.QueryString["fieldName"];
-        string textSearch = Request.Form[componentName];
+        var searchText = Request.Form[Name + "_text"];
 
-        var values = await GetValuesAsync(textSearch);
+        var values = await GetValuesAsync(searchText);
         var items = DataItemService.GetItems(DataItem, values);
 
-        return items.ToList<DataItemResult>();
+        return items.ToList();
     }
 }

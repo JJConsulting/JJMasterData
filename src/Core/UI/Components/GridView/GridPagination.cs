@@ -30,23 +30,6 @@ internal class GridPagination
         _totalButtons = GridView.CurrentSettings.TotalPaginationButtons;
         _startButtonIndex = (int)Math.Floor((GridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
         _endButtonIndex = _startButtonIndex + _totalButtons;
-
-        
-//         <div class="col-sm-9">
-//              <div class="row">
-//  			<div class="col-sm-10">
-//  			<ul class="pagination">
-//               </ul>
-// </div>
-//   <div class="col-sm-2">
-// <div class="input-group mb-3">
-//   <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
-//   <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
-// </div>
-// </div>
-// 		</div>
-//             </div>
-        
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClassIf(BootstrapHelper.Version > 3, "container-fluid p-0")
             .Append(HtmlTag.Div, div =>
@@ -57,17 +40,17 @@ internal class GridPagination
                     div.WithCssClass("col-sm-9");
                     div.Append(HtmlTag.Div, div =>
                     {
-                        div.WithCssClass("row");
-                        div.Append(HtmlTag.Div, div =>
+                        div.WithCssClass("d-flex");
+                        div.AppendDiv(div =>
                         {
-                            div.WithCssClass("col-sm-10");
                             div.Append(GetPaginationHtmlBuilder());
                         });
-                        // div.Append(HtmlTag.Div, div =>
-                        //{
-                       //     div.WithCssClass("col-sm-2");
-                        //    div.Append(GetJumpToPageHtmlBuilder());
-                       // });
+                        var showJumpToPage = _endButtonIndex <= _totalPages || _startButtonIndex > _totalButtons;
+                        div.AppendIf(showJumpToPage,HtmlTag.Div,div =>
+                        {
+                            div.WithCssClass(BootstrapHelper.MarginLeft + "-1");
+                            div.Append(GetJumpToPageHtmlBuilder());
+                        });
                     });
                 });
                 div.Append(GetTotalRecordsHtmlBuilder());
@@ -80,11 +63,15 @@ internal class GridPagination
     {
         var textGroup = GridView.ComponentFactory.Controls.TextGroup.Create();
         textGroup.Name = GridView.Name + "-jump-to-page-input";
+        textGroup.MinValue = 1;
+        textGroup.MaxValue = _totalPages;
         textGroup.InputType = InputType.Number;
+        textGroup.GroupCssClass += " pagination-input";
         textGroup.Actions.Add(new JJLinkButton(GridView.StringLocalizer)
         {
             ShowAsButton = true,
-            Icon = IconType.SolidArrowRightArrowLeft,
+            Icon = IconType.Search,
+            Tooltip = StringLocalizer["Jump to page..."],
             OnClientClick = GridView.Scripts.GetJumpToPageScript()
         });
 
@@ -143,7 +130,7 @@ internal class GridPagination
 
         return li;
     }
-    
+
     private HtmlBuilder GetTotalRecordsHtmlBuilder()
     {
         var div = new HtmlBuilder(HtmlTag.Div);
@@ -173,13 +160,13 @@ internal class GridPagination
                     GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage > GridView.TotalOfRecords
                         ? GridView.TotalOfRecords
                         : GridView.CurrentSettings.RecordsPerPage * GridView.CurrentPage;
-                
+
                 label.AppendText($"{firstPageNumber}-{lastPageNumber} {StringLocalizer["From"]}");
-                
+
                 label.Append(HtmlTag.Span, span =>
                 {
                     span.WithAttribute("id", $"{GridView.Name}_totrows");
-                    span.AppendText(StringLocalizer["{0} records",GridView.TotalOfRecords]);
+                    span.AppendText(StringLocalizer["{0} records", GridView.TotalOfRecords]);
                 });
             }
 

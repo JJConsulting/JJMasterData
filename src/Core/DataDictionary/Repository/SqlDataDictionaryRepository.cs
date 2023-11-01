@@ -30,7 +30,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         var filters = new Dictionary<string, object?>();
         if (apiSync.HasValue)
-            filters.Add(DataDictionaryStructure.EnableApi, apiSync);
+            filters.Add(DataDictionaryStructure.EnableSynchronism, apiSync);
 
         filters[DataDictionaryStructure.Type] = "F";
 
@@ -109,7 +109,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
             { DataDictionaryStructure.Type, "F" },
             { DataDictionaryStructure.Owner, null },
             { DataDictionaryStructure.Json, jsonForm },
-            { DataDictionaryStructure.EnableApi, formElement.EnableSynchronism },
+            { DataDictionaryStructure.EnableSynchronism, formElement.EnableSynchronism },
             { DataDictionaryStructure.LastModified, dNow }
         };
 

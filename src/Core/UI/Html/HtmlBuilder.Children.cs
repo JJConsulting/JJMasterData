@@ -61,6 +61,28 @@ public partial class HtmlBuilder
         return this;
     }
     
+    /// <summary>
+    /// Insert a HTML div as a child of caller builder.
+    /// </summary>
+    public HtmlBuilder AppendDiv(Action<HtmlBuilder>? builderAction = null)
+    {
+        var div = new HtmlBuilder(HtmlTag.Div);
+        builderAction?.Invoke(div);
+        Append(div);
+        return this;
+    }
+    
+    public HtmlBuilder AppendLink(string text, string link)
+    {
+        var child = new HtmlBuilder(HtmlTag.A)
+            .AppendText(text)
+            .WithAttribute("href", link);
+
+        Append(child);
+        
+        return this;
+    }
+    
     public async Task<HtmlBuilder> AppendAsync(HtmlTag tag, Func<HtmlBuilder,Task> builderAction)
     {
         var child = new HtmlBuilder(tag);

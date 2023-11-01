@@ -735,5 +735,9 @@ input.form-control:read-only {
 }
 
 .pagination{
-    overflow-x: scroll
+    overflow-x: scroll;
+}
+
+.pagination-input{
+    width: 45%;
 }

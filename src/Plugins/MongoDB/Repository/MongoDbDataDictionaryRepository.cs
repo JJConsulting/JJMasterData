@@ -160,7 +160,7 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
             DataDictionaryStructure.TableName => new MongoDBOrderByMapper("FormElement.Table.TableName", type),
             DataDictionaryStructure.LastModified => new MongoDBOrderByMapper("Modified", type),
             DataDictionaryStructure.Info  => new MongoDBOrderByMapper("FormElement.Table.Info", type),
-            DataDictionaryStructure.EnableApi   => new MongoDBOrderByMapper("FormElement.Table.Sync", type),
+            DataDictionaryStructure.EnableSynchronism   => new MongoDBOrderByMapper("FormElement.Table.Sync", type),
             _ => throw new ArgumentException(orderBy)
         };
     }

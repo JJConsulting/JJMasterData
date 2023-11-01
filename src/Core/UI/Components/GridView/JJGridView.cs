@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -610,7 +611,7 @@ public class JJGridView : AsyncComponent
             var field = FormElement.Fields[fieldName];
             var formStateData = new FormStateData(await GetCurrentFilterAsync(), UserValues, PageState.Filter);
             var jjSearchBox = ComponentFactory.Controls.Create(FormElement,field, formStateData, Name) as JJSearchBox;
-            jjSearchBox!.Name = fieldName;
+            jjSearchBox!.Name = GridFilter.FilterFieldPrefix + jjSearchBox.Name;
             return await jjSearchBox.GetItemsResult();
         }
         
@@ -620,6 +621,7 @@ public class JJGridView : AsyncComponent
     internal async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
+        
         await html.AppendAsync(HtmlTag.Div, async div =>
         {
             div.WithAttribute("id", $"grid-view-{Name}");
@@ -632,11 +634,10 @@ public class JJGridView : AsyncComponent
             }
 
             if (ShowToolbar)
-            {
                 div.Append(await GetToolbarHtmlBuilder());
-            }
 
             div.Append(await GetTableHtmlBuilder());
+            
         });
 
 
@@ -675,30 +676,39 @@ public class JJGridView : AsyncComponent
 
         await SetDataSource();
 
+        var totalPages = (int)Math.Ceiling(TotalOfRecords / (double)CurrentSettings.RecordsPerPage);
+        
         html.WithAttribute("id", $"grid-view-table-{Name}");
 
         if (SortAction.IsVisible)
-        {
             html.Append(await GetSortingConfigAsync());
-        }
         
         await html.AppendIfAsync(SortAction.IsVisible, GetSortingConfigAsync);
 
         html.AppendText(GetScriptHtml());
         html.AppendRange(GetHiddenInputs(currentAction));
 
-        html.Append(await Table.GetHtmlBuilder());
-
-        if (DataSource?.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
+        if (CurrentPage <= 0)
         {
-            html.Append(await GetNoRecordsAlert());
+            html.AppendComponent(GetPaginationWarningAlert(totalPages));
         }
-
-        if (FormElement.Options.Grid.ShowPagging)
+        else if (CurrentPage > totalPages)
         {
-            var gridPagination = new GridPagination(this);
+            html.AppendComponent(GetPaginationWarningAlert(totalPages));
+        }
+        else
+        {
+            html.Append(await Table.GetHtmlBuilder());
+            
+            if (DataSource?.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
+                html.Append(await GetNoRecordsAlert());
+            
+            if (FormElement.Options.Grid.ShowPagging)
+            {
+                var gridPagination = new GridPagination(this);
 
-            html.Append(gridPagination.GetHtmlBuilder());
+                html.Append(gridPagination.GetHtmlBuilder());
+            }
         }
         
         if (ShowToolbar)
@@ -714,7 +724,20 @@ public class JJGridView : AsyncComponent
 
         return html;
     }
-    
+
+    private JJAlert GetPaginationWarningAlert(int totalPages)
+    {
+        return new JJAlert
+        {
+            Title = StringLocalizer["Warning"],
+            InnerHtml = new HtmlBuilder(HtmlTag.Span)
+                .AppendText(StringLocalizer["Page must be between 1 and {0}.",totalPages])
+                .AppendLink("Click here to go to the first page.", $"javascript:{Scripts.GetPaginationScript(1)}"),
+            Color = PanelColor.Warning,
+            Icon = IconType.SolidTriangleExclamation
+        };
+    }
+
     private IEnumerable<HtmlBuilder> GetHiddenInputs(string? currentAction)
     {
         yield return new HtmlBuilder().AppendHiddenInput($"grid-view-order-{Name}", CurrentOrder.ToQueryParameter() ?? string.Empty);

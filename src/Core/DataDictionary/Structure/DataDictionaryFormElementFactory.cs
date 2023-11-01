@@ -1,3 +1,5 @@
+using System.Data;
+using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Configuration.Options;
@@ -37,7 +39,7 @@ public class DataDictionaryFormElementFactory
         var element = DataDictionaryStructure.GetElement(_options.DataDictionaryTableName);
 
         var formElement = GetFormElement(element);
-
+        
         AddActions(formElement);
 
         return formElement;
@@ -63,8 +65,8 @@ public class DataDictionaryFormElementFactory
         formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: '{PageState}' = 'FILTER'";
         formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["Filter for any data inside the structure of the metadata"];
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
-        formElement.Fields[DataDictionaryStructure.EnableApi].VisibleExpression = "val:0";
-        formElement.Fields[DataDictionaryStructure.EnableApi].Component = FormComponent.CheckBox;
+        formElement.Fields[DataDictionaryStructure.EnableSynchronism].VisibleExpression = "val:0";
+        formElement.Fields[DataDictionaryStructure.EnableSynchronism].Component = FormComponent.CheckBox;
     }
 
     private void AddActions(FormElement formElement)
