@@ -102,7 +102,7 @@ internal class GridPagination
         
         textBox.Attributes["style"] = "display:none";
         
-        textBox.Attributes["onchange"] = GridView.Scripts.GetJumpToPageScript();
+        textBox.Attributes["onfocusout"] = GridView.Scripts.GetJumpToPageScript();
         textBox.PlaceHolder = StringLocalizer["Jump to page..."];
         textBox.CssClass += " pagination-jump-to-page-input";
 
