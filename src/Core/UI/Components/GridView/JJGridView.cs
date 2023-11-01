@@ -692,7 +692,7 @@ public class JJGridView : AsyncComponent
         {
             html.AppendComponent(GetPaginationWarningAlert(totalPages));
         }
-        else if (CurrentPage > totalPages)
+        else if (CurrentPage > totalPages && totalPages != 0)
         {
             html.AppendComponent(GetPaginationWarningAlert(totalPages));
         }
