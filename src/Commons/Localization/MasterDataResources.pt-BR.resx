@@ -3465,4 +3465,10 @@
   <data name="{0} pages" xml:space="preserve">
     <value>{0} páginas</value>
   </data>
+  <data name="Page must be between 1 and {0}." xml:space="preserve">
+    <value>Página deve ser entre 1 e {0}</value>
+  </data>
+  <data name="Jump to page..." xml:space="preserve">
+    <value>Pular para página...</value>
+  </data>
 </root>
