@@ -60,7 +60,13 @@ public class CpfPluginActionHandler : BrasilPluginActionHandler
         var values = context.Values;
         
         var cpf = StringManager.ClearCpfCnpjChars(values[context.FieldName!]!.ToString());
-        var birthDate = values[context.ConfigurationMap[BirthDateFieldKey].ToString()];
+
+        var birthDateFieldName = context.ConfigurationMap[BirthDateFieldKey]?.ToString();
+        
+        if (birthDateFieldName is null)
+            throw new ArgumentNullException(birthDateFieldName, "You must set a BirthDate field");
+        
+        var birthDate = values[birthDateFieldName];
 
         if (birthDate is not DateTime birthDateTime)
             throw new ArgumentNullException(nameof(birthDate));

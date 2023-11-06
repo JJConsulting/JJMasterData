@@ -27,7 +27,7 @@ public class FieldValidationServiceTests
     }
 
     [Fact]
-    public async Task ValidateFields_InvalidField_ReturnsError()
+    public void ValidateFields_InvalidField_ReturnsError()
     {
         // Arrange
         var expressionsServiceMock = new Mock<ExpressionsService>();
