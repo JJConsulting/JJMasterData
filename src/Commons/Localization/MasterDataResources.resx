@@ -89,4 +89,52 @@
     <data name="3. DateTime" xml:space="preserve">
         <value>3. DateTime</value>
     </data>
+    <data name="No records found." xml:space="preserve">
+        <value />
+    </data>
+    <data name="Read Procedure" xml:space="preserve">
+        <value>Read Procedure</value>
+    </data>
+    <data name="Write Procedure" xml:space="preserve">
+        <value>Write Procedure</value>
+    </data>
+    <data name="FormElement" xml:space="preserve">
+        <value>Form Element</value>
+    </data>
+    <data name="Type" xml:space="preserve">
+        <value>Type</value>
+    </data>
+    <data name="Auto Reload Form Fields" xml:space="preserve">
+        <value />
+    </data>
+    <data name="Modal Title" xml:space="preserve">
+        <value>Modal Title</value>
+    </data>
+    <data name="Modal Size" xml:space="preserve">
+        <value>Modal Size</value>
+    </data>
+    <data name="Minimum Value" xml:space="preserve">
+        <value>Minimum Value</value>
+    </data>
+    <data name="Maximum Value" xml:space="preserve">
+        <value>Maximum Value</value>
+    </data>
+    <data name="Show Border" xml:space="preserve">
+        <value>Show Border</value>
+    </data>
+    <data name="Add Dictionary" xml:space="preserve">
+        <value>Add Dictionary</value>
+    </data>
+    <data name="Add new record" xml:space="preserve">
+        <value>Add new record</value>
+    </data>
+    <data name="MULTVALUES filters are only allowed for text type fields" xml:space="preserve">
+        <value />
+    </data>
+    <data name="Your password will expire soon, change it as soon as possible" xml:space="preserve">
+        <value />
+    </data>
+    <data name="6 (six columns)" xml:space="preserve">
+        <value>6 (six columns)</value>
+    </data>
 </root>

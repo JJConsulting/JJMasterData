@@ -552,7 +552,7 @@ public class JJGridView : AsyncComponent
         ShowHeaderWhenEmpty = true;
         ShowPagging = true;
         ShowToolbar = true;
-        EmptyDataText = "No records found";
+        EmptyDataText = "No records found.";
         AutoReloadFormFields = true;
         RelationValues = new Dictionary<string, object>();
         TitleSize = HeadingSize.H1;
@@ -824,7 +824,7 @@ public class JJGridView : AsyncComponent
 
         if (!hasFilter) return alert.GetHtmlBuilder();
 
-        alert.Messages.Add("There are filters applied for this query.");
+        alert.Messages.Add(StringLocalizer["There are filters applied for this query."]);
         alert.Icon = IconType.Filter;
 
         return alert.GetHtmlBuilder();

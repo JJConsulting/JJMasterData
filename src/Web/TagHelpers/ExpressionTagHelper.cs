@@ -112,7 +112,7 @@ public class ExpressionTagHelper : TagHelper
         {
             label.WithCssClass("form-label");
             label.WithAttribute("for", name + "-ExpressionType");
-            label.AppendText("Type");
+            label.AppendText(_stringLocalizer["Type"]);
         });
 
         div.Append(HtmlTag.Select, select =>
@@ -149,14 +149,14 @@ public class ExpressionTagHelper : TagHelper
             {
                 label.WithCssClass("form-label");
                 label.WithAttribute("for", name + "-ExpressionValue");
-                label.AppendText("Expression");
+                label.AppendText(_stringLocalizer["Expression"]);
             });
 
             if (Tooltip is not null)
             {
                 var icon = new JJIcon(IconType.QuestionCircle);
                 icon.CssClass += " help-description";
-                icon.Attributes["title"] = Tooltip;
+                icon.Attributes["title"] = _stringLocalizer[Tooltip];
                 icon.Attributes[BootstrapHelper.DataToggle] = "tooltip";
                 div.AppendComponent(icon);
             }

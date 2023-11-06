@@ -577,14 +577,6 @@
     <value>Nome personalizado para procedure de gravação</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="CustomProcNameGet" xml:space="preserve">
-    <value>Nome do procedimento de leitura</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="CustomProcNameSet" xml:space="preserve">
-    <value>Nome do procedimento de gravação</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Data Dictionaries" xml:space="preserve">
     <value>Lista de Dicionários</value>
     <comment>JJMasterData.Commons</comment>
@@ -1970,11 +1962,11 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Number of decimal places" xml:space="preserve">
-    <value>Numero de casas decimais</value>
+    <value>Número de casas decimais</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Number of lines in the text box" xml:space="preserve">
-    <value>Numero de linhas na caixa de texto</value>
+    <value>Número de linhas na caixa de texto</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Object" xml:space="preserve">
@@ -2491,10 +2483,6 @@
   </data>
   <data name="Show As Button" xml:space="preserve">
     <value>Mostrar como botão</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="Show border on grid" xml:space="preserve">
-    <value>Exibi borda na grid</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Show rows striped" xml:space="preserve">
@@ -3298,10 +3286,6 @@
     <value>Campos marcados como Auto Incremento deve ser do tipo inteiro e obrigatório</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Dark Theme" xml:space="preserve">
-    <value>Tema Escuro</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Data Dictionary" xml:space="preserve">
     <value>Dicionário de Dados</value>
     <comment>JJMasterDataWeb</comment>
@@ -3519,5 +3503,41 @@
   </data>
   <data name="3. DateTime" xml:space="preserve">
     <value>3. DateTime</value>
+  </data>
+  <data name="No records found." xml:space="preserve">
+    <value>Nenhum registro localizado</value>
+  </data>
+  <data name="Read Procedure" xml:space="preserve">
+    <value>Procedure de Leitura</value>
+  </data>
+  <data name="Write Procedure" xml:space="preserve">
+    <value>Procedure de Escrita</value>
+  </data>
+  <data name="FormElement" xml:space="preserve">
+    <value>Formulário do Elemento</value>
+  </data>
+  <data name="Auto Reload Form Fields" xml:space="preserve">
+    <value>Recarregar valores do form automaticamente</value>
+  </data>
+  <data name="Modal Title" xml:space="preserve">
+    <value>Título do Modal</value>
+  </data>
+  <data name="Modal Size" xml:space="preserve">
+    <value>Tamanho do Modal</value>
+  </data>
+  <data name="Minimum Value" xml:space="preserve">
+    <value>Valor Mínimo</value>
+  </data>
+  <data name="Maximum Value" xml:space="preserve">
+    <value>Valor Máximo</value>
+  </data>
+  <data name="Show Border" xml:space="preserve">
+    <value>Mostrar Borda</value>
+  </data>
+  <data name="6. Mask" xml:space="preserve">
+    <value>6. Máscara</value>
+  </data>
+  <data name="4. Boolean" xml:space="preserve">
+    <value>4. Booleano</value>
   </data>
 </root>

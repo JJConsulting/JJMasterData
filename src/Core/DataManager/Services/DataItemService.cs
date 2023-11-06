@@ -106,7 +106,7 @@ public class DataItemService
             }
             else if (searchText is not null)
             {
-                if (item.Description?.Contains(searchText) ?? false)
+                if (item.Description?.ToLower().Contains(searchText.ToLower()) ?? false)
                 {
                     yield return item;
                 }
@@ -142,7 +142,7 @@ public class DataItemService
                     item.IconColor = value[elementMap.FieldIconColor]?.ToString();
             }
 
-            if (searchText == null || item.Description!.ToLower().Contains(searchText))
+            if (searchText == null || item.Description!.ToLower().Contains(searchText.ToLower()))
             {
                 yield return item;
             }
@@ -181,7 +181,7 @@ public class DataItemService
                 item.IconColor = row.ElementAt(3).Value?.ToString();
             }
 
-            if (searchText == null || (item.Description?.ToLower().Contains(searchText) ?? false))
+            if (searchText == null || (item.Description?.ToLower().Contains(searchText.ToLower()) ?? false))
             {
                 yield return item;
             }

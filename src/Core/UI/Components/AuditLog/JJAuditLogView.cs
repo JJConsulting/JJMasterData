@@ -188,7 +188,7 @@ public class JJAuditLogView : AsyncComponent
                 Icon = IconType.ExclamationTriangle,
                 Color = PanelColor.Warning
             };
-            alert.Messages.Add(StringLocalizer["No Records Found"]);
+            alert.Messages.Add(StringLocalizer["No records found."]);
 
             return alert.GetHtmlBuilder();
         }

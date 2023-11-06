@@ -48,6 +48,7 @@ public class LogController : DataDictionaryController
         var formView = FormViewFactory.Create(formElement);
         formView.GridView.CurrentOrder = OrderByData.FromString($"{Options.CreatedColumnName} DESC");
 
+
         formView.GridView.OnRenderCell += (sender, args) =>
         {
             string? message = string.Empty;
