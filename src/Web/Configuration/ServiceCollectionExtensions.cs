@@ -121,7 +121,6 @@ public static partial class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
         services.AddSession();
         services.AddDistributedMemoryCache();
-        services.AddRequestUrlCultureProvider();
         services.AddActionFilters();
     }
 
@@ -134,47 +133,4 @@ public static partial class ServiceCollectionExtensions
             configure?.Invoke(options);
         });
     }
-
-    private static void AddRequestUrlCultureProvider(this IServiceCollection services,
-        params CultureInfo[]? supportedCultures)
-    {
-        if (supportedCultures == null || supportedCultures.Length == 0)
-        {
-            supportedCultures = new[]
-            {
-                new CultureInfo("en-US"),
-                new CultureInfo("pt-BR"),
-                new CultureInfo("zh-CN")
-            };
-        }
-
-        services.Configure<RequestLocalizationOptions>(options =>
-        {
-            const string defaultCulture = "en-US";
-            options.DefaultRequestCulture = new RequestCulture(defaultCulture);
-            options.SupportedCultures = supportedCultures;
-            options.SupportedUICultures = supportedCultures;
-            options.AddInitialRequestCultureProvider(new CustomRequestCultureProvider( context =>
-            {
-                string currentCulture = CultureInfo.CurrentCulture.Name;
-
-                var segments = context.Request.Path.Value?.Split(new[] { '/' },
-                    StringSplitOptions.RemoveEmptyEntries);
-
-                var culturePattern = CultureRegex();
-
-                if (segments?.Length > 0 && culturePattern.IsMatch(segments[0]))
-                {
-                    currentCulture = segments[0];
-                }
-
-                var requestCulture = new ProviderCultureResult(currentCulture);
-
-                return Task.FromResult(requestCulture)!;
-            }));
-        });
-    }
-
-    [GeneratedRegex("^[a-z]{2}(-[a-z]{2,4})?$", RegexOptions.IgnoreCase, "en-US")]
-    private static partial Regex CultureRegex();
 }
