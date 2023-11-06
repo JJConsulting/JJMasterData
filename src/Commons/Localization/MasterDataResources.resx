@@ -1,0 +1,92 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="CustomizedFieldMessage" xml:space="preserve">
+        <value>This field is inside a Form Event Handler and its behavior may be modified at runtime. You can also not delete or modify its name.</value>
+    </data>
+    <data name="CustomizedField" xml:space="preserve">
+        <value>Customized field</value>
+    </data>
+    <data name="(All)" xml:space="preserve">
+        <value>(All)</value>
+    </data>
+    <data name="Birth date" xml:space="preserve">
+        <value>Birth Date</value>
+    </data>
+    <data name="1. Text" xml:space="preserve">
+        <value>1. Text</value>
+    </data>
+    <data name="3. Calendar" xml:space="preserve">
+        <value>3. Calendar</value>
+    </data>
+    <data name="2. Numeric" xml:space="preserve">
+        <value>2. Numeric</value>
+    </data>
+    <data name="5. Data Item" xml:space="preserve">
+        <value>5. Data Item</value>
+    </data>
+    <data name="DataItem" xml:space="preserve">
+        <value>Data Item</value>
+    </data>
+    <data name="DataFile" xml:space="preserve">
+        <value>Data File</value>
+    </data>
+    <data name="DataBehavior" xml:space="preserve">
+        <value>Data Behavior</value>
+    </data>
+    <data name="Database Scripts" xml:space="preserve">
+        <value>Database Scripts</value>
+    </data>
+    <data name="6. Mask" xml:space="preserve">
+        <value>6. Mask</value>
+    </data>
+    <data name="7. File" xml:space="preserve">
+        <value>7. File</value>
+    </data>
+    <data name="8. Especial" xml:space="preserve">
+        <value>8. Especial</value>
+    </data>
+    <data name="4. Boolean" xml:space="preserve">
+        <value>4. Boolean</value>
+    </data>
+    <data name="ElementName" xml:space="preserve">
+        <value>Element Name</value>
+    </data>
+    <data name="Data Dictionary" xml:space="preserve">
+        <value>Data Dictionary</value>
+    </data>
+    <data name="TableName" xml:space="preserve">
+        <value>Table Name</value>
+    </data>
+    <data name="FilterForAnything" xml:space="preserve">
+        <value>Filter for anything</value>
+    </data>
+    <data name="EnableSynchronism" xml:space="preserve">
+        <value>Enable Synchronism</value>
+    </data>
+    <data name="LastModified" xml:space="preserve">
+        <value>Last Modified</value>
+    </data>
+    <data name="FilterForAnythingDescription" xml:space="preserve">
+        <value>Filter for any data inside the structure of the data dictionary</value>
+    </data>
+    <data name="1. String" xml:space="preserve">
+        <value>1. String</value>
+    </data>
+    <data name="5. Especial" xml:space="preserve">
+        <value>5. Especial</value>
+    </data>
+    <data name="3. DateTime" xml:space="preserve">
+        <value>3. DateTime</value>
+    </data>
+</root>

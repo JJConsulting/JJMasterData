@@ -11,4 +11,6 @@ public class MasterDataAreaOptions
     /// If true, will add before the first route path, a {culture} route value used for l10n.
     /// </summary>
     public bool EnableCultureProvider { get; set; } = true;
+
+    public string DefaultCulture { get; set; } = "en-US";
 }

@@ -23,9 +23,8 @@ public static class ServiceCollectionExtensions
     public static MasterDataServiceBuilder AddJJMasterDataCommons(this IServiceCollection services)
     {
         var builder = new MasterDataServiceBuilder(services);
-        services.AddOptions<MasterDataCommonsOptions>().BindConfiguration("JJMasterData");
 
-        services.AddJJMasterDataCommonsServices();
+        services.AddMasterDataCommonsServices();
         
         return builder;
     }
@@ -36,7 +35,7 @@ public static class ServiceCollectionExtensions
 
         builder.Services.Configure<MasterDataCommonsOptions>(configuration.GetJJMasterData());
         
-        services.AddJJMasterDataCommonsServices(configuration);
+        services.AddMasterDataCommonsServices(configuration);
 
         return builder;
     }
@@ -45,14 +44,16 @@ public static class ServiceCollectionExtensions
     {
         var builder = new MasterDataServiceBuilder(services);
 
-        services.AddJJMasterDataCommonsServices(loggingConfiguration);
-        services.Configure(configure);
+        services.AddMasterDataCommonsServices(loggingConfiguration);
+        services.PostConfigure(configure);
 
         return builder;
     }
     
-    private static IServiceCollection AddJJMasterDataCommonsServices(this IServiceCollection services,IConfiguration configuration = null)
+    private static IServiceCollection AddMasterDataCommonsServices(this IServiceCollection services,IConfiguration configuration = null)
     {
+        services.AddOptions<MasterDataCommonsOptions>().BindConfiguration("JJMasterData");
+
         services.AddLocalization();
         services.AddMemoryCache();
         services.AddSingleton<ResourceManagerStringLocalizerFactory>();

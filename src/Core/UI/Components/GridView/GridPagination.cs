@@ -112,6 +112,7 @@ internal class GridPagination
             .Append(textBox.GetHtmlBuilder())
             .AppendDiv(div =>
             {
+                div.WithId(jumpToPageName + "-invalid-feedback");
                 div.WithCssClass("invalid-feedback");
                 div.AppendText(StringLocalizer["Page must be between 1 and {0}.", _totalPages]);
             });
@@ -120,9 +121,9 @@ internal class GridPagination
             .WithCssClass("page-item")
             .Append(new JJLinkButton(GridView.StringLocalizer)
             {
-                ShowAsButton = true,
+                ShowAsButton = false,
                 Icon = IconType.SolidMagnifyingGlassArrowRight,
-                CssClass = "pagination-jump-to-page-button",
+                CssClass = "btn pagination-jump-to-page-button",
                 OnClientClick = $"GridViewHelper.showJumpToPage('{jumpToPageName}')"
             }.GetHtmlBuilder());
     }

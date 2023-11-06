@@ -36,6 +36,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         sql.Append("CREATE OR ALTER PROCEDURE [");
         sql.Append(procedureFinalName);
         sql.AppendLine("] ");
+        sql.AppendLine("@orderby VARCHAR(MAX), ");
         sql.AppendLine(GetParameters(fields, addMasterDataParameters: true));
         sql.AppendLine("AS ");
         sql.AppendLine("BEGIN ");

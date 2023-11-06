@@ -25,9 +25,9 @@ internal class InMemoryExpressionProvider : IBooleanExpressionProvider, IAsyncEx
         return StringManager.ParseBool(EvaluateObject(replacedExpression));
     }
     
-    public async Task<object?> EvaluateAsync(string expression, IDictionary<string,object?> parsedValues)
+    public Task<object?> EvaluateAsync(string expression, IDictionary<string,object?> parsedValues)
     {
         var replacedExpression= ExpressionHelper.ReplaceExpression(expression, parsedValues);
-        return await Task.FromResult(EvaluateObject(replacedExpression));
+        return Task.FromResult<object?>(EvaluateObject(replacedExpression));
     }
 }

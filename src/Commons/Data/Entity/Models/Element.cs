@@ -13,7 +13,7 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 public class Element
 {
     [JsonProperty("name")]
-    [Display(Name = "Element Name")]
+    [Display(Name = "ElementName")]
     public string Name { get; set; }
     
     [JsonProperty("info")]
@@ -29,7 +29,7 @@ public class Element
     public List<ElementRelationship> Relationships { get; set; }
     
     [JsonProperty("tableName")]
-    [Display(Name = "Table Name")]
+    [Display(Name = "TableName")]
     public string TableName { get; set; }
 
     [JsonProperty("useReadProcedure")] 

@@ -17,7 +17,7 @@ public class MasterDataUrlHelper
     private string? JJMasterDataUrl { get; }
     public MasterDataUrlHelper(IHttpRequest httpRequest,IOptions<MasterDataCoreOptions> options)
     {
-        JJMasterDataUrl = options.Value.JJMasterDataUrl;
+        JJMasterDataUrl = options.Value.MasterDataUrl;
         HttpRequest = httpRequest;
     }
 

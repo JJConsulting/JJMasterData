@@ -98,7 +98,8 @@ public static class BootstrapHelper
     };
     public static string Label => Version switch
     {
-        >= 4 => " col-form-label",
+        5 => " form-label",
+        4 => " col-form-label",
         _ => " control-label"
     };
 

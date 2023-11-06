@@ -48,7 +48,7 @@ public static class WebApplicationExtensions
             pattern = $"{options.Prefix.Replace("/", string.Empty)}/{pattern}";
         
         if (options.EnableCultureProvider)
-            pattern = $"/{{culture=en-US}}/{pattern}";
+            pattern = $"/{{culture={options.DefaultCulture}}}/{pattern}";
 
         return app.MapControllerRoute(
             name: "JJMasterData",

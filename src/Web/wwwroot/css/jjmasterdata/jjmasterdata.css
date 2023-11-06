@@ -743,6 +743,23 @@ input.form-control:read-only {
 }
 
 .pagination-jump-to-page-button{
+    border: var(--bs-pagination-border-width) solid var(--bs-pagination-border-color);
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    color: var(--bs-pagination-color) !important;
+    margin-left: calc(var(--bs-border-width)*-1);
+    position: relative;
+    display: block;
+    padding: var(--bs-pagination-padding-y) var(--bs-pagination-padding-x);
+    font-size: var(--bs-pagination-font-size);
+    text-decoration: none;
+    background-color: var(--bs-pagination-bg) !important;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.pagination-jump-to-page-button:hover{
+    z-index: 2 !important;
+    color: var(--bs-pagination-hover-color) !important;
+    background-color: var(--bs-pagination-hover-bg) !important;
+    border-color: var(--bs-pagination-hover-border-color) !important;
 }
