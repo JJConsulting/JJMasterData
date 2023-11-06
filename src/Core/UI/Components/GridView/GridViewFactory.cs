@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -81,38 +82,38 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 
     private static void SetGridEvents(JJGridView gridView, IGridEventHandler eventHandler)
     {
-        if (IsMethodImplemented(eventHandler, nameof(eventHandler.OnDataLoad)))
+        var eventHandlerType = eventHandler.GetType();
+        if (IsMethodImplemented(eventHandlerType, nameof(eventHandler.OnDataLoad)))
         {
             gridView.OnDataLoad += eventHandler.OnDataLoad;
         }
 
-        if (IsMethodImplemented(eventHandler, nameof(eventHandler.OnDataLoadAsync)))
+        if (IsMethodImplemented(eventHandlerType, nameof(eventHandler.OnDataLoadAsync)))
         {
             gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
         }
 
-        if (IsMethodImplemented(eventHandler, nameof(eventHandler.OnRenderAction)))
+        if (IsMethodImplemented(eventHandlerType, nameof(eventHandler.OnRenderAction)))
         {
             gridView.OnRenderAction += eventHandler.OnRenderAction;
         }
 
-        if (IsMethodImplemented(eventHandler, nameof(eventHandler.OnRenderCell)))
+        if (IsMethodImplemented(eventHandlerType, nameof(eventHandler.OnRenderCell)))
         {
             gridView.OnRenderCell += eventHandler.OnRenderCell;
         }
 
-        if (IsMethodImplemented(eventHandler, nameof(eventHandler.OnRenderSelectedCell)))
+        if (IsMethodImplemented(eventHandlerType, nameof(eventHandler.OnRenderSelectedCell)))
         {
             gridView.OnRenderSelectedCell += eventHandler.OnRenderSelectedCell;
         }
     }
 
-    private static bool IsMethodImplemented(IGridEventHandler eventHandler, string methodName)
+    private static bool IsMethodImplemented(Type type, string methodName)
     {
-        var type = eventHandler.GetType();
         var method = type.GetMethod(methodName);
 
-        return method!.DeclaringType != typeof(GridEventHandlerBase);
+        return method is not null;
     }
 
     public JJGridView Create(DataTable dataTable)

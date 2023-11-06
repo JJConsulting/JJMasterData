@@ -1172,8 +1172,11 @@ public class JJGridView : AsyncComponent
 
             dataTable = dataView.ToTable();
             dataView.Dispose();
+            
+            return DictionaryListResult.FromDataTable(dataTable);
         }
-        else if (OnDataLoad != null || OnDataLoadAsync != null)
+
+        if (OnDataLoad != null || OnDataLoadAsync != null)
         {
             var args = new GridDataLoadEventArgs
             {
@@ -1190,17 +1193,15 @@ public class JJGridView : AsyncComponent
                 await OnDataLoadAsync.Invoke(this, args);
             }
 
-
-            TotalOfRecords = args.TotalOfRecords;
+            if (args.DataSource is not null)
+            {
+                TotalOfRecords = args.TotalOfRecords;
             
-            return new DictionaryListResult(args.DataSource!, args.TotalOfRecords);
-        }
-        else
-        {
-            return await EntityRepository.GetDictionaryListResultAsync(FormElement, parameters);
+                return new DictionaryListResult(args.DataSource, args.TotalOfRecords);
+            }
         }
 
-        return DictionaryListResult.FromDataTable(dataTable);
+        return await EntityRepository.GetDictionaryListResultAsync(FormElement, parameters);
     }
 
     /// <remarks>

@@ -426,7 +426,7 @@ public class FormService
     {
         var method = type.GetMethod(methodName);
 
-        return method!.DeclaringType != typeof(FormEventHandlerBase);
+        return method is not null;
     }
 
     private bool IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string, object> formValues)
