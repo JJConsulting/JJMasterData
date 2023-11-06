@@ -241,7 +241,7 @@ public class SqlServerProvider : EntityProviderBase
 
         return field.DataType switch
         {
-            FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int when
+            FieldType.Date or FieldType.DateTime or FieldType.Float or FieldType.Int or FieldType.Time when
                 string.IsNullOrEmpty(value.ToString()) => DBNull.Value,
             FieldType.UniqueIdentifier => Guid.Parse(value.ToString()!),
             FieldType.Bit => StringManager.ParseBool(values[field.Name]),
@@ -253,6 +253,7 @@ public class SqlServerProvider : EntityProviderBase
     {
         return dataType switch
         {
+            FieldType.Time => DbType.Time,
             FieldType.Date => DbType.Date,
             FieldType.DateTime => DbType.DateTime,
             FieldType.DateTime2 => DbType.DateTime,
@@ -294,6 +295,9 @@ public class SqlServerProvider : EntityProviderBase
             databaseType.Equals("real"))
             return FieldType.Float;
 
+        if (databaseType.Equals("time"))
+            return FieldType.Time;
+        
         if (databaseType.Equals("date"))
             return FieldType.Date;
 
@@ -319,7 +323,8 @@ public class SqlServerProvider : EntityProviderBase
 
         var element = new Element
         {
-            Name = tableName
+            Name = tableName,
+            TableName = tableName
         };
 
         var cmdFields = new DataAccessCommand

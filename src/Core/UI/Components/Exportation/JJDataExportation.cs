@@ -94,7 +94,7 @@ public class JJDataExportation : ProcessComponent
     }
     #endregion
     
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override Task<ComponentResult> BuildResultAsync()
     {
         ComponentResult result;
         
@@ -103,7 +103,7 @@ public class JJDataExportation : ProcessComponent
         else
             result = new ContentComponentResult(new DataExportationSettings(this).GetHtmlBuilder());
         
-        return await Task.FromResult(result);
+        return Task.FromResult(result);
     }
 
     internal static JJIcon GetFileIcon(string ext)

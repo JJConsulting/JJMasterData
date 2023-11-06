@@ -386,7 +386,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Birth date" xml:space="preserve">
-    <value>Data Nascimento</value>
+    <value>Data de Nascimento</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Blocked user" xml:space="preserve">
@@ -598,7 +598,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="DataBehavior" xml:space="preserve">
-    <value>Comportamento</value>
+    <value>Comportamento dos Dados</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="DataFile" xml:space="preserve">
@@ -606,7 +606,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="DataItem" xml:space="preserve">
-    <value>Item de dados</value>
+    <value>Data Item</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="DataTable schema is null" xml:space="preserve">
@@ -1729,10 +1729,6 @@
     <value>Última Importação</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Last Modified" xml:space="preserve">
-    <value>Última Modificação</value>
-    <comment>JJMasterData.Commons</comment>
-  </data>
   <data name="Last month" xml:space="preserve">
     <value>Mês Passado</value>
     <comment>JJMasterDataCore</comment>
@@ -2653,10 +2649,6 @@
     <value>Informações sobre a tabela</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Table Name" xml:space="preserve">
-    <value>Nome da Tabela</value>
-    <comment>JJMasterData.Commons</comment>
-  </data>
   <data name="Table not found" xml:space="preserve">
     <value>Tabela não localizada</value>
     <comment>JJMasterDataWeb</comment>
@@ -3470,5 +3462,62 @@
   </data>
   <data name="Jump to page..." xml:space="preserve">
     <value>Pular para página...</value>
+  </data>
+  <data name="CustomizedFieldMessage" xml:space="preserve">
+    <value>Este campo está dentro de um manipulador de eventos e seu comportamento pode ser modificado em tempo de execução. Você também não pode excluir ou modificar seu nome.</value>
+  </data>
+  <data name="CustomizedField" xml:space="preserve">
+    <value>Campo customizado</value>
+  </data>
+  <data name="1. Text" xml:space="preserve">
+    <value>1. Texto</value>
+  </data>
+  <data name="3. Calendar" xml:space="preserve">
+    <value>3. Calendário</value>
+  </data>
+  <data name="2. Numeric" xml:space="preserve">
+    <value>2. Numérico</value>
+  </data>
+  <data name="5. Data Item" xml:space="preserve">
+    <value>5. Data Item</value>
+  </data>
+  <data name="MasksGroupName" xml:space="preserve">
+    <value>6. Máscara</value>
+  </data>
+  <data name="7. File" xml:space="preserve">
+    <value>7. Arquivo</value>
+  </data>
+  <data name="8. Especial" xml:space="preserve">
+    <value>8. Especial</value>
+  </data>
+  <data name="BooleanGroupName" xml:space="preserve">
+    <value>4. Booleano</value>
+  </data>
+  <data name="DataDictionary" xml:space="preserve">
+    <value>Dicionário de Dados</value>
+  </data>
+  <data name="TableName" xml:space="preserve">
+    <value>Nome da Tabela</value>
+  </data>
+  <data name="FilterForAnything" xml:space="preserve">
+    <value>Filter por qualquer coisa</value>
+  </data>
+  <data name="EnableSynchronism" xml:space="preserve">
+    <value>Sincronismo Habilitado</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>Última Modificação</value>
+  </data>
+  <data name="FilterForAnythingDescription" xml:space="preserve">
+    <value>Filter por qualquer dado dentro da estrutura do dicionário de dados.</value>
+  </data>
+  <data name="1. String" xml:space="preserve">
+    <value>1. String</value>
+  </data>
+  <data name="5. Especial" xml:space="preserve">
+    <value>5. Especial</value>
+  </data>
+  <data name="3. DateTime" xml:space="preserve">
+    <value>3. DateTime</value>
   </data>
 </root>

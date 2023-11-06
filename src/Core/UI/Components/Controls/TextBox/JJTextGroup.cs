@@ -25,11 +25,11 @@ public class JJTextGroup : JJTextBox
     {
     }
     
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override Task<ComponentResult> BuildResultAsync()
     {
         var inputGroup = GetHtmlBuilder();
 
-        return await Task.FromResult(new RenderedComponentResult(inputGroup));
+        return Task.FromResult<ComponentResult>(new RenderedComponentResult(inputGroup));
     }
 
     public override HtmlBuilder GetHtmlBuilder()

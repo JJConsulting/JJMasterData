@@ -42,13 +42,13 @@ public class JJTextBox : ControlBase
         Enabled = true;
     }
     
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override Task<ComponentResult> BuildResultAsync()
     {
         var html = GetHtmlBuilder();
 
         var result = new RenderedComponentResult(html);
 
-        return await Task.FromResult(result);
+        return Task.FromResult<ComponentResult>(result);
     }
 
     public virtual HtmlBuilder GetHtmlBuilder()

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
@@ -38,6 +39,7 @@ public class ExpressionTagHelper : TagHelper
     public string? Title { get; set; }
     
     [HtmlAttributeName("tooltip")]
+    [Localizable(false)]
     public string? Tooltip { get; set; }
     
     private bool IsBooleanExpression

@@ -44,13 +44,13 @@ public class JJCheckBox : ControlBase
     }
 
 
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override Task<ComponentResult> BuildResultAsync()
     {
         var html = GetHtmlBuilder();
 
         var result = new RenderedComponentResult(html);
         
-        return await Task.FromResult(result);
+        return Task.FromResult<ComponentResult>(result);
         
     }
 

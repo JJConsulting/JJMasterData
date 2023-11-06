@@ -40,8 +40,6 @@ function listenExpressionType(name, hintList, isBoolean) {
             
             
             expressionValueEditor.innerHTML = div.outerHTML;
-            
-
         }
         else {
             const input = document.createElement('input');

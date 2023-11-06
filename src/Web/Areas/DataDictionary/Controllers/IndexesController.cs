@@ -3,6 +3,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -10,6 +11,18 @@ public class IndexesController : DataDictionaryController
 {
     private readonly IndexesService _indexesService;
 
+    [ViewData] 
+    public string ElementName { get; set; } = null!;
+    
+    [ViewData] 
+    public string MenuId { get; set; } = null!;
+
+    [ViewData] 
+    public string IndexName { get; set; } = null!;
+    
+    [ViewData] 
+    public List<SelectListItem> CheckboxList { get; set; } = null!;
+    
     public IndexesController(IndexesService indexesService)
     {
         _indexesService = indexesService;
@@ -18,7 +31,7 @@ public class IndexesController : DataDictionaryController
     public async Task<ActionResult> Index(string elementName)
     {
         List<ElementIndex> listIndexes = (await _indexesService.GetFormElementAsync(elementName)).Indexes;
-        PopulateViewBag(elementName);
+        PopulateViewData(elementName);
 
         return View(listIndexes);
     }
@@ -31,16 +44,16 @@ public class IndexesController : DataDictionaryController
         if (!string.IsNullOrEmpty(index))
         {
             elementIndex = formElement.Indexes[int.Parse(index)];
-            ViewBag.IndexName = $"IX_{formElement.Name}_{int.Parse(index) + 1}";
+            IndexName = $"IX_{formElement.Name}_{int.Parse(index) + 1}";
         }
         else
         {
             elementIndex = new ElementIndex();
-            ViewBag.IndexName = $"IX_{formElement.Name}_{formElement.Indexes.Count}";
+            IndexName = $"IX_{formElement.Name}_{formElement.Indexes.Count}";
         }
 
         await PopulateCheckBoxAsync(elementName, index);
-        PopulateViewBag(elementName);
+        PopulateViewData(elementName);
         return View("Detail",  elementIndex);
 
     }
@@ -70,37 +83,37 @@ public class IndexesController : DataDictionaryController
             indexes = indexes.FindAll(l => l.Columns.Contains(filter));
 
 
-        PopulateViewBag(elementName);
+        PopulateViewData(elementName);
         return View(indexes);
     }
 
     [HttpPost]
-    public ActionResult Delete(string elementName, string index)
+    public async Task<ActionResult> Delete(string elementName, string index)
     {
-        _indexesService.DeleteAsync(elementName, index);
+        await _indexesService.DeleteAsync(elementName, index);
         return RedirectToAction("Index", new { elementName });
     }
 
     [HttpPost]
-    public ActionResult MoveDown(string elementName, string index)
+    public async Task<ActionResult> MoveDown(string elementName, string index)
     {
-        _indexesService.MoveDownAsync(elementName, index);
+        await _indexesService.MoveDownAsync(elementName, index);
         return RedirectToAction("Index", new { elementName });
 
     }
 
     [HttpPost]
-    public ActionResult MoveUp(string elementName, string index)
+    public async Task<ActionResult> MoveUp(string elementName, string index)
     {
-        _indexesService.MoveUpAsync(elementName, index);
+        await _indexesService.MoveUpAsync(elementName, index);
         return RedirectToAction("Index", new { elementName });
 
     }
 
-    public void PopulateViewBag(string elementName)
+    public void PopulateViewData(string elementName)
     {
-        ViewBag.ElementName = elementName;
-        ViewBag.MenuId = "Indexes";
+        ElementName = elementName;
+        MenuId = "Indexes";
     }
 
     private async Task PopulateCheckBoxAsync(string elementName, string index)
@@ -128,6 +141,6 @@ public class IndexesController : DataDictionaryController
 
         }
 
-        ViewBag.CheckBoxList = listItems;
+        CheckboxList = listItems;
     }
 }

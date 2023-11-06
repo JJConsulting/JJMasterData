@@ -14,9 +14,7 @@ internal class ValueExpressionProvider : IAsyncExpressionProvider, IBooleanExpre
     private static object EvalutateObject(string expression, IDictionary<string,object?> parsedValues)
     {
         if (expression.Contains(ExpressionHelper.Begin.ToString()))
-        {
             return ExpressionHelper.ReplaceExpression(expression, parsedValues);
-        }
         
         return expression.Replace("val:", string.Empty).Trim();
     }
@@ -26,8 +24,8 @@ internal class ValueExpressionProvider : IAsyncExpressionProvider, IBooleanExpre
         return StringManager.ParseBool(EvalutateObject(expression,parsedValues));
     }
 
-    public async Task<object?> EvaluateAsync(string expression, IDictionary<string,object?> parsedValues)
+    public Task<object?> EvaluateAsync(string expression, IDictionary<string,object?> parsedValues)
     {
-        return await Task.FromResult(EvalutateObject(expression, parsedValues));
+        return Task.FromResult<object?>(EvalutateObject(expression, parsedValues));
     }
 }

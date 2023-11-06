@@ -4,8 +4,10 @@
 
 @model RelationshipsLayoutDetailsViewModel
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptions<MasterDataWebOptions> Options
 @{
     TempData["SelectedTab"] = "#divLayout";
+    Layout = Options.Value.ModalLayoutPath;
 }
 
 @section Scripts{

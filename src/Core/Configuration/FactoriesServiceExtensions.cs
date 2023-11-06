@@ -2,6 +2,7 @@ using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.UI.Components;
+using JJMasterData.Core.UI.Components.ColorPicker;
 using JJMasterData.Core.UI.Components.TextRange;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,6 +78,7 @@ public static class FactoriesServiceExtensions
         services.AddScoped<IControlFactory<JJTextFile>, TextFileFactory>();
         services.AddScoped<IControlFactory<JJTextBox>, TextBoxFactory>();
         services.AddScoped<IControlFactory<JJCheckBox>, CheckBoxFactory>();
+        services.AddScoped<IControlFactory<JJColorPicker>, ColorPickerFactory>();
         services.AddScoped<ControlFactory>();
     }
 }

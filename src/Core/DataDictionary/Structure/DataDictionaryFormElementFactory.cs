@@ -49,8 +49,11 @@ public class DataDictionaryFormElementFactory
     {
         var formElement = new FormElement(element)
         {
-            Title = new ImageFactory(HttpContext).CreateMasterDataLogo().GetHtml()
+            Title = new ImageFactory(HttpContext).CreateMasterDataLogo().GetHtml(),
         };
+
+        formElement.SubTitle = StringLocalizer[formElement.SubTitle!];
+        
         ConfigureFields(formElement);
         
         return formElement;
@@ -63,7 +66,7 @@ public class DataDictionaryFormElementFactory
         formElement.Fields[DataDictionaryStructure.Owner].VisibleExpression= "val:0";
         formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.Text;
         formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: '{PageState}' = 'FILTER'";
-        formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["Filter for any data inside the structure of the metadata"];
+        formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["FilterForAnythingDescription"];
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Fields[DataDictionaryStructure.EnableSynchronism].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.EnableSynchronism].Component = FormComponent.CheckBox;

@@ -5,6 +5,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.UI.Components.ColorPicker;
 using JJMasterData.Core.UI.Components.TextRange;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -118,6 +119,9 @@ public class ControlFactory
                 break;
             case FormComponent.Slider:
                 control = Create<JJSlider>(formElement, field, context);
+                break;
+            case FormComponent.ColorPicker:
+                control = Create<JJColorPicker>(formElement, field, context);
                 break;
             case FormComponent.File:
                 if (formStateData.PageState == PageState.Filter)

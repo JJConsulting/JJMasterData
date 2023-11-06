@@ -1,15 +1,16 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
 @using JJMasterData.Core.UI
+@using JJMasterData.Core.Events.Extensions
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel
 
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         @Html.LabelFor(model => model.FormEventType, StringLocalizer["Type"],
-        new Dictionary<string, string>
-        {
-            { BootstrapHelper.DataToggle, "tooltip" },
-            { "title", StringLocalizer["Type"] }
-        })
-        @Html.TextBoxFor((model => model.FormEventType),Model.HtmlAttributes)
+            new {@class="form-label"})
+        @Html.TextBoxFor(model => model.FormEventType,Model.HtmlAttributes)
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-6">
+        <label class="form-label" for="formEventFields">@StringLocalizer["Customized Fields"]</label>
+        <input class="form-control" type="text" id="formEventFields" value="@(string.Join(",",Model.FormEvent.GetCustomizedFields()))" disabled/>
     </div>
 </div>

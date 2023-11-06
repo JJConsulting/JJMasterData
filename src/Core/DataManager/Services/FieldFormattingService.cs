@@ -124,6 +124,10 @@ public class FieldFormattingService
                 }
 
                 break;
+            case FormComponent.Hour:
+                if (TimeSpan.TryParse(stringValue, out var timeSpan))
+                    stringValue = timeSpan.ToString(@"hh\:mm");
+                break;
             case FormComponent.Date:
             case FormComponent.DateTime:
             case FormComponent.Text:
@@ -132,7 +136,7 @@ public class FieldFormattingService
                     case FieldType.Date:
                         {
                             var dVal = DateTime.Parse(stringValue);
-                            stringValue = dVal == DateTime.MinValue ? "" : dVal.ToString(DateTimeFormatInfo.CurrentInfo.ShortDatePattern);
+                            stringValue = dVal == DateTime.MinValue ? string.Empty : dVal.ToString(DateTimeFormatInfo.CurrentInfo.ShortDatePattern);
                             break;
                         }
                     case FieldType.DateTime or FieldType.DateTime2:

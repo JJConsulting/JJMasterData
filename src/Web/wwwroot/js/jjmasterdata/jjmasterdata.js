@@ -1135,7 +1135,9 @@ class GridViewHelper {
     static showJumpToPage(jumpToPageName) {
         const jumpToPageInput = $("#" + jumpToPageName);
         jumpToPageInput.val(null);
-        jumpToPageInput.animate({ width: 'toggle' });
+        jumpToPageInput.animate({ width: 'toggle' }, null, function () {
+            jumpToPageInput.removeClass("is-invalid");
+        });
     }
     static refresh(componentName, routeContext) {
         this.setCurrentGridPage(componentName, String());
@@ -1310,8 +1312,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     SliderListener.listenInputs(selectorPrefix);
     Inputmask().mask(document.querySelectorAll("input"));
     if (bootstrapVersion === 5) {
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }));
+        TooltipListener.listen(selectorPrefix);
     }
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
@@ -2186,6 +2187,12 @@ class TextFileHelper {
         if (valueElement) {
             valueElement.value = valueText;
         }
+    }
+}
+class TooltipListener {
+    static listen(selectorPrefix) {
+        const tooltipTriggerList = document.querySelectorAll(selectorPrefix + '[data-bs-toggle="tooltip"]');
+        tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }));
     }
 }
 class UploadAreaListener {

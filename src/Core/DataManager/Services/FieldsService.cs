@@ -36,7 +36,7 @@ public class FieldsService
         return await FieldFormattingService.FormatGridValueAsync(field, values, userValues);
     }
 
-    public string FormatValue(FormElementField field, object value)
+    public static string FormatValue(FormElementField field, object value)
     {
         return FieldFormattingService.FormatValue(field, value);
     }

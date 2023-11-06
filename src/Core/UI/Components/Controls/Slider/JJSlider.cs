@@ -20,7 +20,7 @@ public class JJSlider : ControlBase
         TextBoxFactory = textBoxFactory;
     }
 
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override Task<ComponentResult> BuildResultAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row")
@@ -45,16 +45,16 @@ public class JJSlider : ControlBase
             number.CssClass = "jjslider-value";
             number.Attributes["step"] = Step.ToString();
 
-            await html.AppendAsync(HtmlTag.Div, async row =>
+            html.Append(HtmlTag.Div, row =>
             {
                 row.WithCssClass("col-sm-3");
-                row.Append(await number.GetHtmlBuilderAsync());
+                row.Append(number.GetHtmlBuilder());
             });
         }
         
         var result = new RenderedComponentResult(html);
         
-        return await Task.FromResult(result);
+        return Task.FromResult<ComponentResult>(result);
     }
     
     private HtmlBuilder GetHtmlSlider()

@@ -57,6 +57,7 @@ public static class MasterDataServiceBuilderExtensions
     
     public static MasterDataServiceBuilder WithCepActionPlugin<TCepService>(this MasterDataServiceBuilder builder) where TCepService : class, ICepService
     {
+        builder.Services.TryAddSingleton<HttpClient>();
         builder.WithCepService<TCepService>();
         builder.WithActionPlugin<CepPluginActionHandler>();
         

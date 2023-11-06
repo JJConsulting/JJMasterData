@@ -21,7 +21,7 @@ public class MasterDataCoreOptions : MasterDataCommonsOptions
     /// <summary>
     /// Default value: null
     /// </summary>
-    public string? JJMasterDataUrl { get; set; }
+    public string? MasterDataUrl { get; set; }
     
     /// <summary>
     /// Default value: {ApplicationPath}/JJExportationFiles

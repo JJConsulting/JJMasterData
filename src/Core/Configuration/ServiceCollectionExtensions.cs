@@ -15,9 +15,7 @@ public static class ServiceCollectionExtensions
 {
     public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services)
     {
-        services.AddOptions<MasterDataCoreOptions>().BindConfiguration("JJMasterData");
-        
-        services.AddDefaultServices();
+        services.AddMasterDataCoreServices();
         
         return services.AddJJMasterDataCommons();
     }
@@ -29,19 +27,30 @@ public static class ServiceCollectionExtensions
 
         configureCore(coreOptions);
 
-        services.Configure(configureCore);
+        services.PostConfigure(configureCore);
         
-        services.AddDefaultServices();
+        services.AddMasterDataCoreServices();
         return services.AddJJMasterDataCommons(ConfigureJJMasterDataCommonsOptions, loggingConfiguration);
 
         void ConfigureJJMasterDataCommonsOptions(MasterDataCommonsOptions options)
         {
-            options.ConnectionString = coreOptions.ConnectionString;
-            options.ConnectionProvider = coreOptions.ConnectionProvider;
-            options.LocalizationTableName = coreOptions.LocalizationTableName;
-            options.ReadProcedurePattern = coreOptions.ReadProcedurePattern;
-            options.WriteProcedurePattern = coreOptions.WriteProcedurePattern;
-            options.SecretKey = coreOptions.SecretKey;
+            if (coreOptions.ConnectionString != null) 
+                options.ConnectionString = coreOptions.ConnectionString;
+            
+            if(coreOptions.ConnectionProvider != default)
+                options.ConnectionProvider = coreOptions.ConnectionProvider;
+            
+            if (coreOptions.LocalizationTableName != null)
+                options.LocalizationTableName = coreOptions.LocalizationTableName;
+
+            if (coreOptions.ReadProcedurePattern != null)
+                options.ReadProcedurePattern = coreOptions.ReadProcedurePattern;
+
+            if (coreOptions.WriteProcedurePattern != null)
+                options.WriteProcedurePattern = coreOptions.WriteProcedurePattern;
+
+            if (coreOptions.SecretKey != null) 
+                options.SecretKey = coreOptions.SecretKey;
         }
     }
 
@@ -49,14 +58,15 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<MasterDataCoreOptions>(configuration.GetJJMasterData());
         
-        services.AddDefaultServices();
+        services.AddMasterDataCoreServices();
         
         return services.AddJJMasterDataCommons(configuration);
     }
 
-    private static void AddDefaultServices(this IServiceCollection services)
+    private static void AddMasterDataCoreServices(this IServiceCollection services)
     {
-        
+        services.AddOptions<MasterDataCoreOptions>().BindConfiguration("JJMasterData");
+
         services.AddHttpServices();
         services.AddDataDictionaryServices();
         services.AddDataManagerServices();

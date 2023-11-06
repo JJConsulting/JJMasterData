@@ -18,11 +18,11 @@ public class JJTextArea : ControlBase
         Rows = 5;
     }
 
-    protected override async Task<ComponentResult> BuildResultAsync()
+    protected override Task<ComponentResult> BuildResultAsync()
     {
         var html = GetHtmlBuilder();
 
-        return await Task.FromResult(new RenderedComponentResult(html));
+        return Task.FromResult<ComponentResult>(new RenderedComponentResult(html));
     }
 
     public HtmlBuilder GetHtmlBuilder()

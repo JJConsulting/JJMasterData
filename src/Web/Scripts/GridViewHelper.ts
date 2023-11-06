@@ -134,7 +134,9 @@ class GridViewHelper {
         
         jumpToPageInput.val(null);
         
-        jumpToPageInput.animate({width: 'toggle'});
+        jumpToPageInput.animate({width: 'toggle'},null, function(){
+            jumpToPageInput.removeClass("is-invalid")
+        });
     }
     
     static refresh(componentName: string, routeContext: string) {
