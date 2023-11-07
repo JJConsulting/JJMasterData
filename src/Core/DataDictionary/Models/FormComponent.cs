@@ -51,7 +51,7 @@ public enum FormComponent
     Lookup = 21,
     [Display(GroupName = "7. File")]
     File = 22,
-    [Display(GroupName = "8. Especial")]
+    [Display(GroupName = "2. Numeric")]
     Slider = 23,
     [Display(Name = "ColorPicker",GroupName = "8. Especial")]
     ColorPicker = 24
