@@ -1,2 +1,2 @@
-[!include[Readme](../../../../src/Plugins/JJMasterData.Hangfire/README.MD)]
+[!include[Readme](../../../../src/Plugins/Hangfire/README.MD)]
 

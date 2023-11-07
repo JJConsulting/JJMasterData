@@ -1,3 +1,4 @@
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using NCalc;
 using AsyncExpression = NCalcAsync.Expression;
@@ -11,20 +12,15 @@ public class NCalcExpressionProvider : IAsyncExpressionProvider, IBooleanExpress
     
     public bool Evaluate(string expression, IDictionary<string, object?> parsedValues)
     {
-        var ncalcExpression = new Expression(expression)
-        {
-            Parameters = parsedValues as Dictionary<string,object>
-        };
+        var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
+        var ncalcExpression = new Expression(replacedExpression, EvaluateOptions.IgnoreCase);
         return (bool)ncalcExpression.Evaluate();
     }
 
     public async Task<object?> EvaluateAsync(string expression, IDictionary<string, object?> parsedValues)
     {
-        var asyncExpression = new AsyncExpression(expression)
-        {
-            Parameters = parsedValues as Dictionary<string, object>
-        };
-
-        return await asyncExpression.EvaluateAsync();
+        var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
+        var ncalcAsyncExpression = new AsyncExpression(replacedExpression, NCalcAsync.EvaluateOptions.IgnoreCase);
+        return await ncalcAsyncExpression.EvaluateAsync();
     }
 }

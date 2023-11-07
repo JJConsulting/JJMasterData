@@ -14,7 +14,7 @@ public static class ExpressionsServiceExtensions
         services.AddTransient<ExpressionParser>();
 
         services.AddScoped<IExpressionProvider, ValueExpressionProvider>();
-        services.AddScoped<IExpressionProvider, InMemoryExpressionProvider>();
+        services.AddScoped<IExpressionProvider, DataTableExpressionProvider>();
         services.AddScoped<IExpressionProvider, SqlExpressionProvider>();
 
         return services;
