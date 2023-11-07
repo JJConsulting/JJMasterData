@@ -4,16 +4,7 @@ function listenExpressionType(name, hintList, isBoolean) {
         const expressionValueInput = document.getElementById(name + '-ExpressionValue') as HTMLInputElement;
         const expressionValueEditor = document.getElementById(name + '-ExpressionValueEditor') as HTMLInputElement;
         
-        if (selectedType === 'sql' || selectedType == 'exp') {
-            const textArea = document.createElement('textarea');
-            textArea.setAttribute('name', name + '-ExpressionValue');
-            textArea.setAttribute('id', name + '-ExpressionValue');
-            textArea.setAttribute('class', 'form-control');
-            textArea.innerText = expressionValueInput.value;
-            expressionValueEditor.innerHTML = textArea.outerHTML;
-            CodeMirrorWrapper.setupCodeMirror(name + '-ExpressionValue', { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
-        } 
-        else if(selectedType ==='val' && isBoolean === true){
+        if(selectedType ==='val' && isBoolean === true){
             const div = document.createElement('div');
             div.classList.add('form-switch', 'form-switch-md', 'form-check');
 
@@ -42,22 +33,13 @@ function listenExpressionType(name, hintList, isBoolean) {
             expressionValueEditor.innerHTML = div.outerHTML;
         }
         else {
-            const input = document.createElement('input');
-            input.setAttribute('type', 'text');
-            input.setAttribute('class', 'form-control');
-            input.setAttribute('name', name + '-ExpressionValue');
-            input.setAttribute('id', name + '-ExpressionValue');
-            input.value = expressionValueInput.value;
-
-            // @ts-ignore
-            if (expressionValueInput.codeMirrorInstance) {
-                // @ts-ignore
-                expressionValueInput.codeMirrorInstance.setOption('mode', 'text/x-csrc');
-                // @ts-ignore
-                expressionValueInput.codeMirrorInstance.getWrapperElement().parentNode.removeChild(expressionValueInput.codeMirrorInstance.getWrapperElement());
-            }
-
-            expressionValueEditor.innerHTML = input.outerHTML;
+            const textArea = document.createElement('textarea');
+            textArea.setAttribute('name', name + '-ExpressionValue');
+            textArea.setAttribute('id', name + '-ExpressionValue');
+            textArea.setAttribute('class', 'form-control');
+            textArea.innerText = expressionValueInput.value;
+            expressionValueEditor.innerHTML = textArea.outerHTML;
+            CodeMirrorWrapper.setupCodeMirror(name + '-ExpressionValue', { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
         }
     });
 }

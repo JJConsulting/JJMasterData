@@ -42,7 +42,7 @@ public class ExpressionsService
         return await GetExpressionValueAsync(field.DefaultValue, field, formStateData);
     }
 
-    public string? ParseExpression(
+    public string? ReplaceExpressionWithParsedValues(
         string? expression, 
         FormStateData formStateData)
     {
