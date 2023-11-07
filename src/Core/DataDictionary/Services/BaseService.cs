@@ -87,8 +87,7 @@ public abstract class BaseService
         return _validationDictionary.IsValid;
     }
 
-    //todo: "Expressions can start with anything now."
-    public bool ValidateExpression(string value, params string[] args)
+    protected static bool ValidateExpression(string value, params string[] args)
     {
         return args.Any(value.StartsWith);
     }

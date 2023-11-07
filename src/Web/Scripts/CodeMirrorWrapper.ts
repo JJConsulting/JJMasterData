@@ -28,7 +28,7 @@ class CodeMirrorWrapper{
             indentWithTabs: true,
             smartIndent: true,
             lineNumbers: true,
-            autofocus: true,
+            autofocus: false,
             autohint: true,
             extraKeys: { "Ctrl-Space": "autocomplete" }
         });
