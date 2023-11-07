@@ -29,7 +29,7 @@ public enum FormComponent
     Search = 10,
     [Display(GroupName = "8. Especial")]
     RadioButton = 11,
-    [Display(GroupName = "BooleanGroupName")]
+    [Display(GroupName = "4. Boolean")]
     CheckBox = 12,
     [Display(Name = "CNPJ", GroupName = "6. Mask")]
     Cnpj = 13,
