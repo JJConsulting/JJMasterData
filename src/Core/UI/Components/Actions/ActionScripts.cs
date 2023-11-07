@@ -137,7 +137,7 @@ public class ActionScripts
         {
             UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
             SqlCommandAction => GetSqlCommandScript(actionContext, actionSource),
-            ScriptAction jsAction => HttpUtility.HtmlAttributeEncode(ExpressionsService.ReplaceExpressionWithParsedValues(jsAction.OnClientClick, formStateData) ?? string.Empty),
+            ScriptAction jsAction => HttpUtility.HtmlAttributeEncode(ExpressionsService.ParseExpression(jsAction.OnClientClick, formStateData) ?? string.Empty),
             InternalAction internalAction => GetInternalUrlScript(internalAction, formStateData.Values),
             _ => GetFormActionScript(actionContext, actionSource)
         };

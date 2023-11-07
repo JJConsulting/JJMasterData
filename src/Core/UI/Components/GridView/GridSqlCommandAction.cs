@@ -63,7 +63,7 @@ internal class GridSqlCommandAction
         foreach (var row in selectedRows)
         {
             var formData = new FormStateData(row, _gridView.UserValues, PageState.List);
-            var sql = _gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.CommandSql, formData);
+            var sql = _gridView.ExpressionsService.ParseExpression(sqlCommandAction.CommandSql, formData);
             commandList.Add(new DataAccessCommand(sql!));
         }
 
@@ -84,7 +84,7 @@ internal class GridSqlCommandAction
         }
 
         var formStateData = new FormStateData(formValues, _gridView.UserValues, PageState.List);
-        var sqlCommand = _gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.CommandSql, formStateData);
+        var sqlCommand = _gridView.ExpressionsService.ParseExpression(sqlCommandAction.CommandSql, formStateData);
         
         await _gridView.EntityRepository.SetCommandAsync(new DataAccessCommand(sqlCommand!));
     }

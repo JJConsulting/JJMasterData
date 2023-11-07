@@ -7,26 +7,21 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ActionsService : BaseService
 {
-    private readonly IEnumerable<IExpressionProvider> _expressionProviders;
     private readonly IEnumerable<IPluginHandler> _pluginHandlers;
 
     public ActionsService(
         IValidationDictionary validationDictionary, 
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IDataDictionaryRepository dataDictionaryRepository,
-        IEnumerable<IExpressionProvider> expressionProviders,
         IEnumerable<IPluginHandler> pluginHandlers) 
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
-        _expressionProviders = expressionProviders;
         _pluginHandlers = pluginHandlers;
     }
 
@@ -164,12 +159,12 @@ public class ActionsService : BaseService
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
             AddError(nameof(action.VisibleExpression), StringLocalizer["Required [VisibleExpression] field"]);
-        else if (!ValidateExpression(action.VisibleExpression, _expressionProviders.GetBooleanProvidersPrefixes()))
+        else if (!ValidateExpression(action.VisibleExpression, "val:", "exp:", "sql:"))
             AddError(nameof(action.VisibleExpression), StringLocalizer["Invalid [VisibleExpression] field"]);
 
         if (string.IsNullOrWhiteSpace(action.EnableExpression))
             AddError(nameof(action.EnableExpression), "Required [EnableExpression] field");
-        else if (!ValidateExpression(action.EnableExpression, _expressionProviders.GetBooleanProvidersPrefixes()))
+        else if (!ValidateExpression(action.EnableExpression, "val:", "exp:", "sql:"))
             AddError(nameof(action.EnableExpression), "Invalid [EnableExpression] field");
 
         switch (action)
