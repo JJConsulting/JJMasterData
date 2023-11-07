@@ -180,7 +180,7 @@ public class ElementService : BaseService
             
             switch (args.ActionName)
             {
-                case "preview":
+                case "render":
                     args.LinkButton.OnClientClick =
                         $"window.open('{UrlHelper.GetUrl("Render", "Form", "MasterData", new { elementName })}', '_blank').focus();";
                     break;

@@ -8,7 +8,10 @@ public interface IFormValues
 #if NETFRAMEWORK
     System.Web.HttpPostedFile GetFile(string file);
     string GetUnvalidated(string key);
-#else
+#elif NET
     Microsoft.AspNetCore.Http.IFormFile GetFile(string file);
+#else 
+     // .NET Standard workaround, this is never compiled.
+     dynamic GetFile(string file);
 #endif
 }

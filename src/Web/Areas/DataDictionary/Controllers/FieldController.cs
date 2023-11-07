@@ -80,8 +80,8 @@ public class FieldController : DataDictionaryController
 
         var iconSearchBoxResult = await iconSearchBox.GetResultAsync();
 
-        if (iconSearchBoxResult.IsActionResult())
-            return iconSearchBoxResult.ToActionResult();
+        if (iconSearchBoxResult is IActionResult actionResult)
+            return actionResult;
         
         var formElement = await _fieldService.GetFormElementAsync(elementName);
         await PopulateViewBag(formElement, field);

@@ -43,8 +43,8 @@ public class InternalRedirectController : MasterDataController
 
                 var result = await formView.GetResultAsync();
 
-                if (result.IsActionResult())
-                    return result.ToActionResult();
+                if (result is IActionResult actionResult)
+                    return actionResult;
 
                 formView.RelationValues = RelationValues;
 
@@ -68,8 +68,9 @@ public class InternalRedirectController : MasterDataController
                 
                 var result = await panel.GetResultAsync();
 
-                if (result.IsActionResult())
-                    return result.ToActionResult();
+                if (result is IActionResult actionResult)
+                    return actionResult;
+                
                 model = new(panel.FormElement.Title ?? panel.Name,result.Content!, false);
                 
                 break;
@@ -86,8 +87,8 @@ public class InternalRedirectController : MasterDataController
                 if (userId != null)
                     panel.SetUserValues("USERID", userId);
                 
-                if (result is not RenderedComponentResult)
-                    return result.ToActionResult();
+                if (result is IActionResult actionResult)
+                    return actionResult;
                 
                 model = new(panel.FormElement.Title ?? panel.Name,result.Content, true);
                 break;

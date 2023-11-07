@@ -71,8 +71,8 @@ public class LogController : DataDictionaryController
         
         var result = await formView.GetResultAsync();
 
-        if (result.IsActionResult())
-            return result.ToActionResult();
+        if (result is IActionResult actionResult)
+            return actionResult;
 
         return View(nameof(Index), result.Content);
     }

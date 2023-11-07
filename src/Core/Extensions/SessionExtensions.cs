@@ -1,4 +1,4 @@
-#if NET || NETSTANDARD
+#if NET
 
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;

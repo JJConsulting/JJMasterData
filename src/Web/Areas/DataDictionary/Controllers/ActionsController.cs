@@ -64,8 +64,8 @@ public class ActionsController : DataDictionaryController
 
         var iconSearchBoxResult = await GetIconSearchBoxResult(action);
 
-        if (iconSearchBoxResult.IsActionResult())
-            return iconSearchBoxResult.ToActionResult();
+        if (iconSearchBoxResult is IActionResult actionResult)
+            return actionResult;
 
         ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
 
@@ -114,8 +114,8 @@ public class ActionsController : DataDictionaryController
         
         var iconSearchBoxResult = await GetIconSearchBoxResult(action);
 
-        if (iconSearchBoxResult.IsActionResult())
-            return iconSearchBoxResult.ToActionResult();
+        if (iconSearchBoxResult is IActionResult actionResult)
+            return actionResult;
 
         ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
 
@@ -139,8 +139,8 @@ public class ActionsController : DataDictionaryController
 
         var iconSearchBoxResult = await GetIconSearchBoxResult(action);
 
-        if (iconSearchBoxResult.IsActionResult())
-            return iconSearchBoxResult.ToActionResult();
+        if (iconSearchBoxResult is IActionResult actionResult)
+            return actionResult;
         
         ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
         

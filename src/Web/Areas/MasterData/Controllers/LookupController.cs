@@ -47,8 +47,8 @@ public class LookupController : MasterDataController
         
         var result = await formView.GetResultAsync();
 
-        if (result.IsActionResult())
-            return result.ToActionResult();
+        if (result is IActionResult actionResult)
+            return actionResult;
 
         ViewBag.FormViewHtml = result.Content;
 

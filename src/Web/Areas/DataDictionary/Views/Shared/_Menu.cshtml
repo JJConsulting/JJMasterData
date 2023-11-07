@@ -126,14 +126,13 @@
                     </li>
                     @if (BootstrapHelper.Version >= 5)
                     {
-                        <li class="@NavItem("More") me-3">
-                            <div class="nav-link">
-                                <div class="dropdown dropstart">
-                                    @{
-                                        More();
-                                    }
-                                </div>
-                            </div>
+                        <li class="@NavItem("More") dropdown dropstart me-3">
+                            <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                @StringLocalizer["More"]
+                            </a>
+                            @{
+                                MoreItems();
+                            }
                         </li>
                     }
                 </ul>
@@ -142,7 +141,10 @@
                     <ul class="nav navbar-nav navbar-right mr-3" style="@(BootstrapHelper.Version == 3 ? "padding-right: 15px;" : string.Empty)">
                         <li class="dropdown dropleft">
                             @{
-                                More();
+                                <a href="#" class="dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") role="button" aria-haspopup="true" aria-expanded="false">
+                                    @StringLocalizer["More"] <span class="caret"></span>
+                                </a>
+                                MoreItems();
                             }
                         </li>
                     </ul>
@@ -154,11 +156,8 @@
 
 @functions
 {
-    private void More()
+    private void MoreItems()
     {
-        <a href="#" class="dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") role="button" aria-haspopup="true" aria-expanded="false">
-            @StringLocalizer["More"] <span class="caret"></span>
-        </a>
         <ul class="dropdown-menu">
             <li onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
                 <a class="dropdown-item" href="#">
@@ -172,7 +171,7 @@
             </li>
             <li onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })', '_blank').focus();">
                 <a class="dropdown-item" href="#">
-                    <span class="fa-solid fa-eye fa-fw fa-lg"></span> @StringLocalizer["Render"]
+                    <span class="@IconType.SolidCirclePlay.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["Render"]
                 </a>
             </li>
             <li role="separator" class="@(BootstrapHelper.Version > 3 ? " divider" : "dropdown-divider")"></li>

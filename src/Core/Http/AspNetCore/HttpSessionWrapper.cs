@@ -1,4 +1,4 @@
-#if NET || NETSTANDARD
+#if NET
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.AspNetCore.Http;

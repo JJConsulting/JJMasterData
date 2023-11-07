@@ -137,4 +137,7 @@
     <data name="6 (six columns)" xml:space="preserve">
         <value>6 (six columns)</value>
     </data>
+    <data name="Render" xml:space="preserve">
+        <value>Render</value>
+    </data>
 </root>

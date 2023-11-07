@@ -30,7 +30,7 @@ internal class FormValuesWrapper : IFormValues
 
     public FormValuesWrapper(IHttpContextAccessor httpContextAccessor)
     {
-        HttpContext = httpContextAccessor.HttpContext;
+        HttpContext = httpContextAccessor.HttpContext!;
     }
     public IFormFile? GetFile(string file) => FormCollection?.Files[file];
 }

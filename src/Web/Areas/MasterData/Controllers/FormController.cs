@@ -22,8 +22,8 @@ public class FormController : MasterDataController
 
         var result = await formView.GetResultAsync();
 
-        if (result.IsActionResult())
-            return result.ToActionResult();
+        if (result is IActionResult actionResult)
+            return actionResult;
         
         var model = new FormViewModel(formView.FormElement.Name, result.Content);
         return View(model);

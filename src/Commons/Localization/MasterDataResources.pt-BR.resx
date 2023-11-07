@@ -3540,4 +3540,7 @@
   <data name="4. Boolean" xml:space="preserve">
     <value>4. Booleano</value>
   </data>
+  <data name="Render" xml:space="preserve">
+    <value>Renderizar</value>
+  </data>
 </root>

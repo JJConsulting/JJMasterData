@@ -98,8 +98,8 @@ public class DataDictionaryFormElementFactory
 
         var renderBtn = new ScriptAction
         {
-            Icon = IconType.Eye,
-            Name = "preview",
+            Icon = IconType.SolidCirclePlay,
+            Name = "render",
             Text = StringLocalizer["Render"],
             EnableExpression = "exp:'T' <> '{type}'",
             IsGroup = true

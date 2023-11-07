@@ -46,8 +46,8 @@ public class ElementController : DataDictionaryController
             var formView = _elementService.GetFormView();
             var result = await formView.GetResultAsync();
             
-            if (result.IsActionResult())
-                return result.ToActionResult();
+            if (result is IActionResult actionResult)
+                return actionResult;
 
             ViewBag.FormViewHtml = result.Content!;
             
@@ -96,8 +96,8 @@ public class ElementController : DataDictionaryController
         
         var result = await uploadArea.GetResultAsync();
 
-        if (result.IsActionResult())
-            return result.ToActionResult();
+        if (result is IActionResult actionResult)
+            return actionResult;
         
         return PartialView(new ImportViewModel(result.Content));
     }
