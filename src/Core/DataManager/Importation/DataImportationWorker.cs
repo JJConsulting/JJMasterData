@@ -26,7 +26,7 @@ public class DataImportationWorker : IBackgroundTaskWorker
 {
     #region "Events"
 
-    public event EventHandler<FormAfterActionEventArgs> OnAfterProcess;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterProcessAsync;
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
     #endregion
@@ -218,8 +218,8 @@ public class DataImportationWorker : IBackgroundTaskWorker
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
         }
 
-        if (OnAfterProcess != null)
-            OnAfterProcess.Invoke(this, new FormAfterActionEventArgs());
+        if (OnAfterProcessAsync != null)
+            await OnAfterProcessAsync(this, new FormAfterActionEventArgs());
     }
 
     /// <summary>

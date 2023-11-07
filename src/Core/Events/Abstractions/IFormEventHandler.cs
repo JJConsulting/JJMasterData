@@ -5,21 +5,68 @@ namespace JJMasterData.Core.Events.Abstractions;
 
 public interface IFormEventHandler : IEventHandler
 {
-    public void OnBeforeInsert(object sender, FormBeforeActionEventArgs args);
-    public void OnBeforeUpdate(object sender, FormBeforeActionEventArgs args);
-    public void OnBeforeDelete(object sender, FormBeforeActionEventArgs args);
-    public void OnBeforeImport(object sender, FormBeforeActionEventArgs args);
-    public void OnAfterInsert(object sender, FormAfterActionEventArgs args);
-    public void OnAfterUpdate(object sender, FormAfterActionEventArgs args);
-    public void OnAfterDelete(object sender, FormAfterActionEventArgs args);
-    public void OnFormElementLoad(object sender, FormElementLoadEventArgs args);
-    
-    public Task OnBeforeInsertAsync(object sender, FormBeforeActionEventArgs args);
-    public Task OnBeforeUpdateAsync(object sender, FormBeforeActionEventArgs args);
-    public Task OnBeforeDeleteAsync(object sender, FormBeforeActionEventArgs args);
-    public Task OnBeforeImportAsync(object sender, FormBeforeActionEventArgs args);
-    public Task OnAfterInsertAsync(object sender, FormAfterActionEventArgs args);
-    public Task OnAfterUpdateAsync(object sender, FormAfterActionEventArgs args);
-    public Task OnAfterDeleteAsync(object sender, FormAfterActionEventArgs args);
-    public Task OnFormElementLoadAsync(object sender, FormElementLoadEventArgs args);
+    public Task OnBeforeInsertAsync(object sender, FormBeforeActionEventArgs args)
+#if NET
+    {
+        return Task.CompletedTask;
+    }
+#else
+    ;
+#endif
+    public Task OnBeforeUpdateAsync(object sender, FormBeforeActionEventArgs args)
+#if NET
+    {
+        return Task.CompletedTask;
+    }
+#else
+    ;
+#endif
+    public Task OnBeforeDeleteAsync(object sender, FormBeforeActionEventArgs args)
+#if NET
+    {
+        return Task.CompletedTask;
+    }
+#else
+    ;
+#endif
+    public Task OnBeforeImportAsync(object sender, FormBeforeActionEventArgs args)
+#if NET
+    {
+        return Task.CompletedTask;
+    }
+#else
+    ;
+#endif
+    public Task OnAfterInsertAsync(object sender, FormAfterActionEventArgs args)
+#if NET
+    {
+        return Task.CompletedTask;
+    }
+#else
+    ;
+#endif
+    public Task OnAfterUpdateAsync(object sender, FormAfterActionEventArgs args)
+#if NET
+    {
+        return Task.CompletedTask;
+    }
+#else
+    ;
+#endif
+    public Task OnAfterDeleteAsync(object sender, FormAfterActionEventArgs args)
+#if NET
+    {
+        return Task.CompletedTask;
+    }
+#else
+    ;
+#endif
+    public Task OnFormElementLoadAsync(object sender, FormElementLoadEventArgs args)
+#if NET
+    {
+        return Task.CompletedTask;
+    }
+#else
+    ;
+#endif
 }

@@ -48,8 +48,7 @@ namespace JJMasterData.Core.UI.Components;
 public class JJGridView : AsyncComponent
 {
     #region Events
-
-    public event EventHandler<GridCellEventArgs>? OnRenderCell;
+    
 
     public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
     
@@ -57,7 +56,6 @@ public class JJGridView : AsyncComponent
     /// Event fired when rendering the checkbox used to select the Grid row.
     /// <para/>Fired only when EnableMultSelect property is enabled.
     /// </summary>
-    public event EventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCell;
     public event AsyncEventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCellAsync;
     /// <summary>
     /// Event fired to retrieve table data
@@ -69,10 +67,8 @@ public class JJGridView : AsyncComponent
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// using the proc informed in the FormElement;
     /// </remarks>
-
-    public event EventHandler<GridDataLoadEventArgs>? OnDataLoad;
+    
     public event AsyncEventHandler<GridDataLoadEventArgs>? OnDataLoadAsync;
-    public event EventHandler<ActionEventArgs>? OnRenderAction;
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
     #endregion
 
@@ -124,8 +120,6 @@ public class JJGridView : AsyncComponent
             _dataExportation.ShowRowStriped = CurrentSettings.ShowRowStriped;
             _dataExportation.UserValues = UserValues;
             _dataExportation.ProcessOptions = ExportAction.ProcessOptions;
-
-            _dataExportation.OnRenderCell += OnRenderCell;
             _dataExportation.OnRenderCellAsync += OnRenderCellAsync;
             
             return _dataExportation;
@@ -354,13 +348,8 @@ public class JJGridView : AsyncComponent
 
             _table = new GridTable(this);
             
-            _table.Body.OnRenderAction += OnRenderAction;
             _table.Body.OnRenderActionAsync += OnRenderActionAsync;
-            
-            _table.Body.OnRenderCell += OnRenderCell;
             _table.Body.OnRenderCellAsync += OnRenderCellAsync;
-            
-            _table.Body.OnRenderSelectedCell += OnRenderSelectedCell;
             _table.Body.OnRenderSelectedCellAsync += OnRenderSelectedCellAsync;
 
 
@@ -1077,7 +1066,7 @@ public class JJGridView : AsyncComponent
                 return await DataExportation.GetResultAsync();
             case "startProcess":
                 {
-                    if (IsUserSetDataSource || OnDataLoad != null || OnDataLoadAsync != null)
+                    if (IsUserSetDataSource)
                     {
                         var result = await GetDataSourceAsync(new EntityParameters
                         {
@@ -1176,7 +1165,7 @@ public class JJGridView : AsyncComponent
             return DictionaryListResult.FromDataTable(dataTable);
         }
 
-        if (OnDataLoad != null || OnDataLoadAsync != null)
+        if (OnDataLoadAsync != null)
         {
             var args = new GridDataLoadEventArgs
             {
@@ -1185,14 +1174,9 @@ public class JJGridView : AsyncComponent
                 RecordsPerPage = parameters.RecordsPerPage,
                 CurrentPage = parameters.CurrentPage,
             };
-
-            OnDataLoad?.Invoke(this, args);
-
-            if (OnDataLoadAsync != null)
-            {
-                await OnDataLoadAsync.Invoke(this, args);
-            }
-
+            
+            await OnDataLoadAsync.Invoke(this, args);
+            
             if (args.DataSource is not null)
             {
                 TotalOfRecords = args.TotalOfRecords;

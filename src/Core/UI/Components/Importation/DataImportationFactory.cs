@@ -94,11 +94,9 @@ internal class DataImportationFactory : IFormElementComponentFactory<JJDataImpor
         
         if (formEvent != null)
         {
-            // ReSharper disable once MethodHasAsyncOverload
-            formEvent.OnFormElementLoad(dataContext, new FormElementLoadEventArgs(formElement));
             await formEvent.OnFormElementLoadAsync(dataContext, new FormElementLoadEventArgs(formElement));
             
-            dataImp.OnBeforeImport += formEvent.OnBeforeImport;
+            dataImp.OnBeforeImportAsync += formEvent.OnBeforeImportAsync;
         }
         
         return dataImp;

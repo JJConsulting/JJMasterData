@@ -174,7 +174,7 @@ public class ElementService : BaseService
             args.TotalOfRecords = result.TotalOfRecords;
         };
 
-        formView.GridView.OnRenderAction += (sender, args) =>
+        formView.GridView.OnRenderActionAsync += (sender, args) =>
         {
             var elementName = args.FieldValues["name"]?.ToString();
             
@@ -195,6 +195,8 @@ public class ElementService : BaseService
                     args.LinkButton.OnClientClick = "";
                     break;
             }
+
+            return Task.CompletedTask;
         };
         
         return formView;

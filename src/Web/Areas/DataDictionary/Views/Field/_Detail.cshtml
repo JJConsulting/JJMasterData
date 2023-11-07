@@ -5,12 +5,17 @@
 @using JJMasterData.Core.Events.Extensions
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.UI.Components
+@using JJMasterData.Core.UI.Events.Abstractions
 @using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IOptions<MasterDataWebOptions> Options
+
 @inject IFormEventHandlerResolver FormEventHandlerResolver
+
+@inject IGridEventHandlerResolver GridEventHandlerResolver
+
 @{
     string currentTab = ViewBag.Tab ?? "#div-general";
 
@@ -22,7 +27,7 @@
 
 @{
     string elementName = ViewBag.ElementName;
-    var formEventHandler = FormEventHandlerResolver.GetFormEventHandler(elementName);
+    var formEventHandler = FormEventHandlerResolver.GetFormEventHandler(elementName) as IEventHandler ?? GridEventHandlerResolver.GetGridEventHandler(elementName);
 
     var isCustomizedField = formEventHandler?.GetCustomizedFields().Contains(Model.Name) ?? false;
     

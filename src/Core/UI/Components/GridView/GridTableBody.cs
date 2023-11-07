@@ -18,10 +18,6 @@ internal class GridTableBody
 {
     private string Name => $"{GridView.Name}-table";
     private JJGridView GridView { get; }
-    public event EventHandler<ActionEventArgs> OnRenderAction;
-    public event EventHandler<GridCellEventArgs> OnRenderCell;
-    public event EventHandler<GridSelectedCellEventArgs> OnRenderSelectedCell;
-
     
     public event AsyncEventHandler<ActionEventArgs> OnRenderActionAsync;
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
@@ -73,7 +69,7 @@ internal class GridTableBody
         var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
         var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
-        var onClickScript = GetOnClickScript(formStateData, defaultAction);
+        var onClickScript = await GetOnClickScript(formStateData, defaultAction);
 
         if (GridView.EnableMultiSelect)
         {
@@ -145,7 +141,7 @@ internal class GridTableBody
                     value = await GridView.FieldsService.FormatGridValueAsync(field, values, GridView.UserValues);
                     cell = new HtmlBuilder(value.Trim());
                 }
-                if (OnRenderCell != null || OnRenderCellAsync != null)
+                if (OnRenderCellAsync != null)
                 {
                     var args = new GridCellEventArgs
                     {
@@ -154,24 +150,15 @@ internal class GridTableBody
                         HtmlResult = cell,
                         Sender = new JJText(value)
                     };
-                    OnRenderCell?.Invoke(this,args);
-
-                    if (OnRenderCellAsync is not null)
-                    {
-                        await OnRenderCellAsync(this, args);
-                    }
-
-                    if (args.HtmlResult is not null)
-                    {
-                        td.Append(args.HtmlResult);
-                    }
-                    else
-                    {
-                        td.AppendText(value?.Trim() ?? string.Empty);
-                    }
+                    
+                    await OnRenderCellAsync(this, args);
+                    
+                    td.Append(args.HtmlResult);
                 }
-
-                td.Append(cell);
+                else
+                {
+                    td.Append(cell);
+                }
             }
 
             yield return td;
@@ -201,14 +188,21 @@ internal class GridTableBody
         control.Name = name;
         control.Attributes.Add("nRowId", index.ToString());
         control.CssClass = field.Name;
-
-        var renderCell = OnRenderCell;
-        if (renderCell != null)
+        
+        if (OnRenderCellAsync != null)
         {
             var args = new GridCellEventArgs { Field = field, DataRow = row, Sender = control };
 
-            OnRenderCell?.Invoke(GridView, args);
-            div.Append(args.HtmlResult);
+            await OnRenderCellAsync(GridView, args);
+
+            if (args.HtmlResult is not null)
+            {
+                div.Append(args.HtmlResult);
+            }
+            else
+            {
+                await div.AppendControlAsync(control);
+            }
         }
         else
         {
@@ -250,16 +244,10 @@ internal class GridTableBody
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
             var linkButton = factory.CreateGridTableButton(groupedAction, GridView, formStateData);
 
-            if (OnRenderAction != null || OnRenderActionAsync != null)
+            if ( OnRenderActionAsync != null)
             {
                 var args = new ActionEventArgs(groupedAction, linkButton, formStateData.Values);
-                
-                OnRenderAction?.Invoke(GridView,args);
-
-                if (OnRenderActionAsync is not null)
-                {
-                    await OnRenderActionAsync(GridView, args);
-                }
+                await OnRenderActionAsync(GridView, args);
             }
             
             btnGroup.Actions.Add(linkButton);
@@ -278,15 +266,13 @@ internal class GridTableBody
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("table-action");
             var link =  factory.CreateGridTableButton(action, GridView, formStateData);
-            if (OnRenderAction is not null || OnRenderActionAsync is not null)
+            if (OnRenderActionAsync is not null)
             {
                 var args = new ActionEventArgs(action, link, formStateData.Values);
-                OnRenderAction?.Invoke(GridView, args);
 
-                if (OnRenderActionAsync != null)
-                {
-                    await OnRenderActionAsync(GridView, args);
-                }
+        
+                await OnRenderActionAsync(GridView, args);
+                
                 
                 if (args.HtmlResult != null)
                 {
@@ -348,19 +334,15 @@ internal class GridTableBody
         
         checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => kvp.Value.Equals(pkValues)));
 
-        if (OnRenderSelectedCell is not null || OnRenderSelectedCellAsync is not null)
+        if (OnRenderSelectedCellAsync is not null)
         {
             var args = new GridSelectedCellEventArgs
             {
                 DataRow = row,
                 CheckBox = checkBox
             };
-            OnRenderSelectedCell?.Invoke(GridView, args);
-
-            if (OnRenderSelectedCellAsync is not null)
-            {
-                await OnRenderSelectedCellAsync(GridView, args);
-            }
+            
+            await OnRenderSelectedCellAsync(GridView, args);
             
             if (args.CheckBox != null)
                 return checkBox;
@@ -369,7 +351,7 @@ internal class GridTableBody
         return checkBox;
     }
 
-    private string GetOnClickScript(FormStateData formStateData, BasicAction defaultAction)
+    private async Task<string> GetOnClickScript(FormStateData formStateData, BasicAction defaultAction)
     {
         if (GridView.EnableEditMode || defaultAction == null)
             return string.Empty;
@@ -378,15 +360,13 @@ internal class GridTableBody
         
         var actionButton = factory.CreateGridTableButton(defaultAction, GridView, formStateData);
 
-        if (OnRenderAction != null)
+        if (OnRenderActionAsync != null)
         {
             var args = new ActionEventArgs(defaultAction, actionButton, formStateData.Values);
-            OnRenderAction.Invoke(GridView, args);
+            await OnRenderActionAsync(GridView, args);
 
             if (args.HtmlResult != null)
-            {
                 actionButton = null;
-            }
         }
 
         if (actionButton is { Visible: true })

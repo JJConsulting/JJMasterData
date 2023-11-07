@@ -12,8 +12,7 @@ namespace JJMasterData.Core.DataManager.Exportation;
 public class DataExportationWriterFactory
 {
     private IServiceProvider ServiceProvider { get; }
-
-    public event EventHandler<GridCellEventArgs>? OnRenderCell;
+    
     public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
     public DataExportationWriterFactory(IServiceProvider serviceProvider)
     {
@@ -50,7 +49,6 @@ public class DataExportationWriterFactory
             case ExportFileExtension.TXT:
                 var textWriter = GetTextWriter();
                 textWriter.Delimiter = dataExportation.ExportOptions.Delimiter;
-                textWriter.OnRenderCell += OnRenderCell;
                 textWriter.OnRenderCellAsync += OnRenderCellAsync;
                 
                 writer = (DataExportationWriterBase)textWriter;
@@ -60,7 +58,6 @@ public class DataExportationWriterFactory
                 var excelWriter = GetExcelWriter();
                 excelWriter.ShowRowStriped = dataExportation.ShowRowStriped;
                 excelWriter.ShowBorder = dataExportation.ShowBorder;
-                excelWriter.OnRenderCell += OnRenderCell;
                 excelWriter.OnRenderCellAsync += OnRenderCellAsync;
                 
                 writer = (DataExportationWriterBase)excelWriter;
@@ -74,7 +71,6 @@ public class DataExportationWriterFactory
 
                 pdfWriter.ShowRowStriped = dataExportation.ShowRowStriped;
                 pdfWriter.ShowBorder = dataExportation.ShowBorder;
-                pdfWriter.OnRenderCell += OnRenderCell;
                 pdfWriter.OnRenderCellAsync += OnRenderCellAsync;
                 
                 // ReSharper disable once SuspiciousTypeConversion.Global;

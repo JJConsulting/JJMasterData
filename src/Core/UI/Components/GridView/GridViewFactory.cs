@@ -82,31 +82,10 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
 
     private static void SetGridEvents(JJGridView gridView, IGridEventHandler eventHandler)
     {
-        var eventHandlerType = eventHandler.GetType();
-        if (IsMethodImplemented(eventHandlerType, nameof(eventHandler.OnDataLoad)))
-        {
-            gridView.OnDataLoad += eventHandler.OnDataLoad;
-        }
-
-        if (IsMethodImplemented(eventHandlerType, nameof(eventHandler.OnDataLoadAsync)))
-        {
-            gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
-        }
-
-        if (IsMethodImplemented(eventHandlerType, nameof(eventHandler.OnRenderAction)))
-        {
-            gridView.OnRenderAction += eventHandler.OnRenderAction;
-        }
-
-        if (IsMethodImplemented(eventHandlerType, nameof(eventHandler.OnRenderCell)))
-        {
-            gridView.OnRenderCell += eventHandler.OnRenderCell;
-        }
-
-        if (IsMethodImplemented(eventHandlerType, nameof(eventHandler.OnRenderSelectedCell)))
-        {
-            gridView.OnRenderSelectedCell += eventHandler.OnRenderSelectedCell;
-        }
+        gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
+        gridView.OnRenderActionAsync += eventHandler.OnRenderActionAsync;
+        gridView.OnRenderCellAsync += eventHandler.OnRenderCellAsync;
+        gridView.OnRenderSelectedCellAsync += eventHandler.OnRenderSelectedCellAsync;
     }
 
     private static bool IsMethodImplemented(Type type, string methodName)

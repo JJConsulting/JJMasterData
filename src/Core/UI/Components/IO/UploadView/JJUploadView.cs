@@ -131,7 +131,7 @@ public class JJUploadView : AsyncComponent
             _gridView.GridActions.Clear();
             _gridView.AddGridAction(DownloadAction);
             
-            _gridView.OnRenderAction += (_, args) =>
+            _gridView.OnRenderActionAsync += (_, args) =>
             {
                 if(args.ActionName.Equals(_downloadAction.Name))
                 {
@@ -142,6 +142,8 @@ public class JJUploadView : AsyncComponent
                         args.LinkButton.Enabled = false;
                     }
                 }
+
+                return Task.CompletedTask;
             };
 
             _gridView.AddGridAction(RenameAction);

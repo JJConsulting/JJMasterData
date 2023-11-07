@@ -22,7 +22,6 @@ namespace JJMasterData.Core.DataManager.Exportation;
 
 public class TextWriter : DataExportationWriterBase, ITextWriter
 {
-    public event EventHandler<GridCellEventArgs> OnRenderCell;
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
     public string Delimiter { get; set; }
     private IEntityRepository EntityRepository { get; } 
@@ -102,7 +101,7 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                         value = row[field.Name]?.ToString();
                 }
                 
-                if (OnRenderCell != null || OnRenderCellAsync != null)
+                if (OnRenderCellAsync != null)
                 {
                     var args = new GridCellEventArgs
                     {
@@ -110,14 +109,11 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
                         DataRow = row,
                         Sender = new JJText(value)
                     };
-                    OnRenderCell?.Invoke(this, args);
-
-                    if (OnRenderCellAsync != null)
-                    {
-                        await OnRenderCellAsync(this, args);
-                    }
                     
-                    value = args.HtmlResult.ToString();
+                    await OnRenderCellAsync(this, args);
+                    
+                    if(args.HtmlResult != null)
+                        value = args.HtmlResult.ToString();
                 }
 
                 await sw.WriteAsync(value);

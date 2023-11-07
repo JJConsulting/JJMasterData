@@ -50,14 +50,7 @@ namespace JJMasterData.Core.UI.Components;
 public class JJFormView : AsyncComponent
 {
     #region "Events"
-
-    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeInsert;
-    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeUpdate;
-    public event EventHandler<FormBeforeActionEventArgs>? OnBeforeDelete;
-    public event EventHandler<FormAfterActionEventArgs>? OnAfterInsert;
-    public event EventHandler<FormAfterActionEventArgs>? OnAfterUpdate;
-    public event EventHandler<FormAfterActionEventArgs>? OnAfterDelete;
-
+    
 
     public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeInsertAsync;
     public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeUpdateAsync;
@@ -129,9 +122,9 @@ public class JJFormView : AsyncComponent
                 return _dataImportation;
 
             _dataImportation = GridView.DataImportation;
-            _dataImportation.OnAfterDelete += OnAfterDelete;
-            _dataImportation.OnAfterInsert += OnAfterInsert;
-            _dataImportation.OnAfterUpdate += OnAfterUpdate;
+            _dataImportation.OnAfterDeleteAsync += OnAfterDeleteAsync;
+            _dataImportation.OnAfterInsertAsync += OnAfterInsertAsync;
+            _dataImportation.OnAfterUpdateAsync += OnAfterUpdateAsync;
 
             return _dataImportation;
         }
@@ -429,7 +422,7 @@ public class JJFormView : AsyncComponent
         childFormView.GridView.GridActions.Add(new InsertSelectionAction());
         childFormView.GridView.ToolBarActions.Add(GetInsertSelectionBackAction());
         
-        childFormView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
+        childFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
 
         
         return childFormView;
@@ -753,14 +746,6 @@ public class JJFormView : AsyncComponent
 
     private void SetFormServiceEvents()
     {
-        FormService.OnBeforeInsert += OnBeforeInsert;
-        FormService.OnBeforeDelete += OnBeforeDelete;
-        FormService.OnBeforeUpdate += OnBeforeUpdate;
-
-        FormService.OnAfterInsert += OnAfterInsert;
-        FormService.OnAfterUpdate += OnAfterUpdate;
-        FormService.OnAfterDelete += OnAfterDelete;
-
         FormService.OnBeforeInsertAsync += OnBeforeInsertAsync;
         FormService.OnBeforeDeleteAsync += OnBeforeDeleteAsync;
         FormService.OnBeforeUpdateAsync += OnBeforeUpdateAsync;
@@ -842,7 +827,7 @@ public class JJFormView : AsyncComponent
 
         var formView = ComponentFactory.FormView.Create(formElement);
         formView.UserValues = UserValues;
-        formView.GridView.OnRenderAction += InsertSelectionOnRenderAction;
+        formView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
         
         formView.GridView.ToolBarActions.Add(GetInsertSelectionBackAction());
 
@@ -1367,16 +1352,18 @@ public class JJFormView : AsyncComponent
         return toolbar;
     }
 
-    private void InsertSelectionOnRenderAction(object? sender, ActionEventArgs args)
+    private Task InsertSelectionOnRenderAction(object? sender, ActionEventArgs args)
     {
         if (sender is not JJGridView)
-            return;
+            return Task.CompletedTask;
 
         if (args.ActionName is not InsertSelectionAction.ActionName)
-            return;
+            return Task.CompletedTask;
 
         args.LinkButton.Tooltip = StringLocalizer["Select"];
         args.LinkButton.OnClientClick = Scripts.GetInsertSelectionScript(args.FieldValues);
+
+        return Task.CompletedTask;
     }
 
 

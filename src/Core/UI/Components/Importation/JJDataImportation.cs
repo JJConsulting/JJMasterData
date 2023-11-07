@@ -28,12 +28,12 @@ public class JJDataImportation : ProcessComponent
 {
     #region "Events"
 
-    internal event EventHandler<FormAfterActionEventArgs> OnAfterDelete;
-    internal event EventHandler<FormAfterActionEventArgs> OnAfterInsert;
-    internal event EventHandler<FormAfterActionEventArgs> OnAfterUpdate;
-
-    public event EventHandler<FormBeforeActionEventArgs> OnBeforeImport;
-    public event EventHandler<FormAfterActionEventArgs> OnAfterProcess;
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterInsertAsync;
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
+    
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterProcessAsync;
 
     #endregion
 
@@ -310,12 +310,12 @@ public class JJDataImportation : ProcessComponent
         worker.UserId = UserId;
         worker.ProcessOptions = ProcessOptions;
         
-        worker.FormService.OnAfterUpdate += OnAfterUpdate;
-        worker.FormService.OnAfterInsert += OnAfterInsert;
-        worker.FormService.OnAfterDelete += OnAfterDelete;
-        worker.FormService.OnBeforeImport += OnBeforeImport;
+        worker.FormService.OnAfterUpdateAsync += OnAfterUpdateAsync;
+        worker.FormService.OnAfterInsertAsync += OnAfterInsertAsync;
+        worker.FormService.OnAfterDeleteAsync += OnAfterDeleteAsync;
+        worker.FormService.OnBeforeImportAsync += OnBeforeImportAsync;
         
-        worker.OnAfterProcess += OnAfterProcess;
+        worker.OnAfterProcessAsync += OnAfterProcessAsync;
         
         return worker;
     }

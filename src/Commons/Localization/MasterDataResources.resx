@@ -12,7 +12,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="CustomizedFieldMessage" xml:space="preserve">
-        <value>This field is inside a Form Event Handler and its behavior may be modified at runtime. You can also not delete or modify its name.</value>
+        <value>This field is inside a event handler and its behavior may be modified at runtime. You can also not delete or modify its name.</value>
     </data>
     <data name="CustomizedField" xml:space="preserve">
         <value>Customized field</value>

@@ -25,7 +25,6 @@ namespace JJMasterData.Core.DataManager.Exportation;
 
 public class ExcelWriter : DataExportationWriterBase, IExcelWriter
 {
-    public event EventHandler<GridCellEventArgs> OnRenderCell;
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
 
     public bool ShowBorder { get; set; }
@@ -185,7 +184,7 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
             }
         }
 
-        if (OnRenderCell != null || OnRenderCellAsync != null)
+        if (OnRenderCellAsync != null)
         {
             var args = new GridCellEventArgs
             {
@@ -193,14 +192,14 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
                 DataRow = row,
                 Sender = new JJText(value)
             };
-            OnRenderCell?.Invoke(this, args);
 
-            if (OnRenderCellAsync != null)
+       
+            await OnRenderCellAsync(this, args);
+
+            if (args.HtmlResult is not null)
             {
-                await OnRenderCellAsync(this, args);
+                value = args.HtmlResult.ToString();
             }
-
-            value = args.HtmlResult.ToString();
         }
 
         return value;

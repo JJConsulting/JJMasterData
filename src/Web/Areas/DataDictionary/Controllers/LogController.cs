@@ -49,7 +49,7 @@ public class LogController : DataDictionaryController
         formView.GridView.CurrentOrder = OrderByData.FromString($"{Options.CreatedColumnName} DESC");
 
 
-        formView.GridView.OnRenderCell += (sender, args) =>
+        formView.GridView.OnRenderCellAsync += (sender, args) =>
         {
             string? message = string.Empty;
             if (args.Field.Name.Equals(Options.MessageColumnName))
@@ -65,6 +65,8 @@ public class LogController : DataDictionaryController
             
             }
             args.HtmlResult = new HtmlBuilder(message ?? string.Empty);
+
+            return Task.CompletedTask;
         };
         
         var result = await formView.GetResultAsync();
