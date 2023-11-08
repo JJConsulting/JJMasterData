@@ -4,7 +4,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<LangVersion>11.0</LangVersion>
 		<Nullable>disable</Nullable>
-		<Product>JJMasterData.Commons - Saturn Version</Product>
+		<Product>JJMasterData.Commons - Sun Version</Product>
 		<Description>JJMasterData base library. Contains i18n functions, logging, database and utilities.</Description>
 		<RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<RootNamespace>JJMasterData.Commons</RootNamespace>

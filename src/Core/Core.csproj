@@ -7,7 +7,7 @@
         <Nullable>disable</Nullable>
         <ImplicitUsings>false</ImplicitUsings>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Product>JJMasterData.Core - Saturn Version</Product>
+        <Product>JJMasterData.Core - Sun Version</Product>
         <Description>JJMasterData library to render JJMasterData's components.</Description>
         <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
         <RootNamespace>JJMasterData.Core</RootNamespace>

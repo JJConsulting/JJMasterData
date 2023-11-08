@@ -17,13 +17,9 @@ public class Cript
 {
     private const string SecretKeyErrorMessage = "You must config or pass a secret key";
     private static DesEncryptionAlgorithm _desEncryptionAlgorithm;
-    private static ReportPortalEnigmaAlgorithm _reportPortalEnigmaAlgorithm;
-
+    
     private static DesEncryptionAlgorithm DesEncryptionAlgorithm => _desEncryptionAlgorithm ??= new DesEncryptionAlgorithm();
-
-    private static ReportPortalEnigmaAlgorithm ReportPortalEnigmaAlgorithm =>
-        _reportPortalEnigmaAlgorithm ??= new ReportPortalEnigmaAlgorithm();
-
+    
     /// <summary>
     /// Encrypts a text.
     /// DES algorithm can be broken easily as it has known vulnerabilities. Please use AesEncryptionService.
@@ -73,21 +69,6 @@ public class Cript
     {
         return Md5HashHelper.VerifyHash(input, hash);
     }
-
-    public static string EnigmaEncryptRP(string message, string secretKey = "Secret")
-    {
-        if (string.IsNullOrEmpty(secretKey))
-            throw new ArgumentNullException(nameof(secretKey), SecretKeyErrorMessage);
-        
-        return ReportPortalEnigmaAlgorithm.EncryptString(message, secretKey);
-    }
-
-    public static string EnigmaDecryptRP(string message, string secretKey = "Secret")
-    {
-        if (string.IsNullOrEmpty(secretKey))
-            throw new ArgumentNullException(nameof(secretKey), SecretKeyErrorMessage);
-        
-        return ReportPortalEnigmaAlgorithm.DecryptString(message, secretKey);
-    }
+    
 }
 #endif
