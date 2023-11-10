@@ -11,7 +11,7 @@ public class RouteContext
     public string? ParentElementName { get; set; }
     public ComponentContext ComponentContext { get; set; }
     
-    internal RouteContext()
+    public RouteContext()
     {
         ComponentContext = ComponentContext.RenderComponent;
     }
@@ -23,7 +23,7 @@ public class RouteContext
         ParentElementName = parentElementName;
     }
 
-    internal static RouteContext FromFormElement(FormElement formElement,ComponentContext context)
+    public static RouteContext FromFormElement(FormElement formElement,ComponentContext context)
     {
         return new RouteContext(formElement.Name, formElement.ParentName, context);
     }
