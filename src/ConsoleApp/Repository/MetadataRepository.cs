@@ -52,9 +52,14 @@ public class MetadataRepository
         MasterDataElement.Fields.Add(new ElementField
         {
             Name = "namefilter",
-            Filter = new ElementFilter(FilterMode.Contain)
+            Filter = new ElementFilter(FilterMode.Contain),
+            DataBehavior = FieldBehavior.ViewOnly
         });
-        
+
+        //Ignore procedures to apply compatibility
+        MasterDataElement.UseReadProcedure = false;
+        MasterDataElement.UseWriteProcedure = false;
+
         string currentName = "";
         var dt = _entityRepository.GetDictionaryListResultAsync(MasterDataElement,entityParameters, false).GetAwaiter().GetResult();
         Metadata currentParser = null;

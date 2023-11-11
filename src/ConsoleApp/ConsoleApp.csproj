@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
         <AssemblyName>JJMasterData.ConsoleApp</AssemblyName>
         <RootNamespace>JJMasterData.ConsoleApp</RootNamespace>
+	    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
 
     <ItemGroup>

@@ -42,7 +42,7 @@ public class SqlServerScripts
 
         var fields = element.Fields
             .ToList()
-            .FindAll(f => f.DataBehavior is not FieldBehavior.Virtual);
+            .FindAll(f => f.DataBehavior is FieldBehavior.Real);
         
         return SqlServerReadProcedureScripts.GetReadScript(element, fields);
     }
