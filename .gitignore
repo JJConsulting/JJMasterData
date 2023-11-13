@@ -355,3 +355,4 @@ jjmasterdata.js.map
 
 # Ignore the default exportation path
 JJExportationFiles/
+/doc/Documentation/api
