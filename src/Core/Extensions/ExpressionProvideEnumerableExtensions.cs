@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
-namespace JJMasterData.Core.DataManager.Expressions.Extensions;
+namespace JJMasterData.Core.Extensions;
 
-public static class ExpressionProvideEnumerableExtensions
+public static class ExpressionProviderEnumerableExtensions
 {
     public static string[] GetAsyncProvidersPrefixes(this IEnumerable<IExpressionProvider> expressionProviders)
     {
