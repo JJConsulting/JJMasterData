@@ -6,13 +6,15 @@ A plugin to enable Python support at certain features of JJMasterData.
 
 At your startup, add the following line:
 ```python
-builder.Services.AddJJMasterDataWeb().WithPythonEvents()
+builder.Services.AddJJMasterDataWeb().WithPythonEventHandlers()
 ```
-The following IConfiguration keys are possible:
 
-## FormEvents
+You can check the possible options at <xref:JJMasterData.Python.Configuration.Options.PythonEngineOptions>.
 
-To use FormEvents with Python, the Python file with your element name and implement a class with the same name.
+
+## Event Handlers
+
+To create event handlers with Python, the Python file with your element name and implement a class with the same name.
 
 ```py
 from JJMasterData.Core.Events.Abstractions import FormEventHandlerBase

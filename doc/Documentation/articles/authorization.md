@@ -108,7 +108,7 @@ public class MasterDataPermissionRequirement : AuthorizationHandler<IAuthorizati
 If you want to protect specific actions or fields in your DataDictionary, you will need to implement your
 own [JJFormView](components/form_view.md) in your custom view.
 <br>
-[Learn more here.](custom_rules.md)
+
 
 > [!TIP]
 > Don't forget to secure every policy in **production**, this is just a example for learning purposes.

@@ -72,10 +72,10 @@ JJFormView is the class responsible to render all JJMasterData CRUDs. It have ma
 a huge customization potential using .NET code, you can even inject Python code in your application at runtime.
 You have 2 options to instantiate a JJFormView:
 
-1. Using the `/DataDictionary/Render/{dictionaryName}` route
+1. Using the `/DataDictionary/Render/{elementName}` route
 2. Creating a View or Page instantiating a JJFormView
 
 For customization you have a lot of scenarios too:
 1. Using the DataDictionary Web interface, we have lots of options, we don't have everything documented **yet**, but you can help submitting a PR
-2. Using the IFormEvent interface (recommended), check the docs for more information
+2. Using the <xhref: JJMasterData.Core.Events.Abstractions.IFormEventHandler> interface (recommended), check the docs for more information
 3. Customizing your own JJFormView object at your pages (the old school way of the JJ Consulting team in the WebForms era, not recommended)

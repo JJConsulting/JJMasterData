@@ -1,4 +1,4 @@
-# Customize Rules
+# Custom Rules
 
 There are three ways to customize MasterData
 
@@ -67,14 +67,17 @@ public class AgendamentoStatusFormEventHandler : FormEventHandlerBase
 <br>
 <img alt="Importing" src="../media/CustomizedFieldsAttribute.png"/>
 
+> [!TIP] 
+> If you want to also customize Grid events, you can also implement <xref:JJMasterData.Core.UI.Events.Abstractions.IGridEventHandler> at your class.
+
+
 ## Python event handler implementations
-Check our [Plugin](plugins/python.md)
+You can check out our [Plugin](plugins/python.md)
 
 ## IFormEventResolver
 
-Implement your own <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandlerResolver> 
-that returns a <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler> from a element name.
-
+<xref:JJMasterData.Core.Events.Abstractions.IFormEventHandlerResolver> is the responsible for retrieving <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler> implementations from a element name.
+You can also create your own implementation.
 At your Program.cs use:
 ```cs
 builder.Services.AddJJMasterDataWeb().WithFormEventResolver<TYourImplementation>();
@@ -84,7 +87,7 @@ builder.Services.AddJJMasterDataWeb().WithFormEventResolver<TYourImplementation>
 
 <br>
 
-If you want to dynamically load from 
+If you want to dynamically load from another assembly for example, you can use the following example:
 ```cs
 Assembly assemblyWithEvents = typeof(MyFormEventHandler).Assembly;
 Assembly anotherAssembly = typeof(MyFormEventHandler).Assembly;

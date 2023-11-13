@@ -14,7 +14,7 @@ using Microsoft.Scripting.Hosting;
 namespace JJMasterData.Python.Configuration;
 public static class MasterDataServiceBuilderExtensions
 {
-    public static MasterDataServiceBuilder WithPythonEvents(this MasterDataServiceBuilder builder, Action<PythonEngineOptions>? configure = null)
+    public static MasterDataServiceBuilder WithPythonEventHandlers(this MasterDataServiceBuilder builder, Action<PythonEngineOptions>? configure = null)
     {
         builder.Services.AddOptions<PythonEngineOptions>().BindConfiguration("JJMasterData:Python");
         
@@ -24,7 +24,7 @@ public static class MasterDataServiceBuilderExtensions
         builder.Services.AddScoped<IFormEventHandlerResolver,PythonEventHandlerResolver>();
         builder.Services.AddScoped<IGridEventHandlerResolver,PythonEventHandlerResolver>();
 
-        builder.Services.AddSingleton<ScriptEngine>(svp =>
+        builder.Services.AddSingleton(svp =>
         {
             var additionalPaths = svp.GetRequiredService<IOptions<PythonEngineOptions>>().Value.AdditionalScriptsPaths;
             return PythonEngineFactory.CreateScriptEngine(additionalPaths);
