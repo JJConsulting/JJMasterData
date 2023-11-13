@@ -28,4 +28,4 @@ In the example above the following HTML code is generated
 
 <br>
 
-You can check all available TagHelpers at our [API Reference](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Web.TagHelpers.html)
+You can check all available TagHelpers at <xhref:JJMasterData.Web.TagHelpers>

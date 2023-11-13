@@ -25,6 +25,8 @@
   items:
   - name: Creating your first dictionary
     href: tutorials/creating_data_dictionary.md
+  - name: Importing at CI/CD pipelines
+    href: tutorials/source_control.md
   - name: UI Options
     href: tutorials/ui_options.md
   - name: Configuring Data Upload
@@ -55,8 +57,6 @@
     href: plugins/hangfire.md
   - name: MongoDB
     href: plugins/mongodb.md
-  - name: Source Control
-    href: plugins/sourcecontrol.md
   - name: Python
     href: plugins/python.md
 - name: Miscellaneous

@@ -14,7 +14,7 @@ public class ImportService
     public ImportService(IDataDictionaryRepository dataDictionaryRepository, IConfiguration configuration)
     {
         DataDictionaryRepository = dataDictionaryRepository;
-        DictionariesPath = configuration.GetJJMasterData().GetValue<string?>("DictionaryPath");
+        DictionariesPath = configuration.GetJJMasterData().GetValue<string?>("DataDictionaryPath");
     }
 
     public void Import()

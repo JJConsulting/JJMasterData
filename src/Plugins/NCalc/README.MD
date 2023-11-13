@@ -7,12 +7,16 @@ builder.AddJJMasterDataWeb().WithNCalcExpressionProvider();
 ```
 
 ## Usage
-Expressions are parsed just like the Value and DataTable providers. Using {}.
+Expressions are pre-parsed just like the Value and DataTable providers. Using {}.
 
-NCalc support more operators than DataTable.Compute, like "if" statements.
+NCalc support more operators than DataTable.Compute, like "if" statements or ternary operators.
 
 ```
 if('{MyColumn}',1,0)
+```
+
+```
+'{MyColumn}' ? 'true result' : 'false result'
 ```
 
 Check [NCalc wiki](https://github.com/ncalc/ncalc/wiki) for more information.

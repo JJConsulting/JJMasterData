@@ -2,91 +2,108 @@
 
 There are three ways to customize MasterData
 
-- FormEvents
+- Event Handlers
 - Editing your JJFormView at runtime
 - Stored procedures
 
-The first way is the recommended, FormEvents don't customize the database and they reflect on systems that use JJMasterData.WebApi. They also works on any JJFormView object.
+The first way is the recommended, Event Handlers don't customize the database and they reflect on systems that use JJMasterData.WebApi. They also works on any JJFormView object.
 
-# FormEvents
+# Event Handlers
 
 ## Overview
-The purpose of a class implementing <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEvent>, is to patronize the customizations and programmatically customize your dictionary rules without a custom view.
+The purpose of a class implementing <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler>, is to patronize the customizations and programmatically customize your dictionary rules without a custom view.
 
-<br>
-
-To use them add to your `Program.cs` file the following method:
-
-```cs
-builder.Services.AddJJMasterDataWeb().WithFormEventResolver();
-```
-
-If the class it is not in the current assembly you must pass the assembly path on startup.
-
-```cs
-Assembly assemblyWithEvents = typeof(MyFormEvent).Assembly;
-builder.Services.AddJJMasterDataWeb().WithFormEventResolver(options=>
-{
-    options.Assemblies = assemblyWithEvents;
-});
-```
 
 To customize your business rules you can use one of these:
 
-## Assembly reflection (Default implementation)
-A .NET Form Event is a class that implements the <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEvent> interface.
+## C# interface implementations
+A .NET Form Event is a class that implements the <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler> interface.
 
-Create a class with starts with your metadata name or use the `FormEvent` attribute.
+Create a class with starts with your element name or use the `FormEvent` attribute.
 
-Inherit from BaseFormEvent (that implements IFormEvent) in your class and then generate your overrides with CTRL+. in your class using VS or Rider:
+Implement <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler> in your class and then generate your overrides with CTRL+. in your class using VS or Rider:
 
-<img alt="Generate Overrides" src="../media/GenerateOverrides.png"/>
 
 Your implementation will look like this:
 ```cs
-[FormEvent("Example")] // or a class that starts with your element name.
-public class MyFormEvent : BaseFormEvent
+
+[CustomizedFields(IconeFieldName)]
+public class AgendamentoStatusFormEventHandler : FormEventHandlerBase
 {
-    public override void OnMetadataLoad(object sender, MetadataLoadEventArgs args)
+    private const string IconeFieldName = "Icone";
+    public override string ElementName => "AgendamentoStatus";
+    
+    public override Task OnFormElementLoadAsync(object sender, FormElementLoadEventArgs args)
     {
-        args.Metadata.Form.SubTitle = "You can edit your metadata at runtime using the FormEvent class";
+        var formElement = args.FormElement;
+        var iconField = formElement.Fields[IconeFieldName];
+        iconField.Component = FormComponent.Search;
+        iconField.DataItem = new FormElementDataItem
+        {
+            DataItemType = DataItemType.Manual,
+            Items = new List<DataItemValue>(),
+            ShowIcon = true
+        };
+
+        foreach (var icon in Enum.GetValues<IconType>())
+        {
+            iconField.DataItem.Items.Add(new DataItemValue
+            {
+                Id = ((int)icon).ToString(),
+                Description = icon.ToString(),
+                Icon = icon
+            });
+        }
+        
+        return Task.CompletedTask;
     }
 }
 ```
 
-## Python
+
+> [!TIP] 
+> If you add the <xref:JJMasterData.Core.Events.Attributes.CustomizedFieldsAttribute> at your class, your customized fields will look like the image below.
+
+<br>
+<img alt="Importing" src="../media/CustomizedFieldsAttribute.png"/>
+
+## Python event handler implementations
 Check our [Plugin](plugins/python.md)
 
 ## IFormEventResolver
 
-Implement your own <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEventResolver> 
-that returns a <xref:JJMasterData.Core.FormEvents.Abstractions.IFormEvent> from a dictionary name.
+Implement your own <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandlerResolver> 
+that returns a <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler> from a element name.
 
 At your Program.cs use:
 ```cs
 builder.Services.AddJJMasterDataWeb().WithFormEventResolver<TYourImplementation>();
 ```
 
+## Dynamically loading Event Handlers using DI
+
+<br>
+
+If you want to dynamically load from 
+```cs
+Assembly assemblyWithEvents = typeof(MyFormEventHandler).Assembly;
+Assembly anotherAssembly = typeof(MyFormEventHandler).Assembly;
+
+builder.Services.AddEventHandlers<IFormEventHandler>(assemblyWithEvents, anotherAssembly);
+
+```
+
 # Customizing your FormView
 
-At your custom view:
-
-```html
-@{
-
-    void Configure(JJFormView formView)
-    {
-        formView.FormElement.SubTitle = "You can edit any property from JJFormView at runtime";
-    }
-}
-<form>
-    <jj-form-view element-name="Example" configure="Configure"/>
-</form>
+```cs
+var formView = await FormViewFactory.CreateAsync("ElementName");
+formView.FormElement.Title = "Runtime customization".
+```
 
 ```
 
 > [!WARNING]
-> These changes will only reflect at this view
+> These changes will only reflect at this specific instance.
 
 # Customizing with stored procedures
 

@@ -23,13 +23,15 @@ public static class EventHandlerServiceExtensions
         return services;
     }
 
-    private static IServiceCollection AddEventHandlers<T>(this IServiceCollection services) where T : IEventHandler
+    public static IServiceCollection AddEventHandlers<T>(this IServiceCollection services, params Assembly[] additionalAssemblies) where T : IEventHandler
     {
         var assemblies = new List<Assembly>
         {
             Assembly.GetEntryAssembly(),
             typeof(EventHandlerServiceExtensions).Assembly
         };
+
+        assemblies.AddRange(additionalAssemblies);
         
         var types = ReflectionUtils.GetDefinedTypes<T>(assemblies);
 

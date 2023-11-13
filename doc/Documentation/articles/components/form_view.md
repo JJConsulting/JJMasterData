@@ -29,8 +29,8 @@ At your Controller, create a JJFormView instance and use the result as your Mode
         var result = await formView.GetResultAsync();
         
         /// Here we intercept any async POST request, like pagination and search boxes.
-        if (result.IsActionResult())
-            return result.ToActionResult();
+        if (result is IActionResult actionResult)
+            return actionResult;
         
         var model = new Model(result.Content);
         return View("YourView",model);
@@ -55,4 +55,4 @@ if you want to programmatically change your CRUD title, your can simply call:
 ```
 
 In a nutshell, use FormElement property to customize anything from the Data Dictionary, like your fields. 
-You can check all properties from FormView at our [API Reference](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.UI.JJFormView.html)
+You can check all properties from FormView at <xhref:JJMasterData.Core.UI.Components.JJFormView>

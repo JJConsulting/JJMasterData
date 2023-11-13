@@ -8,20 +8,15 @@
           ],
           "src": "../../src",
           "exclude": [
-            "**/bin/**",
-            "**/obj/**",
-            "_site/**",
-            "_plugins/**",
-            "**/Plugins/**.cs*",
             "**/example/**",
             "**/test/**",
-            "**/JJMasterData.WebApi/**",
-            "**/test/**",
-            "**/JJMasterData.SourceControl/**"
+            "**/WebApi/**",
+            "**/WebEntryPoint/**",
+            "**/ConsoleApp/**"
           ]
         }
       ],
-      "dest": "lib",
+      "dest": "api",
       "namespaceLayout":"nested",
       "disableGitFeatures": false,
       "disableDefaultFilter": false
@@ -31,10 +26,9 @@
     "content": [
       {
         "files": [
-          "lib/**.yml",
-          "lib/**.md",
-          "articles/**.md",
-          "articles/**/toc.yml",
+          "api/*.yml",
+          "articles/**/*.md",
+          "articles/**/*.yml",
           "index.md",
           "toc.yml"
         ]
@@ -53,13 +47,7 @@
     "overwrite": [
       {
         "files": [
-          "lib/**.md"
-        ],
-        "exclude": [
-          "obj/**",
-          "plugins/**",
-          "templates/**",
-          "_site/**"
+          "api/**.md"
         ]
       }
     ],
@@ -70,7 +58,7 @@
       "_enableSearch": true,
       "_gitContribute": {
         "branch": "main",
-        "apiSpecFolder":"doc",
+        "apiSpecFolder":"api",
         "repo": "https://github.com/jjconsulting/JJMasterData"
       },
       "_gitUrlPattern": "github",

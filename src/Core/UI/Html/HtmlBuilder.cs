@@ -11,7 +11,7 @@ namespace JJMasterData.Core.UI.Html;
 /// Represents a mutable string of HTML tags.
 /// </summary>
 /// <example>
-/// [!include[Test](../../../doc/JJMasterData.Documentation/articles/usages/htmlbuilder.md)]
+/// [!include[Example](../../../doc/Documentation/articles/usages/htmlbuilder.md)]
 /// </example>
 public partial class HtmlBuilder
 {

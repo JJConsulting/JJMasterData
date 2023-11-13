@@ -1,7 +1,7 @@
 # Reserved Keywords
 We have some reserved keywords, which can be used between {...} in expressions and elsewhere.
 
-## USERID
+## UserId
 The USERID is a global identifier to the current user in JJMasterData. It's used for  user identification the following services:
 
 - Data Exportation / Importation
@@ -10,23 +10,23 @@ The USERID is a global identifier to the current user in JJMasterData. It's used
 You can set the USERID in your application after authentication on both Session or Claims.
 
 ```cs
-context.Session.SetString("USERID","YourUserIdentifier");
+context.Session.SetString("UserId","YourUserIdentifier");
 ```
 or
 ```cs
-identity.AddClaim(new Claim("USERID", "YourUserIdentifier"))
+identity.AddClaim(new Claim("UserId", "YourUserIdentifier"))
 ```
 
-## pagestate
+## PageState
 It's the current state of the form:
 ```
 "INSERT", "UPDATE", "VIEW", "LIST", "FILTER", "IMPORT"
 ```
-## objname
+## FieldName
 It's the name of the field that triggered the autopostback event
 
-## search_id
+## SearchId
 It's is a parameter from JJSearchBox component passed to server to filter a list
 
-## search_text
+## SearchText
 Used in JJSearchBox, it's a typed text to release a search command. You can be use it to prepare a command in the query.

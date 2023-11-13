@@ -20,23 +20,10 @@ https://raw.githubusercontent.com/JJConsulting/JJMasterData.JsonSchema/main/JJMa
     "ConnectionString": "data source=data source=localhost;initial catalog=JJMasterData;Integrated Security=True"
   },
   "JJMasterData": {
-    "TableName": "tb_masterdata",
+    "DataDictionaryTableName": "tb_masterdata",
     "ResourcesTableName": "tb_masterdata_resources",
-    "PrefixGetProc": "jj_get{tablename}",
-    "PrefixSetProc": "jj_set{tablename}",
-    "BootstrapVersion":5,
-    "Logger": {
-      "Table": {
-        "Name": "tb_masterdata_log"
-      },
-      "FileName": "yyyyMMdd_applog.txt",
-      "WriteInDatabase": "All",
-      "WriteInFile": "All"
-    },
-    "Swagger": {
-      "DarkMode": true,
-      "Enable": true
-    }
+    "ReadProcedurePattern": "{tablename}Get",
+    "WriteProcedurePattern": "{tablename}Set"
   },
   "Logging": {
     "LogLevel": {
@@ -51,26 +38,22 @@ https://raw.githubusercontent.com/JJConsulting/JJMasterData.JsonSchema/main/JJMa
 <br>
 
 
-**2)** Changing code at application startup
+**2)** Custom `Action<MasterDataWebOptions>` at application startup
 ```cs
 builder.Services.AddJJMasterDataWeb(options =>
 {
-    options.BootstrapVersion = 5;
     options.ConnectionString = "data source=localhost;initial catalog=JJMasterData;Integrated Security=True";
 });
 ```
 
 
-**3)** By custom `IConfiguration`
+**3)** By custom `IConfiguration` sources
 ```cs
-//Any class that implements a ISettings
+//Any IConfiguration sources
 builder.Configuration.AddXmlFile("my_custom_source.xml");
 
 //That simple
-builder.Services.AddJJMasterDataWeb(builder.Configuration);
-
-//or if you prefer
-//builder.Services.AddSingleton(settings);
+builder.Services.AddJJMasterDataWeb();
 ```
 
 ## What to configure?
@@ -80,7 +63,11 @@ builder.Services.AddJJMasterDataWeb(builder.Configuration);
 ///Edit your options at appsettings.json or pass IConfiguration via parameter.
 builder.Services.AddJJMasterDataWeb();
 ```
-You can change any of the [JJMasterDataOptions](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Options.JJMasterDataOptions.html) as seen above.
+You can change any property from:
+
+- <xhref:JJMasterData.Commons.Configuration.Options.MasterDataCommonsOptions>
+- <xhref:JJMasterData.Core.Configuration.Options.MasterDataCoreOptions>
+- <xhref:JJMasterData.Web.Configuration.Options.MasterDataWebOptions>
 <br>
 
 **Logging**

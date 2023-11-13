@@ -45,8 +45,8 @@ JJSearchBox is a searchable combobox.
         var result = await searchBox.GetResultAsync();
         
         /// Here we intercept your POST request to search your data.
-        if (searchBox.IsActionResult())
-            return searchBox.ToActionResult();
+        if (result is IActionResult actionResult)
+            return actionResult;
         
         var model = new Model(searchBox.Content);
         return View("YourView",model);
@@ -62,5 +62,4 @@ JJSearchBox is a searchable combobox.
 
 ## Customization
 
-You can check all properties from JJSearchBox at our [API Reference](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.UI.JJSearchBox.html)
-Also check [FormElementDataItem](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.DataDictionary.Models.FormElementDataItem.html)
+You can check all properties from JJSearchBox at <xhref:JJMasterData.Core.UI.Components.JJSearchBox>

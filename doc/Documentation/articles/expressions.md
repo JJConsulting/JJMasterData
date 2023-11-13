@@ -1,11 +1,11 @@
 <h1>Expressions<small> Any fields and actions supports expressions</small></h1>
 
 ## What is a expression?
-Expression is a simple way to return a dynamic value.
+Expression is a simple way to return a dynamic value from a string.
 
 ## How it works?
 
-Expressions can return a boolean or a value at runtime<br>
+Expressions can return a boolean or a object value at runtime<br>
 Example: <br>
 
 "val:1" Return true.
@@ -79,12 +79,15 @@ field.DefaultValue = "sql:select field2 from table1 where field1 = '{field1}'";
 
 ## Implementing your own expression provider
 
-You can implement both [IBooleanExpressionProvider] (used at visible and enable expressions) or [IAsyncExpressionProvider] (used at triggers and default values.).
+You can implement both <xref:JJMasterData.Core.DataManager.Expressions.Abstractions.IBooleanExpressionProvider> (used at visible and enable expressions) or <xref:JJMasterData.Core.DataManager.Expressions.Abstractions.IAsyncExpressionProvider> (used at triggers and default values.).
 
-You can call [ExpressionHelper] method to replace values {} with runtime values.
+You can call <xref:JJMasterData.Core.DataManager.Expressions.ExpressionHelper> to replace values {} with runtime values.
+
+At your `Program.cs` simply:
+
 ```cs
 builder.Services.AddJJMasterDataWeb().WithExpressionProvider<TMyCustomProvider>();
 ```
 
 
-[!include[Readme](../../../../src/Plugins/NCalc/README.MD)]
+[!include[Readme](../../../src/Plugins/NCalc/README.MD)]
