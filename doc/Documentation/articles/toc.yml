@@ -47,7 +47,7 @@
   items:
     - name: ConnectionString not found.
       href: errors/connection_string.md
-    - name: {SearchId} is required at queries using ReplaceTextOnGrid.
+    - name: SearchId is required at queries using ReplaceTextOnGrid.
       href: errors/search_id.md
 - name: Plugins
   items:
