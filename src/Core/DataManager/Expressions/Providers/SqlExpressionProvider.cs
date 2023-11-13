@@ -20,7 +20,7 @@ internal class SqlExpressionProvider : IAsyncExpressionProvider
     }
 
     public string Prefix => "sql";
-    public string Title => "T-SQL";
+    public string Title => "SQL";
     
     public async Task<object?> EvaluateAsync(string expression, IDictionary<string,object?> parsedValues)
     {

@@ -1,2 +1,2 @@
-[!include[Readme](../../../../src/Plugins/JJMasterData.Python/README.MD)]
+[!include[Readme](../../../../src/Plugins/Python/README.MD)]
 

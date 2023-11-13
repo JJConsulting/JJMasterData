@@ -6,15 +6,24 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Expressions.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
 public class PanelService : BaseService
 {
-    public PanelService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<MasterDataResources> stringLocalizer)
+    private IEnumerable<IExpressionProvider> ExpressionProviders { get; }
+
+    public PanelService(
+        IValidationDictionary validationDictionary,
+        IEnumerable<IExpressionProvider> expressionProviders,
+        IDataDictionaryRepository dataDictionaryRepository,
+        IStringLocalizer<MasterDataResources> stringLocalizer)
         : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
     {
+        ExpressionProviders = expressionProviders;
     }
 
     public async Task SavePanelAsync(string elementName, FormElementPanel panel, string[]? selectedFields)
@@ -70,11 +79,11 @@ public class PanelService : BaseService
     {
         if (string.IsNullOrWhiteSpace(panel.VisibleExpression))
             AddError(nameof(panel.VisibleExpression), "Required [VisibleExpression] panel");
-        else if (!ValidateExpression(panel.VisibleExpression, "val:", "exp:"))
+        else if (!ValidateExpression(panel.VisibleExpression, ExpressionProviders.GetBooleanProvidersPrefixes()))
             AddError(nameof(panel.VisibleExpression), "Invalid [VisibleExpression] panel");
         if (string.IsNullOrWhiteSpace(panel.EnableExpression))
             AddError(nameof(panel.EnableExpression), "Required [VisibleExpression] panel");
-        else if (!ValidateExpression(panel.EnableExpression, "val:", "exp:"))
+        else if (!ValidateExpression(panel.EnableExpression, ExpressionProviders.GetBooleanProvidersPrefixes()))
             AddError(nameof(panel.EnableExpression), "Invalid [VisibleExpression] panel");
 
         return IsValid;

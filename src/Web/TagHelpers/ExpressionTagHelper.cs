@@ -189,7 +189,7 @@ public class ExpressionTagHelper : TagHelper
                         
                     });
                 }
-                else if (selectedExpressionType is "sql" or "exp")
+                else
                 {
                     div.Append(HtmlTag.TextArea, textArea =>
                     {
@@ -199,15 +199,6 @@ public class ExpressionTagHelper : TagHelper
 
                     div.AppendScript(
                         @$"onDOMReady(()=>{{CodeMirrorWrapper.setupCodeMirror('{name}-ExpressionValue',{{mode: 'text/x-sql',singleLine:true, hintList: {codeMirrorHintList}, hintKey: '{{'}});}})");
-                }
-                else
-                {
-                    div.Append(HtmlTag.Input, input =>
-                    {
-                        input.WithNameAndId(name + "-ExpressionValue");
-                        input.WithValue(selectedExpressionValue);
-                        input.WithCssClass("form-control");
-                    });
                 }
             });
             return div;

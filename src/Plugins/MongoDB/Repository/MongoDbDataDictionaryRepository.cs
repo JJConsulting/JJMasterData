@@ -13,7 +13,7 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
 {
     private readonly IMongoCollection<MongoDBFormElement> _formElementCollection;
 
-    public MongoDBDataDictionaryRepository(IOptions<JJMasterDataMongoDBOptions> options)
+    public MongoDBDataDictionaryRepository(IOptions<MasterDataMongoDBOptions> options)
     {
         var mongoClient = new MongoClient(
             options.Value.ConnectionString);

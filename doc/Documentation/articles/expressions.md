@@ -79,31 +79,12 @@ field.DefaultValue = "sql:select field2 from table1 where field1 = '{field1}'";
 
 ## Implementing your own expression provider
 
-Implement the [IExpressionProvider](https://portal.jjconsulting.com.br/jjdoc/lib/JJMasterData.Core.Expressions.Abstractions.IExpressionProvider.html) interface and add to your services your custom provider.
-You can implement both [IBooleanExpressionProvider] (used at visible and enable expressions) or [IAsyncExpressionProvider] (used at triggers and default values.)
+You can implement both [IBooleanExpressionProvider] (used at visible and enable expressions) or [IAsyncExpressionProvider] (used at triggers and default values.).
+
+You can call [ExpressionHelper] method to replace values {} with runtime values.
 ```cs
 builder.Services.AddJJMasterDataWeb().WithExpressionProvider<TMyCustomProvider>();
 ```
 
-## Protheus Plugin
 
-Add to your project:
-```cs
-    builder.Services.AddJJMasterDataWeb().WithProtheusServices();
-```
-Example using [protheus:] + "UrlProtheus", "NameFunction", "Parameters" <br>
-1. protheus:"http://localhost/jjmain.apw","u_test","";
-2. protheus:"http://localhost/jjmain.apw","u_test","{field1};parm2";
-```cs
-var field = new ElementField();
-field.DefaultValue = "protheus:'http://10.0.0.6:8181/websales/jjmain.apw', 'u_vldpan', '1;2'";
-```
-
-> [!IMPORTANT] 
-> A invalid expression will throw a exception in the application
-
-> [!WARNING] 
-> For Protheus calls apply JJxFun patch and configure http connection in Protheus
-> 
-
-## 
+[!include[Readme](../../../../src/Plugins/NCalc/README.MD)]

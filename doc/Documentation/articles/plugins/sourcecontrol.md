@@ -1,3 +1,3 @@
-[!include[Readme](../../../../src/Plugins/JJMasterData.SourceControl/README.MD)]
+[!include[Readme](../../../../src/Plugins/SourceControl/README.MD)]
 
 

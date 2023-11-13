@@ -11,10 +11,10 @@ makes more sense to store metadata in JSON format
 in a NoSQL database than in a relational database. <br>
 In the future it is also planned to implement the forms data storage (`IEntityRepository`).
 
-## Usage
-Add the following method to `JJServiceBuilder`:
+## Configuration
+Add the following method to `MasterDataServiceBuilder`:
 ```cs
-builder.AddJJMasterDataWeb(settingsPath)
+builder.AddJJMasterDataWeb()
 .WithMongoDBDataDictionaryRepository(mongo =>
 {
     mongo.ConnectionString = "mongodb://localhost:27017";

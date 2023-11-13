@@ -16,12 +16,12 @@ public static class MasterDataServiceBuilderExtensions
     public static MasterDataServiceBuilder WithMongoDbDataDictionary(this MasterDataServiceBuilder builder)
     {
         ConfigureMappers();
-        builder.Services.AddOptions<JJMasterDataMongoDBOptions>().BindConfiguration("JJMasterData:MongoDB");
+        builder.Services.AddOptions<MasterDataMongoDBOptions>().BindConfiguration("JJMasterData:MongoDB");
         builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, MongoDBDataDictionaryRepository>());
         return builder;
     }
     
-    public static MasterDataServiceBuilder WithMongoDbDataDictionary(this MasterDataServiceBuilder builder, Action<JJMasterDataMongoDBOptions> options)
+    public static MasterDataServiceBuilder WithMongoDbDataDictionary(this MasterDataServiceBuilder builder, Action<MasterDataMongoDBOptions> options)
     {
         ConfigureMappers();
         builder.Services.Configure(options);
@@ -32,7 +32,7 @@ public static class MasterDataServiceBuilderExtensions
     public static MasterDataServiceBuilder WithMongoDbDataDictionary(this MasterDataServiceBuilder builder, IConfiguration configuration)
     {
         ConfigureMappers();
-        builder.Services.AddOptions<JJMasterDataMongoDBOptions>().Bind(configuration);
+        builder.Services.AddOptions<MasterDataMongoDBOptions>().Bind(configuration);
         builder.Services.Replace(ServiceDescriptor.Transient<IDataDictionaryRepository, MongoDBDataDictionaryRepository>());
         return builder;
     }

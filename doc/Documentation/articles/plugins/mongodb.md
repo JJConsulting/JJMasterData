@@ -1,2 +1,2 @@
-[!include[Readme](../../../../src/Plugins/JJMasterData.MongoDB/README.MD)]
+[!include[Readme](../../../../src/Plugins/MongoDB/README.MD)]
 

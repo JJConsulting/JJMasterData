@@ -1,6 +1,6 @@
 namespace JJMasterData.MongoDB.Models;
 
-public class JJMasterDataMongoDBOptions
+public class MasterDataMongoDBOptions
 {
     public string ConnectionString { get; set; } = null!;
 
