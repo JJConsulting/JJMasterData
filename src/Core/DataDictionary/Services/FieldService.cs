@@ -7,7 +7,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.DataManager.Expressions.Extensions;
+using JJMasterData.Core.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 
