@@ -14,7 +14,7 @@
       <FileVersion>1.0.2</FileVersion>
       <RootNamespace>JJMasterData.Pdf</RootNamespace>
       <AssemblyName>JJMasterData.Pdf</AssemblyName>
-      
+      <PackageId>JJMasterData.Pdf</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

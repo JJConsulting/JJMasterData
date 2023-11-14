@@ -7,6 +7,11 @@
         <Nullable>enable</Nullable>
         <AssemblyName>JJMasterData.NCalc</AssemblyName>
         <RootNamespace>JJMasterData.NCalc</RootNamespace>
+        <Description>JJMasterData NCalc expressions support.</Description>
+        <PackageIcon>JJMasterData.png</PackageIcon>
+        <PackageId>JJMasterData.NCalc</PackageId>
+        <PackageTags>ncalc,jjmasterdata</PackageTags>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
     <ItemGroup>

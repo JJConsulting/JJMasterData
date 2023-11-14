@@ -6,11 +6,12 @@
 		<LangVersion>12</LangVersion>
         <Nullable>enable</Nullable>
         <Description>JJMasterData MongoDB support.</Description>
-        <PackageIcon>JJMasterData.png</PackageIcon>
         <RepositoryUrl>https://www.github.com/jjconsulting/JJMasterData</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <RootNamespace>JJMasterData.MongoDB</RootNamespace>
         <AssemblyName>JJMasterData.MongoDB</AssemblyName>
+        <PackageIcon>JJMasterData.png</PackageIcon>
+        <PackageId>JJMasterData.MongoDB</PackageId>
     </PropertyGroup>
 
     <ItemGroup>

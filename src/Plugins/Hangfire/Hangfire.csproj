@@ -11,6 +11,7 @@
 		<PackageTags>hangfire,jjmasterdata</PackageTags>
 		<RootNamespace>JJMasterData.Hangfire</RootNamespace>
 		<AssemblyName>JJMasterData.Hangfire</AssemblyName>
+		<PackageId>JJMasterData.MongoDB</PackageId>
 	</PropertyGroup>
 
 	<PropertyGroup>

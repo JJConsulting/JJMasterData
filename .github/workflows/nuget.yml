@@ -12,7 +12,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
         
       - name: Setup NodeJS
         uses: actions/setup-node@v3.4.1
@@ -32,11 +32,12 @@ jobs:
           - src/Web
           - src/Plugins/Hangfire
           - src/Plugins/Pdf
+          - src/Plugins/NCalc
     steps:
       - uses: actions/checkout@v2
       - name: Build and publish NuGet package
         run: |
-          npm install --prefix src/JJMasterData.Web
+          npm install --prefix src/Web
           cd ${{ matrix.project }}
           dotnet build -c release
           dotnet pack -c release --output="nuget"
