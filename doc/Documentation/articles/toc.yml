@@ -3,18 +3,20 @@
   items:
   - name: Getting Started
     href: getting_started.md
-  - name: TagHelpers
-    href: taghelpers.md
   - name: Configurations
     href: configurations.md
+  - name: Component Factories
+    href: component_factories.md
+  - name: Custom Rules
+    href: custom_rules.md
+  - name: TagHelpers
+    href: taghelpers.md
   - name: Logging
     href: logging.md
   - name: Internationalization
     href: internationalization.md
   - name: Authorization
     href: authorization.md
-  - name: Custom Rules
-    href: custom_rules.md
   - name: Expressions
     href: expressions.md
   - name: Reserved Keywords
@@ -38,11 +40,13 @@
 - name: Components
   href: components/intro.md
   items:
-  - name: JJAlert
+  - name: Alert
     href: components/alert.md
-  - name: JJSearchBox
+  - name: LinkButton
+    href: components/link_button.md
+  - name: SearchBox
     href: components/searchbox.md
-  - name: JJFormView
+  - name: FormView
     href: components/form_view.md
 - name: Errors
   href: errors/intro.md

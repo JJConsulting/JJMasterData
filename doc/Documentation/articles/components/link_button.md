@@ -1,4 +1,4 @@
-# JJLinkButton
+# LinkButton
 
 Represents a clickable button.
 

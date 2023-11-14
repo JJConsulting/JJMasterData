@@ -12,9 +12,9 @@ At `_ViewImports.cshtml`
 ```csharp
 @addTagHelper *, JJMasterData.Web
 ```
-At your Razor page
+## Examples
 
-### Example
+### Title
 ```html
  <jj-title title="My title" subtitle="Foo"/>
 ```
@@ -26,6 +26,33 @@ In the example above the following HTML code is generated
 </h1>
 ```
 
+> [!TIP]
+> Title is the only with the prefix jj because of a conflict with the <title> HTML tag.
+
+### CollapsePanel
+```html
+<collapse-panel model="Model" icon="Check" title="Dynamic Collapse Panel" partial="_MyPartialView" expanded-by-default="true"/>
+
+<collapse-panel  icon="Table" title="Static Collapse Panel"  expanded-by-default="true">
+    My static collapse-panel
+</collapse-panel>
+```
 <br>
 
+### Tooltip
+```html
+   <tooltip title="This is a help text inside a ? icon"/>
+```
+
+### Checkbox
+```html
+    <checkbox for="Form.IsVerticalLayout" switch="true"/>
+```
+### LinkButton
+````html
+<link-button 
+        icon="@Home" 
+        url-action="http://www.jjconsulting.tech"
+        text="JJ Consulting"/>
+````
 You can check all available TagHelpers at <xhref:JJMasterData.Web.TagHelpers>

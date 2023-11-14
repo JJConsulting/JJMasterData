@@ -1,4 +1,4 @@
-# JJSearchBox
+# SearchBox
 
 JJSearchBox is a searchable combobox.
 

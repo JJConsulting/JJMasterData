@@ -23,9 +23,6 @@ Go to ```/en-us/MasterData/Resources``` and populate the strings with your cultu
 > [!TIP] 
 > By default we write the resources in a table, allowed the user create dictionaries dynamically by adding translated words and texts, you can set the table name with the TableResources property in the JJMasterDataOptions class.
 
-## Create your own localization provider
-You can change the behavior of system internationalization with the interface [ILocalizationProvider](https://portal.jjconsulting.tech/jjdoc/lib/JJMasterData.Commons.Language.ILocalizationProvider.html) with your custom logic.
+## Implement IStringLocalizer<MasterDataResources>
 
-```cs
-builder.Services.WithLocalizationProvider()
-```
+See [ASP.NET Core Docs](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/localization?view=aspnetcore-8.0) for more information.
