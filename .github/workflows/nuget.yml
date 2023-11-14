@@ -30,6 +30,7 @@ jobs:
           - src/Commons
           - src/Core
           - src/Web
+          - src/WebApi
           - src/Plugins/Hangfire
           - src/Plugins/Pdf
           - src/Plugins/NCalc

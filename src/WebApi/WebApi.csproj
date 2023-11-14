@@ -2,12 +2,14 @@
 
   <PropertyGroup>
 	<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+	<RuntimeFrameworkVersion>8.0</RuntimeFrameworkVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
     <LangVersion>12</LangVersion>
     <RootNamespace>JJMasterData.WebApi</RootNamespace>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>JJMasterData.WebApi</PackageId>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <OutputType>library</OutputType>
