@@ -27,7 +27,7 @@ In the example above the following HTML code is generated
 ```
 
 > [!TIP]
-> Title is the only with the prefix jj because of a conflict with the <title> HTML tag.
+> Title is the only with the prefix jj because of a conflict with the title HTML tag.
 
 ### CollapsePanel
 ```html
