@@ -43,7 +43,6 @@ In the example above the following HTML code is generated
 ```html
    <tooltip title="This is a help text inside a ? icon"/>
 ```
-
 ### Checkbox
 ```html
     <checkbox for="Form.IsVerticalLayout" switch="true"/>
