@@ -6,27 +6,18 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class UploadViewFactory : IComponentFactory<JJUploadView>
-{
-    public ILoggerFactory LoggerFactory { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private IHttpContext CurrentContext { get; }
-    private IComponentFactory ComponentFactory { get; }
-    
-    public UploadViewFactory(
-        IHttpContext currentContext,
+internal class UploadViewFactory(IHttpContext currentContext,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
-    {
-        CurrentContext = currentContext;
-        ComponentFactory = componentFactory;
-        EncryptionService = encryptionService;
-        StringLocalizer = stringLocalizer;
-        LoggerFactory = loggerFactory;
-    }
+    : IComponentFactory<JJUploadView>
+{
+    public ILoggerFactory LoggerFactory { get; } = loggerFactory;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private IHttpContext CurrentContext { get; } = currentContext;
+    private IComponentFactory ComponentFactory { get; } = componentFactory;
 
     public JJUploadView Create()
     {

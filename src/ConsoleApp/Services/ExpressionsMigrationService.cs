@@ -9,25 +9,16 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.ConsoleApp.Services;
 
-public class ExpressionsMigrationService
+public class ExpressionsMigrationService(IEntityRepository entityRepository, 
+    IDataDictionaryRepository dataDictionaryRepository,
+    IOptions<MasterDataCoreOptions> options,
+    ILogger<ExpressionsMigrationService> logger)
 {
-    private IEntityRepository EntityRepository { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private ILogger<ExpressionsMigrationService> Logger { get; }
-    private MasterDataCoreOptions Options { get; }
-    public ExpressionsMigrationService(
-        IEntityRepository entityRepository, 
-        IDataDictionaryRepository dataDictionaryRepository,
-        IOptions<MasterDataCoreOptions> options,
-        ILogger<ExpressionsMigrationService> logger
-        )
-    {
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
-        Logger = logger;
-        Options = options.Value;
-    }
-    
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    private ILogger<ExpressionsMigrationService> Logger { get; } = logger;
+    private MasterDataCoreOptions Options { get; } = options.Value;
+
     public void Migrate()
     {
         var start = DateTime.Now;

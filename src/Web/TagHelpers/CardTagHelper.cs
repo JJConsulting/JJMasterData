@@ -10,7 +10,8 @@ using JJMasterData.Web.Services;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
-public class CardTagHelper : TagHelper
+public class CardTagHelper(RazorPartialRendererService rendererService, IComponentFactory<JJCard> cardFactory)
+    : TagHelper
 {
     
     [HtmlAttributeName("name")]
@@ -37,15 +38,9 @@ public class CardTagHelper : TagHelper
     
     [HtmlAttributeName("layout")]
     public PanelLayout? Layout { get; set; }
-    private RazorPartialRendererService RendererService { get; }
-    private IComponentFactory<JJCard> CardFactory { get; }
+    private RazorPartialRendererService RendererService { get; } = rendererService;
+    private IComponentFactory<JJCard> CardFactory { get; } = cardFactory;
 
-    public CardTagHelper(RazorPartialRendererService rendererService, IComponentFactory<JJCard> cardFactory)
-    {
-        RendererService = rendererService;
-        CardFactory = cardFactory;
-    }
-    
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var card = CardFactory.Create();

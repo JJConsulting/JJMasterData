@@ -4,14 +4,9 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace JJMasterData.Web.Models;
 
-public class ModelStateWrapper : IValidationDictionary
+public class ModelStateWrapper(IActionContextAccessor actionContextAccessor) : IValidationDictionary
 {
-    private readonly ModelStateDictionary _modelState;
-
-    public ModelStateWrapper(IActionContextAccessor actionContextAccessor)
-    {
-        _modelState = actionContextAccessor.ActionContext!.ModelState;
-    }
+    private readonly ModelStateDictionary _modelState = actionContextAccessor.ActionContext!.ModelState;
 
     public IEnumerable<string> Errors => 
         _modelState.Values.SelectMany(entry => entry.Errors.Select(e => e.ErrorMessage));

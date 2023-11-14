@@ -7,10 +7,8 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class IndexesController : DataDictionaryController
+public class IndexesController(IndexesService indexesService) : DataDictionaryController
 {
-    private readonly IndexesService _indexesService;
-
     [ViewData] 
     public string ElementName { get; set; } = null!;
     
@@ -22,15 +20,10 @@ public class IndexesController : DataDictionaryController
     
     [ViewData] 
     public List<SelectListItem> CheckboxList { get; set; } = null!;
-    
-    public IndexesController(IndexesService indexesService)
-    {
-        _indexesService = indexesService;
-    }
 
     public async Task<ActionResult> Index(string elementName)
     {
-        List<ElementIndex> listIndexes = (await _indexesService.GetFormElementAsync(elementName)).Indexes;
+        List<ElementIndex> listIndexes = (await indexesService.GetFormElementAsync(elementName)).Indexes;
         PopulateViewData(elementName);
 
         return View(listIndexes);
@@ -38,7 +31,7 @@ public class IndexesController : DataDictionaryController
 
     public async Task<ActionResult> Detail(string elementName, string index)
     {
-        FormElement formElement = await _indexesService.GetFormElementAsync(elementName);
+        FormElement formElement = await indexesService.GetFormElementAsync(elementName);
 
         ElementIndex elementIndex;
         if (!string.IsNullOrEmpty(index))
@@ -65,19 +58,19 @@ public class IndexesController : DataDictionaryController
 
         elementIndex.Columns = indexColumns;
 
-        if (await _indexesService.SaveAsync(elementName, index, elementIndex))
+        if (await indexesService.SaveAsync(elementName, index, elementIndex))
         {
             return Json(new { success = true });
         }
 
-        var summary = _indexesService.GetValidationSummary();
+        var summary = indexesService.GetValidationSummary();
         return Json(new { success = false, errorMessage = summary.GetHtml() });
     }
 
     [HttpPost]
     public async Task<ActionResult> Index(string elementName, string filter)
     {
-        List<ElementIndex> indexes = (await _indexesService.GetFormElementAsync(elementName)).Indexes;
+        List<ElementIndex> indexes = (await indexesService.GetFormElementAsync(elementName)).Indexes;
 
         if (!string.IsNullOrEmpty(filter))
             indexes = indexes.FindAll(l => l.Columns.Contains(filter));
@@ -90,14 +83,14 @@ public class IndexesController : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> Delete(string elementName, string index)
     {
-        await _indexesService.DeleteAsync(elementName, index);
+        await indexesService.DeleteAsync(elementName, index);
         return RedirectToAction("Index", new { elementName });
     }
 
     [HttpPost]
     public async Task<ActionResult> MoveDown(string elementName, string index)
     {
-        await _indexesService.MoveDownAsync(elementName, index);
+        await indexesService.MoveDownAsync(elementName, index);
         return RedirectToAction("Index", new { elementName });
 
     }
@@ -105,7 +98,7 @@ public class IndexesController : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> MoveUp(string elementName, string index)
     {
-        await _indexesService.MoveUpAsync(elementName, index);
+        await indexesService.MoveUpAsync(elementName, index);
         return RedirectToAction("Index", new { elementName });
 
     }
@@ -118,7 +111,7 @@ public class IndexesController : DataDictionaryController
 
     private async Task PopulateCheckBoxAsync(string elementName, string index)
     {
-        var formElement = await _indexesService.GetFormElementAsync(elementName);
+        var formElement = await indexesService.GetFormElementAsync(elementName);
         var listItems = new List<SelectListItem>();
 
         foreach (var field in formElement.Fields)

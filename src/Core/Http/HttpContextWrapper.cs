@@ -3,15 +3,11 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Http;
 
-internal class HttpContextWrapper : IHttpContext
+internal class HttpContextWrapper(IHttpSession session, IHttpRequest request,
+        IClaimsPrincipalAccessor claimsPrincipalAccessor)
+    : IHttpContext
 {
-    public IHttpSession Session { get; }
-    public IHttpRequest Request { get; }
-    public ClaimsPrincipal User { get; }
-    public HttpContextWrapper(IHttpSession session, IHttpRequest request, IClaimsPrincipalAccessor claimsPrincipalAccessor)
-    {
-        Session = session;
-        Request = request;
-        User = claimsPrincipalAccessor.User;
-    }
+    public IHttpSession Session { get; } = session;
+    public IHttpRequest Request { get; } = request;
+    public ClaimsPrincipal User { get; } = claimsPrincipalAccessor.User;
 }

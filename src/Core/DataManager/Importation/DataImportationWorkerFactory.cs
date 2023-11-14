@@ -7,31 +7,21 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Importation;
 
-public class DataImportationWorkerFactory
+public class DataImportationWorkerFactory(FormService formService, ExpressionsService expressionsService,
+    IEntityRepository entityRepository, FieldValuesService fieldValuesService,
+    IStringLocalizer<MasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
 {
-    public ILoggerFactory LoggerFactory { get; }
+    public ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
-    public IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    public IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
-    public FieldValuesService FieldValuesService { get; }
+    public FieldValuesService FieldValuesService { get; } = fieldValuesService;
 
-    public IEntityRepository EntityRepository { get; }
+    public IEntityRepository EntityRepository { get; } = entityRepository;
 
-    public ExpressionsService ExpressionsService { get; }
+    public ExpressionsService ExpressionsService { get; } = expressionsService;
 
-    public FormService FormService { get; }
-
-    public DataImportationWorkerFactory(FormService formService, ExpressionsService expressionsService,
-        IEntityRepository entityRepository, FieldValuesService fieldValuesService,
-        IStringLocalizer<MasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
-    {
-        FormService = formService;
-        ExpressionsService = expressionsService;
-        EntityRepository = entityRepository;
-        FieldValuesService = fieldValuesService;
-        StringLocalizer = stringLocalizer;
-        LoggerFactory = loggerFactory;
-    }
+    public FormService FormService { get; } = formService;
 
     public DataImportationWorker Create(DataImportationContext context)
     {

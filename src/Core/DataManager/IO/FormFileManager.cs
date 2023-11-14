@@ -13,9 +13,12 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.IO;
 
-public class FormFileManager
+public class FormFileManager(string memoryFilesSessionName,
+    IHttpContext httpContext,
+    IStringLocalizer<MasterDataResources> stringLocalizer, 
+    ILogger<FormFileManager> logger)
 {
-    private IHttpContext HttpContext { get; }
+    private IHttpContext HttpContext { get; } = httpContext;
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
     public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
     public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
@@ -23,14 +26,14 @@ public class FormFileManager
     /// <summary>
     /// Session variable name
     /// </summary>
-    private string MemoryFilesSessionName { get; set; }
+    private string MemoryFilesSessionName { get; set; } = $"{memoryFilesSessionName}_files";
 
     /// <summary>
     /// Always apply changes from files on disk,
     /// if it is false, keep it in memory
     /// Default: true
     /// </summary>
-    public bool AutoSave { get; set; }
+    public bool AutoSave { get; set; } = true;
 
     /// <summary>
     /// Full Directory Path.<para></para>
@@ -42,27 +45,14 @@ public class FormFileManager
     /// </remarks>
     public string FolderPath { get; set; }
 
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    
-    private ILogger<FormFileManager> Logger { get; }
-    
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+
+    private ILogger<FormFileManager> Logger { get; } = logger;
+
     public List<FormFileInfo> MemoryFiles
     {
         get => HttpContext.Session.GetSessionValue<List<FormFileInfo>>(MemoryFilesSessionName);
         set => HttpContext.Session.SetSessionValue(MemoryFilesSessionName, value);
-    }
-
-    public FormFileManager(
-        string memoryFilesSessionName,
-        IHttpContext httpContext,
-        IStringLocalizer<MasterDataResources> stringLocalizer, 
-        ILogger<FormFileManager> logger)
-    {
-        HttpContext = httpContext;
-        StringLocalizer = stringLocalizer;
-        Logger = logger;
-        MemoryFilesSessionName = $"{memoryFilesSessionName}_files";
-        AutoSave = true;
     }
 
     public List<FormFileInfo> GetFiles()

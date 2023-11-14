@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class AuditLogService
+public class AuditLogService(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public const string DicId = "id";
     public const string DicName = "dictionary";
@@ -31,16 +31,9 @@ public class AuditLogService
     public const string DicJson = "json";
 
     private static bool _hasAuditLogTable;
-    private IEntityRepository EntityRepository { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private MasterDataCoreOptions Options { get; }
-
-    public AuditLogService(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options, IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        EntityRepository = entityRepository;
-        StringLocalizer = stringLocalizer;
-        Options = options.Value;
-    }
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private MasterDataCoreOptions Options { get; } = options.Value;
 
     public async Task LogAsync(Element element,DataContext dataContext, IDictionary<string, object> formValues, CommandOperation action)
     {

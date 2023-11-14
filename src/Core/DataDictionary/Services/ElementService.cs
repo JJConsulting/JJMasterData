@@ -23,17 +23,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class ElementService : BaseService
-{
-    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
-    private IEncryptionService EncryptionService { get; }
-    private DataDictionaryFormElementFactory DataDictionaryFormElementFactory { get; }
-    private MasterDataUrlHelper UrlHelper { get; }
-    private readonly IEntityRepository _entityRepository;
-    private readonly MasterDataCoreOptions _options;
-
-    public ElementService(
-        IFormElementComponentFactory<JJFormView> formViewFactory,
+public class ElementService(IFormElementComponentFactory<JJFormView> formViewFactory,
         IValidationDictionary validationDictionary,
         IOptions<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
@@ -41,17 +31,14 @@ public class ElementService : BaseService
         IEncryptionService encryptionService,
         IDataDictionaryRepository dataDictionaryRepository,
         DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
-        MasterDataUrlHelper urlHelper
-        )
-        : base(validationDictionary, dataDictionaryRepository, stringLocalizer)
-    {
-        FormViewFactory = formViewFactory;
-        EncryptionService = encryptionService;
-        DataDictionaryFormElementFactory = dataDictionaryFormElementFactory;
-        UrlHelper = urlHelper;
-        _entityRepository = entityRepository;
-        _options = options.Value;
-    }
+        MasterDataUrlHelper urlHelper)
+    : BaseService(validationDictionary, dataDictionaryRepository, stringLocalizer)
+{
+    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private DataDictionaryFormElementFactory DataDictionaryFormElementFactory { get; } = dataDictionaryFormElementFactory;
+    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private readonly MasterDataCoreOptions _options = options.Value;
 
     #region Add Dictionary
 
@@ -63,7 +50,7 @@ public class ElementService : BaseService
         Element element;
         if (importFields)
         {
-            element = await _entityRepository.GetElementFromTableAsync(tableName);
+            element = await entityRepository.GetElementFromTableAsync(tableName);
         }
         else
         {
@@ -93,7 +80,7 @@ public class ElementService : BaseService
 
         if (importFields & IsValid)
         {
-            var exists = await _entityRepository.TableExistsAsync(tableName);
+            var exists = await entityRepository.TableExistsAsync(tableName);
             if (!exists)
                 AddError("Name", StringLocalizer["Table not found"]);
         }

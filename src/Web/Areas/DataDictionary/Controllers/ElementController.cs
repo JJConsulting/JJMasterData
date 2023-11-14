@@ -12,38 +12,21 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class ElementController : DataDictionaryController
-{
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
-    private readonly ElementService _elementService;
-    private readonly ClassGenerationService _classGenerationService;
-    private readonly ScriptsService _scriptsService;
-    private readonly IEntityRepository _entityRepository;
-    private readonly IComponentFactory<JJUploadArea> _uploadAreaFactory;
-
-    public ElementController(
-        ElementService elementService,
+public class ElementController(ElementService elementService,
         ClassGenerationService classGenerationService,
         ScriptsService scriptsService,
         IEntityRepository entityRepository,
         IComponentFactory<JJUploadArea> uploadAreaFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        _stringLocalizer = stringLocalizer;
-        _elementService = elementService;
-        _classGenerationService = classGenerationService;
-        _scriptsService = scriptsService;
-        _entityRepository = entityRepository;
-        _uploadAreaFactory = uploadAreaFactory;
-    }
-
+    : DataDictionaryController
+{
     public async Task<IActionResult> Index()
     {
         try
         {
-            await _elementService.CreateStructureIfNotExistsAsync();
+            await elementService.CreateStructureIfNotExistsAsync();
             
-            var formView = _elementService.GetFormView();
+            var formView = elementService.GetFormView();
             var result = await formView.GetResultAsync();
             
             if (result is IActionResult actionResult)
@@ -66,31 +49,31 @@ public class ElementController : DataDictionaryController
 
     public async Task<IActionResult> Export()
     {
-        var formView = _elementService.GetFormView();
+        var formView = elementService.GetFormView();
         var selectedRows = formView.GridView.GetSelectedGridValues();
 
         if (selectedRows.Count == 1)
         {
-            var jsonBytes = await _elementService.ExportSingleRowAsync(selectedRows[0]);
+            var jsonBytes = await elementService.ExportSingleRowAsync(selectedRows[0]);
             var jsonFileName = $"{selectedRows[0]["name"]}.json";
 
-            Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{jsonFileName}\"");
+            Response.Headers["Content-Disposition"] =  $"attachment; filename=\"{jsonFileName}\"";
             
             return File(jsonBytes, "application/octet-stream");
         }
 
-        var zipBytes = await _elementService.ExportMultipleRowsAsync(selectedRows);
+        var zipBytes = await elementService.ExportMultipleRowsAsync(selectedRows);
         var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
         var zipFileName = $"DataDictionaryExportation_{timestamp}.zip";
 
-        Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{zipFileName}\"");
+        Response.Headers["Content-Disposition"] = $"attachment; filename=\"{zipFileName}\"";
         
         return File(zipBytes, "application/octet-stream");
     }
 
     public async Task<IActionResult> Import()
     {
-        var uploadArea = _uploadAreaFactory.Create();
+        var uploadArea = uploadAreaFactory.Create();
         
         ConfigureUploadArea(uploadArea);
         
@@ -112,14 +95,14 @@ public class ElementController : DataDictionaryController
 
     private async Task FileUploaded(object? sender, FormUploadFileEventArgs e)
     {
-        await _elementService.Import(new MemoryStream(e.File.Bytes));
+        await elementService.Import(new MemoryStream(e.File.Bytes));
         if (ModelState.IsValid)
         {
-            e.SuccessMessage = _stringLocalizer["Dictionary imported successfully!"];
+            e.SuccessMessage = stringLocalizer["Dictionary imported successfully!"];
         }
         else
         {
-            var jjSummary = _elementService.GetValidationSummary();
+            var jjSummary = elementService.GetValidationSummary();
             foreach (var err in jjSummary.Errors)
                 e.ErrorMessage += $"<br>{err}";
         }
@@ -132,7 +115,7 @@ public class ElementController : DataDictionaryController
 
     public async Task<IActionResult> ClassSourceCode(string elementName)
     {
-        ViewBag.ClassSourceCode = await _classGenerationService.GetClassSourceCode(elementName);
+        ViewBag.ClassSourceCode = await classGenerationService.GetClassSourceCode(elementName);
         ViewBag.ElementName = elementName;
 
         return PartialView("ClassSourceCode");
@@ -140,9 +123,9 @@ public class ElementController : DataDictionaryController
 
     public async Task<IActionResult> Scripts(string elementName)
     {
-        var formElement = await _elementService.GetFormElementAsync(elementName);
-        var scripts = await _scriptsService.GetScriptsAsync(formElement);
-        var tableExists = await _entityRepository.TableExistsAsync(formElement.TableName);
+        var formElement = await elementService.GetFormElementAsync(elementName);
+        var scripts = await scriptsService.GetScriptsAsync(formElement);
+        var tableExists = await entityRepository.TableExistsAsync(formElement.TableName);
         
         var model = new ElementScriptsViewModel
         {
@@ -157,13 +140,13 @@ public class ElementController : DataDictionaryController
     [HttpPost]
     public async Task<IActionResult> Add(string tableName, bool importFields)
     {
-        var element = await _elementService.CreateEntityAsync(tableName, importFields);
+        var element = await elementService.CreateEntityAsync(tableName, importFields);
         if (element != null)
         {
             return RedirectToAction("Index", "Entity", new { elementName = element.Name });
         }
 
-        var jjValidationSummary = _elementService.GetValidationSummary();
+        var jjValidationSummary = elementService.GetValidationSummary();
         ViewBag.Error = jjValidationSummary.GetHtml();
         return View();
     }
@@ -171,12 +154,12 @@ public class ElementController : DataDictionaryController
     [HttpPost]
     public async Task<IActionResult> Duplicate(string originName, string newName)
     {
-        if (await _elementService.DuplicateEntityAsync(originName, newName))
+        if (await elementService.DuplicateEntityAsync(originName, newName))
         {
             return RedirectToAction("Index", new { elementName = newName });
         }
 
-        var jjValidationSummary = _elementService.GetValidationSummary();
+        var jjValidationSummary = elementService.GetValidationSummary();
         ViewBag.Error = jjValidationSummary.GetHtml();
         return View();
     }
@@ -186,7 +169,7 @@ public class ElementController : DataDictionaryController
     {
         try
         {
-            await _scriptsService.ExecuteScriptsAsync(elementName, scriptOption);
+            await scriptsService.ExecuteScriptsAsync(elementName, scriptOption);
             return new JsonResult(new { success = true });
         }
         catch (Exception ex)
@@ -198,7 +181,7 @@ public class ElementController : DataDictionaryController
     
     public async Task<IActionResult> Delete()
     {
-        var formView = _elementService.GetFormView();
+        var formView = elementService.GetFormView();
         var selectedGridValues = formView.GridView.GetSelectedGridValues();
     
         var elementNamesToDelete = selectedGridValues
@@ -208,7 +191,7 @@ public class ElementController : DataDictionaryController
 
         foreach (var elementName in elementNamesToDelete)
         {
-            await _elementService.DataDictionaryRepository.DeleteAsync(elementName);
+            await elementService.DataDictionaryRepository.DeleteAsync(elementName);
         }
 
         return RedirectToAction(nameof(Index));

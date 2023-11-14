@@ -14,7 +14,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<LangVersion>10.0</LangVersion>
+		<LangVersion>12</LangVersion>
 		<Nullable>disable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>

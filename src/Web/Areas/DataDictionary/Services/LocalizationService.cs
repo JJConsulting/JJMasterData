@@ -5,18 +5,11 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Services;
 
-public class LocalizationService
+public class LocalizationService(IFormElementComponentFactory<JJFormView> formViewFactory,LocalizationFormElementFactory localizationFormElementFactory,IMemoryCache memoryCache)
 {
-    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
-    private LocalizationFormElementFactory LocalizationFormElementFactory { get; }
-    private IMemoryCache MemoryCache { get; }
-
-    public LocalizationService(IFormElementComponentFactory<JJFormView> formViewFactory,LocalizationFormElementFactory localizationFormElementFactory,IMemoryCache memoryCache)
-    {
-        FormViewFactory = formViewFactory;
-        LocalizationFormElementFactory = localizationFormElementFactory;
-        MemoryCache = memoryCache;
-    }
+    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
+    private LocalizationFormElementFactory LocalizationFormElementFactory { get; } = localizationFormElementFactory;
+    private IMemoryCache MemoryCache { get; } = memoryCache;
 
     public JJFormView GetFormView()
     {

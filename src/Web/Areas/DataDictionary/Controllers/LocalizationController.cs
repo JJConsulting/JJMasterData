@@ -4,13 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class LocalizationController : DataDictionaryController
+public class LocalizationController(LocalizationService localizationService) : DataDictionaryController
 {
-    private LocalizationService LocalizationService { get; }
-    public LocalizationController(LocalizationService localizationService)
-    {
-        LocalizationService = localizationService;
-    }
+    private LocalizationService LocalizationService { get; } = localizationService;
 
     public async Task<IActionResult> Index()
     {

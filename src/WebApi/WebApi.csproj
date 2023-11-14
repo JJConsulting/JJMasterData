@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-	<TargetFramework>net7.0</TargetFramework>
+	<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IsPackable>true</IsPackable>
-    <LangVersion>11</LangVersion>
+    <LangVersion>12</LangVersion>
     <RootNamespace>JJMasterData.WebApi</RootNamespace>
     <PackageId>JJMasterData.WebApi</PackageId>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

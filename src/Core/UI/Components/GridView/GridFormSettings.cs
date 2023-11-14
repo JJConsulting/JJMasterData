@@ -8,11 +8,8 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Class responsible to render the UI on JJGridView
 /// </summary>
-internal class GridFormSettings
+internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private readonly IHttpContext _currentContext;
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
-
     private const string TableTotalPerPage = "grid-view-table-regperpage";
     private const string TableTotalPaginationButtons = "grid-view-table-totalpagebuttons";
     private const string TableBorder = "grid-view-table-border";
@@ -20,21 +17,15 @@ internal class GridFormSettings
     private const string TableRowHover = "grid-view-table-rowhover";
     private const string TableIsHeaderFixed = "grid-view-table-header-fixed";
 
-    public GridFormSettings(IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        _currentContext = currentContext;
-        _stringLocalizer = stringLocalizer;
-    }
-    
     public GridSettings LoadFromForm()
     {
         var gridSettings = new GridSettings();
-        var tableRegPerPage = _currentContext.Request[TableTotalPerPage];
-        var tableTotalPageButtons = _currentContext.Request[TableTotalPaginationButtons];
-        var tableBorder = _currentContext.Request[TableBorder];
-        var tableRowsStriped = _currentContext.Request[TableRowsStriped];
-        var tableRowHover = _currentContext.Request[TableRowHover];
-        var tableIsHeaderFixed = _currentContext.Request[TableIsHeaderFixed];
+        var tableRegPerPage = currentContext.Request[TableTotalPerPage];
+        var tableTotalPageButtons = currentContext.Request[TableTotalPaginationButtons];
+        var tableBorder = currentContext.Request[TableBorder];
+        var tableRowsStriped = currentContext.Request[TableRowsStriped];
+        var tableRowHover = currentContext.Request[TableRowHover];
+        var tableIsHeaderFixed = currentContext.Request[TableIsHeaderFixed];
 
         if (int.TryParse(tableRegPerPage, out var totalPerPage))
             gridSettings.RecordsPerPage = totalPerPage;
@@ -85,7 +76,7 @@ internal class GridFormSettings
             {
                 label.WithAttribute("for", TableRowHover);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(_stringLocalizer["Highlight line on mouseover"]);
+                label.AppendText(stringLocalizer["Highlight line on mouseover"]);
             });
         div.Append(HtmlTag.Div, div =>
         {
@@ -105,7 +96,7 @@ internal class GridFormSettings
             {
                 label.WithAttribute("for", TableRowsStriped);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(_stringLocalizer["Show rows striped"]);
+                label.AppendText(stringLocalizer["Show rows striped"]);
             });
         div.Append(HtmlTag.Div, div =>
         {
@@ -124,7 +115,7 @@ internal class GridFormSettings
             {
                 label.WithAttribute("for", TableBorder);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(_stringLocalizer["Show table border"]);
+                label.AppendText(stringLocalizer["Show table border"]);
             });
         div.Append(HtmlTag.Div, div =>
         {
@@ -144,7 +135,7 @@ internal class GridFormSettings
             {
                 label.WithAttribute("for", TableTotalPerPage);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(_stringLocalizer["Records per Page"]);
+                label.AppendText(stringLocalizer["Records per Page"]);
             });
         div.Append(HtmlTag.Div, div =>
         {
@@ -178,7 +169,7 @@ internal class GridFormSettings
 
     private HtmlBuilder GetDataToggleElement(string name, bool isChecked)
     {
-        var checkbox = new JJCheckBox(_currentContext.Request.Form, _stringLocalizer)
+        var checkbox = new JJCheckBox(currentContext.Request.Form, stringLocalizer)
         {
             Name = name,
             IsChecked = isChecked,

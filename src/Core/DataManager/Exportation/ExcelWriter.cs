@@ -23,7 +23,18 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 
-public class ExcelWriter : DataExportationWriterBase, IExcelWriter
+public class ExcelWriter(ExpressionsService expressionsService,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        IOptions<MasterDataCoreOptions> options,
+        ControlFactory controlFactory,
+        ILoggerFactory loggerFactory,
+        IEntityRepository entityRepository,
+        FieldFormattingService fieldFormattingService)
+    : DataExportationWriterBase(expressionsService,
+        stringLocalizer,
+        options,
+        controlFactory,
+        loggerFactory.CreateLogger<DataExportationWriterBase>()), IExcelWriter
 {
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
 
@@ -35,26 +46,8 @@ public class ExcelWriter : DataExportationWriterBase, IExcelWriter
     /// </summary>
     public bool ShowRowStriped { get; set; }
 
-    private IEntityRepository EntityRepository { get; }
-    private FieldFormattingService FieldFormattingService { get; }
-
-    public ExcelWriter(
-        ExpressionsService expressionsService,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        IOptions<MasterDataCoreOptions> options, 
-        ControlFactory controlFactory,
-        ILoggerFactory loggerFactory, 
-        IEntityRepository entityRepository,
-        FieldFormattingService fieldFormattingService) : base(
-            expressionsService,
-            stringLocalizer, 
-            options,
-            controlFactory, 
-            loggerFactory.CreateLogger<DataExportationWriterBase>())
-    {
-        EntityRepository = entityRepository;
-        FieldFormattingService = fieldFormattingService;
-    }
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {

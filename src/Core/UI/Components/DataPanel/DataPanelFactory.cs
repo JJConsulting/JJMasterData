@@ -10,38 +10,26 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataPanelFactory : IFormElementComponentFactory<JJDataPanel>
-{
-    private IEntityRepository EntityRepository { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IHttpContext HttpContext { get; }
-    private IEncryptionService EncryptionService { get; }
-    private FieldsService FieldsService { get; }
-    private FormValuesService FormValuesService { get; }
-    private ExpressionsService ExpressionsService { get; }
-    private IComponentFactory ComponentFactory { get; }
-    private MasterDataUrlHelper UrlHelper { get; }
-
-    public DataPanelFactory(IEntityRepository entityRepository, 
+internal class DataPanelFactory(IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
-        IHttpContext httpContext, 
-        IEncryptionService encryptionService, 
+        IHttpContext httpContext,
+        IEncryptionService encryptionService,
         FieldsService fieldsService,
-        FormValuesService formValuesService, 
+        FormValuesService formValuesService,
         ExpressionsService expressionsService,
         IComponentFactory componentFactory,
         MasterDataUrlHelper urlHelper)
-    {
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
-        HttpContext = httpContext;
-        EncryptionService = encryptionService;
-        FieldsService = fieldsService;
-        FormValuesService = formValuesService;
-        ExpressionsService = expressionsService;
-        ComponentFactory = componentFactory;
-        UrlHelper = urlHelper;
-    }
+    : IFormElementComponentFactory<JJDataPanel>
+{
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    private IHttpContext HttpContext { get; } = httpContext;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private FieldsService FieldsService { get; } = fieldsService;
+    private FormValuesService FormValuesService { get; } = formValuesService;
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
+    private IComponentFactory ComponentFactory { get; } = componentFactory;
+    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
 
     public JJDataPanel Create(FormElement formElement)
     {

@@ -8,22 +8,14 @@ namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
 public class MetadataOptions
 {
     [JsonProperty("grid")]
-    public GridUI Grid { get; set; }
+    public GridUI Grid { get; set; } = new();
 
     [JsonProperty("form")]
-    public FormUI Form { get; set; }
+    public FormUI Form { get; set; } = new();
 
     [JsonProperty("toolBarActions")]
-    public GridToolbarActions ToolbarActions { get; set; }
+    public GridToolbarActions ToolbarActions { get; set; } = new();
 
     [JsonProperty("gridActions")]
-    public GridActions GridActions { get; set; }
-
-    public MetadataOptions()
-    {
-        Grid = new GridUI();
-        Form = new FormUI();
-        ToolbarActions = new GridToolbarActions();
-        GridActions = new GridActions();
-    }
+    public GridActions GridActions { get; set; } = new();
 }

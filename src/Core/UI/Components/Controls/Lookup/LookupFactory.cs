@@ -7,28 +7,19 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class LookupFactory : IControlFactory<JJLookup>
-{
-    private IFormValues FormValues { get; }
-    private LookupService LookupService { get; }
-    private MasterDataUrlHelper UrlHelper { get; }
-    private IComponentFactory ComponentFactory { get; }
-
-    private ILoggerFactory LoggerFactory { get; }
-
-    public LookupFactory(       
-        IFormValues formValues,
+internal class LookupFactory(IFormValues formValues,
         LookupService lookupService,
         MasterDataUrlHelper urlHelper,
         IComponentFactory componentFactory,
         ILoggerFactory loggerFactory)
-    {
-        FormValues = formValues;
-        LookupService = lookupService;
-        UrlHelper = urlHelper;
-        ComponentFactory = componentFactory;
-        LoggerFactory = loggerFactory;
-    }
+    : IControlFactory<JJLookup>
+{
+    private IFormValues FormValues { get; } = formValues;
+    private LookupService LookupService { get; } = lookupService;
+    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IComponentFactory ComponentFactory { get; } = componentFactory;
+
+    private ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
     public JJLookup Create()
     {

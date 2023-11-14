@@ -15,16 +15,10 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-public class SqlDataDictionaryRepository : IDataDictionaryRepository
+public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options)
+    : IDataDictionaryRepository
 {
-    private readonly IEntityRepository _entityRepository;
-    internal Element MasterDataElement { get; }
-
-    public SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options)
-    {
-        _entityRepository = entityRepository;
-        MasterDataElement = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
-    }
+    internal Element MasterDataElement { get; } = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
 
     public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiSync = null)
     {
@@ -38,7 +32,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         orderBy.AddOrReplace(DataDictionaryStructure.Name, OrderByDirection.Asc);
         orderBy.AddOrReplace(DataDictionaryStructure.Type, OrderByDirection.Asc);
 
-        var result = await _entityRepository.GetDictionaryListResultAsync(MasterDataElement,
+        var result = await entityRepository.GetDictionaryListResultAsync(MasterDataElement,
             new EntityParameters { Filters = filters, OrderBy = orderBy }, false);
 
         return ParseDictionaryList(result.Data);
@@ -56,7 +50,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         var filter = new Dictionary<string, object?> { { DataDictionaryStructure.Type, "F" } };
 
-        var dt = await _entityRepository.GetDictionaryListResultAsync(MasterDataElement,
+        var dt = await entityRepository.GetDictionaryListResultAsync(MasterDataElement,
             new EntityParameters { Filters = filter }, false);
         foreach (var row in dt.Data)
         {
@@ -69,7 +63,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
 
-        var values = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
+        var values = await entityRepository.GetFieldsAsync(MasterDataElement, filter);
 
         var model = values.ToModel<DataDictionaryModel>();
 
@@ -81,7 +75,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
     {
         var values = GetFormElementDictionary(formElement);
 
-        await _entityRepository.SetValuesAsync(MasterDataElement, values);
+        await entityRepository.SetValuesAsync(MasterDataElement, values);
     }
 
     private static Dictionary<string, object?> GetFormElementDictionary(FormElement formElement)
@@ -123,21 +117,21 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
 
         var filters = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
-        await _entityRepository.DeleteAsync(MasterDataElement, filters);
+        await entityRepository.DeleteAsync(MasterDataElement, filters);
     }
 
 
     public async Task<bool> ExistsAsync(string elementName)
     {
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
-        var fields = await _entityRepository.GetFieldsAsync(MasterDataElement, filter);
+        var fields = await entityRepository.GetFieldsAsync(MasterDataElement, filter);
         return fields.Any();
     }
 
     public async Task CreateStructureIfNotExistsAsync()
     {
-        if (!await _entityRepository.TableExistsAsync(MasterDataElement.Name))
-            await _entityRepository.CreateDataModelAsync(MasterDataElement);
+        if (!await entityRepository.TableExistsAsync(MasterDataElement.Name))
+            await entityRepository.CreateDataModelAsync(MasterDataElement);
     }
 
     public async Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filter,
@@ -146,7 +140,7 @@ public class SqlDataDictionaryRepository : IDataDictionaryRepository
         var filters = filter.ToDictionary();
         filters.Add(DataDictionaryStructure.Type, "F");
 
-        var result = await _entityRepository.GetDictionaryListResultAsync(MasterDataElement,
+        var result = await entityRepository.GetDictionaryListResultAsync(MasterDataElement,
             new EntityParameters
             {
                 Filters = filters!, OrderBy = orderBy, CurrentPage = currentPage, RecordsPerPage = recordsPerPage

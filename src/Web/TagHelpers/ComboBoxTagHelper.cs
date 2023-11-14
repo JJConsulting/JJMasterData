@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 namespace JJMasterData.Web.TagHelpers;
 
 [HtmlTargetElement("combobox")]
-public class ComboBoxTagHelper : TagHelper
+public class ComboBoxTagHelper(IControlFactory<JJComboBox> comboBoxFactory) : TagHelper
 {
-    private IControlFactory<JJComboBox> ComboBoxFactory { get; set; }
-    
+    private IControlFactory<JJComboBox> ComboBoxFactory { get; set; } = comboBoxFactory;
+
     [HtmlAttributeName("configure")]
     public Action<JJComboBox>? Configure { get; set; }
 
@@ -21,12 +21,7 @@ public class ComboBoxTagHelper : TagHelper
     
     [HtmlAttributeName("form-element-data-item")]
     public FormElementDataItem? DataItem { get; set; }
-    
-    
-    public ComboBoxTagHelper(IControlFactory<JJComboBox> comboBoxFactory)
-    {
-        ComboBoxFactory = comboBoxFactory;
-    }
+
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {

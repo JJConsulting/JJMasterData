@@ -11,20 +11,12 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class FieldController : DataDictionaryController
+public class FieldController(FieldService fieldService, IControlFactory<JJSearchBox> searchBoxFactory)
+    : DataDictionaryController
 {
-    private readonly FieldService _fieldService;
-    private readonly IControlFactory<JJSearchBox> _searchBoxFactory;
-
-    public FieldController(FieldService fieldService, IControlFactory<JJSearchBox> searchBoxFactory)
-    {
-        _fieldService = fieldService;
-        _searchBoxFactory = searchBoxFactory;
-    }
-
     public async Task<IActionResult> Index(string elementName, string? fieldName)
     {
-        var formElement = await _fieldService.GetFormElementAsync(elementName);
+        var formElement = await fieldService.GetFormElementAsync(elementName);
         FormElementField? field;
      
         if (string.IsNullOrEmpty(fieldName))
@@ -47,7 +39,7 @@ public class FieldController : DataDictionaryController
     
     public async Task<IActionResult> Detail(string elementName, string fieldName)
     {
-        var formElement = await _fieldService.GetFormElementAsync(elementName);
+        var formElement = await fieldService.GetFormElementAsync(elementName);
         var field = formElement.Fields[fieldName];
         await PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
@@ -55,7 +47,7 @@ public class FieldController : DataDictionaryController
 
     public async Task<IActionResult> Add(string elementName)
     {
-        var formElement = await _fieldService.GetFormElementAsync(elementName);
+        var formElement = await fieldService.GetFormElementAsync(elementName);
         var field = new FormElementField();
         await PopulateViewBag(formElement, field);
         return PartialView("_Detail", field);
@@ -63,8 +55,8 @@ public class FieldController : DataDictionaryController
     
     public async Task<IActionResult> Delete(string elementName, string fieldName)
     {
-        await _fieldService.DeleteField(elementName, fieldName);
-        var nextField = await _fieldService.GetNextFieldNameAsync(elementName, fieldName);
+        await fieldService.DeleteField(elementName, fieldName);
+        var nextField = await fieldService.GetNextFieldNameAsync(elementName, fieldName);
         return RedirectToAction("Index", new { elementName, fieldName = nextField });
     }
     
@@ -72,7 +64,7 @@ public class FieldController : DataDictionaryController
     public async Task<IActionResult> Index(string elementName, string? fieldName, FormElementField? field)
     {
         
-        var iconSearchBox = _searchBoxFactory.Create();
+        var iconSearchBox = searchBoxFactory.Create();
         iconSearchBox.Name = fieldName ?? "searchBox";
         iconSearchBox.DataItem.ShowIcon = true;
         iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
@@ -83,7 +75,7 @@ public class FieldController : DataDictionaryController
         if (iconSearchBoxResult is IActionResult actionResult)
             return actionResult;
         
-        var formElement = await _fieldService.GetFormElementAsync(elementName);
+        var formElement = await fieldService.GetFormElementAsync(elementName);
         await PopulateViewBag(formElement, field);
         return View("Index", field);
     }
@@ -93,13 +85,13 @@ public class FieldController : DataDictionaryController
     {
         RecoverCustomAttibutes(ref field);
         
-        await _fieldService.SaveFieldAsync(elementName, field, originalName);
+        await fieldService.SaveFieldAsync(elementName, field, originalName);
         if (ModelState.IsValid)
         {
             return RedirectToIndex(elementName, field);
         }
 
-        ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
+        ViewBag.Error = fieldService.GetValidationSummary().GetHtml();
         return RedirectToIndex(elementName, field);
     }
 
@@ -107,17 +99,17 @@ public class FieldController : DataDictionaryController
     [HttpPost]
     public async Task<IActionResult> Sort(string elementName, string fieldsOrder)
     {
-        await _fieldService.SortFieldsAsync(elementName, fieldsOrder.Split(","));
+        await fieldService.SortFieldsAsync(elementName, fieldsOrder.Split(","));
         return Json(new { success = true });
     }
 
     [HttpPost]
     public async Task<IActionResult> Copy(string elementName, FormElementField? field)
     {
-        var dictionary = await  _fieldService.DataDictionaryRepository.GetFormElementAsync(elementName);
-        await _fieldService.CopyFieldAsync(dictionary, field);
+        var dictionary = await  fieldService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        await fieldService.CopyFieldAsync(dictionary, field);
         if (!ModelState.IsValid)
-            ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
+            ViewBag.Error = fieldService.GetValidationSummary().GetHtml();
 
         await PopulateViewBag(dictionary, field);
         return View("Index", field);
@@ -165,10 +157,10 @@ public class FieldController : DataDictionaryController
             ExpressionValue = mapExpressionValue
         };
 
-        bool isValid = await _fieldService.AddElementMapFilterAsync(field, elementMapFilter);
+        bool isValid = await fieldService.AddElementMapFilterAsync(field, elementMapFilter);
         if (!isValid)
         {
-            ViewBag.Error = _fieldService.GetValidationSummary().GetHtml();
+            ViewBag.Error = fieldService.GetValidationSummary().GetHtml();
         }
 
         return RedirectToIndex(elementName, field);
@@ -230,7 +222,7 @@ public class FieldController : DataDictionaryController
         ViewBag.MenuId = "Field";
         ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(_fieldService.GetAutocompleteHintsList(formElement));
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(fieldService.GetAutocompleteHintsList(formElement));
         ViewBag.MaxRequestLength = GetMaxRequestLength();
         ViewBag.FieldName = field.Name;
         ViewBag.Fields = formElement.Fields;
@@ -238,10 +230,10 @@ public class FieldController : DataDictionaryController
         if (field.Component is not FormComponent.Lookup && field.Component is not FormComponent.Search && field.Component is not FormComponent.ComboBox) 
             return;
 
-        ViewBag.ElementNameList = await _fieldService.GetElementListAsync();
+        ViewBag.ElementNameList = await fieldService.GetElementListAsync();
 
         field.DataItem.ElementMap ??= new DataElementMap();
-        ViewBag.ElementFieldList = await _fieldService.GetElementFieldListAsync(field.DataItem.ElementMap);
+        ViewBag.ElementFieldList = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap);
     }
     private void RecoverCustomAttibutes(ref FormElementField field)
     {

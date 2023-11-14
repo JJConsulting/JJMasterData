@@ -10,20 +10,12 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class RelationshipsService : BaseService
-{
-    private readonly PanelService _panelService;
-
-    public RelationshipsService(
-        IValidationDictionary validationDictionary,
+public class RelationshipsService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         PanelService panelService)
-        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
-    {
-        _panelService = panelService;
-    }
-
+    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+{
     public async Task SaveElementRelationship(ElementRelationship elementRelationship, int? id, string elementName)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
@@ -120,7 +112,7 @@ public class RelationshipsService : BaseService
 
     private async Task<ElementField?> GetFieldAsync(string elementName, string fieldName)
     {
-        var formElement = await _panelService.GetFormElementAsync(elementName);
+        var formElement = await panelService.GetFormElementAsync(elementName);
         return formElement.Fields.Contains(fieldName) ? formElement.Fields[fieldName] : null;
     }
 
@@ -217,6 +209,6 @@ public class RelationshipsService : BaseService
 
     public bool ValidatePanel(FormElementPanel panel)
     {
-        return _panelService.ValidatePanel(panel);
+        return panelService.ValidatePanel(panel);
     }
 }

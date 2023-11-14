@@ -10,25 +10,17 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class TextGroupFactory : IControlFactory<JJTextGroup>
+internal class TextGroupFactory(IFormValues formValues,
+        IEncryptionService encryptionService,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        ActionButtonFactory actionButtonFactory)
+    : IControlFactory<JJTextGroup>
 {
-    private IFormValues FormValues { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private ActionButtonFactory ActionButtonFactory { get; }
+    private IFormValues FormValues { get; } = formValues;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private ActionButtonFactory ActionButtonFactory { get; } = actionButtonFactory;
 
-    public TextGroupFactory(
-         IFormValues formValues, 
-                          IEncryptionService encryptionService,
-                          IStringLocalizer<MasterDataResources> stringLocalizer, 
-                          ActionButtonFactory actionButtonFactory)
-    {
-        FormValues = formValues;
-        EncryptionService = encryptionService;
-        StringLocalizer = stringLocalizer;
-        ActionButtonFactory = actionButtonFactory;
-    }
-    
     public JJTextGroup Create()
     {
         return new JJTextGroup(FormValues);

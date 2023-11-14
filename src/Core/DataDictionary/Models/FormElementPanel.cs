@@ -19,10 +19,10 @@ public class FormElementPanel
     public string? SubTitle { get; set; }
 
     [JsonProperty("layout")]
-    public PanelLayout Layout { get; set; }
+    public PanelLayout Layout { get; set; } = PanelLayout.Well;
 
     [JsonProperty("color")]
-    public PanelColor Color { get; set; }
+    public PanelColor Color { get; set; } = PanelColor.Default;
 
     [JsonProperty("expandedByDefault")]
     public bool ExpandedByDefault { get; set; }
@@ -33,7 +33,7 @@ public class FormElementPanel
     [JsonProperty("visibleExpression")]
     [Display(Name = "Visible Expression")]
     [BooleanExpression]
-    public string VisibleExpression { get; set; }
+    public string VisibleExpression { get; set; } = "val:1";
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
@@ -41,19 +41,11 @@ public class FormElementPanel
     [JsonProperty("enableExpression")]
     [Display(Name = "Enable Expression")]
     [BooleanExpression]
-    public string EnableExpression { get; set; }
+    public string EnableExpression { get; set; } = "val:1";
 
     [JsonProperty("cssClass")]
     [Display(Name = "Css Class")]
     public string? CssClass { get; set; }
-
-    public FormElementPanel()
-    {
-        Layout = PanelLayout.Well;
-        Color = PanelColor.Default;
-        VisibleExpression = "val:1";
-        EnableExpression = "val:1";
-    }
 
     public bool HasTitle()
     {

@@ -35,7 +35,7 @@ internal class DbLogger : ILogger
             Created = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Millisecond,
                 now.Kind),
             LogLevel = (int)logLevel,
-            Event = eventId.Name,
+            Event = eventId.Name ?? string.Empty,
             Message = message
         };
         

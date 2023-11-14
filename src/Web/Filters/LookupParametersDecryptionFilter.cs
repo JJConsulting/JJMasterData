@@ -7,15 +7,8 @@ using Microsoft.Extensions.Primitives;
 namespace JJMasterData.Web.Filters;
 
 
-public class LookupParametersDecryptionFilter : ActionFilterAttribute
+public class LookupParametersDecryptionFilter(IEncryptionService encryptionService) : ActionFilterAttribute
 {
-    private readonly IEncryptionService _encryptionService;
-
-    public LookupParametersDecryptionFilter(IEncryptionService encryptionService)
-    {
-        _encryptionService = encryptionService;
-    }
-
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         if (context.ActionArguments.ContainsKey("lookupParameters"))
@@ -33,7 +26,7 @@ public class LookupParametersDecryptionFilter : ActionFilterAttribute
 
     private void SetLookupParameters(ActionExecutingContext context, StringValues encryptedParameters)
     {
-        var lookupQueryString = _encryptionService.DecryptStringWithUrlUnescape(encryptedParameters);
+        var lookupQueryString = encryptionService.DecryptStringWithUrlUnescape(encryptedParameters);
         context.ActionArguments["lookupParameters"] = LookupParameters.FromQueryString(lookupQueryString);
     }
 }

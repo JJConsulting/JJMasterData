@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.Http.AspNetCore;
 
-internal class FormValuesWrapper : IFormValues
+internal class FormValuesWrapper(IHttpContextAccessor httpContextAccessor) : IFormValues
 {
     private IFormCollection? _formCollection;
 
@@ -22,16 +22,12 @@ internal class FormValuesWrapper : IFormValues
         }
     }
 
-    private HttpContext HttpContext { get; }
-    
+    private HttpContext HttpContext { get; } = httpContextAccessor.HttpContext!;
+
     public bool ContainsFormValues() => FormCollection is not null;
 
     public string? this[string key] => FormCollection?[key];
 
-    public FormValuesWrapper(IHttpContextAccessor httpContextAccessor)
-    {
-        HttpContext = httpContextAccessor.HttpContext!;
-    }
     public IFormFile? GetFile(string file) => FormCollection?.Files[file];
 }
 #endif

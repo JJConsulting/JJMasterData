@@ -9,22 +9,17 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class RelationshipsController : DataDictionaryController
+public class RelationshipsController(RelationshipsService relationshipsService,
+        IStringLocalizer<MasterDataResources> stringLocalizer)
+    : DataDictionaryController
 {
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private readonly RelationshipsService _relationshipsService;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     #region Index
 
-    public RelationshipsController(RelationshipsService relationshipsService,IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        StringLocalizer = stringLocalizer;
-        _relationshipsService = relationshipsService;
-    }
-
     public async Task<ActionResult> Index(string elementName)
     {
-        var relationships = (await _relationshipsService.GetFormElementAsync(elementName)).Relationships;
+        var relationships = (await relationshipsService.GetFormElementAsync(elementName)).Relationships;
 
         var model = CreateListViewModel(elementName, relationships);
 
@@ -34,14 +29,14 @@ public class RelationshipsController : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> Delete(string elementName, int id)
     {
-        await _relationshipsService.DeleteAsync(elementName, id);
+        await relationshipsService.DeleteAsync(elementName, id);
         return RedirectToAction("Index", new { elementName });
     }
 
     [HttpPost]
     public async Task<ActionResult> Sort(string elementName, [FromBody] string[] relationships)
     {
-        await _relationshipsService.SortAsync(elementName, relationships);
+        await relationshipsService.SortAsync(elementName, relationships);
         return Ok();
     }
 
@@ -61,7 +56,7 @@ public class RelationshipsController : DataDictionaryController
 
     public async Task<ActionResult> ElementDetails(string elementName, int? id)
     {
-        var formElement = await _relationshipsService.GetFormElementAsync(elementName);
+        var formElement = await relationshipsService.GetFormElementAsync(elementName);
         var relationship = id != null ? formElement.Relationships.GetById(id.Value).ElementRelationship! : new ElementRelationship();
 
         var model = await CreateElementDetailsViewModel(elementName, relationship, id);
@@ -79,7 +74,7 @@ public class RelationshipsController : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> CreateRelationship(RelationshipsElementDetailsViewModel model)
     {
-        if (await _relationshipsService.ValidateFinallyAddRelation(model.ElementName, model.Relationship,
+        if (await relationshipsService.ValidateFinallyAddRelation(model.ElementName, model.Relationship,
                 model.AddPrimaryKeyName!, model.AddForeignKeyName!))
         {
             model.Relationship.Columns.Add(new ElementRelationshipColumn(model.AddPrimaryKeyName!,
@@ -87,7 +82,7 @@ public class RelationshipsController : DataDictionaryController
         }
         else
         {
-            model.ValidationSummary = _relationshipsService.GetValidationSummary();
+            model.ValidationSummary = relationshipsService.GetValidationSummary();
         }
 
         await PopulateSelectLists(model);
@@ -98,15 +93,15 @@ public class RelationshipsController : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> SaveRelationshipElement(RelationshipsElementDetailsViewModel model)
     {
-        if (await _relationshipsService.ValidateElementRelationship(model.Relationship, model.ElementName, model.Id))
+        if (await relationshipsService.ValidateElementRelationship(model.Relationship, model.ElementName, model.Id))
         {
-            await _relationshipsService.SaveElementRelationship(model.Relationship, model.Id, model.ElementName);
+            await relationshipsService.SaveElementRelationship(model.Relationship, model.Id, model.ElementName);
             return Json(new { success = true });
         }
 
         await PopulateSelectLists(model);
 
-        var jjSummary = _relationshipsService.GetValidationSummary();
+        var jjSummary = relationshipsService.GetValidationSummary();
         return Json(new { success = false, errorMessage = jjSummary.GetHtml() });
     }
 
@@ -143,7 +138,7 @@ public class RelationshipsController : DataDictionaryController
 
     public async Task<List<SelectListItem>> GetPrimaryKeysSelectList(string elementName)
     {
-        var formElement = await _relationshipsService.GetFormElementAsync(elementName);
+        var formElement = await relationshipsService.GetFormElementAsync(elementName);
         var selectList = formElement.Fields.Select(field => new SelectListItem(field.Name, field.Name)).ToList();
 
         return selectList;
@@ -159,7 +154,7 @@ public class RelationshipsController : DataDictionaryController
         }
         else
         {
-            var formElement = await _relationshipsService.DataDictionaryRepository.GetFormElementAsync(childElementName);
+            var formElement = await relationshipsService.DataDictionaryRepository.GetFormElementAsync(childElementName);
             selectList.AddRange(formElement.Fields.Select(field => new SelectListItem(field.Name, field.Name)));
         }
 
@@ -168,7 +163,7 @@ public class RelationshipsController : DataDictionaryController
 
     private async Task<List<SelectListItem>> GetElementsSelectList(string childElementName)
     {
-        IEnumerable<string> list = await _relationshipsService.DataDictionaryRepository.GetNameListAsync().ToListAsync();
+        IEnumerable<string> list = await relationshipsService.DataDictionaryRepository.GetNameListAsync().ToListAsync();
 
         var selectList = list.Select(name => new SelectListItem(name, name)).ToList();
 
@@ -200,13 +195,13 @@ public class RelationshipsController : DataDictionaryController
     
     public async Task<IActionResult> SaveRelationshipLayout(RelationshipsLayoutDetailsViewModel model, FormElementPanel panel)
     {
-        if (_relationshipsService.ValidatePanel(panel))
+        if (relationshipsService.ValidatePanel(panel))
         {
-            await _relationshipsService.SaveFormElementRelationship(panel,model.ViewType, model.Id, model.ElementName);
+            await relationshipsService.SaveFormElementRelationship(panel,model.ViewType, model.Id, model.ElementName);
             return Json(new { success = true });
         }
 
-        var jjSummary = _relationshipsService.GetValidationSummary();
+        var jjSummary = relationshipsService.GetValidationSummary();
         return Json(new { success = false, errorMessage = jjSummary.GetHtml() });
     }
 
@@ -214,7 +209,7 @@ public class RelationshipsController : DataDictionaryController
         string elementName,
         int id)
     {
-        var formElement = await _relationshipsService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await relationshipsService.DataDictionaryRepository.GetFormElementAsync(elementName);
 
         var relationship = formElement.Relationships.GetById(id);
         

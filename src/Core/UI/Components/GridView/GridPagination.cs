@@ -10,20 +10,14 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridPagination
+internal class GridPagination(JJGridView gridView)
 {
-    private JJGridView GridView { get;  }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get;  }
+    private JJGridView GridView { get;  } = gridView;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get;  } = gridView.StringLocalizer;
     private int _totalPages;
     private int _totalButtons;
     private int _startButtonIndex;
     private int _endButtonIndex;
-
-    public GridPagination(JJGridView gridView)
-    {
-        StringLocalizer = gridView.StringLocalizer;
-        GridView = gridView;
-    }
 
     public HtmlBuilder GetHtmlBuilder()
     {

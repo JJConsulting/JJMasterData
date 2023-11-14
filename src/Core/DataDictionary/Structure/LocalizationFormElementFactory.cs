@@ -7,15 +7,10 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class LocalizationFormElementFactory
+public class LocalizationFormElementFactory(IOptions<MasterDataCommonsOptions> options)
 {
-    private MasterDataCommonsOptions Options { get; }
+    private MasterDataCommonsOptions Options { get; } = options.Value;
 
-    public LocalizationFormElementFactory(IOptions<MasterDataCommonsOptions> options)
-    {
-        Options = options.Value;
-    }
-    
     public FormElement GetFormElement()
     {
         var supportedCultures = CultureInfo.GetCultures(CultureTypes.AllCultures);

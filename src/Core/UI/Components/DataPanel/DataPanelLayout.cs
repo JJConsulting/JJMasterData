@@ -11,27 +11,18 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Render panels with fields
 /// </summary>
-internal class DataPanelLayout
+internal class DataPanelLayout(JJDataPanel dataPanel)
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = dataPanel.Name;
 
-    public bool RenderPanelGroup { get; set; }
+    public bool RenderPanelGroup { get; set; } = dataPanel.RenderPanelGroup;
 
-    public FormElement FormElement { private get; set; }
+    public FormElement FormElement { private get; set; } = dataPanel.FormElement;
 
-    public DataPanelControl DataPanelControl { get; set; }
-    public IFormValues FormValues { get; set; }
-    
-    public PageState PageState { get; set; }
-    public DataPanelLayout(JJDataPanel dataPanel)
-    {
-        DataPanelControl = new DataPanelControl(dataPanel);
-        RenderPanelGroup = dataPanel.RenderPanelGroup;
-        FormElement = dataPanel.FormElement;
-        Name = dataPanel.Name;
-        PageState = dataPanel.PageState;
-        FormValues = dataPanel.CurrentContext.Request.Form;
-    }
+    public DataPanelControl DataPanelControl { get; set; } = new(dataPanel);
+    public IFormValues FormValues { get; set; } = dataPanel.CurrentContext.Request.Form;
+
+    public PageState PageState { get; set; } = dataPanel.PageState;
 
     public async IAsyncEnumerable<HtmlBuilder> GetHtmlPanelList()
     {

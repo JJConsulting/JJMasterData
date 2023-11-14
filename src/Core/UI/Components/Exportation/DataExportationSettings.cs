@@ -12,21 +12,15 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataExportationSettings
+internal class DataExportationSettings(JJDataExportation dataExportation)
 {
-    private JJDataExportation DataExportation { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private JJDataExportation DataExportation { get; } = dataExportation;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = dataExportation.StringLocalizer;
 
     private readonly string _colSm = BootstrapHelper.Version > 3 ? "col-sm-2" : "col-sm-4";
     private readonly string _bs4Row = BootstrapHelper.Version > 3 ? "row" : string.Empty;
 
     private readonly string _bsLabel = BootstrapHelper.Version > 3 ? $"{BootstrapHelper.Label}  form-label" : string.Empty;
-
-    public DataExportationSettings(JJDataExportation dataExportation)
-    {
-        DataExportation = dataExportation;
-        StringLocalizer = dataExportation.StringLocalizer;
-    }
 
     internal HtmlBuilder GetHtmlBuilder()
     {

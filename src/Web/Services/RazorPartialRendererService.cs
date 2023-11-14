@@ -10,21 +10,10 @@ using Microsoft.AspNetCore.Routing;
 
 namespace JJMasterData.Web.Services;
 
-public class RazorPartialRendererService 
+public class RazorPartialRendererService(IRazorViewEngine viewEngine,
+    ITempDataProvider tempDataProvider,
+    IHttpContextAccessor httpContextAccessor)
 {
-    private readonly IRazorViewEngine _viewEngine;
-    private readonly ITempDataProvider _tempDataProvider;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public RazorPartialRendererService(
-        IRazorViewEngine viewEngine,
-        ITempDataProvider tempDataProvider,
-        IHttpContextAccessor httpContextAccessor)
-    {
-        _viewEngine = viewEngine;
-        _tempDataProvider = tempDataProvider;
-        _httpContextAccessor = httpContextAccessor;
-    }
     public async Task<string> ToStringAsync<TModel>(string partialName, TModel model)
     {
         var actionContext = GetActionContext();
@@ -41,7 +30,7 @@ public class RazorPartialRendererService
             },
             new TempDataDictionary(
                 actionContext.HttpContext,
-                _tempDataProvider),
+                tempDataProvider),
             output,
             new HtmlHelperOptions()
         );
@@ -50,12 +39,12 @@ public class RazorPartialRendererService
     }
     private IView FindView(ActionContext actionContext, string partialName)
     {
-        var getPartialResult = _viewEngine.GetView(partialName, partialName, false);
+        var getPartialResult = viewEngine.GetView(partialName, partialName, false);
         if (getPartialResult.Success)
         {
             return getPartialResult.View;
         }
-        var findPartialResult = _viewEngine.FindView(actionContext, partialName, false);
+        var findPartialResult = viewEngine.FindView(actionContext, partialName, false);
         if (findPartialResult.Success)
         {
             return findPartialResult.View;
@@ -68,6 +57,6 @@ public class RazorPartialRendererService
     }
     private ActionContext GetActionContext()
     {
-        return new ActionContext(_httpContextAccessor.HttpContext!,  _httpContextAccessor.HttpContext!.GetRouteData(), new ActionDescriptor());
+        return new ActionContext(httpContextAccessor.HttpContext!,  httpContextAccessor.HttpContext!.GetRouteData(), new ActionDescriptor());
     }
 }

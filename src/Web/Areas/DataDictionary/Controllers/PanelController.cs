@@ -5,18 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class PanelController : DataDictionaryController
+public class PanelController(PanelService panelService) : DataDictionaryController
 {
-    private readonly PanelService _panelService;
-
-    public PanelController(PanelService panelService)
-    {
-        _panelService = panelService;
-    }
-
     public async Task<ActionResult> Index(string elementName, int? panelId = null)
     {
-        var formElement = await _panelService.GetFormElementAsync(elementName);
+        var formElement = await panelService.GetFormElementAsync(elementName);
         FormElementPanel panel;
         if (panelId == null)
         {
@@ -39,7 +32,7 @@ public class PanelController : DataDictionaryController
     //Partial View
     public async Task<IActionResult> Detail(string elementName, int panelId)
     {
-        var formElement = await _panelService.GetFormElementAsync(elementName);
+        var formElement = await panelService.GetFormElementAsync(elementName);
         var panel = formElement.GetPanelById(panelId);
         PopulateViewBag(formElement, panel);
         return PartialView("_Detail", panel);
@@ -48,7 +41,7 @@ public class PanelController : DataDictionaryController
     //Partial View
     public async Task<IActionResult> Add(string elementName)
     {
-        var formElement =await  _panelService.GetFormElementAsync(elementName);
+        var formElement =await  panelService.GetFormElementAsync(elementName);
         var panel = new FormElementPanel();
         PopulateViewBag(formElement, panel);
         return PartialView("_Detail", panel);
@@ -56,7 +49,7 @@ public class PanelController : DataDictionaryController
 
     public async Task<IActionResult> Delete(string elementName, int panelId)
     {
-        await _panelService.DeleteFieldAsync(elementName, panelId);
+        await panelService.DeleteFieldAsync(elementName, panelId);
         return RedirectToAction("Index", new { elementName });
     }
 
@@ -64,20 +57,20 @@ public class PanelController : DataDictionaryController
     public async Task<IActionResult> Save(string elementName, FormElementPanel panel, [FromForm] string? selectedFields)
     {
         string[]? splittedFields = selectedFields?.Split(',');
-        await _panelService.SavePanelAsync(elementName, panel, splittedFields);
+        await panelService.SavePanelAsync(elementName, panel, splittedFields);
         if (ModelState.IsValid)
         {
             return RedirectToAction("Index", new { elementName, panelId = panel.PanelId });
         }
 
-        ViewBag.Error = _panelService.GetValidationSummary().GetHtml();
+        ViewBag.Error = panelService.GetValidationSummary().GetHtml();
         return RedirectToIndex(elementName, panel);
     }
 
     [HttpPost]
     public async Task<IActionResult> Index(string elementName, FormElementPanel panel)
     {
-        var formElement = await _panelService.GetFormElementAsync(elementName);
+        var formElement = await panelService.GetFormElementAsync(elementName);
         PopulateViewBag(formElement, panel);
         return View("Index", panel);
     }
@@ -85,14 +78,14 @@ public class PanelController : DataDictionaryController
     [HttpPost]
     public async Task<IActionResult> Sort(string elementName, string[] orderFields)
     {
-        await _panelService.SortPanelsAsync(elementName, orderFields);
+        await panelService.SortPanelsAsync(elementName, orderFields);
         return Json(new { success = true });
     }
 
     [HttpPost]
     public async Task<IActionResult> Copy(string elementName, FormElementPanel panel)
     {
-        var newPanel = await _panelService.CopyPanel(elementName, panel);
+        var newPanel = await panelService.CopyPanel(elementName, panel);
         return RedirectToIndex(elementName, newPanel);
     }
 

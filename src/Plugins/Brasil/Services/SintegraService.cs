@@ -11,22 +11,16 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Brasil.Services;
 
-public class SintegraService : IReceitaFederalService
+public class SintegraService(HttpClient httpClient, ICepService cepService, IOptions<SintegraSettings> options)
+    : IReceitaFederalService
 {
-    private HttpClient HttpClient { get; }
-    private ICepService CepService { get; }
-    private SintegraSettings Settings { get; }
+    private HttpClient HttpClient { get; } = httpClient;
+    private ICepService CepService { get; } = cepService;
+    private SintegraSettings Settings { get; } = options.Value;
     public bool IsHttps { get; set; } = true;
 
     public bool IgnoreDb { get; set; }
 
-    public SintegraService(HttpClient httpClient,ICepService cepService,IOptions<SintegraSettings> options)
-    {
-        HttpClient = httpClient;
-        CepService = cepService;
-        Settings = options.Value;
-    }
-    
     public async Task<CnpjResult> SearchCnpjAsync(string cnpj)
     {
         try

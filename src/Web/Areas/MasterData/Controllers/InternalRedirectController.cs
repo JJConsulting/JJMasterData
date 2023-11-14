@@ -12,21 +12,11 @@ using Microsoft.Data.SqlClient;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-public class InternalRedirectController : MasterDataController
+public class InternalRedirectController(IComponentFactory componentFactory, IEncryptionService encryptionService) : MasterDataController
 {
     private string? _elementName;
     private RelationshipViewType _relationshipType;
-
-    private IComponentFactory ComponentFactory { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IDictionary<string, object> RelationValues { get; }
-
-    public InternalRedirectController(IComponentFactory componentFactory, IEncryptionService encryptionService)
-    {
-        ComponentFactory = componentFactory;
-        EncryptionService = encryptionService;
-        RelationValues = new Dictionary<string, object>();
-    }
+    private IDictionary<string, object> RelationValues { get; } = new Dictionary<string, object>();
 
     public async Task<IActionResult> Index(string parameters)
     {
@@ -39,7 +29,7 @@ public class InternalRedirectController : MasterDataController
         {
             case RelationshipViewType.List:
             {
-                var formView = await ComponentFactory.FormView.CreateAsync(_elementName);
+                var formView = await componentFactory.FormView.CreateAsync(_elementName);
 
                 var result = await formView.GetResultAsync();
 
@@ -59,7 +49,7 @@ public class InternalRedirectController : MasterDataController
             }
             case RelationshipViewType.View:
             {
-                var panel = await ComponentFactory.DataPanel.CreateAsync(_elementName);
+                var panel = await componentFactory.DataPanel.CreateAsync(_elementName);
                 panel.PageState = PageState.View;
                 if (userId != null)
                     panel.SetUserValues("USERID", userId);
@@ -77,7 +67,7 @@ public class InternalRedirectController : MasterDataController
             }
             case RelationshipViewType.Update:
             {
-                var panel = await ComponentFactory.DataPanel.CreateAsync(_elementName);
+                var panel = await componentFactory.DataPanel.CreateAsync(_elementName);
                 panel.PageState = PageState.Update;
 
                 await panel.LoadValuesFromPkAsync(RelationValues);
@@ -107,7 +97,7 @@ public class InternalRedirectController : MasterDataController
 
         var userId = HttpContext.GetUserId();
 
-        var panel = await ComponentFactory.DataPanel.CreateAsync(_elementName);
+        var panel = await componentFactory.DataPanel.CreateAsync(_elementName);
         panel.PageState = PageState.Update;
 
         await panel.LoadValuesFromPkAsync(RelationValues);
@@ -131,7 +121,7 @@ public class InternalRedirectController : MasterDataController
 
         if (errors.Count > 0)
         {
-            ViewBag.Error = ComponentFactory.Html.ValidationSummary.Create(errors).GetHtml();
+            ViewBag.Error = componentFactory.Html.ValidationSummary.Create(errors).GetHtml();
             ViewBag.Success = false;
         }
         else
@@ -149,7 +139,7 @@ public class InternalRedirectController : MasterDataController
 
         _elementName = null;
         _relationshipType = RelationshipViewType.List;
-        var @params = HttpUtility.ParseQueryString(EncryptionService.DecryptStringWithUrlUnescape(parameters));
+        var @params = HttpUtility.ParseQueryString(encryptionService.DecryptStringWithUrlUnescape(parameters));
         _elementName = @params.Get("formname");
         foreach (string key in @params)
         {

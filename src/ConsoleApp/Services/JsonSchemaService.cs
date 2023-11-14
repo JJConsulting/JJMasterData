@@ -2,17 +2,11 @@ using JJMasterData.ConsoleApp.Writers;
 
 namespace JJMasterData.ConsoleApp.Services;
 
-public class JsonSchemaService
+public class JsonSchemaService(JJMasterDataOptionsWriter masterDataOptionsWriter, FormElementWriter formElementWriter)
 {
-    private JJMasterDataOptionsWriter MasterDataOptionsWriter { get; }
-    private FormElementWriter FormElementWriter { get; }
+    private JJMasterDataOptionsWriter MasterDataOptionsWriter { get; } = masterDataOptionsWriter;
+    private FormElementWriter FormElementWriter { get; } = formElementWriter;
 
-    public JsonSchemaService(JJMasterDataOptionsWriter masterDataOptionsWriter, FormElementWriter formElementWriter)
-    {
-        MasterDataOptionsWriter = masterDataOptionsWriter;
-        FormElementWriter = formElementWriter;
-    }
-    
     public void GenerateJsonSchema(string schemaName)
     {
         switch (schemaName)

@@ -5,13 +5,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.Http.AspNetCore;
 
-public class ClaimsPrincipalWrapper : IClaimsPrincipalAccessor
+public class ClaimsPrincipalWrapper(IHttpContextAccessor httpContextAccessor) : IClaimsPrincipalAccessor
 {
-    public ClaimsPrincipal User { get; }
-
-    public ClaimsPrincipalWrapper(IHttpContextAccessor httpContextAccessor)
-    {
-        User = httpContextAccessor.HttpContext.User;
-    }
+    public ClaimsPrincipal User { get; } = httpContextAccessor.HttpContext.User;
 }
 #endif 

@@ -5,13 +5,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace JJMasterData.Core.Http.AspNetCore;
 
-internal class HttpSessionWrapper : IHttpSession
+internal class HttpSessionWrapper(IHttpContextAccessor contextAccessor) : IHttpSession
 {
-    private ISession Session { get; }
-    public HttpSessionWrapper(IHttpContextAccessor contextAccessor)
-    {
-        Session = contextAccessor.HttpContext.Session;
-    }
+    private ISession Session { get; } = contextAccessor.HttpContext.Session;
+
     public string this[string key]
     {
         get => Session.GetObject<string>(key);

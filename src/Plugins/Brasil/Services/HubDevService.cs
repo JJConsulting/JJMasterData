@@ -14,23 +14,16 @@ using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Brasil.Services;
 
-public class HubDevService : IReceitaFederalService
-{
-    private HttpClient HttpClient { get; }
-    private IMemoryCache MemoryCache { get; }
-    private HubDevSettings Settings { get; }
-    
-    
-    public HubDevService(
-        HttpClient httpClient,
+public class HubDevService(HttpClient httpClient,
         IMemoryCache memoryCache,
         IOptions<HubDevSettings> options)
-    {
-        HttpClient = httpClient;
-        MemoryCache = memoryCache;
-        Settings = options.Value;
-    }
-    
+    : IReceitaFederalService
+{
+    private HttpClient HttpClient { get; } = httpClient;
+    private IMemoryCache MemoryCache { get; } = memoryCache;
+    private HubDevSettings Settings { get; } = options.Value;
+
+
     public bool IsHttps { get; set; } = true;
     
     public bool IgnoreDb { get; set; }

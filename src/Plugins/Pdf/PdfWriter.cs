@@ -36,7 +36,15 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Pdf;
 
-public class PdfWriter : DataExportationWriterBase, IPdfWriter
+public class PdfWriter(ExpressionsService expressionsService,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        IOptions<MasterDataCoreOptions> options,
+        DataItemService dataItemService,
+        ILogger<PdfWriter> logger,
+        IEntityRepository entityRepository,
+        FieldFormattingService fieldFormattingService,
+        ControlFactory controlFactory)
+    : DataExportationWriterBase(expressionsService, stringLocalizer, options, controlFactory, logger), IPdfWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
@@ -46,27 +54,12 @@ public class PdfWriter : DataExportationWriterBase, IPdfWriter
 
     public bool IsLandscape { get; set; }
 
-    private DataItemService DataItemService { get; }
-    public IEntityRepository EntityRepository { get; } 
-    
-    public FieldFormattingService FieldFormattingService { get; }
-    
-    
-    public PdfWriter(ExpressionsService expressionsService, 
-                     IStringLocalizer<MasterDataResources> stringLocalizer, 
-                     IOptions<MasterDataCoreOptions> options, 
-                     DataItemService dataItemService,
-                     ILogger<PdfWriter> logger, 
-                     IEntityRepository entityRepository, 
-                     FieldFormattingService fieldFormattingService, 
-                     ControlFactory controlFactory) : base(expressionsService, stringLocalizer, options, controlFactory, logger)
-    {
-        DataItemService = dataItemService;
-        EntityRepository = entityRepository;
-        FieldFormattingService = fieldFormattingService;
-        
-    }
-    
+    private DataItemService DataItemService { get; } = dataItemService;
+    public IEntityRepository EntityRepository { get; } = entityRepository;
+
+    public FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
+
+
     public override async Task GenerateDocument(Stream ms, CancellationToken token)
     {
         using var writer = new iText.Kernel.Pdf.PdfWriter(ms);

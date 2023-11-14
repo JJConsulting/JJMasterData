@@ -8,10 +8,8 @@ namespace JJMasterData.Web.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 
-public class AlertTagHelper : TagHelper
+public class AlertTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelper
 {
-    private readonly HtmlComponentFactory _htmlComponentFactory;
-
     [HtmlAttributeName("title")]
     public string? Title { get; set; }
     
@@ -33,13 +31,9 @@ public class AlertTagHelper : TagHelper
     [HtmlAttributeName("css-class")]
     public string? CssClass { get; set; }
 
-    public AlertTagHelper(HtmlComponentFactory htmlComponentFactory)
-    {
-        _htmlComponentFactory = htmlComponentFactory;
-    }
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var alert = _htmlComponentFactory.Alert.Create();
+        var alert = htmlComponentFactory.Alert.Create();
         alert.Color = Color;
         alert.CssClass = CssClass;
         alert.Title = Title;

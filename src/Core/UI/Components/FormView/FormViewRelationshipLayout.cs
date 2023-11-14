@@ -11,14 +11,9 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class FormViewRelationshipLayout
+internal class FormViewRelationshipLayout(JJFormView parentFormView)
 {
-    private JJFormView ParentFormView { get; }
-
-    public FormViewRelationshipLayout(JJFormView parentFormView)
-    {
-        ParentFormView = parentFormView;
-    }
+    private JJFormView ParentFormView { get; } = parentFormView;
 
     public async Task<ComponentResult> GetRelationshipsResult(List<FormElementRelationship> relationships)
     {

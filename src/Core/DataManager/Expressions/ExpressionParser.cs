@@ -7,19 +7,13 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
-public class ExpressionParser
+public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser> logger)
 {
-    private IHttpContext HttpContext { get; }
-    private ILogger<ExpressionParser> Logger { get; }
+    private IHttpContext HttpContext { get; } = httpContext;
+    private ILogger<ExpressionParser> Logger { get; } = logger;
     private IHttpRequest Request => HttpContext.Request;
     private IHttpSession Session => HttpContext.Session;
-    
-    public ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser> logger)
-    {
-        HttpContext = httpContext;
-        Logger = logger;
-    }
-    
+
     public IDictionary<string,object?> ParseExpression(
         string? expression,
         FormStateData formStateData)

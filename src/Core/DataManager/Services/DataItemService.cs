@@ -17,27 +17,17 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class DataItemService 
+public class DataItemService(IEntityRepository entityRepository,
+    ExpressionParser expressionParser,
+    IFormValues formValues,
+    ElementMapService elementMapService,
+    ILogger<DataItemService> logger)
 {
-    private IEntityRepository EntityRepository { get; }
-    private ExpressionParser ExpressionParser { get; }
-    private IFormValues FormValues { get; }
-    private ElementMapService ElementMapService { get; }
-    private ILogger<DataItemService> Logger { get; }
-
-    public DataItemService(
-        IEntityRepository entityRepository,
-        ExpressionParser expressionParser,
-        IFormValues formValues,
-        ElementMapService elementMapService,
-        ILogger<DataItemService> logger)
-    {
-        EntityRepository = entityRepository;
-        ExpressionParser = expressionParser;
-        FormValues = formValues;
-        ElementMapService = elementMapService;
-        Logger = logger;
-    }
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private ExpressionParser ExpressionParser { get; } = expressionParser;
+    private IFormValues FormValues { get; } = formValues;
+    private ElementMapService ElementMapService { get; } = elementMapService;
+    private ILogger<DataItemService> Logger { get; } = logger;
 
     public async Task<string?> GetSelectedValueAsync(FormElementField field, FormStateData formStateData,
         string? searchText = null, string? searchId = null)

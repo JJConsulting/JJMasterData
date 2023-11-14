@@ -24,7 +24,12 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 
-public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExportationWriter
+public abstract class DataExportationWriterBase(ExpressionsService expressionsService,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        IOptions<MasterDataCoreOptions> options,
+        ControlFactory controlFactory,
+        ILogger<DataExportationWriterBase> logger)
+    : IBackgroundTaskWorker, IExportationWriter
 {
     public event EventHandler<IProgressReporter> OnProgressChanged;
 
@@ -35,13 +40,13 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     private DataExportationReporter _processReporter;
     private List<FormElementField> _fields;
 
-    private ExpressionsService ExpressionsService { get; }
-    protected IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private IOptions<MasterDataCoreOptions> Options { get; }
-    
-    public ControlFactory ControlFactory { get; }
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
+    protected IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private IOptions<MasterDataCoreOptions> Options { get; } = options;
 
-    private ILogger<DataExportationWriterBase> Logger { get; }
+    public ControlFactory ControlFactory { get; } = controlFactory;
+
+    private ILogger<DataExportationWriterBase> Logger { get; } = logger;
 
 
     protected List<FormElementField> VisibleFields
@@ -84,7 +89,7 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
     /// </summary>
-    public IDictionary<string, object> CurrentFilter { get; set; }
+    public IDictionary<string, object> CurrentFilter { get; set; } = new Dictionary<string, object>();
 
     /// <summary>
     /// Recupera a ordenação da tabela, 
@@ -152,21 +157,6 @@ public abstract class DataExportationWriterBase : IBackgroundTaskWorker, IExport
 
     #endregion
 
-
-    protected DataExportationWriterBase(
-        ExpressionsService expressionsService,
-        IStringLocalizer<MasterDataResources> stringLocalizer, 
-        IOptions<MasterDataCoreOptions> options,
-        ControlFactory controlFactory, 
-        ILogger<DataExportationWriterBase> logger)
-    {
-        ExpressionsService = expressionsService;
-        StringLocalizer = stringLocalizer;
-        Options = options;
-        ControlFactory = controlFactory;
-        Logger = logger;
-        CurrentFilter = new Dictionary<string, object>();
-    }
 
     public async Task RunWorkerAsync(CancellationToken token)
     {

@@ -10,19 +10,12 @@ using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class ElementMapService
+public class ElementMapService(IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository,ExpressionsService expressionsService)
 {
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IEntityRepository EntityRepository { get; }
-    private ExpressionsService ExpressionsService { get; }
+    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
 
-    public ElementMapService(IDataDictionaryRepository dataDictionaryRepository,IEntityRepository entityRepository,ExpressionsService expressionsService)
-    {
-        DataDictionaryRepository = dataDictionaryRepository;
-        EntityRepository = entityRepository;
-        ExpressionsService = expressionsService;
-    }
-    
     public async Task<IDictionary<string, object?>> GetFieldsAsync(DataElementMap elementMap, object? value, FormStateData formStateData)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);

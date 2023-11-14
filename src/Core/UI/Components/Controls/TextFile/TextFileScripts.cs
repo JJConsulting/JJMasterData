@@ -6,29 +6,22 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class TextFileScripts
+internal class TextFileScripts(JJTextFile textFile)
 {
-    private readonly JJTextFile _textFile;
-
-    public TextFileScripts(JJTextFile textFile)
-    {
-        _textFile = textFile;
-    }
-
     public string GetShowScript()
     {
-        var title = _textFile.FormElementField.Label ?? _textFile.StringLocalizer["Manage Files"];
+        var title = textFile.FormElementField.Label ?? textFile.StringLocalizer["Manage Files"];
 
-        title = HttpUtility.JavaScriptStringEncode(_textFile.StringLocalizer[title]);
+        title = HttpUtility.JavaScriptStringEncode(textFile.StringLocalizer[title]);
 
-        var routeContext = RouteContext.FromFormElement(_textFile.FormElement, ComponentContext.TextFileUploadView);
+        var routeContext = RouteContext.FromFormElement(textFile.FormElement, ComponentContext.TextFileUploadView);
         
-        return $"TextFileHelper.showUploadView('{_textFile.FieldName}','{title}','{_textFile.EncryptionService.EncryptRouteContext(routeContext)}');";
+        return $"TextFileHelper.showUploadView('{textFile.FieldName}','{title}','{textFile.EncryptionService.EncryptRouteContext(routeContext)}');";
     }
 
     public string GetRefreshScript()
     {
-        return $"TextFileHelper.refreshInputs('{_textFile.Name}','{_textFile.GetPresentationText()}','{_textFile.GetFileName()}')";
+        return $"TextFileHelper.refreshInputs('{textFile.Name}','{textFile.GetPresentationText()}','{textFile.GetFileName()}')";
     }
     
 }

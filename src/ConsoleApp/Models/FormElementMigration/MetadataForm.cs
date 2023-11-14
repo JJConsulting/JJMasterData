@@ -10,7 +10,7 @@ namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
 public class MetadataForm
 {
     [JsonProperty("formfields")]
-    public List<MetadataFormField> FormFields { get; set; }
+    public List<MetadataFormField> FormFields { get; set; } = new();
 
     [JsonProperty("title")]
     public string Title { get; set; }
@@ -19,11 +19,5 @@ public class MetadataForm
     public string SubTitle { get; set; }
 
     [JsonProperty("panels")]
-    public List<FormElementPanel> Panels { get; set; }
-
-    public MetadataForm()
-    {
-        Panels = new List<FormElementPanel>();
-        FormFields = new List<MetadataFormField>();
-    }
+    public List<FormElementPanel> Panels { get; set; } = new();
 }

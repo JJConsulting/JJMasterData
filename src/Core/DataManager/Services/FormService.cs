@@ -15,17 +15,22 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FormService
+public class FormService(IEntityRepository entityRepository,
+    ExpressionsService expressionsService,
+    FormFileService formFileService,
+    FieldValidationService fieldValidationService,
+    AuditLogService auditLogService,
+    ILogger<FormService> logger)
 {
     #region Properties
-    private IEntityRepository EntityRepository { get; }
-    private ExpressionsService ExpressionsService { get; }
-    private FormFileService FormFileService { get; }
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
+    private FormFileService FormFileService { get; } = formFileService;
 
-    private FieldValidationService FieldValidationService { get; }
+    private FieldValidationService FieldValidationService { get; } = fieldValidationService;
 
-    private AuditLogService AuditLogService { get; }
-    private ILogger<FormService> Logger { get; }
+    private AuditLogService AuditLogService { get; } = auditLogService;
+    private ILogger<FormService> Logger { get; } = logger;
 
     public bool EnableErrorLinks { get; set; }
     
@@ -44,23 +49,6 @@ public class FormService
     #endregion
 
     #region Constructor
-    
-    public FormService(
-        IEntityRepository entityRepository,
-        ExpressionsService expressionsService,
-        FormFileService formFileService,
-        FieldValidationService fieldValidationService,
-        AuditLogService auditLogService,
-        ILogger<FormService> logger
-        )
-    {
-        FieldValidationService = fieldValidationService;
-        EntityRepository = entityRepository;
-        ExpressionsService = expressionsService;
-        FormFileService = formFileService;
-        AuditLogService = auditLogService;
-        Logger = logger;
-    }
 
     #endregion
 

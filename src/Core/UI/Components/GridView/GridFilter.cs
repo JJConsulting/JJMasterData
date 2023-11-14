@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridFilter
+internal class GridFilter(JJGridView gridView)
 {
     private const string FilterActionName = "filter";
     private const string ClearActionName = "clear";
@@ -24,17 +24,12 @@ internal class GridFilter
     internal const string FilterFieldPrefix = "filter_";
 
     private IDictionary<string, object> _currentFilter;
-    private JJGridView GridView { get; set; }
+    private JJGridView GridView { get; set; } = gridView;
 
     private IHttpContext CurrentContext => GridView.CurrentContext;
     private IStringLocalizer<MasterDataResources> StringLocalizer => GridView.StringLocalizer;
     public string Name => GridView.Name + "-filter";
 
-    public GridFilter(JJGridView gridView)
-    {
-        GridView = gridView;
-    }
-    
     internal async Task<HtmlBuilder> GetFilterHtml()
     {
         var filterAction = GridView.FilterAction;

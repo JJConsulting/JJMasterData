@@ -7,14 +7,9 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class ClassGenerationService
+public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepository)
 {
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-
-    public ClassGenerationService(IDataDictionaryRepository dataDictionaryRepository)
-    {
-        DataDictionaryRepository = dataDictionaryRepository;
-    }
+    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
 
     public async Task<string> GetClassSourceCode(string elementName)
     {

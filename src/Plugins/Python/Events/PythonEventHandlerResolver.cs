@@ -9,17 +9,12 @@ using Microsoft.Scripting.Hosting;
 
 namespace JJMasterData.Python.Events;
 
-public class PythonEventHandlerResolver : IFormEventHandlerResolver, IGridEventHandlerResolver
+public class PythonEventHandlerResolver(ScriptEngine scriptEngine, IOptions<PythonEngineOptions> options)
+    : IFormEventHandlerResolver, IGridEventHandlerResolver
 {
-    private ScriptEngine ScriptEngine { get; }
-    private string? ScriptsPath { get; }
-    
-    public PythonEventHandlerResolver(ScriptEngine scriptEngine,IOptions<PythonEngineOptions> options)
-    {
-        ScriptEngine = scriptEngine;
-        ScriptsPath = options.Value.ElementScriptsPath;
-    }
-    
+    private ScriptEngine ScriptEngine { get; } = scriptEngine;
+    private string? ScriptsPath { get; } = options.Value.ElementScriptsPath;
+
     private T? Get<T>(string elementName)
     {
         if (ScriptsPath is null)

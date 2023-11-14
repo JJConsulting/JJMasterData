@@ -20,11 +20,22 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 
-public class TextWriter : DataExportationWriterBase, ITextWriter
+public class TextWriter(ExpressionsService expressionsService,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        IOptions<MasterDataCoreOptions> options,
+        ControlFactory controlFactory,
+        ILoggerFactory logger,
+        IEntityRepository entityRepository)
+    : DataExportationWriterBase(expressionsService,
+        stringLocalizer,
+        options,
+        controlFactory,
+        logger.CreateLogger<DataExportationWriterBase>()), ITextWriter
 {
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
     public string Delimiter { get; set; }
-    private IEntityRepository EntityRepository { get; } 
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
         using var sw = new StreamWriter(stream, Encoding.UTF8);
@@ -141,19 +152,5 @@ public class TextWriter : DataExportationWriterBase, ITextWriter
         }
         await sw.WriteLineAsync("");
         await sw.FlushAsync();
-    }
-
-    public TextWriter(ExpressionsService expressionsService, 
-        IStringLocalizer<MasterDataResources> stringLocalizer, 
-        IOptions<MasterDataCoreOptions> options, 
-        ControlFactory controlFactory, 
-        ILoggerFactory logger, 
-        IEntityRepository entityRepository) : base(expressionsService, 
-                stringLocalizer, 
-                options, 
-                controlFactory, 
-                logger.CreateLogger<DataExportationWriterBase>())
-    {
-        EntityRepository = entityRepository;
     }
 }

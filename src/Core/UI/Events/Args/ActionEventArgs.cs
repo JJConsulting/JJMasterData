@@ -5,24 +5,17 @@ using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.UI.Events.Args;
 
-public class ActionEventArgs : EventArgs
+public class ActionEventArgs(BasicAction action, JJLinkButton linkButton, IDictionary<string, object> fieldValues)
+    : EventArgs
 {
     [Obsolete("Please use ActionName property")]
     public BasicAction Action => throw new InvalidOperationException("Please use ActionName property.");
     
-    public string ActionName { get; init; }
-    
-    public JJLinkButton LinkButton { get; set; }
-    
-    public IDictionary<string, object> FieldValues { get; internal set; }
-    
-    public string HtmlResult { get; set; }
+    public string ActionName { get; init; } = action.Name ?? throw new ArgumentNullException(nameof(action));
 
-    public ActionEventArgs(BasicAction action, JJLinkButton linkButton, IDictionary<string, object> fieldValues)
-    {
-        ActionName = action.Name ?? throw new ArgumentNullException(nameof(action));
-        LinkButton = linkButton;
-        FieldValues = fieldValues;
-        HtmlResult = null;
-    }
+    public JJLinkButton LinkButton { get; set; } = linkButton;
+
+    public IDictionary<string, object> FieldValues { get; internal set; } = fieldValues;
+
+    public string HtmlResult { get; set; } = null;
 }

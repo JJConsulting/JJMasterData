@@ -125,7 +125,7 @@ public class GridUI
     /// </remarks>
     [JsonProperty("emptyDataText")]
     [Display(Name = "Empty Data Text")]
-    public string EmptyDataText { get; set; } = "There is no record to display";
+    public string EmptyDataText { get; set; } = "There is no record to display.";
 
     /// <summary>
     /// Exibe os controles de paginação (Default = true) 

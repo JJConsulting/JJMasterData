@@ -3,12 +3,7 @@ using System;
 namespace JJMasterData.Core.Events.Attributes;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class CustomizedFieldsAttribute : Attribute
+public class CustomizedFieldsAttribute(params string[] fieldNames) : Attribute
 {
-    public string[] FieldNames { get; }
-
-    public CustomizedFieldsAttribute(params string[] fieldNames)
-    {
-        FieldNames = fieldNames;
-    }
+    public string[] FieldNames { get; } = fieldNames;
 }

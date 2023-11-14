@@ -13,23 +13,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class ActionsService : BaseService
-{
-    private readonly IEnumerable<IExpressionProvider> _expressionProviders;
-    private readonly IEnumerable<IPluginHandler> _pluginHandlers;
-
-    public ActionsService(
-        IValidationDictionary validationDictionary, 
+public class ActionsService(IValidationDictionary validationDictionary,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IDataDictionaryRepository dataDictionaryRepository,
         IEnumerable<IExpressionProvider> expressionProviders,
-        IEnumerable<IPluginHandler> pluginHandlers) 
-        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
-    {
-        _expressionProviders = expressionProviders;
-        _pluginHandlers = pluginHandlers;
-    }
-
+        IEnumerable<IPluginHandler> pluginHandlers)
+    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+{
     public async Task<bool> DeleteActionAsync(string elementName, string actionName, ActionSource context, string fieldName = null)
     {
         var dicParser = await DataDictionaryRepository.GetFormElementAsync(elementName);
@@ -164,12 +154,12 @@ public class ActionsService : BaseService
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
             AddError(nameof(action.VisibleExpression), StringLocalizer["Required [VisibleExpression] field"]);
-        else if (!ValidateExpression(action.VisibleExpression, _expressionProviders.GetBooleanProvidersPrefixes()))
+        else if (!ValidateExpression(action.VisibleExpression, expressionProviders.GetBooleanProvidersPrefixes()))
             AddError(nameof(action.VisibleExpression), StringLocalizer["Invalid [VisibleExpression] field"]);
 
         if (string.IsNullOrWhiteSpace(action.EnableExpression))
             AddError(nameof(action.EnableExpression), "Required [EnableExpression] field");
-        else if (!ValidateExpression(action.EnableExpression, _expressionProviders.GetBooleanProvidersPrefixes()))
+        else if (!ValidateExpression(action.EnableExpression, expressionProviders.GetBooleanProvidersPrefixes()))
             AddError(nameof(action.EnableExpression), "Invalid [EnableExpression] field");
 
         switch (action)
@@ -203,7 +193,7 @@ public class ActionsService : BaseService
             }
             case PluginAction pluginAction:
             {
-                var pluginHandler = _pluginHandlers.First(p => p.Id == pluginAction.PluginId);
+                var pluginHandler = pluginHandlers.First(p => p.Id == pluginAction.PluginId);
                 if (pluginAction is PluginFieldAction pluginFieldAction)
                 {
                     if (!formElement.Fields[fieldName!].AutoPostBack && pluginFieldAction.AutoTriggerOnChange)

@@ -13,28 +13,19 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class LogController : DataDictionaryController
-{
-    private DbLoggerOptions Options { get; }
-
-    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
-    private LoggerFormElementFactory LoggerFormElementFactory { get; }
-    private IEntityRepository EntityRepository { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-
-    public LogController(
-        IFormElementComponentFactory<JJFormView> formViewFactory,
-        LoggerFormElementFactory loggerFormElementFactory, 
+public class LogController(IFormElementComponentFactory<JJFormView> formViewFactory,
+        LoggerFormElementFactory loggerFormElementFactory,
         IEntityRepository entityRepository,
-        IStringLocalizer<MasterDataResources> stringLocalizer, 
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptions<DbLoggerOptions> options)
-    {
-        FormViewFactory = formViewFactory;
-        LoggerFormElementFactory = loggerFormElementFactory;
-        EntityRepository = entityRepository;
-        StringLocalizer = stringLocalizer;
-        Options = options.Value;
-    }
+    : DataDictionaryController
+{
+    private DbLoggerOptions Options { get; } = options.Value;
+
+    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
+    private LoggerFormElementFactory LoggerFormElementFactory { get; } = loggerFormElementFactory;
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     public async Task<IActionResult> Index()
     {

@@ -15,26 +15,14 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.WebApi.Services;
 
-public class DictionariesService
+public class DictionariesService(IDataDictionaryRepository dataDictionaryRepository,
+    IEntityRepository entityRepository,
+    IStringLocalizer<MasterDataResources> stringLocalizer,
+    IHttpContext httpContext,
+    ILogger<DictionariesService> logger)
 {
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private ILogger<DictionariesService> Logger { get; }
-    private readonly IEntityRepository _entityRepository;
-    private readonly IDataDictionaryRepository _dataDictionaryRepository;
-    private readonly IHttpContext _httpContext;
-    public DictionariesService(
-        IDataDictionaryRepository dataDictionaryRepository,
-        IEntityRepository entityRepository,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        IHttpContext httpContext,
-        ILogger<DictionariesService> logger)
-    {
-        StringLocalizer = stringLocalizer;
-        Logger = logger;
-        _dataDictionaryRepository = dataDictionaryRepository;
-        _entityRepository = entityRepository;
-        _httpContext = httpContext;
-    }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private ILogger<DictionariesService> Logger { get; } = logger;
 
     /// <summary>
     /// Analisa uma lista de elementos retornando quantos registros precisam ser sincronizados
@@ -47,7 +35,7 @@ public class DictionariesService
     /// </param>
     public async Task<DicSyncInfo> GetSyncInfoAsync(DicSyncParam[] listSync, bool showLogInfo, long maxRecordsAllowed = 0)
     {
-        var userId = DataHelper.GetCurrentUserId(_httpContext, null!);
+        var userId = DataHelper.GetCurrentUserId(httpContext, null!);
         if (listSync == null)
             throw new ArgumentNullException(nameof(listSync));
 
@@ -55,7 +43,7 @@ public class DictionariesService
             throw new ArgumentException("DicSyncParam invalid");
 
         var dStart = DateTime.Now;
-        var dictionaries = await _dataDictionaryRepository.GetFormElementListAsync(true);
+        var dictionaries = await dataDictionaryRepository.GetFormElementListAsync(true);
         var syncInfo = new DicSyncInfo
         {
             ServerDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm")
@@ -117,7 +105,7 @@ public class DictionariesService
             Filters = filters,
             RecordsPerPage = 1
         };
-        var result = await _entityRepository.GetDictionaryListResultAsync(element, parameters);
+        var result = await entityRepository.GetDictionaryListResultAsync(element, parameters);
         return result.TotalOfRecords;
     }
     

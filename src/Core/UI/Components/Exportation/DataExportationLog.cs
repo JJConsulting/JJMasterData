@@ -4,16 +4,10 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataExportationLog
+internal class DataExportationLog(JJDataExportation dataExportation)
 {
-    private DataExportationScripts Scripts { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-
-    public DataExportationLog(JJDataExportation dataExportation)
-    {
-        Scripts = dataExportation.Scripts;
-        StringLocalizer = dataExportation.StringLocalizer;
-    }
+    private DataExportationScripts Scripts { get; } = dataExportation.Scripts;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = dataExportation.StringLocalizer;
 
     internal HtmlBuilder GetHtmlProcess()
     {

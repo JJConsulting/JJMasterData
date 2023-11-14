@@ -4,14 +4,9 @@ using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.IO;
 
-public class FormFileService
+public class FormFileService(FormFileManagerFactory formFileManagerFactory)
 {
-    private FormFileManagerFactory FormFileManagerFactory { get; }
-
-    public FormFileService(FormFileManagerFactory formFileManagerFactory)
-    {
-        FormFileManagerFactory = formFileManagerFactory;
-    }
+    private FormFileManagerFactory FormFileManagerFactory { get; } = formFileManagerFactory;
 
     public void SaveFormMemoryFiles(FormElement formElement, IDictionary<string, object> primaryKeys)
     {

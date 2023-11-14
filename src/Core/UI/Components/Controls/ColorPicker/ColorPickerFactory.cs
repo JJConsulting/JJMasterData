@@ -3,15 +3,10 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components.ColorPicker;
 
-internal class ColorPickerFactory: IControlFactory<JJColorPicker>
+internal class ColorPickerFactory(IFormValues formValues) : IControlFactory<JJColorPicker>
 {
-    private IFormValues FormValues { get; }
+    private IFormValues FormValues { get; } = formValues;
 
-    public ColorPickerFactory(IFormValues formValues)
-    {
-        FormValues = formValues;
-    }
-    
     public JJColorPicker Create()
     {
         return new JJColorPicker(FormValues);

@@ -8,60 +8,43 @@ namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
 public class GridToolbarActions
 {
     [JsonProperty("insertAction")]
-    public InsertAction InsertAction { get; set; }
+    public InsertAction InsertAction { get; set; } = new();
 
     [JsonProperty("legendAction")]
-    public LegendAction LegendAction { get; set; }
+    public LegendAction LegendAction { get; set; } = new();
 
     [JsonProperty("refreshAction")]
-    public RefreshAction RefreshAction { get; set; }
+    public RefreshAction RefreshAction { get; set; } = new();
 
     [JsonProperty("filterAction")]
-    public FilterAction FilterAction { get; set; }
+    public FilterAction FilterAction { get; set; } = new();
 
     [JsonProperty("importAction")]
-    public ImportAction ImportAction { get; set; }
+    public ImportAction ImportAction { get; set; } = new();
 
     [JsonProperty("exportAction")]
-    public ExportAction ExportAction { get; set; }
+    public ExportAction ExportAction { get; set; } = new();
 
     [JsonProperty("configAction")]
-    public ConfigAction ConfigAction { get; set; }
+    public ConfigAction ConfigAction { get; set; } = new();
 
     [JsonProperty("sortAction")]
-    public SortAction SortAction { get; set; }
+    public SortAction SortAction { get; set; } = new();
 
     [JsonProperty("logAction")]
-    public AuditLogGridToolbarAction AuditLogGridToolbarAction { get; set; }
+    public AuditLogGridToolbarAction AuditLogGridToolbarAction { get; set; } = new();
 
     [JsonProperty("commandActions")]
-    private List<SqlCommandAction> CommandActions { get; set; }
+    private List<SqlCommandAction> CommandActions { get; set; } = new();
 
     [JsonProperty("urlRedirectActions")]
-    private List<UrlRedirectAction> UrlRedirectActions { get; set; }
+    private List<UrlRedirectAction> UrlRedirectActions { get; set; } = new();
 
     [JsonProperty("internalActions")]
-    private List<InternalAction> InternalActions { get; set; }
+    private List<InternalAction> InternalActions { get; set; } = new();
 
     [JsonProperty("jsActions")]
-    private List<ScriptAction> JsActions { get; set; }
-    
-    public GridToolbarActions()
-    {
-        InsertAction = new InsertAction();
-        LegendAction = new LegendAction();
-        RefreshAction = new RefreshAction();
-        FilterAction = new FilterAction();
-        ImportAction = new ImportAction();
-        ExportAction = new ExportAction();
-        ConfigAction = new ConfigAction();
-        SortAction = new SortAction();
-        AuditLogGridToolbarAction = new AuditLogGridToolbarAction();
-        CommandActions = new List<SqlCommandAction>();
-        UrlRedirectActions = new List<UrlRedirectAction>();
-        InternalActions = new List<InternalAction>();
-        JsActions = new List<ScriptAction>();
-    }
+    private List<ScriptAction> JsActions { get; set; } = new();
 
 
     public void Set(BasicAction action)

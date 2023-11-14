@@ -16,14 +16,10 @@ namespace JJMasterData.Core.DataDictionary.Repository;
 /// <summary>
 /// The Data Dictionaries (metadata) are stored in files in a custom folder
 /// </summary>
-public class FileSystemDataDictionaryRepository : IDataDictionaryRepository
+public class FileSystemDataDictionaryRepository
+    (IOptions<FileSystemDataDictionaryOptions> options) : IDataDictionaryRepository
 {
-    public string FolderPath { get; }
-    
-    public FileSystemDataDictionaryRepository(IOptions<FileSystemDataDictionaryOptions> options)
-    {
-        FolderPath = options.Value.FolderPath;
-    }
+    public string FolderPath { get; } = options.Value.FolderPath;
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
     public IEnumerable<FormElement> GetMetadataList(bool? sync = null)

@@ -8,24 +8,15 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class ScriptsService
+public class ScriptsService(IEntityRepository entityRepository, 
+    IDataDictionaryRepository dataDictionaryRepository)
 {
-    private readonly IEntityRepository _entityRepository;
-    private readonly IDataDictionaryRepository _dataDictionaryRepository;
-
-    public ScriptsService(
-        IEntityRepository entityRepository, 
-        IDataDictionaryRepository dataDictionaryRepository)
-    {
-        _entityRepository = entityRepository;
-        _dataDictionaryRepository = dataDictionaryRepository;
-    }
     public async Task<ScriptsResult> GetScriptsAsync(FormElement formElement)
     {
-        var createTableScript = _entityRepository.GetCreateTableScript(formElement);
-        var readProcedureScript = formElement.UseReadProcedure ? _entityRepository.GetReadProcedureScript(formElement) : null;
-        var writeProcedureScript = formElement.UseWriteProcedure ? _entityRepository.GetWriteProcedureScript(formElement) : null;
-        var alterTableScript = await _entityRepository.GetAlterTableScriptAsync(formElement);
+        var createTableScript = entityRepository.GetCreateTableScript(formElement);
+        var readProcedureScript = formElement.UseReadProcedure ? entityRepository.GetReadProcedureScript(formElement) : null;
+        var writeProcedureScript = formElement.UseWriteProcedure ? entityRepository.GetWriteProcedureScript(formElement) : null;
+        var alterTableScript = await entityRepository.GetAlterTableScriptAsync(formElement);
         
         return new ScriptsResult
         {
@@ -38,22 +29,22 @@ public class ScriptsService
     
     public async Task ExecuteScriptsAsync(string id, string scriptOption)
     {
-        var formElement = await _dataDictionaryRepository.GetFormElementAsync(id);
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(id);
 
         switch (scriptOption)
         {
             case "ExecuteProcedures":
                 var sql = new StringBuilder();
-                sql.AppendLine(_entityRepository.GetWriteProcedureScript(formElement));
-                sql.AppendLine(_entityRepository.GetReadProcedureScript(formElement));
-                await _entityRepository.ExecuteBatchAsync(sql.ToString());
+                sql.AppendLine(entityRepository.GetWriteProcedureScript(formElement));
+                sql.AppendLine(entityRepository.GetReadProcedureScript(formElement));
+                await entityRepository.ExecuteBatchAsync(sql.ToString());
                 break;
             case "ExecuteCreateDataModel":
-                await _entityRepository.CreateDataModelAsync(formElement);
+                await entityRepository.CreateDataModelAsync(formElement);
                 break;
             case "ExecuteAlterTable":
-                var alterTableScript = await _entityRepository.GetAlterTableScriptAsync(formElement);
-                await _entityRepository.ExecuteBatchAsync(alterTableScript);
+                var alterTableScript = await entityRepository.GetAlterTableScriptAsync(formElement);
+                await entityRepository.ExecuteBatchAsync(alterTableScript);
                 break;
         }
     }

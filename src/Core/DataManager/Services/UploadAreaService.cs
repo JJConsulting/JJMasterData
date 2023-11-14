@@ -16,19 +16,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class UploadAreaService 
+public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private IHttpContext CurrentContext { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private IHttpContext CurrentContext { get; } = currentContext;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     public event EventHandler<FormUploadFileEventArgs>? OnFileUploaded;
     public event AsyncEventHandler<FormUploadFileEventArgs>? OnFileUploadedAsync;
 
-    public UploadAreaService(IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        CurrentContext = currentContext;
-        StringLocalizer = stringLocalizer;
-    }
-    
     public async Task<UploadAreaResultDto> UploadFileAsync(FormFileContent formFile, string? allowedTypes = null)
     {
         UploadAreaResultDto dto = new();

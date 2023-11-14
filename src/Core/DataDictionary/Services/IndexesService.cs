@@ -6,16 +6,11 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class IndexesService : BaseService
-{
-    public IndexesService(
-        IValidationDictionary validationDictionary,
+public class IndexesService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
-    {
-    }
-
+    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+{
     public async Task<bool> SaveAsync(string id, string index, ElementIndex elementIndex)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(id);

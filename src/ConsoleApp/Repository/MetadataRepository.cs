@@ -14,10 +14,8 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.ConsoleApp.Repository;
 
-public class MetadataRepository
+public class MetadataRepository(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options)
 {
-    private readonly IEntityRepository _entityRepository;
-    private readonly IOptions<MasterDataCoreOptions> _options;
     private Element _masterDataElement;
 
     internal Element MasterDataElement
@@ -26,19 +24,13 @@ public class MetadataRepository
         {
             if (_masterDataElement == null)
             {
-                var tableName = _options.Value.DataDictionaryTableName;
+                var tableName = options.Value.DataDictionaryTableName;
                 _masterDataElement = DataDictionaryStructure.GetElement(tableName);
             }
             return _masterDataElement;
         }
     }
- 
-    public MetadataRepository(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options)
-    {
-        _entityRepository = entityRepository;
-        _options = options;
-    }
-   
+
     ///<inheritdoc cref="IDataDictionaryRepository.GetFormElementListAsync"/>
     public IEnumerable<Metadata> GetMetadataList(bool? sync = null)
     {
@@ -61,7 +53,7 @@ public class MetadataRepository
         MasterDataElement.UseWriteProcedure = false;
 
         string currentName = "";
-        var dt = _entityRepository.GetDictionaryListResultAsync(MasterDataElement,entityParameters, false).GetAwaiter().GetResult();
+        var dt = entityRepository.GetDictionaryListResultAsync(MasterDataElement,entityParameters, false).GetAwaiter().GetResult();
         Metadata currentParser = null;
         foreach (var row in dt.Data)
         {

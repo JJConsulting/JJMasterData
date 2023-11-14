@@ -2,13 +2,8 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public abstract class HtmlComponentResult : ComponentResult
+public abstract class HtmlComponentResult(HtmlBuilder htmlBuilder) : ComponentResult
 {
-    internal HtmlBuilder HtmlBuilder { get; }
+    internal HtmlBuilder HtmlBuilder { get; } = htmlBuilder;
     public override string Content => HtmlBuilder.ToString(true);
-    protected HtmlComponentResult(HtmlBuilder htmlBuilder) 
-    {
-        HtmlBuilder = htmlBuilder;
-    }
-    
 }

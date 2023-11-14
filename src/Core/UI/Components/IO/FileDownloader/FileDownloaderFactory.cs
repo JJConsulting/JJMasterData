@@ -7,28 +7,18 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class FileDownloaderFactory : IComponentFactory<JJFileDownloader>
-{
-    private IHttpContext HttpContext { get; }
-    private MasterDataUrlHelper UrlHelper { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private ILoggerFactory LoggerFactory { get; }
-
-    public FileDownloaderFactory(
-        IHttpContext httpContext, 
+internal class FileDownloaderFactory(IHttpContext httpContext,
         MasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
-        ILoggerFactory loggerFactory
-        )
-    {
-        HttpContext = httpContext;
-        UrlHelper = urlHelper;
-        EncryptionService = encryptionService;
-        StringLocalizer = stringLocalizer;
-        LoggerFactory = loggerFactory;
-    }
+        ILoggerFactory loggerFactory)
+    : IComponentFactory<JJFileDownloader>
+{
+    private IHttpContext HttpContext { get; } = httpContext;
+    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
     public JJFileDownloader Create()
     {

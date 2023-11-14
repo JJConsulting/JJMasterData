@@ -6,14 +6,9 @@ using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.IO;
 
-public class FormFilePathBuilder
+public class FormFilePathBuilder(FormElement formElement)
 {
-    private FormElement FormElement { get; set; }
-
-    public FormFilePathBuilder(FormElement formElement)
-    {
-        FormElement = formElement;
-    }
+    private FormElement FormElement { get; set; } = formElement;
 
     public string GetFolderPath(FormElementField field, IDictionary<string, object> formValues)
     {

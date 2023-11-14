@@ -48,7 +48,7 @@ public class FormElementApiOptions
     /// </summary>
     [JsonProperty("formatType")]
     [Display(Name = "Json Formatting")]
-    public ApiJsonFormatting JsonFormatting { get; set; }
+    public ApiJsonFormatting JsonFormatting { get; set; } = ApiJsonFormatting.Lowercase;
 
     /// <summary>
     /// Always apply UserId (from login) as filter or on set
@@ -57,11 +57,6 @@ public class FormElementApiOptions
     [Display(Name = "Apply User Id On")]
     public string? ApplyUserIdOn { get; set; }
 
-
-    public FormElementApiOptions()
-    {
-        JsonFormatting = ApiJsonFormatting.Lowercase;
-    }
 
     /// <summary>
     /// Format the field according to the dictionary parameterization

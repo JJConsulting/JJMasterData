@@ -13,25 +13,14 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class ActionsController : DataDictionaryController
-{
-    private readonly ActionsService _actionsService;
-    private readonly IEnumerable<IPluginHandler> _pluginHandlers;
-    private readonly IControlFactory<JJSearchBox> _searchBoxFactory;
-
-    public ActionsController(
-        ActionsService actionsService,
+public class ActionsController(ActionsService actionsService,
         IEnumerable<IPluginHandler> pluginHandlers,
         IControlFactory<JJSearchBox> searchBoxFactory)
-    {
-        _actionsService = actionsService;
-        _pluginHandlers = pluginHandlers;
-        _searchBoxFactory = searchBoxFactory;
-    }
-
+    : DataDictionaryController
+{
     public async Task<ActionResult> Index(string elementName)
     {
-        var formElement = await _actionsService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await actionsService.DataDictionaryRepository.GetFormElementAsync(elementName);
         var model = new ActionsListViewModel(elementName, "Actions")
         {
             GridTableActions = formElement.Options.GridTableActions.GetAllSorted(),
@@ -51,7 +40,7 @@ public class ActionsController : DataDictionaryController
             throw new ArgumentNullException(nameof(elementName));
 
 
-        var formElement = await _actionsService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await actionsService.DataDictionaryRepository.GetFormElementAsync(elementName);
 
         var action = context switch
         {
@@ -76,7 +65,7 @@ public class ActionsController : DataDictionaryController
 
     private async Task<ComponentResult> GetIconSearchBoxResult(BasicAction? action)
     {
-        var iconSearchBox = _searchBoxFactory.Create();
+        var iconSearchBox = searchBoxFactory.Create();
         iconSearchBox.DataItem.ShowIcon = true;
         iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
             .Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
@@ -154,7 +143,7 @@ public class ActionsController : DataDictionaryController
     public async Task<ActionResult> Remove(string elementName, string actionName, ActionSource context,
         string? fieldName)
     {
-        await _actionsService.DeleteActionAsync(elementName, actionName, context, fieldName);
+        await actionsService.DeleteActionAsync(elementName, actionName, context, fieldName);
         return Json(new { success = true });
     }
 
@@ -163,7 +152,7 @@ public class ActionsController : DataDictionaryController
     public async Task<ActionResult> Sort(string elementName, string fieldsOrder, ActionSource context,
         string? fieldName)
     {
-        await _actionsService.SortActionsAsync(elementName, fieldsOrder.Split(","), context, fieldName);
+        await actionsService.SortActionsAsync(elementName, fieldsOrder.Split(","), context, fieldName);
         return Json(new { success = true });
     }
 
@@ -171,7 +160,7 @@ public class ActionsController : DataDictionaryController
     public async Task<ActionResult> EnableDisable(string elementName, string actionName, ActionSource context,
         bool visibility)
     {
-        await _actionsService.EnableDisable(elementName, actionName, context, visibility);
+        await actionsService.EnableDisable(elementName, actionName, context, visibility);
         return Json(new { success = true });
     }
 
@@ -385,7 +374,7 @@ public class ActionsController : DataDictionaryController
     private void SetPluginConfigurationMap(IDictionary<string, object?> configurationMap,
         Guid pluginId)
     {
-        var pluginHandler = _pluginHandlers.First(p => p.Id == pluginId);
+        var pluginHandler = pluginHandlers.First(p => p.Id == pluginId);
 
         if (pluginHandler.ConfigurationFields == null)
             return;
@@ -408,7 +397,7 @@ public class ActionsController : DataDictionaryController
     
     private void SetPluginFieldMap(IDictionary<string, string> fieldMap, Guid pluginId)
     {
-        var pluginHandler = (IPluginFieldActionHandler)_pluginHandlers.First(p => p.Id == pluginId);
+        var pluginHandler = (IPluginFieldActionHandler)pluginHandlers.First(p => p.Id == pluginId);
         
         foreach (var key in pluginHandler.FieldMapKeys)
         {
@@ -422,12 +411,12 @@ public class ActionsController : DataDictionaryController
     private async Task SaveAction(string elementName, BasicAction basicAction, ActionSource context,
         string? originalName, string? fieldName = null)
     {
-        await _actionsService.SaveAction(elementName, basicAction, context, originalName, fieldName);
+        await actionsService.SaveAction(elementName, basicAction, context, originalName, fieldName);
 
         if (ModelState.IsValid)
             ViewBag.Success = true;
         else
-            ViewBag.Error = _actionsService.GetValidationSummary().GetHtml();
+            ViewBag.Error = actionsService.GetValidationSummary().GetHtml();
     }
 
     private async Task PopulateViewBag(string elementName, BasicAction basicAction, ActionSource context,
@@ -448,16 +437,16 @@ public class ActionsController : DataDictionaryController
         ViewBag.ContextAction = context;
         ViewBag.MenuId = "Actions";
         ViewBag.FieldName = fieldName!;
-        var formElement = await _actionsService.GetFormElementAsync(elementName);
+        var formElement = await actionsService.GetFormElementAsync(elementName);
         ViewBag.FormElement = formElement;
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(_actionsService.GetAutocompleteHintsList(formElement, includeAdditionalHints:false));
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(actionsService.GetAutocompleteHintsList(formElement, includeAdditionalHints:false));
 
         if (basicAction is InternalAction internalAction)
         {
-            ViewBag.ElementNameList = await _actionsService.GetElementListAsync();
-            ViewBag.InternalFieldList = await _actionsService.GetFieldList(elementName);
+            ViewBag.ElementNameList = await actionsService.GetElementListAsync();
+            ViewBag.InternalFieldList = await actionsService.GetFieldList(elementName);
             var elementNameRedirect = internalAction.ElementRedirect.ElementNameRedirect;
-            ViewBag.RedirectFieldList = await _actionsService.GetFieldList(elementNameRedirect);
+            ViewBag.RedirectFieldList = await actionsService.GetFieldList(elementNameRedirect);
         }
     }
     

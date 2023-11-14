@@ -10,17 +10,10 @@ namespace JJMasterData.WebApi.Controllers;
 
 [Authorize]
 [ApiController]
-public class DictionariesController : ControllerBase
+public class DictionariesController(DictionariesService dictionariesService,
+        IDataDictionaryRepository dataDictionaryRepository)
+    : ControllerBase
 {
-    private readonly DictionariesService _dictionariesService;
-    private readonly IDataDictionaryRepository _dataDictionaryRepository;
-
-    public DictionariesController(DictionariesService dictionariesService, 
-                                  IDataDictionaryRepository dataDictionaryRepository)
-    {
-        _dictionariesService = dictionariesService;
-        _dataDictionaryRepository = dataDictionaryRepository;
-    }
     /// <summary>
     /// Get all dictionaries with sync enabled.
     /// </summary>
@@ -34,7 +27,7 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/")]
     public async Task<ActionResult<FormElement[]>> GetAll()
     {
-        var dicList = await _dataDictionaryRepository.GetFormElementListAsync(true);
+        var dicList = await dataDictionaryRepository.GetFormElementListAsync(true);
         if (dicList == null)
             return NotFound();
 
@@ -55,7 +48,7 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/{id}")]
     public async Task<FormElement> Get(string id)
     {
-        return await _dataDictionaryRepository.GetFormElementAsync(id);
+        return await dataDictionaryRepository.GetFormElementAsync(id);
     }
 
     /// <summary>
@@ -72,6 +65,6 @@ public class DictionariesController : ControllerBase
     [Route("api/dictionaries/count")]
     public async Task<ActionResult<DicSyncInfo>> Count([FromBody]DicSyncParam[] param)
     {
-        return await _dictionariesService.GetSyncInfoAsync(param, Debugger.IsAttached);
+        return await dictionariesService.GetSyncInfoAsync(param, Debugger.IsAttached);
     }
 }

@@ -7,30 +7,20 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.ConsoleApp.Services;
 
-public class FormElementMigrationService
+public class FormElementMigrationService(IDataDictionaryRepository dataDictionaryRepository, 
+    MetadataRepository metadataRepository,
+    IOptions<MasterDataCoreOptions> options,
+    ExpressionsMigrationService expressionsMigrationService,
+    ILogger<FormElementMigrationService> logger)
 {
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private MetadataRepository MetadataRepository { get; }
-    private ExpressionsMigrationService ExpressionsMigrationService { get; }
-    private ILogger<FormElementMigrationService> Logger { get; }
-    private DataAccess DataAccess { get; }
+    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    private MetadataRepository MetadataRepository { get; } = metadataRepository;
+    private ExpressionsMigrationService ExpressionsMigrationService { get; } = expressionsMigrationService;
+    private ILogger<FormElementMigrationService> Logger { get; } = logger;
+    private DataAccess DataAccess { get; } = new(options.Value.ConnectionString, DataAccessProvider.SqlServer);
     private string TableName => Options.DataDictionaryTableName;
-    private MasterDataCoreOptions Options { get; }
-    public FormElementMigrationService(
-        IDataDictionaryRepository dataDictionaryRepository, 
-        MetadataRepository metadataRepository,
-        IOptions<MasterDataCoreOptions> options,
-        ExpressionsMigrationService expressionsMigrationService,
-        ILogger<FormElementMigrationService> logger)
-    {
-        DataDictionaryRepository = dataDictionaryRepository;
-        MetadataRepository = metadataRepository;
-        ExpressionsMigrationService = expressionsMigrationService;
-        Logger = logger;
-        DataAccess = new DataAccess(options.Value.ConnectionString, DataAccessProvider.SqlServer);
-        Options = options.Value;
-    }
-    
+    private MasterDataCoreOptions Options { get; } = options.Value;
+
     public void Migrate()
     {
         var start = DateTime.Now;

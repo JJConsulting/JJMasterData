@@ -15,28 +15,19 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-public class LookupController : MasterDataController
-{
-    private LookupService LookupService { get; }
-    private FormValuesService FormValuesService { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-
-    public LookupController(
+public class LookupController(
         LookupService lookupService,
         FormValuesService formValuesService,
         IEncryptionService encryptionService,
         IFormElementComponentFactory<JJFormView> formViewFactory,
-        IStringLocalizer<MasterDataResources> stringLocalizer
-        )
-    {
-        LookupService = lookupService;
-        FormValuesService = formValuesService;
-        EncryptionService = encryptionService;
-        FormViewFactory = formViewFactory;
-        StringLocalizer = stringLocalizer;
-    }
+        IStringLocalizer<MasterDataResources> stringLocalizer)
+    : MasterDataController
+{
+    private LookupService LookupService { get; } = lookupService;
+    private FormValuesService FormValuesService { get; } = formValuesService;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     [ServiceFilter<LookupParametersDecryptionFilter>]
     public async Task<IActionResult> Index(LookupParameters lookupParameters)

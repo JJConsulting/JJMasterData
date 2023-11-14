@@ -9,52 +9,40 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class HtmlComponentFactory
+public class HtmlComponentFactory(IStringLocalizer<MasterDataResources> stringLocalizer,
+    IHttpContext currentContext,
+    MasterDataUrlHelper urlHelper,
+    IServiceProvider serviceProvider)
 {
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
-    private readonly IHttpContext _currentContext;
-    private readonly MasterDataUrlHelper _urlHelper;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly MasterDataUrlHelper _urlHelper = urlHelper;
 
-    public HtmlComponentFactory(
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        IHttpContext currentContext,
-        MasterDataUrlHelper urlHelper,
-        IServiceProvider serviceProvider)
-    {
-        _stringLocalizer = stringLocalizer;
-        _currentContext = currentContext;
-        _urlHelper = urlHelper;
-        _serviceProvider = serviceProvider;
-    }
-    
     public AlertFactory Alert => new();
 
     public CardFactory Card => new();
     
-    public CollapsePanelFactory CollapsePanel => new(_currentContext.Request.Form);
+    public CollapsePanelFactory CollapsePanel => new(currentContext.Request.Form);
     
     public IconFactory Icon => new();
     
-    public ImageFactory Image =>  new(_currentContext);
+    public ImageFactory Image =>  new(currentContext);
     
-    public LabelFactory Label => new(_stringLocalizer);
+    public LabelFactory Label => new(stringLocalizer);
     
-    public LinkButtonFactory LinkButton => _serviceProvider.GetRequiredService<LinkButtonFactory>();
+    public LinkButtonFactory LinkButton => serviceProvider.GetRequiredService<LinkButtonFactory>();
     
-    public MessageBoxFactory MessageBox =>  new(_stringLocalizer);
+    public MessageBoxFactory MessageBox =>  new(stringLocalizer);
     
     public ModalDialogFactory ModalDialog => new();
     
     public SpinnerFactory Spinner => new();
     
-    public NavFactory TabNav => new(_currentContext.Request.Form);
+    public NavFactory TabNav => new(currentContext.Request.Form);
     
     public TitleFactory Title => new();
     
     public ToolbarFactory Toolbar => new();
     
-    public ValidationSummaryFactory ValidationSummary =>  new(_stringLocalizer);
+    public ValidationSummaryFactory ValidationSummary =>  new(stringLocalizer);
     
 }
 

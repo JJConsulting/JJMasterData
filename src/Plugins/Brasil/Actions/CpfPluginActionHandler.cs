@@ -11,9 +11,10 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Brasil.Actions;
 
-public class CpfPluginActionHandler : BrasilPluginActionHandler
+public class CpfPluginActionHandler(IReceitaFederalService receitaFederalService, ExpressionsService expressionsService)
+    : BrasilPluginActionHandler(expressionsService)
 {
-    private IReceitaFederalService ReceitaFederalService { get; }
+    private IReceitaFederalService ReceitaFederalService { get; } = receitaFederalService;
 
     private const string BirthDateFieldKey = "BirthDate";
     private const string IgnoreDbFieldKey = "IgnoreDb";
@@ -50,11 +51,6 @@ public class CpfPluginActionHandler : BrasilPluginActionHandler
         }
     }
 
-    public CpfPluginActionHandler(IReceitaFederalService receitaFederalService, ExpressionsService expressionsService) : base(expressionsService)
-    {
-        ReceitaFederalService = receitaFederalService;
-    }
-    
     protected override async Task<Dictionary<string, object?>> GetResultAsync(PluginFieldActionContext context)
     {
         var values = context.Values;

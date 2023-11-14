@@ -4,15 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-public class FileController : MasterDataController
+public class FileController(IEncryptionService encryptionService) : MasterDataController
 {
-    private IEncryptionService EncryptionService { get; }
+    private IEncryptionService EncryptionService { get; } = encryptionService;
 
-    public FileController(IEncryptionService encryptionService)
-    {
-        EncryptionService = encryptionService;
-    }
-    
     public IActionResult Download(string filePath)
     {
         var descriptedPath = EncryptionService.DecryptStringWithUrlUnescape(filePath);

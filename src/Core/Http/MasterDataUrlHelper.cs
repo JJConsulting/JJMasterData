@@ -11,15 +11,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace JJMasterData.Core.Http;
 
-public class MasterDataUrlHelper 
+public class MasterDataUrlHelper(IHttpRequest httpRequest,IOptions<MasterDataCoreOptions> options)
 {
-    private IHttpRequest HttpRequest { get; }
-    private string? JJMasterDataUrl { get; }
-    public MasterDataUrlHelper(IHttpRequest httpRequest,IOptions<MasterDataCoreOptions> options)
-    {
-        JJMasterDataUrl = options.Value.MasterDataUrl;
-        HttpRequest = httpRequest;
-    }
+    private IHttpRequest HttpRequest { get; } = httpRequest;
+    private string? JJMasterDataUrl { get; } = options.Value.MasterDataUrl;
 
     public string GetUrl([AspMvcAction]string? action = null, [AspMvcController] string? controller = null,string? area = null, object? values = null)
     {

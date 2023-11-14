@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class CheckboxTagHelper : TagHelper
+public class CheckboxTagHelper(IControlFactory<JJCheckBox> checkboxFactory) : TagHelper
 {
-    private IControlFactory<JJCheckBox> CheckboxFactory { get; set; }
-    
+    private IControlFactory<JJCheckBox> CheckboxFactory { get; set; } = checkboxFactory;
+
     [HtmlAttributeName("configure")]
     public Action<JJCheckBox>? Configure { get; set; }
 
@@ -34,11 +34,6 @@ public class CheckboxTagHelper : TagHelper
     public string? OnChange { get; set; }
 
     public bool Enabled { get; set; } = true;
-    
-    public CheckboxTagHelper(IControlFactory<JJCheckBox> checkboxFactory)
-    {
-        CheckboxFactory = checkboxFactory;
-    }
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {

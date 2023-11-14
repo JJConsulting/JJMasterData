@@ -1,16 +1,9 @@
 namespace JJMasterData.Web.Areas.MasterData.Models;
 
-public class InternalRedirectViewModel
+public class InternalRedirectViewModel(string title, string htmlContent, bool showToolBar)
 {
-    public string HtmlContent { get; set; }
-    public bool ShowToolBar { get; set; }
-    
-    public string Title { get; set; }
-    
-    public InternalRedirectViewModel(string title, string htmlContent, bool showToolBar)
-    {
-        Title = title;
-        HtmlContent = htmlContent;
-        ShowToolBar = showToolBar;
-    }
+    public string HtmlContent { get; set; } = htmlContent;
+    public bool ShowToolBar { get; set; } = showToolBar;
+
+    public string Title { get; set; } = title;
 }

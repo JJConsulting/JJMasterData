@@ -5,15 +5,10 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class MessageBoxFactory : IComponentFactory<JJMessageBox>
+public class MessageBoxFactory(IStringLocalizer<MasterDataResources> stringLocalizer) : IComponentFactory<JJMessageBox>
 {
-    public IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    public IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
-    public MessageBoxFactory(IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        StringLocalizer = stringLocalizer;
-    }
-    
     public JJMessageBox Create()
     {
         return new JJMessageBox();

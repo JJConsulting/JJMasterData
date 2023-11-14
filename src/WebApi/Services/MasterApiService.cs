@@ -17,53 +17,36 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.WebApi.Services;
 
-public class MasterApiService
+public class MasterApiService(ExpressionsService expressionsService,
+    IHttpContextAccessor httpContextAccessor,
+    IHttpContext httpContext,
+    DataItemService dataItemService,
+    FormService formService,
+    IEntityRepository entityRepository,
+    IDataDictionaryRepository dataDictionaryRepository,
+    FieldsService fieldsService,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private readonly HttpContext _httpContext;
-    private ExpressionsService ExpressionsService { get; }
-    private IHttpContext HttpContext { get; }
-    private DataItemService DataItemService { get; }
-    private FormService FormService { get; }
-    private FieldsService FieldsService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private readonly IEntityRepository _entityRepository;
-    private readonly IDataDictionaryRepository _dataDictionaryRepository;
-
-    public MasterApiService(
-        ExpressionsService expressionsService,
-        IHttpContextAccessor httpContextAccessor,
-        IHttpContext httpContext,
-        DataItemService dataItemService,
-        FormService formService,
-        IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
-        FieldsService fieldsService,
-        IStringLocalizer<MasterDataResources> stringLocalizer
-        )
-    {
-        _httpContext = httpContextAccessor.HttpContext!;
-        ExpressionsService = expressionsService;
-        HttpContext = httpContext;
-        DataItemService = dataItemService;
-        FormService = formService;
-        FieldsService = fieldsService;
-        StringLocalizer = stringLocalizer;
-        _entityRepository = entityRepository;
-        _dataDictionaryRepository = dataDictionaryRepository;
-    }
+    private readonly HttpContext _httpContext = httpContextAccessor.HttpContext!;
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
+    private IHttpContext HttpContext { get; } = httpContext;
+    private DataItemService DataItemService { get; } = dataItemService;
+    private FormService FormService { get; } = formService;
+    private FieldsService FieldsService { get; } = fieldsService;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     public async Task<string> GetListFieldAsTextAsync(string elementName, int pag, int regporpag, string? orderby)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var formElement = await _dataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
         var filters = GetDefaultFilter(formElement, true);
         var showLogInfo = Debugger.IsAttached;
-        string text = await _entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters()
+        string text = await entityRepository.GetListFieldsAsTextAsync(formElement, new EntityParameters()
         {
             Filters = filters!,
             CurrentPage = pag,
@@ -82,13 +65,13 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = await _dataDictionaryRepository.GetFormElementAsync(elementName);
+        var dictionary = await dataDictionaryRepository.GetFormElementAsync(elementName);
         if (!dictionary.ApiOptions.EnableGetAll)
             throw new UnauthorizedAccessException();
 
         var filters = GetDefaultFilter(dictionary, true);
         var element = dictionary;
-        var result = await _entityRepository.GetDictionaryListResultAsync(element, new EntityParameters
+        var result = await entityRepository.GetDictionaryListResultAsync(element, new EntityParameters
         {
             Filters = filters!,
             CurrentPage = pag,
@@ -110,13 +93,13 @@ public class MasterApiService
 
     public async Task<Dictionary<string, object>> GetFieldsAsync(string elementName, string id)
     {
-        var formElement = await _dataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
         
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
         var filters = ParseFilter(formElement, primaryKeys);
-        var fields = await _entityRepository.GetFieldsAsync(formElement, filters);
+        var fields = await entityRepository.GetFieldsAsync(formElement, filters);
 
         if (fields == null || fields.Count == 0)
             throw new KeyNotFoundException("No records found");
@@ -296,7 +279,7 @@ public class MasterApiService
 
             var parsedValues = DataHelper.ParseOriginalName(formElement, values);
             var pkValues = DataHelper.GetPkValues(formElement, parsedValues!);
-            var currentValues = await _entityRepository.GetFieldsAsync(formElement, pkValues);
+            var currentValues = await entityRepository.GetFieldsAsync(formElement, pkValues);
             if (currentValues == null)
                 throw new KeyNotFoundException("No records found");
 
@@ -351,7 +334,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        var dictionary = await _dataDictionaryRepository.GetFormElementAsync(elementName);
+        var dictionary = await dataDictionaryRepository.GetFormElementAsync(elementName);
 
         if (!dictionary.ApiOptions.EnableAdd & !dictionary.ApiOptions.EnableUpdate)
             throw new UnauthorizedAccessException();
@@ -466,7 +449,7 @@ public class MasterApiService
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        return await _dataDictionaryRepository.GetFormElementAsync(elementName);
+        return await dataDictionaryRepository.GetFormElementAsync(elementName);
     }
 
     /// <summary>

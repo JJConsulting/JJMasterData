@@ -12,16 +12,10 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FieldValidationService
+public class FieldValidationService(ExpressionsService expressionsService, IStringLocalizer<MasterDataResources> localizer)
 {
-    private ExpressionsService ExpressionsService { get; }
-    private IStringLocalizer<MasterDataResources> Localizer { get; }
-
-    public FieldValidationService(ExpressionsService expressionsService, IStringLocalizer<MasterDataResources> localizer)
-    {
-        ExpressionsService = expressionsService;
-        Localizer = localizer;
-    }
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
+    private IStringLocalizer<MasterDataResources> Localizer { get; } = localizer;
 
     public IDictionary<string, string> ValidateFields(
         FormElement formElement, 

@@ -8,10 +8,12 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components.TextRange;
 
-public class JJTextRange : ControlBase
+public class JJTextRange(IFormValues formValues, IControlFactory<JJTextGroup> textBoxGroupFactory,
+        IStringLocalizer<MasterDataResources> stringLocalizer)
+    : ControlBase(formValues)
 {
-    private IControlFactory<JJTextGroup> TextBoxGroupFactory { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private IControlFactory<JJTextGroup> TextBoxGroupFactory { get; } = textBoxGroupFactory;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     internal ControlBase FromField { get; set; }
     internal ControlBase ToField { get; set; }
@@ -21,12 +23,6 @@ public class JJTextRange : ControlBase
     private bool IsTimeAware => FieldType is FieldType.DateTime or FieldType.DateTime2;
     
     public bool IsVerticalLayout { get; set; }
-    
-    public JJTextRange(IFormValues formValues, IControlFactory<JJTextGroup> textBoxGroupFactory,IStringLocalizer<MasterDataResources> stringLocalizer) : base(formValues)
-    {
-        TextBoxGroupFactory = textBoxGroupFactory;
-        StringLocalizer = stringLocalizer;
-    }
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {

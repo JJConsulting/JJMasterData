@@ -11,31 +11,21 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class ActionButtonFactory
+public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFactory,
+    ExpressionsService expressionsService,
+    MasterDataUrlHelper urlHelper, 
+    IEncryptionService encryptionService,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private IComponentFactory<JJLinkButton> LinkButtonFactory { get; }
+    private IComponentFactory<JJLinkButton> LinkButtonFactory { get; } = linkButtonFactory;
 
     private ActionScripts _actionScripts;
-    private ExpressionsService ExpressionsService { get; }
-  
-    private MasterDataUrlHelper UrlHelper { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
+
+    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private ActionScripts ActionScripts => _actionScripts ??= new ActionScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
-    
-    public ActionButtonFactory(
-        IComponentFactory<JJLinkButton> linkButtonFactory,
-        ExpressionsService expressionsService,
-        MasterDataUrlHelper urlHelper, 
-        IEncryptionService encryptionService,
-        IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        LinkButtonFactory = linkButtonFactory;
-        ExpressionsService = expressionsService;
-        UrlHelper = urlHelper;
-        EncryptionService = encryptionService;
-        StringLocalizer = stringLocalizer;
-    }
 
     public JJLinkButton Create()
     {

@@ -12,19 +12,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class PanelService : BaseService
-{
-    private IEnumerable<IExpressionProvider> ExpressionProviders { get; }
-
-    public PanelService(
-        IValidationDictionary validationDictionary,
+public class PanelService(IValidationDictionary validationDictionary,
         IEnumerable<IExpressionProvider> expressionProviders,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
-    {
-        ExpressionProviders = expressionProviders;
-    }
+    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+{
+    private IEnumerable<IExpressionProvider> ExpressionProviders { get; } = expressionProviders;
 
     public async Task SavePanelAsync(string elementName, FormElementPanel panel, string[]? selectedFields)
     {

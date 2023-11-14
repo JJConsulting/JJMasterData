@@ -9,17 +9,12 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace JJMasterData.Brasil.Services;
 
-public class ViaCepService : ICepService
+public class ViaCepService(HttpClient httpClient, IMemoryCache memoryCache) : ICepService
 {
     private const string ViaCepUrl = "https://viacep.com.br/ws/";
-    private HttpClient HttpClient { get; }
-    private IMemoryCache MemoryCache { get; }
+    private HttpClient HttpClient { get; } = httpClient;
+    private IMemoryCache MemoryCache { get; } = memoryCache;
 
-    public ViaCepService(HttpClient httpClient, IMemoryCache memoryCache)
-    {
-        HttpClient = httpClient;
-        MemoryCache = memoryCache;
-    }
     public async Task<CepResult> SearchCepAsync(string cep)
     {
          try

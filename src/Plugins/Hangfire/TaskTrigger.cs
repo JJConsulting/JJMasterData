@@ -14,16 +14,10 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Hangfire;
 
-internal class TaskTrigger
+internal class TaskTrigger(BackgroundTaskManager backgroundTaskManager, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private BackgroundTaskManager BackgroundTaskManager { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-
-    public TaskTrigger(BackgroundTaskManager backgroundTaskManager, IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        BackgroundTaskManager = backgroundTaskManager;
-        StringLocalizer = stringLocalizer;
-    }
+    private BackgroundTaskManager BackgroundTaskManager { get; } = backgroundTaskManager;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     public string RunInBackground(string key, IBackgroundTaskWorker worker)
     {

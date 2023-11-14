@@ -26,7 +26,10 @@ internal class DbLoggerBackgroundService : LoggerBackgroundService<DbLoggerBuffe
 
         var dbEntry = DbLogEntry.FromSeparatedString(new string(entry));
 
-        var dbValues = dbEntry.ToDictionary(options);
+        if (dbEntry is null)
+            return;
+        
+        var dbValues = dbEntry?.ToDictionary(options);
         
         var element = DbLoggerElement.GetInstance(options);
 

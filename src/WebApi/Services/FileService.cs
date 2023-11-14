@@ -7,20 +7,11 @@ using JJMasterData.Core.DataManager.IO;
 
 namespace JJMasterData.WebApi.Services;
 
-public class FileService
+public class FileService(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository)
 {
-    private readonly IDataDictionaryRepository _dictionaryRepository;
-    private readonly IEntityRepository _entityRepository;
-
-    public FileService(IDataDictionaryRepository dictionaryRepository, IEntityRepository entityRepository)
-    {
-        _dictionaryRepository = dictionaryRepository;
-        _entityRepository = entityRepository;
-    }
-
     public async Task<FileStream> GetDictionaryFileAsync(string elementName, string pkValues, string fieldName, string fileName)
     {
-        var formElement =await _dictionaryRepository.GetFormElementAsync(elementName);
+        var formElement =await dictionaryRepository.GetFormElementAsync(elementName);
         if (!formElement.ApiOptions.EnableGetDetail)
             throw new UnauthorizedAccessException();
 
@@ -42,7 +33,7 @@ public class FileService
     
     public async Task SetDictionaryFileAsync(string elementName, string fieldName, string pkValues, IFormFile file)
     {
-        var formElement = await _dictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
         
         if (!formElement.ApiOptions.EnableAdd)
             throw new UnauthorizedAccessException();
@@ -57,7 +48,7 @@ public class FileService
     private async Task SetEntityFileAsync(FormElement formElement, FormElementField field, string pkValues, string fileName)
     {
         var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
-        var values = await _entityRepository.GetFieldsAsync(formElement, primaryKeys);
+        var values = await entityRepository.GetFieldsAsync(formElement, primaryKeys);
 
         if (values == null)
             throw new KeyNotFoundException();
@@ -82,7 +73,7 @@ public class FileService
             values[field.Name] = fileName.TrimStart(',');
         }
 
-        await _entityRepository.SetValuesAsync(formElement, values);
+        await entityRepository.SetValuesAsync(formElement, values);
     }
     
     private static async Task SetPhysicalFileAsync(FormElement formElement, FormElementField field, string pkValues, IFormFile file)
@@ -115,7 +106,7 @@ public class FileService
     
     public async Task DeleteFileAsync(string elementName, string fieldName, string pkValues, string fileName)
     {
-        var formElement = await _dictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
         
         if (!formElement.ApiOptions.EnableDel)
             throw new UnauthorizedAccessException();
@@ -143,7 +134,7 @@ public class FileService
     private async Task DeleteEntityFileAsync(Element element, FormElementField field, string pkValues, string fileName)
     {
         var primaryKeys = DataHelper.GetPkValues(element, pkValues, ',');
-        var values = await _entityRepository.GetFieldsAsync(element, primaryKeys);
+        var values = await entityRepository.GetFieldsAsync(element, primaryKeys);
         if (values == null)
             throw new KeyNotFoundException();
         
@@ -163,12 +154,12 @@ public class FileService
         }
 
 
-        await _entityRepository.SetValuesAsync(element, values);
+        await entityRepository.SetValuesAsync(element, values);
     }
     
     public async Task RenameFileAsync(string elementName, string fieldName, string pkValues, string oldName, string newName)
     {
-        var formElement = await _dictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dictionaryRepository.GetFormElementAsync(elementName);
         
         if (!formElement.ApiOptions.EnableUpdatePart)
             throw new UnauthorizedAccessException();
@@ -198,7 +189,7 @@ public class FileService
         string newName)
     {
         var primaryKeys = DataHelper.GetPkValues(formElement, pkValues, ',');
-        var values = await _entityRepository.GetFieldsAsync(formElement, primaryKeys);
+        var values = await entityRepository.GetFieldsAsync(formElement, primaryKeys);
 
         if (values == null)
             throw new KeyNotFoundException();
@@ -217,6 +208,6 @@ public class FileService
             values[field.Name] = newName;
         }
 
-        await _entityRepository.SetValuesAsync(formElement, values);
+        await entityRepository.SetValuesAsync(formElement, values);
     }
 }

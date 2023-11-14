@@ -15,29 +15,19 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FormValuesService 
+public class FormValuesService(IEntityRepository entityRepository,
+    FieldValuesService fieldValuesService,
+    DataItemService dataItemService,
+    LookupService lookupService,
+    IEncryptionService encryptionService,
+    IFormValues formValues)
 {
-    private IEntityRepository EntityRepository { get; }
-    private FieldValuesService FieldValuesService { get; }
-    private DataItemService DataItemService { get; }
-    private LookupService LookupService { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IFormValues FormValues { get; }
-    public FormValuesService(
-        IEntityRepository entityRepository,
-        FieldValuesService fieldValuesService,
-        DataItemService dataItemService,
-        LookupService lookupService,
-        IEncryptionService encryptionService,
-        IFormValues formValues)
-    {
-        EntityRepository = entityRepository;
-        FieldValuesService = fieldValuesService;
-        DataItemService = dataItemService;
-        LookupService = lookupService;
-        EncryptionService = encryptionService;
-        FormValues = formValues;
-    }
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private FieldValuesService FieldValuesService { get; } = fieldValuesService;
+    private DataItemService DataItemService { get; } = dataItemService;
+    private LookupService LookupService { get; } = lookupService;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private IFormValues FormValues { get; } = formValues;
 
     public async Task<IDictionary<string, object?>> GetFormValuesAsync(FormElement formElement, PageState pageState,
         string? fieldPrefix = null)

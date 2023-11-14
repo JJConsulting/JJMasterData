@@ -10,21 +10,13 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class LoggerFormElementFactory
+public class LoggerFormElementFactory(IOptions<DbLoggerOptions> options,MasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private MasterDataUrlHelper UrlHelper { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private DbLoggerOptions Options { get; }
-    public string ElementName { get; }
+    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private DbLoggerOptions Options { get; } = options.Value;
+    public string ElementName { get; } = options.Value.TableName;
 
-    public LoggerFormElementFactory(IOptions<DbLoggerOptions> options,MasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        UrlHelper = urlHelper;
-        StringLocalizer = stringLocalizer;
-        Options = options.Value;
-        ElementName = options.Value.TableName;
-    }
-    
     public FormElement GetFormElement()
     {
         var formElement = new FormElement(DbLoggerElement.GetInstance(Options))

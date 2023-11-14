@@ -13,18 +13,21 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJTextFile : ControlBase
+public class JJTextFile(IHttpRequest request,
+        IComponentFactory componentFactory,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        IEncryptionService encryptionService)
+    : ControlBase(request.Form)
 {
     private IDictionary<string, object> _formValues;
     private FormFilePathBuilder _pathBuilder;
     private RouteContext _routeContext;
     private TextFileScripts _scripts;
     private JJUploadView _uploadView;
-    private IHttpRequest Request { get; }
-    private IComponentFactory ComponentFactory { get; }
-    internal IEncryptionService EncryptionService { get; }
-    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    
+    private IHttpRequest Request { get; } = request;
+    private IComponentFactory ComponentFactory { get; } = componentFactory;
+    internal IEncryptionService EncryptionService { get; } = encryptionService;
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
 
     public string FieldName { get; set; }
@@ -99,18 +102,6 @@ public class JJTextFile : ControlBase
 
             return _uploadView;
         }
-    }
-
-    public JJTextFile(
-        IHttpRequest request,
-        IComponentFactory componentFactory,
-        IStringLocalizer<MasterDataResources> stringLocalizer, 
-        IEncryptionService encryptionService) : base(request.Form)
-    {
-        Request = request;
-        ComponentFactory = componentFactory;
-        StringLocalizer = stringLocalizer;
-        EncryptionService = encryptionService;
     }
 
     protected override async Task<ComponentResult> BuildResultAsync()

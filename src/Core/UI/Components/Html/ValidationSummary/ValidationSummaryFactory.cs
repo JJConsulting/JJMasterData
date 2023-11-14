@@ -4,20 +4,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class ValidationSummaryFactory : IComponentFactory<JJValidationSummary>
+public class ValidationSummaryFactory(IStringLocalizer<MasterDataResources> stringLocalizer) : IComponentFactory<JJValidationSummary>
 {
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
-
-    public ValidationSummaryFactory(IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        _stringLocalizer = stringLocalizer;
-    }
-
     public JJValidationSummary Create()
     {
         return new JJValidationSummary
         {
-            MessageTitle = _stringLocalizer["Invalid data"]
+            MessageTitle = stringLocalizer["Invalid data"]
         };
     }
     

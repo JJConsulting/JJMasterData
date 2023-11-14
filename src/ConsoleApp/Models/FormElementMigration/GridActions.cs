@@ -9,37 +9,26 @@ namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
 public class GridActions
 {
     [JsonProperty("editAction")]
-    public EditAction EditAction { get; set; }
+    public EditAction EditAction { get; set; } = new();
 
     [JsonProperty("deleteAction")]
-    public DeleteAction DeleteAction { get; set; }
+    public DeleteAction DeleteAction { get; set; } = new();
 
     [JsonProperty("viewAction")]
-    public ViewAction ViewAction { get; set; }
+    public ViewAction ViewAction { get; set; } = new();
 
     [JsonProperty("commandActions")]
-    private List<SqlCommandAction> CommandActions { get; set; }
+    private List<SqlCommandAction> CommandActions { get; set; } = new();
 
     [JsonProperty("urlRedirectActions")]
-    private List<UrlRedirectAction> UrlRedirectActions { get; set; }
+    private List<UrlRedirectAction> UrlRedirectActions { get; set; } = new();
 
     [JsonProperty("internalActions")]
-    private List<InternalAction> InternalActions { get; set; }
+    private List<InternalAction> InternalActions { get; set; } = new();
 
     [JsonProperty("jsActions")]
-    private List<ScriptAction> JsActions { get; set; }
+    private List<ScriptAction> JsActions { get; set; } = new();
 
-    
-    public GridActions()
-    {
-        ViewAction = new ViewAction();
-        EditAction = new EditAction();
-        DeleteAction = new DeleteAction();
-        CommandActions = new List<SqlCommandAction>();
-        UrlRedirectActions = new List<UrlRedirectAction>();
-        InternalActions = new List<InternalAction>();
-        JsActions = new List<ScriptAction>();
-    }
 
     public void Set(BasicAction action)
     {

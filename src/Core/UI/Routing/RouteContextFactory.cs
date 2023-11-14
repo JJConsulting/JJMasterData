@@ -4,17 +4,11 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Routing;
 
-public class RouteContextFactory
+public class RouteContextFactory(IQueryString queryString, IEncryptionService encryptionService)
 {
-    private IQueryString QueryString { get; }
-    private IEncryptionService EncryptionService { get; }
+    private IQueryString QueryString { get; } = queryString;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
 
-    public RouteContextFactory(IQueryString queryString, IEncryptionService encryptionService)
-    {
-        QueryString = queryString;
-        EncryptionService = encryptionService;
-    }
-    
     public RouteContext Create()
     {
         if (QueryString.TryGetValue("routeContext", out var encryptedQueryString))

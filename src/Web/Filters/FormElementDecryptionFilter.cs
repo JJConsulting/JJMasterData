@@ -5,15 +5,12 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace JJMasterData.Web.Filters;
 
-public class FormElementDecryptionFilter : ActionFilterAttribute
+public class FormElementDecryptionFilter(IEncryptionService encryptionService,
+        IDataDictionaryRepository dataDictionaryRepository)
+    : ActionFilterAttribute
 {
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IEncryptionService EncryptionService { get; }
-    public FormElementDecryptionFilter(IEncryptionService encryptionService, IDataDictionaryRepository dataDictionaryRepository)
-    {
-        DataDictionaryRepository = dataDictionaryRepository;
-        EncryptionService = encryptionService;
-    }
+    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
 
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {

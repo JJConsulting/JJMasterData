@@ -5,18 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-public class FormController : MasterDataController
+public class FormController(IFormElementComponentFactory<JJFormView> formViewFactory) : MasterDataController
 {
-    private readonly IFormElementComponentFactory<JJFormView> _formViewFactory;
-
-    public FormController(IFormElementComponentFactory<JJFormView> formViewFactory)
-    {
-        _formViewFactory = formViewFactory;
-    }
-    
     public async Task<IActionResult> Render(string elementName)
     {
-        var formView = await _formViewFactory.CreateAsync(elementName);
+        var formView = await formViewFactory.CreateAsync(elementName);
         
         ConfigureFormView(formView);
 

@@ -16,7 +16,11 @@ builder.Services.AddResponseCompression(options =>
     options.Providers.Add<BrotliCompressionProvider>();
     options.Providers.Add<GzipCompressionProvider>();
 });
-
+builder.Services.Configure<HostOptions>(options =>
+{
+    options.BackgroundServiceExceptionBehavior = 
+        BackgroundServiceExceptionBehavior.Ignore;
+});
 builder.Services.AddJJMasterDataWeb(builder.Configuration);
 
 var app = builder.Build();

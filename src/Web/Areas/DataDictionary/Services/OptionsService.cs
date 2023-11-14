@@ -11,18 +11,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Services;
 
-public class OptionsService : BaseService
-{
-    internal IWritableOptions<MasterDataWebOptions>? JJMasterDataWritableOptions { get; }
-
-    public OptionsService(IValidationDictionary validationDictionary,
+public class OptionsService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IWritableOptions<MasterDataWebOptions>? masterDataWritableOptions = null)
-        : base(validationDictionary, dataDictionaryRepository, stringLocalizer)
-    {
-        JJMasterDataWritableOptions = masterDataWritableOptions;
-    }
+    : BaseService(validationDictionary, dataDictionaryRepository, stringLocalizer)
+{
+    internal IWritableOptions<MasterDataWebOptions>? JJMasterDataWritableOptions { get; } = masterDataWritableOptions;
 
 
     public async Task SaveOptions(OptionsViewModel model)

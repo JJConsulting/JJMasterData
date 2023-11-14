@@ -9,17 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 
-public class DataExportationWriterFactory
+public class DataExportationWriterFactory(IServiceProvider serviceProvider)
 {
-    private IServiceProvider ServiceProvider { get; }
-    
+    private IServiceProvider ServiceProvider { get; } = serviceProvider;
+
     public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
-    public DataExportationWriterFactory(IServiceProvider serviceProvider)
-    {
-        ServiceProvider = serviceProvider;
-        
-    }
-    
+
     private IPdfWriter? GetPdfWriter()
     {
         return ServiceProvider.GetService<IPdfWriter>();

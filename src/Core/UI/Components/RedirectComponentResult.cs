@@ -7,17 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class RedirectComponentResult : ComponentResult
+public class RedirectComponentResult(string url) : ComponentResult
 #if NET
 ,IActionResult
 #endif  
 {
-    public override string Content { get; }
+    public override string Content { get; } = url;
 
-    public RedirectComponentResult(string url)
-    {
-        Content = url;
-    }
 #if NET 
     public async Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
     {

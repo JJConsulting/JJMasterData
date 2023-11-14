@@ -12,16 +12,10 @@ using JJMasterData.Core.DataManager.Models;
 namespace JJMasterData.Core.DataManager.Services;
 
 
-public class FieldFormattingService 
+public class FieldFormattingService(DataItemService dataItemService, LookupService lookupService)
 {
-    private DataItemService DataItemService { get; }
-    private LookupService LookupService { get; }
-
-    public FieldFormattingService(DataItemService dataItemService, LookupService lookupService)
-    {
-        DataItemService = dataItemService;
-        LookupService = lookupService;
-    }
+    private DataItemService DataItemService { get; } = dataItemService;
+    private LookupService LookupService { get; } = lookupService;
 
     public async Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
     {

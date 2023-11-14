@@ -10,15 +10,8 @@ using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
-internal class SqlExpressionProvider : IAsyncExpressionProvider
+internal class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncExpressionProvider
 {
-    private readonly IEntityRepository _entityRepository;
-
-    public SqlExpressionProvider(IEntityRepository entityRepository)
-    {
-        _entityRepository = entityRepository;
-    }
-
     public string Prefix => "sql";
     public string Title => "SQL";
     
@@ -26,7 +19,7 @@ internal class SqlExpressionProvider : IAsyncExpressionProvider
     {
         var command = GetParsedDataAccessCommand(expression, parsedValues);
 
-        var result = await _entityRepository.GetResultAsync(command);
+        var result = await entityRepository.GetResultAsync(command);
             
         return result?.ToString() ?? null;
     }

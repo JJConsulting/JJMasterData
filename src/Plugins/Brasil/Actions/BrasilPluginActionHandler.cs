@@ -8,10 +8,10 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Brasil.Actions;
 
-public abstract class BrasilPluginActionHandler : IPluginFieldActionHandler
+public abstract class BrasilPluginActionHandler(ExpressionsService expressionsService) : IPluginFieldActionHandler
 {
-    private ExpressionsService ExpressionsService { get; }
-    
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
+
     private const string AllowEditingOnErrorKey  = "AllowEditingOnError";
     private const string ShowErrorMessageKey = "ShowErrorMessage";
     private const string IsResultValidKey = "IsResultValid";
@@ -64,11 +64,6 @@ public abstract class BrasilPluginActionHandler : IPluginFieldActionHandler
     }
 
     public abstract HtmlBuilder? AdditionalInformationHtml { get; }
-
-    protected BrasilPluginActionHandler(ExpressionsService expressionsService)
-    {
-        ExpressionsService = expressionsService;
-    }
 
     private static void ClearFields(PluginFieldActionContext context)
     {

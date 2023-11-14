@@ -10,33 +10,22 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class AuditLogViewFactory : IFormElementComponentFactory<JJAuditLogView>
-{
-    private IHttpContext HttpContext { get; }
-    private IEntityRepository EntityRepository { get; }
-    private AuditLogService AuditLogService { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IComponentFactory ComponentFactory { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-
-    public AuditLogViewFactory(
-        IHttpContext httpContext,
+internal class AuditLogViewFactory(IHttpContext httpContext,
         IEntityRepository entityRepository,
         AuditLogService auditLogService,
         IDataDictionaryRepository dataDictionaryRepository,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        HttpContext = httpContext;
-        EntityRepository = entityRepository;
-        AuditLogService = auditLogService;
-        DataDictionaryRepository = dataDictionaryRepository;
-        ComponentFactory = componentFactory;
-        EncryptionService = encryptionService;
-        StringLocalizer = stringLocalizer;
-    }
+    : IFormElementComponentFactory<JJAuditLogView>
+{
+    private IHttpContext HttpContext { get; } = httpContext;
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private AuditLogService AuditLogService { get; } = auditLogService;
+    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    private IComponentFactory ComponentFactory { get; } = componentFactory;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     public JJAuditLogView Create(FormElement formElement)
     {

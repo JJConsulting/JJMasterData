@@ -5,20 +5,16 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJSlider : ControlBase
+public class JJSlider(IFormValues formValues, IControlFactory<JJTextBox> textBoxFactory)
+    : ControlBase(formValues)
 {
-    private IControlFactory<JJTextBox> TextBoxFactory { get; }
+    private IControlFactory<JJTextBox> TextBoxFactory { get; } = textBoxFactory;
     public double MinValue { get; set; }
     public double MaxValue { get; set; }
     public double? Value { get; set; }
     public double Step { get; set; } = 1;
     public bool ShowInput { get; set; } = true;
     public int NumberOfDecimalPlaces { get; set; }
-    
-    public JJSlider(IFormValues formValues, IControlFactory<JJTextBox> textBoxFactory) : base(formValues)
-    {
-        TextBoxFactory = textBoxFactory;
-    }
 
     protected override Task<ComponentResult> BuildResultAsync()
     {

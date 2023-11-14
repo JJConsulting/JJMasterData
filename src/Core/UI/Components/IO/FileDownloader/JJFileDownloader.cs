@@ -14,32 +14,23 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJFileDownloader : HtmlComponent
+public class JJFileDownloader(IHttpContext currentContext,
+        MasterDataUrlHelper urlHelper,
+        IEncryptionService encryptionService,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        ILogger<JJFileDownloader> logger)
+    : HtmlComponent
 {
     public const string DirectDownloadParameter = "jjdirectdownload";
     public const string DownloadParameter = "jjdownload";
     
     public string FilePath { get; set; }
     public bool IsExternalLink { get; set; }
-    internal IHttpContext CurrentContext { get; }
-    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    internal MasterDataUrlHelper UrlHelper { get; }
-    internal ILogger<JJFileDownloader> Logger { get; }
-    internal IEncryptionService EncryptionService { get; }
-    
-    public JJFileDownloader(
-        IHttpContext currentContext,
-        MasterDataUrlHelper urlHelper, 
-        IEncryptionService encryptionService,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        ILogger<JJFileDownloader> logger)
-    {
-        CurrentContext = currentContext;
-        StringLocalizer = stringLocalizer;
-        UrlHelper = urlHelper;
-        EncryptionService = encryptionService;
-        Logger = logger;
-    }
+    internal IHttpContext CurrentContext { get; } = currentContext;
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    internal MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    internal ILogger<JJFileDownloader> Logger { get; } = logger;
+    internal IEncryptionService EncryptionService { get; } = encryptionService;
 
 
     internal override HtmlBuilder BuildHtml()

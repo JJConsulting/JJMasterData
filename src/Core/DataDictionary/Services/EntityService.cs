@@ -8,19 +8,11 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class EntityService : BaseService
-{
-
-
-    public EntityService(
-        IValidationDictionary validationDictionary,
+public class EntityService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
-    {
-
-    }
-
+    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+{
     private async Task<bool> ValidateEntity(Element formElement, string originName)
     {
         if (ValidateName(formElement.Name) && !originName.ToLower().Equals(formElement.Name.ToLower()))

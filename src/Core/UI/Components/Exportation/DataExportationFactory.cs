@@ -17,57 +17,25 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataExportationFactory : IFormElementComponentFactory<JJDataExportation>
+internal class DataExportationFactory(
+    IEntityRepository entityRepository,
+    IDataDictionaryRepository dataDictionaryRepository,
+    ExpressionsService expressionsService,
+    FieldsService fieldsService,
+    IOptions<MasterDataCoreOptions> options,
+    IBackgroundTaskManager backgroundTaskManager,
+    IHttpContext httpContext,
+    IStringLocalizer<MasterDataResources> stringLocalizer,
+    ILoggerFactory loggerFactory,
+    IComponentFactory componentFactory,
+    MasterDataUrlHelper urlHelper,
+    IEncryptionService encryptionService,
+    DataExportationWriterFactory dataExportationWriterFactory
+        ) : IFormElementComponentFactory<JJDataExportation>
 {
-    private MasterDataUrlHelper UrlHelper { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IEntityRepository EntityRepository { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private ExpressionsService ExpressionsService { get; }
-    private FieldsService FieldsService { get; }
-    private IOptions<MasterDataCoreOptions> Options { get; }
-    private IBackgroundTaskManager BackgroundTaskManager { get; }
-    private IHttpContext HttpContext { get; }
-    
-    private IComponentFactory ComponentFactory { get; }
-    private DataExportationWriterFactory DataExportationWriterFactory { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private ILoggerFactory LoggerFactory { get; }
-
-    public DataExportationFactory(
-        IEntityRepository entityRepository,
-        IDataDictionaryRepository dataDictionaryRepository,
-        ExpressionsService expressionsService,
-        FieldsService fieldsService,
-        IOptions<MasterDataCoreOptions> options,
-        IBackgroundTaskManager backgroundTaskManager,
-        IHttpContext httpContext,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        ILoggerFactory loggerFactory,
-        IComponentFactory componentFactory,
-        MasterDataUrlHelper urlHelper,
-        IEncryptionService encryptionService,
-        DataExportationWriterFactory dataExportationWriterFactory
-        )
-    {
-        UrlHelper = urlHelper;
-        EncryptionService = encryptionService;
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
-        ExpressionsService = expressionsService;
-        FieldsService = fieldsService;
-        Options = options;
-        BackgroundTaskManager = backgroundTaskManager;
-        HttpContext = httpContext;
-        StringLocalizer = stringLocalizer;
-        LoggerFactory = loggerFactory;
-        ComponentFactory = componentFactory;
-        DataExportationWriterFactory = dataExportationWriterFactory;
-    }
-
     public async Task<JJDataExportation> CreateAsync(string elementName)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
+        var formElement = await dataDictionaryRepository.GetFormElementAsync(elementName);
         return Create(formElement);
     }
 
@@ -75,17 +43,17 @@ internal class DataExportationFactory : IFormElementComponentFactory<JJDataExpor
     {
         return new JJDataExportation(
             formElement,
-            EntityRepository, 
-            ExpressionsService,
-            FieldsService, 
-            Options, 
-            BackgroundTaskManager,
-            StringLocalizer, 
-            ComponentFactory,
-            LoggerFactory, 
-            HttpContext, 
-            UrlHelper,
-            EncryptionService,
-            DataExportationWriterFactory);
+            entityRepository, 
+            expressionsService,
+            fieldsService, 
+            options, 
+            backgroundTaskManager,
+            stringLocalizer, 
+            componentFactory,
+            loggerFactory, 
+            httpContext, 
+            urlHelper,
+            encryptionService,
+            dataExportationWriterFactory);
     }
 }

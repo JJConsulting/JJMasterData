@@ -8,13 +8,10 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class UIOptionsService : BaseService
+public class UIOptionsService(IValidationDictionary validationDictionary,
+        IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<MasterDataResources> stringLocalizer)
+    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
 {
-    public UIOptionsService(IValidationDictionary validationDictionary, IDataDictionaryRepository dataDictionaryRepository, IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
-    {
-    }
-
     private async Task<bool> ValidateOptions(FormElementOptions options, string elementName)
     {
 

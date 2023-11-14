@@ -6,44 +6,37 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class FormViewScripts
+public class FormViewScripts(JJFormView formView)
 {
-    private readonly JJFormView _formView;
-
-    public FormViewScripts(JJFormView formView)
-    {
-        _formView = formView;
-    }
-    
     private string GetEncryptedRouteContext(ComponentContext context)
     {
-        var routeContext = RouteContext.FromFormElement(_formView.FormElement, context);
-        return _formView.EncryptionService.EncryptRouteContext(routeContext);
+        var routeContext = RouteContext.FromFormElement(formView.FormElement, context);
+        return formView.EncryptionService.EncryptRouteContext(routeContext);
     }
 
     public string GetShowInsertSuccessScript()
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.GridViewReload);
-        return $"FormViewHelper.showInsertSuccess('{_formView.Name}', '{encryptedRouteContext}')";
+        return $"FormViewHelper.showInsertSuccess('{formView.Name}', '{encryptedRouteContext}')";
     }
 
     public string GetInsertSelectionScript(IDictionary<string, object?> values)
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.InsertSelection);
-        var encryptedValues = _formView.EncryptionService.EncryptDictionary(values);
-        return $"FormViewHelper.insertSelection('{_formView.Name}', '{encryptedValues}', '{encryptedRouteContext}')";
+        var encryptedValues = formView.EncryptionService.EncryptDictionary(values);
+        return $"FormViewHelper.insertSelection('{formView.Name}', '{encryptedValues}', '{encryptedRouteContext}')";
     }
 
     public string GetSetPageStateScript(PageState pageState)
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.FormViewReload);
-        return $"FormViewHelper.setPageState('{_formView.Name}','{(int)pageState}', '{encryptedRouteContext}')";
+        return $"FormViewHelper.setPageState('{formView.Name}','{(int)pageState}', '{encryptedRouteContext}')";
     }
     
     public string GetSetPanelStateScript(PageState pageState)
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.FormViewReload);
-        return $"FormViewHelper.setPanelState('{_formView.Name}','{(int)pageState}', '{encryptedRouteContext}')";
+        return $"FormViewHelper.setPanelState('{formView.Name}','{(int)pageState}', '{encryptedRouteContext}')";
     }
 
 }

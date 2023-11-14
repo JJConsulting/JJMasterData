@@ -6,19 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class EntityController : DataDictionaryController
+public class EntityController(EntityService entityService, IFormEventHandlerResolver? formEventHandlerFactory = null,
+        IGridEventHandlerResolver? gridEventHandlerResolver = null)
+    : DataDictionaryController
 {
-    private readonly EntityService _entityService;
-    private readonly IFormEventHandlerResolver? _formEventHandlerFactory;
-    private readonly IGridEventHandlerResolver? _gridEventHandlerResolver;
-
-    public EntityController(EntityService entityService, IFormEventHandlerResolver? formEventHandlerFactory = null, IGridEventHandlerResolver? gridEventHandlerResolver = null)
-    {
-        _entityService = entityService;
-        _formEventHandlerFactory = formEventHandlerFactory;
-        _gridEventHandlerResolver = gridEventHandlerResolver;
-    }
-
     public async Task<IActionResult> Index(string elementName)
     {
         return View(await Populate(elementName, true));
@@ -33,7 +24,7 @@ public class EntityController : DataDictionaryController
     public async Task<ActionResult> Edit(
         EntityViewModel model)
     {
-        var entity = await _entityService.EditEntityAsync(model.FormElement, model.ElementName);
+        var entity = await entityService.EditEntityAsync(model.FormElement, model.ElementName);
 
         if (entity != null)
         {
@@ -41,7 +32,7 @@ public class EntityController : DataDictionaryController
         }
 
         model.MenuId = "Entity";
-        model.ValidationSummary = _entityService.GetValidationSummary();
+        model.ValidationSummary = entityService.GetValidationSummary();
             
         return View(model);
 
@@ -51,8 +42,8 @@ public class EntityController : DataDictionaryController
     {
         var viewModel = new EntityViewModel(menuId:"Entity", elementName:elementName)
         {
-            FormElement = await _entityService.GetFormElementAsync(elementName),
-            FormEvent = _formEventHandlerFactory?.GetFormEventHandler(elementName) as IEventHandler ?? _gridEventHandlerResolver?.GetGridEventHandler(elementName),
+            FormElement = await entityService.GetFormElementAsync(elementName),
+            FormEvent = formEventHandlerFactory?.GetFormEventHandler(elementName) as IEventHandler ?? gridEventHandlerResolver?.GetGridEventHandler(elementName),
             ReadOnly = readOnly
         };
 

@@ -7,27 +7,19 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class TextFileFactory : IControlFactory<JJTextFile>
-{
-    private IHttpRequest Request { get; }
-    private IComponentFactory ComponentFactory { get; }
-    
-    private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-
-    public TextFileFactory(
-        IHttpRequest request,
+internal class TextFileFactory(IHttpRequest request,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        Request = request;
-        ComponentFactory = componentFactory;
-        EncryptionService = encryptionService;
-        StringLocalizer = stringLocalizer;
-    }
-    
-    
+    : IControlFactory<JJTextFile>
+{
+    private IHttpRequest Request { get; } = request;
+    private IComponentFactory ComponentFactory { get; } = componentFactory;
+
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+
+
     public JJTextFile Create()
     {
         return new JJTextFile(Request,ComponentFactory, StringLocalizer, EncryptionService);

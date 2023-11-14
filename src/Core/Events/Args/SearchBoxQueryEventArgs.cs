@@ -4,14 +4,9 @@ using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.Events.Args;
 
-public class SearchBoxQueryEventArgs : EventArgs
+public class SearchBoxQueryEventArgs(string textSearch) : EventArgs
 {
-    public string TextSearch { get; set; }
+    public string TextSearch { get; set; } = textSearch;
 
     public IEnumerable<DataItemValue> Values { get; set; }
-
-    public SearchBoxQueryEventArgs(string textSearch)
-    {
-        TextSearch = textSearch;
-    }
 }

@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace JJMasterData.Core.DataManager.Models;
 
-public class FormLetter
+public class FormLetter(IDictionary<string, string>errors)
 {
-    private IDictionary<string, string>? _errors;
+    private IDictionary<string, string>? _errors = errors;
 
     public IDictionary<string, string> Errors 
     {
@@ -20,17 +20,9 @@ public class FormLetter
     public int NumberOfRowsAffected { get; set; }
 
     public string? UrlRedirect { get; set; }
-
-    public FormLetter(IDictionary<string, string>errors)
-    {
-        _errors = errors;
-    }
 }
 
-public class FormLetter<T> : FormLetter
+public class FormLetter<T>(IDictionary<string, string> errors) : FormLetter(errors)
 {
     public T? Result { get; set; }
-
-    public FormLetter(IDictionary<string, string>errors) : base(errors) { }
-    
 }

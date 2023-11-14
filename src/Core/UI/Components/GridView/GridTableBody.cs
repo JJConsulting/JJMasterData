@@ -14,19 +14,14 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridTableBody
+internal class GridTableBody(JJGridView gridView)
 {
     private string Name => $"{GridView.Name}-table";
-    private JJGridView GridView { get; }
-    
+    private JJGridView GridView { get; } = gridView;
+
     public event AsyncEventHandler<ActionEventArgs> OnRenderActionAsync;
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
     public event AsyncEventHandler<GridSelectedCellEventArgs> OnRenderSelectedCellAsync;
-    
-    public GridTableBody(JJGridView gridView)
-    {
-        GridView = gridView;
-    }
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {

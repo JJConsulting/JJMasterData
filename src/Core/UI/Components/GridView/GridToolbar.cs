@@ -6,14 +6,9 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridToolbar
+internal class GridToolbar(JJGridView gridView)
 {
-    private JJGridView GridView { get; set; }
-
-    public GridToolbar(JJGridView gridView)
-    {
-        GridView = gridView;
-    }
+    private JJGridView GridView { get; set; } = gridView;
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {

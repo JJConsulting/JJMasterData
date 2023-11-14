@@ -5,24 +5,14 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataExportationScripts
+internal class DataExportationScripts(string componentName,FormElement formElement, IEncryptionService encryptionService)
 {
-    private string Name { get; }
-    private FormElement FormElement { get; }
-    private IEncryptionService EncryptionService { get; }
+    private string Name { get; } = componentName;
+    private FormElement FormElement { get; } = formElement;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
 
-    public DataExportationScripts(JJDataExportation dataExportation)
+    public DataExportationScripts(JJDataExportation dataExportation) : this(dataExportation.Name, dataExportation.FormElement, dataExportation.EncryptionService)
     {
-        Name = dataExportation.Name;
-        FormElement = dataExportation.FormElement;
-        EncryptionService = dataExportation.EncryptionService;
-    }
-    
-    public DataExportationScripts(string componentName,FormElement formElement, IEncryptionService encryptionService)
-    {
-        Name = componentName;
-        FormElement = formElement;
-        EncryptionService = encryptionService;
     }
 
 

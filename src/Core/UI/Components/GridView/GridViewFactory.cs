@@ -16,21 +16,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
-{
-    private FieldsService FieldsService { get; }
-    private FormValuesService FormValuesService { get; }
-    private ExpressionsService ExpressionsService { get; }
-    private IEncryptionService EncryptionService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private IGridEventHandlerResolver GridEventHandlerResolver { get; }
-    private IComponentFactory ComponentFactory { get; }
-    private IEntityRepository EntityRepository { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private DataItemService DataItemService { get; }
-    private IHttpContext CurrentContext { get; }
-
-    public GridViewFactory(IHttpContext currentContext,
+internal class GridViewFactory(IHttpContext currentContext,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         IEncryptionService encryptionService,
@@ -41,19 +27,19 @@ internal class GridViewFactory : IFormElementComponentFactory<JJGridView>
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IGridEventHandlerResolver gridEventHandlerResolver,
         IComponentFactory componentFactory)
-    {
-        CurrentContext = currentContext;
-        FieldsService = fieldsService;
-        FormValuesService = formValuesService;
-        ExpressionsService = expressionsService;
-        EncryptionService = encryptionService;
-        StringLocalizer = stringLocalizer;
-        GridEventHandlerResolver = gridEventHandlerResolver;
-        ComponentFactory = componentFactory;
-        EntityRepository = entityRepository;
-        DataDictionaryRepository = dataDictionaryRepository;
-        DataItemService = dataItemService;
-    }
+    : IFormElementComponentFactory<JJGridView>
+{
+    private FieldsService FieldsService { get; } = fieldsService;
+    private FormValuesService FormValuesService { get; } = formValuesService;
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private IGridEventHandlerResolver GridEventHandlerResolver { get; } = gridEventHandlerResolver;
+    private IComponentFactory ComponentFactory { get; } = componentFactory;
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    private DataItemService DataItemService { get; } = dataItemService;
+    private IHttpContext CurrentContext { get; } = currentContext;
 
 
     public JJGridView Create(FormElement formElement)

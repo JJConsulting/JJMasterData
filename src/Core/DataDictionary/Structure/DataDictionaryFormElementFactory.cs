@@ -14,26 +14,16 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class DataDictionaryFormElementFactory 
+public class DataDictionaryFormElementFactory(IOptions<MasterDataCoreOptions> options,
+    IStringLocalizer<MasterDataResources> stringLocalizer,
+    IHttpContext httpContext,
+    MasterDataUrlHelper urlHelper)
 {
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private IHttpContext HttpContext { get; }
-    private MasterDataUrlHelper UrlHelper { get; }
-    private readonly MasterDataCoreOptions _options;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private IHttpContext HttpContext { get; } = httpContext;
+    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private readonly MasterDataCoreOptions _options = options.Value;
 
-    public DataDictionaryFormElementFactory(
-        IOptions<MasterDataCoreOptions> options,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        IHttpContext httpContext,
-        MasterDataUrlHelper urlHelper
-    )
-    {
-        StringLocalizer = stringLocalizer;
-        HttpContext = httpContext;
-        UrlHelper = urlHelper;
-        _options = options.Value;
-    }
-    
     public FormElement GetFormElement()
     {
         var element = DataDictionaryStructure.GetElement(_options.DataDictionaryTableName);

@@ -4,10 +4,4 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class RenderedComponentResult : HtmlComponentResult
-{
-    public RenderedComponentResult(HtmlBuilder htmlBuilder) : base(htmlBuilder)
-    {
-
-    }
-}
+public class RenderedComponentResult(HtmlBuilder htmlBuilder) : HtmlComponentResult(htmlBuilder);

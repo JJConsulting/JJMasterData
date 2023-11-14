@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class LinkButtonTagHelper : TagHelper
+public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelper
 {
-    private readonly HtmlComponentFactory _htmlComponentFactory;
-
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
     
@@ -33,14 +31,9 @@ public class LinkButtonTagHelper : TagHelper
     [HtmlAttributeName("css-class")]
     public string? CssClass { get; set; }
 
-    public LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory)
-    {
-        _htmlComponentFactory = htmlComponentFactory;
-    }
-    
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        var link = _htmlComponentFactory.LinkButton.Create();
+        var link = htmlComponentFactory.LinkButton.Create();
         link.Text = Text;
         link.IconClass = Icon.GetCssClass();
         link.UrlAction = UrlAction;

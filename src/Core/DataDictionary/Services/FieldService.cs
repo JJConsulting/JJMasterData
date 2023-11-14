@@ -13,23 +13,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class FieldService : BaseService
-{
-    private readonly IEnumerable<IExpressionProvider> _expressionProviders;
-    private readonly IMemoryCache _memoryCache;
-    
-    public FieldService(
-        IValidationDictionary validationDictionary, 
+public class FieldService(IValidationDictionary validationDictionary,
         IDataDictionaryRepository dataDictionaryRepository,
         IEnumerable<IExpressionProvider> expressionProviders,
         IMemoryCache memoryCache,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
-    {
-        _expressionProviders = expressionProviders;
-        _memoryCache = memoryCache;
-    }
-
+    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+{
     public async Task<bool> SaveFieldAsync(string elementName, FormElementField field, string originalName)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
@@ -67,9 +57,9 @@ public class FieldService : BaseService
         {
             await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
             if (!formElement.UseReadProcedure)
-                _memoryCache.Remove(formElement.Name + "_ReadScript");
+                memoryCache.Remove(formElement.Name + "_ReadScript");
             if (!formElement.UseWriteProcedure)
-                _memoryCache.Remove(formElement.Name + "_WriteScript");
+                memoryCache.Remove(formElement.Name + "_WriteScript");
         }
             
 
@@ -199,23 +189,23 @@ public class FieldService : BaseService
         if (string.IsNullOrWhiteSpace(field.VisibleExpression))
             AddError(nameof(field.VisibleExpression), StringLocalizer["Required [VisibleExpression] field"]);
         
-        else if (!ValidateExpression(field.VisibleExpression, _expressionProviders.GetBooleanProvidersPrefixes()))
+        else if (!ValidateExpression(field.VisibleExpression, expressionProviders.GetBooleanProvidersPrefixes()))
             AddError(nameof(field.VisibleExpression), StringLocalizer["Invalid [VisibleExpression] field"]);
 
         if (string.IsNullOrWhiteSpace(field.EnableExpression))
             AddError(nameof(field.EnableExpression), StringLocalizer["Required [EnableExpression] field"]);
-        else if (!ValidateExpression(field.EnableExpression, _expressionProviders.GetBooleanProvidersPrefixes()))
+        else if (!ValidateExpression(field.EnableExpression, expressionProviders.GetBooleanProvidersPrefixes()))
             AddError(nameof(field.EnableExpression), StringLocalizer["Invalid [EnableExpression] field"]);
 
         if (!string.IsNullOrEmpty(field.DefaultValue))
         {
-            if (!ValidateExpression(field.DefaultValue, _expressionProviders.GetAsyncProvidersPrefixes()))
+            if (!ValidateExpression(field.DefaultValue, expressionProviders.GetAsyncProvidersPrefixes()))
                 AddError(nameof(field.DefaultValue), StringLocalizer["Invalid [DefaultValue] field"]);
         }
 
         if (!string.IsNullOrEmpty(field.TriggerExpression))
         {
-            if (!ValidateExpression(field.TriggerExpression, _expressionProviders.GetAsyncProvidersPrefixes()))
+            if (!ValidateExpression(field.TriggerExpression, expressionProviders.GetAsyncProvidersPrefixes()))
                 AddError(nameof(field.TriggerExpression), StringLocalizer["Invalid [TriggerExpression] field"]);
         }
     }

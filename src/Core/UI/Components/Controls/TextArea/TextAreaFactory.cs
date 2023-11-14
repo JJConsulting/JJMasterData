@@ -6,17 +6,12 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class TextAreaFactory : IControlFactory<JJTextArea>
+internal class TextAreaFactory(IFormValues formValues, IStringLocalizer<MasterDataResources> stringLocalizer)
+    : IControlFactory<JJTextArea>
 {
-    private IFormValues FormValues { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private IFormValues FormValues { get; } = formValues;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
-    public TextAreaFactory(IFormValues formValues, IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        FormValues = formValues;
-
-        StringLocalizer = stringLocalizer;
-    }
     public JJTextArea Create()
     {
         return new JJTextArea(FormValues,StringLocalizer);

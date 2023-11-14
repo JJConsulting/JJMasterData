@@ -3,18 +3,13 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class TextGroupTagHelper : TagHelper
+public class TextGroupTagHelper(IControlFactory<JJTextGroup> textGroupFactory) : TagHelper
 {
-    private IControlFactory<JJTextGroup> TextGroupFactory { get; set; }
+    private IControlFactory<JJTextGroup> TextGroupFactory { get; set; } = textGroupFactory;
 
     [HtmlAttributeName("configure")] 
     public Action<JJTextGroup>? Configure { get; set; }
-    
-    public TextGroupTagHelper(IControlFactory<JJTextGroup> textGroupFactory)
-    {
-        TextGroupFactory = textGroupFactory;
-    }
-    
+
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var textGroup = TextGroupFactory.Create();

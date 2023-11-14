@@ -12,9 +12,12 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Brasil.Actions;
 
-public class CepPluginActionHandler : BrasilPluginActionHandler
+public class CepPluginActionHandler(ICepService cepService,
+        ExpressionsService expressionService,
+        HtmlComponentFactory htmlComponentFactory)
+    : BrasilPluginActionHandler(expressionService)
 {
-    private ICepService CepService { get; }
+    private ICepService CepService { get; } = cepService;
     public override Guid Id => GuidGenerator.FromValue(nameof(CepPluginActionHandler));
     public override string Title => "Cep";
 
@@ -45,14 +48,5 @@ public class CepPluginActionHandler : BrasilPluginActionHandler
 
     public override HtmlBuilder AdditionalInformationHtml { get; } = new();
 
-    private MessageBoxFactory MessageBoxFactory { get; }
-    
-    public CepPluginActionHandler(
-        ICepService cepService, 
-        ExpressionsService expressionService,
-        HtmlComponentFactory htmlComponentFactory) : base(expressionService)
-    {
-        CepService = cepService;
-        MessageBoxFactory = htmlComponentFactory.MessageBox;
-    }
+    private MessageBoxFactory MessageBoxFactory { get; } = htmlComponentFactory.MessageBox;
 }

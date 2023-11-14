@@ -5,21 +5,15 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components.TextRange;
 
-internal class TextRangeFactory : IControlFactory<JJTextRange>
+internal class TextRangeFactory(IHttpContext httpContext,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        TextGroupFactory textGroupFactory)
+    : IControlFactory<JJTextRange>
 {
 
-    private IHttpContext HttpContext { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private TextGroupFactory TextGroupFactory { get; }
-
-    public TextRangeFactory(IHttpContext httpContext,
-                            IStringLocalizer<MasterDataResources> stringLocalizer,
-                            TextGroupFactory textGroupFactory)
-    {
-        HttpContext = httpContext;
-        StringLocalizer = stringLocalizer;
-        TextGroupFactory = textGroupFactory;
-    }
+    private IHttpContext HttpContext { get; } = httpContext;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private TextGroupFactory TextGroupFactory { get; } = textGroupFactory;
 
     public JJTextRange Create()
     {

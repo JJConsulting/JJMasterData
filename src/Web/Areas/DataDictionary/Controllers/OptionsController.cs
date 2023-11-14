@@ -4,15 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class OptionsController : DataDictionaryController
+public class OptionsController(OptionsService service) : DataDictionaryController
 {
-    private OptionsService Service { get; }
-    
-    public OptionsController(OptionsService service)
-    {
-        Service = service;
-    }
-    
+    private OptionsService Service { get; } = service;
+
     public async Task<IActionResult> Index(bool isFullscreen=false)
     {
         var viewModel = await Service.GetViewModel(isFullscreen);

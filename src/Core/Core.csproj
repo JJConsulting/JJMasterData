@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net4.8;netstandard2.0;net6.0</TargetFrameworks>
-        <LangVersion>11</LangVersion>
-        <RuntimeFrameworkVersion>6.0</RuntimeFrameworkVersion>
+        <TargetFrameworks>net4.8;netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
+        <LangVersion>12</LangVersion>
+        <RuntimeFrameworkVersion>8.0</RuntimeFrameworkVersion>
         <Nullable>disable</Nullable>
         <ImplicitUsings>false</ImplicitUsings>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <!--Runtime dependencies-->
-    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' OR '$(TargetFramework)' == 'net7.0' OR '$(TargetFramework)' == 'net8.0'">
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
     

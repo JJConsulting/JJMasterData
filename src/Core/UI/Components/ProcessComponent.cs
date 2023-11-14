@@ -14,15 +14,23 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-public abstract class ProcessComponent : AsyncComponent
+public abstract class ProcessComponent(IHttpContext currentContext,
+        IEntityRepository entityRepository,
+        ExpressionsService expressionsService,
+        FieldsService fieldsService,
+        IBackgroundTaskManager backgroundTaskManager,
+        ILogger<ProcessComponent> logger,
+        IEncryptionService encryptionService,
+        IStringLocalizer<MasterDataResources> stringLocalizer)
+    : AsyncComponent
 {
     private string _processKey;
     private ProcessOptions _processOptions;
     private string _userId;
 
-    internal ExpressionsService ExpressionsService { get; }
+    internal ExpressionsService ExpressionsService { get; } = expressionsService;
 
-    internal IEntityRepository EntityRepository { get; }
+    internal IEntityRepository EntityRepository { get; } = entityRepository;
 
     internal string ProcessKey
     {
@@ -44,7 +52,7 @@ public abstract class ProcessComponent : AsyncComponent
     /// </remarks>
     internal string UserId => _userId ??= DataHelper.GetCurrentUserId(CurrentContext, UserValues);
 
-    public IHttpContext CurrentContext { get; init; }
+    public IHttpContext CurrentContext { get; init; } = currentContext;
 
     public ProcessOptions ProcessOptions
     {
@@ -57,32 +65,12 @@ public abstract class ProcessComponent : AsyncComponent
     /// </summary>
     public FormElement FormElement { get; set; }
     
-    internal FieldsService FieldsService { get; } 
-    internal IBackgroundTaskManager BackgroundTaskManager { get; }
-    private ILogger<ProcessComponent> Logger { get; }
-    internal IEncryptionService EncryptionService { get; }
-    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    internal FieldsService FieldsService { get; } = fieldsService;
+    internal IBackgroundTaskManager BackgroundTaskManager { get; } = backgroundTaskManager;
+    private ILogger<ProcessComponent> Logger { get; } = logger;
+    internal IEncryptionService EncryptionService { get; } = encryptionService;
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
-    protected ProcessComponent(
-        IHttpContext currentContext,
-        IEntityRepository entityRepository,
-        ExpressionsService expressionsService,
-        FieldsService fieldsService,
-        IBackgroundTaskManager backgroundTaskManager,
-        ILogger<ProcessComponent> logger,
-        IEncryptionService encryptionService,
-        IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        EntityRepository = entityRepository;
-        ExpressionsService = expressionsService;
-        FieldsService = fieldsService;
-        BackgroundTaskManager = backgroundTaskManager;
-        Logger = logger;
-        EncryptionService = encryptionService;
-        StringLocalizer = stringLocalizer;
-        CurrentContext = currentContext;
-    }
-    
     internal bool IsRunning() => BackgroundTaskManager.IsRunning(ProcessKey);
 
     internal void StopExportation() => BackgroundTaskManager.Abort(ProcessKey);

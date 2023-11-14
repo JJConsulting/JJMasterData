@@ -49,7 +49,7 @@ public class MetadataApiOptions
     /// Json Format
     /// </summary>
     [JsonProperty("formatType")]
-    public ApiJsonFormatting FormatType { get; set; }
+    public ApiJsonFormatting FormatType { get; set; } = ApiJsonFormatting.Lowercase;
 
     /// <summary>
     /// Aways apply UserId (from login) as filter or on set
@@ -57,11 +57,6 @@ public class MetadataApiOptions
     [JsonProperty("applyUserIdOn")]
     public string ApplyUserIdOn { get; set; }
 
-
-    public MetadataApiOptions()
-    {
-        FormatType = ApiJsonFormatting.Lowercase;
-    }
 
     /// <summary>
     /// Format the field according to the dictionary parameterization

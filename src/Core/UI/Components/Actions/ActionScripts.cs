@@ -13,26 +13,16 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class ActionScripts
+public class ActionScripts(ExpressionsService expressionsService,
+    MasterDataUrlHelper urlHelper,
+    IEncryptionService encryptionService,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private ExpressionsService ExpressionsService { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private MasterDataUrlHelper UrlHelper { get; }
-    private IEncryptionService EncryptionService { get; }
-
-    public ActionScripts(
-        ExpressionsService expressionsService,
-        MasterDataUrlHelper urlHelper,
-        IEncryptionService encryptionService,
-        IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        ExpressionsService = expressionsService;
-        StringLocalizer = stringLocalizer;
-        UrlHelper = urlHelper;
-        EncryptionService = encryptionService;
-    }
-
-
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    
     public string GetInternalUrlScript(InternalAction action, IDictionary<string, object> formValues)
     {
         var elementRedirect = action.ElementRedirect;

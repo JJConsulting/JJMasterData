@@ -4,24 +4,16 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataPanelScripts
+internal class DataPanelScripts(DataPanelControl dataPanelControl)
 {
+    private IEncryptionService EncryptionService => dataPanelControl.EncryptionService;
 
-    private readonly DataPanelControl _dataPanelControl;
-    private IEncryptionService EncryptionService => _dataPanelControl.EncryptionService;
-    
 
-    public DataPanelScripts(DataPanelControl dataPanelControl)
-    {
-        _dataPanelControl = dataPanelControl;
-    }
-
-    
     public string GetReloadPanelScript(string fieldName)
     {
-        var componentName = _dataPanelControl.Name;
+        var componentName = dataPanelControl.Name;
         
-        var routeContext = EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(_dataPanelControl.FormElement,ComponentContext.DataPanelReload));
+        var routeContext = EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(dataPanelControl.FormElement,ComponentContext.DataPanelReload));
         
         return $"DataPanelHelper.reload('{componentName}','{fieldName}','{routeContext}');";
     }

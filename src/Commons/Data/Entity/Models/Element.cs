@@ -13,7 +13,7 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 public class Element
 {
     [JsonProperty("name")]
-    [Display(Name = "ElementName")]
+    [Display(Name = "Element Name")]
     public string Name { get; set; }
     
     [JsonProperty("info")]

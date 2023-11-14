@@ -7,11 +7,11 @@ using JJMasterData.Core.UI.Routing;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataImportationScripts
+internal class DataImportationScripts(string name, FormElement formElement, IEncryptionService encryptionService)
 {
-    public string Name { get; }
-    public FormElement FormElement { get; }
-    public IEncryptionService EncryptionService { get; }
+    public string Name { get; } = name;
+    public FormElement FormElement { get; } = formElement;
+    public IEncryptionService EncryptionService { get; } = encryptionService;
 
     private string GetEncryptedRouteContext(ComponentContext context = ComponentContext.DataImportation)
     {
@@ -20,18 +20,8 @@ internal class DataImportationScripts
         return encryptedRouteContext;
     }
 
-    public DataImportationScripts(string name, FormElement formElement, IEncryptionService encryptionService)
+    public DataImportationScripts(JJDataImportation dataImportation) : this(dataImportation.Name, dataImportation.FormElement, dataImportation.EncryptionService)
     {
-        Name = name;
-        FormElement = formElement;
-        EncryptionService = encryptionService;
-    }
-    
-    public DataImportationScripts(JJDataImportation dataImportation)
-    {
-        Name = dataImportation.Name;
-        FormElement = dataImportation.FormElement;
-        EncryptionService = dataImportation.EncryptionService;
     }
     
     public string GetShowScript()

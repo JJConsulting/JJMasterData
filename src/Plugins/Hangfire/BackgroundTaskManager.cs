@@ -9,17 +9,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Hangfire;
 
-public sealed class BackgroundTaskManager : IBackgroundTaskManager
+public sealed class BackgroundTaskManager
+    (IStringLocalizer<MasterDataResources> stringLocalizer) : IBackgroundTaskManager
 {
     private readonly List<TaskWrapper> _tasks = new();
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
-    public BackgroundTaskManager(IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        StringLocalizer = stringLocalizer;
-    }
-    
+
     internal TaskWrapper GetTask(string key)
     {
         return _tasks.Find(x => x.Key.Equals(key));

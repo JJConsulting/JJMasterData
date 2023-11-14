@@ -821,7 +821,7 @@
     <value>ElementField não pode ser nulo</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="ElementName" xml:space="preserve">
+  <data name="Element Name" xml:space="preserve">
     <value>Nome do Elemento</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -2733,8 +2733,8 @@
     <value>Não existe registro para aplicar</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="There is no record to display" xml:space="preserve">
-    <value>Não existe registro para ser exibido</value>
+  <data name="There is no record to display." xml:space="preserve">
+    <value>Não existe registro para ser exibido.</value>
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="There was an error processing your order." xml:space="preserve">

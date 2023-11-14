@@ -12,10 +12,12 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Brasil.Actions;
 
-public class CnpjPluginActionHandler : BrasilPluginActionHandler
+public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalService,
+        ExpressionsService expressionsService)
+    : BrasilPluginActionHandler(expressionsService)
 {
     private const string IgnoreDbFieldKey = "IgnoreDb";
-    private IReceitaFederalService ReceitaFederalService { get; }
+    private IReceitaFederalService ReceitaFederalService { get; } = receitaFederalService;
     public override Guid Id => GuidGenerator.FromValue(nameof(CnpjPluginActionHandler));
     public override string Title => "Cnpj";
     public override HtmlBuilder? AdditionalInformationHtml => null;
@@ -52,11 +54,6 @@ public class CnpjPluginActionHandler : BrasilPluginActionHandler
                 Type = PluginConfigurationFieldType.Boolean
             };
         }
-    }
-
-    public CnpjPluginActionHandler(IReceitaFederalService receitaFederalService, ExpressionsService expressionsService) : base(expressionsService)
-    {
-        ReceitaFederalService = receitaFederalService;
     }
 
     protected override async Task<Dictionary<string, object?>> GetResultAsync(PluginFieldActionContext context)

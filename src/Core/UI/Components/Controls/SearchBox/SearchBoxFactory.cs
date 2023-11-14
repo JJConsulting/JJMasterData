@@ -8,27 +8,18 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class SearchBoxFactory : IControlFactory<JJSearchBox>
-{
-    private DataItemService DataItemService { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private FormValuesService FormValuesService { get; }
-    private IHttpRequest HttpRequest { get; }
-    private IEncryptionService EncryptionService { get; }
-
-    public SearchBoxFactory(
-        DataItemService dataItemService,
+internal class SearchBoxFactory(DataItemService dataItemService,
         IDataDictionaryRepository dataDictionaryRepository,
         FormValuesService formValuesService,
         IHttpRequest httpRequest,
         IEncryptionService encryptionService)
-    {
-        DataItemService = dataItemService;
-        DataDictionaryRepository = dataDictionaryRepository;
-        FormValuesService = formValuesService;
-        HttpRequest = httpRequest;
-        EncryptionService = encryptionService;
-    }
+    : IControlFactory<JJSearchBox>
+{
+    private DataItemService DataItemService { get; } = dataItemService;
+    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    private FormValuesService FormValuesService { get; } = formValuesService;
+    private IHttpRequest HttpRequest { get; } = httpRequest;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
 
     public JJSearchBox Create()
     {

@@ -15,35 +15,23 @@ using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class LookupService 
+public class LookupService(IFormValues formValues,
+    IDataDictionaryRepository dataDictionaryRepository,
+    IEntityRepository entityRepository,
+    ExpressionsService expressionsService,
+    IEncryptionService encryptionService,
+    ElementMapService elementMapService,
+    MasterDataUrlHelper urlHelper)
 {
-    private IFormValues FormValues { get; }
-    private IDataDictionaryRepository DataDictionaryRepository { get; }
-    private IEntityRepository EntityRepository { get; }
-    private ExpressionsService ExpressionsService { get; }
-    private IEncryptionService EncryptionService { get; }
-    private ElementMapService ElementMapService { get; }
-    private MasterDataUrlHelper UrlHelper { get; }
+    private IFormValues FormValues { get; } = formValues;
+    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private ElementMapService ElementMapService { get; } = elementMapService;
+    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
 
-    public LookupService(
-        IFormValues formValues,
-        IDataDictionaryRepository dataDictionaryRepository,
-        IEntityRepository entityRepository,
-        ExpressionsService expressionsService,
-        IEncryptionService encryptionService,
-        ElementMapService elementMapService,
-        MasterDataUrlHelper urlHelper)
-    {
-        FormValues = formValues;
-        DataDictionaryRepository = dataDictionaryRepository;
-        EntityRepository = entityRepository;
-        ExpressionsService = expressionsService;
-        EncryptionService = encryptionService;
-        ElementMapService = elementMapService;
-        UrlHelper = urlHelper;
-    }
 
-    
     public string GetFormViewUrl(DataElementMap elementMap, FormStateData formStateData, string componentName)
     {
         var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.FieldId,elementMap.FieldDescription,

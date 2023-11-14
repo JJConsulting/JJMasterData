@@ -6,18 +6,11 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public class ApiService : BaseService
-{
-
-    public ApiService(
-        IValidationDictionary validationDictionary, 
-        IDataDictionaryRepository dataDictionaryRepository, 
+public class ApiService(IValidationDictionary validationDictionary,
+        IDataDictionaryRepository dataDictionaryRepository,
         IStringLocalizer<MasterDataResources> stringLocalizer)
-        : base(validationDictionary, dataDictionaryRepository,stringLocalizer)
-    {
-
-    }
-
+    : BaseService(validationDictionary, dataDictionaryRepository,stringLocalizer)
+{
     public async Task<bool> SetFormElementWithApiValidation(FormElement formElement)
     {
         if (ValidateWebApi(formElement))

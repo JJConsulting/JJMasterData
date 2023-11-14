@@ -7,16 +7,11 @@ using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataPanelExpressionScripts
+internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
 {
-    private JJDataPanel DataPanel { get; set; }
+    private JJDataPanel DataPanel { get; set; } = dataPanel;
 
     private FormElement FormElement => DataPanel.FormElement;
-
-    public DataPanelExpressionScripts(JJDataPanel dataPanel)
-    {
-        DataPanel = dataPanel;
-    }
 
     public string GetHtmlFormScript()
     {

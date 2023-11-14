@@ -22,7 +22,14 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Importation;
 
-public class DataImportationWorker : IBackgroundTaskWorker
+public class DataImportationWorker(DataImportationContext context,
+        FormService formService,
+        ExpressionsService expressionsService,
+        IEntityRepository entityRepository,
+        FieldValuesService fieldValuesService,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
+        ILogger<DataImportationWorker> logger)
+    : IBackgroundTaskWorker
 {
     #region "Events"
 
@@ -35,47 +42,25 @@ public class DataImportationWorker : IBackgroundTaskWorker
 
     public ProcessOptions ProcessOptions { get; set; }
 
-    public CultureInfo Culture { get; set; }
+    public CultureInfo Culture { get; set; } = Thread.CurrentThread.CurrentUICulture;
 
-    public FormElement FormElement { get; }
-    internal DataContext DataContext { get; }
+    public FormElement FormElement { get; } = context.FormElement;
+    internal DataContext DataContext { get; } = context.DataContext;
 
-    public string RawData { get; }
-    public char Separator { get;}
-    
-    internal ExpressionsService ExpressionsService { get; }
+    public string RawData { get; } = context.RawData;
+    public char Separator { get;} = context.Separator;
 
-    internal IEntityRepository EntityRepository { get; }
-    
-    internal FieldValuesService FieldValuesService { get; }
+    internal ExpressionsService ExpressionsService { get; } = expressionsService;
 
-    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    internal IEntityRepository EntityRepository { get; } = entityRepository;
 
-    internal ILogger<DataImportationWorker> Logger { get; }
+    internal FieldValuesService FieldValuesService { get; } = fieldValuesService;
 
-    internal FormService FormService { get; }
-    
-    public DataImportationWorker(
-        DataImportationContext context,
-        FormService formService, 
-        ExpressionsService expressionsService, 
-        IEntityRepository entityRepository, 
-        FieldValuesService fieldValuesService,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        ILogger<DataImportationWorker> logger)
-    {
-        FormElement = context.FormElement;
-        FormService = formService;
-        ExpressionsService = expressionsService;
-        EntityRepository = entityRepository;
-        FieldValuesService = fieldValuesService;
-        StringLocalizer = stringLocalizer;
-        Logger = logger;
-        DataContext = context.DataContext;
-        RawData = context.RawData;
-        Separator = context.Separator;
-        Culture = Thread.CurrentThread.CurrentUICulture;
-    }
+    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+
+    internal ILogger<DataImportationWorker> Logger { get; } = logger;
+
+    internal FormService FormService { get; } = formService;
 
     public async Task RunWorkerAsync(CancellationToken token)
     {

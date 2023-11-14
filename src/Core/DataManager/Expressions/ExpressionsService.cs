@@ -13,27 +13,19 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
-public class ExpressionsService 
+public class ExpressionsService(IEnumerable<IExpressionProvider> expressionProviders,
+    ExpressionParser expressionParser,
+    ILogger<ExpressionsService> logger)
 {
     #region "Properties"
 
-    private IEnumerable<IExpressionProvider> ExpressionProviders { get; }
-    private ExpressionParser ExpressionParser { get; }
-    private ILogger<ExpressionsService> Logger { get; }
+    private IEnumerable<IExpressionProvider> ExpressionProviders { get; } = expressionProviders;
+    private ExpressionParser ExpressionParser { get; } = expressionParser;
+    private ILogger<ExpressionsService> Logger { get; } = logger;
 
     #endregion
 
     #region "Constructors"
-
-    public ExpressionsService(
-        IEnumerable<IExpressionProvider> expressionProviders,
-        ExpressionParser expressionParser,
-        ILogger<ExpressionsService> logger)
-    {
-        ExpressionProviders = expressionProviders;
-        ExpressionParser = expressionParser;
-        Logger = logger;
-    }
 
     #endregion
     

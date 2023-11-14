@@ -7,20 +7,13 @@ namespace JJMasterData.WebApi.Controllers;
 [Authorize]
 [ApiController]
 [Route("masterApi/{elementName}/{id}/{fieldName}/file")]
-public class FileController : ControllerBase
+public class FileController(FileService service) : ControllerBase
 {
-    private readonly FileService _service;
-    
-    public FileController(FileService service)
-    {
-        _service = service;
-    }
-    
     [HttpGet]
     [Route("{fileName}")]
     public async Task<IActionResult> GetFile(string elementName, string id, string fieldName, string fileName)
     {
-        var fileStream = await _service.GetDictionaryFileAsync(elementName, id, fieldName, fileName);
+        var fileStream = await service.GetDictionaryFileAsync(elementName, id, fieldName, fileName);
 
         return File(fileStream, "application/octet-stream", fileName);
     }
@@ -28,7 +21,7 @@ public class FileController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostFile(string elementName, string fieldName, string id, IFormFile file)
     {
-        await _service.SetDictionaryFileAsync(elementName, fieldName, id, file);
+        await service.SetDictionaryFileAsync(elementName, fieldName, id, file);
 
         return Created($"masterApi/{elementName}/{id}/{fieldName}/{file.FileName}", "File successfully created.");
     }
@@ -42,7 +35,7 @@ public class FileController : ControllerBase
         string fileName,
         [FromQuery] string newName)
     {
-        await _service.RenameFileAsync(elementName, fieldName, id, fileName, newName);
+        await service.RenameFileAsync(elementName, fieldName, id, fileName, newName);
 
         return Ok($"File sucessfuly renamed from {fileName} to {newName}");
     }
@@ -51,7 +44,7 @@ public class FileController : ControllerBase
     [Route("{fileName}")]
     public async Task<IActionResult> DeleteFile(string elementName, string fieldName, string id, string fileName)
     {
-        await _service.DeleteFileAsync(elementName, fieldName, id, fileName);
+        await service.DeleteFileAsync(elementName, fieldName, id, fileName);
 
         return Ok("File successfully deleted.");
     }

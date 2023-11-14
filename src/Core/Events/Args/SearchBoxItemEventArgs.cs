@@ -2,14 +2,9 @@
 
 namespace JJMasterData.Core.Events.Args;
 
-public class SearchBoxItemEventArgs : EventArgs
+public class SearchBoxItemEventArgs(string idSearch) : EventArgs
 {
-    public string IdSearch { get; set; }
+    public string IdSearch { get; set; } = idSearch;
 
     public string ResultText { get; set; }
-
-    public SearchBoxItemEventArgs(string idSearch)
-    {
-        IdSearch = idSearch;
-    }
 }

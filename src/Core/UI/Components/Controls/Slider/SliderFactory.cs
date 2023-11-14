@@ -3,18 +3,13 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class SliderFactory : IControlFactory<JJSlider>
+internal class SliderFactory(IFormValues formValues, IControlFactory<JJTextBox> textBoxFactory)
+    : IControlFactory<JJSlider>
 {
-    private IFormValues FormValues { get; }
-    private IControlFactory<JJTextBox> TextBoxFactory { get; }
+    private IFormValues FormValues { get; } = formValues;
+    private IControlFactory<JJTextBox> TextBoxFactory { get; } = textBoxFactory;
 
 
-    public SliderFactory(IFormValues formValues, IControlFactory<JJTextBox> textBoxFactory)
-    {
-        FormValues = formValues;
-        TextBoxFactory = textBoxFactory;
-    }
-    
     public JJSlider Create()
     {
         return new JJSlider(FormValues,TextBoxFactory);

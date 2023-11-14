@@ -5,18 +5,11 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.IO;
 
-public class FormFileManagerFactory
+public class FormFileManagerFactory(IHttpContext httpContext, IStringLocalizer<MasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
 {
-    private IHttpContext HttpContext { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    private ILoggerFactory LoggerFactory { get; }
-
-    public FormFileManagerFactory(IHttpContext httpContext, IStringLocalizer<MasterDataResources> stringLocalizer, ILoggerFactory loggerFactory)
-    {
-        HttpContext = httpContext;
-        StringLocalizer = stringLocalizer;
-        LoggerFactory = loggerFactory;
-    }
+    private IHttpContext HttpContext { get; } = httpContext;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
     public FormFileManager Create(string memoryFilesSessionName)
     {

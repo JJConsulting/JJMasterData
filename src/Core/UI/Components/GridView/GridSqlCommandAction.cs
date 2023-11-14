@@ -10,31 +10,24 @@ using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridSqlCommandAction
+internal class GridSqlCommandAction(JJGridView gridView)
 {
-    private readonly JJGridView _gridView;
-
-    public GridSqlCommandAction(JJGridView gridView)
-    {
-        _gridView = gridView;
-    }
-
     public async Task<JJMessageBox> ExecuteSqlCommand(ActionMap map, SqlCommandAction sqlCommandAction)
     {
-        var messageFactory = _gridView.ComponentFactory.Html.MessageBox;
+        var messageFactory = gridView.ComponentFactory.Html.MessageBox;
         try
         {
             if (IsApplyOnList(map, sqlCommandAction))
             {
-                var selectedRows = _gridView.GetSelectedGridValues();
+                var selectedRows = gridView.GetSelectedGridValues();
                 if (selectedRows.Count == 0)
                 {
-                    string msg = _gridView.StringLocalizer["No lines selected."];
+                    string msg = gridView.StringLocalizer["No lines selected."];
                     return  messageFactory.Create(msg, MessageIcon.Warning);
                 }
 
                 await ExecuteOnList(sqlCommandAction, selectedRows);
-                _gridView.ClearSelectedGridValues();
+                gridView.ClearSelectedGridValues();
             }
             else
             {
@@ -53,7 +46,7 @@ internal class GridSqlCommandAction
     private bool IsApplyOnList(ActionMap map, SqlCommandAction sqlCommandAction)
     {
         return map.ActionSource == ActionSource.GridToolbar
-               && _gridView.EnableMultiSelect
+               && gridView.EnableMultiSelect
                && sqlCommandAction.ApplyOnSelected;
     }
 
@@ -62,31 +55,31 @@ internal class GridSqlCommandAction
         var commandList = new List<DataAccessCommand>();
         foreach (var row in selectedRows)
         {
-            var formData = new FormStateData(row, _gridView.UserValues, PageState.List);
-            var sql = _gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.CommandSql, formData);
+            var formData = new FormStateData(row, gridView.UserValues, PageState.List);
+            var sql = gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.CommandSql, formData);
             commandList.Add(new DataAccessCommand(sql!));
         }
 
-        await _gridView.EntityRepository.SetCommandListAsync(commandList);
+        await gridView.EntityRepository.SetCommandListAsync(commandList);
     }
 
     private async Task ExecuteOnRecord(ActionMap map, SqlCommandAction sqlCommandAction)
     {
-        var formElement = _gridView.FormElement;
+        var formElement = gridView.FormElement;
         IDictionary<string, object> formValues;
         if (map.PkFieldValues.Any())
         {
-            formValues = await _gridView.EntityRepository.GetFieldsAsync(formElement, map.PkFieldValues);
+            formValues = await gridView.EntityRepository.GetFieldsAsync(formElement, map.PkFieldValues);
         }
         else
         {
-            formValues = await _gridView.FieldsService.GetDefaultValuesAsync(formElement, null, PageState.List);
+            formValues = await gridView.FieldsService.GetDefaultValuesAsync(formElement, null, PageState.List);
         }
 
-        var formStateData = new FormStateData(formValues, _gridView.UserValues, PageState.List);
-        var sqlCommand = _gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.CommandSql, formStateData);
+        var formStateData = new FormStateData(formValues, gridView.UserValues, PageState.List);
+        var sqlCommand = gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.CommandSql, formStateData);
         
-        await _gridView.EntityRepository.SetCommandAsync(new DataAccessCommand(sqlCommand!));
+        await gridView.EntityRepository.SetCommandAsync(new DataAccessCommand(sqlCommand!));
     }
 
 }

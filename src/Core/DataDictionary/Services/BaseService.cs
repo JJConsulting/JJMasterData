@@ -11,41 +11,30 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.DataDictionary.Services;
 
-public abstract class BaseService
+public abstract class BaseService(IValidationDictionary validationDictionary, 
+    IDataDictionaryRepository dataDictionaryRepository,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private readonly IValidationDictionary _validationDictionary;
-
-    public IDataDictionaryRepository DataDictionaryRepository { get; }
-    protected IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-
-    protected BaseService(
-        IValidationDictionary validationDictionary, 
-        IDataDictionaryRepository dataDictionaryRepository,
-        IStringLocalizer<MasterDataResources> stringLocalizer
-        )
-    {
-        _validationDictionary = validationDictionary;
-        DataDictionaryRepository = dataDictionaryRepository;
-        StringLocalizer = stringLocalizer;
-    }
+    public IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
+    protected IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     protected void AddError(string field, string message)
     {
-        _validationDictionary?.AddError(field, message);
+        validationDictionary?.AddError(field, message);
     }
     
     protected void RemoveError(string field)
     {
-        _validationDictionary?.RemoveError(field);
+        validationDictionary?.RemoveError(field);
     }
     
     public JJValidationSummary GetValidationSummary()
     {
         var factory = new ValidationSummaryFactory(StringLocalizer);
-        return factory.Create(_validationDictionary.Errors.ToList());
+        return factory.Create(validationDictionary.Errors.ToList());
     }
 
-    public bool IsValid => _validationDictionary.IsValid;
+    public bool IsValid => validationDictionary.IsValid;
 
     public async Task<FormElement> GetFormElementAsync(string elementName)
     {
@@ -84,7 +73,7 @@ public abstract class BaseService
             AddError(nameof(name), StringLocalizer["The [Name] field contains a reserved word used in the database."]);
 
 
-        return _validationDictionary.IsValid;
+        return validationDictionary.IsValid;
     }
 
     protected static bool ValidateExpression(string value, params string[] args)

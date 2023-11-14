@@ -3,16 +3,10 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class LinkButtonFactory : IComponentFactory<JJLinkButton>
+public class LinkButtonFactory(IStringLocalizer<MasterDataResources> stringLocalizer) : IComponentFactory<JJLinkButton>
 {
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-  
-    
-    public LinkButtonFactory(
-        IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        StringLocalizer = stringLocalizer;
-    }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+
 
     public JJLinkButton Create()
     {

@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <LangVersion>11</LangVersion>
+        <LangVersion>12</LangVersion>
         <AssemblyName>JJMasterData.WebEntryPoint</AssemblyName>
         <RootNamespace>JJMasterData.WebEntryPoint</RootNamespace>
         <UserSecretsId>f3a7ef0a-07c3-4eaa-95eb-7c578e67e286</UserSecretsId>

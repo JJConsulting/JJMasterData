@@ -9,7 +9,7 @@ using Microsoft.Extensions.FileProviders;
 
 namespace JJMasterData.Web.Configuration;
 
-public static partial class WebApplicationExtensions
+public static class WebApplicationExtensions
 {
     public static WebApplication UseJJMasterDataWeb(this WebApplication app, string defaultCulture = "en-US")
     {
@@ -34,8 +34,9 @@ public static partial class WebApplicationExtensions
 
                 var segments = context.Request.Path.Value?.Split(new[] { '/' },
                     StringSplitOptions.RemoveEmptyEntries);
-
-                var culturePattern = CultureRegex();
+                
+                var culturePattern = new Regex(@"^[a-z]{2}(-[a-z]{2,4})?$",
+                    RegexOptions.IgnoreCase);
 
                 if (segments?.Length > 0 && culturePattern.IsMatch(segments[0]))
                 {
@@ -91,7 +92,4 @@ public static partial class WebApplicationExtensions
             name: "JJMasterData",
             pattern: pattern);
     }
-    
-    [GeneratedRegex("^[a-z]{2}(-[a-z]{2,4})?$", RegexOptions.IgnoreCase)]
-    private static partial Regex CultureRegex();
 }

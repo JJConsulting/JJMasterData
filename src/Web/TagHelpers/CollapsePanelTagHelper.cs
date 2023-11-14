@@ -10,7 +10,9 @@ namespace JJMasterData.Web.TagHelpers;
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-public class CollapsePanelTagHelper : TagHelper
+public class CollapsePanelTagHelper(RazorPartialRendererService rendererService,
+        IComponentFactory<JJCollapsePanel> collapsePanelFactory)
+    : TagHelper
 {
     
     [HtmlAttributeName("title")]
@@ -35,15 +37,9 @@ public class CollapsePanelTagHelper : TagHelper
     [HtmlAttributeName("color")]
     public PanelColor Color { get; set; }
     
-    private RazorPartialRendererService RendererService { get; }
-    private IComponentFactory<JJCollapsePanel> CollapsePanelFactory { get; }
+    private RazorPartialRendererService RendererService { get; } = rendererService;
+    private IComponentFactory<JJCollapsePanel> CollapsePanelFactory { get; } = collapsePanelFactory;
 
-    public CollapsePanelTagHelper(RazorPartialRendererService rendererService, IComponentFactory<JJCollapsePanel> collapsePanelFactory)
-    {
-        RendererService = rendererService;
-        CollapsePanelFactory = collapsePanelFactory;
-    }
-    
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         AssertAttributes();

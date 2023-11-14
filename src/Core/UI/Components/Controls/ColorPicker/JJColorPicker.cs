@@ -5,14 +5,10 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components.ColorPicker;
 
-public class JJColorPicker : ControlBase
+public class JJColorPicker(IFormValues formValues) : ControlBase(formValues)
 {
     
     public string Title { get; set; }
-    
-    public JJColorPicker(IFormValues formValues) : base(formValues)
-    {
-    }
 
     public HtmlBuilder GetHtmlBuilder()
     {

@@ -6,18 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class ApiController : DataDictionaryController
+public class ApiController(ApiService apiService) : DataDictionaryController
 {
-    private readonly ApiService _apiService;
-
-    public ApiController(ApiService apiService)
-    {
-        _apiService = apiService;
-    }
-
     public async Task<ActionResult> Index(string elementName)
     {
-        var dic = await _apiService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dic = await apiService.DataDictionaryRepository.GetFormElementAsync(elementName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -25,7 +18,7 @@ public class ApiController : DataDictionaryController
 
     public async Task<ActionResult> Edit(string elementName)
     {
-        var dic = await _apiService.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dic = await apiService.DataDictionaryRepository.GetFormElementAsync(elementName);
         var model = PopulateViewModel(dic);
 
         return View(model);
@@ -34,16 +27,16 @@ public class ApiController : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> Edit(ApiViewModel apiViewModel)
     {
-        var formElement = await _apiService.DataDictionaryRepository.GetFormElementAsync( apiViewModel.ElementName);
+        var formElement = await apiService.DataDictionaryRepository.GetFormElementAsync( apiViewModel.ElementName);
         formElement.ApiOptions = apiViewModel.ApiOptions;
         formElement.EnableSynchronism = apiViewModel.EnableSynchronism;
         formElement.SynchronismMode = apiViewModel.SynchronismMode;
 
-        if (await _apiService.SetFormElementWithApiValidation(formElement))
+        if (await apiService.SetFormElementWithApiValidation(formElement))
             return RedirectToAction("Index", new { elementName =  apiViewModel.ElementName });
         
         var model = PopulateViewModel(formElement);
-        model.ValidationSummary = _apiService.GetValidationSummary();
+        model.ValidationSummary = apiService.GetValidationSummary();
         return View(model);
 
     }

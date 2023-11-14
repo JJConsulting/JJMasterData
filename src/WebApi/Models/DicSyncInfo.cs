@@ -9,7 +9,7 @@ public class DicSyncInfo
     /// Lista de dicionários com retorno do count
     /// </summary>
     [JsonProperty("listElement")]
-    public List<DicSyncInfoElement> ListElement { get; set; }
+    public List<DicSyncInfoElement> ListElement { get; set; } = new();
 
     /// <summary>
     /// Server date.
@@ -23,10 +23,4 @@ public class DicSyncInfo
     /// </summary>
     [JsonProperty("totalProcessMilliseconds")]
     public double TotalProcessMilliseconds { get; set; }
-
-
-    public DicSyncInfo()
-    {
-        ListElement = new List<DicSyncInfoElement>();
-    } 
 }

@@ -5,18 +5,11 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class LabelFactory :  IComponentFactory<JJLabel>
+public class LabelFactory(IStringLocalizer<MasterDataResources> stringLocalizer) : IComponentFactory<JJLabel>
 {
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
-
-    public LabelFactory(IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        _stringLocalizer = stringLocalizer;
-    }
-    
     public JJLabel Create()
     {
-        return new JJLabel(_stringLocalizer);
+        return new JJLabel(stringLocalizer);
     }
     
     public JJLabel Create(FormElementField field)

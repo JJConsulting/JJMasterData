@@ -11,20 +11,13 @@ using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FieldValuesService
+public class FieldValuesService(ExpressionsService expressionsService, IEntityRepository entityRepository, FieldValidationService fieldValidationService)
 {
-    private IEntityRepository EntityRepository { get; }
-    private FieldValidationService FieldValidationService { get; }
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private FieldValidationService FieldValidationService { get; } = fieldValidationService;
 
-    private ExpressionsService ExpressionsService { get; }
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
 
-
-    public FieldValuesService(ExpressionsService expressionsService, IEntityRepository entityRepository, FieldValidationService fieldValidationService)
-    {
-        ExpressionsService = expressionsService;
-        EntityRepository = entityRepository;
-        FieldValidationService = fieldValidationService;
-    }
 
     /// <summary>
     /// Apply default and triggers expression values

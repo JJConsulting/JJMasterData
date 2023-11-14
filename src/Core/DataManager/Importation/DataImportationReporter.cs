@@ -38,13 +38,8 @@ public class DataImportationReporter : ProgressReporter
 
     public int Ignore { get; set; }
 
-    public StringBuilder ErrorLog { get; set; }
+    public StringBuilder ErrorLog { get; set; } = new();
 
-
-    public DataImportationReporter()
-    {
-        ErrorLog = new StringBuilder();
-    }
 
     public void AddError(string value)
     {

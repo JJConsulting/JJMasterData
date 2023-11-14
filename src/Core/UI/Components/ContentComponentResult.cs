@@ -7,16 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 #endif
 namespace JJMasterData.Core.UI.Components;
 
-public class ContentComponentResult : HtmlComponentResult 
+public class ContentComponentResult(HtmlBuilder htmlBuilder) : HtmlComponentResult(htmlBuilder)
 #if NET
     ,IActionResult
 #endif
 {
-    public ContentComponentResult(HtmlBuilder htmlBuilder) : base(htmlBuilder)
-    {
-    }
-
-    #if NET 
+#if NET 
     public async Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
     {
         await new ContentResult

@@ -7,18 +7,14 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JsonComponentResult : ComponentResult
+public class JsonComponentResult(object objectResult) : ComponentResult
 #if NET
     ,IActionResult
 #endif
 {
-    private object ObjectResult { get; }
+    private object ObjectResult { get; } = objectResult;
     public override string Content => JsonConvert.SerializeObject(ObjectResult);
-    
-    public JsonComponentResult(object objectResult)
-    {
-        ObjectResult = objectResult;
-    }
+
 #if NET
     public async Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
     {

@@ -7,23 +7,16 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridLegendView 
+internal class GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private IControlFactory<JJComboBox> ComboBoxFactory { get; }
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
-    public bool ShowAsModal { get; set; }
-    
+    private IControlFactory<JJComboBox> ComboBoxFactory { get; } = comboBoxFactory;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    public bool ShowAsModal { get; set; } = false;
+
     public required string Name { get; init; }
     public required FormElement FormElement { get; init; }
 
     #region "Constructors"
-
-    public GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStringLocalizer<MasterDataResources> stringLocalizer)
-    {
-        ComboBoxFactory = comboBoxFactory;
-        StringLocalizer = stringLocalizer;
-        ShowAsModal = false;
-    }
 
     #endregion
     

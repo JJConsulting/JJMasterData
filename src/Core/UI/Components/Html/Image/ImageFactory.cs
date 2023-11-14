@@ -2,15 +2,8 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class ImageFactory
+public class ImageFactory(IHttpContext httpContext)
 {
-    private readonly IHttpContext _httpContext;
-
-    public ImageFactory(IHttpContext httpContext)
-    {
-        _httpContext = httpContext;
-    }
-    
     public JJImage Create(string src)
     {
         return new JJImage(src);
@@ -18,7 +11,7 @@ public class ImageFactory
 
     public JJImage CreateMasterDataLogo()
     {
-        var appPath = _httpContext.Request.ApplicationPath;
+        var appPath = httpContext.Request.ApplicationPath;
         var baseUrl = string.IsNullOrEmpty(appPath) ? "/" : appPath;
 
         if (!baseUrl.EndsWith("/"))

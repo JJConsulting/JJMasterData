@@ -4,16 +4,12 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class TextBoxFactory : IControlFactory<JJTextBox>
+internal class TextBoxFactory(IFormValues formValues, IEncryptionService encryptionService)
+    : IControlFactory<JJTextBox>
 {
-    private IFormValues FormValues { get; }
-    private IEncryptionService EncryptionService { get; }
+    private IFormValues FormValues { get; } = formValues;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
 
-    public TextBoxFactory(IFormValues formValues, IEncryptionService encryptionService)
-    {
-        FormValues = formValues;
-        EncryptionService = encryptionService;
-    }
     public JJTextBox Create()
     {
         return new JJTextBox(FormValues);

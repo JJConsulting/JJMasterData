@@ -5,22 +5,14 @@ using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FieldsService 
+public class FieldsService(FieldFormattingService fieldFormattingService,
+    FieldValuesService fieldValuesService,
+    FieldValidationService fieldValidationService)
 {
-    private FieldFormattingService FieldFormattingService { get; }
-    private FieldValidationService FieldValidationService { get; }
-    private FieldValuesService FieldValuesService { get; }
-    
-    public FieldsService(
-        FieldFormattingService fieldFormattingService,
-        FieldValuesService fieldValuesService,
-        FieldValidationService fieldValidationService)
-    {
-        FieldFormattingService = fieldFormattingService;
-        FieldValidationService = fieldValidationService;
-        FieldValuesService = fieldValuesService;
-    }
-    
+    private FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
+    private FieldValidationService FieldValidationService { get; } = fieldValidationService;
+    private FieldValuesService FieldValuesService { get; } = fieldValuesService;
+
     public IDictionary<string, string> ValidateFields(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool enableErrorLink)
     {
        return FieldValidationService.ValidateFields(formElement, formValues, pageState, enableErrorLink);

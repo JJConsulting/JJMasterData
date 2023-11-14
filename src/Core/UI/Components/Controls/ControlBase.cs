@@ -4,7 +4,7 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public abstract class ControlBase : AsyncComponent
+public abstract class ControlBase(IFormValues formValues) : AsyncComponent
 {
     private string _text;
 
@@ -31,8 +31,8 @@ public abstract class ControlBase : AsyncComponent
     
     public int MaxLength { get; set; }
 
-    internal IFormValues FormValues { get; }
-    
+    internal IFormValues FormValues { get; } = formValues;
+
     /// <summary>
     /// Text content inside the input
     /// </summary>
@@ -47,11 +47,6 @@ public abstract class ControlBase : AsyncComponent
             return _text;
         }
         set => _text = value;
-    }
-
-    protected ControlBase(IFormValues formValues) 
-    {
-        FormValues = formValues;
     }
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()

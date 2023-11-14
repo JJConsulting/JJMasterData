@@ -4,15 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class UIOptionsController : DataDictionaryController
+public class UIOptionsController(UIOptionsService? optionsService) : DataDictionaryController
 {
-    private readonly UIOptionsService? _optionsService;
-
-    public UIOptionsController(UIOptionsService? optionsService)
-    {
-        _optionsService = optionsService;
-    }
-
     public async Task<ActionResult> Index(string elementName)
     {
         return View(await Populate(elementName));
@@ -26,10 +19,10 @@ public class UIOptionsController : DataDictionaryController
     [HttpPost]
     public async Task<ActionResult> Edit(FormElementOptions uIMetadataOptions, string elementName)
     {
-        if (await _optionsService!.EditOptionsAsync(uIMetadataOptions, elementName))
+        if (await optionsService!.EditOptionsAsync(uIMetadataOptions, elementName))
             return RedirectToAction("Index", new { elementName });
 
-        var jjValidationSummary = _optionsService.GetValidationSummary();
+        var jjValidationSummary = optionsService.GetValidationSummary();
         ViewBag.Error = jjValidationSummary.GetHtml();
         ViewBag.ElementName = elementName;
         ViewBag.MenuId = "Options";
@@ -39,7 +32,7 @@ public class UIOptionsController : DataDictionaryController
 
     private async Task<FormElementOptions> Populate(string elementName)
     {
-        var dicParser = await _optionsService!.DataDictionaryRepository.GetFormElementAsync(elementName);
+        var dicParser = await optionsService!.DataDictionaryRepository.GetFormElementAsync(elementName);
         var uIOptions = dicParser.Options;
         ViewBag.MenuId = "Options";
         ViewBag.ElementName = elementName;

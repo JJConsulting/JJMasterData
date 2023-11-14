@@ -5,29 +5,19 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridTable
+internal class GridTable(JJGridView gridView)
 {
-    internal GridSettings Settings { get; }
+    internal GridSettings Settings { get; } = gridView.CurrentSettings;
 
-    internal GridTableHeader Header { get; }
+    internal GridTableHeader Header { get; } = new(gridView);
 
-    internal GridTableBody Body { get; }
+    internal GridTableBody Body { get; } = new(gridView);
 
-    internal IList<Dictionary<string,object?>>? DataSource { get; }
+    internal IList<Dictionary<string,object?>>? DataSource { get; } = gridView.DataSource;
 
-    internal string EmptyDataText { get; }
+    internal string EmptyDataText { get; } = gridView.EmptyDataText;
 
-    internal GridFilter Filter { get; }
-
-    public GridTable(JJGridView gridView)
-    {
-        Header = new GridTableHeader(gridView);
-        Body = new GridTableBody(gridView);
-        Settings = gridView.CurrentSettings;
-        DataSource = gridView.DataSource;
-        EmptyDataText = gridView.EmptyDataText;
-        Filter = gridView.Filter;
-    }
+    internal GridFilter Filter { get; } = gridView.Filter;
 
     public async Task<HtmlBuilder> GetHtmlBuilder()
     {

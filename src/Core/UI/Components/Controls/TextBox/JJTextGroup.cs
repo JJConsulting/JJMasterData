@@ -6,7 +6,7 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJTextGroup : JJTextBox
+public class JJTextGroup(IFormValues formValues) : JJTextBox(formValues)
 {
     /// <summary>
     /// Actions of input
@@ -21,10 +21,6 @@ public class JJTextGroup : JJTextBox
 
     public string GroupCssClass { get; set; }
 
-    public JJTextGroup(IFormValues formValues) :  base(formValues)
-    {
-    }
-    
     protected override Task<ComponentResult> BuildResultAsync()
     {
         var inputGroup = GetHtmlBuilder();
