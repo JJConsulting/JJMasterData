@@ -1,12 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
-
-        <LangVersion>11</LangVersion>
 
         <RootNamespace>JJMasterData.WebApi.Test</RootNamespace>
     </PropertyGroup>
