@@ -1,5 +1,5 @@
 
-# JJ001 - ConnectionString not found.
+# ConnectionString not found.
 
 This is probably the first error you can find setting up JJMasterData. You can easily 
 solve it in different ways.

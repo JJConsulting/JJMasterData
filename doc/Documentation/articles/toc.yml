@@ -59,6 +59,8 @@
     href: plugins/mongodb.md
   - name: Python
     href: plugins/python.md
+  - name: Python
+    href: plugins/python.md
 - name: Miscellaneous
   items:
   - name: .NET Framework Support

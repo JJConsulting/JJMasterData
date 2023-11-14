@@ -6,7 +6,11 @@ A plugin to enable Python support at certain features of JJMasterData.
 
 At your startup, add the following line:
 ```python
-builder.Services.AddJJMasterDataWeb().WithPythonEventHandlers()
+builder.Services.AddJJMasterDataWeb().WithPythonEventHandlers(
+options =>
+{
+    options.ElementScriptsPath = "/home/gumbarros/ElementScripts"
+})
 ```
 
 You can check the possible options at <xref:JJMasterData.Python.Configuration.Options.PythonEngineOptions>.

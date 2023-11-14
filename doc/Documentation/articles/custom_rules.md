@@ -65,7 +65,7 @@ public class AgendamentoStatusFormEventHandler : FormEventHandlerBase
 > If you add the <xref:JJMasterData.Core.Events.Attributes.CustomizedFieldsAttribute> at your class, your customized fields will look like the image below.
 
 <br>
-<img alt="Importing" src="../media/CustomizedFieldsAttribute.png"/>
+<img alt="Customized Fields" src="../media/CustomizedFieldsAttribute.png"/>
 
 > [!TIP] 
 > If you want to also customize Grid events, you can also implement <xref:JJMasterData.Core.UI.Events.Abstractions.IGridEventHandler> at your class.

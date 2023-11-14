@@ -20,7 +20,8 @@ Example: <br>
 **Don't forget to add single quotes, if your value is a string or can be null, because it will be replaced at runtime** 
 
 In the Data Dictionary UI, the expression editor is simplified like this:
-//TODO: Add image
+<img alt="Customized Fields" src="../media/ExpressionsUI.png"/>
+
 
 ## What are the default expression providers?
 - Type [val:] returns a value; (1 or 0) (true or false) ("foo") etc..
