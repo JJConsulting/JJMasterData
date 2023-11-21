@@ -335,10 +335,10 @@
 
     void Delete()
     {
-        <button class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
+        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
             <span class="fa fa-trash"></span>
-            <span>&nbsp;@StringLocalizer["Delete"]</span>
-        </button>
+            <span>@StringLocalizer["Delete"]</span>
+        </a>
     }
 
     void Copy()

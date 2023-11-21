@@ -18,14 +18,11 @@ public class ExpressionsService(
     ExpressionParser expressionParser,
     ILogger<ExpressionsService> logger)
 {
-    #region "Properties"
-
+    
     private IEnumerable<IExpressionProvider> ExpressionProviders { get; } = expressionProviders;
     private ExpressionParser ExpressionParser { get; } = expressionParser;
     private ILogger<ExpressionsService> Logger { get; } = logger;
-
-    #endregion
-
+    
     public async Task<object?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
     {
         return await GetExpressionValueAsync(field.DefaultValue, field, formStateData);

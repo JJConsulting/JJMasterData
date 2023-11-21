@@ -21,7 +21,7 @@ internal class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyn
 
         var result = await entityRepository.GetResultAsync(command);
             
-        return result?.ToString() ?? null;
+        return result?.ToString();
     }
 
     internal static DataAccessCommand GetParsedDataAccessCommand(string expression, IDictionary<string, object?> parsedValues)

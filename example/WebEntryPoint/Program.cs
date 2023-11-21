@@ -1,5 +1,6 @@
 // This is a debug and example purposes Program.cs
 
+using JJMasterData.NCalc.Configuration;
 using JJMasterData.Web.Configuration;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -21,7 +22,7 @@ builder.Services.Configure<HostOptions>(options =>
     options.BackgroundServiceExceptionBehavior = 
         BackgroundServiceExceptionBehavior.Ignore;
 });
-builder.Services.AddJJMasterDataWeb(builder.Configuration);
+builder.Services.AddJJMasterDataWeb(builder.Configuration).WithNCalcExpressionProvider();
 
 var app = builder.Build();
 

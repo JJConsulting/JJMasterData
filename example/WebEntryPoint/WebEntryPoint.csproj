@@ -13,6 +13,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\Core\Core.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Brasil\Brasil.csproj" />
+      <ProjectReference Include="..\..\src\Plugins\NCalc\NCalc.csproj" />
       <ProjectReference Include="..\..\src\Plugins\Pdf\Pdf.csproj" />
       <ProjectReference Include="..\..\src\Web\Web.csproj" />
     </ItemGroup>
