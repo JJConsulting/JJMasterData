@@ -13,7 +13,8 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
-public class ExpressionsService(IEnumerable<IExpressionProvider> expressionProviders,
+public class ExpressionsService(
+    IEnumerable<IExpressionProvider> expressionProviders,
     ExpressionParser expressionParser,
     ILogger<ExpressionsService> logger)
 {
@@ -25,10 +26,6 @@ public class ExpressionsService(IEnumerable<IExpressionProvider> expressionProvi
 
     #endregion
 
-    #region "Constructors"
-
-    #endregion
-    
     public async Task<object?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
     {
         return await GetExpressionValueAsync(field.DefaultValue, field, formStateData);

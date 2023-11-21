@@ -16,10 +16,6 @@ internal class GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStri
     public required string Name { get; init; }
     public required FormElement FormElement { get; init; }
 
-    #region "Constructors"
-
-    #endregion
-    
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         if (ShowAsModal)

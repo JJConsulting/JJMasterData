@@ -1,7 +1,7 @@
 ﻿namespace JJMasterData.Core.UI;
 
 /// <summary>
-/// Helper to Bootstrap strings, everything defaults to version 3.
+/// Helper to Bootstrap strings, everything defaults to version 5.
 /// Supports Bootstrap 3,4 and 5
 /// </summary>
 /// <author>
