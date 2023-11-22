@@ -14,7 +14,7 @@ public class CancelAction : FormToolbarAction
     {
         Name = ActionName;
         Icon = IconType.Times;
-        VisibleExpression = "exp:'{PageState}' in ('INSERT','UPDATE')";
+        VisibleExpression = "exp: '{PageState}' <> 'Insert' AND '{PageState}' <> 'Update'";
         Order = 0;
         Location = FormToolbarActionLocation.Panel;
         ShowAsButton = true;

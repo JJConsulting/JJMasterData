@@ -7,10 +7,10 @@ using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
-internal class DataTableExpressionProvider : IBooleanExpressionProvider, IAsyncExpressionProvider
+public class DefaultExpressionProvider : IBooleanExpressionProvider, IAsyncExpressionProvider
 {
     public string Prefix => "exp";
-    public string Title => "DataTable.Compute";
+    public string Title => "Expression";
     private static object EvaluateObject(string replacedExpression)
     {
         using var dt = new DataTable();

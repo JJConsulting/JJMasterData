@@ -37,7 +37,7 @@ public class FormElementRelationship
             Layout = PanelLayout.Collapse
         };
         if (!isParent)
-            Panel.VisibleExpression = "exp:'{PageState}'<>'INSERT'";
+            Panel.VisibleExpression = "exp:'{PageState}'<>'Insert'";
     }
 
     public FormElementRelationship(ElementRelationship elementRelationship) : this(false)

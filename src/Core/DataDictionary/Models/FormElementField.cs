@@ -221,12 +221,12 @@ public class FormElementField : ElementField
         {
             if (elementField.AutoNum)
             {
-                EnableExpression = "exp:'{PageState}' = 'FILTER'";
-                VisibleExpression = "exp:'{PageState}' <> 'INSERT'";
+                EnableExpression = "exp:'{PageState}' = 'Filter'";
+                VisibleExpression = "exp:'{PageState}' <> 'Insert'";
             }
             else
             {
-                EnableExpression = "exp:'{PageState}' <> 'UPDATE'";
+                EnableExpression = "exp:'{PageState}' <> 'Update'";
             }
         }
         Export = true;

@@ -13,7 +13,7 @@ public class BackAction : FormToolbarAction
     public BackAction()
     {
         Name = ActionName;
-        VisibleExpression = "exp:'{PageState}' = 'VIEW'";
+        VisibleExpression = "exp:'{PageState}' = 'View'";
         Icon = IconType.ArrowLeft;
         ShowAsButton = true;
         Location = FormToolbarActionLocation.Bottom;

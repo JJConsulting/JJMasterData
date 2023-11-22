@@ -18,11 +18,10 @@ public class ExpressionsService(
     ExpressionParser expressionParser,
     ILogger<ExpressionsService> logger)
 {
-    
     private IEnumerable<IExpressionProvider> ExpressionProviders { get; } = expressionProviders;
     private ExpressionParser ExpressionParser { get; } = expressionParser;
     private ILogger<ExpressionsService> Logger { get; } = logger;
-    
+
     public async Task<object?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
     {
         return await GetExpressionValueAsync(field.DefaultValue, field, formStateData);
@@ -47,9 +46,7 @@ public class ExpressionsService(
 
         var expressionType = expression.Split(':')[0];
         if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IBooleanExpressionProvider) is not IBooleanExpressionProvider provider)
-        {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}.");
-        }
 
         object? result;
         

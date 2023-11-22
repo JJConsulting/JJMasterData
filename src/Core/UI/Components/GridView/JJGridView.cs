@@ -986,7 +986,7 @@ public class JJGridView : AsyncComponent
     {
         var action = ExportAction;
         var formData = await GetFormStateDataAsync();
-        bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formData);
+        var isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formData);
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
@@ -1003,7 +1003,7 @@ public class JJGridView : AsyncComponent
     {
         var action = LegendAction;
         var formData = await GetFormStateDataAsync();
-        bool isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formData);
+        var isVisible = ExpressionsService.GetBoolValue(action.VisibleExpression, formData);
 
         if (!isVisible)
             return new HtmlBuilder(string.Empty);

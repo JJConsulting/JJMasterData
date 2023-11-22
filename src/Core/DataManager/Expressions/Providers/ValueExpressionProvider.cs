@@ -6,7 +6,7 @@ using JJMasterData.Core.DataManager.Expressions.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Expressions.Providers;
 
-internal class ValueExpressionProvider : IAsyncExpressionProvider, IBooleanExpressionProvider
+public class ValueExpressionProvider : IAsyncExpressionProvider, IBooleanExpressionProvider
 {
     public string Prefix => "val";
     public string Title => "Value";

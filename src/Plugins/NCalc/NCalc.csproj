@@ -19,7 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="NCalcAsync" Version="4.0.4" />
       <PackageReference Include="NCalcSync" Version="3.8.0" />
     </ItemGroup>
 

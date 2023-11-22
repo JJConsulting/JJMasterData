@@ -51,11 +51,11 @@ public class DataDictionaryFormElementFactory(IOptions<MasterDataCoreOptions> op
 
     private void ConfigureFields(FormElement formElement)
     {
-        formElement.Fields[DataDictionaryStructure.Name].VisibleExpression = "exp:'{PageState}' <> 'FILTER'";
+        formElement.Fields[DataDictionaryStructure.Name].VisibleExpression = "exp:'{PageState}' <> 'Filter'";
         formElement.Fields[DataDictionaryStructure.Type].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.Owner].VisibleExpression= "val:0";
         formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.Text;
-        formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: '{PageState}' = 'FILTER'";
+        formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: '{PageState}' = 'Filter'";
         formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["FilterForAnythingDescription"];
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Fields[DataDictionaryStructure.EnableSynchronism].VisibleExpression = "val:0";
