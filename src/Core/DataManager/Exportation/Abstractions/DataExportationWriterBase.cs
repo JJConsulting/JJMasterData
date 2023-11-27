@@ -249,7 +249,7 @@ public abstract class DataExportationWriterBase(ExpressionsService expressionsSe
         textFile.FormElementField = field;
         textFile.PageState = PageState.List;
         textFile.Text = value;
-        textFile.FortStateValues = row;
+        textFile.FormStateValues = row;
         textFile.Name = field.Name;
 
         return textFile.GetDownloadLink(fileName, true);

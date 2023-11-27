@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class ComponentFactory(IServiceProvider serviceProvider) : IComponentFactory
+internal class ComponentFactory(IServiceScopeFactory scopeFactory) : IComponentFactory
 {
     private RouteContext? _routeContext;
     private HtmlComponentFactory? _htmlComponentFactory;
-    private IServiceProvider ServiceProvider { get; } = serviceProvider;
+    private IServiceProvider ServiceProvider => scopeFactory.CreateScope().ServiceProvider;
 
     public IFormElementComponentFactory<JJAuditLogView> AuditLog =>
         GetFactory<IFormElementComponentFactory<JJAuditLogView>>();
@@ -30,7 +30,7 @@ internal class ComponentFactory(IServiceProvider serviceProvider) : IComponentFa
     public IFormElementComponentFactory<JJGridView> GridView =>
         GetFactory<IFormElementComponentFactory<JJGridView>>();
 
-    public IComponentFactory<JJUploadView> FormUpload =>
+    public IComponentFactory<JJUploadView> UploadView =>
         GetFactory<IComponentFactory<JJUploadView>>();
 
     public IComponentFactory<JJFileDownloader> Downloader =>
@@ -46,6 +46,7 @@ internal class ComponentFactory(IServiceProvider serviceProvider) : IComponentFa
         _htmlComponentFactory ??= ServiceProvider.GetRequiredService<HtmlComponentFactory>();
 
     public ActionButtonFactory ActionButton =>  GetFactory<ActionButtonFactory>();
+    public TextGroupFactory TextGroup  =>  GetFactory<TextGroupFactory>();
 
     public RouteContext RouteContext =>
         _routeContext ??= ServiceProvider.GetRequiredService<RouteContextFactory>().Create();

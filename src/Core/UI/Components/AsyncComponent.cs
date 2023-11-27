@@ -2,6 +2,7 @@
 
 using System;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Tasks;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -36,10 +37,10 @@ public abstract class AsyncComponent : ComponentBase
     /// It only exists to legacy compatibility with WebForms.
     /// </summary>
     /// <returns>The rendered HTML component or nothing (AJAX response)</returns>
-    [Obsolete("Please use GetResultAsync with CanSendResult and SendResult. If CanSendResult return false, use the Content property at your front-end, else, use the SendResult method.")]
+    [Obsolete("Please use GetResultAsync with SystemWebHelper.CanSendResult and SendResult. If CanSendResult return false, use the Content property at your front-end, else, use the SystemWebHelper.SendResult method.")]
     public string? GetHtml()
     {
-        var result = GetResultAsync().GetAwaiter().GetResult();
+        var result = AsyncHelper.RunSync(GetResultAsync);
 
         if (result is RenderedComponentResult)
             return result;

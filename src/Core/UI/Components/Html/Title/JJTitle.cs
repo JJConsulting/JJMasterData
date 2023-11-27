@@ -20,8 +20,15 @@ public class JJTitle : HtmlComponent
         _ => throw new ArgumentOutOfRangeException()
     };
 
-    internal JJTitle()
+    public JJTitle()
     {
+        Size = HeadingSize.H1;
+    }
+    
+    public JJTitle(string title, string subtitle)
+    {
+        Title = title;
+        SubTitle = subtitle;
         Size = HeadingSize.H1;
     }
 

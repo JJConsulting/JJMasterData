@@ -1,5 +1,4 @@
-﻿using System;
-using JJMasterData.Commons.Tasks;
+﻿using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 
 namespace JJMasterData.Core.DataManager.Exportation.Abstractions;

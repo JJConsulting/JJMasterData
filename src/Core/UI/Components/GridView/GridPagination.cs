@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 
@@ -76,7 +75,7 @@ internal class GridPagination(JJGridView gridView)
 
         var showJumpToPage = _endButtonIndex <= _totalPages || _startButtonIndex > _totalButtons;
         
-        if (showJumpToPage)
+        if (showJumpToPage && BootstrapHelper.Version >= 5)
         {
             ul.AppendRange(GetJumpToPageButtons());
         }

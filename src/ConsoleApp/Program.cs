@@ -51,20 +51,23 @@ var rootCommand = new RootCommand("JJMasterData CLI. To learn more visit https:/
         service.GenerateJsonSchema(schemaName);
     })
 };
-host.Start();
+var service = host.Services.GetRequiredService<FormElementMigrationService>();
+service.Migrate();
 
-var parser = new CommandLineBuilder(rootCommand)
-    .UseDefaults()
-    .UseHelp(context =>
-    {
-        context.HelpBuilder.CustomizeLayout(
-            _ =>
-                HelpBuilder.Default
-                    .GetLayout()
-                    .Prepend(
-                        _ => ConsoleHelper.WriteJJConsultingLogo()
-                    ));
-    })
-    .Build();
+// host.Start();
+//
+// var parser = new CommandLineBuilder(rootCommand)
+//     .UseDefaults()
+//     .UseHelp(context =>
+//     {
+//         context.HelpBuilder.CustomizeLayout(
+//             _ =>
+//                 HelpBuilder.Default
+//                     .GetLayout()
+//                     .Prepend(
+//                         _ => ConsoleHelper.WriteJJConsultingLogo()
+//                     ));
+//     })
+//     .Build();
 
-await parser.InvokeAsync(args);
+// await parser.InvokeAsync(args);

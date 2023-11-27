@@ -8,7 +8,6 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
-using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;

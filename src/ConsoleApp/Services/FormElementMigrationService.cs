@@ -36,8 +36,8 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
         var databaseDictionaries = MetadataRepository.GetMetadataList();
         
         DataAccess.SetCommand($"DROP TABLE {TableName}");
-        DataAccess.SetCommand($"DROP PROCEDURE {Options.GetReadProcedureName(TableName)}");
-        DataAccess.SetCommand($"DROP PROCEDURE {Options.GetWriteProcedureName(TableName)}");
+        // DataAccess.SetCommand($"DROP PROCEDURE {Options.GetReadProcedureName(TableName)}");
+        // DataAccess.SetCommand($"DROP PROCEDURE {Options.GetWriteProcedureName(TableName)}");
         
         DataDictionaryRepository.CreateStructureIfNotExistsAsync().GetAwaiter().GetResult();
         

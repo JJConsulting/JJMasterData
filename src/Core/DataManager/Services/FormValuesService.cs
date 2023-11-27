@@ -90,7 +90,7 @@ public class FormValuesService(IEntityRepository entityRepository,
         return values;
     }
 
-    public async Task<IDictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
+    public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         PageState pageState,
         bool autoReloadFormFields,
@@ -101,7 +101,7 @@ public class FormValuesService(IEntityRepository entityRepository,
         return await GetFormValuesWithMergedValuesAsync(formElement, pageState, dbValues, autoReloadFormFields, fieldPrefix);
     }
 
-    public async Task<IDictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
+    public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         PageState pageState,
         IDictionary<string, object?>? values,

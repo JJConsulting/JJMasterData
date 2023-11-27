@@ -205,7 +205,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         return Encoding.Default.GetBytes(json);
     }
 
-    public async Task<byte[]> ExportMultipleRowsAsync(List<IDictionary<string, object>> selectedRows)
+    public async Task<byte[]> ExportMultipleRowsAsync(List<Dictionary<string, object>> selectedRows)
     {
         using var memoryStream = new MemoryStream();
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))

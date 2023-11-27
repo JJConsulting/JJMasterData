@@ -1,4 +1,4 @@
-#if NETFRAMEWORK
+
 using System.Threading.Tasks;
 using JJMasterData.Core.Events.Args;
 
@@ -16,4 +16,3 @@ public abstract class FormEventHandlerBase : IFormEventHandler
     public virtual Task OnAfterDeleteAsync(object sender, FormAfterActionEventArgs args) => Task.CompletedTask;
     public virtual Task OnFormElementLoadAsync(object sender, FormElementLoadEventArgs args) => Task.CompletedTask;
 }
-#endif

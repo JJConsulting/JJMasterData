@@ -13,7 +13,7 @@
 @section Scripts{
     <script lang="javascript" type="text/javascript">
         document.addEventListener("DOMContentLoaded",()=>{
-            CodeMirrorWrapper.setupCodeMirror('@nameof(Model.CommandSql)',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'})
+            CodeMirrorWrapper.setupCodeMirror('@nameof(Model.SqlCommand)',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'})
         });
     </script>
 }
@@ -49,12 +49,12 @@
                         @if (!BootstrapHelper.Version.Equals(3))
                         {
                             <div class="card-body">
-                                @Html.TextAreaFor(model => model.CommandSql, new { @class = "form-control", rows = "8" })
+                                @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "8" })
                             </div>
                         }
                         else
                         {
-                            @Html.TextAreaFor(model => model.CommandSql, new { @class = "form-control", rows = "8" })
+                            @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "8" })
                         }
                     </div>
                 </div>

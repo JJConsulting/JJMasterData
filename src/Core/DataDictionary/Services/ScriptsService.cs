@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;

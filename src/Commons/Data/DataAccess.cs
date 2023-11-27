@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Exceptions;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -80,49 +80,6 @@ public partial class DataAccess
     /// Waiting time to execute a command on the database (seconds - default 240s)
     /// </summary>
     public int TimeOut { get; set; } = 240;
-
-
-#if NET48
-    /// <summary>
-    /// By default DataAccess recover connection string from appsettings.json with name ConnectionString
-    /// </summary>
-    public DataAccess()
-    {
-        ConnectionString =
-            System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
-        if (Enum.TryParse<DataAccessProvider>(
-                System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionString"].ProviderName,
-                out var provider))
-        {
-            ConnectionProvider = provider;
-        }
-        else
-        {
-            throw new DataAccessProviderException("Invalid DataAccess provider.");
-        }
-    }
-
-
-    /// <summary>
-    /// New instance from a custom connection string name
-    /// </summary>
-    /// <param name="connectionStringName">Name of connection string in appsettings.json or webconfig.xml file</param>
-    public DataAccess(string connectionStringName)
-    {
-        ConnectionString =
-            System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
-        if (Enum.TryParse<DataAccessProvider>(
-                System.Configuration.ConfigurationManager.ConnectionStrings[connectionStringName].ProviderName,
-                out var provider))
-        {
-            ConnectionProvider = provider;
-        }
-        else
-        {
-            throw new DataAccessProviderException("Invalid DataAccess provider.");
-        }
-    }
-#endif
     
     /// <summary>
     /// Initialize a with a connectionString and a specific providerName.
@@ -458,7 +415,7 @@ public partial class DataAccess
     /// Return a Hashtable Object. 
     /// If no record is found it returns null.
     /// </returns>
-    public Hashtable? GetFields(string sql) => GetFields(new DataAccessCommand(sql));
+    public Hashtable? GetHashtable(string sql) => GetHashtable(new DataAccessCommand(sql));
     
     /// <summary>
     /// Retrieves the first record of the sql statement in a Hashtable object.
@@ -469,7 +426,7 @@ public partial class DataAccess
     /// Return a Hashtable Object. 
     /// If no record is found it returns null.
     /// </returns>
-    public Hashtable? GetFields(DataAccessCommand cmd)
+    public Hashtable? GetHashtable(DataAccessCommand cmd)
     {
         Hashtable? retCollection = null;
         try

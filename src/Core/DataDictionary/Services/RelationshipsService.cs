@@ -23,8 +23,13 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
 
         if (!relationships.Any(r => r.IsParent))
         {
-            var relation = new FormElementRelationship(true);
-            relation.Panel.Title = formElement.Title;
+            var relation = new FormElementRelationship(true)
+            {
+                Panel =
+                {
+                    Title = formElement.Title
+                }
+            };
             relationships.Add(relation);
         }
         

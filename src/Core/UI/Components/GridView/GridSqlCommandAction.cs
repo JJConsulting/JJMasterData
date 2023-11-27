@@ -50,13 +50,13 @@ internal class GridSqlCommandAction(JJGridView gridView)
                && sqlCommandAction.ApplyOnSelected;
     }
 
-    private async Task ExecuteOnList(SqlCommandAction sqlCommandAction, List<IDictionary<string, object>> selectedRows)
+    private async Task ExecuteOnList(SqlCommandAction sqlCommandAction, List<Dictionary<string, object>> selectedRows)
     {
         var commandList = new List<DataAccessCommand>();
         foreach (var row in selectedRows)
         {
             var formData = new FormStateData(row, gridView.UserValues, PageState.List);
-            var sql = gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.CommandSql, formData);
+            var sql = gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.SqlCommand, formData);
             commandList.Add(new DataAccessCommand(sql!));
         }
 
@@ -77,7 +77,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
         }
 
         var formStateData = new FormStateData(formValues, gridView.UserValues, PageState.List);
-        var sqlCommand = gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.CommandSql, formStateData);
+        var sqlCommand = gridView.ExpressionsService.ReplaceExpressionWithParsedValues(sqlCommandAction.SqlCommand, formStateData);
         
         await gridView.EntityRepository.SetCommandAsync(new DataAccessCommand(sqlCommand!));
     }

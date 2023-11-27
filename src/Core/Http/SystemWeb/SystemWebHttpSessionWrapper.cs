@@ -7,7 +7,7 @@ namespace JJMasterData.Core.Http.SystemWeb;
 
 internal class SystemWebHttpSessionWrapper : IHttpSession
 {
-    private HttpSessionState Session { get; } = HttpContext.Current.Session;
+    private static HttpSessionState Session => HttpContext.Current.Session;
     public string this[string key]
     {
         get => Session[key]?.ToString();

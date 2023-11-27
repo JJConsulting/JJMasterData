@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -750,6 +749,17 @@ public class JJGridView : AsyncComponent
     }
     
 
+    public string GetTitleHtml()
+    {
+        var title = FormElement.Title;
+        var subTitle = FormElement.SubTitle;
+
+        var titleComponent = ComponentFactory.Html.Title.Create(title, subTitle);
+        titleComponent.Size = TitleSize;
+
+        return titleComponent.GetHtml();
+    }
+    
     internal JJTitle GetTitle(IDictionary<string, object?> values)
     {
         var title = FormElement.Title;
@@ -1191,7 +1201,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the <see cref="EnableEditMode"/> property
     /// </remarks>
-    public async Task<List<IDictionary<string, object?>>?> GetGridValuesAsync(int recordsPerPage, int currentPage)
+    public async Task<List<Dictionary<string, object?>>?> GetGridValuesAsync(int recordsPerPage, int currentPage)
     {
         var result = await GetDataSourceAsync(new EntityParameters
         {
@@ -1207,7 +1217,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    public async Task<List<IDictionary<string, object?>>?> GetGridValuesAsync(IList<Dictionary<string,object?>>? loadedData = null)
+    public async Task<List<Dictionary<string, object?>>?> GetGridValuesAsync(IList<Dictionary<string,object?>>? loadedData = null)
     {
         if (loadedData == null)
         {
@@ -1216,7 +1226,7 @@ public class JJGridView : AsyncComponent
                 return null;
         }
 
-        var gridValues = new List<IDictionary<string, object?>>();
+        var gridValues = new List<Dictionary<string, object?>>();
         foreach (var row in loadedData)
         {
             string fieldName = GetFieldName("", row);
@@ -1231,9 +1241,9 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the EnableMultSelect property
     /// </remarks>
-    public List<IDictionary<string, object>> GetSelectedGridValues()
+    public List<Dictionary<string, object>> GetSelectedGridValues()
     {
-        var listValues = new List<IDictionary<string, object>>();
+        var listValues = new List<Dictionary<string, object>>();
 
         if (!EnableMultiSelect)
             return listValues;
@@ -1299,12 +1309,12 @@ public class JJGridView : AsyncComponent
     /// Key = Field name
     /// Value = Message
     /// </returns>
-    public IDictionary<string, object> ValidateGridFields(List<IDictionary<string, object?>> values)
+    public IDictionary<string, string> ValidateGridFields(List<Dictionary<string, object?>> values)
     {
         if (values == null)
             throw new ArgumentNullException(nameof(values));
 
-        var errors = new Dictionary<string, object>();
+        var errors = new Dictionary<string, string>();
         int line = 0;
         foreach (var row in values)
         {
@@ -1457,16 +1467,6 @@ public class JJGridView : AsyncComponent
     public BasicAction GetGridAction(string actionName)
     {
         return GridActions.First(x => x.Name.Equals(actionName));
-    }
-
-    /// <summary>
-    /// Add or change a value in the CurrentFilter.<br></br>
-    /// If it exists, change it, otherwise it includes it.
-    /// </summary>
-    public async Task SetCurrentFilterAsync(string field, object value)
-    {
-        var filter = await GetCurrentFilterAsync();
-        filter[field] = value;
     }
 
     /// <summary>

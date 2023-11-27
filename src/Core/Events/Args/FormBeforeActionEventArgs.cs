@@ -8,4 +8,5 @@ public class FormBeforeActionEventArgs(IDictionary<string, object> values, IDict
 {
     public IDictionary<string, object> Values { get; set; } = values;
     public IDictionary<string, string> Errors { get; set; } = errors;
+    
 }

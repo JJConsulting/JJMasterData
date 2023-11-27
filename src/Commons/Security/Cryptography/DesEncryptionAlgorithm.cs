@@ -9,7 +9,7 @@ namespace JJMasterData.Commons.Security.Cryptography;
 /// <summary>
 /// DES algorithm can be broken easily as it has known vulnerabilities. Please use AesEncryptionService.
 /// </summary>
-internal class DesEncryptionAlgorithm : IEncryptionAlgorithm
+public class DesEncryptionAlgorithm : IEncryptionAlgorithm
 {
     private static readonly byte[] Iv = { 12, 34, 56, 78, 90, 102, 114, 126 };
     

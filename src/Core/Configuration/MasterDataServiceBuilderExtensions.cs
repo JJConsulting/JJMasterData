@@ -2,9 +2,7 @@
 
 using System;
 using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -16,7 +14,6 @@ using JJMasterData.Core.Events.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.Configuration;

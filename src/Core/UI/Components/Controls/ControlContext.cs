@@ -4,7 +4,7 @@ using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal record ControlContext(
+public record ControlContext(
     FormStateData FormStateData,
     string ParentComponentName,
     object? Value = null);

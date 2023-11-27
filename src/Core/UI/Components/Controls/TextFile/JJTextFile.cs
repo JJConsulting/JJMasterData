@@ -32,7 +32,7 @@ public class JJTextFile(IHttpRequest request,
 
     public string FieldName { get; set; }
     
-    public IDictionary<string, object> FortStateValues
+    public IDictionary<string, object> FormStateValues
     {
         get => _formValues ??= new Dictionary<string, object>();
         set => _formValues = value;
@@ -76,7 +76,7 @@ public class JJTextFile(IHttpRequest request,
             if (_uploadView is not null) 
                 return _uploadView;
             
-            _uploadView = ComponentFactory.FormUpload.Create();
+            _uploadView = ComponentFactory.UploadView.Create();
             _uploadView.Name = $"{FormElementField.Name}-upload-view";
             _uploadView.Title = string.Empty;
             _uploadView.AutoSave = false;
@@ -191,12 +191,12 @@ public class JJTextFile(IHttpRequest request,
         if (pkFields.Count == 0)
             return false;
 
-        return pkFields.All(pkField => FortStateValues.ContainsKey(pkField.Name) && !string.IsNullOrEmpty(FortStateValues[pkField.Name]?.ToString()));
+        return pkFields.All(pkField => FormStateValues.ContainsKey(pkField.Name) && !string.IsNullOrEmpty(FormStateValues[pkField.Name]?.ToString()));
     }
 
     public string GetFolderPath()
     {
-        return PathBuilder.GetFolderPath(FormElementField, FortStateValues);
+        return PathBuilder.GetFolderPath(FormElementField, FormStateValues);
     }
 
     internal string GetFileName()

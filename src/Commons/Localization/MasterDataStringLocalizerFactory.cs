@@ -1,13 +1,9 @@
 using System;
 using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data;
-using JJMasterData.Commons.Data.Entity.Providers;
-using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Localization;

@@ -41,7 +41,7 @@ public class InternalRedirectController(IComponentFactory componentFactory, IEnc
                 if (userId != null)
                 {
                     formView.SetUserValues("USERID", userId);
-                    await formView.GridView.SetCurrentFilterAsync("USERID", userId);
+                    formView.GridView.SetCurrentFilter("USERID", userId);
                 }
 
                 model = new(formView.FormElement.Title ?? formView.Name,result.Content!, false);

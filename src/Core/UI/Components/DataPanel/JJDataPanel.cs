@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
@@ -112,41 +114,6 @@ public class JJDataPanel : AsyncComponent
     #endregion
 
     #region "Constructors"
-#if NET48
-    public JJDataPanel() 
-    {
-        ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<IComponentFactory>();
-        EntityRepository =  StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
-        CurrentContext =  StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
-        FieldsService = StaticServiceLocator.Provider.GetScopedDependentService<FieldsService>();
-        FormValuesService = StaticServiceLocator.Provider.GetScopedDependentService<FormValuesService>();
-        ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<ExpressionsService>();
-        UrlHelper = StaticServiceLocator.Provider.GetScopedDependentService<MasterDataUrlHelper>();
-        
-        Values = new Dictionary<string, object>();
-        Errors =  new Dictionary<string, string>();
-        AutoReloadFormFields = true;
-        PageState = PageState.View;
-    }
-    
-    [Obsolete("This constructor uses a static service locator, and have business logic inside it. This an anti pattern. Please use ComponentsFactory.")]
-    public JJDataPanel(string elementName): this()
-    {
-        Name = $"{ComponentNameGenerator.Create(elementName)}-data-panel";
-        FormElement = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>()
-            .GetFormElementAsync(elementName).GetAwaiter().GetResult();
-        RenderPanelGroup = FormElement.Panels.Count > 0;
-    }
-    
-    [Obsolete("This constructor uses a static service locator. This an anti pattern. Please use ComponentsFactory.")]
-    public JJDataPanel(
-        FormElement formElement) : this()
-    {
-        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-data-panel";
-        FormElement = formElement;
-        RenderPanelGroup = formElement.Panels.Count > 0;
-    }
-#endif
 
     public JJDataPanel(
         IEntityRepository entityRepository,
@@ -276,10 +243,26 @@ public class JJDataPanel : AsyncComponent
         return script.ToString();
     }
     
+    #if NETFRAMEWORK
+    
+    [Obsolete("Please use GetFormValuesAsync")]
+    public Hashtable GetFormValues()
+    {
+        var result = AsyncHelper.RunSync(FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix));
+        
+        var hashtable = new Hashtable();
+        foreach (var pair in result)
+        {
+            hashtable.Add(pair.Key, pair.Value);
+        }
+
+        return hashtable;
+    }
+    #endif
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
-    public async Task<IDictionary<string, object>> GetFormValuesAsync()
+    public async Task<Dictionary<string, object>> GetFormValuesAsync()
     {
         return await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix);
     }

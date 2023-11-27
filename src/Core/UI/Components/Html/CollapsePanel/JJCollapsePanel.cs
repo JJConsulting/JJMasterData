@@ -169,8 +169,10 @@ public class JJCollapsePanel : HtmlComponent
 
         if (!string.IsNullOrEmpty(SubTitle))
         {
-            var title = new JJTitle();
-            title.SubTitle = SubTitle;
+            var title = new JJTitle
+            {
+                SubTitle = SubTitle
+            };
             panelBody.Append(title.GetHtmlBlockquote());
         }
 

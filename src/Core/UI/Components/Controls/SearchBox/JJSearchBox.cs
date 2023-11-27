@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
@@ -175,6 +176,8 @@ public class JJSearchBox : ControlBase
 
     public string SelectedValue
     {
+        [Obsolete("Please use GetSelectedValueAsync()")]
+        get => AsyncHelper.RunSync(GetSelectedValueAsync()) ?? string.Empty;
         set => _selectedValue = value;
     }
     

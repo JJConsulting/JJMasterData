@@ -4,9 +4,14 @@ using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.Http.SystemWeb;
 
-internal static class SystemWebHelper
+public static class SystemWebHelper
 {
-    internal static void SendResult(ComponentResult result)
+    public static bool CanSendResult(ComponentResult result)
+    {
+        return result is not EmptyComponentResult && result is not RenderedComponentResult;
+    }
+
+    public static void SendResult(ComponentResult result)
     {
         var currentContext = System.Web.HttpContext.Current;
 

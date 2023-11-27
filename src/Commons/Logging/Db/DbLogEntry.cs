@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace JJMasterData.Commons.Logging.Db;
 

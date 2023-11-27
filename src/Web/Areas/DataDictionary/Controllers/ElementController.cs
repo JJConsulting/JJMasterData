@@ -7,7 +7,6 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
-using JJMasterData.Web.Extensions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;

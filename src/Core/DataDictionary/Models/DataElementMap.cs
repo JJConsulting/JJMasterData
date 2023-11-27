@@ -33,11 +33,9 @@ public class DataElementMap
         {
             var filters = new Dictionary<string, object>();
             
-      
-            foreach (var item in MapFilters)
-                filters.Add(item.FieldName, item.ExpressionValue);
             
-
+            foreach (var item in MapFilters ?? new List<DataElementMapFilter>())
+                filters.Add(item.FieldName, item.ExpressionValue);
                 
             return filters;
         }

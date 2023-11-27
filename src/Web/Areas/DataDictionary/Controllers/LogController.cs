@@ -6,7 +6,6 @@ using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
-using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;

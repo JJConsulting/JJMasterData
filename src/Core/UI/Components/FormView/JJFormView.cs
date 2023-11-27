@@ -114,7 +114,7 @@ public class JJFormView : AsyncComponent
     /// <summary>
     /// Configurações de importação
     /// </summary>
-    private JJDataImportation DataImportation
+    public JJDataImportation DataImportation
     {
         get
         {
@@ -254,7 +254,7 @@ public class JJFormView : AsyncComponent
     }
 
 
-    protected RouteContext RouteContext
+    public RouteContext RouteContext
     {
         get
         {
@@ -296,7 +296,7 @@ public class JJFormView : AsyncComponent
             _showTitle = value;
         }
     }
-
+    
     internal IHttpContext CurrentContext { get; }
     internal IFormValues FormValues => CurrentContext.Request.Form;
     public IQueryString QueryString => CurrentContext.Request.QueryString;
@@ -314,41 +314,7 @@ public class JJFormView : AsyncComponent
     #endregion
 
     #region "Constructors"
-
-#if NET48
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    private JJFormView() 
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    {
-        CurrentContext = StaticServiceLocator.Provider.GetScopedDependentService<IHttpContext>();
-        EntityRepository = StaticServiceLocator.Provider.GetScopedDependentService<IEntityRepository>();
-        ComponentFactory = StaticServiceLocator.Provider.GetScopedDependentService<IComponentFactory>();
-        FormService = StaticServiceLocator.Provider.GetScopedDependentService<FormService>();
-        FieldValuesService = StaticServiceLocator.Provider.GetScopedDependentService<FieldValuesService>();
-        Options = StaticServiceLocator.Provider.GetScopedDependentService<IOptions<MasterDataCoreOptions>>();
-        ExpressionsService = StaticServiceLocator.Provider.GetScopedDependentService<ExpressionsService>();
-        StringLocalizer =
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           StaticServiceLocator.Provider.GetScopedDependentService<IStringLocalizer<MasterDataResources>>();
-        DataDictionaryRepository = StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();        
-        PluginHandlers = StaticServiceLocator.Provider.GetScopedDependentService<IEnumerable<IPluginHandler>>();
-        FormService.EnableErrorLinks = true;
-    }
-
-    public JJFormView(string elementName) : this()
-    {
-        var dataDictionaryRepository =
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          StaticServiceLocator.Provider.GetScopedDependentService<IDataDictionaryRepository>();
-        var factory = StaticServiceLocator.Provider.GetScopedDependentService<FormViewFactory>();
-        FormElement = dataDictionaryRepository.GetFormElementAsync(elementName).GetAwaiter().GetResult();
-        factory.SetFormEventHandlerAsync(this, FormElement).GetAwaiter().GetResult();
-    }
-
-    public JJFormView(FormElement formElement) : this()
-    {
-        FormElement = formElement;
-    }
-#endif
-
+    
     internal JJFormView(
         FormElement formElement,
         IHttpContext currentContext,
@@ -658,7 +624,7 @@ public class JJFormView : AsyncComponent
         var sqlAction = CurrentActionMap!.GetAction<SqlCommandAction>(FormElement);
         try
         {
-            var sqlCommand = ExpressionsService.ReplaceExpressionWithParsedValues(sqlAction.CommandSql, await GetFormStateDataAsync());
+            var sqlCommand = ExpressionsService.ReplaceExpressionWithParsedValues(sqlAction.SqlCommand, await GetFormStateDataAsync());
 
             await EntityRepository.SetCommandAsync(new DataAccessCommand(sqlCommand!));
         }
@@ -1445,10 +1411,10 @@ public class JJFormView : AsyncComponent
 
         if (!values.Any())
         {
-            values = DataPanel.Values;
+            values = DataPanel.Values as Dictionary<string,object?>;
         }
 
-        return new FormStateData(values, UserValues, PageState);
+        return new FormStateData(values ?? new Dictionary<string, object?>(), UserValues, PageState);
     }
 
     public IDictionary<string, object> GetRelationValuesFromForm()
@@ -1531,6 +1497,16 @@ public class JJFormView : AsyncComponent
         };
     }
     
+    [Obsolete("Please use GetCurrentFilterAsync")]
+    public IDictionary<string, object?> CurrentFilter
+    {
+        get
+        {
+            return AsyncHelper.RunSync(GridView.GetCurrentFilterAsync());
+        }
+    }
+    
+    
     #region "Legacy inherited GridView compatibility"
 
     [Obsolete("Please use GridView.GridActions")]
@@ -1539,14 +1515,14 @@ public class JJFormView : AsyncComponent
     [Obsolete("Please use GridView.ToolBarActions")]
     public GridToolbarActionList ToolBarActions => GridView.ToolBarActions;
 
-    [Obsolete("Please use GridView.SetCurrentFilterAsync")]
-    public void SetCurrentFilter(string filterKey, string filterValue)
+    [Obsolete("Please use GridView.SetCurrentFilter")]
+    public void SetCurrentFilter(string filterKey, object filterValue)
     {
-        GridView.SetCurrentFilterAsync(filterKey, filterValue).GetAwaiter().GetResult();
+        GridView.SetCurrentFilter(filterKey, filterValue);
     }
 
     [Obsolete("Please use GridView.GetSelectedGridValues")]
-    public List<IDictionary<string, object>> GetSelectedGridValues() => GridView.GetSelectedGridValues();
+    public List<Dictionary<string, object>> GetSelectedGridValues() => GridView.GetSelectedGridValues();
 
     [Obsolete("Please use GridView.AddToolBarAction")]
     public void AddToolBarAction(UserCreatedAction userCreatedAction)
@@ -1600,7 +1576,103 @@ public class JJFormView : AsyncComponent
         get => GridView.EnableMultiSelect;
         set => GridView.EnableMultiSelect = value;
     }
+    
+    [Obsolete("Please use GridView.EnableEditMode")]
+    public bool EnableEditMode
+    {
+        get => GridView.EnableEditMode;
+        set => GridView.EnableEditMode = value;
+    }
+    
+    [Obsolete("Please use GridView.CurrentSettings")]
+    public GridSettings CurrentSettings
+    {
+        get => GridView.CurrentSettings;
+        set => GridView.CurrentSettings = value;
+    }
+    
+    [Obsolete("Please use GridView.EnableFilter")]
+    public bool EnableFilter
+    {
+        get => GridView.EnableFilter;
+        set => GridView.EnableFilter = value;
+    }
 
+    [Obsolete("Please use GridView.EnableMultiSelect")]
+    public bool EnableMultiSelect
+    {
+        get => GridView.EnableMultiSelect;
+        set => GridView.EnableMultiSelect = value;
+    }
+
+    [Obsolete("Please use GridView.ShowToolbar")]
+    public bool ShowToolbar
+    {
+        get => GridView.ShowToolbar;
+        set => GridView.ShowToolbar = value;
+    }
+
+    [Obsolete("Please use GridView.ShowPagging")]
+    public bool ShowPagging
+    {
+        get => GridView.ShowPagging;
+        set => GridView.ShowPagging = value;
+    }
+
+    [Obsolete("Please use GridView.GetGridValuesAsync()")]
+    public List<Dictionary<string,object?>> GetGridValues()
+    {
+        return AsyncHelper.RunSync(GridView.GetGridValuesAsync()) ?? new List<Dictionary<string, object?>>();
+    }
+    
+    [Obsolete("Please use GridView.SetGridOptions()")]
+    public void SetGridOptions(GridUI options)
+    {
+         GridView.SetGridOptions(options);
+    }
+    
+
+
+    [Obsolete("Please use GridView.AddGridAction()")]
+    public void AddGridAction(BasicAction action)
+    {
+        switch (action)
+        {
+            case SqlCommandAction sqlCommandAction:
+                GridView.AddGridAction(sqlCommandAction);
+                break;
+            case UrlRedirectAction url:
+                GridView.AddGridAction(url);
+                break;
+            case InternalAction internalAction:
+                GridView.AddGridAction(internalAction);
+                break;
+            case ScriptAction scriptAction:
+                GridView.AddGridAction(scriptAction);
+                break;
+        }
+    }
+    
+    [Obsolete("Please use GridView.AddToolBarAction()")]
+    public void AddToolBarAction(BasicAction action)
+    {
+        switch (action)
+        {
+            case SqlCommandAction sqlCommandAction:
+                GridView.AddToolBarAction(sqlCommandAction);
+                break;
+            case UrlRedirectAction url:
+                GridView.AddToolBarAction(url);
+                break;
+            case InternalAction internalAction:
+                GridView.AddToolBarAction(internalAction);
+                break;
+            case ScriptAction scriptAction:
+                GridView.AddToolBarAction(scriptAction);
+                break;
+        }
+    }
+    
     #endregion
 
     public static implicit operator JJGridView(JJFormView formView) => formView.GridView;

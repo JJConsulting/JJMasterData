@@ -29,12 +29,12 @@ public class FieldValuesService(ExpressionsService expressionsService, IEntityRe
     /// <returns>
     /// Returns a new Dictionary with the updated values
     /// </returns>
-    public async Task<IDictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState, bool replaceNullValues)
+    public async Task<Dictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState, bool replaceNullValues)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));
 
-        IDictionary<string, object?> newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var f in formElement.Fields)
         {
             if (formValues.TryGetValue(f.Name, out var value) && value != null)

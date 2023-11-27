@@ -80,7 +80,7 @@ public static class WebApplicationExtensions
 
         configure?.Invoke(options);
 
-        var pattern = "{area=DataDictionary}/{controller=Element}/{action=Index}/{elementName?}/";
+        var pattern = "{area}/{controller}/{action}/{elementName?}/";
 
         if (options.Prefix is not null)
             pattern = $"{options.Prefix.Replace("/", string.Empty)}/{pattern}";

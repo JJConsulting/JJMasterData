@@ -54,7 +54,7 @@ public class EntityRepository : IEntityRepository
     public async Task<bool> ExecuteBatchAsync(string script) => await DataAccess.ExecuteBatchAsync(script);
     public async Task<IDictionary<string, object?>> GetFieldsAsync(DataAccessCommand command)
     {
-        return await DataAccess.GetDictionaryAsync(command);
+        return await DataAccess.GetDictionaryAsync(command).ConfigureAwait(false);
     }
 
     public async Task<IDictionary<string, object?>> GetFieldsAsync(Element element, IDictionary<string, object> primaryKeys)
@@ -66,7 +66,7 @@ public class EntityRepository : IEntityRepository
             Filters = primaryKeys!
         },totalOfRecords);
 
-        return await DataAccess.GetDictionaryAsync(cmd);
+        return await DataAccess.GetDictionaryAsync(cmd).ConfigureAwait(false);
     }
 
     public async Task CreateDataModelAsync(Element element) => await Provider.CreateDataModelAsync(element);
@@ -115,7 +115,16 @@ public class EntityRepository : IEntityRepository
         
         return result.Data;
     }
-    
+
+    public async Task<DataTable> GetDataTableAsync(Element element, EntityParameters? parameters = null)
+    {
+        var totalOfRecords =
+            new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
+        var command = Provider.GetReadCommand(element, parameters ?? new EntityParameters(), totalOfRecords);
+
+        return await DataAccess.GetDataTableAsync(command);
+    }
+
     public async Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(DataAccessCommand command)
     {
         return await DataAccess.GetDictionaryListAsync(command);

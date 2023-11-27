@@ -11,11 +11,12 @@ public interface IComponentFactory
     IFormElementComponentFactory<JJDataPanel> DataPanel { get; }
     IFormElementComponentFactory<JJFormView> FormView { get; }
     IFormElementComponentFactory<JJGridView> GridView { get; }
-    IComponentFactory<JJUploadView> FormUpload { get; }
+    IComponentFactory<JJUploadView> UploadView { get; }
     IComponentFactory<JJFileDownloader> Downloader { get; }
     IComponentFactory<JJUploadArea> UploadArea { get; }
     ControlFactory Controls { get; }
     HtmlComponentFactory Html { get; }
     ActionButtonFactory ActionButton { get; }
+    TextGroupFactory TextGroup { get; }
     RouteContext RouteContext { get; }
 }

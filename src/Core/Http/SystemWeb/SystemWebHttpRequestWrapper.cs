@@ -5,30 +5,17 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Http.SystemWeb;
 
-internal class SystemWebHttpRequestWrapper : IHttpRequest
+internal class SystemWebHttpRequestWrapper(IQueryString queryString, IFormValues form) : IHttpRequest
 {
-    private HttpRequest Request { get; }
-    public string UserHostAddress { get; }
-    public string HttpMethod { get; }
-    public string UserAgent { get; }
-    public string AbsoluteUri { get; }
-    public string ApplicationPath { get; }
-    public IFormValues Form { get; }
-    public bool IsPost { get; }
-    public IQueryString QueryString { get; }
-
-    public SystemWebHttpRequestWrapper(HttpRequest request, IQueryString queryString, IFormValues form)
-    {
-        Request = request;
-        QueryString = queryString;
-        Form = form;
-        UserHostAddress = Request.UserHostAddress;
-        HttpMethod = Request.HttpMethod;
-        UserAgent = Request.UserAgent;
-        AbsoluteUri = Request.Url.AbsoluteUri;
-        ApplicationPath = Request.ApplicationPath;
-        IsPost = Request.HttpMethod.Equals("POST");
-    }
+    private static HttpRequest Request => HttpContext.Current.Request;
+    public string UserHostAddress => Request.UserHostAddress;
+    public string HttpMethod=>  Request.HttpMethod;
+    public string UserAgent =>  Request.UserAgent;
+    public string AbsoluteUri => Request.Url.AbsoluteUri;
+    public string ApplicationPath=>  Request.ApplicationPath;
+    public IFormValues Form  => form;
+    public bool IsPost => Request.HttpMethod.Equals("POST");
+    public IQueryString QueryString { get; } = queryString;
 
     public HttpPostedFile GetFile(string file) => Request.Files[file];
     public object GetUnvalidated(string key) => Request.Unvalidated[key];

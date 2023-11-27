@@ -7,7 +7,7 @@ namespace JJMasterData.Core.Http.SystemWeb;
 
 internal class SystemWebQueryStringWrapper : IQueryString
 {
-    private NameValueCollection QueryString { get; } = HttpContext.Current.Request.QueryString;
+    private static NameValueCollection QueryString  => HttpContext.Current.Request.QueryString;
     public string this[string key] => QueryString[key];
     public string Value => QueryString.ToString();
 }

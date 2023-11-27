@@ -823,8 +823,10 @@ public class OracleProvider : EntityProviderBase
 
     private DataAccessCommand GetCommandWrite(string action, Element element, IDictionary<string,object?> values)
     {
-        var cmd = new DataAccessCommand();
-        cmd.Type = CommandType.StoredProcedure;
+        var cmd = new DataAccessCommand()
+        {
+            Type = CommandType.StoredProcedure
+        };
         cmd.Sql = Options.GetWriteProcedureName(element);
         cmd.Parameters.Add(new DataAccessParameter($"{VariablePrefix}action", action, DbType.String, 1));
 

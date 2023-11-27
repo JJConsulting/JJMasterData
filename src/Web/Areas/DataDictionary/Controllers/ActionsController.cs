@@ -7,7 +7,6 @@ using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
-using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 

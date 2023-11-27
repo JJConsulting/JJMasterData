@@ -15,7 +15,7 @@ public class DataAccessCommand
     public CommandType CmdType
     {
         get => Type;
-        init => Type = value;
+        set => Type = value;
     }
     
     [JsonProperty("cmdType")]

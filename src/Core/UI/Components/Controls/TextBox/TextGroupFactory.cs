@@ -10,7 +10,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class TextGroupFactory(IFormValues formValues,
+public class TextGroupFactory(IFormValues formValues,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ActionButtonFactory actionButtonFactory)

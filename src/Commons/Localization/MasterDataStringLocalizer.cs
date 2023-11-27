@@ -8,6 +8,7 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -66,7 +67,7 @@ public class MasterDataStringLocalizer : IStringLocalizer
 
     public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
-        return GetAllStringsAsDictionary().GetAwaiter().GetResult().Select(e=>new LocalizedString(e.Key, e.Value));
+        return AsyncHelper.RunSync( GetAllStringsAsDictionary()).Select(e=>new LocalizedString(e.Key, e.Value));
     }
 
     public LocalizedString this[string? name]
@@ -108,7 +109,7 @@ public class MasterDataStringLocalizer : IStringLocalizer
             return key;
         }
 
-        var localizedStrings = GetAllStringsAsDictionary().GetAwaiter().GetResult();
+        var localizedStrings = Task.Run(GetAllStringsAsDictionary).GetAwaiter().GetResult();
         
         Cache.Set(cacheKey, localizedStrings);
 
@@ -189,7 +190,7 @@ public class MasterDataStringLocalizer : IStringLocalizer
     {
         var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         var filter = new Dictionary<string,object?> { { "cultureCode", culture} };
-        var result = EntityRepository.GetDictionaryListResultAsync(element, new EntityParameters(){Filters = filter},false).GetAwaiter().GetResult();
+        var result = Task.Run(()=> EntityRepository.GetDictionaryListResultAsync(element, new EntityParameters(){Filters = filter},false)).GetAwaiter().GetResult();
         foreach (var row in result.Data)
         {
             values.Add(row["resourceKey"]!.ToString()!, row["resourceValue"]?.ToString());

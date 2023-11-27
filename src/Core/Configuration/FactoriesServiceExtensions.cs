@@ -48,6 +48,7 @@ public static class FactoriesServiceExtensions
         services.AddScoped<RouteContextFactory>();
         services.AddScoped<ValidationSummaryFactory>();
         services.AddScoped<HtmlComponentFactory>();
+        services.AddScoped<TextGroupFactory>();
         services.AddScoped<IComponentFactory, ComponentFactory>();
         services.AddScoped<LinkButtonFactory>();
         services.AddScoped<ActionButtonFactory>();

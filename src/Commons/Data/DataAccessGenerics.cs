@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.Collections;
 using JJMasterData.Commons.Data.Extensions;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -16,7 +17,7 @@ public partial class DataAccess
         CancellationToken cancellationToken = default)
     {
         var fields = await GetDictionaryAsync(cmd, cancellationToken);
-        return fields == null ? default : fields.ToModel<T>(serializerSettings);
+        return (fields as IDictionary<string,object?>).ToModel<T>(serializerSettings);
     }
 
     public IList<T>? GetModelList<T>(DataAccessCommand cmd, JsonSerializerSettings? serializerSettings = null)

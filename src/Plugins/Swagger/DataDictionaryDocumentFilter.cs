@@ -16,7 +16,7 @@ namespace JJMasterData.Swagger
     {
         public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
         {
-            var dictionaryRepository  = StaticServiceLocator.Provider.GetRequiredService<IDataDictionaryRepository>();
+            IDataDictionaryRepository dictionaryRepository = null; //Will be discountinued.
             var dictionaries = dictionaryRepository.GetFormElementListAsync().GetAwaiter().GetResult();
 
             foreach (var formElement in dictionaries)

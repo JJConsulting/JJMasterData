@@ -54,10 +54,12 @@ public class JJFileDownloader(IHttpContext currentContext,
         string lastWriteTime = file.LastWriteTime.ToDateTimeString();
         string url = CurrentContext.Request.AbsoluteUri.Replace(DirectDownloadParameter, DownloadParameter);
 
-        var htmlTitle = new JJTitle();
-        htmlTitle.Title = StringLocalizer["Downloading"];
-        htmlTitle.SubTitle = fileName.ToLower();
-        
+        var htmlTitle = new JJTitle
+        {
+            Title = StringLocalizer["Downloading"],
+            SubTitle = fileName.ToLower()
+        };
+
         var html = new HtmlBuilder(HtmlTag.Div)
             .AppendComponent(htmlTitle)
             .Append(HtmlTag.Section, section =>

@@ -5,7 +5,6 @@ using System.Text;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 

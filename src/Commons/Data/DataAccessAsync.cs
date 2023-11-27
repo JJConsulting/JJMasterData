@@ -21,7 +21,7 @@ public partial class DataAccess
         try
         {
             connection!.ConnectionString = ConnectionString;
-            await connection.OpenAsync(cancellationToken);
+            await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -56,7 +56,7 @@ public partial class DataAccess
 #if NET
                 await
 #endif
-                using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
+                using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
                 {
                     var dataTable = new DataTable();
                     dataTable.Load(reader);
@@ -93,14 +93,14 @@ public partial class DataAccess
             await
 #endif
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
+            dbCommand.Connection = await GetConnectionAsync(cancellationToken).ConfigureAwait(false);
 
 #if NET
             await
 #endif
             using (dbCommand.Connection)
             {
-                scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken);
+                scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
 
                 foreach (var parameter in cmd.Parameters)
                 {
@@ -133,7 +133,7 @@ public partial class DataAccess
 #endif
             using (dbCommand.Connection)
             {
-                rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken);
+                rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
 
                 foreach (var parameter in cmd.Parameters)
                 {
@@ -218,12 +218,12 @@ public partial class DataAccess
         return numberOfRowsAffected;
     }
     
-    /// <inheritdoc cref="GetFields(string)"/>
+    /// <inheritdoc cref="GetHashtable(string)"/>
     public Task<Dictionary<string,object?>> GetDictionaryAsync(string sql, CancellationToken cancellationToken = default) =>
         GetDictionaryAsync(new DataAccessCommand(sql), cancellationToken);
     
     
-    /// <inheritdoc cref="GetFields(DataAccessCommand)"/>
+    /// <inheritdoc cref="GetHashtable"/>
     public async Task<Dictionary<string,object?>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
         var result = new Dictionary<string, object?>();
@@ -243,9 +243,9 @@ public partial class DataAccess
                 await
 #endif
                 using (var dataReader =
-                       await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
+                       await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken).ConfigureAwait(false))
                 {
-                    while (await dataReader.ReadAsync(cancellationToken))
+                    while (await dataReader.ReadAsync(cancellationToken).ConfigureAwait(false))
                     {
                         int count = 0;
 

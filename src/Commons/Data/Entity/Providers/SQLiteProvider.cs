@@ -391,10 +391,12 @@ public class SQLiteProvider : EntityProviderBase
         foreach (var f in fields)
         {
             object value = GetElementValue(f, values);
-            var param = new DataAccessParameter();
-            param.Direction = ParameterDirection.Input;
-            param.Value = value;
-            param.Type = GetDbType(f.DataType);
+            var param = new DataAccessParameter
+            {
+                Direction = ParameterDirection.Input,
+                Value = value,
+                Type = GetDbType(f.DataType)
+            };
             cmd.Parameters.Add(param);
         }
 
@@ -461,12 +463,14 @@ public class SQLiteProvider : EntityProviderBase
         foreach (var f in fields)
         {
             object value = GetElementValue(f, values);
-            var param = new DataAccessParameter();
-            param.Name = string.Format(VariablePrefix + f.Name);
-            //param.Size = f.Size;
-            param.Direction = ParameterDirection.Input;
-            param.Value = value;
-            param.Type = GetDbType(f.DataType);
+            var param = new DataAccessParameter
+            {
+                Name = string.Format(VariablePrefix + f.Name),
+                //param.Size = f.Size;
+                Direction = ParameterDirection.Input,
+                Value = value,
+                Type = GetDbType(f.DataType)
+            };
             cmd.Parameters.Add(param);
         }
 
@@ -608,19 +612,20 @@ public class SQLiteProvider : EntityProviderBase
             }
         }
 
-        DataAccessCommand cmd = new DataAccessCommand();
-        cmd.Type = CommandType.Text;
+        var cmd = new DataAccessCommand();
         cmd.Sql = sqlScript.ToString();
 
         foreach (var f in fields)
         {
             object value = GetElementValue(f, filters);
-            var param = new DataAccessParameter();
-            //param.Name = string.Format(f.Name);
-            //param.Size = f.Size;
-            param.Direction = ParameterDirection.Input;
-            param.Value = value;
-            param.Type = GetDbType(f.DataType);
+            var param = new DataAccessParameter
+            {
+                //param.Name = string.Format(f.Name);
+                //param.Size = f.Size;
+                Direction = ParameterDirection.Input,
+                Value = value,
+                Type = GetDbType(f.DataType)
+            };
             cmd.Parameters.Add(param);
         }
 

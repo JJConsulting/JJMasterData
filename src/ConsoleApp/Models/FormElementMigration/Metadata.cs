@@ -3,6 +3,7 @@
 using System.Collections;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using Newtonsoft.Json;
 
 namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
@@ -69,6 +70,20 @@ public class Metadata
             Grid = Options.Grid
         };
 
+        formElement.Options.GridTableActions.Clear();
+
+        foreach (var a in Options.GridActions.GetAll())
+        {
+            formElement.Options.GridTableActions.Add(a);
+        }
+        
+        formElement.Options.GridToolbarActions.Clear();
+        
+        foreach (var a in Options.ToolbarActions.GetAll())
+        {
+            formElement.Options.GridToolbarActions.Add(a);
+        }
+        
         formElement.ApiOptions = new FormElementApiOptions
         {
             JsonFormatting = ApiOptions.FormatType,

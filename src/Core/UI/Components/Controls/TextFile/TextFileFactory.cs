@@ -39,7 +39,7 @@ internal class TextFileFactory(IHttpRequest request,
         textFile.FormElementField = field;
         textFile.PageState = formStateData.PageState;
         textFile.Text = value != null ? value.ToString() : "";
-        textFile.FortStateValues = formStateData.Values;
+        textFile.FormStateValues = formStateData.Values;
         textFile.Name = field.Name;
         textFile.FieldName = field.Name;
         textFile.Enabled = true;

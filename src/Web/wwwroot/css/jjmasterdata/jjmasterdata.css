@@ -734,10 +734,6 @@ input.form-control:read-only {
     margin-bottom: 0;
 }
 
-.pagination{
-    overflow-x: scroll;
-}
-
 .pagination-jump-to-page-input{
     border-radius: 0;
 }

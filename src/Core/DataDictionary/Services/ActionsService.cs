@@ -166,8 +166,8 @@ public class ActionsService(IValidationDictionary validationDictionary,
         {
             case SqlCommandAction sqlAction:
             {
-                if (string.IsNullOrEmpty(sqlAction.CommandSql))
-                    AddError(nameof(sqlAction.CommandSql), StringLocalizer["Required [Sql Command] field"]);
+                if (string.IsNullOrEmpty(sqlAction.SqlCommand))
+                    AddError(nameof(sqlAction.SqlCommand), StringLocalizer["Required [Sql Command] field"]);
 
                 if (!formElement.Options.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
                     AddError(nameof(sqlAction.ApplyOnSelected), StringLocalizer["[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"]);

@@ -78,7 +78,18 @@ public class ExpressionTagHelper : TagHelper
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var name = For?.Name ?? Name ?? throw new ArgumentException("For or Name properties are required.");
-        var modelValue = For?.Model?.ToString() ?? Value;
+        string? modelValue = null;
+
+        if (For is { Model: not null } && !string.IsNullOrWhiteSpace(For.Model.ToString()))
+        {
+            modelValue = For.Model.ToString();
+        }
+        else if (!string.IsNullOrWhiteSpace(Value))
+        {
+            modelValue = Value;
+        }
+
+        
         var selectedExpressionType = modelValue?.Split(':')[0];
         var selectedExpressionValue = modelValue?.Split(':')[1]  ?? string.Empty;
         string codeMirrorHintList = ViewContext.ViewBag.CodeMirrorHintList;

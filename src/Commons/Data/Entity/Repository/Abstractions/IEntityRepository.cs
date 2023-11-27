@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 
@@ -150,4 +151,6 @@ public interface IEntityRepository
         Element element,
         EntityParameters? parameters = null
     );
+
+    Task<DataTable> GetDataTableAsync(Element element, EntityParameters? entityParameters = null);
 }

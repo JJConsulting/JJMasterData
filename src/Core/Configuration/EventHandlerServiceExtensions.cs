@@ -27,7 +27,6 @@ public static class EventHandlerServiceExtensions
     {
         var assemblies = new List<Assembly>
         {
-            Assembly.GetEntryAssembly(),
             typeof(EventHandlerServiceExtensions).Assembly
         };
 
