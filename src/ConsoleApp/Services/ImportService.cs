@@ -3,14 +3,13 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using ConfigurationExtensions = JJMasterData.Commons.Configuration.ConfigurationExtensions;
 
 namespace JJMasterData.ConsoleApp.Services;
 
 public class ImportService(IDataDictionaryRepository dataDictionaryRepository, IConfiguration configuration)
 {
     private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-    private string? DictionariesPath { get; } = ConfigurationExtensions.GetJJMasterData(configuration).GetValue<string?>("DataDictionaryPath");
+    private string? DictionariesPath { get; } = configuration.GetJJMasterData().GetValue<string?>("DataDictionaryPath");
 
     public void Import()
     {

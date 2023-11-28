@@ -2849,7 +2849,7 @@
     <value>总分页按钮</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="TotalPerPage" xml:space="preserve">
+  <data name="RecordsPerPage" xml:space="preserve">
     <value>总页数</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -3193,8 +3193,8 @@
     <value>压缩文件:</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled" xml:space="preserve">
-    <value>[Apply On Selected] 字段只能在启用网格的 EnableMultSelect 选项时启用</value>
+  <data name="[Apply On Selected] field can only be enabled if the EnableMultiSelect option of the grid is enabled" xml:space="preserve">
+    <value>[Apply On Selected] 字段只能在启用网格的 EnableMultiSelect 选项时启用</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="[Command.Sql field] required" xml:space="preserve">

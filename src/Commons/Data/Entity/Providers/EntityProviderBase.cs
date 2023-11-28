@@ -51,6 +51,24 @@ public abstract class EntityProviderBase
         }
     }
     
+    public  void Insert(Element element, IDictionary<string,object?> values)
+    {
+        var command = GetInsertCommand(element, values);
+        var newFields =  DataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
+
+        foreach (var entry in newFields.Where(entry => element.Fields.ContainsKey(entry.Key)))
+        {
+            values[entry.Key] = entry.Value;
+        }
+    }
+    
+    public int Update(Element element, IDictionary<string, object?> values)
+    {
+        var cmd = GetUpdateCommand(element, values);
+        int numberRowsAffected = DataAccess.SetCommand(cmd);
+        return numberRowsAffected;
+    }
+    
     public async Task<int> UpdateAsync(Element element, IDictionary<string,object?> values)
     {
         var cmd = GetUpdateCommand(element, values);
@@ -63,6 +81,15 @@ public abstract class EntityProviderBase
         const CommandOperation commandType = CommandOperation.None;
         var command = GetInsertOrReplaceCommand(element, values);
         var newFields = await DataAccess.GetDictionaryAsync(command);
+
+        return GetCommandOperation(element, values, command, commandType, newFields);
+    }
+    
+    public CommandOperation SetValues(Element element, IDictionary<string, object?> values, bool ignoreResults)
+    {
+        const CommandOperation commandType = CommandOperation.None;
+        var command = GetInsertOrReplaceCommand(element, values);
+        var newFields =  DataAccess.GetDictionary(command);
 
         return GetCommandOperation(element, values, command, commandType, newFields);
     }
@@ -102,6 +129,14 @@ public abstract class EntityProviderBase
             return await SetValuesNoResultAsync(element, values);
 
         return await SetValuesAsync(element, values);
+    }
+    
+    
+    public int Delete(Element element, IDictionary<string, object> primaryKeys)
+    {
+        var cmd = GetDeleteCommand(element, primaryKeys);
+        int numberRowsAffected = DataAccess.SetCommand(cmd);
+        return numberRowsAffected;
     }
     
     public async Task<int> DeleteAsync(Element element, IDictionary<string,object> primaryKeys)
@@ -228,5 +263,30 @@ public abstract class EntityProviderBase
         }
 
         return ret;
+    }
+
+    public DictionaryListResult GetDictionaryList(
+        Element element,
+        EntityParameters entityParameters,
+        bool recoverTotalOfRecords = true)
+    {
+        if (element == null)
+            throw new ArgumentNullException(nameof(element));
+
+        if (!ValidateOrderByClause(element, entityParameters.OrderBy.ToQueryParameter()))
+            throw new ArgumentException("[order by] clause is not valid");
+
+        var totalParameter = new DataAccessParameter($"{VariablePrefix}qtdtotal", recoverTotalOfRecords ? 0 : -1, DbType.Int32, 0, ParameterDirection.InputOutput);
+        
+        var command = GetReadCommand(element, entityParameters, totalParameter);
+        
+        var list =  DataAccess.GetDictionaryList(command);
+
+        int totalRecords = 0;
+        
+        if (totalParameter is { Value: not null } && totalParameter.Value != DBNull.Value)
+            totalRecords = (int)totalParameter.Value;
+
+        return new DictionaryListResult(list, totalRecords);
     }
 }

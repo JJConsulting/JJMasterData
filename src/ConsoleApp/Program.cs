@@ -1,12 +1,8 @@
 ﻿using System.CommandLine;
-using System.CommandLine.Builder;
-using System.CommandLine.Help;
-using System.CommandLine.Parsing;
 using JJMasterData.Commons.Logging;
 using JJMasterData.ConsoleApp.CommandLine;
 using JJMasterData.ConsoleApp.Extensions;
 using JJMasterData.ConsoleApp.Services;
-using JJMasterData.ConsoleApp.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

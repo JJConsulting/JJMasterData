@@ -25,7 +25,7 @@ public class DataAccessCommand
     public string Sql { get; set; }
 
     [JsonProperty("parameters")]
-    public List<DataAccessParameter> Parameters { get; }
+    public List<DataAccessParameter> Parameters { get;  }
 
     [SetsRequiredMembers]
     public DataAccessCommand()

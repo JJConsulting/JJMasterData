@@ -12,6 +12,7 @@ namespace JJMasterData.Core.DataDictionary.Repository.Abstractions;
 public interface IDataDictionaryRepository
 {
     Task CreateStructureIfNotExistsAsync();
+    FormElement GetFormElement(string elementName);
     Task<FormElement> GetFormElementAsync(string elementName);
     Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiSync = null);
     IAsyncEnumerable<string> GetNameListAsync();

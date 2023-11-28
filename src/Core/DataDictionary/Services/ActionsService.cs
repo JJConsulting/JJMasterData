@@ -169,8 +169,8 @@ public class ActionsService(IValidationDictionary validationDictionary,
                 if (string.IsNullOrEmpty(sqlAction.SqlCommand))
                     AddError(nameof(sqlAction.SqlCommand), StringLocalizer["Required [Sql Command] field"]);
 
-                if (!formElement.Options.Grid.EnableMultSelect && sqlAction.ApplyOnSelected)
-                    AddError(nameof(sqlAction.ApplyOnSelected), StringLocalizer["[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled"]);
+                if (!formElement.Options.Grid.EnableMultiSelect && sqlAction.ApplyOnSelected)
+                    AddError(nameof(sqlAction.ApplyOnSelected), StringLocalizer["[Apply On Selected] field can only be enabled if the EnableMultiSelect option of the grid is enabled"]);
                 break;
             }
             case UrlRedirectAction urlAction:

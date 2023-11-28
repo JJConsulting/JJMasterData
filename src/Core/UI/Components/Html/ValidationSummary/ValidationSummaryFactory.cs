@@ -8,7 +8,7 @@ public class ValidationSummaryFactory(IStringLocalizer<MasterDataResources> stri
 {
     public JJValidationSummary Create()
     {
-        return new JJValidationSummary
+        return new JJValidationSummary()
         {
             MessageTitle = stringLocalizer["Invalid data"]
         };

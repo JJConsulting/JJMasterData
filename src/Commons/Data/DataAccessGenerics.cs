@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using System.Collections;
 using JJMasterData.Commons.Data.Extensions;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;

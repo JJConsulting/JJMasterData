@@ -59,6 +59,17 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
     }
 
 
+    public FormElement? GetFormElement(string elementName)
+    {
+        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
+
+        var values =  entityRepository.GetFields(MasterDataElement, filter);
+
+        var model = values.ToModel<DataDictionaryModel>();
+
+        return model != null ? FormElementSerializer.Deserialize(model.Json) : null;
+    }
+
     public async Task<FormElement?> GetFormElementAsync(string elementName)
     {
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };

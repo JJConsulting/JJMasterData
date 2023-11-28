@@ -20,7 +20,7 @@ public class UrlRedirectAction : UserCreatedAction
     [JsonProperty("popupSize")]
     public ModalSize ModalSize { get; set; } = ModalSize.Default;
 
-    [JsonProperty("titlePopUp")]
+    [JsonProperty("ModalTitle")]
     public string ModalTitle { get; set; } = "Title";
 
     public UrlRedirectAction()

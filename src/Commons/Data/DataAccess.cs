@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Security.Policy;
 using System.Text;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Exceptions;
@@ -106,10 +105,7 @@ public partial class DataAccess
         ConnectionString = connectionString;
         ConnectionProvider = dataAccessProvider;
     }
-
-    /// <summary>
-    /// Initialize with a IConfiguration instance.
-    /// </summary>
+    
     [ActivatorUtilitiesConstructor]
     public DataAccess(IOptions<MasterDataCommonsOptions> options)
     {
@@ -417,6 +413,9 @@ public partial class DataAccess
     /// </returns>
     public Hashtable? GetHashtable(string sql) => GetHashtable(new DataAccessCommand(sql));
     
+    public Dictionary<string,object?>? GetDictionary(string sql) => GetDictionary(new DataAccessCommand(sql));
+
+    
     /// <summary>
     /// Retrieves the first record of the sql statement in a Hashtable object.
     /// [key(database field), value(value stored in database)]
@@ -441,6 +440,59 @@ public partial class DataAccess
                     while (dr.Read())
                     {
                         retCollection = new Hashtable();
+                        int nQtd = 0;
+
+                        while (nQtd < dr.FieldCount)
+                        {
+                            string fieldName = dr.GetName(nQtd);
+                            if (retCollection.ContainsKey(fieldName))
+                                throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
+
+                            retCollection.Add(fieldName, dr.GetValue(nQtd));
+                            nQtd += 1;
+                        }
+                    }
+                }
+
+                foreach (var parameter in cmd.Parameters)
+                {
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw GetDataAccessException(ex, cmd);
+        }
+
+        return retCollection;
+    }
+    
+    /// <summary>
+    /// Retrieves the records of the sql statement in a Dictionary object.
+    /// [key(database field), value(value stored in database)]
+    /// </summary>
+    /// <param name="cmd">Command</param>
+    /// <returns>
+    /// Return a Dictionary Object. 
+    /// If no record is found it returns null.
+    /// </returns>
+    public Dictionary<string, object?>? GetDictionary(DataAccessCommand cmd)
+    {
+        Dictionary<string, object?>? retCollection = null;
+        try
+        {
+            using var dbCommand = CreateDbCommand(cmd);
+            dbCommand.Connection = GetConnection();
+
+            using (dbCommand.Connection)
+            {
+                using (var dr = dbCommand.ExecuteReader(CommandBehavior.SingleRow))
+                {
+                    if (dr.Read())
+                    {
+                        retCollection = new Dictionary<string, object?>();
                         int nQtd = 0;
 
                         while (nQtd < dr.FieldCount)
@@ -664,5 +716,56 @@ public partial class DataAccess
         command.AddParameter("@ColumnName", columnName, DbType.String);
 
         return command;
+    }
+
+  public List<Dictionary<string, object?>> GetDictionaryList(DataAccessCommand cmd)
+    {
+        var dictionaryList = new List<Dictionary<string, object?>>();
+
+        try
+        {
+
+            using var dbCommand = CreateDbCommand(cmd);
+            dbCommand.Connection =  GetConnection();
+
+
+            using (dbCommand.Connection)
+            {
+
+                using (var dataReader =  dbCommand.ExecuteReader())
+                {
+                    var columnNames = Enumerable.Range(0, dataReader.FieldCount)
+                        .Select(i => dataReader.GetName(i))
+                        .ToList();
+
+                    while ( dataReader.Read())
+                    {
+                        var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+                        foreach (var columnName in columnNames)
+                        {
+                            var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
+                                ? null
+                                : dataReader.GetValue(dataReader.GetOrdinal(columnName));
+                            dictionary[columnName] = value;
+                        }
+
+                        dictionaryList.Add(dictionary);
+                    }
+                }
+
+                foreach (var param in cmd.Parameters.Where(param =>
+                             param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
+                {
+                    param.Value = dbCommand.Parameters[param.Name].Value;
+                }
+                
+            }
+        }
+        catch (Exception ex)
+        {
+            throw GetDataAccessException(ex, cmd);
+        }
+
+        return dictionaryList;
     }
 }

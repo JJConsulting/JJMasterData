@@ -2825,7 +2825,7 @@
     <value>Botão de paginação total</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="TotalPerPage" xml:space="preserve">
+  <data name="RecordsPerPage" xml:space="preserve">
     <value>Total por página</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -3165,8 +3165,8 @@
     <value>Compactando arquivo:</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="[Apply On Selected] field can only be enabled if the EnableMultSelect option of the grid is enabled" xml:space="preserve">
-    <value>O campo [Apply On Selected] só pode ser habilitado se a opção EnableMultSelect da grade estiver habilitada</value>
+  <data name="[Apply On Selected] field can only be enabled if the EnableMultiSelect option of the grid is enabled" xml:space="preserve">
+    <value>O campo [Apply On Selected] só pode ser habilitado se a opção EnableMultiSelect da grade estiver habilitada</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="[Command.Sql field] required" xml:space="preserve">

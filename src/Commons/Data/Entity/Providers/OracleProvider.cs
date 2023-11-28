@@ -15,9 +15,9 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class OracleProvider : EntityProviderBase
 {
-    private const string Insert = "I";
-    private const string Update = "A";
-    private const string Delete = "E";
+    private const string InsertKeyword = "I";
+    private const string UpdateKeyword = "A";
+    private const string DeleteKeyword = "E";
     private const string Tab = "\t";
     public override string VariablePrefix => "p_";
 
@@ -285,7 +285,7 @@ public class OracleProvider : EntityProviderBase
         sql.Append(Tab);
         sql.AppendLine("IF v_TYPEACTION = ' ' THEN");
         sql.Append(Tab).Append(Tab);
-        sql.AppendLine($"v_TYPEACTION := '{Insert}'; ");
+        sql.AppendLine($"v_TYPEACTION := '{InsertKeyword}'; ");
 
         if (hasPk)
         {
@@ -322,7 +322,7 @@ public class OracleProvider : EntityProviderBase
             sql.Append(Tab).Append(Tab);
             sql.AppendLine("IF v_NCOUNT > 0 THEN ");
             sql.Append(Tab).Append(Tab).Append(Tab);
-            sql.AppendLine($"v_TYPEACTION := '{Update}';");
+            sql.AppendLine($"v_TYPEACTION := '{UpdateKeyword}';");
             sql.Append(Tab).Append(Tab);
             sql.AppendLine("END IF;");
         }
@@ -333,7 +333,7 @@ public class OracleProvider : EntityProviderBase
 
         //SCRIPT INSERT
         sql.Append(Tab);
-        sql.AppendLine($"IF v_TYPEACTION = '{Insert}' THEN");
+        sql.AppendLine($"IF v_TYPEACTION = '{InsertKeyword}' THEN");
         sql.Append(Tab).Append(Tab);
         sql.Append("INSERT INTO ");
         sql.Append(element.TableName);
@@ -380,7 +380,7 @@ public class OracleProvider : EntityProviderBase
         if (hasUpd)
         {
             sql.Append(Tab);
-            sql.AppendLine($"ELSIF v_TYPEACTION = '{Update}' THEN ");
+            sql.AppendLine($"ELSIF v_TYPEACTION = '{UpdateKeyword}' THEN ");
             sql.Append(Tab).Append(Tab);
             sql.Append("UPDATE ");
             sql.Append(element.TableName);
@@ -434,7 +434,7 @@ public class OracleProvider : EntityProviderBase
         else
         {
             sql.Append(Tab);
-            sql.AppendLine($"ELSIF v_TYPEACTION = '{Update}' THEN ");
+            sql.AppendLine($"ELSIF v_TYPEACTION = '{UpdateKeyword}' THEN ");
             sql.Append(Tab).Append(Tab);
             sql.AppendLine("--NO UPDATABLED");
             sql.Append(Tab).Append(Tab);
@@ -444,7 +444,7 @@ public class OracleProvider : EntityProviderBase
 
         //SCRIPT DELETE
         sql.Append(Tab);
-        sql.AppendLine($"ELSIF v_TYPEACTION = '{Delete}' THEN ");
+        sql.AppendLine($"ELSIF v_TYPEACTION = '{DeleteKeyword}' THEN ");
         sql.Append(Tab).Append(Tab);
         sql.Append("DELETE FROM ");
         sql.Append(element.TableName);
@@ -798,17 +798,17 @@ public class OracleProvider : EntityProviderBase
 
     public override DataAccessCommand GetInsertCommand(Element element, IDictionary<string,object?> values)
     {
-        return GetCommandWrite(Insert, element, values);
+        return GetCommandWrite(InsertKeyword, element, values);
     }
 
     public override DataAccessCommand GetUpdateCommand(Element element, IDictionary<string,object?> values)
     {
-        return GetCommandWrite(Update, element, values);
+        return GetCommandWrite(UpdateKeyword, element, values);
     }
 
     public override DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> filters)
     {
-        return GetCommandWrite(Delete, element, filters!);
+        return GetCommandWrite(DeleteKeyword, element, filters!);
     }
 
     protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values)

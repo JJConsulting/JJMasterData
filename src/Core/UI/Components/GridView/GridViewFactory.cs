@@ -113,7 +113,7 @@ internal class GridViewFactory(IHttpContext currentContext,
     internal void SetGridUiOptions(JJGridView grid, GridUI gridOptions)
     {
         grid.EnableSorting = gridOptions.EnableSorting;
-        grid.EnableMultiSelect = gridOptions.EnableMultSelect;
+        grid.EnableMultiSelect = gridOptions.EnableMultiSelect;
         grid.MaintainValuesOnLoad = gridOptions.MaintainValuesOnLoad;
         grid.ShowPagging = gridOptions.ShowPagging;
         grid.ShowToolbar = gridOptions.ShowToolBar;
@@ -130,7 +130,7 @@ internal class GridViewFactory(IHttpContext currentContext,
                 settings.ShowRowHover = gridOptions.ShowRowHover;
                 settings.ShowRowStriped = gridOptions.ShowRowStriped;
                 settings.ShowBorder = gridOptions.ShowBorder;
-                settings.RecordsPerPage = gridOptions.TotalPerPage;
+                settings.RecordsPerPage = gridOptions.RecordsPerPage;
                 settings.TotalPaginationButtons = gridOptions.TotalPaggingButton;
                 settings.IsHeaderFixed = gridOptions.HeaderFixed;
             }

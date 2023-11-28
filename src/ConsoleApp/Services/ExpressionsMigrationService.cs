@@ -19,7 +19,7 @@ public class ExpressionsMigrationService(IEntityRepository entityRepository,
     private ILogger<ExpressionsMigrationService> Logger { get; } = logger;
     private MasterDataCoreOptions Options { get; } = options.Value;
 
-    public void Migrate()
+    public async Task Migrate()
     {
         var start = DateTime.Now;
 
@@ -52,7 +52,7 @@ public class ExpressionsMigrationService(IEntityRepository entityRepository,
                 FixActionExpressions(action);
             }
             
-            DataDictionaryRepository.InsertOrReplaceAsync(formElement).GetAwaiter().GetResult();
+            await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
         }
         
         Logger.LogInformation("Process started: {Start}", start);

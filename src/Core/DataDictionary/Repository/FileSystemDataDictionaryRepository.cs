@@ -99,7 +99,12 @@ public class FileSystemDataDictionaryRepository
         string json = File.ReadAllText(fileFullName);
         return JsonConvert.DeserializeObject<FormElement>(json);
     }
-    
+
+    public FormElement GetFormElement(string elementName)
+    {
+        return GetMetadata(elementName);
+    }
+
     public Task<FormElement> GetFormElementAsync(string elementName)
     {
         var result = GetMetadata(elementName);

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,11 +6,9 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -19,6 +16,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
 #if NET48
@@ -242,23 +240,13 @@ public class JJDataPanel : AsyncComponent
         script.AppendLine("});");
         return script.ToString();
     }
-    
-    #if NETFRAMEWORK
-    
-    [Obsolete("Please use GetFormValuesAsync")]
-    public Hashtable GetFormValues()
-    {
-        var result = AsyncHelper.RunSync(FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix));
-        
-        var hashtable = new Hashtable();
-        foreach (var pair in result)
-        {
-            hashtable.Add(pair.Key, pair.Value);
-        }
 
-        return hashtable;
+    [Obsolete("Please use GetFormValuesAsync")]
+    public IDictionary<string,object> GetFormValues()
+    {
+        return AsyncHelper.RunSync(()=>FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix));
     }
-    #endif
+
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
@@ -266,13 +254,13 @@ public class JJDataPanel : AsyncComponent
     {
         return await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix);
     }
-
+#if NETFRAMEWORK
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]
     public void LoadValuesFromPK(IDictionary<string, object> pks)
     {
-        Values = EntityRepository.GetFieldsAsync(FormElement, pks).GetAwaiter().GetResult();
+        Values = AsyncHelper.RunSync(()=>EntityRepository.GetFieldsAsync(FormElement, pks));
     }
-
+#endif
     public async Task LoadValuesFromPkAsync(IDictionary<string, object> pks)
     {
         Values = await EntityRepository.GetFieldsAsync(FormElement, pks);

@@ -21,7 +21,7 @@ public partial class DataAccess
         try
         {
             connection!.ConnectionString = ConnectionString;
-            await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+            await connection.OpenAsync(cancellationToken);
         }
         catch (Exception ex)
         {
@@ -56,7 +56,7 @@ public partial class DataAccess
 #if NET
                 await
 #endif
-                using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken).ConfigureAwait(false))
+                using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
                 {
                     var dataTable = new DataTable();
                     dataTable.Load(reader);
@@ -93,14 +93,14 @@ public partial class DataAccess
             await
 #endif
             using var dbCommand = CreateDbCommand(cmd);
-            dbCommand.Connection = await GetConnectionAsync(cancellationToken).ConfigureAwait(false);
+            dbCommand.Connection = await GetConnectionAsync(cancellationToken);
 
 #if NET
             await
 #endif
             using (dbCommand.Connection)
             {
-                scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
+                scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken);
 
                 foreach (var parameter in cmd.Parameters)
                 {
@@ -133,7 +133,7 @@ public partial class DataAccess
 #endif
             using (dbCommand.Connection)
             {
-                rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+                rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken);
 
                 foreach (var parameter in cmd.Parameters)
                 {
@@ -243,9 +243,9 @@ public partial class DataAccess
                 await
 #endif
                 using (var dataReader =
-                       await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken).ConfigureAwait(false))
+                       await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
                 {
-                    while (await dataReader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                    while (await dataReader.ReadAsync(cancellationToken))
                     {
                         int count = 0;
 

@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
@@ -35,6 +36,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 #if NET48
 using JJMasterData.Commons.Configuration;
+using JJMasterData.Core.Tasks;
 #endif
 
 namespace JJMasterData.Core.UI.Components;
@@ -552,46 +554,30 @@ public class JJFormView : AsyncComponent
         SetFormServiceEvents();
 
         ComponentResult? result;
-        switch (CurrentAction)
-        {
-            case ViewAction:
-                result = await GetViewResult();
-                break;
-            case EditAction:
-                result = await GetUpdateResult();
-                break;
-            case InsertAction:
-                result = await GetInsertResult();
-                break;
-            case AuditLogFormToolbarAction:
-            case AuditLogGridToolbarAction:
-                result = await GetAuditLogResult();
-                break;
-            case DeleteAction:
-                result = await GetDeleteResult();
-                break;
-            case DeleteSelectedRowsAction:
-                result = await GetDeleteSelectedRowsResult();
-                break;
-            case SaveAction:
-                result = await GetSaveActionResult();
-                break;
-            case BackAction:
-                result = await GetBackActionResult();
-                break;
-            case CancelAction:
-                result = await GetCancelActionResult();
-                break;
-            case SqlCommandAction:
-                result = await GetSqlCommandActionResult();
-                break;
-            case PluginAction:
-                result = await GetPluginActionResult();
-                break;
-            default:
-                result = await GetDefaultResult();
-                break;
-        }
+        if (CurrentAction is ViewAction)
+            result = await GetViewResult();
+        else if (CurrentAction is EditAction)
+            result = await GetUpdateResult();
+        else if (CurrentAction is InsertAction)
+            result = await GetInsertResult();
+        else if (CurrentAction is AuditLogFormToolbarAction or AuditLogGridToolbarAction)
+            result = await GetAuditLogResult();
+        else if (CurrentAction is DeleteAction)
+            result = await GetDeleteResult();
+        else if (CurrentAction is DeleteSelectedRowsAction)
+            result = await GetDeleteSelectedRowsResult();
+        else if (CurrentAction is SaveAction)
+            result = await GetSaveActionResult();
+        else if (CurrentAction is BackAction)
+            result = await GetBackActionResult();
+        else if (CurrentAction is CancelAction)
+            result = await GetCancelActionResult();
+        else if (CurrentAction is SqlCommandAction)
+            result = await GetSqlCommandActionResult();
+        else if (CurrentAction is PluginAction)
+            result = await GetPluginActionResult();
+        else
+            result = await GetDefaultResult();
 
         if (result is HtmlComponentResult htmlComponent && ComponentContext is not ComponentContext.Modal)
         {
@@ -1454,7 +1440,7 @@ public class JJFormView : AsyncComponent
     {
         foreach (var action in FormElement.Options.GridTableActions)
         {
-            if (action is not ViewAction)
+            if (action.GetType() != typeof(ViewAction))
             {
                 action.SetVisible(false);
             }
@@ -1497,14 +1483,16 @@ public class JJFormView : AsyncComponent
         };
     }
     
+#if NETFRAMEWORK
     [Obsolete("Please use GetCurrentFilterAsync")]
     public IDictionary<string, object?> CurrentFilter
     {
         get
         {
-            return AsyncHelper.RunSync(GridView.GetCurrentFilterAsync());
+            return AsyncHelper.RunSync(()=>GridView.GetCurrentFilterAsync());
         }
     }
+#endif
     
     
     #region "Legacy inherited GridView compatibility"
@@ -1571,7 +1559,7 @@ public class JJFormView : AsyncComponent
     }
 
     [Obsolete("Please use GridView.EnableMultiSelect")]
-    public bool EnableMultSelect
+    public bool EnableMultiSelect
     {
         get => GridView.EnableMultiSelect;
         set => GridView.EnableMultiSelect = value;
@@ -1598,13 +1586,6 @@ public class JJFormView : AsyncComponent
         set => GridView.EnableFilter = value;
     }
 
-    [Obsolete("Please use GridView.EnableMultiSelect")]
-    public bool EnableMultiSelect
-    {
-        get => GridView.EnableMultiSelect;
-        set => GridView.EnableMultiSelect = value;
-    }
-
     [Obsolete("Please use GridView.ShowToolbar")]
     public bool ShowToolbar
     {
@@ -1619,11 +1600,13 @@ public class JJFormView : AsyncComponent
         set => GridView.ShowPagging = value;
     }
 
+    #if NETFRAMEWORK
     [Obsolete("Please use GridView.GetGridValuesAsync()")]
     public List<Dictionary<string,object?>> GetGridValues()
     {
-        return AsyncHelper.RunSync(GridView.GetGridValuesAsync()) ?? new List<Dictionary<string, object?>>();
+        return AsyncHelper.RunSync(()=>GridView.GetGridValuesAsync()) ?? new List<Dictionary<string, object?>>();
     }
+    #endif
     
     [Obsolete("Please use GridView.SetGridOptions()")]
     public void SetGridOptions(GridUI options)
@@ -1672,7 +1655,64 @@ public class JJFormView : AsyncComponent
                 break;
         }
     }
+
+
+    [Obsolete("Please use GridView.ExportAction")]
+    public ExportAction ExportAction
+    {
+        get
+        {
+            return GridView.ExportAction;
+        }
+    }
     
+    [Obsolete("Please use GridView.GridTableActions.EditAction")]
+    public EditAction EditAction
+    {
+        get
+        {
+            return FormElement.Options.GridTableActions.EditAction;
+        }
+    }
+    
+    [Obsolete("Please use GridView.GridTableActions.ViewAction")]
+    public ViewAction ViewAction
+    {
+        get
+        {
+            return FormElement.Options.GridTableActions.ViewAction;
+        }
+    }
+    
+    [Obsolete("Please use GridView.GridTableActions.DeleteAction")]
+    public DeleteAction DeleteAction
+    {
+        get
+        {
+            return FormElement.Options.GridTableActions.DeleteAction;
+        }
+    }
+    [Obsolete("Please use GridView.GridToolbarActions.InsertAction")]
+    public InsertAction InsertAction
+    {
+        get
+        {
+            return FormElement.Options.GridToolbarActions.InsertAction;
+        }
+    }
+    
+    [Obsolete("Please use GridView.IsExportPost")]
+    public bool IsExportPost()
+    {
+        return GridView.IsExportPost();
+    }
+
+    [Obsolete("Please use GridView.DataSource")]
+    public IList<Dictionary<string, object?>>? DataSource
+    {
+        get => GridView.DataSource;
+        set => GridView.DataSource = value;
+    }
     #endregion
 
     public static implicit operator JJGridView(JJFormView formView) => formView.GridView;

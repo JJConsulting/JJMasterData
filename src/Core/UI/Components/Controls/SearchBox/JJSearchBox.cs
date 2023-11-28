@@ -176,8 +176,11 @@ public class JJSearchBox : ControlBase
 
     public string SelectedValue
     {
+#if NETFRAMEWORK
         [Obsolete("Please use GetSelectedValueAsync()")]
-        get => AsyncHelper.RunSync(GetSelectedValueAsync()) ?? string.Empty;
+        get => JJMasterData.Core.Tasks.AsyncHelper.RunSync(GetSelectedValueAsync) ?? string.Empty;
+#endif
+
         set => _selectedValue = value;
     }
     

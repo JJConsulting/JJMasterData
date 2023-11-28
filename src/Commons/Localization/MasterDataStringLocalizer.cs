@@ -8,7 +8,6 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -67,7 +66,7 @@ public class MasterDataStringLocalizer : IStringLocalizer
 
     public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
-        return AsyncHelper.RunSync( GetAllStringsAsDictionary()).Select(e=>new LocalizedString(e.Key, e.Value));
+        return Task.Run(GetAllStringsAsDictionary).GetAwaiter().GetResult().Select(e=>new LocalizedString(e.Key, e.Value));
     }
 
     public LocalizedString this[string? name]

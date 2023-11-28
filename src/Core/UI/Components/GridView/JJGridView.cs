@@ -53,7 +53,7 @@ public class JJGridView : AsyncComponent
     
     /// <summary>
     /// Event fired when rendering the checkbox used to select the Grid row.
-    /// <para/>Fired only when EnableMultSelect property is enabled.
+    /// <para/>Fired only when EnableMultiSelect property is enabled.
     /// </summary>
     public event AsyncEventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCellAsync;
     /// <summary>
@@ -420,7 +420,7 @@ public class JJGridView : AsyncComponent
     /// <para/>
     /// If the CurrentPage property is equal to zero, pagination will not be displayed.
     /// <para/>
-    /// If the CurrentUI.TotalPerPage property is equal to zero, pagination will not be displayed.
+    /// If the CurrentUI.RecordsPerPage property is equal to zero, pagination will not be displayed.
     /// <para/>
     /// If the TotalRecords property is equal to zero, pagination will not be displayed.
     /// </remarks>
@@ -1239,7 +1239,7 @@ public class JJGridView : AsyncComponent
     }
 
     /// <remarks>
-    /// Used with the EnableMultSelect property
+    /// Used with the EnableMultiSelect property
     /// </remarks>
     public List<Dictionary<string, object>> GetSelectedGridValues()
     {

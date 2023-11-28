@@ -14,11 +14,11 @@ public class GridUI
     /// (Default = 5)
     /// </summary>
     /// <remarks>
-    /// Se o TotalPerPage for zero a paginação não será exibida
+    /// Se o RecordsPerPage for zero a paginação não será exibida
     /// </remarks>
     [JsonProperty("totalPerPage")]
     [Display(Name = "Total Records Per Page")]
-    public int TotalPerPage { get; set; } = 5;
+    public int RecordsPerPage { get; set; } = 5;
 
     /// <summary>
     /// Total de botões na paginação 
@@ -90,7 +90,7 @@ public class GridUI
     /// </summary>
     [JsonProperty("enableMultSelect")]
     [Display(Name = "Enable Multiselect")]
-    public bool EnableMultSelect { get; set; }
+    public bool EnableMultiSelect { get; set; }
 
     /// <summary>
     /// Mantem os filtros, ordem e paginação da grid na sessão, 
@@ -138,7 +138,7 @@ public class GridUI
     /// <para/>
     /// Se a propriedade CurrentPage for igual zero  a paginação não será exibida.
     /// <para/>
-    /// Se a propriedade CurrentUI.TotalPerPage for igual zero a paginação não será exibida.
+    /// Se a propriedade CurrentUI.RecordsPerPage for igual zero a paginação não será exibida.
     /// <para/>
     /// Se a propriedade TotalRecords for igual zero a paginação não será exibida.
     /// </remarks>

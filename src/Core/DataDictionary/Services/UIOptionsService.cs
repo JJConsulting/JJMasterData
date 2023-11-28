@@ -15,13 +15,13 @@ public class UIOptionsService(IValidationDictionary validationDictionary,
     private async Task<bool> ValidateOptions(FormElementOptions options, string elementName)
     {
 
-        if (options.Grid.EnableMultSelect)
+        if (options.Grid.EnableMultiSelect)
         {
             var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
             var pks = formElement.Fields.ToList().FindAll(x => x.IsPk);
             if (pks.Count == 0)
             {
-                AddError("EnableMultSelect", StringLocalizer["You cannot enable MultiSelect without setting a primary key"]);
+                AddError("EnableMultiSelect", StringLocalizer["You cannot enable MultiSelect without setting a primary key"]);
             }
         }
 
