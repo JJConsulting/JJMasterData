@@ -38,7 +38,7 @@ app.MapJJMasterData();
 ## 4. Navigate on Data Dictionary
 Next, run your website and open in your browser the route:
 ```
-/en-us/DataDictionary
+/en-us/DataDictionary/Element/Index
 ```
 you will be presented with the following screen:
 
