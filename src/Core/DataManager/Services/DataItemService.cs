@@ -161,11 +161,18 @@ public class DataItemService(IEntityRepository entityRepository,
 
         foreach (var row in result)
         {
-            var item = new DataItemValue
+            var item = new DataItemValue();
+            item.Id = row.ElementAt(0).Value?.ToString();
+
+            if (row.Count == 1)
             {
-                Id = row.ElementAt(0).Value?.ToString(),
-                Description = row.ElementAt(1).Value?.ToString()?.Trim()
-            };
+                item.Description = item.Id;
+            }
+            else
+            {
+                item.Description = row.ElementAt(1).Value?.ToString();
+            }
+            
             if (dataItem.ShowIcon)
             {
                 item.Icon = (IconType)int.Parse(row.ElementAt(2).Value?.ToString() ?? string.Empty);

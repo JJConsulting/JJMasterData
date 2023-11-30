@@ -42,7 +42,17 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
             }
             else if (values != null && values.TryGetValue(field, out var objVal) && !string.IsNullOrEmpty(objVal?.ToString()))
             {
-                parsedValue = $"{objVal}";
+                if(objVal is bool boolValue)
+                {
+                    if (boolValue is true)
+                        parsedValue = "1";
+                    else
+                        parsedValue = "0";
+                }
+                else
+                {
+                    parsedValue = $"{objVal}";
+                }
             }
             else if ("fieldName".Equals(field.ToLower()))
             {

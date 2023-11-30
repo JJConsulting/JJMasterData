@@ -75,7 +75,7 @@ internal class GridPagination(JJGridView gridView)
 
         var showJumpToPage = _endButtonIndex <= _totalPages || _startButtonIndex > _totalButtons;
         
-        if (showJumpToPage && BootstrapHelper.Version >= 5)
+        if (showJumpToPage)
         {
             ul.AppendRange(GetJumpToPageButtons());
         }

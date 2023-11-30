@@ -142,6 +142,9 @@ public class FormValuesService(IEntityRepository entityRepository,
             
         }
 
+        if (encryptedPkValues is null)
+            return new Dictionary<string, object?>();
+
         string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');
 
