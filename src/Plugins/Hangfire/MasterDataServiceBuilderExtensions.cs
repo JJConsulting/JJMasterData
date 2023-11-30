@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Hangfire;
 public static class MasterDataServiceBuilderExtensions

@@ -17,5 +17,6 @@ internal class HttpSessionWrapper(IHttpContextAccessor contextAccessor) : IHttpS
     public void SetSessionValue(string key, object value) => Session.SetObject(key, value);
 
     public T GetSessionValue<T>(string key) => Session.GetObject<T>(key);
+    public bool HasSession() => Session != null;
 }
 #endif  

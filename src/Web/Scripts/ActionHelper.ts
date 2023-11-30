@@ -177,4 +177,19 @@ class ActionHelper {
         modal.modalId = componentName + "-modal";
         modal.remove();
     }
+    
+    static launchUrl(url, isModal, title, confirmationMessage, modalSize = 1) {
+        if (confirmationMessage) {
+            const result = confirm(confirmationMessage);
+            if (!result) {
+                return false;
+            }
+        }
+
+        if (isModal) {
+            popup.show(title, url, modalSize);
+        } else {
+            window.location.href = url;
+        }
+    }
 }

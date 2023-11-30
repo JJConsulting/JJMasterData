@@ -1,60 +1,136 @@
-﻿
-using System;
-using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-#if NETFRAMEWORK
-using System.Web;
-#endif
+using JJMasterData.Commons.Extensions;
+
+// ReSharper disable AsyncVoidLambda
+
 namespace JJMasterData.Core.Tasks;
 
+/// <summary>
+/// Class to safely run async methods on sync environments like ASP.NET without deadlocks.
+/// </summary>
 public static class AsyncHelper
 {
-    private static readonly TaskFactory _taskFactory = new 
-        TaskFactory(CancellationToken.None, TaskCreationOptions.None, 
-            TaskContinuationOptions.None, TaskScheduler.Default);
-
-    public static TResult RunSync<TResult>(Func<Task<TResult>> func)
+    /// <summary>
+    /// Execute is an async Task method which has a void return value synchronously
+    /// </summary>
+    /// <param name="task">Task method to execute.</param>
+    public static void RunSync(Func<Task> task)
     {
-        var cultureUi = CultureInfo.CurrentUICulture;
-        var culture = CultureInfo.CurrentCulture;
-        #if NETFRAMEWORK
-        return _taskFactory.StartNew( (context) =>
+        var oldContext = SynchronizationContext.Current;
+        var synch = new ExclusiveSynchronizationContext();
+        SynchronizationContext.SetSynchronizationContext(synch);
+        synch.Post(async _ =>
         {
-            HttpContext.Current = context as HttpContext;
-            Thread.CurrentThread.CurrentCulture = culture;
-            Thread.CurrentThread.CurrentUICulture = cultureUi;
-            return func();
-        }, HttpContext.Current).Unwrap().GetAwaiter().GetResult();
-        #else
-        return _taskFactory.StartNew(() =>
-        {
-            Thread.CurrentThread.CurrentCulture = culture;
-            Thread.CurrentThread.CurrentUICulture = cultureUi;
-            return func();
-        }).Unwrap().GetAwaiter().GetResult();
-        #endif
+            try
+            {
+                await task();
+            }
+            catch (Exception e)
+            {
+                synch.InnerException = e;
+                throw;
+            }
+            finally
+            {
+                synch.EndMessageLoop();
+            }
+        }, null);
+        synch.BeginMessageLoop();
+
+        SynchronizationContext.SetSynchronizationContext(oldContext);
     }
 
-    public static void RunSync(this Func<Task> func)
+    /// <summary>
+    /// Execute is an async Task method which has a T return type synchronously
+    /// </summary>
+    /// <typeparam name="T">Return Type</typeparam>
+    /// <param name="task">Task method to execute</param>
+    public static T RunSync<T>(Func<Task<T>> task)
     {
-        var cultureUi = CultureInfo.CurrentUICulture;
-        var culture = CultureInfo.CurrentCulture;
-#if NETFRAMEWORK
-        _taskFactory.StartNew( (context) =>
+        var oldContext = SynchronizationContext.Current;
+        var synch = new ExclusiveSynchronizationContext();
+        SynchronizationContext.SetSynchronizationContext(synch);
+        var ret = default(T);
+        synch.Post(async _ =>
         {
-            HttpContext.Current = context as HttpContext;
-            Thread.CurrentThread.CurrentCulture = culture;
-            Thread.CurrentThread.CurrentUICulture = cultureUi;
-            return func();
-        }, HttpContext.Current).Unwrap().GetAwaiter().GetResult();
-#else
-        _taskFactory.StartNew(() =>
+            try
+            {
+                ret = await task();
+            }
+            catch (Exception e)
+            {
+                synch.InnerException = e;
+                throw;
+            }
+            finally
+            {
+                synch.EndMessageLoop();
+            }
+        }, null);
+        synch.BeginMessageLoop();
+        SynchronizationContext.SetSynchronizationContext(oldContext);
+        return ret;
+    }
+
+    private class ExclusiveSynchronizationContext : SynchronizationContext
+    {
+        private bool done;
+        public Exception InnerException { get; set; }
+        readonly AutoResetEvent workItemsWaiting = new AutoResetEvent(false);
+        readonly Queue<Tuple<SendOrPostCallback, object>> items = new();
+
+        public override void Send(SendOrPostCallback d, object state)
         {
-            Thread.CurrentThread.CurrentCulture = culture;
-            Thread.CurrentThread.CurrentUICulture = cultureUi;
-            return func();
-        }).Unwrap().GetAwaiter().GetResult();
-#endif
+            throw new NotSupportedException("We cannot send to our same thread");
+        }
+
+        public override void Post(SendOrPostCallback d, object state)
+        {
+            lock (items)
+            {
+                items.Enqueue(Tuple.Create(d, state));
+            }
+            workItemsWaiting.Set();
+        }
+
+        public void EndMessageLoop()
+        {
+            Post(_ => done = true, null);
+        }
+
+        public void BeginMessageLoop()
+        {
+            while (!done)
+            {
+                Tuple<SendOrPostCallback, object> task = null;
+                lock (items)
+                {
+                    if (items.Count > 0)
+                    {
+                        task = items.Dequeue();
+                    }
+                }
+                if (task != null)
+                {
+                    task.Item1(task.Item2);
+                    if (InnerException != null) // the method threw an exeption
+                    {
+                        throw new AggregateException("AsyncHelper.Run method threw an exception.", InnerException);
+                    }
+                }
+                else
+                {
+                    workItemsWaiting.WaitOne();
+                }
+            }
+        }
+
+        public override SynchronizationContext CreateCopy()
+        {
+            return this.DeepCopy();
+        }
     }
 }

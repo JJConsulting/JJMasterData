@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -62,10 +63,16 @@ public class DataImportationWorker(DataImportationContext context,
 
     internal FormService FormService { get; } = formService;
 
+#if NETFRAMEWORK
+    private HttpContext HttpContext { get; } = HttpContext.Current;
+#endif
     public async Task RunWorkerAsync(CancellationToken token)
     {
         await Task.Run(async () =>
         {
+#if NETFRAMEWORK
+            HttpContext.Current = HttpContext;
+#endif
             var currentProcess = new DataImportationReporter();
             try
             {

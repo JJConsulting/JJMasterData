@@ -14,11 +14,8 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Hangfire;
 
-internal class TaskTrigger(BackgroundTaskManager backgroundTaskManager, IStringLocalizer<MasterDataResources> stringLocalizer)
+internal class TaskTrigger
 {
-    private BackgroundTaskManager BackgroundTaskManager { get; } = backgroundTaskManager;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-
     public string RunInBackground(string key, IBackgroundTaskWorker worker)
     {
         string jobId;
@@ -92,7 +89,7 @@ internal class TaskTrigger(BackgroundTaskManager backgroundTaskManager, IStringL
             {
                 consoleProgress = context.WriteProgressBar();
                 if (!string.IsNullOrEmpty(e.UserId))
-                    context.WriteLine(StringLocalizer["User [{0}] started the process."], e.UserId);
+                    context.WriteLine("User [{0}] started the process.", e.UserId);
             }
 
             if (consoleProgress != null)

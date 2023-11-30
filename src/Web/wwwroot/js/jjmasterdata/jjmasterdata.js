@@ -144,6 +144,20 @@ class ActionHelper {
         modal.modalId = componentName + "-modal";
         modal.remove();
     }
+    static launchUrl(url, isModal, title, confirmationMessage, modalSize = 1) {
+        if (confirmationMessage) {
+            const result = confirm(confirmationMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        if (isModal) {
+            popup.show(title, url, modalSize);
+        }
+        else {
+            window.location.href = url;
+        }
+    }
 }
 class AuditLogViewHelper {
     static viewAuditLog(componentName, id) {
@@ -1131,6 +1145,12 @@ class GridViewHelper {
         this.clearCurrentGridAction(componentName);
         this.clearCurrentFormAction(componentName);
         GridViewHelper.refreshGrid(componentName, routeContext);
+    }
+    static submitGrid(componentName) {
+        this.setCurrentGridPage(componentName, String());
+        this.clearCurrentGridAction(componentName);
+        this.clearCurrentFormAction(componentName);
+        document.forms[0].submit();
     }
     static refreshGrid(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();

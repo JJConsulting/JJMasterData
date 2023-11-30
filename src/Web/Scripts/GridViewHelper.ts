@@ -145,7 +145,21 @@ class GridViewHelper {
         this.clearCurrentFormAction(componentName)
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
-
+    
+    
+    /**
+     * Submits the grid form for the specified component.
+     *
+     * @param {string} componentName - The name of the component.
+     * @return {void}
+     */
+    static submitGrid(componentName: string){
+        this.setCurrentGridPage(componentName,String());
+        this.clearCurrentGridAction(componentName)
+        this.clearCurrentFormAction(componentName)
+        document.forms[0].submit();
+    }
+    
     static refreshGrid(componentName: string, routeContext: string) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);

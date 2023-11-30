@@ -104,8 +104,11 @@ public class ControlFactory(IServiceScopeFactory serviceScopeFactory,
 
                 if (formStateData.PageState != PageState.List)
                     ((JJCheckBox)control).Text = field.LabelOrName;
-                
-                ((JJCheckBox)control).IsSwitch = field.Attributes[FormElementField.IsSwitchAttribute] is true;
+
+                if (field.Attributes.TryGetValue(FormElementField.IsSwitchAttribute, out var isSwitch))
+                {
+                    ((JJCheckBox)control).IsSwitch = isSwitch is true;
+                }
                 
                 break;
             case FormComponent.TextArea:

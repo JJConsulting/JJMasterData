@@ -11,6 +11,7 @@ namespace JJMasterData.Web.Configuration;
 
 public static class WebApplicationExtensions
 {
+    
     public static WebApplication UseJJMasterDataWeb(this WebApplication app, string defaultCulture = "en-US")
     {
         app.UseSession();

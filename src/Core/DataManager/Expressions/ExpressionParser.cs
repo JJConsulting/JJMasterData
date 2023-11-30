@@ -52,7 +52,7 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
             {
                 parsedValue = DataHelper.GetCurrentUserId(HttpContext,userValues!);
             }
-            else if (Session?[field] != null)
+            else if (Session.HasSession() && Session[field] != null)
             {
                 parsedValue = Session[field];
             }

@@ -9,16 +9,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Hangfire;
 
-public sealed class BackgroundTaskManager
-    (IStringLocalizer<MasterDataResources> stringLocalizer) : IBackgroundTaskManager
+public sealed class BackgroundTaskManager: IBackgroundTaskManager
 {
-    private readonly List<TaskWrapper> _tasks = new();
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    internal static List<TaskWrapper> Tasks { get; }= new();
 
-
-    internal TaskWrapper GetTask(string key)
+    internal static TaskWrapper GetTask(string key)
     {
-        return _tasks.Find(x => x.Key.Equals(key));
+        return Tasks.Find(x => x.Key.Equals(key));
     }
 
     
@@ -35,13 +32,13 @@ public sealed class BackgroundTaskManager
 
         var olderPipeline = GetTask(key);
         if (olderPipeline != null)
-            _tasks.Remove(olderPipeline);
+            Tasks.Remove(olderPipeline);
 
         //Workaround: Interfaces are not a good idea with Hangfire.
-        var taskTrigger = new TaskTrigger(this, StringLocalizer);
-        taskWrapper.JobId = taskTrigger.RunInBackground(key, worker);
+        var taskTrigger = new TaskTrigger();
+        taskWrapper.JobId = taskTrigger.RunInBackground(key,worker);
 
-        _tasks.Add(taskWrapper);
+        Tasks.Add(taskWrapper);
     }
 
     public bool IsRunning(string key)
@@ -75,9 +72,9 @@ public sealed class BackgroundTaskManager
         return default;
     }
 
-    internal void SetProgress(string key, IProgressReporter progress)
+    internal static void SetProgress(string key, IProgressReporter progress)
     {
-        var task = _tasks.Find(x => x.Key.Equals(key));
+        var task = Tasks.Find(x => x.Key.Equals(key));
         if (task != null)
             task.ProgressResult = progress;
     }

@@ -228,6 +228,9 @@ public class JJDataExportation : ProcessComponent
     {
         var exporter = CreateWriter();
 
+#if NETFRAMEWORK
+        exporter.HttpContext = System.Web.HttpContext.Current;
+#endif
         exporter.DataSource = result.Data;
         exporter.TotalOfRecords = result.TotalOfRecords;
         BackgroundTaskManager.Run(ProcessKey, exporter);
@@ -239,7 +242,9 @@ public class JJDataExportation : ProcessComponent
 
         exporter.CurrentFilter = filter;
         exporter.CurrentOrder = orderByData;
-
+#if NETFRAMEWORK
+        exporter.HttpContext = System.Web.HttpContext.Current;
+#endif
         BackgroundTaskManager.Run(ProcessKey, exporter);
     }
 

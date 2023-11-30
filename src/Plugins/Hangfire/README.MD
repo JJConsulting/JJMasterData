@@ -30,4 +30,6 @@ app.MapJJMasterDataWeb();
 Simply use exportation and importation like you would use normally.
 Check [Hangfire docs](https://docs.hangfire.io/en/latest/getting-started/aspnet-core-applications.html) for more information.
 
+> [!WARNING] 
+> User values from session will not work inside Hangfire jobs
 

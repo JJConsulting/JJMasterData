@@ -32,8 +32,8 @@ public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncE
         {
             var parameterName = $"@{keyValuePair.Key}";
 
-            expression = expression.Replace($"'{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}'", parameterName);
-            expression = expression.Replace($"{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}", parameterName);
+            expression = expression.Replace($"'{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}'", $" {parameterName} ");
+            expression = expression.Replace($"{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}", $" {parameterName} ");
 
             command.AddParameter(parameterName, keyValuePair.Value, GetDbTypeFromObject(keyValuePair.Value));
         }

@@ -56,12 +56,12 @@ public static class EncryptionServiceExtensions
         return service.EncryptStringWithUrlEscape(JsonConvert.SerializeObject(actionMap));
     }
     
-    internal static string EncryptRouteContext(this IEncryptionService service, RouteContext routeContext)
+    public static string EncryptRouteContext(this IEncryptionService service, RouteContext routeContext)
     {
         return service.EncryptObject(routeContext);
     }
     
-    internal static RouteContext DecryptRouteContext(this IEncryptionService service, string encryptedRouteContext)
+    public static RouteContext DecryptRouteContext(this IEncryptionService service, string encryptedRouteContext)
     {
         return service.DecryptObject<RouteContext>(encryptedRouteContext);
     }

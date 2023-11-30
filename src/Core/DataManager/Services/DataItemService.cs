@@ -85,27 +85,28 @@ public class DataItemService(IEntityRepository entityRepository,
 
     private static IEnumerable<DataItemValue> GetItemsValues(FormElementDataItem dataItem, string? searchId, string? searchText)
     {
-        foreach (var item in dataItem.Items!)
-        {
-            if (searchId is not null)
+        if (dataItem.Items != null)
+            foreach (var item in dataItem.Items)
             {
-                if (item.Id == searchId)
+                if (searchId is not null)
+                {
+                    if (item.Id == searchId)
+                    {
+                        yield return item;
+                    }
+                }
+                else if (searchText is not null)
+                {
+                    if (item.Description?.ToLower().Contains(searchText.ToLower()) ?? false)
+                    {
+                        yield return item;
+                    }
+                }
+                else
                 {
                     yield return item;
                 }
             }
-            else if (searchText is not null)
-            {
-                if (item.Description?.ToLower().Contains(searchText.ToLower()) ?? false)
-                {
-                    yield return item;
-                }
-            }
-            else
-            {
-                yield return item;
-            }
-        }
     }
 
     private async IAsyncEnumerable<DataItemValue> GetElementMapValues(FormElementDataItem dataItem, FormStateData formStateData, string? searchId, string? searchText)

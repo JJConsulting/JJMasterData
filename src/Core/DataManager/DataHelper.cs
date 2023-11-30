@@ -70,9 +70,9 @@ public static class DataHelper
             var value = values[field.Name];
 
             if (value is null)
-                throw new JJMasterDataException($"Primary key value from {field.Name} cannot be null");
-            
-            primaryKeys.Add(field.Name, value);
+                primaryKeys.Add(field.Name, DBNull.Value);
+            else
+                primaryKeys.Add(field.Name, value);
         }
 
         return primaryKeys;

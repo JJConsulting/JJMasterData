@@ -28,8 +28,7 @@ public class ExcelWriter(ExpressionsService expressionsService,
         IOptions<MasterDataCoreOptions> options,
         ControlFactory controlFactory,
         ILoggerFactory loggerFactory,
-        IEntityRepository entityRepository,
-        FieldFormattingService fieldFormattingService)
+        IEntityRepository entityRepository)
     : DataExportationWriterBase(expressionsService,
         stringLocalizer,
         options,
@@ -47,7 +46,6 @@ public class ExcelWriter(ExpressionsService expressionsService,
     public bool ShowRowStriped { get; set; }
 
     private IEntityRepository EntityRepository { get; } = entityRepository;
-    private FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
 
     public override async Task GenerateDocument(Stream stream, CancellationToken token)
     {
@@ -198,7 +196,7 @@ public class ExcelWriter(ExpressionsService expressionsService,
         return value;
     }
 
-    private async Task GenerateHeader(StreamWriter sw)
+    private async Task GenerateHeader(System.IO.TextWriter sw)
     {
         await sw.WriteLineAsync("\t\t\t<tr>");
         foreach (var field in VisibleFields)
