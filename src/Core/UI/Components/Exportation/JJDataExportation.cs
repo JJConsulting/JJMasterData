@@ -69,7 +69,6 @@ public class JJDataExportation : ProcessComponent
     #region "Constructors"
     internal JJDataExportation(
         FormElement formElement,
-        IEntityRepository entityRepository,
         ExpressionsService expressionsService,
         FieldsService fieldsService,
         IOptions<MasterDataCoreOptions> masterDataOptions,
@@ -81,7 +80,7 @@ public class JJDataExportation : ProcessComponent
         MasterDataUrlHelper urlHelper, 
         IEncryptionService encryptionService, 
         DataExportationWriterFactory dataExportationWriterFactory) : 
-        base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
+        base(currentContext, expressionsService, fieldsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
         _urlHelper = urlHelper;
         _encryptionService = encryptionService;

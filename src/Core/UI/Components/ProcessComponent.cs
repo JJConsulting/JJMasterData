@@ -14,8 +14,8 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-public abstract class ProcessComponent(IHttpContext currentContext,
-        IEntityRepository entityRepository,
+public abstract class ProcessComponent(
+        IHttpContext currentContext,
         ExpressionsService expressionsService,
         FieldsService fieldsService,
         IBackgroundTaskManager backgroundTaskManager,
@@ -29,8 +29,6 @@ public abstract class ProcessComponent(IHttpContext currentContext,
     private string _userId;
 
     internal ExpressionsService ExpressionsService { get; } = expressionsService;
-
-    internal IEntityRepository EntityRepository { get; } = entityRepository;
 
     internal string ProcessKey
     {

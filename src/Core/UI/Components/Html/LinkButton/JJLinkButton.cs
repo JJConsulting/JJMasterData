@@ -110,7 +110,8 @@ public class JJLinkButton : HtmlComponent
         html.WithCssClass(GetCssClassWithCompatibility());
         html.WithAttributes(Attributes);
         html.WithToolTip(_stringLocalizer[Tooltip]);
-        html.WithAttributeIf(Enabled && !string.IsNullOrEmpty(OnClientClick), "onclick", OnClientClick);
+        bool isOnClickEnabled = Enabled && !string.IsNullOrEmpty(OnClientClick) && UrlAction is null;
+        html.WithAttributeIf(isOnClickEnabled, "onclick", OnClientClick);
         html.WithCssClassIf(!Enabled, "disabled");
 
         if (icon != null)

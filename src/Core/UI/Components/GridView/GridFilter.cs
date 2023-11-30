@@ -108,11 +108,7 @@ internal class GridFilter(JJGridView gridView)
     public void SetCurrentFilter(string name, object value)
     {
         _currentFilter ??= new Dictionary<string, object>();
-        
-        if(_currentFilter.ContainsKey(name))
-        {
-            _currentFilter[name] = value;
-        }
+        _currentFilter[name] = value;
     }
 
     private bool IsDynamicPost()

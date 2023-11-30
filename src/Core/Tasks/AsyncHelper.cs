@@ -130,7 +130,7 @@ public static class AsyncHelper
 
         public override SynchronizationContext CreateCopy()
         {
-            return this.DeepCopy();
+            return this;
         }
     }
 }

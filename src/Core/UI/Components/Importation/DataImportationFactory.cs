@@ -47,7 +47,6 @@ internal class DataImportationFactory(IDataDictionaryRepository dataDictionaryRe
 
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; } = dataImportationWorkerFactory;
 
-    private MasterDataUrlHelper UrlHelper { get; }
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private ILoggerFactory LoggerFactory { get; } = loggerFactory;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
@@ -55,7 +54,7 @@ internal class DataImportationFactory(IDataDictionaryRepository dataDictionaryRe
 
     public JJDataImportation Create(FormElement formElement)
     {
-        return new JJDataImportation(formElement, EntityRepository, ExpressionsService, FormService,
+        return new JJDataImportation(formElement, ExpressionsService, FormService,
             FieldsService, BackgroundTaskManager, HttpContext, ComponentFactory,
             DataImportationWorkerFactory, EncryptionService, LoggerFactory,
             StringLocalizer);

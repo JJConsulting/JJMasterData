@@ -111,7 +111,8 @@ internal class GridTableBody(JJGridView gridView)
             }
             else
             {
-                value = values[field.Name]?.ToString();
+                values.TryGetValue(field.Name, out var objValue);
+                value = objValue?.ToString() ?? string.Empty;
                 var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
                 HtmlBuilder cell;
                 if (field.DataItem is not null && field.DataItem.ShowIcon)

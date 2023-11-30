@@ -18,7 +18,6 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.UI.Components;
 
 internal class DataExportationFactory(
-    IEntityRepository entityRepository,
     IDataDictionaryRepository dataDictionaryRepository,
     ExpressionsService expressionsService,
     FieldsService fieldsService,
@@ -43,7 +42,6 @@ internal class DataExportationFactory(
     {
         return new JJDataExportation(
             formElement,
-            entityRepository, 
             expressionsService,
             fieldsService, 
             options, 

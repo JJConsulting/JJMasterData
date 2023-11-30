@@ -87,7 +87,6 @@ public class JJDataImportation : ProcessComponent
     #region "Constructors"
     public JJDataImportation(
         FormElement formElement,
-        IEntityRepository entityRepository,
         ExpressionsService expressionsService,
         FormService formService,
         FieldsService fieldsService,
@@ -98,7 +97,7 @@ public class JJDataImportation : ProcessComponent
         IEncryptionService encryptionService,
         ILoggerFactory loggerFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer) 
-        : base(currentContext,entityRepository, expressionsService, fieldsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService, stringLocalizer)
+        : base(currentContext, expressionsService, fieldsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService, stringLocalizer)
     {
         CurrentContext = currentContext;
         DataImportationWorkerFactory = dataImportationWorkerFactory;
