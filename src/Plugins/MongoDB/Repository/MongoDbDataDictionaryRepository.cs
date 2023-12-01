@@ -26,11 +26,17 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
     }
 
     public Task CreateStructureIfNotExistsAsync() => Task.CompletedTask;
-
-
-    public async Task<FormElement> GetFormElementAsync(string dictionaryName)
+    
+    public FormElement GetFormElement(string elementName)
     {
-        var formElementQuery = await _formElementCollection.FindAsync(formElement => formElement.FormElement.Name == dictionaryName);
+        var formElementQuery = _formElementCollection.Find(formElement => formElement.FormElement.Name == elementName);
+
+        return formElementQuery.First().FormElement;
+    }
+
+    public async Task<FormElement> GetFormElementAsync(string elementName)
+    {
+        var formElementQuery = await _formElementCollection.FindAsync(formElement => formElement.FormElement.Name == elementName);
 
         return (await formElementQuery.FirstAsync()).FormElement;
     }

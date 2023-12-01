@@ -55,9 +55,6 @@ internal class GridFilter(JJGridView gridView)
     /// <returns></returns>
     public async Task<IDictionary<string, object>> GetCurrentFilterAsync()
     {
-        if (_currentFilter is { Count: > 0 })
-            return _currentFilter;
-
         //Action is captured here, because the user can call GetCurrentFilterAsync before GetResultAsync()
         var currentFilterAction = CurrentContext.Request.Form[$"grid-view-filter-action-{GridView.Name}"];
         switch (currentFilterAction)
