@@ -15,6 +15,7 @@ using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Args;
+using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
@@ -236,9 +237,11 @@ public class JJDataImportation : ProcessComponent
 
     private HtmlBuilder GetUploadAreaCollapse(string keyprocess)
     {
+        var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.DataImportation);        
+        var gridRouteContext = RouteContext.FromFormElement(FormElement, ComponentContext.GridViewReload);
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
-            .AppendScript("DataImportationHelper.addPasteListener();")
+            .AppendScript($"DataImportationHelper.addPasteListener('{Name}', '{EncryptionService.EncryptRouteContext(routeContext)}', '{EncryptionService.EncryptRouteContext(gridRouteContext)}');")
             .AppendHiddenInput("filename")
             .Append(HtmlTag.TextArea, area =>
             {
