@@ -3,8 +3,8 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>4.0.0-rc</Version>
-		<PackageVersion>$(Version)</PackageVersion>
+		<Version>4.0.0</Version>
+		<PackageVersion>$(Version)-rc</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<IncludeSymbols>true</IncludeSymbols>
     		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
