@@ -20,9 +20,25 @@ internal class SliderFactory(IFormValues formValues, IControlFactory<JJTextBox> 
         var slider = Create();
         slider.Name = field.Name;
         slider.NumberOfDecimalPlaces = field.NumberOfDecimalPlaces;
-        slider.MinValue = (double)(field.Attributes[FormElementField.MinValueAttribute] ?? 0f);
-        slider.MaxValue = (double)(field.Attributes[FormElementField.MaxValueAttribute] ?? 100);
-        slider.Step = (double)field.Attributes![FormElementField.StepAttribute];
+        double minValue, maxValue, step;
+        if (field.Attributes.TryGetValue(FormElementField.MinValueAttribute, out var tempValue))
+            minValue = (double)tempValue;
+        else
+            minValue = 0f;
+
+        if (field.Attributes.TryGetValue(FormElementField.MaxValueAttribute, out tempValue))
+            maxValue = (double)tempValue;
+        else
+            maxValue = 100f;
+
+        if (field.Attributes.TryGetValue(FormElementField.StepAttribute, out tempValue))
+            step = (double)tempValue;
+        else
+            step = 1f;
+
+        slider.MinValue = minValue;
+        slider.MaxValue = maxValue;
+        slider.Step = step;
         slider.Value = !string.IsNullOrEmpty(context.Value?.ToString()) ? double.Parse(context.Value.ToString()!) : null;
         return slider;
     }
