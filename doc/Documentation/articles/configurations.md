@@ -9,7 +9,7 @@ There are three ways to configure an application:
 
 > [!TIP]
 > To autocomplete with JJMasterData keys in your text editor, put this URL in the JSON Schema of your IDE.
-https://raw.githubusercontent.com/JJConsulting/JJMasterData.JsonSchema/main/JJMasterData.JsonSchema/jjmasterdata.json
+https://github.com/JJConsulting/JJMasterData/blob/main/jjmasterdata.json
 <details><summary> >> appsettings.json (click to expand)</summary><br>
 
 ```json

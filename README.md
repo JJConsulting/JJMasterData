@@ -55,7 +55,7 @@ See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles
 <br>
 
 ## Building from source 🧰
-1. Install [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+1. Install [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 2. Install [NodeJS](https://nodejs.org/en/download/)
 
