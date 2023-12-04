@@ -25,6 +25,12 @@ public class UIOptionsService(IValidationDictionary validationDictionary,
             }
         }
 
+        if (options.Grid.RecordsPerPage < 5)
+        {
+            AddError("RecordsPerPage", StringLocalizer["You need at least 5 records per page"]);
+
+        }
+        
         return IsValid;
     }
 
