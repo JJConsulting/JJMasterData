@@ -1,0 +1,146 @@
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Commons.Data.Entity.Models
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ApiViewModel        
+
+<style>
+    input[type=checkbox] {
+        margin: 2px 0 0;
+    }
+</style>
+
+<script>
+function checkAllToggle(checkAllCheckbox) {
+    const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+
+    for (let i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = checkAllCheckbox.checked;
+        const event = new Event('change');
+        checkboxes[i].dispatchEvent(event);
+    }
+}
+</script>
+
+
+<table class="table table-striped">
+    <caption>@StringLocalizer["Enable or disable HTTP operations"]</caption>
+    <thead>
+    <tr>
+        <th style="width: 50px">
+            <input type="checkbox" class="form-check-input" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Enable or disable all endpoints"]" onclick="checkAllToggle(this)"/>
+        </th>
+        <th style="width: 100px">
+            @StringLocalizer["Verb"]
+        </th>
+        <th>
+            @StringLocalizer["Verb Description"]
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="tr-hover-action">
+        <td>
+            <checkbox for="ApiOptions.EnableGetAll"/>
+        </td>
+
+        <td>
+            <span class="text-info">@StringLocalizer["GET"]</span>
+        </td>
+        <td>
+            <span class="text-info">@StringLocalizer["Get all records"]</span>
+        </td>
+    </tr>
+    <tr class="tr-hover-action">
+        <td>
+            <checkbox for="ApiOptions.EnableGetDetail"/>
+        </td>
+        <td>
+            <span class="text-info">@StringLocalizer["GET"]</span>
+        </td>
+        <td>
+            <span class="text-info">@StringLocalizer["Get a record detail"]</span>
+        </td>
+    </tr>
+    <tr class="tr-hover-action">
+        <td>
+            <checkbox for="ApiOptions.EnableAdd"/>
+        </td>
+        <td>
+            <span class="text-success">@StringLocalizer["POST"]</span>
+        </td>
+        <td>
+            <span class="text-success">@StringLocalizer["Add new record"]</span>
+        </td>
+    </tr>
+    <tr class="tr-hover-action">
+        <td>
+            <checkbox for="ApiOptions.EnableUpdate"/>
+        </td>
+        <td>
+            <span class="text-warning">@StringLocalizer["PUT"]</span>
+        </td>
+        <td>
+            <span class="text-warning">@StringLocalizer["Update records"]</span>
+        </td>
+    </tr>
+    <tr class="tr-hover-action">
+        <td>
+            <checkbox for="ApiOptions.EnableUpdatePart"/>
+        </td>
+        <td>
+            <span class="text-warning">@StringLocalizer["PATCH"]</span>
+        </td>
+        <td>
+            <span class="text-warning">@StringLocalizer["Update some especific fields"]</span>
+        </td>
+    </tr>
+    <tr class="tr-hover-action">
+        <td >
+            <checkbox for="ApiOptions.EnableDel"/>
+        </td>
+        <td>
+            <span class="text-danger">@StringLocalizer["DEL"]</span>
+        </td>
+        <td>
+            <span class="text-danger">@StringLocalizer["Delete a record"]</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="@BootstrapHelper.FormGroup col-sm-5">
+            <label class="@BootstrapHelper.Label " asp-for="ApiOptions.ApplyUserIdOn"></label>
+            <tooltip title="Apply the current logged user in this field."/> 
+            @Html.DropDownListFor(model => Model.ApiOptions.ApplyUserIdOn, new SelectList(Model.ElementFields, "Name", "Name"), StringLocalizer["(No Apply)"], new { @class = "form-control form-select" })
+        </div>
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
+            <label class="@BootstrapHelper.Label " asp-for="ApiOptions.JsonFormatting"></label>
+            <select asp-for="ApiOptions.JsonFormatting" class="form-control form-select" asp-items="Html.GetEnumSelectList<ApiJsonFormatting>()"></select>
+        </div>
+        <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+            <label class="@BootstrapHelper.Label" asp-for="EnableSynchronism"></label>
+            <checkbox for="EnableSynchronism" switch="true" onchange="setModeVisibility(this)"/>
+        </div>
+        <div class="@BootstrapHelper.FormGroup col-sm-3" id="divMode" style="visibility:@(Model.EnableSynchronism ? "visible" : "hidden")">
+            <label class="@BootstrapHelper.Label" asp-for="SynchronismMode"></label>
+            <select asp-for="SynchronismMode" class="form-control form-select" asp-items="@Html.GetEnumSelectList<SynchronismMode>()"></select>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function setModeVisibility(checkbox) {
+        const divMode = document.getElementById('divMode');
+        if (checkbox.checked) {
+            divMode.style.visibility = 'visible';
+        } else {
+            divMode.style.visibility = 'hidden';
+        }
+    }
+</script>
+

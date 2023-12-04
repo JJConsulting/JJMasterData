@@ -1,0 +1,83 @@
+@using JJMasterData.Core.UI
+@model JJMasterData.Core.DataDictionary.Models.FormElementOptions
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowTitle"></label>
+            <checkbox for="Grid.ShowTitle" switch="true"/>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.EnableSorting"></label>
+            <checkbox for="Grid.EnableSorting" switch="true"/>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.EnableMultiSelect"></label>
+            <tooltip title="Allows you to select multiple lines in the grid"/>
+            <checkbox for="Grid.EnableMultiSelect" switch="true"/>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.MaintainValuesOnLoad"></label>
+            <tooltip title="Maintains grid filters, order, and pagination"/>
+            <checkbox for="Grid.MaintainValuesOnLoad" switch="true"/>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowRowHover"></label>
+            <tooltip title="Change the line color on mouseover"/>
+            <checkbox for="Grid.ShowRowHover" switch="true"/>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowRowStriped"></label>
+            <tooltip title="Display zebra columns"/>
+            <checkbox for="Grid.ShowRowStriped" switch="true"/>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowBorder"></label>
+            <checkbox for="Grid.ShowBorder" switch="true"/>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowToolBar"></label>
+            <checkbox for="Grid.ShowToolBar" switch="true"/>
+        </div>
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.UseVerticalLayoutAtFilter"></label>
+            <checkbox for="Grid.UseVerticalLayoutAtFilter" switch="true"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.HeaderFixed"></label>
+            <checkbox for="Grid.HeaderFixed" switch="true"/>
+        </div>
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowHeaderWhenEmpty"></label>
+            <checkbox for="Grid.ShowHeaderWhenEmpty" switch="true"/>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.RecordsPerPage"></label>
+            <input asp-for="Grid.RecordsPerPage" class="form-control"/>
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.TotalPaggingButton" title="Total buttons on paging"></label>
+            <input asp-for="Grid.TotalPaggingButton" class="form-control">
+        </div>
+
+        <div class="col-sm-4">
+            <label class="@BootstrapHelper.Label" asp-for="Grid.EmptyDataText"></label>
+            <tooltip title="Text shown when there are no records to be applied"/>
+            <input asp-for="Grid.EmptyDataText" class="form-control"/>
+        </div>
+    </div>
+</div>

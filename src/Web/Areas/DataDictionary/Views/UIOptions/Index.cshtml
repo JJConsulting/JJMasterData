@@ -1,0 +1,33 @@
+﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Core.UI
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@model JJMasterData.Core.DataDictionary.Models.FormElementOptions
+
+@{
+    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Options"]}";
+}
+
+<style>
+    input[type=checkbox] {
+        margin: 2px 0 0;
+    }
+</style>
+
+<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
+
+<div class="row">
+    <div class="col-sm-12">
+        <button name="action" type="button" onclick="location.href='@Url.Action("Edit", new { elementName = ViewBag.ElementName })'" class="@BootstrapHelper.DefaultButton btn-small">
+            <span class="fa fa-pencil"></span>
+            <span>&nbsp;@StringLocalizer["Edit"]</span>
+        </button>
+    </div>
+</div>
+
+<br/>
+
+<fieldset disabled="disabled">
+    <collapse-panel model="Model" icon="Table" title="Grid View" partial="_GridView" expanded-by-default="true"/>
+    <collapse-panel model="Model" icon="Columns" title="Data Panel" partial="_DataPanel"  expanded-by-default="true"/>
+</fieldset>

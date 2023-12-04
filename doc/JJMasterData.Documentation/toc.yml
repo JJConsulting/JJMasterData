@@ -1,6 +1,0 @@
-- name: Articles
-  href: articles/
-  homepage: articles/intro.md
-- name: API Reference
-  href: lib/
-  homepage: lib/JJMasterData.Core.Web.Components.html

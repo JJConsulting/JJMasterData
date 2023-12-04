@@ -1,0 +1,77 @@
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Commons.Data.Entity.Models
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@model RelationshipsListViewModel
+
+@functions {
+
+    private static string GetRelationshipIconCssClass(FormElementRelationship relationship)
+    {
+        if (relationship.IsParent)
+            return "fa-crown";
+        return relationship.ViewType switch
+        {
+            RelationshipViewType.List => "fa-table-cells",
+            RelationshipViewType.View => "fa-eye",
+            RelationshipViewType.Update => "fa-pencil",
+            _ => "fa-ban"
+            };
+    }
+
+}
+
+<script language="javascript" type="text/javascript">
+
+    document.addEventListener('DOMContentLoaded', function () {
+        $("#sortable").sortable({
+               update: function () {
+                 const relationships = $(this).sortable('toArray');
+                 fetch('@Url.Action("Sort", new { elementName = Model.ElementName })', {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json'
+                     },
+                     body: JSON.stringify(relationships)
+                 }).catch(error => {
+                    messageBox.show("JJMasterData", error.message, 4);
+                 });
+               }
+        }).disableSelection();
+    });
+
+</script>
+
+
+<div class="row">
+    <div class="col-sm-12">
+        @if (Model.Relationships.Any())
+        {
+            <ul class="list-group jjsortable" id="sortable">
+                @foreach (var relationship in Model.Relationships)
+                {
+                    var id = relationship.ElementRelationship?.ChildElement ?? "parent";
+                    var title = relationship.ElementRelationship?.ChildElement ?? Model.ElementName;
+                    <li class="list-group-item" id="@id">
+                        <div style="height: 33px;">
+                            <div style="float: left; margin-top: 10px;">
+                                <span class="fa-solid @GetRelationshipIconCssClass(relationship)"></span>&nbsp;
+                                @title
+                            </div>
+                            <div class=@BootstrapHelper.PullRight>
+                                <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="defaultModal.showIframe('@Url.Action("LayoutDetails", "Relationships", new { elementName = Model.ElementName, relationship.Id })','Layout - @title')">
+                                    <span class="fa fa-pencil"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <alert icon="IconType.TimesCircleO" title="@StringLocalizer["No relationships found."]" color="Default" show-close-button="false"/>
+        }
+    </div>
+</div>

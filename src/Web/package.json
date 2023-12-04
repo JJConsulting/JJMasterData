@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "@popperjs/core": "^2.11.5",
+    "@types/bootstrap": "^5.2.0",
+    "@types/jquery": "^3.5.14",
+    "flatpickr": "^4.6.13",
+    "@types/dropzone": "^5.7.4",
+    "jquery-ui": "^1.13.2"
+  }
+}

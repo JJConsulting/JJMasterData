@@ -1,0 +1,64 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
+@model JJMasterData.Core.DataDictionary.Models.FormElementField
+
+<div class="row">
+    <div class="col-sm-12">
+        <jj-title title="@StringLocalizer["DataItem"]" size="HeadingSize.H4"/>
+    </div>
+
+    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+        <label class="@BootstrapHelper.Label" >@StringLocalizer["Type"]</label>
+        <select asp-for="DataItem!.DataItemType" 
+                asp-items="Enum.GetValues<DataItemType>().Select(d=> new SelectListItem(d.ToString(),d.ToString()))" onchange="this.form.submit();" class="form-control form-select">
+        </select>
+
+    </div>
+
+    <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divReplaceTextOnGrid">
+        <label class="@BootstrapHelper.Label " asp-for="DataItem!.ReplaceTextOnGrid"></label>
+        <tooltip title="Replace the field value with the description in the grid"/>
+        <checkbox for="DataItem!.ReplaceTextOnGrid" switch="true"/>
+    </div>
+
+    @if (Model.Component is FormComponent.ComboBox)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divFirstOption">
+            <label class="@BootstrapHelper.Label">@StringLocalizer["First Option Mode"]</label>
+            <select asp-for="DataItem!.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
+        </div>
+    }
+    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+            <label class="@BootstrapHelper.Label " asp-for="DataItem!.ShowIcon"></label>
+            <tooltip title="Display a FontAwesome icon alongside the options"/>
+            <checkbox for="DataItem!.ShowIcon" switch="true" onchange="this.form.requestSubmit();"/>
+    </div>
+    
+    @if (Model.Component is FormComponent.ComboBox)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+            <label class="@BootstrapHelper.Label " asp-for="DataItem!.EnableMultiSelect"></label>
+            <tooltip title="Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table."/>
+            <checkbox for="DataItem!.EnableMultiSelect" switch="true"/>
+        </div>
+    }
+
+
+    @switch (Model.DataItem!.DataItemType)
+    {
+        case DataItemType.Manual:
+            <partial name="_DataItemManual" model="@Model"/>
+            break;
+        case DataItemType.SqlCommand:
+            <partial name="_DataItemSql" model="@Model"/>
+            break;
+        case DataItemType.ElementMap:
+            <partial name="_DataItemElementMap" model="@Model"/>
+            break;
+    }
+
+</div>

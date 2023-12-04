@@ -1,0 +1,12 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+
+@{
+    ViewData["Title"] = StringLocalizer["Data Dictionary"];
+}
+
+@using (Html.BeginForm())
+{
+    @Html.Raw(ViewBag.FormViewHtml)
+}
+    

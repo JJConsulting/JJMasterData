@@ -1,0 +1,91 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptions<MasterDataWebOptions> Options
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Core.UI.Components
+@model JJMasterData.Core.DataDictionary.Models.Actions.SqlCommandAction
+
+@{
+    Layout = Options.Value.ModalLayoutPath;
+}
+
+
+@section Scripts{
+    <script lang="javascript" type="text/javascript">
+        document.addEventListener("DOMContentLoaded",()=>{
+            CodeMirrorWrapper.setupCodeMirror('@nameof(Model.SqlCommand)',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'})
+        });
+    </script>
+}
+
+@using (Html.BeginForm("SqlCommandAction", "Actions",
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li id="nav-general" class="nav-item active">
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+        </li>
+        <li id="navSqlCommand" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divSqlcommand">@StringLocalizer["SQL Command"]</a>
+        </li>
+        <li id="nav-advanced" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
+            @await Html.PartialAsync("_NavGeneral", Model)
+        </div>
+
+
+        <div id="divSqlcommand" class="tab-pane fade">
+            <div class="row">
+
+                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="Informações sobre a tabela">@StringLocalizer["SQL Command"]</label>
+                    <span class="small @BootstrapHelper.TextRight text-info"> &nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
+                    <div class="@BootstrapHelper.Well" style="margin-bottom:0px">
+                        @if (!BootstrapHelper.Version.Equals(3))
+                        {
+                            <div class="card-body">
+                                @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "8" })
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.TextAreaFor(model => model.SqlCommand, new { @class = "form-control", rows = "8" })
+                        }
+                    </div>
+                </div>
+                @if (ViewBag.ContextAction is ActionSource.GridToolbar)
+                {
+                    <hr/>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="@BootstrapHelper.FormGroup col-sm-2">
+                                <label class="@BootstrapHelper.Label" asp-for="ApplyOnSelected">@StringLocalizer["Apply On Selected Lines"]</label>
+                                <checkbox for="ApplyOnSelected" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                            </div>
+
+                            <div class="col-sm-10">
+                                <span class="text-info fa fa-info-circle"></span>
+                                <span class="small">
+                                    <b>@StringLocalizer["Apply only selected lines."]</b><br/>
+                                    @StringLocalizer["When the command is triggered only the selected lines are affected."]
+                                    <br/>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div id="div-advanced" class="tab-pane fade">
+            @await Html.PartialAsync("_NavAdvanced", Model)
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}

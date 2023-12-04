@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net4.8;netstandard2.0;net6.0;net7.0;net8.0;</TargetFrameworks>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<LangVersion>11.0</LangVersion>
+		<Nullable>disable</Nullable>
+		<Product>JJMasterData.Commons - Sun Version</Product>
+		<Description>JJMasterData base library. Contains i18n functions, logging, database and utilities.</Description>
+		<RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
+		<RootNamespace>JJMasterData.Commons</RootNamespace>
+		<AssemblyName>JJMasterData.Commons</AssemblyName>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="PolySharp" Version="1.13.2">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
+		<PackageReference Include="System.Data.Common" Version="4.3.0" />
+		<PackageReference Include="System.Diagnostics.EventLog" Version="6.0.0" />
+		<PackageReference Include="System.Linq.Async" Version="6.0.1" />
+		<PackageReference Include="System.Threading.Channels" Version="7.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<InternalsVisibleTo Include="JJMasterData.Commons.Test" />
+		<InternalsVisibleTo Include="JJMasterData.Core" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Data\DataAccessAsync.cs">
+	    <DependentUpon>DataAccess.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="Data\DataAccessGenerics.cs">
+	    <DependentUpon>DataAccess.cs</DependentUpon>
+	  </Compile>
+	  <Compile Remove="Tasks\BackgroundTaskScheduler.cs" />
+	  <Compile Remove="Tasks\BackgroundTaskList.cs" />
+	  <Compile Update="Data\Entity\Models\BooleanExpressionAttribute.cs">
+	    <DependentUpon>ExpressionAttribute.cs</DependentUpon>
+	  </Compile>
+	  <Compile Update="Data\Entity\Models\AsyncExpressionAttribute.cs">
+	    <DependentUpon>ExpressionAttribute.cs</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Security\" />
+	</ItemGroup>
+</Project>

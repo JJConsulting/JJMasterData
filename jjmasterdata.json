@@ -1,0 +1,130 @@
+{
+  "title": "JJMasterData",
+  "description": "JSON schema for JJMasterData .NET appsettings.json file",
+  "properties": {
+    "JJMasterData": {
+      "type": "object",
+      "properties": {
+        "LayoutPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ModalLayoutPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "CustomBootstrapPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "SupportNetFramework": {
+          "type": "boolean"
+        },
+        "EnableBundleAndMinification": {
+          "type": "boolean"
+        },
+        "CustomScriptsPaths": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "DataDictionaryTableName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "AuditLogTableName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "MasterDataUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ExportationFolderPath": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ConnectionString": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ConnectionProvider": {
+          "type": "string",
+          "enum": [
+            "SqlServer",
+            "SqLite",
+            "Oracle",
+            "OracleNetCore",
+            "MySql",
+            "PostgreSql"
+          ]
+        },
+        "LocalizationTableName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ReadProcedurePattern": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "WriteProcedurePattern": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "SecretKey": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "LayoutPath",
+        "ModalLayoutPath",
+        "CustomBootstrapPath",
+        "SupportNetFramework",
+        "EnableBundleAndMinification",
+        "CustomScriptsPaths",
+        "DataDictionaryTableName",
+        "AuditLogTableName",
+        "MasterDataUrl",
+        "ExportationFolderPath",
+        "ConnectionString",
+        "ConnectionProvider",
+        "LocalizationTableName",
+        "ReadProcedurePattern",
+        "WriteProcedurePattern",
+        "SecretKey"
+      ]
+    }
+  }
+}

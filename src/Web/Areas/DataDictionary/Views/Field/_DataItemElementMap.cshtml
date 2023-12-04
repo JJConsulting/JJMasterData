@@ -1,0 +1,106 @@
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.DataDictionary.Models
+@model JJMasterData.Core.DataDictionary.Models.FormElementField
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+<collapse-panel title="@StringLocalizer["Element Map"]" expanded-by-default="true" icon="Map">
+    <div class="row">
+        <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+            <label class="@BootstrapHelper.Label ">@StringLocalizer["ElementName"]</label>
+            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.ElementName,
+                new SelectList(ViewBag.ElementNameList, "Key", "Value"),
+                new { @class = "form-control form-select", onchange = "document.forms[0].submit();" })
+        </div>
+        <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+            <label class="@BootstrapHelper.Label">@StringLocalizer["Id"]</label>
+            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldId,
+                new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
+                new { @class = "form-control form-select" })
+        </div>
+        <div class="@BootstrapHelper.FormGroup col-sm-3">
+            <label class="@BootstrapHelper.Label">@StringLocalizer["Description"]</label>
+            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldDescription,
+                new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
+                new { @class = "form-control form-select" })
+        </div>
+
+        @if (Model.Component is FormComponent.ComboBox or FormComponent.Search && Model.DataItem!.ShowIcon)
+        {
+            <div class="@BootstrapHelper.FormGroup col-sm-3">
+                <label class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldIconId,
+                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
+                    new { @class = "form-control form-select" })
+            </div>
+            <div class="@BootstrapHelper.FormGroup col-sm-3">
+                <label class="@BootstrapHelper.Label">@StringLocalizer["Icon Color"]</label>
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldIconColor,
+                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
+                    new { @class = "form-control form-select" })
+            </div>
+        }
+    </div>
+</collapse-panel>
+
+
+<collapse-panel title="@StringLocalizer["Filters"]" expanded-by-default="false" icon="Filter">
+    <div class="row">
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
+            <label class="@BootstrapHelper.Label">@StringLocalizer["Field"]</label>
+            @Html.DropDownList("mapField",
+                new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
+                new { @class = "form-control" })
+        </div>
+        <div class="@BootstrapHelper.FormGroup col-sm-10">
+            <expression name="mapExpressionValue" title="Filter Expression" icon="IconType.Filter"/>
+            <link-button css-class="btn-small" text="Add" icon="CheckSquareO" on-client-click="addElementMapFilter();"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+
+            <table class="table table-bordered table-hover">
+                <tbody>
+                @for (var i = 0; i < Model.DataItem!.ElementMap!.MapFilters.Count; i++)
+                {
+                    var index = i;
+                    var mapFilter = Model.DataItem.ElementMap.MapFilters[i];
+                    <tr>
+                        <td>
+                            @mapFilter.FieldName<i class="fa-solid fa-arrow-right"></i>@mapFilter.ExpressionValue
+                            @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[index].FieldName, mapFilter.FieldName)
+                            @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[index].ExpressionValue, mapFilter.ExpressionValue)
+                        </td>
+                        <td style="width:80px;" align="center">
+                            <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="Delete" onclick="removeElementMapFilter('@mapFilter.FieldName');">
+                                <span class="fa fa-trash"></span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</collapse-panel>
+<script lang="javascript" type="text/javascript">
+    function addElementMapFilter() {
+        const form = document.forms[0]; 
+        form.action = "@Url.Action("AddElementMapFilter", new { elementName = ViewBag.ElementName })";
+        form.submit();
+    }
+    
+    function removeElementMapFilter(elementMapFieldName) {
+        const form = document.forms[0];
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.id = "elementMapFieldName";
+        input.name = "elementMapFieldName";
+        input.value = elementMapFieldName;
+        form.appendChild(input);
+        form.action = "@Url.Action("RemoveElementMapFilter", new { elementName = ViewBag.ElementName })";
+        form.submit();
+    }
+
+</script>

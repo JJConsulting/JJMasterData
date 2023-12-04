@@ -1,0 +1,42 @@
+﻿@using JJMasterData.Core.UI
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+<div class="jjrelative">
+    <div class="bs-clipboard">
+        <div class="btn-group">
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small btn-sm" onclick="copyContent(this);" data-placement="top" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Copy to Clipboard"]">
+                <span class="fa fa-copy fa-fw"></span>
+                &nbsp;@StringLocalizer["Copy"]
+            </button>
+        </div>
+    </div>
+    <pre><code>@ViewBag.ClassSourceCode</code></pre>
+</div>
+
+
+<script type="text/javascript">
+
+    function copyContent(obj) {
+        let textVal = $("pre").text().trim();
+        copyText(textVal);
+        displayAsCopied(obj);
+    }
+
+    function displayAsCopied(obj) {
+         var btnContent = $(obj).html();
+        $(obj).html("<span class='fa fa-check'></span> Copied!")
+            .attr("class", "btn btn-success btn-small btn-sm");
+
+        setTimeout(function() {
+            $(obj).html(btnContent)
+                .attr("class", "@BootstrapHelper.DefaultButton btn-small btn-sm");
+        },2000);
+    }
+
+    function copyText(value) {
+        navigator.clipboard.writeText(value);
+    }
+
+    hljs.highlightAll();
+</script>
+

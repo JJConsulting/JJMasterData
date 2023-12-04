@@ -1,0 +1,202 @@
+﻿@using JJMasterData.Commons.Util
+@using System.Text
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using System.Reflection
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Core.UI
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IEnumerable<IPluginHandler> ActionPluginHandlers
+
+@model ActionsListDetailsViewModel
+
+@{
+    var sortableClass = string.Empty;
+}
+@if (Model.Actions?.Count > 1)
+{
+    sortableClass = "jjsortable";
+    <script lang="javascript" type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            DataDictionaryUtils.sortAction('@Model.Source.ToString()', '@GetUrlSort()','@StringLocalizer["Unexpected error"]');
+        });
+    </script>
+}
+
+<div class="row mt-3 mb-3">
+    <div class="col-sm-12">
+        <div class="btn-group">
+            <button type="button" class="@BootstrapHelper.DefaultButton dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
+                <span class="fa fa-plus-circle"></span>&nbsp;@StringLocalizer["New Action"]&nbsp; <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                       onclick="@GetAddScript(typeof(UrlRedirectAction))">
+                        @StringLocalizer["Url Redirect"]
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                       onclick="@GetAddScript(typeof(InternalAction))">
+                        @StringLocalizer["Internal Redirect"]
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                       onclick="@GetAddScript(typeof(SqlCommandAction))">
+                        @StringLocalizer["Sql Command"]
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                       onclick="@GetAddScript(typeof(ScriptAction))">
+                        @StringLocalizer["JavaScript Script"]
+                    </a>
+                </li>
+                @if (ActionPluginHandlers.Any())
+                {
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    @if (Model.Source is ActionSource.Field)
+                    {
+                        @foreach (var plugin in ActionPluginHandlers.Where(p => p is IPluginFieldActionHandler || p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
+                        {
+                            @if (plugin is IPluginFieldActionHandler)
+                            {
+                                <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                                   onclick="@GetAddScript(typeof(PluginFieldAction), plugin.Id)">
+                                    @StringLocalizer[plugin.Title]
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                                   onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">
+                                    @StringLocalizer[plugin.Title]
+                                </a>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var plugin in ActionPluginHandlers.Where(p => p is IPluginActionHandler pa && pa.CanCreate(Model.Source)))
+                        {
+                            <a class="dropdown-item dropdown-link" href="javascript: void(0);"
+                               onclick="@GetAddScript(typeof(PluginAction), plugin.Id)">
+                                @StringLocalizer[plugin.Title]
+                            </a>
+                        }
+                    }
+                }
+
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <ul class="list-group @sortableClass" id="sortable-@Model.Source.ToString()">
+            @foreach (var action in Model.Actions!)
+            {
+                <li class="list-group-item" id="@action.Name">
+                    <div style="height: 33px;">
+                        <div style="float: left; margin-top: 10px;">
+                            <span class="@action.Icon.GetCssClass() fa-fw"></span>&nbsp;
+                            @action.Name
+                            &nbsp;
+                        </div>
+                        <div class="@BootstrapHelper.PullRight d-flex align-content-center">
+                            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="@GetEditScript(action)">
+                                <span class="fa fa-pencil"></span>
+                            </button>
+                            @if (action.IsUserCreated)
+                            {
+                                <button class="@BootstrapHelper.DefaultButton btn-small" style="margin-left:10px;" type="button"
+                                        onclick="@GetDeleteScript(action)">
+                                    <span class="fa fa-trash"></span>
+                                </button>
+                            }
+                            else if (action is not FormToolbarAction)
+                            {
+                                <div class="form-check form-switch form-switch-md" style="padding-left:0px">
+                                    <input type="checkbox"
+                                           @(action.IsVisible ? "checked=\"checked\"" : "")
+                                           style="margin-left:10px;"
+                                           data-toggle="toggle"
+                                           data-size="small"
+                                           data-on="On"
+                                           role="switch"
+                                           data-off="Off"
+                                           class="form-check-input align-self-center"
+                                           onchange="DataDictionaryUtils.toggleActionEnabled($(this).prop('checked'),'@GetUrlDisable(action)','@StringLocalizer["Unexpected error"]');">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+
+    </div>
+</div>
+
+
+@functions {
+
+    private string GetEditScript(BasicAction action)
+    {
+        var script = new StringBuilder();
+        script.Append("defaultModal.showIframe('");
+        script.Append(Url.Action("Edit", "Actions",
+            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName }));
+        script.Append($"','{Model.Source.ToString().FirstCharToUpper()}");
+        script.Append($" Action', {(int)ModalSize.ExtraLarge}");
+        script.Append(");");
+
+        return script.ToString();
+    }
+
+    private string GetAddScript(MemberInfo actionType, Guid? pluginId = null)
+    {
+        var script = new StringBuilder();
+        script.Append("defaultModal.showIframe('");
+        script.Append(Url.Action("Add", "Actions",
+            new { elementName = Model.ElementName, actionType = actionType.Name, context = Model.Source, fieldName = Model.FieldName, pluginId }));
+        script.Append($"','{Model.Source.ToString().FirstCharToUpper()}");
+        script.Append($" Action',{(int)ModalSize.ExtraLarge}");
+        script.Append(");");
+
+        return script.ToString();
+    }
+
+
+    private string GetDeleteScript(BasicAction action)
+    {
+        var script = new StringBuilder();
+        script.Append("DataDictionaryUtils.deleteAction('");
+        script.Append(action.Name);
+        script.Append("', '");
+        script.Append(Url.Action("Remove", "Actions",
+            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName }));
+        script.Append("', '");
+        script.Append(StringLocalizer["Are you sure you want to delete [{0}] action?", action.Name]);
+        script.Append("');");
+
+        return script.ToString();
+    }
+
+    public string? GetUrlDisable(BasicAction action)
+    {
+        return Url.Action("EnableDisable", "Actions",
+            new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName });
+    }
+
+    public string? GetUrlSort()
+    {
+        return Url.Action("Sort", "Actions",
+            new { elementName = Model.ElementName, fieldName = Model.FieldName });
+    }
+
+}

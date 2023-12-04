@@ -1,0 +1,37 @@
+﻿@using JJMasterData.Core.UI
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+<input type="hidden" id="isActionSave" name="isActionSave" value="false" />
+
+<div class="row">
+    <div class="col-sm-12">
+        @Html.Raw(ViewBag.Error)
+    </div>
+</div>
+
+<br />
+<hr />
+
+<div class="row">
+    <div class="col-sm-12">
+        <button type="submit" class="btn btn-primary" onclick="$('#isActionSave').val('true');">
+            <span class="fa fa-check"></span>
+            <span>&nbsp;@StringLocalizer["Save"]</span>
+        </button>
+
+        <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.defaultModal.hide();">
+            <span class="fa fa-times"></span>
+            <span>&nbsp;@StringLocalizer["Cancel"]</span>
+        </button>
+    </div>
+</div>
+
+@if (ViewBag.Success != null && ViewBag.Success)
+{
+    <script lang="javascript" type="text/javascript">
+        requestSubmitParentWindow();
+    </script>
+}
+
+<br />
+<br />

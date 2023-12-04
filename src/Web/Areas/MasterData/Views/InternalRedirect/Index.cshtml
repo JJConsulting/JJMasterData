@@ -1,0 +1,43 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptions<MasterDataWebOptions> Options
+@using JJMasterData.Core.UI
+@model JJMasterData.Web.Areas.MasterData.Models.InternalRedirectViewModel
+
+@{
+    Layout = Options.Value.ModalLayoutPath;
+    
+}
+
+@using (Html.BeginForm())
+{
+    <script lang="js" type="text/javascript">
+         window.parent.defaultModal.modalTitle = '@Model.Title';
+    </script>
+    if (ViewBag.Success == true)
+    {
+        <script lang="js" type="text/javascript">
+            requestSubmitParentWindow()
+        </script>
+    }
+
+    @Html.Raw(Model.HtmlContent)
+
+    if (Model.ShowToolBar)
+    {
+        <div id="divToolbar">
+            <button type="submit" class="btn btn-primary"
+                    formaction="@Url.Action("Save", new { parameters = Context.Request.Query["parameters"] })">
+                <span class="fa fa-check"></span>
+                <span>&nbsp;@StringLocalizer["Save"]</span>
+            </button>
+    
+            <button type="button" class="@BootstrapHelper.DefaultButton" onclick="window.parent.defaultModal.hide();">
+                <span class="fa fa-times"></span>
+                <span>&nbsp;@StringLocalizer["Cancel"]</span>
+            </button>
+        </div>
+        <br/>
+    
+        @Html.Raw(ViewBag.Error)
+    }
+}

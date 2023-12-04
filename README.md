@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-<img width=25% src="doc/JJMasterData.Documentation/media/JJMasterDataLogoVertical.png"/>
+<img width=25% src="doc/Documentation/media/JJMasterDataLogoVertical.png"/>
 </h1>
 <p align="center">
   <a href="https://img.shields.io/badge/.NET-5C2D91">
@@ -48,12 +48,14 @@ https://user-images.githubusercontent.com/52143624/213810038-e966e8d9-f465-4f98-
 
 https://user-images.githubusercontent.com/28662273/213789862-a86365f9-fd60-4e4a-ab4e-ded967d4080d.mp4
 
+You can paste the appsettings.json url from [here](https://raw.githubusercontent.com/JJConsulting/JJMasterData/main/jjmasterdata.json)
+
 See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles/getting_started.html).
 
 <br>
 
 ## Building from source 🧰
-1. Install [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+1. Install [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 2. Install [NodeJS](https://nodejs.org/en/download/)
 

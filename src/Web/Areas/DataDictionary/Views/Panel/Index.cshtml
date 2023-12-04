@@ -1,0 +1,182 @@
+﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
+@model JJMasterData.Core.DataDictionary.Models.FormElementPanel
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@{
+    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Panels"]}";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        sortableGrid();
+        savePanelState();
+
+        resizeContainer();
+        window.onresize = resizeContainer;
+    });
+
+    function resizeContainer() {
+
+        var buttonBar = document.getElementsByClassName("jjtoolbar");
+        let container = document.getElementsByClassName("jjcontainer");
+        let containerHeight = 0;
+        let windowHeight = 0;
+
+        if (buttonBar[0] && container[0]) {
+            containerHeight = container[0].offsetHeight + 250;
+            windowHeight = window.innerHeight;
+
+            if (windowHeight < containerHeight) {
+                buttonBar[0].style.position = "relative";
+            } else {
+                buttonBar[0].style.position = "absolute";
+            }
+        }
+    }
+
+    function savePanelState() {
+        var currentTab = $("#selected-tab").val();
+        if (!currentTab) {
+            currentTab = "#div-general";
+        }
+        $(".nav a[href='" + currentTab + "']").tab("show");
+
+        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
+            var target = $(e.target).attr("href");
+            $("#selected-tab").val(target);
+            resizeContainer();
+        });
+    }
+
+    function sortableGrid() {
+        $("#sortable-grid").sortable({
+            update: function () {
+                var order = $(this).sortable('toArray');
+                cmdMoveAction(order);
+            }
+        }).disableSelection();
+    }
+
+    function cmdMoveAction(order) {
+        var url = "@Url.Action("Sort", new { elementName = ViewBag.ElementName })";
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: { orderFields: order },
+            success: function (response) {
+                if (!response.success) {
+                    messageBox.show("Erro", "Ocorreu um erro inesperado ao ordenar os campos", 4);
+                }
+            },
+            error: function (xhr, status, error) {
+                SpinnerOverlay.hide();
+                if (xhr.responseText != "") {
+                    var err = JSON.parse(xhr.responseText);
+                    //Session expired
+                    if (err.status == 401) {
+                        document.forms[0].submit();
+                    }
+                    else {
+                        messageBox.show("Atenção", err.message, 4);
+                    }
+                }
+                else {
+                    messageBox.show("Erro", "Ocorreu um erro inesperado ao ordenar os campos", 4);
+                }
+            }
+        });
+    }
+
+    function loadIframe(url, panelId) {
+        $("#sortable-grid a").removeClass("active");
+
+        if (panelId != "")
+            $("#" + panelId).addClass("active");
+
+        $.get(url, function (data) {
+            $("#field-details").html(data);
+            listenAllEvents("#field-details ");
+            savePanelState();
+            resizeContainer();
+        });
+    }
+
+    function searchFields(oDom) {
+        var value = $(oDom).val().toLowerCase();
+        $("#sortable-grid a").filter(function () {
+            //procura por textos
+            var textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            var isSearch = textValues.toLowerCase().indexOf(value) > -1;
+
+            $(this).toggle(isSearch);
+        });
+    }
+</script>
+
+<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
+
+@using (Html.BeginForm())
+{
+    <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
+    <input type="hidden" name="selectedFields" id="selectedFields" value="@Context.Request.Query["selectedFields"]"/>
+    <input type="hidden" name="enabled_fields" id="enabled_fields" value="@Context.Request.Query["enabled_fields"]"/>
+
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="input-group jjsearch" style="margin-bottom: 15px;margin-top: 1px;">
+                <span class="input-group-btn">
+                    <button type="button" class="@BootstrapHelper.DefaultButton" onclick="loadIframe('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
+                        <span class="fa fa-plus"></span>
+                    </button>
+                </span>
+                <input class="form-control"
+                       type="search"
+                       @BootstrapHelper.GetDataToggle("tooltip")
+                       title="@StringLocalizer["Filter by any field visible in the list"]"
+                       placeholder="@StringLocalizer["Search..."]"
+                       id="txtFilter"
+                       name="txtFilter"
+                       onkeyup="searchFields(this);"/>
+            </div>
+            <div class="jjrelative">
+                <div id="listField">
+                    <div class="list-group jjsortable" id="sortable-grid">
+                        @{int nLine = 0;}
+                        @if (ViewBag.Panels.Count == 0)
+                        {
+                            <div>@StringLocalizer["No record found"]</div>
+                        }
+                        @foreach (FormElementPanel panel in ViewBag.Panels)
+                        {
+                            nLine++;
+                            <a href="javascript:loadIframe('@Url.Action("Detail", new { elementName = ViewBag.ElementName, panelId = panel.PanelId })', '@panel.PanelId' );"
+                               class="list-group-item @(panel.PanelId.Equals(Model.PanelId) ? "active" : "")"
+                               id="@panel.PanelId">
+                                <div style="height: 33px;">
+                                    <div class="@BootstrapHelper.PullLeft">
+                                        <b>@panel.Title</b>
+                                        <br>
+                                        @panel.Layout.ToString()
+                                    </div>
+                                    <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
+                                    </div>
+                                    <span class="@BootstrapHelper.PullRight jjsortable-span" title="@StringLocalizer["Drag and drop to move"]">
+                                        @nLine.ToString()
+                                    </span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-9" style="padding-left:0px">
+            <div class="jjrelative" id="field-details">
+                @await Html.PartialAsync("_Detail", Model)
+            </div>
+        </div>
+        <br/>
+    </div>
+}

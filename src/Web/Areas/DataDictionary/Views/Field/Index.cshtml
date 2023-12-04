@@ -1,0 +1,297 @@
+﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
+@using JJMasterData.Commons.Data.Entity.Providers
+
+@inject IComponentFactory ComponentFactory 
+
+@model JJMasterData.Core.DataDictionary.Models.FormElementField
+
+@functions {
+    private void ConfigureFieldSearchBox(JJTextGroup fieldSearchBox)
+    {
+        fieldSearchBox.Name = "txtFilter";
+        fieldSearchBox.PlaceHolder = StringLocalizer["Search..."];
+        fieldSearchBox.Tooltip = StringLocalizer["Filter by any field visible in the list"];
+
+        fieldSearchBox.Attributes.Add("onkeyup", "searchFields(this);");
+        
+        var item = ComponentFactory.Html.LinkButton.Create();
+        item.IconClass = "fa fa-plus";
+        item.OnClientClick = $"loadFieldDetails('{Url.Action("Add", new { elementName = ViewBag.ElementName })}', '');";
+        fieldSearchBox.Actions.Add(item);
+    }
+}
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@{
+    ViewData["Title"] = $"{ViewBag.ElementName} - {StringLocalizer["Fields"]}";
+}
+
+@{
+    static IconType GetFontAwesomeIconClass(FormComponent component)
+    {
+        return component switch
+        {
+            FormComponent.Text => IconType.KeyboardO,
+            FormComponent.TextArea => IconType.AlignLeft,
+            FormComponent.Hour => IconType.ClockO,
+            FormComponent.Date => IconType.Calendar,
+            FormComponent.DateTime => IconType.Calendar,
+            FormComponent.Password => IconType.Lock,
+            FormComponent.Email => IconType.Envelope, 
+            FormComponent.Number => IconType.Calculator, 
+            FormComponent.ComboBox => IconType.CaretDown, 
+            FormComponent.Search => IconType.Search, 
+            FormComponent.RadioButton => IconType.RegularCircleDot, 
+            FormComponent.CheckBox => IconType.CheckSquare, 
+            FormComponent.Cnpj => IconType.SolidBuildingColumns, 
+            FormComponent.Cpf => IconType.RegularIdCard, 
+            FormComponent.CnpjCpf => IconType.RegularIdBadge, 
+            FormComponent.Currency => IconType.Dollar, 
+            FormComponent.Tel => IconType.Phone, 
+            FormComponent.Cep => IconType.MapMarker, 
+            FormComponent.QrCode => IconType.Qrcode, 
+            FormComponent.Location => IconType.MapMarker, 
+            FormComponent.Lookup => IconType.Binoculars, 
+            FormComponent.File => IconType.File, 
+            FormComponent.Slider => IconType.Sliders, 
+            FormComponent.ColorPicker => IconType.SolidPaintbrush,
+            _ => IconType.Question 
+            };
+    }
+
+}
+
+@section Scripts{
+
+    <script type="text/javascript">
+         function setupCodeMirror(){
+            CodeMirrorWrapper.setupCodeMirror("DataItem_Command_Sql",{
+                mode: "text/x-sql",
+                hintList: @Html.Raw(ViewBag.CodeMirrorHintList),
+                hintKey: '{'
+            });
+         }
+         
+           
+         function listenTabs (){
+            setupCodeMirror(); 
+            
+            const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]')
+            
+            if(!tabs)
+                return;
+            
+            tabs.forEach((tab)=>{
+                 tab.addEventListener('shown.bs.tab', () => {
+                     const codeMirrorElements = document.querySelectorAll(".CodeMirror");
+                     if (codeMirrorElements){
+                         codeMirrorElements.forEach(function (c){
+                             c.CodeMirror.refresh();
+                         })
+                     }
+                     else{
+                        setupCodeMirror();
+                     }
+                 })
+            })
+         }
+         
+         document.addEventListener("DOMContentLoaded",listenTabs)
+    </script>
+
+    <script type="text/javascript">        
+        document.addEventListener("DOMContentLoaded",function (){
+            sortableGrid();
+            saveTabState();
+    
+            resizeContainer();
+            window.onresize = resizeContainer;
+        })
+    
+        function resizeContainer() {
+            const buttonBar = document.getElementsByClassName("jjtoolbar");
+            let container = document.getElementsByClassName("jjcontainer");
+            let containerHeight = 0;
+            let windowHeight = 0;
+    
+            if (buttonBar[0] && container[0]) {
+                containerHeight = container[0].offsetHeight + 250;
+                windowHeight = window.innerHeight;
+                
+                if (windowHeight < containerHeight) {
+                    buttonBar[0].style.position = "relative";
+                } else {
+                    buttonBar[0].style.position = "absolute";
+                }
+            }
+        }
+    
+        function saveTabState() {
+            let currentTab = document.querySelector("#selected-tab").value;
+            if (!currentTab) {
+                currentTab = "#div-general";
+            }
+            
+            let tabLinks = document.querySelectorAll("[@BootstrapHelper.DataToggle='tab']");
+            tabLinks.forEach(function(link) {
+                if (link.getAttribute('href') === currentTab) {
+                    link.classList.add('active');
+                    link.classList.add('show');
+                } else {
+                    link.classList.remove('active');
+                    link.classList.remove('remove');
+                }
+            });
+            
+            document.querySelectorAll(".tab-pane").forEach(function (tabPane){
+              if (tabPane.id === currentTab.replace("#","")) {
+                    tabPane.classList.add('active');
+                    tabPane.classList.add('show');
+                } else {
+                    tabPane.classList.remove('active');
+                    tabPane.classList.remove('remove');
+                }
+            })
+        
+            document.querySelector(currentTab).classList.add('active');
+            document.querySelector(currentTab).classList.add('show');
+            
+            tabLinks.forEach(function(tabLink) {
+                tabLink.addEventListener("click", function(e) {
+                   
+                    document.querySelector("#selected-tab").value = e.target.getAttribute("href");
+        
+                    resizeContainer();
+                });
+            });
+        }
+    
+        function sortableGrid() {
+            $("#sortable-grid").sortable({
+                update: function () {
+                    const order = $(this).sortable('toArray');
+                    moveFields(order);
+                }
+            }).disableSelection();
+        }
+    
+        function moveFields(order) {
+            const formData = new FormData();
+            formData.append('fieldsOrder', order);
+            fetch('@Url.Action("Sort", new { elementName = ViewBag.ElementName })', {
+                method: "POST",
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('@StringLocalizer["Error while ordering fields."]');
+                }
+            })
+            .catch(error => {
+               messageBox.show('@StringLocalizer["Error"]', error.message, 4);
+            });
+        }
+    
+        function loadFieldDetails(url, fieldName) {
+            document.querySelector("#sortable-grid .active").classList.remove("active");
+    
+            if (fieldName !== "")
+                document.querySelector("#" + fieldName).classList.add("active");
+            
+            SpinnerOverlay.show()
+            
+            fetch(url).then((response)=>response.text()).then((html)=>{
+                HTMLHelper.setInnerHTML("field-details",html)
+                
+                listenAllEvents("#field-details");
+                listenTabs();
+                saveTabState();
+                resizeContainer();
+                SpinnerOverlay.hide()
+            })
+        }
+    
+        function searchFields(oDom) {
+            const value = $(oDom).val().toLowerCase();
+            $("#sortable-grid a").filter(function () {
+                const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+                const isSearch = textValues.toLowerCase().indexOf(value) > -1;
+    
+                $(this).toggle(isSearch);
+            });
+        }
+    </script>
+}
+
+    <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
+
+    @using (Html.BeginForm("Index", "Field", FormMethod.Post))
+    {
+        <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
+        <div class="row">
+            <div class="col-sm-3">
+                <text-group configure="ConfigureFieldSearchBox"/>
+                <br/>
+                <div class="jjrelative">
+                    <div id="listField">
+                        <div class="list-group jjsortable" id="sortable-grid">
+                            @if (ViewBag.Fields.Count == 0)
+                            {
+                                <div>@StringLocalizer["No record found"]</div>
+                            }
+                            @for (int i = 0; i < ViewBag.Fields.Count; i++)
+                            {
+                                FormElementField field = ViewBag.Fields[i];
+                                var fieldName = field.Name;
+
+                                <a href="javascript:loadFieldDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, fieldName })', '@fieldName' );"
+                                   class="list-group-item @(fieldName.Equals(Model.Name) ? "active" : "")"
+                                   id="@fieldName">
+                                    <div style="height: 33px;">
+                                        <div class="@BootstrapHelper.PullLeft">
+                                            <b>@fieldName</b>
+                                            @if (field.IsPk)
+                                            {
+                                                <span class="fa fa-star" style="color:#efd829;" data-bs-toggle="tooltip" data-bs-original-title="@StringLocalizer["Primary key"]"></span>
+                                            }
+                                            @if (field.Component is not FormComponent.Text)
+                                            {
+                                                <span class="@GetFontAwesomeIconClass(field.Component).GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Component.ToString()"></span>
+                                            }
+                                            <br>
+                                            @if (field.Label != null)
+                                            {
+                                                var label = field.Label.Replace("<br>", " ").Replace("<BR>", " ").Replace("<br />", " ");
+                                                if (label.Length > 35)
+                                                {
+                                                    label = $"{label[..30]}...";
+                                                }
+                                                <span>@label</span>
+                                                <span> - </span>
+                                            }
+                                            <small>@SqlServerScriptsBase.GetFieldDataTypeScript(field)</small>
+                                        </div>
+                                        <div class="@BootstrapHelper.PullRight jjsortable-icon" title="@StringLocalizer["Drag and drop to move"]">
+                                        </div>
+                                        <span class="@BootstrapHelper.PullRight jjsortable-span" title="@StringLocalizer["Drag and drop to move"]">
+                                            @i
+                                        </span>
+                                    </div>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9" style="padding-left:0px">
+                <div class="jjrelative" id="field-details">
+                    <partial name="_Detail" model="Model"/>
+                </div>
+            </div>
+            <br/>
+        </div>
+    }
+

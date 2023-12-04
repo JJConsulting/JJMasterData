@@ -1,0 +1,352 @@
+﻿@using JJMasterData.Commons.Data.Entity.Models
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Core.Events.Abstractions
+@using JJMasterData.Core.Events.Extensions
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
+@using JJMasterData.Core.UI.Events.Abstractions
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+
+@model JJMasterData.Core.DataDictionary.Models.FormElementField
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptions<MasterDataWebOptions> Options
+
+@inject IFormEventHandlerResolver FormEventHandlerResolver
+
+@inject IGridEventHandlerResolver GridEventHandlerResolver
+
+@{
+    string currentTab = ViewBag.Tab ?? "#div-general";
+
+    string Active(string tab)
+    {
+        return currentTab == tab ? "active show" : string.Empty;
+    }
+}
+
+@{
+    string elementName = ViewBag.ElementName;
+    var formEventHandler = FormEventHandlerResolver.GetFormEventHandler(elementName) as IEventHandler ?? GridEventHandlerResolver.GetGridEventHandler(elementName);
+
+    var isCustomizedField = formEventHandler?.GetCustomizedFields().Contains(Model.Name) ?? false;
+    
+}
+
+<script lang="javascript" type="text/javascript">
+    function save() {
+        SpinnerOverlay.show();
+        const url = `@Url.Action("Save", new { elementName })`;
+        const form = document.querySelector("form");
+        form.action = url;
+        form.submit();
+    }
+    
+    function copy() {
+        SpinnerOverlay.show();
+        const url = `@Url.Action("Copy", new { elementName })`;
+        const form = document.querySelector("form");
+        form.action = url;
+        form.submit();
+    }
+    
+    function showSuccess(fieldName) {
+        document.addEventListener("DOMContentLoaded", function () {
+            const successDiv = document.getElementById("div-success");
+            successDiv.style.display = "";
+            window.parent.document.querySelector('#current_field').value = fieldName;
+        });
+    }
+</script>
+
+@Html.HiddenFor(model => Model.PanelId)
+<div class="container-fluid jjcontainer">
+    <div class="row">
+        <div class="col-sm-12">
+            @Html.Raw(ViewBag.Error)
+        </div>
+    </div>
+    <ul id="field-nav" class="nav nav-tabs">
+        <li class="nav-item" id="nav-general" @Active("#div-general")>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-general" href="#div-general">@StringLocalizer["General"]</a>
+        </li>
+        <li class="nav-item" id="nav-component" @Active("#div-component")>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-component" href="#div-component">@StringLocalizer["Component"]</a>
+        </li>
+        <li class="nav-item" id="nav-advanced" @Active("#div-advanced")>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-advanced" href="#div-advanced">@StringLocalizer["Advanced"]</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade @Active("#div-general")">
+            <div class="row">
+
+                <div class="@BootstrapHelper.FormGroup col-sm-5 required">
+                    <label class="@BootstrapHelper.Label " asp-for="Name"></label>
+                    <tooltip title="Name of the field at your data source."/>
+                    @if (isCustomizedField)
+                    {
+                        <input asp-for="Name" maxlength="64" class="form-control" readonly="readonly"/>
+                    }
+                    else
+                    {
+                        <input asp-for="Name" maxlength="64" class="form-control"/>
+                    }
+                    <input type="hidden" id="originalName" name="originalName" value="@ViewBag.OriginalName"/>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-7">
+                    <label class="@BootstrapHelper.Label " asp-for="Label"></label>
+                    <tooltip title="Name of the field displayed at the form."/>
+                        
+                    @Html.TextBoxFor(model => model.Label, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+                    <label class="@BootstrapHelper.Label " asp-for="Filter.Type"></label>
+                    <select asp-for="Filter.Type" class="form-control form-select" asp-items="Html.GetEnumSelectList<FilterMode>()"></select>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                    <label class="@BootstrapHelper.Label " asp-for="DataBehavior"></label>
+
+                    <tooltip title="Field behavior in relation to the database"/>
+
+                    <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                    <label class="@BootstrapHelper.Label " asp-for="DataType"></label>
+                     @{
+                                    var dataTypeList = Html.GetEnumSelectList<FieldType>().ToList();
+            
+                                    foreach (var dataType in dataTypeList)
+                                        dataType.Group.Name = StringLocalizer[dataType.Group.Name];
+                    }
+                    <select asp-for="DataType" class="form-control form-select" asp-items="dataTypeList.OrderBy(f => f.Group.Name)"></select>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-2">
+                    <label class="@BootstrapHelper.Label " asp-for="Size"></label>
+                    <tooltip title="Field size. At SQL Server use -1 to use the MAX keyword."/>
+                    @Html.TextBoxFor(model => model.Size, new { @class = "form-control" })
+                </div>
+                <div class="col-sm-3">
+                    <div class="row">
+                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                            <label class="@BootstrapHelper.Label " asp-for="IsRequired">@StringLocalizer["Required"]</label>
+                            <checkbox for="IsRequired" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                        </div>
+                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                            <label class="@BootstrapHelper.Label " asp-for="IsPk">@StringLocalizer["PK"]</label>
+                            <checkbox for="IsPk" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                        </div>
+                        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                            <label class="@BootstrapHelper.Label " asp-for="AutoNum">@StringLocalizer["Identity"]</label>
+                            <checkbox for="AutoNum" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-12">
+                    <label class="@BootstrapHelper.Label " asp-for="HelpDescription">
+                    </label>
+                    <tooltip title="The help text will be displayed like this on the form."/>
+                    @Html.TextBoxFor(model => model.HelpDescription, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-3">
+                    <label class="@BootstrapHelper.Label " asp-for="CssClass"></label>
+                    <tooltip title="Class name (CSS) one to be assigned to object group rendering"/>
+
+                    @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
+                </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-2">
+                    <label class="@BootstrapHelper.Label " asp-for="LineGroup"></label>
+                    <tooltip title="Row number at the form, used to break the line in the form flex layout."/>
+
+                    @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+                    <label class="@BootstrapHelper.Label " asp-for="Export"></label>
+                    <checkbox for="Export" switch="true"/>
+                </div>
+
+                @if (Options.Value.SupportNetFramework)
+                {
+                    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                        <label class="@BootstrapHelper.Label " asp-for="ValidateRequest"></label>
+                        <tooltip title="Validates possibly dangerous values on request on .NET Framework 4.8"/>
+                        <checkbox for="ValidateRequest" switch="true"/>
+                    </div>
+                }
+            </div>
+
+        </div>
+        <div id="div-component" class="tab-pane fade @Active("#div-component")">
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+                    <label class="@BootstrapHelper.Label " asp-for="Component"></label>
+                    @{
+                        var componentList = Html.GetEnumSelectList<FormComponent>().ToList();
+
+                        foreach (var component in componentList)
+                            component.Group.Name = StringLocalizer[component.Group.Name];
+                    }
+                    <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="componentList.OrderBy(c=>c.Group.Name).ThenBy(c=>c.Text)"></select>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                    <label class="@BootstrapHelper.Label " asp-for="AutoPostBack"></label>
+
+                    <tooltip title="When changing the content, it reloads all form fields"/>
+
+                    <checkbox for="AutoPostBack" switch="true"/>
+                </div>
+
+                @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider)
+                {
+                    <div class="@BootstrapHelper.FormGroup col-sm-2">
+                        <label class="@BootstrapHelper.Label " asp-for="NumberOfDecimalPlaces"></label>
+                        @Html.TextBoxFor(model => model.NumberOfDecimalPlaces, new { type = "number", @class = "form-control" })
+                    </div>
+                }
+
+                @await Html.PartialAsync("_Attributes", Model)
+
+            </div>
+
+            @if (Model.Component is FormComponent.Text 
+                or FormComponent.Email 
+                or FormComponent.Number 
+                or FormComponent.Cep 
+                or FormComponent.Cnpj 
+                or FormComponent.Cpf 
+                or FormComponent.CnpjCpf)
+            {
+                if (ViewBag.OriginalName == null || ViewBag.OriginalName == "")
+                {
+                    <hr/>
+                    <div class="col-sm-12">
+                        <span class="text-info fa fa-info-circle"></span>
+                        <span class="small">
+                            <b>@StringLocalizer["Actions"]</b>
+                            <br/>
+                            <em>@StringLocalizer["This component allows you to add actions, but you must save it to add actions later."]</em>
+                        </span>
+                    </div>
+                }
+                else
+                {
+                    @await Html.PartialAsync("~/Areas/DataDictionary/Views/Actions/_List.cshtml", new ActionsListDetailsViewModel
+                           {
+                               Source = ActionSource.Field,
+                               ElementName = ViewBag.ElementName,
+                               Actions = Model.Actions.GetAllSorted(),
+                               FieldName = ViewBag.OriginalName
+                           })
+                }
+            }
+            else if (Model.Component is FormComponent.ComboBox or FormComponent.Search)
+            {
+                @await Html.PartialAsync("_DataItem", Model)
+            }
+            else if (Model.Component is FormComponent.Lookup)
+            {
+                @await Html.PartialAsync("_Lookup", Model)
+            }
+            else if (Model.Component is FormComponent.File)
+            {
+                @await Html.PartialAsync("_DataFile", Model)
+            }
+
+        </div>
+        <div id="div-advanced" class="tab-pane fade @Active("#div-advanced")">
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-12">
+                    <expression for="DefaultValue" icon="IconType.Check" tooltip="Expression for a default value. Check expressions at the docs for more information."/>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                    <expression for="VisibleExpression" icon="IconType.Eye" tooltip="Boolean expression to show the field. Check expressions at the docs for more information."/>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                    <expression for="EnableExpression" icon="IconType.Pencil" tooltip="Boolean expression to enable the field. Check expressions at the docs for more information."/>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-12">
+                    <expression for="TriggerExpression" icon="IconType.Bolt" tooltip="Expression triggered whenever a field triggers a POST to the server. Check expressions at the docs for more information."/>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-sm-12">
+            @if (isCustomizedField)
+            {
+                <alert title="@StringLocalizer["CustomizedField"]"
+                       message="@StringLocalizer["CustomizedFieldMessage"]" 
+                       icon="IconType.SolidCircleInfo" 
+                       color="Info"/>
+            }
+        </div>
+        <div class="col-sm-12 jjtoolbar">
+
+            @{
+                Save();
+            }
+            @{
+                Refresh();
+            }
+            @{
+                @if (!isCustomizedField)
+                {
+                    Delete();
+                }
+            }
+            @{
+                Copy();
+            }
+        </div>
+    </div>
+</div>
+
+
+
+@functions{
+
+    void Save()
+    {
+        <button type="button" class="btn btn-primary btn-small" style="color:white" onclick="save();">
+            <span class="fa fa-check"></span>
+            <span>&nbsp;@StringLocalizer["Save"]</span>
+        </button>
+    }
+
+    void Refresh()
+    {
+        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
+            <span class="fa fa-refresh fa-fw fa-fw"></span>
+            <span>@StringLocalizer["Refresh"]</span>
+        </a>
+    }
+
+    void Delete()
+    {
+        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
+            <span class="fa fa-trash"></span>
+            <span>@StringLocalizer["Delete"]</span>
+        </a>
+    }
+
+    void Copy()
+    {
+        <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="copy();">
+            <span class="fa fa-files-o fa-fw fa-fw"></span>
+            <span>&nbsp;@StringLocalizer["Copy"]</span>
+        </button>
+    }
+
+}

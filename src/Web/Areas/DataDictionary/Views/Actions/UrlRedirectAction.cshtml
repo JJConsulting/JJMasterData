@@ -1,0 +1,67 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptions<MasterDataWebOptions> Options
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
+@model  JJMasterData.Core.DataDictionary.Models.Actions.UrlRedirectAction
+
+@{
+    Layout = Options.Value.ModalLayoutPath;
+}
+
+@using (Html.BeginForm("UrlRedirectAction", "Actions",
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li id="nav-general" class="nav-item active"><a class="nav-link active"  @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
+        <li id="navUrlAction" class="nav-item"><a class="nav-link"  @BootstrapHelper.GetDataToggle("tab") href="#divUrlAction">@StringLocalizer["Url Action"]</a></li>
+        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
+            @await Html.PartialAsync("_NavGeneral", Model)
+        </div>
+
+        <div id="divUrlAction" enableviewstate="false" class="tab-pane fade">
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+                    <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["This field support runtime values using expressions."]">@StringLocalizer["Url Redirect"]</label>
+                    @Html.TextBoxFor(model => model.UrlRedirect, new { @class = "form-control" })
+                </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-1">
+                    <label asp-for="IsModal" class="@BootstrapHelper.Label">@StringLocalizer["Is Modal"]</label>
+                    <tooltip/> 
+                    <checkbox for="IsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-8">
+                    <label class="@BootstrapHelper.Label" >@StringLocalizer["Modal Title"]</label>
+                    @Html.TextBoxFor(model => model.ModalTitle, new { @class = "form-control" })
+                </div>
+                
+                
+                <div class="@BootstrapHelper.FormGroup col-sm-1">
+                    <label asp-for="IsIframe" class="@BootstrapHelper.Label">
+                        @StringLocalizer["Iframe"]
+                    </label>
+                    <tooltip title="If the redirect is in a modal will render a iframe in the body (not recommended in most cases)"/>
+                    <checkbox for="IsIframe" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                </div>
+
+                <div class="@BootstrapHelper.FormGroup col-sm-3">
+                    <label class="@BootstrapHelper.Label " asp-for="ModalSize">@StringLocalizer["Modal Size"]</label>
+                    <select asp-for="ModalSize" class="form-control form-select" asp-items="Html.GetEnumSelectList<ModalSize>()"></select>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="div-advanced" class="tab-pane fade">
+            @await Html.PartialAsync("_NavAdvanced", Model)
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}

@@ -1,0 +1,69 @@
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI.Components
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.OptionsViewModel
+@inject IOptions<MasterDataWebOptions> Options
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@{
+    ViewData["Title"] = StringLocalizer["Options"];
+}
+
+@{
+    Layout = Options.Value.ModalLayoutPath;
+}
+
+<form>
+    <input asp-for="FilePath" hidden="hidden"/>
+    <input asp-for="IsFullscreen" hidden="hidden"/>
+
+    @if (Model.IsFullscreen)
+    {
+        <jj-title title="Application Settings"/>
+    }
+
+    @if (Model.PathExists)
+    {
+        <alert icon="IconType.InfoCircle"
+                  color="Info"
+                  message="@Model.FilePath"
+                  title="All changes will be saved in the file located at the path:"/>
+    }
+    
+    @if (Model is { IsConnectionSuccessful:true })
+    {
+        <alert
+            title="Success"
+            message="Connection successfully estabilished."
+            icon="@IconType.CheckCircle"
+            color="@PanelColor.Success"/>
+    }
+
+    @if (!ViewData.ModelState.IsValid && Model.ValidationSummary != null)
+    {
+        @Html.Raw(Model.ValidationSummary.GetHtml())
+    }
+
+    <collapse-panel
+        title="Connection String"
+        partial="_ConnectionString"
+        model="Model"
+        icon="@IconType.Connectdevelop"/>
+
+    <div class="row">
+        <div class="col-sm-12">
+            @if (Model.IsFullscreen)
+            {
+                <link-button 
+                    url-action="/en-us/DataDictionary/" 
+                    icon="Home" 
+                    text="Home"/>
+            }
+            <link-button type="LinkButtonType.Submit" 
+                            url-action="@Url.Action("Save", "Options")" 
+                            icon="Save" 
+                            text="Save"/>
+        </div>
+    </div>
+
+
+</form>

@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+	<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <LangVersion>12</LangVersion>
+    <RootNamespace>JJMasterData.WebApi</RootNamespace>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>JJMasterData.WebApi</PackageId>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <OutputType>library</OutputType>
+	<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Plugins\Swagger.AspNetCore\Swagger.AspNetCore.csproj" />
+  </ItemGroup>
+</Project>

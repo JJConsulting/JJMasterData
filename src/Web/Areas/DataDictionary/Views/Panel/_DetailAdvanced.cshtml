@@ -1,0 +1,19 @@
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@using JJMasterData.Core.UI
+@model JJMasterData.Core.DataDictionary.Models.FormElementPanel
+
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+        <expression for="VisibleExpression" icon="IconType.Eye" />
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+        <expression for="EnableExpression" icon="IconType.Pencil" />
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-4">
+        <label asp-for="CssClass" class="@BootstrapHelper.Label"></label>
+        <tooltip title="Class name (CSS) to be added when rendering the object group"/>
+         <input type="text" asp-for="CssClass" class="form-control"/>
+    </div>
+</div>

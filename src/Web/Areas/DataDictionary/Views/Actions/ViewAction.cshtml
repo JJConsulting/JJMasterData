@@ -1,0 +1,41 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptions<MasterDataWebOptions> Options
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
+@model JJMasterData.Core.DataDictionary.Models.Actions.ViewAction
+
+@{
+    Layout = Options.Value.ModalLayoutPath;
+}
+
+@using (Html.BeginForm("ViewAction", "Actions",
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li id="nav-general" class="nav-item active"><a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a></li>
+                <li id="navView" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divViewAction">@StringLocalizer["View Action"]</a></li>
+        <li id="nav-advanced" class="nav-item"><a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a></li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
+            <partial name="_NavGeneral" model="Model"/>
+        </div>
+        
+        <div id="divViewAction" class="tab-pane fade">
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-12">
+                    <label asp-for="ShowAsModal" class="@BootstrapHelper.Label">@StringLocalizer["Show as Modal"]</label>
+                    <checkbox for="ShowAsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div id="div-advanced" class="tab-pane fade">
+            <partial name="_NavAdvanced" model="Model"/>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}

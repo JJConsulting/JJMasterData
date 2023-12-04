@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>12</LangVersion>
+        <Nullable>enable</Nullable>
+        <AssemblyName>JJMasterData.NCalc</AssemblyName>
+        <RootNamespace>JJMasterData.NCalc</RootNamespace>
+        <Description>JJMasterData NCalc expressions support.</Description>
+        <PackageIcon>JJMasterData.png</PackageIcon>
+        <PackageId>JJMasterData.NCalc</PackageId>
+        <PackageTags>ncalc,jjmasterdata</PackageTags>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Core\Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NCalcSync" Version="3.8.0" />
+    </ItemGroup>
+
+
+</Project>

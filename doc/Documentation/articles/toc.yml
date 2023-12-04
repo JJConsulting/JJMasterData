@@ -1,0 +1,73 @@
+- name: Introduction
+  href: intro.md
+  items:
+  - name: Getting Started
+    href: getting_started.md
+  - name: Configurations
+    href: configurations.md
+  - name: Component Factories
+    href: component_factories.md
+  - name: Custom Rules
+    href: custom_rules.md
+  - name: TagHelpers
+    href: taghelpers.md
+  - name: Logging
+    href: logging.md
+  - name: Internationalization
+    href: internationalization.md
+  - name: Authorization
+    href: authorization.md
+  - name: Expressions
+    href: expressions.md
+  - name: Reserved Keywords
+    href: reserved_keywords.md
+  - name: Customizing Layout
+    href: customizing_layout.md
+- name: Tutorials
+  items:
+  - name: Creating your first dictionary
+    href: tutorials/creating_data_dictionary.md
+  - name: Importing at CI/CD pipelines
+    href: tutorials/source_control.md
+  - name: UI Options
+    href: tutorials/ui_options.md
+  - name: Configuring Data Upload
+    href: tutorials/data_file.md
+  - name: Importing and Exporting Data Dictionaries
+    href: tutorials/import_export.md
+  - name: How to create a Relationship
+    href: tutorials/relationship.md    
+- name: Components
+  href: components/intro.md
+  items:
+  - name: Alert
+    href: components/alert.md
+  - name: LinkButton
+    href: components/link_button.md
+  - name: SearchBox
+    href: components/searchbox.md
+  - name: FormView
+    href: components/form_view.md
+- name: Errors
+  href: errors/intro.md
+  items:
+    - name: ConnectionString not found.
+      href: errors/connection_string.md
+    - name: SearchId is required at queries using ReplaceTextOnGrid.
+      href: errors/search_id.md
+- name: Plugins
+  items:
+  - name: Hangfire
+    href: plugins/hangfire.md
+  - name: MongoDB
+    href: plugins/mongodb.md
+  - name: Python
+    href: plugins/python.md
+  - name: NCalc
+    href: plugins/ncalc.md
+- name: Miscellaneous
+  items:
+  - name: .NET Framework Support
+    href: miscellaneous/netframework.md
+  - name: Assemblies
+    href: miscellaneous/assemblies.md

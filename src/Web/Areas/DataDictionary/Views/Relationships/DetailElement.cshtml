@@ -1,0 +1,198 @@
+﻿@using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.RelationshipsElementDetailsViewModel
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptions<MasterDataWebOptions> Options
+@{
+    ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Relationships"]}";
+    Layout = Options.Value.ModalLayoutPath;
+}
+
+@section Scripts{
+    <script type="text/javascript">
+        function saveForm() {
+            const form = document.querySelector('form');
+            fetch('@Url.Action("SaveRelationshipElement", "Relationships")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(new FormData(form))
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === true) {
+                    window.parent.defaultModal.hide();
+                    window.parent.location.reload();
+                } else {
+                    document.querySelector('#divError').innerHTML = data.errorMessage;
+                }
+            })
+            .catch(error => {
+                document.querySelector('#divError').innerHTML = error;
+            });
+        }
+    
+        function populateFkColumn() {
+          SpinnerOverlay.show();
+          document.querySelector('form').action = '@Url.Action("ElementDetails", "Relationships")';
+          document.querySelector('form').submit();
+        }
+    </script>
+}
+
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.ElementName)
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.MenuId)
+
+    <div class="well">
+        <div>
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-8">
+                    <label asp-for="Relationship.ChildElement"
+                           class="@BootstrapHelper.Label"
+                           data-bs-toggle="tooltip" data-toggle="tooltip"
+                           title="@StringLocalizer["Child element name"]">
+                        @StringLocalizer["ChildElement"]
+                    </label>
+                    <select asp-for="Relationship.ChildElement"
+                            onchange="populateFkColumn()"
+                            class="form-control"
+                            asp-items="Model.ElementsSelectList">
+                    </select>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                    <label asp-for="Relationship.UpdateOnCascade" class="@BootstrapHelper.Label "></label>
+                    @Html.DropDownListFor(model => model.Relationship.UpdateOnCascade, new[]
+                    {
+                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
+                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
+                    }, new { @class = "form-control form-select" })
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                    <label asp-for="Relationship.DeleteOnCascade" class="@BootstrapHelper.Label "></label>
+                    @Html.DropDownListFor(model => model.Relationship.DeleteOnCascade, new[]
+                    {
+                        new SelectListItem { Text = StringLocalizer["No"], Value = "false" },
+                        new SelectListItem { Text = StringLocalizer["Yes"], Value = "true" }
+                    }, new { @class = "form-control form-select" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <jj-title title="@StringLocalizer["Relationship"]" size="HeadingSize.H4"/>
+
+    <div class="row">
+        <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+            <label asp-for="AddPrimaryKeyName" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip"></label>
+            <select asp-for="AddPrimaryKeyName"
+                    class="form-control form-select"
+                    asp-items="Model.PrimaryKeysSelectList">
+            </select>
+        </div>
+
+        <div class="@BootstrapHelper.FormGroup col-sm-5 required">
+            <label asp-for="AddForeignKeyName" class="@BootstrapHelper.Label" data-bs-toggle="tooltip" data-toggle="tooltip"></label>
+            <select asp-for="AddForeignKeyName"
+                    class="form-control form-select"
+                    asp-items="Model.ForeignKeysSelectList">
+            </select>
+        </div>
+
+
+        <div class="col-sm-12">
+            @Html.Raw(Model.ValidationSummary?.GetHtml())
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4">
+            <button id="btnAddRelation" type="submit" class="@BootstrapHelper.DefaultButton" formaction="@Url.Action("CreateRelationship", "Relationships")">
+                <span class="fa fa-plus-square-o"></span>
+                &nbsp;@StringLocalizer["Add Relationship"]
+            </button>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th scope="col">@StringLocalizer["Order"]</th>
+                    <th scope="col">@StringLocalizer["Primary Key"]</th>
+                    <th scope="col">@StringLocalizer["Foreign Key"]</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (Model.Relationship.Columns.Count > 0)
+                {
+                    int index = 0;
+                    foreach (var item in Model.Relationship.Columns)
+                    {
+                        <tr>
+                            <td>@index</td>
+                            <td>
+                                @item.PkColumn
+                                @Html.HiddenFor(model => model.Relationship.Columns[index].PkColumn)
+                            </td>
+
+                            <td>
+                                @item.FkColumn
+                                @Html.HiddenFor(model => model.Relationship.Columns[index].FkColumn)
+                            </td>
+                            <td align="center" style="width:60px;" valign="middle">
+                                <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title=""
+                                        formaction="@Url.Action("DeleteRelationshipColumn", "Relationships", new { columnIndex = index })"
+                                        class="btn btn-link" data-original-title="@StringLocalizer["Delete"]">
+                                    <span class="fa fa-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        index++;
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">
+                            @StringLocalizer["No data records found"]
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div id="divError" class="col-sm-12">
+
+        </div>
+    </div>
+
+    <br/>
+    <div class="row">
+        <div class="col-sm-12">
+            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="saveForm()">
+                <span class="fa fa-check"></span>
+                <span>&nbsp;@StringLocalizer["Save"]</span>
+            </button>
+
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.defaultModal.hide();">
+                <span class="fa fa-times"></span>
+                <span>&nbsp;@StringLocalizer["Cancel"]</span>
+            </button>
+        </div>
+    </div>
+
+    <br/>
+    <br/>
+}

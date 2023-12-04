@@ -1,0 +1,15 @@
+﻿@inject IOptions<MasterDataWebOptions> Options
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ImportViewModel
+
+
+@Html.Raw(Model.UploadAreaHtml)
+
+<script type="text/javascript">
+    
+    UploadAreaListener.listenFileUpload("#jjmasterdata-modal ");
+  
+    function importationCallback(){
+        window.location.reload();
+    }
+   
+</script>

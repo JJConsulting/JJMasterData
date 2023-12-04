@@ -1,0 +1,90 @@
+﻿@using JJMasterData.Core.Http.Abstractions
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
+@model JJMasterData.Core.DataDictionary.Models.FormElementField
+
+@functions {
+    private void ConfigureSlider(JJSlider slider)
+    {
+        slider.MinValue = 0;
+        slider.MaxValue = 28;
+        slider.Name = @Html.NameFor(m => m.DataFile!.MaxFileSize);
+        slider.Value = Model.DataFile!.MaxFileSize;
+        slider.Enabled = true;
+        slider.CssClass = "row";
+    }
+}
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@inject IHttpContext HttpContext
+@section Scripts{
+    <script lang="javascript" type="text/javascript">
+    
+        $(document).ready(function () {
+            $("#DataFile_MultipleFile").change(function () {
+    
+                var ischecked = $(this).prop('checked');
+                var exportLink = $("#DataFile_ExportAsLink");
+                if (ischecked) {
+                    exportLink.bootstrapToggle('off');
+                    exportLink.bootstrapToggle('disable');
+                }
+                else {
+                    exportLink.bootstrapToggle('enable');
+                }
+            });
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <h4>@StringLocalizer["DataFile"]</h4>
+        <hr />
+    </div>
+
+    <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Folder Path"]">@StringLocalizer["FolderPath"]</label>
+        @Html.TextBoxFor(model => model.DataFile!.FolderPath, new { maxlength = "400", @class = "form-control" })
+        
+        <span class="help-block">
+            @StringLocalizer["You can use for example: "] {app.path}/DataDictionaries/AnotherFolder
+        </span>
+    </div>
+
+    <div class="@BootstrapHelper.FormGroup col-sm-12 required">
+        <label class="@BootstrapHelper.Label " for="txtAllowedTypes" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Types of historical files"]">@StringLocalizer["AllowedTypes"]</label>
+        @Html.TextBoxFor(model => model.DataFile!.AllowedTypes, new { maxlength = "255", @class = "form-control" })
+        <span class="help-block">@StringLocalizer["file types separated with comma ex: txt,csv,xlsx. In * mode system files are blocked"]</span>
+    </div>
+
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        @Html.LabelFor(m=>m.DataFile!.MaxFileSize,@StringLocalizer["Max File Size (MB)"], new {@class = BootstrapHelper.Label})
+        <slider configure="ConfigureSlider"/>
+    </div>
+
+    <div class="@BootstrapHelper.FormGroup col-sm-2">
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.ViewGallery">@StringLocalizer["View Gallery"]</label>
+        <checkbox for="DataFile!.ViewGallery" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-2">
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.DragDrop" >@StringLocalizer["DragDrop"]</label>
+        <tooltip title="Allow dragging files"/>
+        <checkbox for="DataFile!.DragDrop" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-2">
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.MultipleFile" >@StringLocalizer["MultipleFile"]</label>
+        <checkbox for="DataFile!.MultipleFile" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-2">
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.ExportAsLink">@StringLocalizer["ExportAsLink"]</label>
+        <tooltip title="Export file name with download link"/>
+        <checkbox for="DataFile!.ExportAsLink" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+    </div>
+
+    <div class="col-sm-12">
+        <a href="javascript:window.open('https://portal.jjconsulting.com.br/jjdoc/articles/tutorials/data_file.html', '_blank').focus();">@StringLocalizer["Need more help ?"]</a>
+    </div>
+
+
+</div>

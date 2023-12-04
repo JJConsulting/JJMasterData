@@ -1,0 +1,76 @@
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IEnumerable<IPluginHandler> Plugins
+
+@{
+    var plugin = Plugins.First(p => p.Id == Model.PluginId);
+    FormElement formElement = ViewBag.FormElement;
+
+    var dataItem = new FormElementDataItem
+    {
+        DataItemType = DataItemType.Manual,
+        FirstOption = FirstOptionMode.Choose,
+        Items = formElement.Fields.Select(f=>new DataItemValue(f.Name,f.Name)).ToImmutableList()
+    };
+}
+
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@using JJMasterData.Core.DataDictionary.Models
+@using System.Collections.Immutable
+@model JJMasterData.Core.DataDictionary.Models.Actions.PluginAction
+
+
+<div class="container-fluid ">
+    <table class="table table-responsive table-hover table-striped">
+        <thead>
+        <tr>
+            <th>
+                @StringLocalizer["Plugin Key"]
+            </th>
+            <th>
+                @StringLocalizer["Value"]
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var pluginField in plugin.ConfigurationFields!)
+        {
+            <tr>
+                <td>
+                    <span>@pluginField.NameOrLabel</span>
+                    @if (pluginField.Required)
+                    {
+                        <span style="color:red">*</span>
+                    }
+                </td>
+                <td>
+                    @{
+                        object? value = null;
+
+                        if (Model.ConfigurationMap.ContainsKey(pluginField.Name))
+                        {
+                            value = Model.ConfigurationMap[pluginField.Name];
+                        }
+                        
+                    }
+
+                    @switch (pluginField.Type)
+                    {
+                        case PluginConfigurationFieldType.Boolean:
+                            <checkbox name="@pluginField.Name" value="@(value is true)" switch="true"/>
+                            break;
+                        case PluginConfigurationFieldType.FormElementField:
+                            <combobox name="@pluginField.Name" form-element-data-item="@dataItem" value="@value"/>
+                            break;
+                        default:
+                            <input name="@pluginField.Name"
+                                   class="form-control" 
+                                   value="@value"
+                                   type="@(pluginField.Type is PluginConfigurationFieldType.Text ? "text" : "number")"/>
+                            break;
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

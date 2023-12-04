@@ -1,0 +1,116 @@
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Commons.Data.Entity.Models
+@using JJMasterData.Core.UI
+
+@model RelationshipsLayoutDetailsViewModel
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptions<MasterDataWebOptions> Options
+@{
+    TempData["SelectedTab"] = "#divLayout";
+    Layout = Options.Value.ModalLayoutPath;
+}
+
+@section Scripts{
+    <script type="text/javascript">
+        function saveForm() {
+            const form = document.querySelector('form');
+            fetch('@Url.Action("SaveRelationshipLayout", "Relationships")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(new FormData(form))
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === true) {
+                    window.parent.defaultModal.hide();
+                    window.parent.location.reload();
+                } else {
+                    document.querySelector('#divError').innerHTML = data.errorMessage;
+                }
+            })
+            .catch(error => {
+                document.querySelector('#divError').innerHTML = error;
+            });
+        }
+    </script>
+}
+
+
+<ul class="nav nav-tabs">
+    <li id="nav-general" class="nav-item active">
+        <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+    </li>
+    @if (!Model.IsParent)
+    {
+        <li id="navBehavior" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divBehavior">@StringLocalizer["Behavior"]</a>
+        </li>
+    }
+    <li id="nav-advanced" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+    </li>
+</ul>
+
+@using (Html.BeginForm())
+{
+    <input asp-for="ElementName" hidden/>
+    <input asp-for="MenuId" hidden/>
+    <input asp-for="IsParent" hidden/>
+    <input asp-for="Id" hidden/>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
+            <partial name="../Panel/_DetailData" model="Model.Panel"/>
+        </div>
+        
+        @if (!Model.IsParent)
+        {
+            <div id="divBehavior" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label asp-for="ViewType">@StringLocalizer["View Type"]</label>
+                        <select class="form-control form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
+                    </div>
+                    <div style="margin-top: 5px"  class="col-sm-12">
+                        <alert color="Info" title="@StringLocalizer["Help"]" icon="IconType.InfoCircle">
+                            <ul>
+                                <li>@StringLocalizer["None - The relationship is hidden and not rendered in any component."]</li>
+                                <li>@StringLocalizer["List - The relationship is shown in a list with the actions controlled by the respective Data Dictionary (1xn)."]</li>
+                                <li>@StringLocalizer["View - The relationship is shown in a read-only form (1x1)."]</li>
+                                <li>@StringLocalizer["Update - The relationship is shown in an updatable form (1x1)."]</li>
+                            </ul>
+                        </alert>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        <div id="div-advanced" class="tab-pane fade">
+            <partial name="../Panel/_DetailAdvanced" model="Model.Panel"/>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="saveForm()">
+                    <span class="fa fa-check"></span>
+                    <span>&nbsp;@StringLocalizer["Save"]</span>
+                </button>
+
+                <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.defaultModal.hide();">
+                    <span class="fa fa-times"></span>
+                    <span>&nbsp;@StringLocalizer["Cancel"]</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <br/>
+    <div class="row">
+        <div id="divError" class="col-sm-12">
+
+        </div>
+    </div>
+}

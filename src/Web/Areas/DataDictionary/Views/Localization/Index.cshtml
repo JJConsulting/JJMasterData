@@ -1,0 +1,12 @@
+﻿@model string
+@inject IOptions<MasterDataWebOptions> Options
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@{
+    ViewData["Title"] = StringLocalizer["Localization"];
+    Layout = Options.Value.ModalLayoutPath;
+}
+
+@using (Html.BeginForm())
+{
+    @Html.Raw(Model)
+}

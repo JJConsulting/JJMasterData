@@ -1,0 +1,64 @@
+﻿@using JJMasterData.Core.UI.Components
+@using JJMasterData.Core.UI
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IComponentFactory ComponentFactory
+
+<div class="@BootstrapHelper.PageHeader">
+    <h1>
+        @Html.Raw(ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml())
+        <small>@StringLocalizer["Duplicate Dictionary"]</small>
+    </h1>
+</div>
+
+
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Required field"]">@StringLocalizer["Source dictionary"]</label>
+            @Html.TextBox("originName", null, new { @class = "form-control", @readonly = "readonly" })
+        </div>
+
+        <div class="@BootstrapHelper.FormGroup col-sm-8 required">
+            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Required field"]">@StringLocalizer["New Dictionary Name"]</label>
+            @Html.TextBox("newName", "", new { @class = "form-control", maxlength = "64", placeholder = StringLocalizer["Enter a table or view name"] })
+        </div>
+    </div>
+
+
+    <partial name="_DatabaseWarning"/>
+
+    <div class="col-sm-12">
+        <div id="divError">
+            @Html.Raw(ViewBag.Error)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="location.href='@Url.Action("Index")'">
+                <span class="fa fa-arrow-left"></span>
+                <span>&nbsp;@StringLocalizer["Back"]</span>
+            </button>
+
+            <button id="btnNext" class="@BootstrapHelper.DefaultButton" type="submit">
+                <span class="fa fa-forward"></span>
+                @StringLocalizer["Next"]
+            </button>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+    <script lang="javascript" type="text/javascript">
+        $(document).ready(function () {
+            $("#txtTableName").keyup(function () {
+                if ($(this).val().length > 30)
+                    $("#divWarning").css("display", "");
+                else
+                    $("#divWarning").css("display", "none");
+            });
+        });
+    </script>
+}

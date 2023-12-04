@@ -1,0 +1,83 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [
+            "**.csproj"
+          ],
+          "src": "../../src",
+          "exclude": [
+            "**/example/**",
+            "**/test/**",
+            "**/WebApi/**",
+            "**/WebEntryPoint/**",
+            "**/ConsoleApp/**"
+          ]
+        }
+      ],
+      "dest": "api",
+      "namespaceLayout":"nested",
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "api/*.yml",
+          "articles/**/*.md",
+          "articles/**/*.yml",
+          "index.md",
+          "toc.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "example/JJMasterData.WebExample/**",
+          "media/**",
+          "logo.png",
+          "favicon.ico"
+        ]
+      }
+    ],
+    "overwrite": [
+      {
+        "files": [
+          "api/**.md"
+        ]
+      }
+    ],
+    "dest": "_site",
+    "globalMetadata": {
+      "_appName":"JJMasterData",
+      "_disableContribution": false,
+      "_enableSearch": true,
+      "_gitContribute": {
+        "branch": "main",
+        "apiSpecFolder":"api",
+        "repo": "https://github.com/jjconsulting/JJMasterData"
+      },
+      "_gitUrlPattern": "github",
+      "_disableSideFilter":true,
+      "_appTitle": "JJMasterData",
+      "_appLogoPath": "logo.png",
+      "_appFooter": "Sun Version - 4.0.x",
+      "_copyrightFooter":"2023 JJConsulting. All rights reserved."
+    },
+    "globalMetadataFiles": [],
+    "fileMetadataFiles": [],
+    "template": [
+      "default",
+      "templates/singulinkfx"
+    ],
+    "postProcessors": [ "ExtractSearchIndex" ],
+    "noLangKeyword": false,
+    "keepFileLink": true,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": false
+  }
+}

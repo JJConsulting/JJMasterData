@@ -1,0 +1,54 @@
+﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Core.UI
+@model RelationshipsListViewModel
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+<partial name="_Menu" model="Model"/>
+
+@{
+    ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Relationships"]}";
+}
+
+@section Scripts{
+    
+    <script lang="javascript" type="text/javascript">
+    $(function () {
+          let currentTab = $("#selectedTab").val();
+          if (!currentTab) {
+              currentTab = "#divElements";
+          }
+          $(".nav a[href='" + currentTab + "']").tab("show");
+
+          $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
+              const target = $(e.target).attr("href");
+              $("#selectedTab").val(target);
+          });
+    });
+
+
+</script>
+}
+
+@using (Html.BeginForm())
+{
+    <input type="hidden" name="selectedTab" id="selectedTab" value="@TempData["SelectedTab"]"/>
+    
+    <ul class="nav nav-tabs">
+        <li id="navGrid" class="nav-item active">
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divElements">@StringLocalizer["Elements"]</a>
+        </li>
+        <li id="navToolbar" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divLayout">@StringLocalizer["Layout"]</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+
+        <div id="divElements" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
+           <partial name="_IndexElement" model="Model"/>
+        </div>
+
+        <div id="divLayout" class="tab-pane fade">
+            <partial name="_IndexLayout" model="Model"/>
+        </div>
+    </div>
+}

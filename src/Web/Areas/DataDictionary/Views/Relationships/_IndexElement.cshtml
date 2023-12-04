@@ -1,0 +1,91 @@
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.RelationshipsListViewModel
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+<script type="text/javascript">
+             function deleteRelationship() {
+                     return confirm('@StringLocalizer["Are you sure you want to delete this relationship?"]');
+                 }
+    </script>
+
+
+
+
+<div class="row">
+    <div class="col-sm-8">
+        @{
+            var newRelationLabel = @StringLocalizer["New Relation"];
+            var url = @Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName });
+        }
+        <link-button icon="PlusCircle"
+                        text="@StringLocalizer["New"]"
+                        type="LinkButtonType.Button"
+                        on-client-click="defaultModal.showIframe('@url','@newRelationLabel');"/>
+    </div>
+</div>
+<br/>
+
+<table id="relationshipsTable" class="table table-striped table-hover">
+    <thead>
+    <tr>
+        <th scope="col">@StringLocalizer["Relation"]</th>
+        <th scope="col">@StringLocalizer["Columns"]</th>
+        <th scope="col">@StringLocalizer["UpdateOnCascade"]</th>
+        <th scope="col">@StringLocalizer["DeleteOnCascade"]</th>
+        <th style="width: 100px" scope="col">&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (Model.Relationships.Any())
+    {
+        var relationships = Model.Relationships.Where(r => !r.IsParent).ToList();
+        foreach (var relationship in relationships)
+        {
+            <tr>
+                <td>
+                    <a href="@Url.Action("Index", "Entity", new { elementName = relationship.ElementRelationship!.ChildElement })" target="_blank">@relationship.ElementRelationship!.ChildElement</a>
+                </td>
+                <td>
+                    @foreach (var t in relationship.ElementRelationship!.Columns)
+                    {
+                        @t.PkColumn
+                        <i class="fa-solid fa-arrow-right"></i>
+                        @t.FkColumn
+
+                        <br/>
+                    }
+                </td>
+                <td>
+                    @relationship.ElementRelationship!.UpdateOnCascade
+                </td>
+                <td>
+                    @relationship.ElementRelationship!.DeleteOnCascade
+                </td>
+                <td style="text-align: center;width: 120px">
+                    <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
+                            onclick="defaultModal.showIframe('@Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName, id = relationship.Id })','@StringLocalizer["Edit Relation"]');"
+                            data-original-title="@StringLocalizer["Edit"]">
+                        <span class="fa fa-pencil"></span>
+                    </button>
+                    <button type="submit" title="" class="btn btn-link" 
+                            onclick="return deleteRelationship();"
+                            asp-controller="Relationships"
+                            asp-action="Delete"
+                            asp-route-elementName="@Model.ElementName"
+                            asp-route-id="@relationship.Id"
+                            data-original-title="@StringLocalizer["Delete"]">
+                        <span class="fa fa-trash"></span>
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+
+    </tbody>
+</table>
+
+@if (!Model.Relationships.Any())
+{
+    <alert icon="IconType.TimesCircleO" title="@StringLocalizer["No relationships found."]" color="Default" show-close-button="false"/>
+}

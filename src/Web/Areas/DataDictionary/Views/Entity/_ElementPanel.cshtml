@@ -1,0 +1,84 @@
+﻿@using JJMasterData.Core.UI
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel
+
+
+<div class="row">
+    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+        <label asp-for="FormElement.Name" class=" form-label"></label>
+        <tooltip title="Unique identifier of the element."/>
+        @Html.TextBoxFor(model => model.FormElement.Name, Model.HtmlAttributes)
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-6 required">
+        <label asp-for="FormElement.TableName" class="form-label"> </label>
+        <tooltip title="Table where the element data is stored."/>
+        @Html.TextBoxFor(model => model.FormElement.TableName, Model.HtmlAttributes)
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-6 ">
+        <label asp-for="FormElement.ReadProcedureName" class="form-label"></label>
+        <div class="input-group mb-3">
+            <div class="input-group-text">
+                <input asp-for="FormElement.UseReadProcedure" data-bs-placement="right" 
+                       data-bs-toggle="tooltip" 
+                       title="@StringLocalizer["Enable Read Procedure"]"  
+                       disabled="disabled" 
+                       class="form-check-input mt-0" 
+                       type="checkbox" aria-label="Enable Read Procedure">
+            </div>
+            @Html.TextBoxFor(model => model.FormElement.ReadProcedureName, Model.HtmlAttributes)
+        </div>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-6 ">
+        <label asp-for="FormElement.WriteProcedureName" class=" form-label"></label>
+        <div class="input-group mb-3">
+            <div class="input-group-text">
+                <input asp-for="FormElement.UseWriteProcedure" 
+                       data-bs-placement="right" 
+                       data-bs-toggle="tooltip" 
+                       title="@StringLocalizer["Enable Write Procedure"]" 
+                       disabled="disabled" 
+                       class="form-check-input mt-0" 
+                       type="checkbox" 
+                       aria-label="Enable Write Procedure">
+            </div>
+            @Html.TextBoxFor(model => model.FormElement.WriteProcedureName, Model.HtmlAttributes)
+        </div>
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-5 flex-grow-1">
+        <label asp-for="FormElement.Info" class="form-label">
+        </label>
+        <tooltip title="Developer only information about the data dictionary."/>
+        @Html.TextBoxFor(model => model.FormElement.Info, Model.HtmlAttributes)
+    </div>
+</div>
+
+@if (!Model.ReadOnly)
+{
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const useReadProcedureCheckbox = document.getElementById('FormElement_UseReadProcedure');
+        const useWriteProcedureCheckbox = document.getElementById('FormElement_UseWriteProcedure'); 
+        
+        useReadProcedureCheckbox.disabled = false;
+        useWriteProcedureCheckbox.disabled = false;
+        
+        const writeProcedureName = document.getElementById('FormElement_WriteProcedureName'); 
+        const readProcedureName = document.getElementById('FormElement_ReadProcedureName'); 
+        
+        function toggleProcedure(checkbox, input) {
+            input.readOnly = !checkbox.checked;
+        }
+    
+        toggleProcedure(useReadProcedureCheckbox, readProcedureName);
+        useReadProcedureCheckbox.addEventListener('change', function () {
+            toggleProcedure(useReadProcedureCheckbox, readProcedureName);
+        });
+    
+        
+        toggleProcedure(useWriteProcedureCheckbox, writeProcedureName);
+        useWriteProcedureCheckbox.addEventListener('change', function () {
+            toggleProcedure(useWriteProcedureCheckbox, writeProcedureName);
+        });
+    });
+   </script>
+}

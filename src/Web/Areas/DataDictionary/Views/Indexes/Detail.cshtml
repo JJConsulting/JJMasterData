@@ -1,0 +1,92 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IOptions<MasterDataWebOptions> Options
+@using JJMasterData.Core.UI
+@model JJMasterData.Commons.Data.Entity.Models.ElementIndex
+
+@{
+    Layout = Options.Value.ModalLayoutPath;
+}
+
+<script type="text/javascript">
+    function saveIndexes() {
+   
+        fetch('@Url.Action("Detail", "Indexes", new { elementName = ViewBag.ElementName })', {
+        method:"POST",
+            body: new FormData(document.querySelector("form"))
+        }).then(response=>response.json()).then(data=>{
+            if (data.success){
+                 window.parent.defaultModal.hide();
+                 window.parent.location.reload();
+            }
+            else{
+                document.getElementById("divError").innerHTML = data.errorMessage;
+            }
+        })
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    @Html.Hidden("index", ViewData["Index"])
+    <div class="well">
+        <div>
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-8">
+                    <label class="@BootstrapHelper.Label" for="indexName">@StringLocalizer["IndexName"]</label>
+                    @Html.TextBox("indexName", (string)ViewBag.IndexName, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                     <label class="form-label" asp-for="IsUnique"></label>
+                     <checkbox for="IsClustered" switch="true"/>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                    <label class="form-label" asp-for="IsClustered"></label>
+                    <checkbox for="IsClustered" switch="true"/>
+                </div>
+
+                <div class="col-sm-12">
+                    <h4>@StringLocalizer["Fields"]</h4>
+                    <hr/>
+                </div>
+
+                <div class="col-sm-12">
+                    @{
+                        List<SelectListItem> checkBoxList = ViewBag.CheckBoxList;
+                        for (var i = 0; i < checkBoxList.Count; i++)
+                        {
+                            <div class="form-check">
+                                @Html.HiddenFor(c => checkBoxList[i].Value)
+                                @Html.HiddenFor(c => checkBoxList[i].Text)
+                                @Html.CheckBoxFor(c => checkBoxList[i].Selected, new {@class="form-check-input"})
+                                @Html.LabelFor(c => checkBoxList[i].Selected, checkBoxList[i].Text, new {@class="form-check-label"})
+                            </div>
+                            <br>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="divError" class="col-sm-12">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="saveIndexes()">
+                <span class="fa fa-check"></span>
+                <span>&nbsp;@StringLocalizer["Save"]</span>
+            </button>
+
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="window.parent.defaultModal.hide();">
+                <span class="fa fa-times"></span>
+                <span>&nbsp;@StringLocalizer["Cancel"]</span>
+            </button>
+        </div>
+    </div>
+
+    <br/>
+    <br/>
+}

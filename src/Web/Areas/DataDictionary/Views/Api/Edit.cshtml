@@ -1,0 +1,35 @@
+﻿@using JJMasterData.Core.UI.Components
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ApiViewModel
+
+
+@{
+    ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["WebApi"]}";
+}
+
+<partial name="_Menu" model="Model"/>
+
+@{
+    var cancelLocation = @Url.Action("Index", new { elementName = Model.ElementName });
+}
+
+@using (Html.BeginForm("Edit", "Api", FormMethod.Post))
+{
+    <input asp-for="MenuId" hidden="hidden"/>
+    <input asp-for="ElementName" hidden="hidden"/>
+    <div class="row">
+        <div class="col-sm-12">
+            <link-button type="LinkButtonType.Submit" icon="Check" css-class="btn-small" text="Save"/>
+            <link-button icon="Times" css-class="btn-small" text="Cancel" on-client-click="location.href='@cancelLocation'"/>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-12">
+            @Html.Raw(Model.ValidationSummary?.GetHtml())
+        </div>
+    </div>
+    <card name="webApiCard" partial="_Api" model="Model"/>
+}
+

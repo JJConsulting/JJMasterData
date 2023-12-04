@@ -1,0 +1,122 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>net4.8;netstandard2.0;net6.0;net7.0;net8.0</TargetFrameworks>
+        <LangVersion>12</LangVersion>
+        <RuntimeFrameworkVersion>8.0</RuntimeFrameworkVersion>
+        <Nullable>disable</Nullable>
+        <ImplicitUsings>false</ImplicitUsings>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Product>JJMasterData.Core - Sun Version</Product>
+        <Description>JJMasterData library to render JJMasterData's components.</Description>
+        <RepositoryUrl>https://github.com/JJConsulting/JJMasterData</RepositoryUrl>
+        <RootNamespace>JJMasterData.Core</RootNamespace>
+        <AssemblyName>JJMasterData.Core</AssemblyName>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+    
+    <ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">
+        <Reference Include="System.Web" />
+    </ItemGroup>
+
+    <!--Runtime dependencies-->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' OR '$(TargetFramework)' == 'net7.0' OR '$(TargetFramework)' == 'net8.0'">
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+    </ItemGroup>
+    
+    <!--Compile time dependencies-->
+    <ItemGroup>
+        <PackageReference Include="PolySharp" Version="1.13.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="JetBrains.Annotations" Version="2023.2.0">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\Commons\Commons.csproj" />
+        <InternalsVisibleTo Include="JJMasterData.ConsoleApp" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Update="UI\Components\Widgets\MessageIcon.cs">
+        <DependentUpon>JJMessageBox.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\Widgets\MessageSize.cs">
+        <DependentUpon>JJMessageBox.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\Widgets\NavContent.cs">
+        <DependentUpon>JJTabNav.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\Widgets\HeadingSize.cs">
+        <DependentUpon>JJTitle.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Html\HtmlBuilder.Attributes.cs">
+        <DependentUpon>HtmlBuilder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Html\HtmlBuilder.Children.cs">
+        <DependentUpon>HtmlBuilder.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\JsonComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\RenderedComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\ContentComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\EmptyComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\RedirectComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\IComponentFactoryOfT.cs">
+        <DependentUpon>IComponentFactory.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\HtmlComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\HtmlComponent.cs">
+        <DependentUpon>ComponentBase.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\AsyncComponent.cs">
+        <DependentUpon>ComponentBase.cs</DependentUpon>
+      </Compile>
+      <Compile Update="UI\Components\ProcessComponent.cs">
+        <DependentUpon>ComponentBase.cs</DependentUpon>
+      </Compile>
+      <Compile Update="DataDictionary\Models\Actions\FormElementFieldActionList.cs">
+        <DependentUpon>FormElementActionList.cs</DependentUpon>
+      </Compile>
+      <Compile Update="DataDictionary\Models\Actions\FormToolbarActionList.cs">
+        <DependentUpon>FormElementActionList.cs</DependentUpon>
+      </Compile>
+      <Compile Update="DataDictionary\Models\Actions\GridToolbarActionList.cs">
+        <DependentUpon>FormElementActionList.cs</DependentUpon>
+      </Compile>
+      <Compile Update="DataDictionary\Models\Actions\GridTableActionList.cs">
+        <DependentUpon>FormElementActionList.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</Project>

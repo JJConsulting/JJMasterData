@@ -1,0 +1,39 @@
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
+@model JJMasterData.Core.DataDictionary.Models.FormElementOptions
+
+<div class="row">
+    <div class="col-sm-4">
+        <label class="@BootstrapHelper.Label"  asp-for="Form.FormCols"></label>
+        <tooltip title="Number of columns where fields will be rendered by default"/>
+        
+        @Html.DropDownListFor(model => Model.Form.FormCols, new[]
+        {
+            new SelectListItem { Text = StringLocalizer["1 (one column)"], Value = "1" },
+            new SelectListItem { Text = StringLocalizer["2 (two columns)"], Value = "2" },
+            new SelectListItem { Text = StringLocalizer["3 (three columns)"], Value = "3" },
+            new SelectListItem { Text = StringLocalizer["4 (four columns)"], Value = "4" },
+            new SelectListItem { Text = StringLocalizer["6 (six columns)"], Value = "6" },
+            new SelectListItem { Text = StringLocalizer["12 (twelve columns)"], Value = "12" },
+        }, new { @class = "form-control" })
+    </div>
+    
+    <div class="col-sm-4">
+       <label class="@BootstrapHelper.Label" asp-for="Form.IsVerticalLayout"></label>
+       <checkbox for="Form.IsVerticalLayout" switch="true"/>
+    </div>
+    
+    <div class="col-sm-4">
+        <label class="@BootstrapHelper.Label" asp-for="Form.ShowViewModeAsStatic"></label>
+        <tooltip title="When the panel is in PageState.View show only the values without the components."/>
+        <checkbox for="Form.ShowViewModeAsStatic" switch="true"/>
+    </div>
+    
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
+        <label class="@BootstrapHelper.Label " asp-for="Form.EnterKey"></label>
+        <tooltip title="Behavior of the Enter key on the form"></tooltip>
+        <select asp-for="Form.EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
+    </div>
+</div>

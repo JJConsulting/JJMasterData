@@ -1,0 +1,115 @@
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@using System.Collections.Immutable
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.UI.Components
+@model JJMasterData.Core.DataDictionary.Models.Actions.PluginFieldAction
+@inject IOptions<MasterDataWebOptions> Options
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IEnumerable<IPluginHandler> Plugins
+
+@{
+    var plugin = (IPluginFieldActionHandler)Plugins.First(p => p.Id == Model.PluginId && p is IPluginFieldActionHandler);
+
+    Layout = Options.Value.ModalLayoutPath;
+
+    FormElement formElement = ViewBag.FormElement;
+
+    var dataItem = new FormElementDataItem
+    {
+        DataItemType = DataItemType.Manual,
+        FirstOption = FirstOptionMode.Choose,
+        Items = formElement.Fields.Select(f=>new DataItemValue(f.Name,f.Name)).ToImmutableList()
+    };
+}
+
+@using (Html.BeginForm("PluginFieldAction", "Actions",
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction, fieldName = ViewBag.FieldName }, FormMethod.Post))
+{
+    <input asp-for="PluginId" class="form-control" hidden="hidden"/>
+
+    <ul class="nav nav-tabs">
+        <li id="nav-general" class="nav-item active">
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+        </li>
+        <li id="nav-field-map" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-field-map">@StringLocalizer["Field Map"]</a>
+        </li>
+        @if (plugin.ConfigurationFields is not null)
+        {
+            <li id="nav-plugin" class="nav-item">
+                <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-plugin-configuration">@StringLocalizer["Plugin Configuration"]</a>
+            </li>
+        }
+        <li id="nav-advanced" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
+            <partial name="_NavGeneral" model="Model"/>
+        </div>
+
+        <div id="div-field-map" class="tab-pane fade @BootstrapHelper.Show">
+            <div class="container-fluid ">
+                
+                <table class="table table-responsive table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th>
+                            @StringLocalizer["Plugin Key"]
+                        </th>
+                        <th>
+                            @StringLocalizer["Field Name"]
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pluginKey in plugin.FieldMapKeys)
+                        {
+                            <tr>
+                                <td>
+                                    @pluginKey
+                                </td>
+                                <td>
+                                    @if (Model.FieldMap.TryGetValue(pluginKey, out var value))
+                                    {
+                                        <combobox name="@pluginKey" form-element-data-item="dataItem" value="value"/>
+                                    }
+                                    else
+                                    {
+                                        <combobox name="@pluginKey" form-element-data-item="dataItem"/>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label asp-for="AutoTriggerOnChange" class="form-label"></label>
+                        <tooltip title="Trigger the action when the value of the field is changed."/>
+                        <checkbox for="AutoTriggerOnChange" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (plugin.ConfigurationFields is not null)
+        {
+            <div id="div-plugin-configuration" class="tab-pane fade @BootstrapHelper.Show">
+                <div class="container-fluid ">
+                    <partial name="_PluginConfiguration" model="Model"/>
+                </div>
+            </div>
+        }
+        
+        <div id="div-advanced" class="tab-pane fade">
+            <partial name="_NavAdvanced" model="Model"/>
+        </div>
+
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}

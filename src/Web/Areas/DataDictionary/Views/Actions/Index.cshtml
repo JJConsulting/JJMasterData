@@ -1,0 +1,81 @@
+﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.DataDictionary.Models.Actions
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@model ActionsListViewModel
+
+@{
+    ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Actions"]}";
+}
+
+<script lang="javascript" type="text/javascript">
+    $(document).ready(function () {
+        savePanelState();
+    });
+
+    function savePanelState() {
+        let currentTab = $("#selectedTab").val();
+        if (!currentTab) {
+            currentTab = "#divGrid";
+        }
+        $(".nav a[href='" + currentTab + "']").tab("show");
+
+        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
+            const target = $(e.target).attr("href");
+            $("#selectedTab").val(target);
+        });
+    }
+
+</script>
+
+<partial name="_Menu" model="@(new DataDictionaryViewModel(Model.ElementName, Model.MenuId))"/>
+
+@using (Html.BeginForm())
+{
+    <input type="hidden" name="selectedTab" id="selectedTab" value="@TempData["selectedTab"]"/>
+    <ul class="nav nav-tabs">
+        <li id="navGrid" class="nav-item active">
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#divGrid">@StringLocalizer["Grid Table"]</a>
+        </li>
+        <li id="navGridToolbar" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-grid-toolbar">@StringLocalizer["Grid Toolbar"]</a>
+        </li>
+        <li id="navFormToolbar" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-form-toolbar">@StringLocalizer["Form Toolbar"]</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3">
+
+        <div id="divGrid" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
+            @await Html.PartialAsync("_List", new ActionsListDetailsViewModel
+                   {
+                       Source = ActionSource.GridTable,
+                       ElementName = Model.ElementName,
+                       Actions = Model.GridTableActions,
+                       MenuId = Model.MenuId
+                   })
+        </div>
+
+        <div id="div-grid-toolbar" class="tab-pane fade">
+            @await Html.PartialAsync("_List", new ActionsListDetailsViewModel
+                   {
+                       Source = ActionSource.GridToolbar,
+                       ElementName = Model.ElementName,
+                       MenuId = Model.MenuId,
+                       Actions = Model.GridToolbarActions,
+                       
+                   })
+        </div>
+
+        <div id="div-form-toolbar" class="tab-pane fade">
+            @await Html.PartialAsync("_List", new ActionsListDetailsViewModel
+                   {
+                       Source = ActionSource.FormToolbar,
+                       ElementName = Model.ElementName,
+                       Actions = Model.FormToolbarActions
+                   })
+        </div>
+    </div>
+}

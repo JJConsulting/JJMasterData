@@ -1,0 +1,62 @@
+﻿@using JJMasterData.Core.UI
+@inject IOptions<MasterDataWebOptions> Options
+
+@{
+    var areaName = ViewContext.RouteData.Values["area"] as string;
+}
+
+
+<link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/all.min.css"/>
+<link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-font-face.min.css"/>
+<link rel="stylesheet preload prefetch" as="style" href="~/_content/JJMasterData.Web/css/fontawesome/v4-shims.min.css"/>
+
+@if (!Options.Value.EnableBundleAndMinification)
+{
+    @if (Options.Value.UseCustomBootstrap)
+    {
+        <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath"/>
+    }
+    else
+    {
+        <link rel="Stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap.min.css" />
+    }
+    @if (BootstrapHelper.Version == 3)
+    {
+        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-toggle.min.css"/>
+        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-tagsinput.css" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-tagsinput-bs5.css" />
+    }
+    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/bootstrap/bootstrap-select.css" />
+
+    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/flatpickr/flatpickr.min.css">
+    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/flatpickr/airbnb.css">
+    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/highlightjs/ssms.min.css" />
+    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/dropzone/dropzone.min.css" />
+    
+    @if (areaName is "DataDictionary")
+    {
+        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/codemirror/codemirror.css"  />
+        <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/codemirror/show-hint.css"  />
+    }
+    
+    <link rel="stylesheet" href="~/_content/JJMasterData.Web/css/jjmasterdata/jjmasterdata.css" />
+}
+else
+{
+    @if (areaName is "DataDictionary")
+    {
+        <link rel="stylesheet" href="~/css/code-mirror-bundle.min.css"/>
+    }
+    @if (Options.Value.UseCustomBootstrap)
+    {
+        <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath" asp-append-version="true"/>
+        <link rel="stylesheet" href="~/css/jjmasterdata-bundle.min.css" asp-append-version="true"/>
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/css/jjmasterdata-bundle-with-bootstrap.min.css" asp-append-version="true"/>
+    }
+}

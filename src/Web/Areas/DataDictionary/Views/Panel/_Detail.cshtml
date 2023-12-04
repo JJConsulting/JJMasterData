@@ -1,0 +1,149 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+@using JJMasterData.Core.UI
+@model JJMasterData.Core.DataDictionary.Models.FormElementPanel
+
+<script lang="javascript" type="text/javascript">
+
+    document.addEventListener("DOMContentLoaded", function () {
+        saveOptions();
+    });
+
+    function save() {
+        SpinnerOverlay.show();
+        const url = "@Url.Action("Save", new { elementName = ViewBag.ElementName })";
+        const form = document.querySelector("form");
+        form.action = url;
+        form.submit();
+    }
+    
+    function copy() {
+        SpinnerOverlay.show();
+        const url = "@Url.Action("Copy", new { elementName = ViewBag.ElementName })";
+        const form = document.querySelector("form");
+        form.action = url;
+        form.submit();
+    }
+    
+    function showSuccess(fieldName) {
+        const successDiv = document.getElementById("div-success");
+        successDiv.style.display = "";
+        window.parent.document.querySelector('#current-field').value = fieldName;
+    }
+
+
+    function addFields() {
+        $('#listEnabled option:selected').remove().appendTo('#listSelected');
+        saveOptions();
+    }
+
+    function saveOptions() {
+        var listEnabled = "";
+        $('#listEnabled option').each(function () {
+            if (listEnabled.length > 0)
+                listEnabled = listEnabled.concat(",");
+
+            listEnabled = listEnabled.concat($(this).val());
+        });
+        $("#enabled_fields").val(listEnabled);
+
+
+        var listSelected = "";
+        $('#listSelected option').each(function () {
+            if (listSelected.length > 0)
+                listSelected = listSelected.concat(",");
+
+            listSelected = listSelected.concat($(this).val());
+        });
+        console.log(listSelected);
+        $("#selectedFields").val(listSelected);
+    }
+
+    function removeFields() {
+        $('#listSelected option:selected').remove().appendTo('#listEnabled');
+        saveOptions();
+    }
+
+    function moveUp() {
+        $('#listSelected option:selected:first-child').prop("selected", false);
+        before = $('#listSelected option:selected:first').prev();
+        $('#listSelected option:selected').detach().insertBefore(before);
+        saveOptions();
+    }
+
+    function moveDown() {
+        $('#listSelected option:selected:last-child').prop("selected", false);
+        after = $('#listSelected option:selected:last').next();
+        $('#listSelected option:selected').detach().insertAfter(after);
+        saveOptions();
+    }
+</script>
+
+
+<div class="container-fluid">
+
+    <ul class="nav nav-tabs">
+        <li id="nav-general" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+        </li>
+        <li id="nav-advanced" class="nav-item">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+        </li>
+    </ul>
+
+    @Html.HiddenFor(model => model.PanelId)
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade">
+            <partial name="_DetailData" model="Model"/>
+            <partial name="_DetailFields" model="Model"/>
+        </div>
+
+        <div id="div-advanced" class="tab-pane fade">
+            <partial name="_DetailAdvanced" model="Model"/>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            @Html.Raw(ViewBag.Error)
+        </div>
+
+        <div class="col-sm-12">
+            <div id="div-success" class="alert alert-success alert-dismissible" role="alert" style="display:none">
+                <button type="button" class="@BootstrapHelper.Close" @BootstrapHelper.GetDataDismiss("alert") aria-label="Close">
+                    <span aria-hidden="true">@BootstrapHelper.CloseButtonTimes</span>
+                </button>
+                <strong>@StringLocalizer["Sucesso!"]</strong> @StringLocalizer["Record saved successfully."]
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 jjtoolbar">
+
+            <button type="button" class="btn btn-primary btn-small" onclick="save();">
+                <span class="fa fa-check"></span>
+                <span>&nbsp;@StringLocalizer["Save"]</span>
+            </button>
+
+            <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })">
+                <span class="fa fa-refresh fa-fw fa-fw"></span>
+                <span>&nbsp;@StringLocalizer["Refresh"]</span>
+            </a>
+
+            <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })">
+                <span class="fa fa-trash"></span>
+                <span>&nbsp;@StringLocalizer["Delete"]</span>
+            </a>
+
+            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="copy();">
+                <span class="fa fa-files-o fa-fw fa-fw"></span>
+                <span>&nbsp;@StringLocalizer["Copy"]</span>
+            </button>
+
+        </div>
+    </div>
+
+
+</div>

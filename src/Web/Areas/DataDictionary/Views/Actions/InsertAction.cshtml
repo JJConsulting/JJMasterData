@@ -1,0 +1,107 @@
+﻿@using JJMasterData.Core.UI.Components
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI
+@inject IOptions<MasterDataWebOptions> Options
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IControlFactory<JJComboBox> ComboBoxFactory
+@model  JJMasterData.Core.DataDictionary.Models.Actions.InsertAction
+
+@{
+    Layout = Options.Value.ModalLayoutPath;
+}
+
+@{
+    async Task<string> GetInsertSelectionComboBoxHtml()
+    {
+        var comboBox = ComboBoxFactory.Create();
+        comboBox.Name = "ElementNameToSelect";
+        comboBox.DataItem.FirstOption = FirstOptionMode.Choose;
+        comboBox.DataItem.Items = new List<DataItemValue>();
+        
+        FormElement formElement = ViewBag.FormElement;
+        
+        foreach (var relationship in formElement.Relationships.GetElementRelationships())
+        {
+            comboBox.DataItem.Items.Add(new DataItemValue(relationship.ChildElement,relationship.ChildElement));
+        }
+        
+        comboBox.SelectedValue = formElement.Options.GridToolbarActions.InsertAction.ElementNameToSelect;
+
+        var result = await comboBox.GetHtmlBuilderAsync();
+        return result.ToString();
+    }
+}
+
+@using (Html.BeginForm("InsertAction", "Actions",
+    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
+{
+    <ul class="nav nav-tabs">
+        <li id="nav-general" class="nav-item active">
+            <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
+        </li>
+        <li class="nav-item" id="navInsertAction">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divInsertAction">@StringLocalizer["Insert Action"]</a>
+        </li>
+        <li class="nav-item" id="nav-advanced">
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
+        </li>
+    </ul>
+
+
+    <div class="tab-content" style="margin-top: 20px;">
+        <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
+            @await Html.PartialAsync("_NavGeneral", Model)
+        </div>
+
+        <div id="divInsertAction" class="tab-pane fade">
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                    <label>@StringLocalizer["Element Name To Select"]</label>
+                    <tooltip title="Only relationships will be shown here, because you need to map the foreign keys to be used at your SET procedure."/>
+                    @Html.Raw(await GetInsertSelectionComboBoxHtml())
+                </div>
+
+                <div class="col-sm-6">
+                    <span class="text-info fa fa-info-circle"></span>
+                    <span class="small">
+                        <b>@StringLocalizer["Element name used to display the preselection of a record."]</b><br/>
+                        @StringLocalizer["When this property is set, the system will display a list of records for selection."]<br/>
+                        @StringLocalizer["When selecting a record, the insert method is triggered sending the values of the current selection."]<br/>
+                        @StringLocalizer["If the insert method is executed successfully the user will be redirected to editing the parent element."]<br/>
+                        <br/>
+                    </span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="@BootstrapHelper.FormGroup col-sm-2">
+                        <label class="@BootstrapHelper.Label">@StringLocalizer["Reopen Form"]</label>
+                        <checkbox for="ReopenForm" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="@BootstrapHelper.FormGroup col-sm-2">
+                        <label class="@BootstrapHelper.Label">@StringLocalizer["Show as Modal"]</label>
+                        <checkbox for="ShowAsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <span class="text-info fa fa-info-circle"></span>
+                    <span class="small">
+                        <b>@StringLocalizer["Reopen Form."]</b><br/>
+                        @StringLocalizer["No = Close the form and return to the list."]<br/>
+                        @StringLocalizer["Yes = Reopen the form to enter a new record."]<br/>
+                        <br/>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div id="div-advanced" class="tab-pane fade">
+            @await Html.PartialAsync("_NavAdvanced", Model)
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Toolbar")
+}

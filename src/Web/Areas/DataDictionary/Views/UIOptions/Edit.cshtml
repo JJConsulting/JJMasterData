@@ -1,0 +1,40 @@
+﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Core.UI
+@model JJMasterData.Core.DataDictionary.Models.FormElementOptions
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+
+<style>
+    input[type=checkbox] {
+        margin: 2px 0 0;
+    }
+</style>
+
+<partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
+
+@using (Html.BeginForm("Edit", "UIOptions", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <button type="submit" class="@BootstrapHelper.DefaultButton btn-small">
+                <span class="fa fa-check"></span>
+                <span>&nbsp;@StringLocalizer["Save"]</span>
+            </button>
+            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="location.href='@Url.Action("Index", new { elementName = ViewBag.ElementName })'">
+                <span class="fa fa-times">
+                </span>
+                <span>&nbsp;@StringLocalizer["Cancel"]</span>
+            </button>
+        </div>
+    </div>
+
+    <br/>
+
+    <div class="row">
+        <div class="col-sm-12">
+            @Html.Raw(ViewBag.Error)
+        </div>
+    </div>
+
+    <collapse-panel model="Model" icon="Table" title="Grid View" partial="_GridView" expanded-by-default="true"/>
+    <collapse-panel model="Model" icon="Columns" title="Data Panel" partial="_DataPanel" expanded-by-default="true"/>
+}

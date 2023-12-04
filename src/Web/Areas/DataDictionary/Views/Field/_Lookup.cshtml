@@ -1,0 +1,33 @@
+﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@using JJMasterData.Core.UI
+@using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.UI.Components
+@model JJMasterData.Core.DataDictionary.Models.FormElementField
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <jj-title title="@StringLocalizer["DataItem"]" size="HeadingSize.H4"/>
+    </div>
+
+    <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+        <label class="@BootstrapHelper.Label" asp-for="DataItem!.DataItemType" >@StringLocalizer["Type"]</label>
+        <select asp-for="DataItem!.DataItemType" onchange="this.form.submit();" class="form-control form-select">
+            <option selected="selected" value="@((int)DataItemType.ElementMap)">@DataItemType.ElementMap.ToString()</option>
+        </select>
+    </div>
+
+    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+        <label class="@BootstrapHelper.Label " asp-for="DataItem!.ReplaceTextOnGrid"></label>
+        <tooltip title="Replace the field value with the description in the grid"/>
+        <checkbox for="DataItem!.ReplaceTextOnGrid" switch="true"/>
+    </div>
+
+    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+        <label class="@BootstrapHelper.Label " asp-for="DataItem!.ElementMap!.EnableElementActions"></label>
+        <checkbox for="DataItem!.ElementMap!.EnableElementActions" switch="true"/>
+    </div>
+    
+    <partial name="_DataItemElementMap"/>
+    
+</div>
