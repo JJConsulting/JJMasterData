@@ -1,8 +1,12 @@
 ﻿using System.CommandLine;
+using System.CommandLine.Builder;
+using System.CommandLine.Help;
+using System.CommandLine.Parsing;
 using JJMasterData.Commons.Logging;
 using JJMasterData.ConsoleApp.CommandLine;
 using JJMasterData.ConsoleApp.Extensions;
 using JJMasterData.ConsoleApp.Services;
+using JJMasterData.ConsoleApp.Utils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -47,23 +51,23 @@ var rootCommand = new RootCommand("JJMasterData CLI. To learn more visit https:/
         service.GenerateJsonSchema(schemaName);
     })
 };
-var service = host.Services.GetRequiredService<FormElementMigrationService>();
-service.Migrate();
+var service = host.Services.GetRequiredService<JsonSchemaService>();
+service.GenerateJsonSchema("MasterDataOptions");
 
-// host.Start();
-//
-// var parser = new CommandLineBuilder(rootCommand)
-//     .UseDefaults()
-//     .UseHelp(context =>
-//     {
-//         context.HelpBuilder.CustomizeLayout(
-//             _ =>
-//                 HelpBuilder.Default
-//                     .GetLayout()
-//                     .Prepend(
-//                         _ => ConsoleHelper.WriteJJConsultingLogo()
-//                     ));
-//     })
-//     .Build();
+host.Start();
 
-// await parser.InvokeAsync(args);
+var parser = new CommandLineBuilder(rootCommand)
+    .UseDefaults()
+    .UseHelp(context =>
+    {
+        context.HelpBuilder.CustomizeLayout(
+            _ =>
+                HelpBuilder.Default
+                    .GetLayout()
+                    .Prepend(
+                        _ => ConsoleHelper.WriteJJConsultingLogo()
+                    ));
+    })
+    .Build();
+
+await parser.InvokeAsync(args);

@@ -22,8 +22,6 @@ public abstract class BaseWriter
         Generator.GenerationProviders.Add(new StringEnumGenerationProvider());
     }
 
-    public abstract void Write();
-    
     private static string GetFilePath(string? fileName)
     {
         string workingDirectory = Environment.CurrentDirectory;

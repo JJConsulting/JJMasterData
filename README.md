@@ -48,6 +48,8 @@ https://user-images.githubusercontent.com/52143624/213810038-e966e8d9-f465-4f98-
 
 https://user-images.githubusercontent.com/28662273/213789862-a86365f9-fd60-4e4a-ab4e-ded967d4080d.mp4
 
+You can paste the appsettings.json url from [here](https://github.com/JJConsulting/JJMasterData/blob/main/jjmasterdata.json)
+
 See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles/getting_started.html).
 
 <br>

@@ -116,6 +116,14 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
             replacement: new MongoDBFormElement(formElement));
     }
 
+    public void InsertOrReplace(FormElement formElement)
+    {
+        _formElementCollection.ReplaceOne(
+            filter: m=>formElement.Name == m.FormElement.Name,
+            options: new ReplaceOptions { IsUpsert = true },
+            replacement: new MongoDBFormElement(formElement));
+    }
+
 
     public async Task DeleteAsync(string dictionaryName)
     {

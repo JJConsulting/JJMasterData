@@ -11,6 +11,10 @@ Installing JJMasterData.Web, will install all required dependencies.
 ## 2. Add a SQL Server ConnectionString to your configuration file
 In your configuration file (normally appsettings.json), add a SQL Server connection string. 
 
+
+You can replace the appsettings.json url from [here](https://github.com/JJConsulting/JJMasterData/blob/main/jjmasterdata.json) and have autocomplete features in your IDE.
+
+
 ```json
 {
   "AllowedHosts": "*",

@@ -89,6 +89,13 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
         await entityRepository.SetValuesAsync(MasterDataElement, values);
     }
 
+    public void InsertOrReplace(FormElement formElement)
+    {
+        var values = GetFormElementDictionary(formElement);
+
+        entityRepository.SetValues(MasterDataElement, values);
+    }
+
     private static Dictionary<string, object?> GetFormElementDictionary(FormElement formElement)
     {
         if (formElement == null)

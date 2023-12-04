@@ -7,11 +7,10 @@ There are three ways to configure an application:
 
 **1)** Add configuration key in appsettings.json. On .NET Framework you will need to add `IConfiguration` via `Microsoft.Extensions.Configuration`
 
-<details><summary> >> appsettings.json (click to expand)</summary><br>
-
-> [!TIP] 
-> To autocomplete with JJMasterData keys in your text editor, put this URL in the JSON Schema.
+> [!TIP]
+> To autocomplete with JJMasterData keys in your text editor, put this URL in the JSON Schema of your IDE.
 https://raw.githubusercontent.com/JJConsulting/JJMasterData.JsonSchema/main/JJMasterData.JsonSchema/jjmasterdata.json
+<details><summary> >> appsettings.json (click to expand)</summary><br>
 
 ```json
 {

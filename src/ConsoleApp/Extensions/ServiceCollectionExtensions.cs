@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ImportService>();
         
         services.AddTransient<JsonSchemaService>();
-        services.AddTransient<JJMasterDataOptionsWriter>();
+        services.AddTransient<MasterDataOptionsWriter>();
         services.AddTransient<FormElementWriter>();
         
         return services;
