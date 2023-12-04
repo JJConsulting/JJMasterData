@@ -522,7 +522,8 @@ public class JJGridView : AsyncComponent
 
     #region Constructors
 
-    internal JJGridView(FormElement formElement,
+    internal JJGridView(
+        FormElement formElement,
         IHttpContext currentContext,
         IEntityRepository entityRepository,
         IEncryptionService encryptionService,
@@ -534,17 +535,18 @@ public class JJGridView : AsyncComponent
         IComponentFactory componentFactory)
     {
         Name = $"{ComponentNameGenerator.Create(formElement.Name)}-grid-view";
-        ShowTitle = true;
+        FormElement = formElement;
+        ShowTitle =  formElement.Options.Grid.ShowTitle;
         EnableFilter = true;
-        EnableSorting = true;
-        ShowHeaderWhenEmpty = true;
-        ShowPagging = true;
-        ShowToolbar = true;
-        EmptyDataText = "No records found.";
+        EnableSorting = formElement.Options.Grid.EnableSorting;
+        ShowHeaderWhenEmpty = formElement.Options.Grid.ShowHeaderWhenEmpty;
+        ShowPagging = formElement.Options.Grid.ShowPagging;
+        ShowToolbar = formElement.Options.Grid.ShowToolBar;
+        EmptyDataText = formElement.Options.Grid.EmptyDataText;
         AutoReloadFormFields = true;
         RelationValues = new Dictionary<string, object>();
         TitleSize = HeadingSize.H1;
-        FormElement = formElement;
+
         FieldsService = fieldsService;
         ExpressionsService = expressionsService;
         EncryptionService = encryptionService;
@@ -815,7 +817,7 @@ public class JJGridView : AsyncComponent
         {
             ShowCloseButton = true,
             Color = PanelColor.Default,
-            Title = StringLocalizer["No records found."],
+            Title = StringLocalizer[EmptyDataText],
             Icon = IconType.InfoCircle
         };
 

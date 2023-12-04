@@ -13,12 +13,6 @@ internal class GridTable(JJGridView gridView)
 
     internal GridTableBody Body { get; } = new(gridView);
 
-    internal IList<Dictionary<string,object?>>? DataSource { get; } = gridView.DataSource;
-
-    internal string EmptyDataText { get; } = gridView.EmptyDataText;
-
-    internal GridFilter Filter { get; } = gridView.Filter;
-
     public async Task<HtmlBuilder> GetHtmlBuilder()
     {
         var table = new HtmlBuilder(HtmlTag.Table);
@@ -27,7 +21,7 @@ internal class GridTable(JJGridView gridView)
 
         table.WithCssClassIf(Settings.IsResponsive, "table-responsive");
         table.WithCssClassIf(Settings.ShowBorder, "table-bordered");
-        table.WithCssClassIf(Settings.IsResponsive, "table-hover");
+        table.WithCssClassIf(Settings.ShowRowHover, "table-hover");
         table.WithCssClassIf(Settings.ShowRowStriped, "table-striped");
         table.WithCssClassIf(Settings.IsHeaderFixed, "table-fixed-header");
 

@@ -105,12 +105,12 @@ public class GridUI
     public bool MaintainValuesOnLoad { get; set; }
 
     /// <summary>
-    /// Obtém ou define um valor que indica se o cabeçalho da gridview ficará visível quando não existir dados.
+    /// Gets or sets a value indicating whether the GridView header will remain visible when there is no data.
     /// </summary>
     /// <remarks>
-    /// Valor padrão = (Verdadeiro).
+    /// Default value = (True).
     /// <para/>
-    /// Para alterar o texto da mensagem veja o método EmptyDataText
+    /// To change the empty data message, refer to the EmptyDataText property
     /// </remarks>
     [JsonProperty("showHeaderWhenEmpty")]
     [Display(Name = "Show Header When Empty")]

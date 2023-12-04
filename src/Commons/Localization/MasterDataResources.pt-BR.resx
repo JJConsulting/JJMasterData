@@ -3474,13 +3474,13 @@
   <data name="8. Especial" xml:space="preserve">
     <value>8. Especial</value>
   </data>
-  <data name="DataDictionary" xml:space="preserve">
+  <data name="Data Dictionary" xml:space="preserve">
     <value>Dicionário de Dados</value>
   </data>
-  <data name="TableName" xml:space="preserve">
+  <data name="Table Name" xml:space="preserve">
     <value>Nome da Tabela</value>
   </data>
-  <data name="FilterForAnything" xml:space="preserve">
+  <data name="Filter For Anything" xml:space="preserve">
     <value>Filter por qualquer coisa</value>
   </data>
   <data name="EnableSynchronism" xml:space="preserve">
@@ -3489,7 +3489,7 @@
   <data name="LastModified" xml:space="preserve">
     <value>Última Modificação</value>
   </data>
-  <data name="FilterForAnythingDescription" xml:space="preserve">
+  <data name="Filter by any data within the data dictionary structure." xml:space="preserve">
     <value>Filter por qualquer dado dentro da estrutura do dicionário de dados.</value>
   </data>
   <data name="1. String" xml:space="preserve">

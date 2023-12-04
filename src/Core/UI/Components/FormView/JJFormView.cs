@@ -73,7 +73,6 @@ public class JJFormView : AsyncComponent
     private JJAuditLogView? _auditLogView;
     private JJDataImportation? _dataImportation;
     private string? _userId;
-    private bool? _showTitle;
     private PageState? _pageState;
     private PageState? _panelState;
     private IDictionary<string, object> _relationValues = new Dictionary<string, object>();
@@ -189,7 +188,7 @@ public class JJFormView : AsyncComponent
             _gridView.ParentComponentName = Name;
             _gridView.FormElement = FormElement;
             _gridView.UserValues = UserValues;
-            _gridView.ShowTitle = true;
+            _gridView.ShowTitle = ShowTitle;
 
             _gridView.ToolBarActions.Add(new DeleteSelectedRowsAction());
 
@@ -270,34 +269,12 @@ public class JJFormView : AsyncComponent
         }
     }
 
-    internal ComponentContext ComponentContext
-    {
-        get
-        {
-            if (RouteContext.IsCurrentFormElement(FormElement.Name))
-            {
-                return RouteContext.ComponentContext;
-            }
-
-            return default;
-        }
-    }
+    internal ComponentContext ComponentContext => RouteContext.IsCurrentFormElement(FormElement.Name) 
+        ? RouteContext.ComponentContext : default;
 
     internal FormViewScripts Scripts => _scripts ??= new(this);
 
-    public bool ShowTitle
-    {
-        get
-        {
-            _showTitle ??= FormElement.Options.Grid.ShowTitle;
-            return _showTitle.Value;
-        }
-        set
-        {
-            GridView.ShowTitle = value;
-            _showTitle = value;
-        }
-    }
+    public bool ShowTitle { get; set; }
     
     internal IHttpContext CurrentContext { get; }
     internal IFormValues FormValues => CurrentContext.Request.Form;
@@ -335,6 +312,7 @@ public class JJFormView : AsyncComponent
         Name = ComponentNameGenerator.Create(FormElement.Name);
         CurrentContext = currentContext;
         EntityRepository = entityRepository;
+        ShowTitle = formElement.Options.Grid.ShowTitle;
         FormService = formService;
         EncryptionService = encryptionService;
         FieldValuesService = fieldValuesService;

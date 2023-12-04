@@ -54,7 +54,7 @@ public class DataDictionaryFormElementFactory(IOptions<MasterDataCoreOptions> op
         formElement.Fields[DataDictionaryStructure.Owner].VisibleExpression= "val:0";
         formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.Text;
         formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: '{PageState}' = 'Filter'";
-        formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["FilterForAnythingDescription"];
+        formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["Filter by any data within the data dictionary structure."];
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
         formElement.Fields[DataDictionaryStructure.EnableSynchronism].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.EnableSynchronism].Component = FormComponent.CheckBox;

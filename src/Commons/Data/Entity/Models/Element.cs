@@ -29,7 +29,7 @@ public class Element
     public List<ElementRelationship> Relationships { get; set; }
     
     [JsonProperty("tableName")]
-    [Display(Name = "TableName")]
+    [Display(Name = "Table Name")]
     public string TableName { get; set; }
 
     [JsonProperty("useReadProcedure")] 
