@@ -8,10 +8,10 @@
 	  <PackageProjectUrl>https://www.github.com/jjconsulting/jjmasterdata</PackageProjectUrl>
 	  <PackageIcon>JJMasterData.png</PackageIcon>
 	  <PackageTags>pdf,jjmasterdata</PackageTags>
-      <Version>1.0.2</Version>
+      <Version>2.0.0</Version>
+    	<AssemblyVersion>2.0.0</AssemblyVersion>
+      <FileVersion>2.0.0</FileVersion>
       <Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
-      <AssemblyVersion>1.0.2</AssemblyVersion>
-      <FileVersion>1.0.2</FileVersion>
       <RootNamespace>JJMasterData.Pdf</RootNamespace>
       <AssemblyName>JJMasterData.Pdf</AssemblyName>
       <PackageId>JJMasterData.Pdf</PackageId>
