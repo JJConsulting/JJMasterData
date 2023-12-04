@@ -50,7 +50,7 @@ public class FieldValuesService(ExpressionsService expressionsService, IEntityRe
         return newValues;
     }
 
-    public async Task<IDictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState state)
+    public async Task<Dictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState state)
     {
         var filters = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         var fieldsWithDefaultValue = formElement.Fields
@@ -70,9 +70,9 @@ public class FieldValuesService(ExpressionsService expressionsService, IEntityRe
         return filters;
     }
 
-    public async Task<IDictionary<string, object?>> MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState)
+    public async Task<Dictionary<string, object?>> MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState)
     {
-        IDictionary<string, object?> values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
   
         foreach (var v in formValues)
             values.Add(v.Key, v.Value);

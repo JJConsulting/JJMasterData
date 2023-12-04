@@ -137,8 +137,15 @@ internal class GridFilter(JJGridView gridView)
             }
         }
 
-        _currentFilter = await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement,values, PageState.List);
+        var defaultValues =
+            await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement, values, PageState.List);
 
+        foreach (var kvp in defaultValues)
+        {
+            if(!_currentFilter.ContainsKey(kvp.Key))
+                _currentFilter[kvp.Key] = kvp.Value;  
+        }
+        
         CurrentContext.Session.SetSessionValue($"jjcurrentfilter_{GridView.Name}", _currentFilter);
     }
 

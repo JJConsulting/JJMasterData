@@ -51,8 +51,6 @@ var rootCommand = new RootCommand("JJMasterData CLI. To learn more visit https:/
         service.GenerateJsonSchema(schemaName);
     })
 };
-var service = host.Services.GetRequiredService<JsonSchemaService>();
-service.GenerateJsonSchema("MasterDataOptions");
 
 host.Start();
 

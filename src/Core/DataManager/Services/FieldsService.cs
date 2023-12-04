@@ -33,18 +33,18 @@ public class FieldsService(FieldFormattingService fieldFormattingService,
         return FieldFormattingService.FormatValue(field, value);
     }
 
-    public async Task<IDictionary<string, object>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState,
+    public async Task<Dictionary<string, object>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState,
         bool replaceNullValues)
     {
         return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, formValues, pageState, replaceNullValues);
     }
 
-    public async Task<IDictionary<string, object>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState)
+    public async Task<Dictionary<string, object>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState)
     {
         return await FieldValuesService.GetDefaultValuesAsync(formElement, formValues, pageState);
     }
 
-    public async Task<IDictionary<string, object>>  MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState)
+    public async Task<Dictionary<string, object>>  MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState)
     {
         return await FieldValuesService.MergeWithDefaultValuesAsync(formElement, formValues, pageState);
     }
