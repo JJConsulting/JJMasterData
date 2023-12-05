@@ -133,7 +133,7 @@ internal class GridTableBody(JJGridView gridView)
                 }
                 else
                 {
-                    value = await GridView.FieldsService.FormatGridValueAsync(field, values, GridView.UserValues);
+                    value = await GridView.FieldsService.FormatGridValueAsync(GridView.FormElement,field, values, GridView.UserValues);
                     cell = new HtmlBuilder(value.Trim());
                 }
                 if (OnRenderCellAsync != null)

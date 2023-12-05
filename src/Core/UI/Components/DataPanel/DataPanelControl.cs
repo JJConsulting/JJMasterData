@@ -316,7 +316,7 @@ internal class DataPanelControl
     {
         var html = new HtmlBuilder(HtmlTag.P)
             .WithCssClass("form-control-static")
-            .AppendText(await FieldsService.FormatGridValueAsync(f, Values, UserValues));
+            .AppendText(await FieldsService.FormatGridValueAsync(FormElement,f, Values, UserValues));
 
         return html;
     }

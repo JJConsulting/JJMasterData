@@ -23,9 +23,9 @@ public class FieldsService(FieldFormattingService fieldFormattingService,
         return FieldValidationService.ValidateField(field, fieldId, value, enableErrorLink);
     }
 
-    public Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
+    public Task<string> FormatGridValueAsync(FormElement formElement,FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
     {
-        return FieldFormattingService.FormatGridValueAsync(field, values, userValues);
+        return FieldFormattingService.FormatGridValueAsync(formElement,field, values, userValues);
     }
 
     public static string FormatValue(FormElementField field, object value)
