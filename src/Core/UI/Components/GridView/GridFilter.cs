@@ -23,7 +23,7 @@ internal class GridFilter(JJGridView gridView)
     
     internal const string FilterFieldPrefix = "filter_";
 
-    private IDictionary<string, object> _currentFilter;
+    private IDictionary<string, object> _currentFilter = new Dictionary<string,object>();
     private JJGridView GridView { get; set; } = gridView;
 
     private IHttpContext CurrentContext => GridView.CurrentContext;
@@ -84,7 +84,7 @@ internal class GridFilter(JJGridView gridView)
         if (!string.IsNullOrEmpty(filters))
         {
             var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
-            _currentFilter = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson);
+            _currentFilter = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson) ?? new Dictionary<string, object>();
             return _currentFilter;
         }
 
