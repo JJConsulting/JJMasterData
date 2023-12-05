@@ -40,7 +40,16 @@ class ActionHelper {
         }
 
         const currentFormActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
-        currentFormActionInput.value = encryptedActionMap;
+        if(currentFormActionInput){
+            currentFormActionInput.value = encryptedActionMap;
+        }
+        else{
+            const newInput = document.createElement("input");
+            newInput.id = "form-view-action-map-" + componentName;
+            newInput.name = "form-view-action-map-" + componentName;
+            newInput.value = encryptedActionMap;
+            document.querySelector('form').appendChild(newInput);
+        }
 
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);

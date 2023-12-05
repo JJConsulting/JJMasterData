@@ -296,7 +296,7 @@ public class JJDataPanel : AsyncComponent
         var urlRedirectAction = actionMap.GetAction<UrlRedirectAction>(FormElement);
         var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement,PageState,actionMap.PkFieldValues, true, FieldNamePrefix);
         var formStateData = new FormStateData(values, PageState);
-        var parsedUrl = ExpressionsService.ReplaceExpressionWithParsedValues(urlRedirectAction.UrlRedirect, formStateData);
+        var parsedUrl = ExpressionsService.ReplaceExpressionWithParsedValues(System.Web.HttpUtility.UrlDecode(urlRedirectAction.UrlRedirect), formStateData);
 
         var model = new UrlRedirectModel
         {
