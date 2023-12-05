@@ -50,7 +50,7 @@ else
     {
         <link rel="stylesheet" href="~/css/code-mirror-bundle.min.css"/>
     }
-    @if (Options.Value.UseCustomBootstrap)
+    @if (Options.Value is { UseCustomBootstrap: true, CustomBootstrapPath: not null })
     {
         <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath" asp-append-version="true"/>
         <link rel="stylesheet" href="~/css/jjmasterdata-bundle.min.css" asp-append-version="true"/>

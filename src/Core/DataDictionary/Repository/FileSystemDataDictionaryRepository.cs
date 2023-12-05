@@ -145,11 +145,11 @@ public class FileSystemDataDictionaryRepository
         return Task.CompletedTask;
     }
 
-    public async Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderBy, int recordsPerPage, int currentPage)
+    public Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderBy, int recordsPerPage, int currentPage)
     {
         int total = 0;
         var result = GetMetadataInfoList(filters,orderBy,recordsPerPage,currentPage,ref total);
-        return await Task.FromResult(new ListResult<FormElementInfo>(result.ToList(),total));
+        return Task.FromResult(new ListResult<FormElementInfo>(result.ToList(),total));
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.Exists"/>

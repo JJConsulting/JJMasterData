@@ -29,7 +29,7 @@ public class EntityRepository : IEntityRepository
         return Provider.Update(element, values);
     }
 
-    public async Task<int> DeleteAsync(Element element, IDictionary<string,object> filters) => await Provider.DeleteAsync(element, filters);
+    public Task<int> DeleteAsync(Element element, IDictionary<string,object> filters) => Provider.DeleteAsync(element, filters);
     public int Delete(Element element, IDictionary<string, object> primaryKeys)
     {
         return Provider.Delete(element, primaryKeys);
@@ -40,37 +40,37 @@ public class EntityRepository : IEntityRepository
         Provider.Insert(element, values);
     }
 
-    public async Task InsertAsync(Element element, IDictionary<string,object?> values) => await Provider.InsertAsync(element, values);
+    public Task InsertAsync(Element element, IDictionary<string,object?> values) => Provider.InsertAsync(element, values);
 
-    public async Task<int> UpdateAsync(Element element, IDictionary<string,object?> values) => await Provider.UpdateAsync(element, values);
+    public Task<int> UpdateAsync(Element element, IDictionary<string,object?> values) => Provider.UpdateAsync(element, values);
 
-    public async Task<CommandOperation> SetValuesAsync(Element element, IDictionary<string,object?> values, bool ignoreResults = false) =>
-        await Provider.SetValuesAsync(element, values, ignoreResults);
+    public Task<CommandOperation> SetValuesAsync(Element element, IDictionary<string,object?> values, bool ignoreResults = false) =>
+        Provider.SetValuesAsync(element, values, ignoreResults);
 
     public CommandOperation SetValues(Element element, IDictionary<string, object?> values, bool ignoreResults = false)
     {
         return Provider.SetValues(element, values, ignoreResults);
     }
 
-    public async Task<Element> GetElementFromTableAsync(string tableName) =>await Provider.GetElementFromTableAsync(tableName);
-    public async Task<object?> GetResultAsync(DataAccessCommand command)
+    public Task<Element> GetElementFromTableAsync(string tableName) =>Provider.GetElementFromTableAsync(tableName);
+    public Task<object?> GetResultAsync(DataAccessCommand command)
     {
-        return await DataAccess.GetResultAsync(command);
+        return DataAccess.GetResultAsync(command);
     }
 
-    public async Task<bool> TableExistsAsync(string tableName) => await DataAccess.TableExistsAsync(tableName);
+    public Task<bool> TableExistsAsync(string tableName) => DataAccess.TableExistsAsync(tableName);
     
     public async Task SetCommandAsync(DataAccessCommand command)
     {
         await DataAccess.SetCommandAsync(command);
     }
     
-    public async Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList) => await DataAccess.SetCommandListAsync(commandList);
+    public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList) => DataAccess.SetCommandListAsync(commandList);
     
-    public async Task<bool> ColumnExistsAsync(string tableName, string columnName) => await DataAccess.ColumnExistsAsync(tableName,columnName);
+    public Task<bool> ColumnExistsAsync(string tableName, string columnName) => DataAccess.ColumnExistsAsync(tableName,columnName);
 
 
-    public async Task<bool> ExecuteBatchAsync(string script) => await DataAccess.ExecuteBatchAsync(script);
+    public Task<bool> ExecuteBatchAsync(string script) => DataAccess.ExecuteBatchAsync(script);
 
     public IDictionary<string, object?> GetFields(Element element, Dictionary<string, object> primaryKeys)
     {
@@ -106,7 +106,7 @@ public class EntityRepository : IEntityRepository
         return await DataAccess.GetDictionaryAsync(cmd);
     }
 
-    public async Task CreateDataModelAsync(Element element) => await Provider.CreateDataModelAsync(element);
+    public Task CreateDataModelAsync(Element element) => Provider.CreateDataModelAsync(element);
 
     ///<inheritdoc cref="IEntityRepository.GetCreateTableScript"/>
     public string GetCreateTableScript(Element element) => Provider.GetCreateTableScript(element);
@@ -137,10 +137,10 @@ public class EntityRepository : IEntityRepository
     public string? GetReadProcedureScript(Element element) => Provider.GetReadProcedureScript(element);
     
 
-    public async Task<string> GetListFieldsAsTextAsync(Element element, EntityParameters? parameters = null, bool showLogInfo = false,
+    public Task<string> GetListFieldsAsTextAsync(Element element, EntityParameters? parameters = null, bool showLogInfo = false,
         string delimiter = "|")
     {
-        return await Provider.GetFieldsListAsTextAsync(element, parameters ?? new EntityParameters(), showLogInfo, delimiter);
+        return Provider.GetFieldsListAsTextAsync(element, parameters ?? new EntityParameters(), showLogInfo, delimiter);
     }
     
     public async Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(
@@ -153,13 +153,13 @@ public class EntityRepository : IEntityRepository
         return result.Data;
     }
 
-    public async Task<DataTable> GetDataTableAsync(Element element, EntityParameters? parameters = null)
+    public Task<DataTable> GetDataTableAsync(Element element, EntityParameters? parameters = null)
     {
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
         var command = Provider.GetReadCommand(element, parameters ?? new EntityParameters(), totalOfRecords);
 
-        return await DataAccess.GetDataTableAsync(command);
+        return DataAccess.GetDataTableAsync(command);
     }
 
     public int GetCount(Element element, IDictionary<string,object?> values)
@@ -182,9 +182,9 @@ public class EntityRepository : IEntityRepository
         return result.Count;
     }
 
-    public async Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(DataAccessCommand command)
+    public Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(DataAccessCommand command)
     {
-        return await DataAccess.GetDictionaryListAsync(command);
+        return DataAccess.GetDictionaryListAsync(command);
     }
     
     public async Task<DictionaryListResult> GetDictionaryListResultAsync(

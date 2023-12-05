@@ -165,155 +165,155 @@ public class ActionsController(ActionsService actionsService,
 
 
     [HttpPost]
-    public async Task<IActionResult> InsertAction(string elementName, InsertAction insertAction, ActionSource context,
+    public Task<IActionResult> InsertAction(string elementName, InsertAction insertAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, insertAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, insertAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> ConfigAction(string elementName, ConfigAction configAction, ActionSource context,
+    public Task<IActionResult> ConfigAction(string elementName, ConfigAction configAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, configAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, configAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> ExportAction(string elementName, ExportAction exportAction, ActionSource context,
+    public Task<IActionResult> ExportAction(string elementName, ExportAction exportAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, exportAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, exportAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> ViewAction(string elementName, ViewAction viewAction, ActionSource context,
+    public Task<IActionResult> ViewAction(string elementName, ViewAction viewAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, viewAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, viewAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditAction(string elementName, EditAction editAction, ActionSource context,
+    public Task<IActionResult> EditAction(string elementName, EditAction editAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, editAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, editAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> DeleteAction(string elementName, DeleteAction deleteAction, ActionSource context,
+    public Task<IActionResult> DeleteAction(string elementName, DeleteAction deleteAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, deleteAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, deleteAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> ImportAction(string elementName, ImportAction importAction, ActionSource context,
+    public Task<IActionResult> ImportAction(string elementName, ImportAction importAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, importAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, importAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> RefreshAction(string elementName, RefreshAction refreshAction,
+    public Task<IActionResult> RefreshAction(string elementName, RefreshAction refreshAction,
         ActionSource context, string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, refreshAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, refreshAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> LegendAction(string elementName, LegendAction legendAction, ActionSource context,
+    public Task<IActionResult> LegendAction(string elementName, LegendAction legendAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, legendAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, legendAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> SortAction(string elementName, SortAction sortAction, ActionSource context,
+    public Task<IActionResult> SortAction(string elementName, SortAction sortAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, sortAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, sortAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> SaveAction(string elementName, SaveAction saveAction, ActionSource context,
+    public Task<IActionResult> SaveAction(string elementName, SaveAction saveAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, saveAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, saveAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> CancelAction(string elementName, CancelAction cancelAction, ActionSource context,
+    public Task<IActionResult> CancelAction(string elementName, CancelAction cancelAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, cancelAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, cancelAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> BackAction(string elementName, BackAction cancelAction, ActionSource context,
+    public Task<IActionResult> BackAction(string elementName, BackAction cancelAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, cancelAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, cancelAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> FormEditAction(string elementName, FormEditAction cancelAction,
+    public Task<IActionResult> FormEditAction(string elementName, FormEditAction cancelAction,
         ActionSource context, string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, cancelAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, cancelAction, context, isActionSave, originalName);
     }
 
 
     [HttpPost]
-    public async Task<IActionResult> AuditLogGridToolbarAction(string elementName,
+    public Task<IActionResult> AuditLogGridToolbarAction(string elementName,
         AuditLogGridToolbarAction auditLogAction, ActionSource context, string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, auditLogAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, auditLogAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> AuditLogFormToolbarAction(string elementName,
+    public Task<IActionResult> AuditLogFormToolbarAction(string elementName,
         AuditLogFormToolbarAction auditLogAction, ActionSource context, string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, auditLogAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, auditLogAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> FilterAction(string elementName, FilterAction filterAction, ActionSource context,
+    public Task<IActionResult> FilterAction(string elementName, FilterAction filterAction, ActionSource context,
         string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, filterAction, context, isActionSave, originalName);
+        return EditActionResult(elementName, filterAction, context, isActionSave, originalName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> UrlRedirectAction(string elementName, UrlRedirectAction urlAction,
+    public Task<IActionResult> UrlRedirectAction(string elementName, UrlRedirectAction urlAction,
         ActionSource context,
         string? fieldName, string? originalName, bool isActionSave)
     {
-        return await EditActionResult(elementName, urlAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, urlAction, context, isActionSave, originalName, fieldName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> ScriptAction(string elementName, ScriptAction scriptAction, ActionSource context,
+    public Task<IActionResult> ScriptAction(string elementName, ScriptAction scriptAction, ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
-        return await EditActionResult(elementName, scriptAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, scriptAction, context, isActionSave, originalName, fieldName);
     }
 
     [HttpPost]
-    public async Task<IActionResult> SqlCommandAction(string elementName, SqlCommandAction sqlAction,
+    public Task<IActionResult> SqlCommandAction(string elementName, SqlCommandAction sqlAction,
         ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
-        return await EditActionResult(elementName, sqlAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, sqlAction, context, isActionSave, originalName, fieldName);
     }
 
 
     [HttpPost]
-    public async Task<IActionResult> InternalAction(string elementName, InternalAction internalAction,
+    public Task<IActionResult> InternalAction(string elementName, InternalAction internalAction,
         ActionSource context,
         string? originalName, bool isActionSave, string? fieldName)
     {
-        return await EditActionResult(elementName, internalAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, internalAction, context, isActionSave, originalName, fieldName);
     }
 
     [HttpPost]
@@ -342,7 +342,7 @@ public class ActionsController(ActionsService actionsService,
     }
     
     [HttpPost]
-    public async Task<IActionResult> PluginAction(
+    public Task<IActionResult> PluginAction(
         string elementName, 
         PluginAction pluginAction,
         ActionSource context,
@@ -352,10 +352,10 @@ public class ActionsController(ActionsService actionsService,
     {
         SetPluginConfigurationMap(pluginAction.ConfigurationMap, pluginAction.PluginId);
         
-        return await EditActionResult(elementName, pluginAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, pluginAction, context, isActionSave, originalName, fieldName);
     }
     [HttpPost]
-    public async Task<IActionResult> PluginFieldAction(
+    public Task<IActionResult> PluginFieldAction(
         string elementName, 
         PluginFieldAction pluginFieldAction,
         ActionSource context,
@@ -367,7 +367,7 @@ public class ActionsController(ActionsService actionsService,
         
         SetPluginFieldMap(pluginFieldAction.FieldMap, pluginFieldAction.PluginId);
         
-        return await EditActionResult(elementName, pluginFieldAction, context, isActionSave, originalName, fieldName);
+        return EditActionResult(elementName, pluginFieldAction, context, isActionSave, originalName, fieldName);
     }
 
     private void SetPluginConfigurationMap(IDictionary<string, object?> configurationMap,

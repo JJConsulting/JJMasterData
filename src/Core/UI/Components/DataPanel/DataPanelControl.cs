@@ -86,12 +86,12 @@ internal class DataPanelControl
         FormState = new FormStateData(values, gridView.UserValues, PageState.Filter);
     }
 
-    public async Task<HtmlBuilder> GetHtmlForm(List<FormElementField> fields)
+    public Task<HtmlBuilder> GetHtmlForm(List<FormElementField> fields)
     {
         if (FormUI.IsVerticalLayout)
-            return await GetHtmlFormVertical(fields);
+            return GetHtmlFormVertical(fields);
 
-        return await GetHtmlFormHorizontal(fields);
+        return GetHtmlFormHorizontal(fields);
     }
 
     private async Task<HtmlBuilder> GetHtmlFormVertical(List<FormElementField> fields)
@@ -321,7 +321,7 @@ internal class DataPanelControl
         return html;
     }
 
-    private async Task<HtmlBuilder> GetControlFieldHtml(FormElementField field, object? value)
+    private Task<HtmlBuilder> GetControlFieldHtml(FormElementField field, object? value)
     {
         var formStateData = new FormStateData(Values, UserValues, PageState);
         var control = ComponentFactory.Controls.Create(FormElement, field, formStateData, ParentComponentName, value);
@@ -342,7 +342,7 @@ internal class DataPanelControl
                 textGroupAction.Enabled = false;
         
         if (PageState != PageState.Filter) 
-            return await control.GetHtmlBuilderAsync();
+            return control.GetHtmlBuilderAsync();
         
         switch (control)
         {
@@ -350,7 +350,7 @@ internal class DataPanelControl
                 range.IsVerticalLayout = FormUI.IsVerticalLayout;
                 break;
             case JJTextGroup when field.Filter.Type is not (FilterMode.MultValuesContain or FilterMode.MultValuesEqual):
-                return await control.GetHtmlBuilderAsync();
+                return control.GetHtmlBuilderAsync();
             case JJTextGroup:
                 control.Attributes.Add("data-role", "tagsinput");
                 control.MaxLength = 0;
@@ -368,7 +368,7 @@ internal class DataPanelControl
             }
         }
 
-        return await control.GetHtmlBuilderAsync();
+        return control.GetHtmlBuilderAsync();
     }
 
     private string GetScriptReload(FormElementField field)

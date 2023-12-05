@@ -32,9 +32,9 @@ public partial class DataAccess
     }
     
     ///<inheritdoc cref="GetDataTable(string)"/>
-    public async Task<DataTable> GetDataTableAsync(string sql, CancellationToken cancellationToken = default)
+    public Task<DataTable> GetDataTableAsync(string sql, CancellationToken cancellationToken = default)
     {
-        return await GetDataTableAsync(new DataAccessCommand(sql), cancellationToken);
+        return GetDataTableAsync(new DataAccessCommand(sql), cancellationToken);
     }
 
     ///<inheritdoc cref="GetDataTable(DataAccessCommand)"/>
@@ -78,9 +78,9 @@ public partial class DataAccess
     }
     
     /// <inheritdoc cref="GetResult(string)"/>
-    public async Task<object?> GetResultAsync(string sql, CancellationToken cancellationToken = default)
+    public Task<object?> GetResultAsync(string sql, CancellationToken cancellationToken = default)
     {
-        return await GetResultAsync(new DataAccessCommand(sql), cancellationToken);
+        return GetResultAsync(new DataAccessCommand(sql), cancellationToken);
     }
 
     /// <inheritdoc cref="GetResult(DataAccessCommand)"/>
@@ -204,9 +204,9 @@ public partial class DataAccess
     }
     
     /// <inheritdoc cref="SetCommand(string)"/>
-    public async Task<int> SetCommandAsync(string sql, CancellationToken cancellationToken = default)
+    public Task<int> SetCommandAsync(string sql, CancellationToken cancellationToken = default)
     {
-        return await SetCommandAsync(new DataAccessCommand(sql), cancellationToken);
+        return SetCommandAsync(new DataAccessCommand(sql), cancellationToken);
     }
     
     /// <inheritdoc cref="SetCommand(IEnumerable&lt;string&gt;)"/>

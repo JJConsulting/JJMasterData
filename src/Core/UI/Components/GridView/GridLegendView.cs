@@ -16,16 +16,16 @@ internal class GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStri
     public required string Name { get; init; }
     public required FormElement FormElement { get; init; }
 
-    public async Task<HtmlBuilder> GetHtmlBuilderAsync()
+    public Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         if (ShowAsModal)
         {
-            return await GetModalHtmlBuilder();
+            return GetModalHtmlBuilder();
         }
 
         var field = GetLegendField();
 
-        return  await GetLegendHtmlBuilder(field);
+        return  GetLegendHtmlBuilder(field);
     }
 
     private async Task<HtmlBuilder> GetLegendHtmlBuilder(FormElementField field)

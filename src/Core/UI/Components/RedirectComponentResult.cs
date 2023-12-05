@@ -15,9 +15,9 @@ public class RedirectComponentResult(string url) : ComponentResult
     public override string Content { get; } = url;
 
 #if NET 
-    public async Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
+    public Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
     {
-        await new RedirectResult(Content).ExecuteResultAsync(context);
+        return new RedirectResult(Content).ExecuteResultAsync(context);
     }
 #endif
 }

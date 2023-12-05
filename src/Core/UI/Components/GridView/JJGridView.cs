@@ -634,9 +634,9 @@ public class JJGridView : AsyncComponent
         return html;
     }
 
-    public async Task<IDictionary<string, object?>> GetCurrentFilterAsync()
+    public Task<IDictionary<string, object?>> GetCurrentFilterAsync()
     {
-        return await Filter.GetCurrentFilterAsync();
+        return Filter.GetCurrentFilterAsync();
     }
 
 
@@ -780,13 +780,13 @@ public class JJGridView : AsyncComponent
         return titleComponent;
     }
 
-    internal async Task<HtmlBuilder> GetToolbarHtmlBuilder() => await new GridToolbar(this).GetHtmlBuilderAsync();
+    internal Task<HtmlBuilder> GetToolbarHtmlBuilder() => new GridToolbar(this).GetHtmlBuilderAsync();
 
-    public async Task<HtmlBuilder> GetFilterHtmlAsync() => await Filter.GetFilterHtml();
+    public Task<HtmlBuilder> GetFilterHtmlAsync() => Filter.GetFilterHtml();
 
-    public async Task<HtmlBuilder> GetToolbarHtmlAsync() => await GetToolbarHtmlBuilder();
+    public Task<HtmlBuilder> GetToolbarHtmlAsync() => GetToolbarHtmlBuilder();
 
-    private async Task<HtmlBuilder> GetSortingConfigAsync() => await new GridSortingConfig(this).GetHtmlBuilderAsync();
+    private Task<HtmlBuilder> GetSortingConfigAsync() => new GridSortingConfig(this).GetHtmlBuilderAsync();
 
     private bool CheckForSqlCommand()
     {
@@ -794,11 +794,11 @@ public class JJGridView : AsyncComponent
         return action is SqlCommandAction;
     }
 
-    private async Task<JJMessageBox?> ExecuteSqlCommand()
+    private Task<JJMessageBox?> ExecuteSqlCommand()
     {
         var action = CurrentActionMap!.GetAction(FormElement);
         var gridSqlAction = new GridSqlCommandAction(this);
-        return await gridSqlAction.ExecuteSqlCommand(CurrentActionMap, (SqlCommandAction)action);
+        return gridSqlAction.ExecuteSqlCommand(CurrentActionMap, (SqlCommandAction)action);
     }
 
     private void AssertProperties()
@@ -1168,7 +1168,7 @@ public class JJGridView : AsyncComponent
         if (IsUserSetDataSource && DataSource != null)
         {
 
-            using var dataView = new DataView(EnumerableHelper.ConvertToDataTable(DataSource.DeepCopy()));
+            using var dataView = new DataView(EnumerableHelper.ConvertToDataTable( ObjectCloner.DeepCopy(DataSource)));
             dataView.Sort = parameters.OrderBy.ToQueryParameter();
             dataTable = dataView.ToTable();
             

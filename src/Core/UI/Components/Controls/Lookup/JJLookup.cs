@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
@@ -146,7 +147,7 @@ public class JJLookup : ControlBase
         idTextBox.InputType = OnlyNumbers ? InputType.Number : InputType.Text;
         idTextBox.MaxLength = MaxLength;
         idTextBox.Text = SelectedValue?.ToString();
-        idTextBox.Attributes = Attributes.DeepCopy();
+        idTextBox.Attributes = ObjectCloner.DeepCopy(Attributes);
         idTextBox.Tooltip = Tooltip;
         idTextBox.ReadOnly = ReadOnly;
         idTextBox.Enabled = Enabled;
@@ -164,7 +165,7 @@ public class JJLookup : ControlBase
             descriptionTextBox.InputType = InputType.Text;
             descriptionTextBox.MaxLength = MaxLength;
             descriptionTextBox.Text = description;
-            descriptionTextBox.Attributes = Attributes.DeepCopy();
+            descriptionTextBox.Attributes =  ObjectCloner.DeepCopy(Attributes);;
             descriptionTextBox.Tooltip = Tooltip;
             descriptionTextBox.Enabled = false;
 

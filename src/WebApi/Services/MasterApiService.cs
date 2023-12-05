@@ -444,12 +444,12 @@ public class MasterApiService(ExpressionsService expressionsService,
         return new DataContext(HttpContext.Request, DataContextSource.Api, userId);
     }
 
-    private async Task<FormElement> GetDataDictionary(string elementName)
+    private Task<FormElement> GetDataDictionary(string elementName)
     {
         if (string.IsNullOrEmpty(elementName))
             throw new ArgumentNullException(nameof(elementName));
 
-        return await dataDictionaryRepository.GetFormElementAsync(elementName);
+        return dataDictionaryRepository.GetFormElementAsync(elementName);
     }
 
     /// <summary>

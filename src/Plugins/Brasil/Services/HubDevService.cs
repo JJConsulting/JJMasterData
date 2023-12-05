@@ -68,22 +68,22 @@ public class HubDevService(HttpClient httpClient,
         }
     }
 
-    public async Task<CnpjResult> SearchCnpjAsync(string cnpj)
+    public Task<CnpjResult> SearchCnpjAsync(string cnpj)
     {
-        return await Search<CnpjResult>("cnpj", cnpj);
+        return Search<CnpjResult>("cnpj", cnpj);
     }
 
-    public async Task<CpfResult> SearchCpfAsync(string cpf, DateTime birthDate)
+    public Task<CpfResult> SearchCpfAsync(string cpf, DateTime birthDate)
     {
-        return await Search<CpfResult>("cpf", cpf, new Dictionary<string, string>
+        return Search<CpfResult>("cpf", cpf, new Dictionary<string, string>
         {
             {"data", birthDate.ToString("ddMMyyyy")}
         });
     }
 
 
-    public async Task<CepResult> SearchCepAsync(string cep)
+    public Task<CepResult> SearchCepAsync(string cep)
     {
-        return await Search<CepResult>("cep", cep);
+        return Search<CepResult>("cep", cep);
     }
 }

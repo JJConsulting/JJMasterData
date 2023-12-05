@@ -36,9 +36,9 @@ public abstract class BaseService(IValidationDictionary validationDictionary,
 
     public bool IsValid => validationDictionary.IsValid;
 
-    public async Task<FormElement> GetFormElementAsync(string elementName)
+    public Task<FormElement> GetFormElementAsync(string elementName)
     {
-        return await DataDictionaryRepository.GetFormElementAsync(elementName);
+        return DataDictionaryRepository.GetFormElementAsync(elementName);
     }
 
     public bool ValidateName(string name)

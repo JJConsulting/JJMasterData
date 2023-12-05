@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -210,13 +211,13 @@ public class FieldService(IValidationDictionary validationDictionary,
         }
     }
 
-    private async Task ValidateDataItemAsync(FormElementField field)
+    private Task ValidateDataItemAsync(FormElementField field)
     {
         var dataItem = field.DataItem;
         if (dataItem == null)
         {
             AddError("DataItem", StringLocalizer["DataItem cannot be empty."]);
-            return;
+            return Task.CompletedTask;
         }
 
         if (dataItem.DataItemType == DataItemType.SqlCommand)
@@ -224,7 +225,7 @@ public class FieldService(IValidationDictionary validationDictionary,
             if (dataItem.Command == null)
             {
                 AddError("Command", StringLocalizer["[Command] required"]);
-                return;
+                return Task.CompletedTask;
             }
                
             if (string.IsNullOrEmpty(dataItem.Command.Sql))
@@ -243,9 +244,10 @@ public class FieldService(IValidationDictionary validationDictionary,
         }
         else if (dataItem.DataItemType == DataItemType.ElementMap)
         {
-            
-            await ValidateDataElementMapAsync(field);
+            return ValidateDataElementMapAsync(field);
         }
+
+        return Task.CompletedTask;
     }
 
     private void ValidateManualItens(IList<DataItemValue> itens)
@@ -443,7 +445,7 @@ public class FieldService(IValidationDictionary validationDictionary,
 
     public async Task<bool> CopyFieldAsync(FormElement formElement, FormElementField field)
     {
-        var newField = field.DeepCopy();
+        var newField = ObjectCloner.DeepCopy(field);
 
         if (formElement.Fields.Contains(newField.Name))
         {

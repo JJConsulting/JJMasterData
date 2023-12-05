@@ -439,9 +439,9 @@ public class JJUploadView : AsyncComponent
         return panelContent;
     }
 
-    private async Task<HtmlBuilder> GetGridViewHtml()
+    private Task<HtmlBuilder> GetGridViewHtml()
     {
-        return await GridView.GetHtmlBuilderAsync();
+        return GridView.GetHtmlBuilderAsync();
         
     }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -127,7 +128,7 @@ public class PanelService(IValidationDictionary validationDictionary,
     public async Task<FormElementPanel> CopyPanel(string elementName, FormElementPanel panel)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
-        var newPanel = panel.DeepCopy();
+        var newPanel = ObjectCloner.DeepCopy(panel);
         newPanel.PanelId = 1 + formElement.Panels.Max(x => x.PanelId);
         formElement.Panels.Add(newPanel);
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);

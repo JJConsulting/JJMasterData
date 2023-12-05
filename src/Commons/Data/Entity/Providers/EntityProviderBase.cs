@@ -123,12 +123,12 @@ public abstract class EntityProviderBase
         return commandType;
     }
     
-    public async Task<CommandOperation> SetValuesAsync(Element element, IDictionary<string,object?> values, bool ignoreResults)
+    public Task<CommandOperation> SetValuesAsync(Element element, IDictionary<string,object?> values, bool ignoreResults)
     {
         if (ignoreResults)
-            return await SetValuesNoResultAsync(element, values);
+            return SetValuesNoResultAsync(element, values);
 
-        return await SetValuesAsync(element, values);
+        return SetValuesAsync(element, values);
     }
     
     
@@ -197,7 +197,7 @@ public abstract class EntityProviderBase
         return sqlScripts.ToString();
     }
     
-    public async Task<string> GetFieldsListAsTextAsync(Element element, EntityParameters entityParameters,
+    public Task<string> GetFieldsListAsTextAsync(Element element, EntityParameters entityParameters,
         bool showLogInfo, string delimiter = "|")
     {
         if (element == null)
@@ -212,7 +212,7 @@ public abstract class EntityProviderBase
             Delimiter = delimiter
         };
 
-        return await plainTextWriter.GetFieldsListAsTextAsync(element, entityParameters);
+        return plainTextWriter.GetFieldsListAsTextAsync(element, entityParameters);
     }
 
     private static bool ValidateOrderByClause(Element element, string? orderBy)

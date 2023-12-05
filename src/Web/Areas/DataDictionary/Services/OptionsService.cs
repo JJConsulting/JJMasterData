@@ -20,18 +20,20 @@ public class OptionsService(IValidationDictionary validationDictionary,
     internal IWritableOptions<MasterDataWebOptions>? JJMasterDataWritableOptions { get; } = masterDataWritableOptions;
 
 
-    public async Task SaveOptions(OptionsViewModel model)
+    public Task SaveOptions(OptionsViewModel model)
     {
         ValidateWritableOptions();
 
         if (IsValid)
         {
-            await JJMasterDataWritableOptions!.UpdateAsync(options =>
+            return JJMasterDataWritableOptions!.UpdateAsync(options =>
             {
                 options.ConnectionString = model.ConnectionString.ToString();
                 options.ConnectionProvider = model.ConnectionProvider;
             });
         }
+
+        return Task.CompletedTask;
     }
 
     public async Task<OptionsViewModel> GetViewModel(bool isFullscreen)

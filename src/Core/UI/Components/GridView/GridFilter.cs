@@ -95,7 +95,7 @@ internal class GridFilter(JJGridView gridView)
         }
 
         await ApplyCurrentFilter(null);
-        return _currentFilter;
+        return _currentFilter ?? new Dictionary<string, object>();
     }
     
     /// <summary>
@@ -178,7 +178,7 @@ internal class GridFilter(JJGridView gridView)
             FieldNamePrefix = FilterFieldPrefix
         };
         
-        var htmlPanel = await dataPanelControl.GetHtmlForm(fields.DeepCopy());
+        var htmlPanel = await dataPanelControl.GetHtmlForm(ObjectCloner.DeepCopy(fields));
         htmlPanel.WithAttribute("id", $"current-grid-filter-{GridView.Name}");
 
         var html = new HtmlBuilder(HtmlTag.Div)

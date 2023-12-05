@@ -1,14 +1,15 @@
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Test.Extensions;
 
-public class GenericExtensionsTest
+public class DeepCopyTest
 {
     [Fact]
-    public void DeepCopyTest()
+    public void ObjectClonerDeepCopyTest()
     {
         var obj1 = new object();
-        var obj2 = obj1.DeepCopy();
+        var obj2 = ObjectCloner.DeepCopy(obj1);
         
         Assert.NotEqual(obj1,obj2);
     }

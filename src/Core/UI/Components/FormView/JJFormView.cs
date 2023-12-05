@@ -514,17 +514,17 @@ public class JJFormView : AsyncComponent
         htmlBuilder.AppendScript(Scripts.GetShowInsertSuccessScript());
     }
 
-    private async Task<ComponentResult> GetCancelActionResult()
+    private Task<ComponentResult> GetCancelActionResult()
     {
         PageState = PageState.List;
         ClearTempFiles();
-        return await GridView.GetResultAsync();
+        return GridView.GetResultAsync();
     }
 
-    private async Task<ComponentResult> GetBackActionResult()
+    private Task<ComponentResult> GetBackActionResult()
     {
         PageState = PageState.List;
-        return await GridView.GetResultAsync();
+        return GridView.GetResultAsync();
     }
 
     private async Task<ComponentResult> GetFormActionResult()
@@ -634,14 +634,14 @@ public class JJFormView : AsyncComponent
         return formResult;
     }
 
-    private async Task<PluginActionResult> GetPluginActionResult(IDictionary<string, object?> formValues)
+    private Task<PluginActionResult> GetPluginActionResult(IDictionary<string, object?> formValues)
     {
         var pluginAction = (PluginAction)CurrentAction!;
 
-        return await GetPluginActionResult(pluginAction, formValues, CurrentActionMap!.FieldName);
+        return GetPluginActionResult(pluginAction, formValues, CurrentActionMap!.FieldName);
     }
 
-    private async Task<PluginActionResult> GetPluginActionResult(PluginAction pluginAction,
+    private Task<PluginActionResult> GetPluginActionResult(PluginAction pluginAction,
         IDictionary<string, object?> values, string? fieldName)
     {
         var pluginHandler = PluginHandlers.First(p => p.Id == pluginAction.PluginId);
@@ -656,13 +656,13 @@ public class JJFormView : AsyncComponent
         switch (pluginHandler)
         {
             case IPluginActionHandler pluginActionHandler:
-                return await pluginActionHandler.ExecuteActionAsync(new PluginActionContext
+                return pluginActionHandler.ExecuteActionAsync(new PluginActionContext
                 {
                     ActionContext = GetActionContext(pluginAction, formStateData),
                     ConfigurationMap = pluginAction.ConfigurationMap
                 });
             case IPluginFieldActionHandler pluginFieldActionHandler:
-                return await pluginFieldActionHandler.ExecuteActionAsync(context: new PluginFieldActionContext
+                return pluginFieldActionHandler.ExecuteActionAsync(context: new PluginFieldActionContext
                 {
                     ActionContext = GetActionContext(pluginAction,
                         formStateData, fieldName),
@@ -685,9 +685,9 @@ public class JJFormView : AsyncComponent
         FormService.OnAfterDeleteAsync += OnAfterDeleteAsync;
     }
 
-    private async Task<ComponentResult> GetGridViewResult()
+    private Task<ComponentResult> GetGridViewResult()
     {
-        return await GridView.GetResultAsync();
+        return GridView.GetResultAsync();
     }
 
     private async Task<ComponentResult> GetUpdateResult()
@@ -1043,7 +1043,7 @@ public class JJFormView : AsyncComponent
         return new RenderedComponentResult(html);
     }
 
-    private async Task<ComponentResult> GetFormResult(FormContext formContext, bool autoReloadFormFields)
+    private Task<ComponentResult> GetFormResult(FormContext formContext, bool autoReloadFormFields)
     {
         var (values, errors, pageState) = formContext;
 
@@ -1057,10 +1057,10 @@ public class JJFormView : AsyncComponent
 
         if (!visibleRelationships.Any() || visibleRelationships.Count == 1)
         {
-            return await GetParentPanelResult(parentPanel, values);
+            return GetParentPanelResult(parentPanel, values);
         }
 
-        return await GetRelationshipLayoutResult(visibleRelationships, values);
+        return GetRelationshipLayoutResult(visibleRelationships, values);
     }
 
     private async Task<ComponentResult> GetRelationshipLayoutResult(List<FormElementRelationship> visibleRelationships,

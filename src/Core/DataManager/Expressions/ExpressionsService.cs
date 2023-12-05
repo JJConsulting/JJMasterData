@@ -22,9 +22,9 @@ public class ExpressionsService(
     private ExpressionParser ExpressionParser { get; } = expressionParser;
     private ILogger<ExpressionsService> Logger { get; } = logger;
 
-    public async Task<object?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
+    public Task<object?> GetDefaultValueAsync(ElementField field, FormStateData formStateData)
     {
-        return await GetExpressionValueAsync(field.DefaultValue, field, formStateData);
+        return GetExpressionValueAsync(field.DefaultValue, field, formStateData);
     }
 
     public string? ReplaceExpressionWithParsedValues(
@@ -72,9 +72,9 @@ public class ExpressionsService(
         return ParseBool(result);
     }
 
-    public async Task<object?> GetTriggerValueAsync(FormElementField field, FormStateData formStateData)
+    public Task<object?> GetTriggerValueAsync(FormElementField field, FormStateData formStateData)
     {
-        return await GetExpressionValueAsync(field.TriggerExpression, field, formStateData);
+        return GetExpressionValueAsync(field.TriggerExpression, field, formStateData);
     }
 
     private async Task<object?> GetExpressionValueAsync(

@@ -16,9 +16,9 @@ public class JsonComponentResult(object objectResult) : ComponentResult
     public override string Content => JsonConvert.SerializeObject(ObjectResult);
 
 #if NET
-    public async Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
+    public Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
     {
-        await new ContentResult
+        return new ContentResult
         {
             Content = Content,
             StatusCode = StatusCode,

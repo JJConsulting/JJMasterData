@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.Models;
@@ -26,7 +27,7 @@ public class FormStateData
         IDictionary<string, object?>? userValues,
         PageState pageState)
     {
-        UserValues = userValues.DeepCopy();
+        UserValues = ObjectCloner.DeepCopy(userValues);
         Values = values;
         PageState = pageState;
     }

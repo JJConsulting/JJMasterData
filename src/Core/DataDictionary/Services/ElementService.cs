@@ -248,8 +248,8 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         return IsValid;
     }
 
-    public async Task CreateStructureIfNotExistsAsync()
+    public Task CreateStructureIfNotExistsAsync()
     {
-       await DataDictionaryRepository.CreateStructureIfNotExistsAsync();
+        return DataDictionaryRepository.CreateStructureIfNotExistsAsync();
     }
 }

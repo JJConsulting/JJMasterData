@@ -59,14 +59,16 @@ internal class FormViewFactory(
         return formView;
     }
 
-    private async Task SetFormEventHandlerAsync(JJFormView formView, FormElement formElement)
+    private Task SetFormEventHandlerAsync(JJFormView formView, FormElement formElement)
     {
         var formEventHandler = formEventHandlerResolver.GetFormEventHandler(formElement.Name);
         formView.FormService.AddFormEventHandler(formEventHandler);
         if (formEventHandler != null)
         {
-            await formEventHandler.OnFormElementLoadAsync(this, new FormElementLoadEventArgs(formElement))!;
+            return formEventHandler.OnFormElementLoadAsync(this, new FormElementLoadEventArgs(formElement))!;
         }
+
+        return Task.CompletedTask;
     }
     
 }

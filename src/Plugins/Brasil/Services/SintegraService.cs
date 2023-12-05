@@ -67,8 +67,8 @@ public class SintegraService(HttpClient httpClient, ICepService cepService, IOpt
         }
     }
     
-    public async Task<CepResult> SearchCepAsync(string cep)
+    public Task<CepResult> SearchCepAsync(string cep)
     {
-        return await CepService.SearchCepAsync(cep);
+        return CepService.SearchCepAsync(cep);
     }
 }

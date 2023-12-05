@@ -162,9 +162,9 @@ public abstract class DataExportationWriterBase(ExpressionsService expressionsSe
     #endregion
 
 
-    public async Task RunWorkerAsync(CancellationToken token)
+    public Task RunWorkerAsync(CancellationToken token)
     {
-        await Task.Run(async () =>
+        return Task.Run(async () =>
         {
 #if NETFRAMEWORK
             HttpContext.Current = HttpContext;

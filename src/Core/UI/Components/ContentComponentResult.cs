@@ -13,9 +13,9 @@ public class ContentComponentResult(HtmlBuilder htmlBuilder) : HtmlComponentResu
 #endif
 {
 #if NET 
-    public async Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
+    public Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
     {
-        await new ContentResult
+        return new ContentResult
         {
             Content = Content,
             StatusCode = StatusCode,

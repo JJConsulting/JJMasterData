@@ -251,9 +251,9 @@ public class JJDataPanel : AsyncComponent
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
-    public async Task<Dictionary<string, object>> GetFormValuesAsync()
+    public Task<Dictionary<string, object>> GetFormValuesAsync()
     {
-        return await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix);
+        return FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix);
     }
 #if NETFRAMEWORK
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]
