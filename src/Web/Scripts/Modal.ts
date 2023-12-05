@@ -252,6 +252,12 @@ class _LegacyModal extends ModalBase{
     override showIframe(url: string, title: string, size: ModalSize = null) {
         this.modalSize = size || this.modalSize;
         const modalHtml = this.createModalHtml(url, true); // Using iframe
+
+        const modalIdSelector = `#${this.modalId}`;
+        if ($(modalIdSelector).length) {
+            $(modalIdSelector).remove();
+        }
+
         $(modalHtml).appendTo($("body"));
         this.setTitle(title);
         this.showModal();
@@ -283,6 +289,12 @@ class _LegacyModal extends ModalBase{
                     else {
                         return response.text().then((htmlData)=>{
                             const modalHtml = this.createModalHtml(htmlData, false); // Not using iframe
+
+                            const modalIdSelector = `#${this.modalId}`;
+                            if ($(modalIdSelector).length) {
+                                $(modalIdSelector).remove();
+                            }                    
+
                             $(modalHtml).appendTo($("body"));
                             this.setTitle(title);
                             this.showModal();
