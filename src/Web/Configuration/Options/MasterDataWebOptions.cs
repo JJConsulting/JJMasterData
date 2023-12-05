@@ -28,5 +28,8 @@ public class MasterDataWebOptions : MasterDataCoreOptions
     public bool SupportNetFramework { get; set; }
     public bool EnableBundleAndMinification { get; set; }
 
+    /// <summary>
+    /// Custom scripts to be added at _MasterDataScripts. The paths are relative.
+    /// </summary>
     public List<string> CustomScriptsPaths { get; } = new();
 }

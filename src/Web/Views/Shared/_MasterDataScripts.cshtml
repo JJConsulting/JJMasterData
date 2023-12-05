@@ -2,6 +2,7 @@
 @inject IOptions<MasterDataWebOptions> Options
 @{
     var areaName = ViewContext.RouteData.Values["area"] as string;
+    var pathBase = Context.Request.PathBase;
 }
 
 @if (!Options.Value.EnableBundleAndMinification)
@@ -75,5 +76,5 @@ else
 
 @foreach (var customScriptPath in Options.Value.CustomScriptsPaths)
 {
-    <script type="text/javascript" src="@customScriptPath" asp-append-version="true"></script>
+    <script type="text/javascript" src="@(pathBase + customScriptPath)" asp-append-version="true"></script>
 }
