@@ -199,7 +199,7 @@ public class PdfWriter(ExpressionsService expressionsService,
             }
             else
             {
-                value = await FieldFormattingService.FormatGridValueAsync(FormElement,field, row,null);
+                value = await FieldFormattingService.FormatGridValueAsync(field, row,null);
             }
         }
 

@@ -17,7 +17,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
     private DataItemService DataItemService { get; } = dataItemService;
     private LookupService LookupService { get; } = lookupService;
 
-    public async Task<string> FormatGridValueAsync(FormElement formElement,FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
+    public async Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
     {
         object fieldValue = null;
         if (values.TryGetValue(field.Name, out var value))
@@ -49,9 +49,9 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                  when field.DataItem is { ReplaceTextOnGrid: true }:
                 var searchFormData = new FormStateData(values, userValues, PageState.List);
 
-                var searchId = DataHelper.ParsePkValues(formElement,values, ',');
+                values.TryGetValue(field.Name, out var searchId);
                 
-                var searchBoxValues = DataItemService.GetValuesAsync(field.DataItem, searchFormData, null, searchId);
+                var searchBoxValues = DataItemService.GetValuesAsync(field.DataItem, searchFormData, null, searchId?.ToString());
 
                 var rowValue = await searchBoxValues.FirstOrDefaultAsync(v => v.Id == fieldValue?.ToString());
                 

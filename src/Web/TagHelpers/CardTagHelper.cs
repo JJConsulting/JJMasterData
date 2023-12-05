@@ -25,7 +25,7 @@ public class CardTagHelper(RazorPartialRendererService rendererService, ICompone
     public string? Partial { get; set; }
 
     [HtmlAttributeName("model")]
-    public dynamic? Model { get; set; }
+    public object? Model { get; set; }
     
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
