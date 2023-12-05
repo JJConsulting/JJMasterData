@@ -50,9 +50,7 @@ public class TextGroupFactory(IFormValues formValues,
 
         textGroup.Text = value?.ToString() ?? string.Empty;
 
-        if (formStateData.PageState is PageState.Filter)
-            textGroup.Actions.AddRange(textGroup.Actions.Where(a => a.ShowInFilter));
-        else
+        if (formStateData.PageState is not PageState.Filter)
             AddUserActions(formElement, field, context, textGroup);
         
         return textGroup;
@@ -217,7 +215,6 @@ public class TextGroupFactory(IFormValues formValues,
         var btn = ActionButtonFactory.Create();
         btn.IconClass = $"fa fa-{BootstrapHelper.DateIcon}";
         btn.Tooltip = StringLocalizer["Calendar"];
-        btn.ShowInFilter = true;
         btn.Enabled = isEnabled;
         btn.SetAttr("data-toggle", "date");
         btn.SetAttr("tabindex", "-1");

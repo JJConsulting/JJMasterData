@@ -74,8 +74,6 @@ public class JJLinkButton : HtmlComponent
     
     public string UrlAction { get; set; }
 
-    internal bool ShowInFilter { get; set; }
-
     internal JJLinkButton(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         _stringLocalizer = stringLocalizer;
