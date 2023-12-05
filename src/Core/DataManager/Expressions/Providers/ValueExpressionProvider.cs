@@ -16,7 +16,7 @@ public class ValueExpressionProvider : IAsyncExpressionProvider, IBooleanExpress
         if (expression.Contains(ExpressionHelper.Begin.ToString()))
             return ExpressionHelper.ReplaceExpression(expression, parsedValues);
 
-        return expression;
+        return expression.Trim();
     }
     
     public bool Evaluate(string expression, IDictionary<string,object?> parsedValues)
