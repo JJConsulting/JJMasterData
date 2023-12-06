@@ -1,7 +1,8 @@
 #nullable enable
+
+using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging.Db;
 
@@ -45,18 +46,12 @@ internal class DbLogger : ILogger
     private static string GetMessage(EventId eventId, string formatterMessage, Exception? exception)
     {
         var message = new StringBuilder();
-
         message.AppendLine(eventId.Name);
         message.AppendLine(formatterMessage);
 
         if (exception != null)
         {
-            message.AppendLine("Message:");
-            message.AppendLine(exception.Message);
-            message.AppendLine("Stacktrace:");
-            message.AppendLine(exception.StackTrace);
-            message.AppendLine("Source:");
-            message.AppendLine(exception.Source);
+            message.AppendLine(LoggerDecoration.GetMessage(exception));
         }
 
         return message.ToString();
