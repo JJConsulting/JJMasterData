@@ -36,6 +36,16 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
             case FormComponent.Slider:
                 stringValue = GetNumericValueAsString(field, value);
                 break;
+            case FormComponent.Currency:
+                if (double.TryParse(value?.ToString(),NumberStyles.Currency,CultureInfo.CurrentCulture, out var currencyValue))
+                {
+                    var cultureInfo = CultureInfo.CurrentCulture;
+                    var numberFormatInfo = (NumberFormatInfo)cultureInfo.NumberFormat.Clone();
+                    stringValue = currencyValue.ToString($"C{field.NumberOfDecimalPlaces}", numberFormatInfo);
+                }
+                else
+                    stringValue = null;
+                break;
             case FormComponent.Lookup
                  when field.DataItem is { ReplaceTextOnGrid: true }:
                 var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
@@ -76,7 +86,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         
         else if (field.DataType == FieldType.Int)
         {
-            if (int.TryParse(value.ToString(), out var intVal))
+            if (int.TryParse(value.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture,out var intVal))
                 stringValue = intVal.ToString("0");
         }
         else
@@ -106,6 +116,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 break;
             case FormComponent.Slider:
             case FormComponent.Number:
+            case FormComponent.Currency:
                 switch (type)
                 {
                     case FieldType.Int when !field.IsPk:
@@ -114,15 +125,6 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                         return GetNumericValueAsString(field, value);
                     }
                 }
-                break;
-            case FormComponent.Currency:
-                if (double.TryParse(stringValue, out var currencyValue))
-                {
-                    var cultureInfo = CultureInfo.CurrentCulture;
-                    var numberFormatInfo = (NumberFormatInfo)cultureInfo.NumberFormat.Clone();
-                    stringValue = currencyValue.ToString($"C{field.NumberOfDecimalPlaces}", numberFormatInfo);
-                }
-
                 break;
             case FormComponent.Hour:
                 if (TimeSpan.TryParse(stringValue, out var timeSpan))

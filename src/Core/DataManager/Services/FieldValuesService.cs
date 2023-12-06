@@ -37,9 +37,9 @@ public class FieldValuesService(ExpressionsService expressionsService, IEntityRe
         var newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var f in formElement.Fields)
         {
-            if (formValues.TryGetValue(f.Name, out var value) && value != null)
+            if (formValues.TryGetValue(f.Name, out var value))
             {
-                object valueWithoutSpecialCharacters = ClearSpecialChars(f, value);
+                var valueWithoutSpecialCharacters = ClearSpecialChars(f, value);
                 newValues.Add(f.Name, valueWithoutSpecialCharacters);
             }
         }
@@ -119,8 +119,11 @@ public class FieldValuesService(ExpressionsService expressionsService, IEntityRe
         }
     }
 
-    private static object ClearSpecialChars(FormElementField f, object value)
+    private static object? ClearSpecialChars(FormElementField f, object? value)
     {
+        if (value is null)
+            return value;
+        
         value = f.Component switch
         {
             FormComponent.Cnpj or FormComponent.Cnpj or FormComponent.CnpjCpf => StringManager.ClearCpfCnpjChars(

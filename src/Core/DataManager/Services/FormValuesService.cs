@@ -74,14 +74,14 @@ public class FormValuesService(IEntityRepository entityRepository,
                             out var numericValue))
                         value = numericValue;
                     else
-                        value = 0;
+                        value = null;
                     break;
                 case FormComponent.CheckBox:
                     value = StringManager.ParseBool(value);
                     break;
             }
 
-            if(value is not null)
+            if(!field.IsPk)
                 values.Add(field.Name, value);
             
         }
@@ -115,7 +115,7 @@ public class FormValuesService(IEntityRepository entityRepository,
         if (FormValues.ContainsFormValues() && autoReloadFormFields)
         {
             var formValues = await GetFormValuesAsync(formElement, pageState, prefix);
-            DataHelper.CopyIntoDictionary(valuesToBeReceived, formValues , true);
+            DataHelper.CopyIntoDictionary(valuesToBeReceived, formValues, true);
         }
         
         return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !FormValues.ContainsFormValues());

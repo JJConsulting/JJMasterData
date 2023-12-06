@@ -61,6 +61,7 @@ public class JJAlert : HtmlComponent
         foreach (var message in Messages)
         {
             html.AppendText(message);
+            html.Append(HtmlTag.Br);
         }
 
         return html;

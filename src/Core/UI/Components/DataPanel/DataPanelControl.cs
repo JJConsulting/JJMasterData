@@ -117,14 +117,8 @@ internal class DataPanelControl
             object? value = null;
             if (Values != null && Values.ContainsKey(field.Name))
             {
-                if (field.Component != FormComponent.Currency)
-                {
-                    value = FieldsService.FormatValue(field, Values[field.Name]);
-                }
-                else
-                {
-                    value = Values[field.Name];
-                }
+                value = FieldsService.FormatValue(field, Values[field.Name]);
+                
             }
 
             if (lineGroup != field.LineGroup)
