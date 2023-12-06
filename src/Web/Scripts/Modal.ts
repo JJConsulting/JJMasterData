@@ -269,7 +269,7 @@ class _LegacyModal extends ModalBase{
         let fetchUrl : string;
         let fetchOptions : RequestInit;
 
-        if(options instanceof ModalUrlOptions){
+        if(typeof options === 'object' && 'url' in options){
             fetchUrl = options.url;
             fetchOptions = options.requestOptions;
         }
