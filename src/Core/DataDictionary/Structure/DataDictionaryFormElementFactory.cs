@@ -169,6 +169,7 @@ public class DataDictionaryFormElementFactory(IOptions<MasterDataCoreOptions> op
             ShowAsButton = true,
             IsModal = true,
             ModalTitle = StringLocalizer["Log"],
+            ModalSize = ModalSize.ExtraLarge,
             UrlRedirect = UrlHelper.GetUrl("Index", "Log", "DataDictionary"),
             Order = 11,
             CssClass = BootstrapHelper.PullRight
