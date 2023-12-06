@@ -20,14 +20,14 @@ public class FormValuesService(IEntityRepository entityRepository,
     DataItemService dataItemService,
     LookupService lookupService,
     IEncryptionService encryptionService,
-    IFormValues formValues)
+    IFormValues httpFormValues)
 {
     private IEntityRepository EntityRepository { get; } = entityRepository;
     private FieldValuesService FieldValuesService { get; } = fieldValuesService;
     private DataItemService DataItemService { get; } = dataItemService;
     private LookupService LookupService { get; } = lookupService;
     private IEncryptionService EncryptionService { get; } = encryptionService;
-    private IFormValues FormValues { get; } = formValues;
+    private IFormValues FormValues { get; } = httpFormValues;
 
     public async Task<IDictionary<string, object?>> GetFormValuesAsync(FormElement formElement, PageState pageState,
         string? fieldPrefix = null)
@@ -74,17 +74,16 @@ public class FormValuesService(IEntityRepository entityRepository,
                             out var numericValue))
                         value = numericValue;
                     else
-                        value = null;
+                        value = 0;
                     break;
                 case FormComponent.CheckBox:
                     value = StringManager.ParseBool(value);
                     break;
             }
 
-            if (value != null)
-            {
+            if(value is not null)
                 values.Add(field.Name, value);
-            }
+            
         }
 
         return values;
@@ -104,28 +103,27 @@ public class FormValuesService(IEntityRepository entityRepository,
     public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         PageState pageState,
-        IDictionary<string, object?>? values,
+        IDictionary<string, object?> values,
         bool autoReloadFormFields,
         string? prefix = null)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
 
-        var valuesToBeReceived = new Dictionary<string, object?>();
-        DataHelper.CopyIntoDictionary(valuesToBeReceived, values, true);
-
+        var valuesToBeReceived = new Dictionary<string, object?>(values);
+        
         if (FormValues.ContainsFormValues() && autoReloadFormFields)
         {
-            var requestedValues = await GetFormValuesAsync(formElement, pageState, prefix);
-            DataHelper.CopyIntoDictionary(valuesToBeReceived, requestedValues, true);
+            var formValues = await GetFormValuesAsync(formElement, pageState, prefix);
+            DataHelper.CopyIntoDictionary(valuesToBeReceived, formValues , true);
         }
-
+        
         return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !FormValues.ContainsFormValues());
     }
 
 
 
-    private async Task<IDictionary<string, object?>?> GetDbValues(Element element)
+    private async Task<IDictionary<string, object?>> GetDbValues(Element element)
     {
         string encryptedPkValues = FormValues[
             $"data-panel-pk-values-{element.Name}"];

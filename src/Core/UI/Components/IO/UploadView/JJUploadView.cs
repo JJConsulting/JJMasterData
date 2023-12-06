@@ -119,10 +119,13 @@ public class JJUploadView : AsyncComponent
             if (_gridView.FormElement.Fields.Contains("LastWriteTime"))
                 _gridView.FormElement.Fields["LastWriteTime"].Label = "Last Modified";
             
+            _gridView.FormElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
+            
             _gridView.Name = $"{Name}-grid-view";
             _gridView.UserValues = UserValues;
             _gridView.ShowPagging = false;
             _gridView.ShowTitle = false;
+
 
             _gridView.FilterAction.SetVisible(false);
             _gridView.EmptyDataText = "There is no file to display";
