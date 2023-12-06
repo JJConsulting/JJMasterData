@@ -363,8 +363,7 @@ internal class GridFilter(JJGridView gridView)
                             value = StringManager.ClearCpfCnpjChars(value.ToString());
                         break;
                     case FormComponent.CheckBox:
-                        if (string.IsNullOrEmpty(value?.ToString()))
-                            value = "0";
+                        value = StringManager.ParseBool(value) ? "1" : "0";
                         break;
                     case FormComponent.Search:
                         var search = (JJSearchBox)GridView.ComponentFactory.Controls.Create(GridView.FormElement,field, new(values,GridView.UserValues, PageState.Filter),Name,value);
