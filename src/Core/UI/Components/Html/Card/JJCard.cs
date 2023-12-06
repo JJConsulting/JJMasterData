@@ -13,6 +13,8 @@ public class JJCard : HtmlComponent
     
     public string SubTitle { get; set; }
 
+    public string Tooltip { get; set; }
+    
     public PanelLayout Layout { get; set; }
 
     public PanelColor Color { get; set; } = PanelColor.Default;
@@ -64,6 +66,16 @@ public class JJCard : HtmlComponent
                 header.AppendComponent(icon);
             }
             header.AppendText(Title);
+
+            if (Tooltip is not null)
+            {
+                var icon = new JJIcon(IconType.QuestionCircle);
+                icon.CssClass += " help-description";
+                icon.Attributes["title"] = Tooltip;
+                icon.Attributes[BootstrapHelper.DataToggle] = "tooltip";
+                header.AppendComponent(icon);
+            }
+            
         });
 
         html.Append(HtmlTag.Div, d =>

@@ -87,9 +87,7 @@ internal class FileLogger : ILogger
 
                 if (entry.Exception != null)
                 {
-                    log.AppendLine(entry.Exception.Message);
-                    log.AppendLine(entry.Exception.StackTrace);
-                    log.AppendFormat("Source: {0}", entry.Exception.Source);
+                    log.AppendLine(LoggerDecoration.GetMessage(entry.Exception));
                 }
                 log.AppendLine();
                 break;

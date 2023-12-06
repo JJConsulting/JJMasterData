@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
@@ -7,15 +5,13 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.UI;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;
+using System.ComponentModel;
 
 namespace JJMasterData.Web.TagHelpers;
 
@@ -97,7 +93,10 @@ public class ExpressionTagHelper : TagHelper
         var card = _cardFactory.Create();
         card.Layout = PanelLayout.Collapse;
         card.Icon = Icon;
+        card.Tooltip = _stringLocalizer[Tooltip!];
         card.Title = For?.ModelExplorer.Metadata.GetDisplayName();
+        
+
         card.HtmlBuilderContent.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("row");
@@ -119,13 +118,6 @@ public class ExpressionTagHelper : TagHelper
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("col-sm-2");
-        div.Append(HtmlTag.Label, label =>
-        {
-            label.WithCssClass("form-label");
-            label.WithAttribute("for", name + "-ExpressionType");
-            label.AppendText(_stringLocalizer["Type"]);
-        });
-
         div.Append(HtmlTag.Select, select =>
         {
             select.WithNameAndId(name + "-ExpressionType");
@@ -154,24 +146,7 @@ public class ExpressionTagHelper : TagHelper
     private HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType, string selectedExpressionValue, string codeMirrorHintList)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
-      
             div.WithCssClass("col-sm-10");
-            div.Append(HtmlTag.Label, label =>
-            {
-                label.WithCssClass("form-label");
-                label.WithAttribute("for", name + "-ExpressionValue");
-                label.AppendText(_stringLocalizer["Expression"]);
-            });
-
-            if (Tooltip is not null)
-            {
-                var icon = new JJIcon(IconType.QuestionCircle);
-                icon.CssClass += " help-description";
-                icon.Attributes["title"] = _stringLocalizer[Tooltip];
-                icon.Attributes[BootstrapHelper.DataToggle] = "tooltip";
-                div.AppendComponent(icon);
-            }
-
             div.Append(HtmlTag.Div, div =>
             {
                 div.WithId(name + "-ExpressionValueEditor");
