@@ -1766,6 +1766,10 @@ class _LegacyModal extends ModalBase {
     showIframe(url, title, size = null) {
         this.modalSize = size || this.modalSize;
         const modalHtml = this.createModalHtml(url, true);
+        const modalIdSelector = `#${this.modalId}`;
+        if ($(modalIdSelector).length) {
+            $(modalIdSelector).remove();
+        }
         $(modalHtml).appendTo($("body"));
         this.setTitle(title);
         this.showModal();
@@ -1795,6 +1799,10 @@ class _LegacyModal extends ModalBase {
                     else {
                         return response.text().then((htmlData) => {
                             const modalHtml = this.createModalHtml(htmlData, false);
+                            const modalIdSelector = `#${this.modalId}`;
+                            if ($(modalIdSelector).length) {
+                                $(modalIdSelector).remove();
+                            }
                             $(modalHtml).appendTo($("body"));
                             this.setTitle(title);
                             this.showModal();

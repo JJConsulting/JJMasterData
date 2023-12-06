@@ -176,7 +176,7 @@ public static class DataHelper
             }
             else
             {
-                value = formValues[field.Name]?.ToString() ?? throw new JJMasterDataException($"Primary key value from {field.Name} cannot be null");
+                value = formValues[field.Name]?.ToString() ?? string.Empty;
             }
             
             if (value.Contains(separator))
