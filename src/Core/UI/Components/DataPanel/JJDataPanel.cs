@@ -250,9 +250,13 @@ public class JJDataPanel : AsyncComponent
     /// <summary>
     /// Load form data with default values and triggers
     /// </summary>
-    public Task<Dictionary<string, object>> GetFormValuesAsync()
+    public async Task<Dictionary<string, object>> GetFormValuesAsync()
     {
-        return FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix);
+        var mergedValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix);
+        
+        DataHelper.CopyIntoDictionary(Values, mergedValues, true);
+
+        return Values as Dictionary<string,object>;
     }
 #if NETFRAMEWORK
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]
