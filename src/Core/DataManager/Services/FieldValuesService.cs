@@ -29,7 +29,7 @@ public class FieldValuesService(ExpressionsService expressionsService, IEntityRe
     /// <returns>
     /// Returns a new Dictionary with the updated values
     /// </returns>
-    public async Task<Dictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState, bool replaceNullValues)
+    public async Task<Dictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState, bool replaceNullValues = true)
     {
         if (formValues == null)
             throw new ArgumentNullException(nameof(formValues));

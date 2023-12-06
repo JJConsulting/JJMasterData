@@ -118,7 +118,7 @@ public class FormValuesService(IEntityRepository entityRepository,
             DataHelper.CopyIntoDictionary(valuesToBeReceived, formValues, true);
         }
         
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !FormValues.ContainsFormValues());
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, true);
     }
 
 

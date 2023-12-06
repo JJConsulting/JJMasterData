@@ -244,7 +244,7 @@ public class JJDataPanel : AsyncComponent
     [Obsolete("Please use GetFormValuesAsync")]
     public IDictionary<string,object> GetFormValues()
     {
-        return AsyncHelper.RunSync(()=>FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState, AutoReloadFormFields, FieldNamePrefix));
+        return AsyncHelper.RunSync(GetFormValuesAsync);
     }
 
     /// <summary>
