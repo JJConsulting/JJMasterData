@@ -172,13 +172,13 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
             case FieldType.DateTime2:
                 if (!DateTime.TryParse(value?.ToString(), out var date) || date.Year < 1900)
                 {
-                    return Localizer["{0} field is a invalid date",
+                    return Localizer["{0} field is an invalid date",
                         fieldName];
                 }
 
                 break;
             case FieldType.Int:
-                if (!int.TryParse(value?.ToString(), out _))
+                if (value is not bool && !int.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture, out _))
                 {
                     return Localizer["{0} field has an invalid number",
                         fieldName];
@@ -186,7 +186,7 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
 
                 break;
             case FieldType.Float:
-                if (!double.TryParse(value?.ToString(), out _))
+                if (!double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture, out _))
                 {
                     return Localizer["{0} field has an invalid number",
                         fieldName];
@@ -194,7 +194,7 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
 
                 break;
             default:
-                if (value is not bool && value?.ToString().Length > field.Size && field.Size > 0)
+                if (value is not bool && value?.ToString()?.Length > field.Size && field.Size > 0)
                 {
                     return Localizer["{0} field cannot contain more than {1} characters",
                         fieldName, field.Size];
