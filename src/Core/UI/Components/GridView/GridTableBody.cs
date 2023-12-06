@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,9 +19,9 @@ internal class GridTableBody(JJGridView gridView)
     private string Name => $"{GridView.Name}-table";
     private JJGridView GridView { get; } = gridView;
 
-    public event AsyncEventHandler<ActionEventArgs> OnRenderActionAsync;
-    public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;
-    public event AsyncEventHandler<GridSelectedCellEventArgs> OnRenderSelectedCellAsync;
+    public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
+    public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
+    public event AsyncEventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCellAsync;
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
@@ -42,7 +43,7 @@ internal class GridTableBody(JJGridView gridView)
         }
     }
 
-    internal async Task<HtmlBuilder> GetRowHtml(IDictionary<string,object> row, int index)
+    internal async Task<HtmlBuilder> GetRowHtml(IDictionary<string,object?> row, int index)
     {
         var tr = new HtmlBuilder(HtmlTag.Tr);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
@@ -57,12 +58,12 @@ internal class GridTableBody(JJGridView gridView)
         return tr;
     }
 
-    internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(IDictionary<string,object> row, int index)
+    internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(IDictionary<string,object?> row, int index)
     {
         var values = await GetValues(row);
         var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
-        var defaultAction = basicActions.Find(x => x.IsVisible && x.IsDefaultOption);
+        var defaultAction = basicActions.FirstOrDefault(x => x is { IsVisible: true, IsDefaultOption: true });
         var onClickScript = await GetOnClickScript(formStateData, defaultAction);
 
         if (GridView.EnableMultiSelect)
@@ -93,7 +94,7 @@ internal class GridTableBody(JJGridView gridView)
         }
     }
     
-    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(IDictionary<string,object> row, int index, IDictionary<string, object> values, string onClickScript)
+    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(IDictionary<string,object?> row, int index, IDictionary<string, object?> values, string onClickScript)
     {
         await foreach (var field in GridView.GetVisibleFieldsAsync())
         {
@@ -119,7 +120,7 @@ internal class GridTableBody(JJGridView gridView)
                 {
                     var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,null,value).FirstOrDefaultAsync();
                     cell = new HtmlBuilder(HtmlTag.Div);
-                    cell.AppendComponent(new JJIcon(dataItemValue.Icon,dataItemValue.IconColor ?? string.Empty));
+                    cell.AppendComponent(new JJIcon(dataItemValue!.Icon,dataItemValue.IconColor ?? string.Empty));
                     cell.AppendIf(dataItemValue.Description is not null && field.DataItem.ReplaceTextOnGrid, HtmlTag.Span, span =>
                     {
                         span.AppendText(field.DataItem.ReplaceTextOnGrid ? dataItemValue.Description! : dataItemValue.Id);
@@ -160,8 +161,8 @@ internal class GridTableBody(JJGridView gridView)
         }
     }
 
-    private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, IDictionary<string,object> row, int index, IDictionary<string, object> values,
-        string value)
+    private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, IDictionary<string,object?> row, int index, IDictionary<string, object?> values,
+        string? value)
     {
         string name = GridView.GetFieldName(field.Name, values);
         bool hasError = GridView.Errors.ContainsKey(name);
@@ -176,10 +177,10 @@ internal class GridTableBody(JJGridView gridView)
                 or FormComponent.Number
             && values.TryGetValue(field.Name, out var value1))
         {
-            value = value1.ToString();
+            value = value1?.ToString();
         }
 
-        var control = GridView.ComponentFactory.Controls.Create(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List), value);
+        var control = GridView.ComponentFactory.Controls.Create(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List),name, value);
         control.Name = name;
         control.Attributes.Add("nRowId", index.ToString());
         control.CssClass = field.Name;
@@ -308,7 +309,7 @@ internal class GridTableBody(JJGridView gridView)
         return string.Empty;
     }
 
-    private async Task<JJCheckBox> GetMultiSelectCheckbox(IDictionary<string,object> row, int index, IDictionary<string, object> values)
+    private async Task<JJCheckBox> GetMultiSelectCheckbox(IDictionary<string,object?> row, int index, IDictionary<string, object?> values)
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -346,7 +347,7 @@ internal class GridTableBody(JJGridView gridView)
         return checkBox;
     }
 
-    private async Task<string> GetOnClickScript(FormStateData formStateData, BasicAction defaultAction)
+    private async Task<string> GetOnClickScript(FormStateData formStateData, BasicAction? defaultAction)
     {
         if (GridView.EnableEditMode || defaultAction == null)
             return string.Empty;
@@ -377,7 +378,7 @@ internal class GridTableBody(JJGridView gridView)
         return string.Empty;
     }
 
-    private async Task<IDictionary<string, object>> GetValues(IDictionary<string,object> row)
+    private async Task<IDictionary<string, object?>> GetValues(IDictionary<string,object?> row)
     {
         if (!GridView.EnableEditMode)
             return row;

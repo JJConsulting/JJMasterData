@@ -11,7 +11,6 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
@@ -746,7 +745,7 @@ public class JJGridView : AsyncComponent
         var row = DataSource?[rowIndex];
 
         return await Table.Body
-            .GetTdHtmlList(row, rowIndex)
+            .GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex)
             .AggregateAsync(string.Empty, (current, td) => current + td);
     }
     
@@ -1038,10 +1037,10 @@ public class JJGridView : AsyncComponent
             if (name.Length > 0)
                 name += "_";
 
-            name += row[fpk.Name]!.ToString()!
-                .Replace(" ", "_")
-                .Replace("'", "")
-                .Replace("\"", "");
+            name += row[fpk.Name]?.ToString()
+                ?.Replace(" ", "_")
+                ?.Replace("'", "")
+                ?.Replace("\"", "");
         }
 
         name += fieldName;
