@@ -15,11 +15,13 @@ using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FormValuesService(IEntityRepository entityRepository,
+public class FormValuesService(
+    IEntityRepository entityRepository,
     FieldValuesService fieldValuesService,
     DataItemService dataItemService,
     LookupService lookupService,
     IEncryptionService encryptionService,
+    IQueryString queryString,
     IFormValues httpFormValues)
 {
     private IEntityRepository EntityRepository { get; } = entityRepository;
@@ -27,6 +29,7 @@ public class FormValuesService(IEntityRepository entityRepository,
     private DataItemService DataItemService { get; } = dataItemService;
     private LookupService LookupService { get; } = lookupService;
     private IEncryptionService EncryptionService { get; } = encryptionService;
+    private IQueryString QueryString { get; } = queryString;
     private IFormValues FormValues { get; } = httpFormValues;
 
     public async Task<IDictionary<string, object?>> GetFormValuesAsync(FormElement formElement, PageState pageState,
@@ -70,18 +73,21 @@ public class FormValuesService(IEntityRepository entityRepository,
                 case FormComponent.Slider:
                 case FormComponent.Currency:
                 case FormComponent.Number:
-                    if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture,
-                            out var numericValue))
-                        value = numericValue;
-                    else
-                        value = null;
+                    if (value is not null && QueryString.Value.Contains("routeContext"))
+                    {
+                        if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture,
+                                out var numericValue))
+                            value = numericValue;
+                        else
+                            value = 0;
+                    }
                     break;
                 case FormComponent.CheckBox:
                     value = StringManager.ParseBool(value);
                     break;
             }
 
-            if(!field.IsPk)
+            if(value is not null)
                 values.Add(field.Name, value);
             
         }
@@ -118,7 +124,7 @@ public class FormValuesService(IEntityRepository entityRepository,
             DataHelper.CopyIntoDictionary(valuesToBeReceived, formValues, true);
         }
         
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, true);
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !FormValues.ContainsFormValues());
     }
 
 

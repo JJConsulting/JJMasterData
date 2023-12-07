@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Extensions;
 
 namespace JJMasterData.Commons.Util;
@@ -27,6 +28,59 @@ public static class EnumerableHelper
         }
 
         return list;
+    }
+    
+    public static DataTable ConvertToDataTable(Element element, IList<Dictionary<string, object?>> data)
+    {
+        if (data == null || data.Count == 0)
+            throw new ArgumentException("Data cannot be null or empty.");
+
+        var table = new DataTable();
+        
+        foreach (var column in data[0].Keys)
+        {
+            table.Columns.Add(column, GetTypeFromField(element.Fields[column].DataType));
+        }
+        foreach (var item in data)
+        {
+            var row = table.NewRow();
+
+            foreach (var key in item.Keys)
+            {
+                var value = item[key];
+                row[key] = value;
+            }
+            table.Rows.Add(row);
+        }
+
+        return table;
+    }
+    
+    private static Type GetTypeFromField(FieldType fieldType)
+    {
+        switch (fieldType)
+        {
+            case FieldType.Date:
+            case FieldType.DateTime:
+            case FieldType.DateTime2:
+            case FieldType.Time:
+                return typeof(DateTime);
+            case FieldType.Float:
+                return typeof(float);
+            case FieldType.Int:
+                return typeof(int);
+            case FieldType.NText:
+            case FieldType.NVarchar:
+            case FieldType.Text:
+            case FieldType.Varchar:
+                return typeof(string);
+            case FieldType.Bit:
+                return typeof(bool);
+            case FieldType.UniqueIdentifier:
+                return typeof(Guid);
+            default:
+                throw new ArgumentOutOfRangeException(nameof(fieldType), fieldType, "Unknown FieldType");
+        }
     }
     
     public static DataTable ConvertToDataTable<T>(IEnumerable<T> list)
