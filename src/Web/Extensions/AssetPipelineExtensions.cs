@@ -89,6 +89,7 @@ public static class AssetPipelineExtensions
             "_content/JJMasterData.Web/css/flatpickr/airbnb.css",
             "_content/JJMasterData.Web/css/highlightjs/ssms.min.css",
             "_content/JJMasterData.Web/css/dropzone/dropzone.min.css",
+            "_content/JJMasterData.Web/css/dropzone/dropzone-theme.css",
             "_content/JJMasterData.Web/css/jjmasterdata/jjmasterdata.css"
         };
 

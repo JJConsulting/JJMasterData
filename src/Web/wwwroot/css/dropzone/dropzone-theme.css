@@ -1,0 +1,13 @@
+﻿.dropzone {
+    border: 2px dashed #ccc !important;
+    border-radius: 5px;
+    background: white;
+    min-height: 150px;
+    padding: 20px;
+}
+
+.dropzone .dz-message {
+    text-align: center;
+    font-size: 1.5em;
+    color: #666;
+}
