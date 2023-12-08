@@ -30,12 +30,6 @@ JJMasterData is an open-source .NET library to help you create dynamic CRUDs qui
 
 <br>
 
-# Demo
-
-https://user-images.githubusercontent.com/52143624/213810038-e966e8d9-f465-4f98-8ee9-9c043a96dd08.mp4
-
-<br>
-
 ## Features
 - Pages generated at runtime 🔥
 - Data exportation & importation ↔️
@@ -46,7 +40,7 @@ https://user-images.githubusercontent.com/52143624/213810038-e966e8d9-f465-4f98-
 
 ## Getting Started
 
-https://user-images.githubusercontent.com/28662273/213789862-a86365f9-fd60-4e4a-ab4e-ded967d4080d.mp4
+https://github.com/JJConsulting/JJMasterData/assets/28662273/9b874c9d-2a2f-4d3b-9e78-846db446def2
 
 You can paste the appsettings.json url from [here](https://raw.githubusercontent.com/JJConsulting/JJMasterData/main/jjmasterdata.json)
 
