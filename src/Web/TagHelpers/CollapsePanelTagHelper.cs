@@ -23,7 +23,7 @@ public class CollapsePanelTagHelper(RazorPartialRendererService rendererService,
     public string? Partial { get; set; }
 
     [HtmlAttributeName("model")]
-    public dynamic? Model { get; set; }
+    public object? Model { get; set; }
     
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }

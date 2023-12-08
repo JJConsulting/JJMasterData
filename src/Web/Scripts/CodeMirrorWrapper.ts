@@ -35,18 +35,17 @@ class CodeMirrorWrapper{
         });
         
         if(options.singleLine){
-            codeMirrorTextArea.setSize(null, 30);
-            //codeMirrorTextArea.on("beforeChange", function(instance, change) {
-            //    const newText = change.text.join("").replace(/\n/g, "");
-            //    change.update(change.from, change.to, [newText]);
-            //    return true;
-            //});
+            codeMirrorTextArea.setSize(null, 45);
+            codeMirrorTextArea.on("beforeChange", function(instance, change) {
+               const newText = change.text.join("").replace(/\n/g, "");
+               change.update(change.from, change.to, [newText]);
+               return true;
+            });
         }
         else{
             codeMirrorTextArea.setSize(null, 250);
         }
-        // ReSharper disable once TsNotResolved
-        textArea.codeMirrorInstance = codeMirrorTextArea;
+
         
         // @ts-ignore
         CodeMirror.registerHelper('hint', 'hintList', function (_) {
@@ -63,7 +62,9 @@ class CodeMirrorWrapper{
                 CodeMirror.commands.autocomplete(cm, CodeMirror.hint.hintList, { completeSingle: false });
             }
         });
-
-        setTimeout(() => { codeMirrorTextArea.refresh() }, 200);
+        
+        // ReSharper disable once TsNotResolved
+        textArea.codeMirrorInstance = codeMirrorTextArea;
+        setTimeout(() => { codeMirrorTextArea.refresh() }, 250);
     }
 }

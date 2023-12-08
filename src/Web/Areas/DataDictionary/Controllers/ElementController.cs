@@ -11,12 +11,13 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class ElementController(ElementService elementService,
-        ClassGenerationService classGenerationService,
-        ScriptsService scriptsService,
-        IEntityRepository entityRepository,
-        IComponentFactory<JJUploadArea> uploadAreaFactory,
-        IStringLocalizer<MasterDataResources> stringLocalizer)
+public class ElementController(
+    ElementService elementService,
+    ClassGenerationService classGenerationService,
+    ScriptsService scriptsService,
+    IEntityRepository entityRepository,
+    IComponentFactory<JJUploadArea> uploadAreaFactory,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
     : DataDictionaryController
 {
     public async Task<IActionResult> Index()

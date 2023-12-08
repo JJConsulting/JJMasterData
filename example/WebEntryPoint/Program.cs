@@ -2,7 +2,6 @@
 
 using JJMasterData.NCalc.Configuration;
 using JJMasterData.Web.Configuration;
-using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +21,10 @@ builder.Services.Configure<HostOptions>(options =>
     options.BackgroundServiceExceptionBehavior = 
         BackgroundServiceExceptionBehavior.Ignore;
 });
-builder.Services.AddJJMasterDataWeb(builder.Configuration).WithNCalcExpressionProvider();
+builder.Services.AddJJMasterDataWeb(builder.Configuration).WithNCalcExpressionProvider(new()
+{
+    ReplaceDefaultExpressionProvider = true
+});
 
 var app = builder.Build();
 

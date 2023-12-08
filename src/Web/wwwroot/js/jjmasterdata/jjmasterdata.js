@@ -280,13 +280,13 @@ class CodeMirrorWrapper {
             mode: options.mode,
             indentWithTabs: true,
             smartIndent: true,
-            lineNumbers: true,
+            lineNumbers: !options.singleLine,
             autofocus: false,
             autohint: true,
             extraKeys: { "Ctrl-Space": "autocomplete" }
         });
         if (options.singleLine) {
-            codeMirrorTextArea.setSize(null, 30);
+            codeMirrorTextArea.setSize(null, 45);
             codeMirrorTextArea.on("beforeChange", function (instance, change) {
                 const newText = change.text.join("").replace(/\n/g, "");
                 change.update(change.from, change.to, [newText]);
@@ -296,7 +296,6 @@ class CodeMirrorWrapper {
         else {
             codeMirrorTextArea.setSize(null, 250);
         }
-        textArea.codeMirrorInstance = codeMirrorTextArea;
         CodeMirror.registerHelper('hint', 'hintList', function (_) {
             const cur = codeMirrorTextArea.getCursor();
             return {
@@ -310,7 +309,8 @@ class CodeMirrorWrapper {
                 CodeMirror.commands.autocomplete(cm, CodeMirror.hint.hintList, { completeSingle: false });
             }
         });
-        setTimeout(() => { codeMirrorTextArea.refresh(); }, 200);
+        textArea.codeMirrorInstance = codeMirrorTextArea;
+        setTimeout(() => { codeMirrorTextArea.refresh(); }, 250);
     }
 }
 class CollapsePanelListener {

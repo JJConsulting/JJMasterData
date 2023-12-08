@@ -12,7 +12,7 @@ public class NCalcExpressionProviderOptions
     /// <summary>
     /// EvaluateOptions [Flags] enum. Check NCalc wiki for more information
     /// </summary>
-    public EvaluateOptions EvaluateOptions { get; set; } = EvaluateOptions.IgnoreCase;
+    public EvaluateOptions EvaluateOptions { get; set; } = EvaluateOptions.IgnoreCase | EvaluateOptions.CaseInsensitiveComparer;
 
     /// <summary>
     /// Additional functions to be used at expressions. Check NCalc wiki for more information
