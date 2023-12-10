@@ -5,7 +5,8 @@ using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FieldsService(FieldFormattingService fieldFormattingService,
+public class FieldsService(
+    FieldFormattingService fieldFormattingService,
     FieldValuesService fieldValuesService,
     FieldValidationService fieldValidationService)
 {
@@ -23,7 +24,7 @@ public class FieldsService(FieldFormattingService fieldFormattingService,
         return FieldValidationService.ValidateField(field, fieldId, value, enableErrorLink);
     }
 
-    public Task<string> FormatGridValueAsync(FormElement formElement,FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
+    public Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
     {
         return FieldFormattingService.FormatGridValueAsync(field, values, userValues);
     }

@@ -112,7 +112,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
             case FormComponent.Cnpj:
             case FormComponent.Cpf:
             case FormComponent.CnpjCpf:
-                stringValue = Format.FormatCnpj_Cpf(stringValue);
+                stringValue = Format.FormatCnpjCpf(stringValue);
                 break;
             case FormComponent.Slider:
             case FormComponent.Number:

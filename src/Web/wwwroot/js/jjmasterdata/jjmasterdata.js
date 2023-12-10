@@ -1330,6 +1330,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     if (bootstrapVersion === 5) {
         TooltipListener.listen(selectorPrefix);
     }
+    $(selectorPrefix + ".jjdecimal").each(applyDecimalPlaces);
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&

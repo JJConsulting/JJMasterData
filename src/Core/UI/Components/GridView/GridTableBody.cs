@@ -8,6 +8,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
@@ -98,7 +99,10 @@ internal class GridTableBody(JJGridView gridView)
     {
         await foreach (var field in GridView.GetVisibleFieldsAsync())
         {
-            string value = string.Empty;
+            if (values.TryGetValue(field.Name, out var value))
+            {
+                value = FieldFormattingService.FormatValue(field, value);
+            }
 
             var td = new HtmlBuilder(HtmlTag.Td);
             string style = GetTdStyle(field);
@@ -108,7 +112,7 @@ internal class GridTableBody(JJGridView gridView)
 
             if (GridView.EnableEditMode && field.DataBehavior != FieldBehavior.ViewOnly)
             {
-                td.Append(await GetEditModeFieldHtml(field, row, index, values, value));
+                td.Append(await GetEditModeFieldHtml(field, row, index, values, value?.ToString()));
             }
             else
             {
@@ -118,7 +122,7 @@ internal class GridTableBody(JJGridView gridView)
                 HtmlBuilder cell;
                 if (field.DataItem is not null && field.DataItem.ShowIcon)
                 {
-                    var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,null,value).FirstOrDefaultAsync();
+                    var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,null,value.ToString()).FirstOrDefaultAsync();
                     cell = new HtmlBuilder(HtmlTag.Div);
                     cell.AppendComponent(new JJIcon(dataItemValue!.Icon,dataItemValue.IconColor ?? string.Empty));
                     cell.AppendIf(dataItemValue.Description is not null && field.DataItem.ReplaceTextOnGrid, HtmlTag.Span, span =>
@@ -134,8 +138,8 @@ internal class GridTableBody(JJGridView gridView)
                 }
                 else
                 {
-                    value = await GridView.FieldsService.FormatGridValueAsync(GridView.FormElement,field, values, GridView.UserValues);
-                    cell = new HtmlBuilder(value.Trim());
+                    value = await GridView.FieldsService.FormatGridValueAsync(field, values, GridView.UserValues);
+                    cell = new HtmlBuilder(value?.ToString()?.Trim() ?? string.Empty);
                 }
                 if (OnRenderCellAsync != null)
                 {
@@ -144,7 +148,7 @@ internal class GridTableBody(JJGridView gridView)
                         Field = field,
                         DataRow = row,
                         HtmlResult = cell,
-                        Sender = new JJText(value)
+                        Sender = new JJText(value?.ToString())
                     };
                     
                     await OnRenderCellAsync(this, args);
@@ -164,21 +168,12 @@ internal class GridTableBody(JJGridView gridView)
     private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, IDictionary<string,object?> row, int index, IDictionary<string, object?> values,
         string? value)
     {
-        string name = GridView.GetFieldName(field.Name, values);
-        bool hasError = GridView.Errors.ContainsKey(name);
+        var name = GridView.GetFieldName(field.Name, values);
+        var hasError = GridView.Errors.ContainsKey(name);
 
         var div = new HtmlBuilder(HtmlTag.Div);
 
         div.WithCssClassIf(hasError, BootstrapHelper.HasError);
-        if (field.Component
-                is FormComponent.ComboBox
-                or FormComponent.CheckBox
-                or FormComponent.Search
-                or FormComponent.Number
-            && values.TryGetValue(field.Name, out var value1))
-        {
-            value = value1?.ToString();
-        }
 
         var control = GridView.ComponentFactory.Controls.Create(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List),name, value);
         control.Name = name;

@@ -93,7 +93,7 @@ internal class GridPagination(JJGridView gridView)
         textBox.MaxValue = _totalPages;
         textBox.InputType = InputType.Number;
         
-        textBox.Attributes["style"] = "display:none";
+        textBox.Attributes["style"] = "display:none;width:150px";
         
         textBox.Attributes["onfocusout"] = GridView.Scripts.GetJumpToPageScript();
         textBox.PlaceHolder = StringLocalizer["Jump to page..."];

@@ -102,24 +102,24 @@ public static class Format
     /// </remarks>
     public static string FormatFileSize(long value)
     {
-        const Decimal OneKiloByte = 1024M;
-        const Decimal OneMegaByte = OneKiloByte * 1024M;
-        const Decimal OneGigaByte = OneMegaByte * 1024M;
+        const Decimal oneKiloByte = 1024M;
+        const Decimal oneMegaByte = oneKiloByte * 1024M;
+        const Decimal oneGigaByte = oneMegaByte * 1024M;
         Decimal size = Convert.ToDecimal(value);
         string suffix = "";
-        if (size > OneGigaByte)
+        if (size > oneGigaByte)
         {
-            size /= OneGigaByte;
+            size /= oneGigaByte;
             suffix = "GB";
         }
-        else if (size > OneMegaByte)
+        else if (size > oneMegaByte)
         {
-            size /= OneMegaByte;
+            size /= oneMegaByte;
             suffix = "MB";
         }
-        else if (size > OneKiloByte)
+        else if (size > oneKiloByte)
         {
-            size /= OneKiloByte;
+            size /= oneKiloByte;
             suffix = "kB";
         }
         else
@@ -127,7 +127,7 @@ public static class Format
             suffix = "B";
         }
 
-        return String.Format("{0:N2} {1}", size, suffix);
+        return $"{size:N2} {suffix}";
 
     }
 
@@ -164,7 +164,7 @@ public static class Format
     /// <summary>
     /// Formata um CNPJ ou CPF válido
     /// </summary>
-    public static string FormatCnpj_Cpf(string value)
+    public static string FormatCnpjCpf(string value)
     {
         value = StringManager.ClearCpfCnpjChars(value);
         var formattedCnpf = value.Trim().Length > 11 ? FormatCnpj(value) : FormatCpf(value);
@@ -232,12 +232,12 @@ public static class Format
         return sTel;
     }
 
-    public static String FormatDecBR2USA(double value)
+    public static string FormatDecBr2Usa(double value)
     {
-        return FormatDecBR2USA(value.ToString(CultureInfo.CurrentCulture));
+        return FormatDecBr2Usa(value.ToString(CultureInfo.CurrentCulture));
     }
 
-    public static String FormatDecBR2USA(string text)
+    public static string FormatDecBr2Usa(string text)
     {
         String result = text.Replace(".", "");
         result = result.Replace(",", ".");

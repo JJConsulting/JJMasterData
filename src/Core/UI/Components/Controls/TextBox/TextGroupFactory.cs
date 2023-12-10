@@ -125,14 +125,15 @@ public class TextGroupFactory(IFormValues formValues,
                 listClass.Add(BootstrapHelper.TextRight);
                 textGroup.MaxLength = 22;
                 textGroup.InputType = InputType.Number;
+                
+                if(textGroup.NumberOfDecimalPlaces == 0 )
+                    textGroup.SetAttr("onkeypress", "return jjutil.justNumber(event);");
+                
                 textGroup.SetAttr("step", textGroup.Attributes.TryGetValue("step", out var stepValue) ? stepValue : 1);
                 textGroup.SetAttr("onclick", "this.select();");
 
-                if (!textGroup.MinValue.HasValue)
-                    textGroup.MinValue = int.MinValue;
-
-                if (!textGroup.MaxValue.HasValue)
-                    textGroup.MaxValue = int.MaxValue;
+                textGroup.MinValue ??= int.MinValue;
+                textGroup.MaxValue ??= int.MaxValue;
 
                 break;
             case FormComponent.Cnpj:
