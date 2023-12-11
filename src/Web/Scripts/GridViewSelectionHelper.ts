@@ -68,7 +68,7 @@ class GridViewSelectionHelper{
     static selectAllRowsElements(componentName, rows) {
         const values = rows.split(",");
 
-        const checkboxes = document.querySelectorAll<HTMLInputElement>(".jj-checkbox input:not(:disabled)");
+        const checkboxes = document.querySelectorAll<HTMLInputElement>(`#grid-view-table-${componentName} .jj-checkbox input:not(:disabled)`);
         checkboxes.forEach(checkbox => checkbox.checked = true);
 
         const selectedRowsInput = document.getElementById("grid-view-selected-rows-" + componentName) as HTMLInputElement;
@@ -80,7 +80,7 @@ class GridViewSelectionHelper{
 
 
     static unSelectAll(componentName: string) {
-        const checkboxes = document.querySelectorAll(`#${componentName} .jj-checkbox input:not(:disabled)`) as NodeListOf<HTMLInputElement>;
+        const checkboxes = document.querySelectorAll(`#grid-view-table-${componentName} .jj-checkbox input:not(:disabled)`) as NodeListOf<HTMLInputElement>;
         const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName) as HTMLInputElement;
         const selectedText = document.getElementById("selected-text-" + componentName);
 
