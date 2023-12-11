@@ -5,6 +5,7 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http;
 using JJMasterData.Core.UI.Routing;
@@ -23,10 +24,10 @@ public class ActionScripts(ExpressionsService expressionsService,
     private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IEncryptionService EncryptionService { get; } = encryptionService;
     
-    public string GetInternalUrlScript(InternalAction action, IDictionary<string, object> formValues)
+    public string GetInternalUrlScript(InternalAction action, ActionContext actionContext)
     {
         var elementRedirect = action.ElementRedirect;
-        string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
+        string confirmationMessage = GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
         int popupSize = (int)elementRedirect.ModalSize;
 
         var @params = new StringBuilder();
@@ -38,7 +39,7 @@ public class ActionScripts(ExpressionsService expressionsService,
 
         foreach (var field in elementRedirect.RelationFields)
         {
-            if (formValues.TryGetValue(field.InternalField, out var value))
+            if (actionContext.FormStateData.Values.TryGetValue(field.InternalField, out var value))
             {
                 @params.Append("&");
                 @params.Append(field.RedirectField);
@@ -66,7 +67,7 @@ public class ActionScripts(ExpressionsService expressionsService,
     {
         var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
-        string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
+        string confirmationMessage = GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
 
         var routeContext = RouteContext.FromFormElement(actionContext.FormElement, ComponentContext.UrlRedirect);
 
@@ -82,7 +83,7 @@ public class ActionScripts(ExpressionsService expressionsService,
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
-        string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
+        string confirmationMessage = GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
 
         var actionData = new ActionData
         {
@@ -128,7 +129,7 @@ public class ActionScripts(ExpressionsService expressionsService,
             UrlRedirectAction urlRedirectAction => GetUrlRedirectScript(urlRedirectAction, actionContext, actionSource),
             SqlCommandAction => GetSqlCommandScript(actionContext, actionSource),
             ScriptAction jsAction => HttpUtility.HtmlAttributeEncode(ExpressionsService.ReplaceExpressionWithParsedValues(jsAction.OnClientClick, formStateData) ?? string.Empty),
-            InternalAction internalAction => GetInternalUrlScript(internalAction, formStateData.Values),
+            InternalAction internalAction => GetInternalUrlScript(internalAction, actionContext),
             _ => GetFormActionScript(actionContext, actionSource)
         };
     }
@@ -143,7 +144,7 @@ public class ActionScripts(ExpressionsService expressionsService,
         
         var encryptedRouteContext = EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(actionContext.FormElement, ComponentContext.FormViewReload));
         
-        string confirmationMessage = StringLocalizer[action.ConfirmationMessage];
+        string confirmationMessage = GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
         
         return
             $"ActionHelper.executeSqlCommand('{actionContext.ParentComponentName}','{encryptedActionMap}','{encryptedRouteContext}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
@@ -152,5 +153,11 @@ public class ActionScripts(ExpressionsService expressionsService,
     public static string GetHideModalScript(string componentName)
     {
         return $"ActionHelper.hideActionModal('{componentName}')";
+    }
+
+    private string GetParsedConfirmationMessage(string originalMessage,
+        FormStateData formStateData)
+    {
+        return ExpressionsService.ReplaceExpressionWithParsedValues(originalMessage, formStateData);
     }
 }

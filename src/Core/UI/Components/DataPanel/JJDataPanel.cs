@@ -297,15 +297,20 @@ public class JJDataPanel : AsyncComponent
     internal async Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)
     {
         var urlRedirectAction = actionMap.GetAction<UrlRedirectAction>(FormElement);
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement,PageState,actionMap.PkFieldValues, true, FieldNamePrefix);
+
+        var dbValues = await EntityRepository.GetFieldsAsync(FormElement, actionMap.PkFieldValues);
+        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement,PageState,dbValues, true, FieldNamePrefix);
+        
+        DataHelper.CopyIntoDictionary(values, actionMap.PkFieldValues);
+        
         var formStateData = new FormStateData(values, PageState);
         var parsedUrl = ExpressionsService.ReplaceExpressionWithParsedValues(System.Web.HttpUtility.UrlDecode(urlRedirectAction.UrlRedirect), formStateData);
-
+        var parsedTitle =  ExpressionsService.ReplaceExpressionWithParsedValues(urlRedirectAction.ModalTitle, formStateData);
         var model = new UrlRedirectModel
         {
             IsIframe = urlRedirectAction.IsIframe,
             UrlRedirect = parsedUrl!,
-            ModalTitle = urlRedirectAction.ModalTitle,
+            ModalTitle = parsedTitle!,
             UrlAsModal = urlRedirectAction.IsModal,
             ModalSize = urlRedirectAction.ModalSize
         };

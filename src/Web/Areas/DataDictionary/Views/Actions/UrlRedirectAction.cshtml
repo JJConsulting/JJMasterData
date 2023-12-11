@@ -38,6 +38,7 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-8">
                     <label class="@BootstrapHelper.Label" >@StringLocalizer["Modal Title"]</label>
+                    <tooltip title="Support runtime values, for example: {OrderId}"/>
                     @Html.TextBoxFor(model => model.ModalTitle, new { @class = "form-control" })
                 </div>
                 

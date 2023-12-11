@@ -19,7 +19,7 @@
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         <label class="@BootstrapHelper.Label" asp-for="ConfirmationMessage">@StringLocalizer["Confirmation Message"]</label>
-        <tooltip title="If not null or empty, show a confirmation message before executing the action"/>
+        <tooltip title="If not null or empty, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}"/>
         @Html.TextBoxFor(model => model.ConfirmationMessage, new { @class = "form-control", placeholder = StringLocalizer["Are you sure you want to execute this action?"] })
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
