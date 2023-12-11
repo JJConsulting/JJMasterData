@@ -1253,7 +1253,7 @@ class GridViewSelectionHelper {
     }
     static selectAllRowsElements(componentName, rows) {
         const values = rows.split(",");
-        const checkboxes = document.querySelectorAll(".jj-checkbox input:not(:disabled)");
+        const checkboxes = document.querySelectorAll(`#grid-view-table-${componentName} .jj-checkbox input:not(:disabled)`);
         checkboxes.forEach(checkbox => checkbox.checked = true);
         const selectedRowsInput = document.getElementById("grid-view-selected-rows-" + componentName);
         selectedRowsInput.value = values.join(",");
@@ -1261,7 +1261,7 @@ class GridViewSelectionHelper {
         selectedText.textContent = selectedText.getAttribute("multiple-records-selected-label").replace("{0}", values.length.toString());
     }
     static unSelectAll(componentName) {
-        const checkboxes = document.querySelectorAll(`#${componentName} .jj-checkbox input:not(:disabled)`);
+        const checkboxes = document.querySelectorAll(`#grid-view-table-${componentName} .jj-checkbox input:not(:disabled)`);
         const valuesInput = document.getElementById("grid-view-selected-rows-" + componentName);
         const selectedText = document.getElementById("selected-text-" + componentName);
         if (checkboxes) {

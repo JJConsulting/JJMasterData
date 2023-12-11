@@ -561,15 +561,14 @@ public class JJGridView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
+        if (!RouteContext.CanRender(FormElement.Name))
+            return new EmptyComponentResult();
+        
         if (ComponentContext is ComponentContext.GridViewReload)
-        {
             return new ContentComponentResult(await GetTableHtmlBuilder());
-        }
         
         if (ComponentContext is ComponentContext.DataExportation)
-        {
             return await GetExportationResult();
-        }
 
         if (ComponentContext is ComponentContext.GridViewRow)
         {
