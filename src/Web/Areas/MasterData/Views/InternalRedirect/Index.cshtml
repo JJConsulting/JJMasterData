@@ -11,7 +11,7 @@
 @using (Html.BeginForm())
 {
     <script lang="js" type="text/javascript">
-         window.parent.defaultModal.modalTitle = '@Model.Title';
+         window.parent.defaultModal.modalTitle = '@Html.Raw(@Model.Title)';
     </script>
     if (ViewBag.Success == true)
     {
