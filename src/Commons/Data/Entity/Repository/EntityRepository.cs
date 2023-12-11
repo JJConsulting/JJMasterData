@@ -153,6 +153,16 @@ public class EntityRepository : IEntityRepository
         return result.Data;
     }
 
+    public DataTable GetDataTable(DataAccessCommand dataAccessCommand)
+    {
+        return DataAccess.GetDataTable(dataAccessCommand);
+    }
+
+    public Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand)
+    {
+        return DataAccess.GetDataTableAsync(dataAccessCommand);
+    }
+
     public Task<DataTable> GetDataTableAsync(Element element, EntityParameters? parameters = null)
     {
         var totalOfRecords =

@@ -159,6 +159,11 @@ public interface IEntityRepository
         EntityParameters? parameters = null
     );
 
+    DataTable GetDataTable(DataAccessCommand dataAccessCommand);
+
+    Task<DataTable> GetDataTableAsync(DataAccessCommand dataAccessCommand);
+
+    
     Task<DataTable> GetDataTableAsync(Element element, EntityParameters? entityParameters = null);
     int GetCount(Element element, IDictionary<string, object?> filters);
     Task<int> GetCountAsync(Element element, IDictionary<string, object?> filters);

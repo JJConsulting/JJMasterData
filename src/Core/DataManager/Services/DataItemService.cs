@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
@@ -147,11 +148,11 @@ public class DataItemService(IEntityRepository entityRepository,
     {
         var command = GetDataItemCommand(dataItem, formStateData, searchText, searchId);
         
-        List<Dictionary<string, object?>> result;
+        DataTable result;
         
         try
         {
-             result = await EntityRepository.GetDictionaryListAsync(command);
+             result = await EntityRepository.GetDataTableAsync(command);
         }
         catch (Exception ex)
         {
@@ -159,24 +160,24 @@ public class DataItemService(IEntityRepository entityRepository,
             throw;
         }
 
-        foreach (var row in result)
+        foreach (DataRow row in result.Rows)
         {
             var item = new DataItemValue();
-            item.Id = row.ElementAt(0).Value?.ToString();
+            item.Id = row[0].ToString();
 
-            if (row.Count == 1)
+            if (row.Table.Columns.Count == 1)
             {
                 item.Description = item.Id;
             }
             else
             {
-                item.Description = row.ElementAt(1).Value?.ToString();
+                item.Description = row[1].ToString();
             }
             
             if (dataItem.ShowIcon)
             {
-                item.Icon = (IconType)int.Parse(row.ElementAt(2).Value?.ToString() ?? string.Empty);
-                item.IconColor = row.ElementAt(3).Value?.ToString();
+                item.Icon = (IconType)int.Parse(row[2].ToString() ?? string.Empty);
+                item.IconColor = row[3].ToString();
             }
 
             if (searchText == null || (item.Description?.ToLower().Contains(searchText.ToLower()) ?? false))
