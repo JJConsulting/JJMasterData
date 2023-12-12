@@ -3,7 +3,6 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
@@ -63,7 +62,6 @@ public class ExpressionTagHelper : TagHelper
     public ExpressionTagHelper(
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEnumerable<IExpressionProvider> expressionProviders,
-        ExpressionParser expressionParser,
         IComponentFactory<JJCard> cardFactory)
     {
         _expressionProviders = expressionProviders;
@@ -85,9 +83,9 @@ public class ExpressionTagHelper : TagHelper
             modelValue = Value;
         }
 
-        
-        var selectedExpressionType = modelValue?.Split(':')[0];
-        var selectedExpressionValue = modelValue?.Split(':')[1]  ?? string.Empty;
+        var splittedExpression = modelValue?.Split(':',2);
+        var selectedExpressionType = splittedExpression?[0];
+        var selectedExpressionValue = splittedExpression?[1] ?? string.Empty;
         string codeMirrorHintList = ViewContext.ViewBag.CodeMirrorHintList;
         
         var card = _cardFactory.Create();

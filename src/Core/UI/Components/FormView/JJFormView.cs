@@ -1163,6 +1163,8 @@ public class JJFormView : AsyncComponent
 
         formHtml.AppendComponent(await GetFormToolbarAsync(topToolbarActions));
 
+        panel.Values = await panel.GetFormValuesAsync();
+        
         var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
 
         var panelAndBottomToolbarActions = GetPanelToolbarActions(FormElement);

@@ -45,7 +45,8 @@ public class ExpressionsService(
         if (string.IsNullOrEmpty(expression))
             throw new ArgumentNullException(nameof(expression));
 
-        var expressionType = expression.Split(':')[0];
+        var splittedExpression = expression.Split([':'], 2);
+        var expressionType = splittedExpression[0];
         if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IBooleanExpressionProvider) is not IBooleanExpressionProvider provider)
             throw new JJMasterDataException($"Expression type not supported: {expressionType}.");
 
@@ -56,7 +57,7 @@ public class ExpressionsService(
             Logger.LogDebug("Executing expression: {Expression}", expression);
 
             var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
-            var parsedExpression = expression.Split(':')[1];
+            var parsedExpression = splittedExpression[1];
             
             result = provider.Evaluate(parsedExpression, parsedValues);
         }
@@ -89,7 +90,8 @@ public class ExpressionsService(
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        var expressionType = expression.Split(':')[0];
+        var splittedExpression = expression.Split([':'], 2);
+        var expressionType =splittedExpression[0];
         if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IAsyncExpressionProvider) is not IAsyncExpressionProvider provider)
         {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}");
@@ -97,7 +99,7 @@ public class ExpressionsService(
         try
         {
             var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
-            var parsedExpression = expression.Split(':')[1];
+            var parsedExpression = splittedExpression[1];
             var result = await provider.EvaluateAsync(parsedExpression, parsedValues);
 
             if (result is string stringResult)
