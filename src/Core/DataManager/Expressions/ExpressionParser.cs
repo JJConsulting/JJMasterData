@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
@@ -13,7 +14,7 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
     private ILogger<ExpressionParser> Logger { get; } = logger;
     private IHttpRequest Request => HttpContext.Request;
     private IHttpSession Session => HttpContext.Session;
-
+    
     public IDictionary<string,object?> ParseExpression(
         string? expression,
         FormStateData formStateData)
@@ -31,10 +32,10 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
 
         foreach (var field in valueList)
         {
-            string? parsedValue;
+            object? parsedValue;
             if (userValues != null && userValues.TryGetValue(field, out var value))
             {
-                parsedValue = $"{value}";
+                parsedValue = value;
             }
             else if ("pagestate".Equals(field.ToLower()))
             {
@@ -44,14 +45,11 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
             {
                 if(objVal is bool boolValue)
                 {
-                    if (boolValue is true)
-                        parsedValue = "1";
-                    else
-                        parsedValue = "0";
+                    parsedValue = boolValue ? "1" : "0";
                 }
                 else
                 {
-                    parsedValue = $"{objVal}";
+                    parsedValue = objVal;
                 }
             }
             else if ("fieldName".Equals(field.ToLower()))

@@ -73,9 +73,9 @@ public class FormValuesService(
                 case FormComponent.Slider:
                 case FormComponent.Currency:
                 case FormComponent.Number:
-                    if (value is not null && QueryString.Value.Contains("routeContext"))
+                    if (value is not null)
                     {
-                        if (double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture,
+                        if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture,
                                 out var numericValue))
                             value = numericValue;
                         else

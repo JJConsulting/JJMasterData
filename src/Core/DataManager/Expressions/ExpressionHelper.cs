@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace JJMasterData.Core.DataManager.Expressions;
 
@@ -12,8 +13,16 @@ public static class ExpressionHelper
     {
         foreach (var kvp in values)
         {
-            var value = kvp.Value?.ToString();
-            expression = expression.Replace($"{Begin}{kvp.Key}{End}", value);
+            var value = kvp.Value;
+            
+            var stringValue = value switch
+            {
+                double doubleValue => doubleValue.ToString("F", NumberFormatInfo.InvariantInfo),
+                float floatValue => floatValue.ToString("F", NumberFormatInfo.InvariantInfo),
+                _ => value?.ToString() ?? string.Empty
+            };
+
+            expression = expression.Replace($"{Begin}{kvp.Key}{End}", stringValue);
         }
 
         return expression;

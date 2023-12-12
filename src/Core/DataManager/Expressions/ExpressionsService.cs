@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
@@ -98,8 +99,20 @@ public class ExpressionsService(
             var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
             var parsedExpression = expression.Split(':')[1];
             var result = await provider.EvaluateAsync(parsedExpression, parsedValues);
+
+            if (result is string stringResult)
+            {
+                if (field.DataType is FieldType.Int && int.TryParse(stringResult.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var intResult))
+                {
+                    return intResult;
+                }
+                if (field.DataType is FieldType.Float && float.TryParse(stringResult.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var floatResult))
+                {
+                    return floatResult;
+                }
+            }
             
-            return result?.ToString();
+            return result;
         }
 
         catch (Exception ex)
