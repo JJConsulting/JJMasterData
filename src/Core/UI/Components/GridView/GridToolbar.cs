@@ -19,7 +19,7 @@ internal class GridToolbar(JJGridView gridView)
             toolbar.Items.Add(action);
         }
         
-        return toolbar.GetHtmlBuilder();
+        return toolbar.GetHtmlBuilder().WithCssClass("mb-1");
     }
 
     private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlBuilderEnumerable()
