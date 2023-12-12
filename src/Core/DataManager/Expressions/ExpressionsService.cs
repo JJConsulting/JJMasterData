@@ -102,19 +102,17 @@ public class ExpressionsService(
             var parsedExpression = splittedExpression[1];
             var result = await provider.EvaluateAsync(parsedExpression, parsedValues);
 
-            if (result is string stringResult)
+            if (result is not string stringResult) 
+                return result;
+
+            return field.DataType switch
             {
-                if (field.DataType is FieldType.Int && int.TryParse(stringResult.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var intResult))
-                {
-                    return intResult;
-                }
-                if (field.DataType is FieldType.Float && float.TryParse(stringResult.Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out var floatResult))
-                {
-                    return floatResult;
-                }
-            }
-            
-            return result;
+                FieldType.Int when int.TryParse(stringResult.Trim(), NumberStyles.Any, CultureInfo.CurrentCulture,
+                    out var intResult) => intResult,
+                FieldType.Float when float.TryParse(stringResult.Trim(), NumberStyles.Any, CultureInfo.CurrentCulture,
+                    out var floatResult) => floatResult,
+                _ => result
+            };
         }
 
         catch (Exception ex)
