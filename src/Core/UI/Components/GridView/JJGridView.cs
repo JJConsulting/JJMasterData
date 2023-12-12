@@ -1035,11 +1035,14 @@ public class JJGridView : AsyncComponent
         {
             if (name.Length > 0)
                 name += "_";
-
-            name += row[fpk.Name]?.ToString()
-                ?.Replace(" ", "_")
-                ?.Replace("'", "")
-                ?.Replace("\"", "");
+                
+            if(row.TryGetValue(fpk.Name, out var fieldValue))
+            {
+                name += fieldValue?.ToString()
+                    ?.Replace(" ", "_")
+                    ?.Replace("'", "")
+                    ?.Replace("\"", "");
+            }
         }
 
         name += fieldName;
