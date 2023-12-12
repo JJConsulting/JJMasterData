@@ -1231,7 +1231,7 @@ public class JJGridView : AsyncComponent
         foreach (var row in loadedData)
         {
             string fieldName = GetFieldName("", row);
-            var newValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState.List, row,
+            var newValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, new FormStateData(row!, UserValues, PageState.List),
                 AutoReloadFormFields, fieldName);
             gridValues.Add(newValues);
         }

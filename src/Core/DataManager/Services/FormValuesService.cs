@@ -75,7 +75,7 @@ public class FormValuesService(
                 case FormComponent.Number:
                     if (value is not null)
                     {
-                        if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture,
+                        if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
                                 out var numericValue))
                             value = numericValue;
                         else

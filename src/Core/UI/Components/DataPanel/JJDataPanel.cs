@@ -302,7 +302,7 @@ public class JJDataPanel : AsyncComponent
         var urlRedirectAction = actionMap.GetAction<UrlRedirectAction>(FormElement);
 
         var dbValues = await EntityRepository.GetFieldsAsync(FormElement, actionMap.PkFieldValues);
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement,PageState,dbValues, true, FieldNamePrefix);
+        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement,new FormStateData(dbValues,UserValues,PageState), true, FieldNamePrefix);
         
         DataHelper.CopyIntoDictionary(values, actionMap.PkFieldValues);
         
