@@ -59,7 +59,7 @@ public class LookupController(
         PageState pageState)
     {
         var elementMap = formElement.Fields[fieldName].DataItem!.ElementMap;
-        var formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, pageState, true);
+        var formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, pageState,new Dictionary<string, object?>(), true);
         var formStateData = new FormStateData(formValues, pageState);
         var selectedValue = LookupService.GetSelectedValue(componentName);
         
