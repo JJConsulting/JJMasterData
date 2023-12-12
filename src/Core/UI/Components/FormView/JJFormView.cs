@@ -866,7 +866,9 @@ public class JJFormView : AsyncComponent
         try
         {
             var filter = CurrentActionMap?.PkFieldValues;
-            var errors = await DeleteFormValuesAsync(filter);
+            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(filter!, UserValues, PageState.Delete));
+            
+            var errors = await DeleteFormValuesAsync(values!);
             if (errors.Count > 0)
             {
                 html.AppendComponent(messageFactory.Create(errors, MessageIcon.Warning));
@@ -907,7 +909,7 @@ public class JJFormView : AsyncComponent
 
             foreach (var row in rows)
             {
-                var errors = await DeleteFormValuesAsync(row);
+                var errors = await DeleteFormValuesAsync(row!);
 
                 if (errors.Count > 0)
                 {
@@ -1323,7 +1325,7 @@ public class JJFormView : AsyncComponent
         return result.Errors;
     }
 
-    public async Task<IDictionary<string, string>> DeleteFormValuesAsync(IDictionary<string, object>? filter)
+    public async Task<IDictionary<string, string>> DeleteFormValuesAsync(IDictionary<string, object?>? filter)
     {
         var values =
             await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(filter!,UserValues, PageState.Delete), true);
