@@ -35,7 +35,14 @@ public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncE
             expression = expression.Replace($"'{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}'", $" {parameterName} ");
             expression = expression.Replace($"{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}", $" {parameterName} ");
 
-            command.AddParameter(parameterName, keyValuePair.Value, GetDbTypeFromObject(keyValuePair.Value));
+            var value = keyValuePair.Value;
+
+            if (value is string stringValue)
+            {
+                value = stringValue.Trim(); //this prevents erros when coalescing string to numeric values.
+            }
+            
+            command.AddParameter(parameterName, value, GetDbTypeFromObject(keyValuePair.Value));
         }
 
         command.Sql = expression;
