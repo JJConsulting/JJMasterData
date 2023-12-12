@@ -176,7 +176,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         ResponseLetter ret;
         try
         {
-            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, apiValues, PageState.Insert, true);
+            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, new FormStateData(apiValues, PageState.Insert), true);
             var formResult = await FormService.InsertAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
@@ -205,7 +205,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         ResponseLetter ret;
         try
         {
-            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, apiValues, PageState.Update, true);
+            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, new FormStateData(apiValues, PageState.Update), true);
             var formResult = await FormService.UpdateAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
@@ -238,7 +238,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         ResponseLetter ret;
         try
         {
-            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, apiValues, PageState.Import, true);
+            var values = await FieldsService.MergeWithExpressionValuesAsync(formElement,  new FormStateData(apiValues, PageState.Import), true);
             var formResult =await FormService.InsertOrReplaceAsync(formElement, values, GetDataContext());
             if (formResult.IsValid)
             {
@@ -305,7 +305,7 @@ public class MasterApiService(ExpressionsService expressionsService,
 
         var formElement = dictionary;
         var primaryKeys = DataHelper.GetPkValues(formElement, id, ',');
-        var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, primaryKeys, PageState.Delete, true);
+        var values = await FieldsService.MergeWithExpressionValuesAsync(formElement, new FormStateData(primaryKeys!, PageState.Delete), true);
         var formResult = await FormService.DeleteAsync(formElement, values, GetDataContext());
 
         if (formResult.IsValid)
@@ -345,7 +345,7 @@ public class MasterApiService(ExpressionsService expressionsService,
             { "componentName", objname }
         };
 
-        var newValues = await FieldsService.MergeWithExpressionValuesAsync(dictionary, values, pageState, false);
+        var newValues = await FieldsService.MergeWithExpressionValuesAsync(dictionary,  new FormStateData(values!,pageState), false);
         var formData = new FormStateData(newValues, userValues, pageState);
         var listFormValues = new Dictionary<string, FormValues>();
         foreach (var field in dictionary.Fields)
