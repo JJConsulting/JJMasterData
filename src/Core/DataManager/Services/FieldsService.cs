@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Models;
 
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -34,19 +35,19 @@ public class FieldsService(
         return FieldFormattingService.FormatValue(field, value);
     }
 
-    public Task<Dictionary<string, object>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState,
+    public Task<Dictionary<string, object>> MergeWithExpressionValuesAsync(FormElement formElement, FormStateData formStateData,
         bool replaceNullValues)
     {
-        return FieldValuesService.MergeWithExpressionValuesAsync(formElement, formValues, pageState, replaceNullValues);
+        return FieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData, replaceNullValues);
     }
 
-    public Task<Dictionary<string, object>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState)
+    public Task<Dictionary<string, object>> GetDefaultValuesAsync(FormElement formElement, FormStateData formStateData)
     {
-        return FieldValuesService.GetDefaultValuesAsync(formElement, formValues, pageState);
+        return FieldValuesService.GetDefaultValuesAsync(formElement, formStateData);
     }
 
-    public Task<Dictionary<string, object>>  MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, object> formValues, PageState pageState)
+    public Task<Dictionary<string, object>> MergeWithDefaultValuesAsync(FormElement formElement, FormStateData formStateData)
     {
-        return FieldValuesService.MergeWithDefaultValuesAsync(formElement, formValues, pageState);
+        return FieldValuesService.MergeWithDefaultValuesAsync(formElement,formStateData);
     }
 }

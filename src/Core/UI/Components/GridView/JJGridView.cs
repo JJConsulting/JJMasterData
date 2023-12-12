@@ -940,13 +940,13 @@ public class JJGridView : AsyncComponent
     }
 
     internal async Task<IDictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
-        await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
+        await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues, PageState.List));
 
     internal async Task<FormStateData> GetFormStateDataAsync()
     {
         if (_formStateData == null)
         {
-            var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, null, PageState.List);
+            var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues, PageState.List));
             var userValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
 
             DataHelper.CopyIntoDictionary(userValues, UserValues, false);

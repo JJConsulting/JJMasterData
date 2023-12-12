@@ -8,6 +8,7 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
@@ -138,7 +139,7 @@ internal class GridFilter(JJGridView gridView)
         }
 
         var defaultValues =
-            await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement, values, PageState.List);
+            await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement, new FormStateData(values,GridView.UserValues, PageState.List));
 
         foreach (var kvp in defaultValues)
         {

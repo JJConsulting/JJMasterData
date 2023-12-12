@@ -73,7 +73,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
         }
         else
         {
-            formValues = await gridView.FieldsService.GetDefaultValuesAsync(formElement, null, PageState.List);
+            formValues = await gridView.FieldsService.GetDefaultValuesAsync(formElement, new FormStateData(new Dictionary<string, object>(), PageState.List));
         }
 
         var formStateData = new FormStateData(formValues, gridView.UserValues, PageState.List);

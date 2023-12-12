@@ -136,7 +136,12 @@ public class DataImportationWorker(DataImportationContext context,
         currentProcess.TotalRecords = rows.Length;
         currentProcess.Message = StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
         
-        var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, null, PageState.Import);
+        var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData()
+        {
+             Values = new Dictionary<string, object>(),
+             PageState = PageState.Import,
+             UserValues = new Dictionary<string, object>()
+        });
         var formData = new FormStateData(defaultValues, PageState.Import);
 
         //executa script antes da execuçao
@@ -267,7 +272,7 @@ public class DataImportationWorker(DataImportationContext context,
     {
         try
         {
-            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, fileValues, PageState.Import, true);
+            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData( fileValues, PageState.Import), true);
             var ret = await FormService.InsertOrReplaceAsync(FormElement, values, DataContext);
 
             if (ret.IsValid)

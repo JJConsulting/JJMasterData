@@ -11,11 +11,8 @@ using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FieldValuesService(ExpressionsService expressionsService, IEntityRepository entityRepository, FieldValidationService fieldValidationService)
+public class FieldValuesService(ExpressionsService expressionsService)
 {
-    private IEntityRepository EntityRepository { get; } = entityRepository;
-    private FieldValidationService FieldValidationService { get; } = fieldValidationService;
-
     private ExpressionsService ExpressionsService { get; } = expressionsService;
 
 
@@ -29,63 +26,61 @@ public class FieldValuesService(ExpressionsService expressionsService, IEntityRe
     /// <returns>
     /// Returns a new Dictionary with the updated values
     /// </returns>
-    public async Task<Dictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState, bool replaceNullValues = true)
+    public async Task<Dictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, FormStateData formStateData, bool replaceNullValues = true)
     {
-        if (formValues == null)
-            throw new ArgumentNullException(nameof(formValues));
-
-        var newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var formValues = formStateData.Values;
         foreach (var f in formElement.Fields)
         {
             if (formValues.TryGetValue(f.Name, out var value))
             {
                 var valueWithoutSpecialCharacters = ClearSpecialChars(f, value);
-                newValues.Add(f.Name, valueWithoutSpecialCharacters);
+                formValues[f.Name] = valueWithoutSpecialCharacters;
             }
         }
 
-        await ApplyDefaultValues(formElement, newValues, pageState, replaceNullValues);
-        await ApplyTriggerValues(formElement, newValues, pageState);
+        await ApplyDefaultValues(formElement, formStateData, replaceNullValues);
+        await ApplyTriggerValues(formElement, formStateData);
 
-        return newValues;
+        return new Dictionary<string, object?>(formStateData.Values);
     }
 
-    public async Task<Dictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState state)
+    public async Task<Dictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
     {
-        var filters = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var defaultValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         var fieldsWithDefaultValue = formElement.Fields
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.DefaultValue));
-
-        var formState = new FormStateData(formValues, state);
+        
         foreach (var field in fieldsWithDefaultValue)
         {
-            var defaultValue = await ExpressionsService.GetDefaultValueAsync(field, formState);
+            var defaultValue = await ExpressionsService.GetDefaultValueAsync(field, formStateData);
             if (defaultValue is not null && !string.IsNullOrEmpty(defaultValue.ToString()))
             {
-                filters.Add(field.Name, defaultValue);
+                defaultValues.Add(field.Name, defaultValue);
             }
         }
 
-        return filters;
+        return defaultValues;
     }
 
-    public async Task<Dictionary<string, object?>> MergeWithDefaultValuesAsync(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState)
+    public async Task<Dictionary<string, object?>> MergeWithDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
     {
         var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
   
-        foreach (var v in formValues)
+        foreach (var v in formStateData.Values)
             values.Add(v.Key, v.Value);
         
 
-        await ApplyDefaultValues(formElement,values, pageState, false);
+        await ApplyDefaultValues(formElement, formStateData, false);
         return values;
     }
 
-    private async Task ApplyDefaultValues(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState, bool replaceNullValues)
+    private async Task ApplyDefaultValues(FormElement formElement, FormStateData formStateData, bool replaceNullValues)
     {
-        var defaultValues = await GetDefaultValuesAsync(formElement,formValues, pageState);
+        var defaultValues = await GetDefaultValuesAsync(formElement,formStateData);
 
+        var formValues = formStateData.Values;
+        
         foreach (var d in defaultValues)
         {
             if (!formValues.ContainsKey(d.Key))
@@ -102,19 +97,18 @@ public class FieldValuesService(ExpressionsService expressionsService, IEntityRe
         }
     }
 
-    private async Task ApplyTriggerValues(FormElement formElement, IDictionary<string, object?> formValues, PageState pageState)
+    private async Task ApplyTriggerValues(FormElement formElement, FormStateData formStateData)
     {
         var fieldList = formElement.Fields
             .ToList()
             .FindAll(x => !string.IsNullOrEmpty(x.TriggerExpression));
-
-        var formState = new FormStateData(formValues, pageState);
+        
         foreach (var field in fieldList)
         {
-            object? value = await ExpressionsService.GetTriggerValueAsync(field, formState);
+            object? value = await ExpressionsService.GetTriggerValueAsync(field, formStateData);
             if (value != null)
             {
-                formValues[field.Name] = value;
+                formStateData.Values[field.Name] = value;
             }
         }
     }

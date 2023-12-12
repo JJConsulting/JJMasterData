@@ -803,7 +803,7 @@ public class JJFormView : AsyncComponent
         var mappedFkValues = DataHelper.GetRelationValues(FormElement, selectionValues, true);
 
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, mappedFkValues!, PageState.Insert,
+            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(mappedFkValues!,UserValues, PageState.Insert),
                 true);
         
         var errors = await InsertFormValuesAsync(values, false);
@@ -1326,7 +1326,7 @@ public class JJFormView : AsyncComponent
     public async Task<IDictionary<string, string>> DeleteFormValuesAsync(IDictionary<string, object>? filter)
     {
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, filter!, PageState.Delete, true);
+            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(filter!,UserValues, PageState.Delete), true);
         var result = await FormService.DeleteAsync(FormElement, values,
             new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
@@ -1370,7 +1370,7 @@ public class JJFormView : AsyncComponent
     public async Task<FormStateData> GetFormStateDataAsync()
     {
         var values =
-            await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState,
+            await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState,UserValues,
                 CurrentContext.Request.Form.ContainsFormValues());
 
         if (!values.Any())

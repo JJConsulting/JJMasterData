@@ -247,9 +247,9 @@ internal class DataImportationHelp
         return text.ToString();
     }
 
-    private async Task<string> GetHtmlComboHelp(FormElementField field)
+    private async Task<string> GetHtmlComboHelp(FormElementField field) 
     {
-        var defaultValues = await DataImportation.FieldsService.GetDefaultValuesAsync(DataImportation.FormElement,null, PageState.Import);
+        var defaultValues = await DataImportation.FieldsService.GetDefaultValuesAsync(DataImportation.FormElement,new FormStateData(new Dictionary<string, object>(),DataImportation.UserValues, PageState.Import));
         var expOptions = new FormStateData(defaultValues, DataImportation.UserValues, PageState.Import);
         //TODO: DataItemService is better
         var comboBox = DataImportation.ComponentFactory.Controls.Create<JJComboBox>(null,field, new(expOptions,DataImportation.Name));

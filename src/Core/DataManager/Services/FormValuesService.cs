@@ -98,33 +98,31 @@ public class FormValuesService(
     public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         PageState pageState,
+        IDictionary<string,object?> userValues,
         bool autoReloadFormFields,
         string? fieldPrefix = null)
     {
         var dbValues = await GetDbValues(formElement);
         
-        return await GetFormValuesWithMergedValuesAsync(formElement, pageState, dbValues, autoReloadFormFields, fieldPrefix);
+        return await GetFormValuesWithMergedValuesAsync(formElement, new FormStateData(dbValues, userValues, pageState), autoReloadFormFields, fieldPrefix);
     }
 
     public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
-        PageState pageState,
-        IDictionary<string, object?> values,
+        FormStateData formStateData,
         bool autoReloadFormFields,
         string? prefix = null)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
-
-        var valuesToBeReceived = new Dictionary<string, object?>(values);
         
         if (FormValues.ContainsFormValues() && autoReloadFormFields)
         {
-            var formValues = await GetFormValuesAsync(formElement, pageState, prefix);
-            DataHelper.CopyIntoDictionary(valuesToBeReceived, formValues, true);
+            var formValues = await GetFormValuesAsync(formElement, formStateData.PageState, prefix);
+            DataHelper.CopyIntoDictionary(formStateData.Values, formValues, true);
         }
         
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, valuesToBeReceived, pageState, !FormValues.ContainsFormValues());
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData, !FormValues.ContainsFormValues());
     }
 
 
