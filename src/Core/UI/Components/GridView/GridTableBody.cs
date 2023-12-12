@@ -379,6 +379,6 @@ internal class GridTableBody(JJGridView gridView)
             return row;
 
         var prefixName = GridView.GetFieldName(string.Empty, row);
-        return await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(GridView.FormElement, PageState.List,row, GridView.AutoReloadFormFields, prefixName);
+        return await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(GridView.FormElement, new FormStateData(row, GridView.UserValues,PageState.List), GridView.AutoReloadFormFields, prefixName);
     }
 }
