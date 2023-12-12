@@ -4,7 +4,7 @@
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
 		<Version>4.0.0</Version>
-		<PackageVersion>$(Version)-rc.24</PackageVersion>
+		<PackageVersion>$(Version)-rc.25</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
