@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -70,17 +71,14 @@ public class FormValuesService(
                     else
                         value = null;
                     break;
-                case FormComponent.Slider:
                 case FormComponent.Currency:
+                case FormComponent.Slider: 
                 case FormComponent.Number:
-                    if (value is not null)
-                    {
-                        if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
-                                out var numericValue))
-                            value = numericValue;
-                        else
-                            value = 0;
-                    }
+                    if (value is null)
+                        break;
+
+                    value = HandleNumericComponent(value, field.DataType);
+
                     break;
                 case FormComponent.CheckBox:
                     value = StringManager.ParseBool(value);
@@ -95,18 +93,21 @@ public class FormValuesService(
         return values;
     }
 
-    public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
-        FormElement formElement,
-        PageState pageState,
-        IDictionary<string,object?> userValues,
-        bool autoReloadFormFields,
-        string? fieldPrefix = null)
+    private static object HandleNumericComponent(object value, FieldType dataType)
     {
-        var dbValues = await GetDbValues(formElement);
-        
-        return await GetFormValuesWithMergedValuesAsync(formElement, new FormStateData(dbValues, userValues, pageState), autoReloadFormFields, fieldPrefix);
+        value = dataType switch
+        {
+            FieldType.Float when double.TryParse(value.ToString(), NumberStyles.Any,
+                CultureInfo.InvariantCulture, out var numericValue) => numericValue,
+            FieldType.Float => 0,
+            FieldType.Int when int.TryParse(value.ToString(), NumberStyles.Any,
+                CultureInfo.InvariantCulture, out var numericValue) => numericValue,
+            FieldType.Int => 0,
+            _ => value
+        };
+        return value;
     }
-
+    
     public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         FormStateData formStateData,
@@ -115,6 +116,12 @@ public class FormValuesService(
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
+
+        if (!formStateData.Values.Any())
+        {
+            var dbValues = await GetDbValues(formElement);
+            DataHelper.CopyIntoDictionary(formStateData.Values, dbValues);
+        }
         
         if (FormValues.ContainsFormValues() && autoReloadFormFields)
         {

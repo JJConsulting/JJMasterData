@@ -329,7 +329,7 @@ public class JJFormView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (!RouteContext.CanRender(FormElement.Name))
+        if (!RouteContext.CanRender(FormElement))
             return new EmptyComponentResult();
 
         if (RouteContext.IsCurrentFormElement(FormElement.Name))
@@ -866,9 +866,8 @@ public class JJFormView : AsyncComponent
         try
         {
             var filter = CurrentActionMap?.PkFieldValues;
-            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(filter!, UserValues, PageState.Delete));
             
-            var errors = await DeleteFormValuesAsync(values!);
+            var errors = await DeleteFormValuesAsync(filter!);
             if (errors.Count > 0)
             {
                 html.AppendComponent(messageFactory.Create(errors, MessageIcon.Warning));
@@ -1330,7 +1329,7 @@ public class JJFormView : AsyncComponent
     public async Task<IDictionary<string, string>> DeleteFormValuesAsync(IDictionary<string, object?>? filter)
     {
         var values =
-            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData(filter!,UserValues, PageState.Delete), true);
+            await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,  new FormStateData(filter!, UserValues, PageState.Delete), true);
         var result = await FormService.DeleteAsync(FormElement, values,
             new DataContext(CurrentContext.Request, DataContextSource.Form, UserId));
         UrlRedirect = result.UrlRedirect;
@@ -1374,7 +1373,7 @@ public class JJFormView : AsyncComponent
     public async Task<FormStateData> GetFormStateDataAsync()
     {
         var values =
-            await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState,UserValues,
+            await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues,PageState),
                 CurrentContext.Request.Form.ContainsFormValues());
 
         if (!values.Any())
