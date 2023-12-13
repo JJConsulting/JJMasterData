@@ -1373,7 +1373,7 @@ public class JJFormView : AsyncComponent
     public async Task<FormStateData> GetFormStateDataAsync()
     {
         var values =
-            await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState,UserValues,
+            await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues,PageState),
                 CurrentContext.Request.Form.ContainsFormValues());
 
         if (!values.Any())

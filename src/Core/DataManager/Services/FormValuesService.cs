@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -106,19 +107,7 @@ public class FormValuesService(
         };
         return value;
     }
-
-    public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
-        FormElement formElement,
-        PageState pageState,
-        IDictionary<string,object?> userValues,
-        bool autoReloadFormFields,
-        string? fieldPrefix = null)
-    {
-        var dbValues = await GetDbValues(formElement);
-        
-        return await GetFormValuesWithMergedValuesAsync(formElement, new FormStateData(dbValues, userValues, pageState), autoReloadFormFields, fieldPrefix);
-    }
-
+    
     public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         FormStateData formStateData,
@@ -127,6 +116,12 @@ public class FormValuesService(
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
+
+        if (!formStateData.Values.Any())
+        {
+            var dbValues = await GetDbValues(formElement);
+            DataHelper.CopyIntoDictionary(formStateData.Values, dbValues);
+        }
         
         if (FormValues.ContainsFormValues() && autoReloadFormFields)
         {
