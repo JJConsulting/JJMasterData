@@ -159,7 +159,7 @@ public class JJDataPanel : AsyncComponent
     
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        if (!RouteContext.CanRender(FormElement.Name))
+        if (!RouteContext.CanRender(FormElement))
             return new EmptyComponentResult();
         
         Values = await GetFormValuesAsync();
