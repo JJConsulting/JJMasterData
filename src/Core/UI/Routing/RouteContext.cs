@@ -40,7 +40,7 @@ public class RouteContext
             return true;
         
         if (ParentElementName is not null)
-            return ParentElementName == currentElementName || ParentElementName == currentElementName;
+            return ParentElementName == currentElementName || ParentElementName == currentParentName;
 
         return IsCurrentFormElement(currentElementName);
     }
