@@ -14,7 +14,7 @@ public class ValueExpressionProvider : IAsyncExpressionProvider, IBooleanExpress
     private static object EvalutateObject(string expression, IDictionary<string,object?> parsedValues)
     {
         if (expression.Contains(ExpressionHelper.Begin.ToString()))
-            return ExpressionHelper.ReplaceExpression(expression, parsedValues);
+            return ExpressionHelper.ReplaceExpression(expression, parsedValues).Trim();
 
         return expression.Trim();
     }

@@ -70,17 +70,14 @@ public class FormValuesService(
                     else
                         value = null;
                     break;
-                case FormComponent.Slider:
                 case FormComponent.Currency:
+                case FormComponent.Slider: 
                 case FormComponent.Number:
-                    if (value is not null)
-                    {
-                        if (double.TryParse(value.ToString(), NumberStyles.Number, CultureInfo.InvariantCulture,
-                                out var numericValue))
-                            value = numericValue;
-                        else
-                            value = 0;
-                    }
+                    if (value is null)
+                        break;
+
+                    value = HandleNumericComponent(value, field.DataType);
+
                     break;
                 case FormComponent.CheckBox:
                     value = StringManager.ParseBool(value);
@@ -93,6 +90,21 @@ public class FormValuesService(
         }
 
         return values;
+    }
+
+    private static object HandleNumericComponent(object value, FieldType dataType)
+    {
+        value = dataType switch
+        {
+            FieldType.Float when double.TryParse(value.ToString(), NumberStyles.Any,
+                CultureInfo.InvariantCulture, out var numericValue) => numericValue,
+            FieldType.Float => 0,
+            FieldType.Int when int.TryParse(value.ToString(), NumberStyles.Any,
+                CultureInfo.InvariantCulture, out var numericValue) => numericValue,
+            FieldType.Int => 0,
+            _ => value
+        };
+        return value;
     }
 
     public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(

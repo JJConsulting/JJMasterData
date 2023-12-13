@@ -6,11 +6,14 @@ class PostFormValuesOptions{
 
 function postFormValues(options : PostFormValuesOptions) {
     SpinnerOverlay.show();
-    const formData = new FormData(document.querySelector("form"));
+    const formData = $("form").serialize();
     
     const requestOptions = {
         method: "POST",
-        body: formData
+        body: formData,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
     };
     
     fetch(options.url, requestOptions)

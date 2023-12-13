@@ -55,7 +55,14 @@ public static class SqlCommandExtensions
                 {
                     if (sp.Direction is not (ParameterDirection.InputOutput or ParameterDirection.Output)) continue;
 
-                    sql.Append($"declare {sp.ParameterName}\t{sp.SqlDbType}\t= ");
+                    string parameterName = sp.ParameterName;
+
+                    if (!parameterName.StartsWith("@"))
+                    {
+                        parameterName = "@" + parameterName;
+                    }
+                    
+                    sql.Append($"declare {parameterName}\t{sp.SqlDbType}\t= ");
 
                     sql.AppendLine(
                         $"{(sp.Direction == ParameterDirection.Output ? "null" : sp.ParameterValueAsSql())};");
@@ -70,12 +77,19 @@ public static class SqlCommandExtensions
                     sql.Append(firstParam ? "\t" : "\t, ");
 
                     if (firstParam) firstParam = false;
+                    
+                    string parameterName = sp.ParameterName;
+
+                    if (!parameterName.StartsWith("@"))
+                    {
+                        parameterName = "@" + parameterName;
+                    }
 
                     if (sp.Direction == ParameterDirection.Input)
-                        sql.AppendLine($"{sp.ParameterName} = {sp.ParameterValueAsSql()}");
+                        sql.AppendLine($"{parameterName} = {sp.ParameterValueAsSql()}");
                     else
 
-                        sql.AppendLine($"{sp.ParameterName} = {sp.ParameterName} output");
+                        sql.AppendLine($"{parameterName} = {sp.ParameterName} output");
                 }
                 sql.AppendLine(";");
 
