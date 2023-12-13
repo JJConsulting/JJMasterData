@@ -420,7 +420,7 @@ public class JJUploadView : AsyncComponent
 
         html.AppendComponent(new JJCollapsePanel(CurrentContext.Request.Form)
         {
-            Title = "New File",
+            Title = StringLocalizer["New File"],
             ExpandedByDefault = IsCollapseExpandedByDefault,
             HtmlBuilderContent = GetHtmlFormPanel()
         });
