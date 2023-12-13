@@ -255,7 +255,7 @@ public class JJDataPanel : AsyncComponent
     /// </summary>
     public async Task<Dictionary<string, object>> GetFormValuesAsync()
     {
-        var mergedValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, PageState,UserValues, AutoReloadFormFields, FieldNamePrefix);
+        var mergedValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement,new FormStateData(Values,UserValues,PageState), AutoReloadFormFields, FieldNamePrefix);
         
         DataHelper.CopyIntoDictionary(Values, mergedValues, true);
 
