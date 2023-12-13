@@ -28,15 +28,21 @@ public class RouteContext
         return new RouteContext(formElement.Name, formElement.ParentName, context);
     }
     
-    public bool CanRender(string elementName)
+    public bool CanRender(FormElement formElement)
     {
+        string currentElementName = formElement.Name;
+        string? currentParentName = formElement.ParentName;
+
+        if (ElementName == currentParentName)
+            return true;
+        
         if (ElementName is null)
             return true;
         
         if (ParentElementName is not null)
-            return ParentElementName == elementName || ParentElementName == elementName;
+            return ParentElementName == currentElementName || ParentElementName == currentElementName;
 
-        return IsCurrentFormElement(elementName);
+        return IsCurrentFormElement(currentElementName);
     }
     
     public bool IsCurrentFormElement(string elementName)
