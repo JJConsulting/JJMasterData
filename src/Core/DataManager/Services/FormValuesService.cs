@@ -83,19 +83,24 @@ public class FormValuesService(
 
     private static object HandleNumericComponent(object value, FieldType dataType)
     {
-        value = dataType switch
+        var culture = CultureInfo.InvariantCulture;
+        object parsedValue = 0;
+        
+        switch (dataType)
         {
-            FieldType.Float when double.TryParse(value.ToString(), NumberStyles.Any,
-                CultureInfo.InvariantCulture, out var numericValue) => numericValue,
-            FieldType.Float => 0,
-            FieldType.Int when int.TryParse(value.ToString(), NumberStyles.Any,
-                CultureInfo.InvariantCulture, out var numericValue) => numericValue,
-            FieldType.Int => 0,
-            _ => value
-        };
-        return value;
+            case FieldType.Float:
+                if (double.TryParse(value.ToString(), NumberStyles.Any, culture, out var floatValue))
+                    parsedValue = floatValue;
+                break;
+            case FieldType.Int:
+                if (int.TryParse(value.ToString(), NumberStyles.Any, culture, out var numericValue))
+                    parsedValue = numericValue;
+                break;
+        }
+
+        return parsedValue;
     }
-    
+
     public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         FormStateData formStateData,
