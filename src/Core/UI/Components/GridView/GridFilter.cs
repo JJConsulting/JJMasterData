@@ -8,6 +8,7 @@ using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
@@ -24,7 +25,8 @@ internal class GridFilter(JJGridView gridView)
     
     internal const string FilterFieldPrefix = "filter_";
 
-    private IDictionary<string, object> _currentFilter = new Dictionary<string,object>();
+    private IDictionary<string, object> _currentFilter;
+    private IDictionary<string, object> _userFilters;
     private JJGridView GridView { get; } = gridView;
 
     private IHttpContext CurrentContext => GridView.CurrentContext;
@@ -56,6 +58,10 @@ internal class GridFilter(JJGridView gridView)
     /// <returns></returns>
     public async Task<IDictionary<string, object>> GetCurrentFilterAsync()
     {
+        if (_currentFilter != null)
+            return _currentFilter;
+        
+     
         //Action is captured here, because the user can call GetCurrentFilterAsync before GetResultAsync()
         var currentFilterAction = CurrentContext.Request.Form[$"grid-view-filter-action-{GridView.Name}"];
         switch (currentFilterAction)
@@ -70,7 +76,6 @@ internal class GridFilter(JJGridView gridView)
                 await ApplyCurrentFilter(null);
                 return _currentFilter;
         }
-
         
         var sessionFilter = CurrentContext.Session.GetSessionValue<Dictionary<string, object>>(
             $"jjcurrentfilter_{GridView.Name}");
@@ -81,13 +86,13 @@ internal class GridFilter(JJGridView gridView)
             return _currentFilter;
         }
         
-        var filters = CurrentContext.Request.Form[$"grid-view-filters-{GridView.Name}"];
-        if (!string.IsNullOrEmpty(filters))
-        {
-            var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
-            _currentFilter = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson) ?? new Dictionary<string, object>();
-            return _currentFilter;
-        }
+        // var filters = CurrentContext.Request.Form[$"grid-view-filters-{GridView.Name}"];
+        // if (!string.IsNullOrEmpty(filters))
+        // {
+        //     var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
+        //     _currentFilter = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson) ?? new Dictionary<string, object>();
+        //     return _currentFilter;
+        // }
 
         if (sessionFilter != null && (CurrentContext.Request.Form.ContainsFormValues() || IsDynamicPost()))
         {
@@ -105,8 +110,8 @@ internal class GridFilter(JJGridView gridView)
     /// <returns></returns>
     public void SetCurrentFilter(string name, object value)
     {
-        _currentFilter ??= new Dictionary<string, object>();
-        _currentFilter[name] = value;
+        _userFilters ??= new Dictionary<string, object>();
+        _userFilters[name] = value;
     }
 
     private bool IsDynamicPost()
@@ -128,6 +133,8 @@ internal class GridFilter(JJGridView gridView)
             }
         }
         
+        DataHelper.CopyIntoDictionary(values, _userFilters);
+        
         var queryString = GetFilterQueryString();
         if (queryString != null)
         {
@@ -141,12 +148,11 @@ internal class GridFilter(JJGridView gridView)
         var defaultValues =
             await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement, new FormStateData(values,GridView.UserValues, PageState.List));
 
-        foreach (var kvp in defaultValues)
-        {
-            if(!_currentFilter.ContainsKey(kvp.Key))
-                _currentFilter[kvp.Key] = kvp.Value;  
-        }
+        _currentFilter ??= new Dictionary<string, object>();
         
+        DataHelper.CopyIntoDictionary(values, defaultValues);
+        DataHelper.CopyIntoDictionary(_currentFilter, values);
+
         CurrentContext.Session.SetSessionValue($"jjcurrentfilter_{GridView.Name}", _currentFilter);
     }
 

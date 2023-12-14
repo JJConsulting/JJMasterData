@@ -6,6 +6,8 @@ namespace JJMasterData.Core.DataManager.Expressions;
 
 public class ExpressionException : JJMasterDataException
 {
+    public required string Expression { get; init; }
+    
     public ExpressionException(string message) : base(message)
     {
     }

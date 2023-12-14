@@ -64,7 +64,10 @@ public class ExpressionsService(
 
         catch (Exception ex)
         {
-            var exception = new ExpressionException("Unhandled exception at a expression provider.",ex);
+            var exception = new ExpressionException("Unhandled exception at a expression provider.",ex)
+            {
+                Expression = expression
+            };
 
             Logger.LogError(exception,"Error retrieving expression at {Provider} provider. Expression: {Expression}",provider.Prefix, expression);
 
@@ -117,7 +120,10 @@ public class ExpressionsService(
 
         catch (Exception ex)
         {
-            var exception = new ExpressionException("Unhandled exception at a expression provider.",ex);
+            var exception = new ExpressionException("Unhandled exception at a expression provider.",ex)
+            {
+                Expression = expression
+            };
 
             Logger.LogError(exception,"Error retrieving expression at {Provider} provider\nExpression: {Expression}\nField: {FieldName}",provider,expression, field.Name);
 

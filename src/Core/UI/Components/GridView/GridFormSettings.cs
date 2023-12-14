@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
@@ -33,10 +34,10 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
         if (int.TryParse(tableTotalPageButtons, out var totalPaggingButtons))
             gridSettings.TotalPaginationButtons = totalPaggingButtons;
 
-        gridSettings.ShowBorder = "true".Equals(tableBorder);
-        gridSettings.ShowRowStriped = "true".Equals(tableRowsStriped);
-        gridSettings.ShowRowHover = "true".Equals(tableRowHover);
-        gridSettings.IsHeaderFixed = "true".Equals(tableIsHeaderFixed);
+        gridSettings.ShowBorder = StringManager.ParseBool(tableBorder);
+        gridSettings.ShowRowStriped = StringManager.ParseBool(tableRowsStriped);
+        gridSettings.ShowRowHover = StringManager.ParseBool(tableRowHover);
+        gridSettings.IsHeaderFixed = StringManager.ParseBool(tableIsHeaderFixed);
 
         return gridSettings;
     }
