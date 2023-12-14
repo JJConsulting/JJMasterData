@@ -71,14 +71,5 @@ public class FormElementDataItem
     [Display(Name="Show Icon")]
     public bool ShowIcon { get; set; }
 
-    public bool HasSqlExpression()
-    {
-        if (string.IsNullOrEmpty(Command?.Sql))
-            return false;
-
-        var sql = Command?.Sql;
-        sql = sql?.Replace("{SearchId}", string.Empty);
-        sql = sql?.Replace("{SearchText}", string.Empty);
-        return sql?.Contains("{") ?? false;
-    }
+    public bool HasSqlExpression() => !string.IsNullOrWhiteSpace(Command?.Sql);
 }

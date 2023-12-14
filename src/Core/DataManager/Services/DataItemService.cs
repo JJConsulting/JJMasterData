@@ -51,7 +51,9 @@ public class DataItemService(IEntityRepository entityRepository,
         string? searchText = null,
         string? searchId = null)
     {
-        switch (dataItem.DataItemType)
+        var dataItemType = GetDataItemType(dataItem);
+        
+        switch (dataItemType)
         {
             case DataItemType.Manual:
             {
@@ -70,6 +72,16 @@ public class DataItemService(IEntityRepository entityRepository,
             default:
                 throw new JJMasterDataException("Invalid DataItemType.");
         }
+    }
+
+    private static DataItemType GetDataItemType(FormElementDataItem dataItem)
+    {
+        if (dataItem.HasSqlExpression())
+            return DataItemType.SqlCommand;
+        if (dataItem.Items != null && dataItem.Items.Any())
+            return DataItemType.Manual;
+        
+        return DataItemType.ElementMap;
     }
 
     private static IEnumerable<DataItemValue> GetItemsValues(FormElementDataItem dataItem, string? searchId, string? searchText)
