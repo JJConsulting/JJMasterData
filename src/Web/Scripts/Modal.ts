@@ -258,7 +258,14 @@ class _LegacyModal extends ModalBase{
             $(modalIdSelector).remove();
         }
 
-        $(modalHtml).appendTo($("body"));
+        const $form = $("form");
+
+        if ($form.length) {
+            $(modalHtml).appendTo($form);
+        } else {
+            $(modalHtml).appendTo($("body"));
+        }
+        
         this.setTitle(title);
         this.showModal();
     }
@@ -293,9 +300,16 @@ class _LegacyModal extends ModalBase{
                             const modalIdSelector = `#${this.modalId}`;
                             if ($(modalIdSelector).length) {
                                 $(modalIdSelector).remove();
-                            }                    
+                            }
 
-                            $(modalHtml).appendTo($("body"));
+                            const $form = $("form");
+
+                            if ($form.length) {
+                                $(modalHtml).appendTo($form);
+                            } else {
+                                $(modalHtml).appendTo($("body"));
+                            }
+                            
                             this.setTitle(title);
                             this.showModal();
                         });

@@ -21,9 +21,7 @@ class MessageBox {
 
     private static readonly modalId = MessageBox.jQueryModalId.substring(1);
     private static readonly button1Id = MessageBox.jQueryModalButton1Id.substring(1);
-
-    private static bootstrapVersion = 5; // Replace this with the actual Bootstrap version if needed
-
+    
     private static setTitle(title: string): void {
         $(MessageBox.jQueryModalTitleId).html(title);
     }
@@ -33,7 +31,7 @@ class MessageBox {
     }
 
     private static showModal(): void {
-        if (MessageBox.bootstrapVersion < 5) {
+        if (bootstrapVersion < 5) {
             $(MessageBox.jQueryModalId)
                 .modal()
                 .on("shown.bs.modal", function () {
