@@ -15,7 +15,7 @@ namespace JJMasterData.Core.UI.Components;
 /// Represents a field with a value from another FormElement accessed via modal.
 public class JJLookup : ControlBase
 {
-    private FormElement FormElement { get; set; }
+
     private LookupService LookupService { get; }
     private IComponentFactory ComponentFactory { get; }
 
@@ -24,7 +24,7 @@ public class JJLookup : ControlBase
     private object? _selectedValue;
     private string? _text;
 
-    internal FormStateData FormStateData { get; set; }
+    internal FormStateData? FormStateData { get; set; }
 
     public bool AutoReloadFormFields { get; set; }
 
@@ -79,44 +79,45 @@ public class JJLookup : ControlBase
 
     public DataElementMap ElementMap { get; }
     
-    public string FieldName { get; }
+    public string? FieldName { get; set; }
     #endregion
 
     #region "Constructors"
 
     internal JJLookup(
-        FormElement formElement,
-        FormElementField field,
-        ControlContext controlContext,
+        FormElementField? field,
+        ControlContext? controlContext,
         IFormValues formValues,
         LookupService lookupService,
         IComponentFactory componentFactory) : base(formValues)
     {
-        FormElement = formElement;
-        ElementMap = field.DataItem?.ElementMap ?? throw new ArgumentException("ElementMap cannot be null.");
-        FieldName = field.Name;
+        ElementMap = field?.DataItem?.ElementMap ?? new DataElementMap();
+        FieldName = field?.Name;
         LookupService = lookupService;
         ComponentFactory = componentFactory;
         Enabled = true;
         AutoReloadFormFields = true;
-        Name = field.Name;
+        Name = field?.Name;
         ModalSize = ModalSize.Large;
         ModalTitle = "Search";
-        FormStateData = controlContext.FormStateData;
-        UserValues = controlContext.FormStateData.UserValues;
-        SelectedValue = controlContext.Value?.ToString();
-        SetAttr(field.Attributes);
+        FormStateData = controlContext?.FormStateData;
+        UserValues = controlContext?.FormStateData.UserValues;
+        SelectedValue = controlContext?.Value?.ToString();
 
-        if (field.DataType is FieldType.Int)
+        if (field != null)
         {
-            OnlyNumbers = true;
-            MaxLength = 11;
+            SetAttr(field.Attributes);
+
+            if (field.DataType is FieldType.Int)
+            {
+                OnlyNumbers = true;
+                MaxLength = 11;
+            }
+            else
+            {
+                MaxLength = field.Size;
+            }
         }
-        else
-        {
-            MaxLength = field.Size;
-        }
-        
     }
 
     #endregion
@@ -128,6 +129,10 @@ public class JJLookup : ControlBase
 
     private async Task<HtmlBuilder> GetLookupHtml()
     {
+        if (ElementMap is null)
+            throw new ArgumentNullException(nameof(ElementMap));
+        if (FieldName is null)
+            throw new ArgumentNullException(nameof(FieldName));
         object? inputValue = SelectedValue;
         string? description = Text;
 
@@ -139,7 +144,7 @@ public class JJLookup : ControlBase
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("input-group mb-3 d-flex" );
         
-        Attributes["lookup-description-url"] = LookupService.GetDescriptionUrl(FormElement.Name,FieldName,Name,FormStateData.PageState);
+        Attributes["lookup-description-url"] = LookupService.GetDescriptionUrl(ElementMap.ElementName,FieldName,Name,FormStateData?.PageState);
 
         var idTextBox = ComponentFactory.Controls.TextBox.Create();
         idTextBox.Name = Name;
@@ -154,8 +159,7 @@ public class JJLookup : ControlBase
         
         await div.AppendControlAsync(idTextBox);
         
-        var dataItem = FormElement.Fields[FieldName].DataItem!;
-        if (!string.IsNullOrEmpty(dataItem.ElementMap!.FieldDescription))
+        if (!string.IsNullOrEmpty(ElementMap!.FieldDescription))
         {
             idTextBox.Attributes["style"] = "flex:2";
 

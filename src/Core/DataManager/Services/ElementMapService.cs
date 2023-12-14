@@ -16,7 +16,7 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
     private IEntityRepository EntityRepository { get; } = entityRepository;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
 
-    public async Task<IDictionary<string, object?>> GetFieldsAsync(DataElementMap elementMap, object? value, FormStateData formStateData)
+    public async Task<IDictionary<string, object?>> GetFieldsAsync(DataElementMap elementMap, object? value, FormStateData? formStateData)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
         var filters = GetFilters(elementMap, value, formStateData);
@@ -33,7 +33,7 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
         });
     }
     
-    private IDictionary<string, object> GetFilters(DataElementMap elementMap, object? value, FormStateData formStateData)
+    private IDictionary<string, object> GetFilters(DataElementMap elementMap, object? value, FormStateData? formStateData)
     {
         var filters = new Dictionary<string, object>();
 
@@ -41,9 +41,12 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
         {
             foreach (var filter in elementMap.Filters)
             {
-                var filterParsed =
-                    ExpressionsService.ReplaceExpressionWithParsedValues(filter.Value.ToString(), formStateData) ?? string.Empty;
-                filters[filter.Key] = filterParsed;
+                if (formStateData != null)
+                {
+                    var filterParsed =
+                        ExpressionsService.ReplaceExpressionWithParsedValues(filter.Value.ToString(), formStateData) ?? string.Empty;
+                    filters[filter.Key] = filterParsed;
+                }
             }
         }
         else
