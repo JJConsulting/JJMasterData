@@ -1314,7 +1314,7 @@ document.addEventListener("DOMContentLoaded", function () {
 const listenAllEvents = (selectorPrefix = String()) => {
     selectorPrefix += " ";
     $(selectorPrefix + ".selectpicker").selectpicker({
-        iconBase: 'fa'
+        iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon'
     });
     if (bootstrapVersion === 3) {
         $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
@@ -2001,6 +2001,8 @@ class SearchBoxListener {
                 },
                 onSelect: function (item) {
                     const hiddenSearchBox = document.querySelector(jjSearchBoxHiddenSelector);
+                    console.log("pan");
+                    console.log(item.value);
                     if (hiddenSearchBox)
                         hiddenSearchBox.value = item.value;
                     if (item.value != "") {

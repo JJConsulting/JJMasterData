@@ -30,18 +30,6 @@ public class DataItemService(IEntityRepository entityRepository,
     private ElementMapService ElementMapService { get; } = elementMapService;
     private ILogger<DataItemService> Logger { get; } = logger;
 
-    public async Task<string?> GetSelectedValueAsync(FormElementField field, FormStateData formStateData,
-        string? searchText = null, string? searchId = null)
-    {
-        var value = FormValues[field.Name];
-        if (value is not null)
-            return value;
-
-        var first = await GetValuesAsync(field.DataItem!, formStateData, searchText, searchId).FirstOrDefaultAsync();
-
-        return first?.Id;
-    }
-
     public static IEnumerable<DataItemResult> GetItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values)
     {
         foreach (var i in values.ToArray())
