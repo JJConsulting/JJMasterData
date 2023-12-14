@@ -4,7 +4,7 @@ namespace JJMasterData.Commons.Logging;
 
 public abstract class LoggerBuffer
 {
-    private readonly Channel<char[]> _channel;
+    private readonly Channel<LogMessage> _channel;
 
     protected LoggerBuffer(int maxSize)
     {
@@ -14,15 +14,15 @@ public abstract class LoggerBuffer
             SingleReader = true,
             SingleWriter = false
         };
-        _channel = Channel.CreateBounded<char[]>(options);
+        _channel = Channel.CreateBounded<LogMessage>(options);
     }
 
-    public void Enqueue(char[] entry)
+    public void Enqueue(LogMessage entry)
     {
         _channel.Writer.TryWrite(entry);
     }
 
-    public bool TryDequeue(out char[] entry)
+    public bool TryDequeue(out LogMessage entry)
     {
         return _channel.Reader.TryRead(out entry);
     }

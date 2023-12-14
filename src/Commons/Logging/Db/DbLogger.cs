@@ -26,24 +26,20 @@ internal class DbLogger : ILogger
     {
         if (!IsEnabled(logLevel))
             return;
-        
-        var now = DateTime.Now;
 
         var message = GetMessage(eventId, formatter(state, exception), exception);
-        
-        var entry = new DbLogEntry
+        var entry = new LogMessage
         {
-            Created = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second, now.Millisecond,
-                now.Kind),
+            Created = DateTime.Now,
             LogLevel = (int)logLevel,
             Event = eventId.Name ?? string.Empty,
             Message = message
         };
         
-        _loggerBuffer.Enqueue(entry.ToSeparatedCharArray());
+        _loggerBuffer.Enqueue(entry);
     }
-    
-    private static string GetMessage(EventId eventId, string formatterMessage, Exception? exception)
+
+    public string GetMessage(EventId eventId, string formatterMessage, Exception? exception)
     {
         var message = new StringBuilder();
         message.AppendLine(eventId.Name);
@@ -51,9 +47,11 @@ internal class DbLogger : ILogger
 
         if (exception != null)
         {
-            message.AppendLine(LoggerDecoration.GetMessage(exception));
+            message.AppendLine(LoggerDecoration.GetMessageException(exception));
         }
 
         return message.ToString();
     }
+
+
 }

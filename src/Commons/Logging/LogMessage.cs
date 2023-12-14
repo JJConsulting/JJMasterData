@@ -1,0 +1,13 @@
+#nullable enable
+using System;
+
+namespace JJMasterData.Commons.Logging;
+
+public class LogMessage
+{
+    public required DateTime Created { get; init; }
+    public required int LogLevel { get; init; }
+    public required string Event { get; init; }
+    public required string Message { get; init; }
+    
+}
