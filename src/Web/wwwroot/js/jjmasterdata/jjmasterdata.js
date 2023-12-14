@@ -1430,7 +1430,7 @@ class MessageBox {
         $(MessageBox.jQueryModalContentId).html(content);
     }
     static showModal() {
-        if (MessageBox.bootstrapVersion < 5) {
+        if (bootstrapVersion < 5) {
             $(MessageBox.jQueryModalId)
                 .modal()
                 .on("shown.bs.modal", function () {
@@ -1573,7 +1573,6 @@ MessageBox.jQueryModalButton1Id = "#site-modal-btn1";
 MessageBox.jQueryModalButton2Id = "#site-modal-btn2";
 MessageBox.modalId = MessageBox.jQueryModalId.substring(1);
 MessageBox.button1Id = MessageBox.jQueryModalButton1Id.substring(1);
-MessageBox.bootstrapVersion = 5;
 const messageBox = MessageBox;
 var ModalSize;
 (function (ModalSize) {
@@ -1773,7 +1772,13 @@ class _LegacyModal extends ModalBase {
         if ($(modalIdSelector).length) {
             $(modalIdSelector).remove();
         }
-        $(modalHtml).appendTo($("body"));
+        const $form = $("form");
+        if ($form.length) {
+            $(modalHtml).appendTo($form);
+        }
+        else {
+            $(modalHtml).appendTo($("body"));
+        }
         this.setTitle(title);
         this.showModal();
     }
@@ -1806,7 +1811,13 @@ class _LegacyModal extends ModalBase {
                             if ($(modalIdSelector).length) {
                                 $(modalIdSelector).remove();
                             }
-                            $(modalHtml).appendTo($("body"));
+                            const $form = $("form");
+                            if ($form.length) {
+                                $(modalHtml).appendTo($form);
+                            }
+                            else {
+                                $(modalHtml).appendTo($("body"));
+                            }
                             this.setTitle(title);
                             this.showModal();
                         });
@@ -2001,8 +2012,6 @@ class SearchBoxListener {
                 },
                 onSelect: function (item) {
                     const hiddenSearchBox = document.querySelector(jjSearchBoxHiddenSelector);
-                    console.log("pan");
-                    console.log(item.value);
                     if (hiddenSearchBox)
                         hiddenSearchBox.value = item.value;
                     if (item.value != "") {
