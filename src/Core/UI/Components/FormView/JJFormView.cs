@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
@@ -77,6 +76,7 @@ public class JJFormView : AsyncComponent
     private PageState? _panelState;
     private IDictionary<string, object> _relationValues = new Dictionary<string, object>();
     private RouteContext? _routeContext;
+    private FormStateData? _formStateData;
 
     #endregion
 
@@ -1372,16 +1372,20 @@ public class JJFormView : AsyncComponent
 
     public async Task<FormStateData> GetFormStateDataAsync()
     {
-        var values =
-            await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues,PageState),
-                CurrentContext.Request.Form.ContainsFormValues());
+        if (_formStateData != null)
+            return _formStateData;
+
+        var tempFormData = new FormStateData(new Dictionary<string, object?>(), UserValues, PageState);
+        var autoReloadFormFields = CurrentContext.Request.Form.ContainsFormValues();
+        var values = await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, tempFormData, autoReloadFormFields);
 
         if (!values.Any())
         {
             values = DataPanel.Values as Dictionary<string,object?>;
         }
 
-        return new FormStateData(values ?? new Dictionary<string, object?>(), UserValues, PageState);
+        _formStateData = new FormStateData(values ?? new Dictionary<string, object?>(), UserValues, PageState);
+        return _formStateData;
     }
 
     public IDictionary<string, object> GetRelationValuesFromForm()

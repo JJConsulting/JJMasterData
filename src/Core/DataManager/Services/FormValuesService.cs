@@ -33,7 +33,7 @@ public class FormValuesService(
     private IQueryString QueryString { get; } = queryString;
     private IFormValues FormValues { get; } = httpFormValues;
 
-    public async Task<IDictionary<string, object?>> GetFormValuesAsync(FormElement formElement, PageState pageState,
+    public IDictionary<string, object?> GetFormValues(FormElement formElement, PageState pageState,
         string? fieldPrefix = null)
     {
         if (formElement == null)
@@ -53,17 +53,6 @@ public class FormValuesService(
 #endif
             switch (field.Component)
             {
-                case FormComponent.Search:
-                    {
-                        var formData = new FormStateData(values, pageState);
-                        value = await DataItemService.GetSelectedValueAsync(field, formData);
-                        break;
-                    }
-                case FormComponent.Lookup:
-                    {
-                        value = LookupService.GetSelectedValue(fieldName);
-                        break;
-                    }
                 case FormComponent.Date when field.DataType is FieldType.DateTime or FieldType.DateTime2:
                 case FormComponent.DateTime when field.DataType is FieldType.DateTime or FieldType.DateTime2:
                     if (value is not null && !string.IsNullOrEmpty(value.ToString()))
@@ -87,7 +76,6 @@ public class FormValuesService(
 
             if(value is not null)
                 values.Add(field.Name, value);
-            
         }
 
         return values;
@@ -125,7 +113,7 @@ public class FormValuesService(
         
         if (FormValues.ContainsFormValues() && autoReloadFormFields)
         {
-            var formValues = await GetFormValuesAsync(formElement, formStateData.PageState, prefix);
+            var formValues = GetFormValues(formElement, formStateData.PageState, prefix);
             DataHelper.CopyIntoDictionary(formStateData.Values, formValues, true);
         }
         
