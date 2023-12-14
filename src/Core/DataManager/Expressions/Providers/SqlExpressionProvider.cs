@@ -54,7 +54,7 @@ public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncE
         return value switch
         {
             int => DbType.Int32,
-            float or decimal or double => DbType.Decimal,
+            float or decimal or double => DbType.Double,
             string => DbType.String,
             DateTime => DbType.DateTime,
             bool => DbType.Boolean,
