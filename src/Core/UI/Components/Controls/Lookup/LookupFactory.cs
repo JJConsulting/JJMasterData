@@ -1,4 +1,3 @@
-using System;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http;
@@ -23,13 +22,17 @@ internal class LookupFactory(IFormValues formValues,
 
     public JJLookup Create()
     {
-        throw new InvalidOperationException("JJLookup must be instantiated with a FormElement and FormElementField.");
+        return new JJLookup(
+            null,
+            null,
+            FormValues,
+            LookupService,
+            ComponentFactory);
     }
 
     public JJLookup Create(FormElement formElement, FormElementField field, ControlContext controlContext)
     {
         var lookup = new JJLookup(
-            formElement,
             field,
             controlContext,
             FormValues,

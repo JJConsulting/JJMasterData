@@ -32,7 +32,7 @@ public class LookupService(IFormValues formValues,
     private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
 
 
-    public string GetFormViewUrl(DataElementMap elementMap, FormStateData formStateData, string componentName)
+    public string GetFormViewUrl(DataElementMap elementMap, FormStateData? formStateData, string componentName)
     {
         var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.FieldId,elementMap.FieldDescription,
             elementMap.EnableElementActions, elementMap.Filters);
@@ -43,7 +43,7 @@ public class LookupService(IFormValues formValues,
         return UrlHelper.GetUrl("Index", "Lookup", "MasterData",new { lookupParameters = encryptedLookupParameters });
     }
 
-    public string GetDescriptionUrl(string elementName, string fieldName, string componentName, PageState pageState)
+    public string GetDescriptionUrl(string elementName, string fieldName, string componentName, PageState? pageState)
     {
         return UrlHelper.GetUrl("GetDescription", "Lookup","MasterData", 
             new
@@ -57,7 +57,7 @@ public class LookupService(IFormValues formValues,
 
     public async Task<string?> GetDescriptionAsync(
         DataElementMap elementMap,
-        FormStateData formStateData,
+        FormStateData? formStateData,
         object? value,
         bool allowOnlyNumbers)
     {

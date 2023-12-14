@@ -25,7 +25,7 @@ internal class GridFilter(JJGridView gridView)
     internal const string FilterFieldPrefix = "filter_";
 
     private IDictionary<string, object> _currentFilter = new Dictionary<string,object>();
-    private JJGridView GridView { get; set; } = gridView;
+    private JJGridView GridView { get; } = gridView;
 
     private IHttpContext CurrentContext => GridView.CurrentContext;
     private IStringLocalizer<MasterDataResources> StringLocalizer => GridView.StringLocalizer;
