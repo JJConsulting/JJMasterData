@@ -39,7 +39,7 @@ function listenExpressionType(name, hintList, isBoolean) {
             textArea.setAttribute('class', 'form-control');
             textArea.innerText = expressionValueInput.value;
             expressionValueEditor.innerHTML = textArea.outerHTML;
-            CodeMirrorWrapper.setupCodeMirror(name + '-ExpressionValue', { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
+            CodeMirrorWrapper.setupCodeMirror(name, { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
         }
     });
 }

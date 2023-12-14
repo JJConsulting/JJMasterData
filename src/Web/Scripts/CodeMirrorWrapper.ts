@@ -16,12 +16,12 @@ class CodeMirrorWrapper{
     }
     static setupCodeMirror(elementId: string, options: CodeMirrorWrapperOptions) {
         
-        const textArea = document.querySelector("#"+elementId);
+        const textArea = document.querySelector("#" + elementId + "-ExpressionValue");
         
         if(!textArea)
             return;
         
-        if(this.isCodeMirrorConfigured(elementId))
+        if (this.isCodeMirrorConfigured(elementId + "-ExpressionValue"))
             return;
         
         const codeMirrorTextArea = CodeMirror.fromTextArea(textArea, {
@@ -33,9 +33,10 @@ class CodeMirrorWrapper{
             autohint: true,
             extraKeys: { "Ctrl-Space": "autocomplete" }
         });
-        
-        if(options.singleLine){
-            codeMirrorTextArea.setSize(null, 45);
+
+        if (options.singleLine) {
+            codeMirrorTextArea.setSize(null, 29);
+           
             codeMirrorTextArea.on("beforeChange", function(instance, change) {
                const newText = change.text.join("").replace(/\n/g, "");
                change.update(change.from, change.to, [newText]);
@@ -65,6 +66,9 @@ class CodeMirrorWrapper{
         
         // ReSharper disable once TsNotResolved
         textArea.codeMirrorInstance = codeMirrorTextArea;
-        setTimeout(() => { codeMirrorTextArea.refresh() }, 250);
+        setTimeout(() => {
+            codeMirrorTextArea.refresh();
+        }, 250);
     }
+
 }

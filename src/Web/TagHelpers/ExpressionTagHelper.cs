@@ -182,7 +182,7 @@ public class ExpressionTagHelper : TagHelper
                     });
 
                     div.AppendScript(
-                        @$"onDOMReady(()=>{{CodeMirrorWrapper.setupCodeMirror('{name}-ExpressionValue',{{mode: 'text/x-sql',singleLine:true, hintList: {codeMirrorHintList}, hintKey: '{{'}});}})");
+                        @$"onDOMReady(()=>{{CodeMirrorWrapper.setupCodeMirror('{name}',{{mode: 'text/x-sql',singleLine:true, hintList: {codeMirrorHintList}, hintKey: '{{'}});}})");
                 }
             });
             return div;
