@@ -1489,7 +1489,7 @@ public class JJGridView : AsyncComponent
 
     public bool IsExportPost()
     {
-        return "export".Equals(CurrentContext.Request["dataExportationOperation"]) && Name.Equals(CurrentContext.Request["gridViewName"]);
+        return "startProcess".Equals(CurrentContext.Request["dataExportationOperation"]) && Name.Equals(CurrentContext.Request["gridViewName"]);
     }
 
     public ActionContext GetActionContext(BasicAction basicAction, FormStateData formStateData)
