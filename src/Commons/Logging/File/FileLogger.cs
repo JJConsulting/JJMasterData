@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
+
 namespace JJMasterData.Commons.Logging.File;
 
 internal class FileLogger : ILogger
@@ -46,14 +47,22 @@ internal class FileLogger : ILogger
         if (!IsEnabled(logLevel))
             return;
 
-        var message = new LogEntry<TState>(logLevel, eventId, state!, exception, formatter);
-        var record = GetLogRecord(message, _options.CurrentValue.Formatting);
-        _buffer.Enqueue(record.ToCharArray());
+        var message = GetMessage(logLevel, eventId, exception, formatter(state, exception));
+        var entry = new LogMessage
+        {
+            Created = DateTime.Now,
+            LogLevel = (int)logLevel,
+            Event = eventId.Name ?? string.Empty,
+            Message = message
+        };
+
+        _buffer.Enqueue(entry);
     }
-    
-    private static string GetLogRecord<TState>(LogEntry<TState> entry, FileLoggerFormatting formatting)
+
+    public string GetMessage(LogLevel logLevel, EventId eventId, Exception exception, string formatterMessage)
     {
         var log = new StringBuilder();
+        var formatting = _options.CurrentValue.Formatting;
 
         switch (formatting)
         {
@@ -61,45 +70,42 @@ internal class FileLogger : ILogger
 
                 log.Append(DateTime.Now);
                 log.Append(" ");
-                if (!string.IsNullOrWhiteSpace(entry.EventId.Name))
-                {
-                    log.AppendFormat(" [{0}] ", entry.EventId.Name);
-                }
 
                 log.Append("(");
-                log.Append(entry.LogLevel.ToString());
+                log.Append(logLevel.ToString());
                 log.AppendLine(")");
-                log.Append(entry.Formatter(entry.State, entry.Exception));
+                log.Append(formatterMessage);
                 log.AppendLine();
                 log.AppendLine();
                 break;
             case FileLoggerFormatting.Compact:
-            {
-                log.AppendFormat("{0:yyyy-MM-dd HH:mm:ss+00:00} -", DateTime.Now);
-                log.AppendFormat(" [{0}] ", entry.LogLevel);
-
-                if (!string.IsNullOrWhiteSpace(entry.EventId.Name))
                 {
-                    log.AppendFormat(" [{0}] ", entry.EventId.Name);
-                }
+                    log.AppendFormat("{0:yyyy-MM-dd HH:mm:ss+00:00} -", DateTime.Now);
+                    log.AppendFormat(" [{0}] ", logLevel);
 
-                log.AppendFormat(" {0} ", entry.Formatter(entry.State, entry.Exception));
+                    if (!string.IsNullOrWhiteSpace(eventId.Name))
+                    {
+                        log.AppendFormat(" [{0}] ", eventId.Name);
+                    }
 
-                if (entry.Exception != null)
-                {
-                    log.AppendLine(LoggerDecoration.GetMessage(entry.Exception));
+                    log.AppendFormat(" {0} ", formatterMessage);
+
+                    if (exception != null)
+                    {
+                        log.AppendLine(LoggerDecoration.GetMessageException(exception));
+                    }
+                    log.AppendLine();
+                    break;
                 }
-                log.AppendLine();
-                break;
-            }
             case FileLoggerFormatting.Json:
                 log.Append(
                     JsonConvert.SerializeObject(new
-                    {   Date = DateTime.Now,
-                        Event = entry.EventId.Name,
-                        entry.LogLevel,
-                        Message = entry.Formatter(entry.State, entry.Exception),
-                        entry.Exception
+                    {
+                        Date = DateTime.Now,
+                        Event = eventId.Name,
+                        logLevel,
+                        Message = formatterMessage,
+                        exception
                     }, new JsonSerializerSettings
                     {
                         NullValueHandling = NullValueHandling.Ignore,
@@ -113,4 +119,5 @@ internal class FileLogger : ILogger
 
         return log.ToString();
     }
+
 }

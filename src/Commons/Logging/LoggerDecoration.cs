@@ -8,7 +8,8 @@ namespace JJMasterData.Commons.Logging;
 
 internal static class LoggerDecoration
 {
-    public static string GetMessage(Exception exception)
+
+    public static string GetMessageException(Exception exception)
     {
         var message = new StringBuilder();
         message.Append("Message: ");

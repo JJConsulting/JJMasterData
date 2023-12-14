@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -20,17 +21,10 @@ internal class DbLoggerBackgroundService : LoggerBackgroundService<DbLoggerBuffe
         _options = optionsMonitor;
     }
 
-    protected override async Task LogAsync(char[] entry, CancellationToken cancellationToken)
+    protected override async Task LogAsync(LogMessage entry, CancellationToken cancellationToken)
     {
         var options = _options.CurrentValue;
-
-        var dbEntry = DbLogEntry.FromSeparatedString(new string(entry));
-
-        if (dbEntry is null)
-            return;
-        
-        var dbValues = dbEntry?.ToDictionary(options);
-        
+        var dbValues = GetDictionary(entry, options);
         var element = DbLoggerElement.GetInstance(options);
 
         using var scope = _serviceProvider.CreateScope();
@@ -47,4 +41,16 @@ internal class DbLoggerBackgroundService : LoggerBackgroundService<DbLoggerBuffe
     
         await entityRepository.InsertAsync(element, dbValues);
     }
+
+    private Dictionary<string, object> GetDictionary(LogMessage entry, DbLoggerOptions options)
+    {
+        return new Dictionary<string, object>
+        {
+            [options.CreatedColumnName] = entry.Created,
+            [options.LevelColumnName] = entry.LogLevel,
+            [options.EventColumnName] = entry.Event,
+            [options.MessageColumnName] = entry.Message,
+        };
+    }
+
 }
