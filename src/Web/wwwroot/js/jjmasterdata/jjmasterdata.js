@@ -2001,8 +2001,6 @@ class SearchBoxListener {
                 },
                 onSelect: function (item) {
                     const hiddenSearchBox = document.querySelector(jjSearchBoxHiddenSelector);
-                    console.log("pan");
-                    console.log(item.value);
                     if (hiddenSearchBox)
                         hiddenSearchBox.value = item.value;
                     if (item.value != "") {
