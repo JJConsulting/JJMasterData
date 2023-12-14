@@ -8,7 +8,7 @@ namespace JJMasterData.Core.UI.Components;
 
 internal class GridToolbar(JJGridView gridView)
 {
-    private JJGridView GridView { get; set; } = gridView;
+    private JJGridView GridView { get; } = gridView;
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {

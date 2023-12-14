@@ -64,21 +64,18 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
 
         switch (action)
         {
-            case UserCreatedAction userCreatedAction:
+            case UserCreatedAction:
                 button.OnClientClick = ActionScripts.GetUserActionScript(actionContext, ActionSource.GridTable);
                 break;
             case GridTableAction gridTableAction:
 
-                if (gridTableAction is EditAction editAction)
+                actionContext.IsModal = gridTableAction switch
                 {
-                    actionContext.IsModal = editAction.ShowAsModal;
-                }
-                
-                if (gridTableAction is ViewAction viewAction)
-                {
-                    actionContext.IsModal = viewAction.ShowAsModal;
-                }
-                
+                    EditAction editAction => editAction.ShowAsModal,
+                    ViewAction viewAction => viewAction.ShowAsModal,
+                    _ => actionContext.IsModal
+                };
+
                 button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.GridTable);
                 break;
             default:
@@ -94,7 +91,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
         var actionContext = gridView.GetActionContext(action, formStateData);
         var button = Create(action, formStateData);
 
-        if (action is UserCreatedAction userCreatedAction)
+        if (action is UserCreatedAction)
         {
             button.OnClientClick =  ActionScripts.GetUserActionScript(actionContext, ActionSource.GridToolbar);
             return button;

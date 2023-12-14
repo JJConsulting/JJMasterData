@@ -63,7 +63,7 @@ public abstract class DataExportationWriterBase(ExpressionsService expressionsSe
             else
             {
                 var defaultValues = new Dictionary<string, object>();
-                var formData = new FormStateData(defaultValues, PageState.Import);
+                var formData = new FormStateData(defaultValues, PageState.List);
                 _fields = new List<FormElementField>();
 
                 foreach (var field in FormElement.Fields)

@@ -1,4 +1,5 @@
-﻿using JJMasterData.Core.Http.Abstractions;
+﻿using JJMasterData.Commons.Util;
+using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.DataManager.Exportation.Configuration;
 
@@ -25,9 +26,9 @@ public class ExportOptions
         if (formValues[componentName + FileName] != null)
         {
             expConfig.FileExtension = (ExportFileExtension)int.Parse(formValues[componentName + FileName]);
-            expConfig.IsLandScape = "true".Equals(formValues[componentName + TableOrientation]);
-            expConfig.ExportFirstLine = "true".Equals(formValues[componentName + ExportTableFirstLine]);
-            expConfig.ExportAllFields = "true".Equals(formValues[componentName + ExportAll]);
+            expConfig.IsLandScape = StringManager.ParseBool(formValues[componentName + TableOrientation]);
+            expConfig.ExportFirstLine = StringManager.ParseBool(formValues[componentName + ExportTableFirstLine]);
+            expConfig.ExportAllFields = StringManager.ParseBool(formValues[componentName + ExportAll]);
             expConfig.Delimiter = formValues[componentName + ExportDelimiter];
         }
 
