@@ -271,10 +271,10 @@ class CodeMirrorWrapper {
         return textArea.codeMirrorInstance != null;
     }
     static setupCodeMirror(elementId, options) {
-        const textArea = document.querySelector("#" + elementId);
+        const textArea = document.querySelector("#" + elementId + "-ExpressionValue");
         if (!textArea)
             return;
-        if (this.isCodeMirrorConfigured(elementId))
+        if (this.isCodeMirrorConfigured(elementId + "-ExpressionValue"))
             return;
         const codeMirrorTextArea = CodeMirror.fromTextArea(textArea, {
             mode: options.mode,
@@ -286,7 +286,7 @@ class CodeMirrorWrapper {
             extraKeys: { "Ctrl-Space": "autocomplete" }
         });
         if (options.singleLine) {
-            codeMirrorTextArea.setSize(null, 45);
+            codeMirrorTextArea.setSize(null, 29);
             codeMirrorTextArea.on("beforeChange", function (instance, change) {
                 const newText = change.text.join("").replace(/\n/g, "");
                 change.update(change.from, change.to, [newText]);
@@ -310,7 +310,9 @@ class CodeMirrorWrapper {
             }
         });
         textArea.codeMirrorInstance = codeMirrorTextArea;
-        setTimeout(() => { codeMirrorTextArea.refresh(); }, 250);
+        setTimeout(() => {
+            codeMirrorTextArea.refresh();
+        }, 250);
     }
 }
 class CollapsePanelListener {
@@ -877,7 +879,7 @@ function listenExpressionType(name, hintList, isBoolean) {
             textArea.setAttribute('class', 'form-control');
             textArea.innerText = expressionValueInput.value;
             expressionValueEditor.innerHTML = textArea.outerHTML;
-            CodeMirrorWrapper.setupCodeMirror(name + '-ExpressionValue', { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
+            CodeMirrorWrapper.setupCodeMirror(name, { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
         }
     });
 }
