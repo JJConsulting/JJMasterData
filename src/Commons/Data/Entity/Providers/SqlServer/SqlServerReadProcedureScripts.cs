@@ -1,20 +1,23 @@
-﻿using System;
+﻿using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Commons.Data.Entity.Models;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data.Entity.Models;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerReadProcedureScripts : SqlServerScriptsBase
 {
     private MasterDataCommonsOptions Options { get; }
+    public SqlServerInfo SqlServerInfo { get; }
 
-    public SqlServerReadProcedureScripts(IOptions<MasterDataCommonsOptions> options)
+    public SqlServerReadProcedureScripts(IOptions<MasterDataCommonsOptions> options,
+                                         SqlServerInfo sqlServerInfo)
     {
         Options = options.Value;
+        SqlServerInfo = sqlServerInfo;
     }
     
     public string GetReadProcedureScript(Element element)
@@ -45,7 +48,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         return sql.ToString();
     }
 
-    internal static string GetReadScript(Element element, List<ElementField> fields)
+    internal string GetReadScript(Element element, List<ElementField> fields)
     {
         var sql = new StringBuilder();
         sql.Append(Tab);
@@ -182,20 +185,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
                     sql.Append($" LIKE  ''%'' + @{field.Name} + ''%'' '");
                     break;
                 case FilterMode.MultValuesContain:
-                    sql.AppendLine();
-                    sql.Append(Tab);
-                    sql.Append("IF @");
-                    sql.Append(field.Name);
-                    sql.AppendLine(" IS NOT NULL");
-                    sql.Append(Tab,2);
-                    sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
-                    sql.Append($"""
-                                       EXISTS (
-                                           SELECT 1
-                                           FROM STRING_SPLIT(@{field.Name}, '','') AS s
-                                           WHERE {field.Name} LIKE ''%'' + s.value + ''%''
-                                        )'
-                               """);
+                    sql.Append(GetFilterMultValuesContains(field.Name));
                     break;
                 case FilterMode.MultValuesEqual:
                     sql.AppendLine();
@@ -452,6 +442,60 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         }
 
         return sql.ToString();
+    }
+
+    private string GetFilterMultValuesContains(string fieldName)
+    {
+        var sql = new StringBuilder();
+        sql.AppendLine();
+        sql.Append(Tab);
+        sql.Append("IF @");
+        sql.Append(fieldName);
+        sql.AppendLine(" IS NOT NULL");
+        sql.Append(Tab);
+        sql.AppendLine("BEGIN");
+        sql.Append(Tab, 2);
+        sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
+
+        if (SqlServerInfo.GetCompatibilityLevel() >= 130)
+        { 
+            sql.Append($"""
+                                       EXISTS (
+                                           SELECT 1
+                                           FROM STRING_SPLIT(@{fieldName}, '','') AS s
+                                           WHERE {fieldName} LIKE ''%'' + s.value + ''%''
+                                        )'
+                               """);
+        }
+        else
+        {
+            sql.AppendLine(" ( '");
+            sql.Append(Tab, 2);
+            sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", fieldName);
+            sql.AppendLine("");
+            sql.Append(Tab, 2);
+            sql.AppendLine("BEGIN");
+            sql.Append(Tab, 3);
+            sql.AppendFormat("SET @likein = @likein + '{0} LIKE ' + CHAR(39) + '%' + SUBSTRING(@{0}, 1, CHARINDEX(',', @{0}) -1) + '%' + CHAR(39);", fieldName);
+            sql.AppendLine("");
+            sql.Append(Tab, 3);
+            sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", fieldName);
+            sql.AppendLine("");
+            sql.Append(Tab, 3);
+            sql.AppendLine("SET @likein = @likein + ' OR ';");
+            sql.Append(Tab, 2);
+            sql.AppendLine("END");
+            sql.Append(Tab, 2);
+            sql.AppendFormat("SET @likein = @likein  + '{0} LIKE ' + CHAR(39) + '%' + @{0} + '%' + CHAR(39) + ' ) '", fieldName);
+            sql.AppendLine("");
+            sql.Append(Tab, 2);
+        }
+
+        sql.Append(Tab);
+        sql.AppendLine("END");
+
+        return sql.ToString();
+
     }
 
 }

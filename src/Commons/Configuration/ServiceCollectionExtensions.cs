@@ -75,7 +75,8 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<DataAccess>();
-        
+        services.AddScoped<SqlServerInfo>();
+
         services.AddTransient<SqlServerReadProcedureScripts>();
         services.AddTransient<SqlServerWriteProcedureScripts>();
         services.AddTransient<SqlServerScripts>();

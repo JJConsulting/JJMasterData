@@ -38,12 +38,11 @@ public class SqlServerScripts
 
     public string GetReadScript(Element element)
     {
-
         var fields = element.Fields
             .ToList()
             .FindAll(f => f.DataBehavior is FieldBehavior.Real);
         
-        return SqlServerReadProcedureScripts.GetReadScript(element, fields);
+        return ReadProcedureScripts.GetReadScript(element, fields);
     }
     
     public static string GetCreateTableScript(Element element)
