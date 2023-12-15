@@ -66,10 +66,13 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder AppendDiv(Action<HtmlBuilder>? builderAction = null)
     {
-        var div = new HtmlBuilder(HtmlTag.Div);
-        builderAction?.Invoke(div);
-        Append(div);
-        return this;
+        return Append(HtmlTag.Div, builderAction);
+    }
+    
+    
+    public HtmlBuilder AppendSpan(Action<HtmlBuilder>? builderAction = null)
+    {
+        return Append(HtmlTag.Span, builderAction);
     }
     
     public HtmlBuilder AppendLink(string text, string link)
@@ -228,4 +231,5 @@ public partial class HtmlBuilder
 
         return this;
     }
+
 }

@@ -197,6 +197,14 @@ public class JJLookup : ControlBase
         
         if (!string.IsNullOrEmpty(ElementMap!.FieldDescription))
         {
+            if (BootstrapHelper.Version == 3)
+            {
+                div.AppendSpan(span =>
+                {
+                    span.WithCssClass("input-group-btn");
+                    span.WithAttribute("style", "width:0px;");
+                });
+            }
             idTextBox.Attributes["style"] = "flex:2";
 
             var descriptionTextBox = ComponentFactory.Controls.TextBox.Create();
@@ -215,15 +223,28 @@ public class JJLookup : ControlBase
         }
 
         var formViewUrl = LookupService.GetFormViewUrl(ElementMap, FormStateData, Name);
-
+        
         var button = ComponentFactory.Html.LinkButton.Create();
         button.Name = $"btn_{Name}";
         button.Enabled = Enabled;
         button.ShowAsButton = true;
         button.OnClientClick = $"""defaultModal.showIframe('{formViewUrl}', '{ModalTitle}', '{(int)ModalSize}')""";
         button.IconClass = "fa fa-search";
+
+        if (BootstrapHelper.Version == 3)
+        {
+            div.AppendDiv(div =>
+            {
+                div.WithCssClass("input-group-btn");
+                div.AppendComponent(button);
+            });
+        }
+        else
+        {
+            div.AppendComponent(button);
+        }       
+
         
-        div.AppendComponent(button);
         return div;
     }
 
