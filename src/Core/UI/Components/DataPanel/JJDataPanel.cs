@@ -171,6 +171,8 @@ public class JJDataPanel : AsyncComponent
                 return await GetFieldResultAsync<JJTextFile>();
             case ComponentContext.SearchBox:
                 return await GetFieldResultAsync<JJSearchBox>();
+            case ComponentContext.LookupDescription:
+                return await GetFieldResultAsync<JJLookup>();
             case ComponentContext.DownloadFile:
                 return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
             case ComponentContext.DataPanelReload:

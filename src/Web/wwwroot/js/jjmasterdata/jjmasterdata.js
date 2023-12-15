@@ -1377,7 +1377,10 @@ class LookupListener {
         const lookupInputs = document.querySelectorAll(selectorPrefix + "input.jj-lookup");
         lookupInputs.forEach(lookupInput => {
             let lookupId = lookupInput.id;
-            let lookupDescriptionUrl = lookupInput.getAttribute("lookup-description-url");
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", lookupInput.getAttribute("route-context"));
+            urlBuilder.addQueryParameter("fieldName", lookupInput.getAttribute("lookup-field-name"));
+            const lookupDescriptionUrl = urlBuilder.build();
             const lookupIdSelector = "#" + lookupId;
             const lookupDescriptionSelector = lookupIdSelector + "-description";
             const lookupIdInput = document.querySelector(lookupIdSelector);

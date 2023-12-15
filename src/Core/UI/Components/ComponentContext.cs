@@ -51,5 +51,6 @@ public enum ComponentContext
     
     AuditLogView,
 
-    InsertSelection
+    InsertSelection,
+    LookupDescription
 }
