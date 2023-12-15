@@ -2441,20 +2441,14 @@ var jjutil = (function () {
                 return false;
         },
         gotoNextFocus: function (currentId) {
-            var self = $("#" + currentId);
-            var form = self.parents("form:eq(0)");
-            var focusable = form.find("input,a.btn,select,button[type=submit]").filter(":visible");
-            var next = focusable.eq(focusable.index(self) + 1);
-            if (next.length) {
-                if (next.is(":disabled")) {
-                    for (let i = 2; i < 1000; i++) {
-                        next = focusable.eq(focusable.index(self) + i);
-                        if (!next.is(":disabled") && next.is(":visible"))
-                            break;
-                    }
-                }
-                next.focus();
-                next.select();
+            const element = document.getElementById(currentId);
+            if (element) {
+                const focusableElements = document.querySelectorAll('input:not([disabled]):not([type="hidden"]), select:not([disabled]), button:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]):not([hidden])');
+                const currentIndex = Array.from(focusableElements).indexOf(element);
+                const nextIndex = (currentIndex + 1) % focusableElements.length;
+                const nextElement = focusableElements[nextIndex];
+                nextElement.focus();
+                console.log(nextElement.id);
             }
         },
         replaceEntertoTab: function (objid) {

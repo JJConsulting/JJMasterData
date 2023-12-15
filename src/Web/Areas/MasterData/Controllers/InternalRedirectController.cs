@@ -31,11 +31,6 @@ public class InternalRedirectController(IComponentFactory componentFactory, IEnc
             {
                 var formView = await componentFactory.FormView.CreateAsync(_elementName);
 
-                var result = await formView.GetResultAsync();
-
-                if (result is IActionResult actionResult)
-                    return actionResult;
-
                 formView.RelationValues = RelationValues;
 
                 if (userId != null)
@@ -43,6 +38,11 @@ public class InternalRedirectController(IComponentFactory componentFactory, IEnc
                     formView.SetUserValues("USERID", userId);
                     formView.GridView.SetCurrentFilter("USERID", userId);
                 }
+                
+                var result = await formView.GetResultAsync();
+
+                if (result is IActionResult actionResult)
+                    return actionResult;
 
                 model = new(formView.FormElement.Title ?? formView.Name,result.Content!, false);
                 break;
