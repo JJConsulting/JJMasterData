@@ -11,8 +11,8 @@ namespace JJMasterData.Core.UI.Components;
 
 internal class GridPagination(JJGridView gridView)
 {
-    private JJGridView GridView { get;  } = gridView;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get;  } = gridView.StringLocalizer;
+    private JJGridView GridView { get; } = gridView;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = gridView.StringLocalizer;
     private int _totalPages;
     private int _totalButtons;
     private int _startButtonIndex;
@@ -20,7 +20,7 @@ internal class GridPagination(JJGridView gridView)
 
     public HtmlBuilder GetHtmlBuilder()
     {
-        _totalPages = (int)Math.Ceiling(GridView.TotalOfRecords  / (double)GridView.CurrentSettings.RecordsPerPage);
+        _totalPages = (int)Math.Ceiling(GridView.TotalOfRecords / (double)GridView.CurrentSettings.RecordsPerPage);
         _totalButtons = GridView.CurrentSettings.TotalPaginationButtons;
         _startButtonIndex = (int)Math.Floor((GridView.CurrentPage - 1) / (double)_totalButtons) * _totalButtons + 1;
         _endButtonIndex = _startButtonIndex + _totalButtons;
@@ -74,12 +74,12 @@ internal class GridPagination(JJGridView gridView)
         }
 
         var showJumpToPage = _endButtonIndex <= _totalPages || _startButtonIndex > _totalButtons;
-        
+
         if (showJumpToPage && BootstrapHelper.Version >= 5)
         {
             ul.AppendRange(GetJumpToPageButtons());
         }
-        
+
         return ul;
     }
 
@@ -87,14 +87,14 @@ internal class GridPagination(JJGridView gridView)
     {
         var jumpToPageName = GridView.Name + "-jump-to-page-input";
         var textBox = GridView.ComponentFactory.Controls.TextGroup.Create();
-        
+
         textBox.Name = jumpToPageName;
         textBox.MinValue = 1;
         textBox.MaxValue = _totalPages;
         textBox.InputType = InputType.Number;
-        
+
         textBox.Attributes["style"] = "display:none;width:150px";
-        
+
         textBox.Attributes["onfocusout"] = GridView.Scripts.GetJumpToPageScript();
         textBox.PlaceHolder = StringLocalizer["Jump to page..."];
         textBox.CssClass += " pagination-jump-to-page-input";
@@ -120,7 +120,7 @@ internal class GridPagination(JJGridView gridView)
                 OnClientClick = $"GridViewHelper.showJumpToPage('{jumpToPageName}')"
             }.GetHtmlBuilder());
     }
-    
+
     private HtmlBuilder GetPageButton(int page, IconType? icon = null, string? tooltip = null)
     {
         var li = new HtmlBuilder(HtmlTag.Li)
@@ -149,13 +149,13 @@ internal class GridPagination(JJGridView gridView)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass($"col-sm-3 {BootstrapHelper.TextRight}");
-        div.Append(HtmlTag.Span, label =>
+        div.Append(HtmlTag.Label, label =>
         {
             label.WithAttribute("id", $"infotext_{GridView.Name}");
             label.WithCssClass("small");
             label.AppendText(StringLocalizer["Showing"]);
             label.AppendText(" ");
-            
+
             if (_totalPages <= 1)
             {
                 label.Append(HtmlTag.Span, span =>
@@ -186,8 +186,8 @@ internal class GridPagination(JJGridView gridView)
 
             label.Append(HtmlTag.Br);
 
-            if(_endButtonIndex <= _totalPages)
-                label.AppendText(StringLocalizer["{0} pages",_totalPages]);
+            if (_endButtonIndex <= _totalPages)
+                label.AppendText(StringLocalizer["{0} pages", _totalPages]);
         });
 
         div.AppendIf(GridView.EnableMultiSelect, HtmlTag.Br);

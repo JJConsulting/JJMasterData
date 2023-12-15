@@ -21,8 +21,9 @@ internal class DataPanelControl
 {
 
     private DataPanelScripts? _panelScripts;
+    private bool _isViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
 
-    
+
     public string ParentComponentName { get; }
 
     public string Name { get; }
@@ -46,12 +47,8 @@ internal class DataPanelControl
     public string? FieldNamePrefix { get; init; }
 
 
-    private bool IsViewModeAsStatic => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
-    
-    private bool IsSummaryMode => PageState == PageState.View && FormUI.ShowViewModeAsStatic;
-    
+    internal FieldsService FieldsService { get; }
     internal ExpressionsService ExpressionsService { get; }
-    private FieldsService FieldsService { get; }
     internal IEncryptionService EncryptionService { get; }
     internal DataPanelScripts Scripts => _panelScripts ??= new DataPanelScripts(this);
 
@@ -170,7 +167,7 @@ internal class DataPanelControl
                 htmlField.AppendComponent(label);
             }
                 
-            if (IsViewModeAsStatic)
+            if (_isViewModeAsStatic)
                 htmlField.Append(await GetStaticField(field));
             else
                 htmlField.Append(await GetControlFieldHtml(field, value));
@@ -269,7 +266,7 @@ internal class DataPanelControl
             else if (f.Component == FormComponent.CheckBox)
             {
                 colCount = 1;
-                if (!IsViewModeAsStatic)
+                if (!_isViewModeAsStatic)
                     label.Text = string.Empty;
             }
             else
@@ -289,7 +286,7 @@ internal class DataPanelControl
                 await row?.AppendAsync(HtmlTag.Div, async col =>
                 {
                     col.WithCssClass(colClass);
-                    col.Append(IsViewModeAsStatic ? await GetStaticField(f) : await GetControlFieldHtml(f, value));
+                    col.Append(_isViewModeAsStatic ? await GetStaticField(f) : await GetControlFieldHtml(f, value));
                 })!;
             }
         }
@@ -307,7 +304,7 @@ internal class DataPanelControl
         var label = ComponentFactory.Html.Label.Create(field);
         label.LabelFor = FieldNamePrefix + field.Name;
 
-        if (IsViewModeAsStatic)
+        if (_isViewModeAsStatic)
             label.LabelFor = null;
         else if (isRange)
             label.LabelFor += "_from";
