@@ -1311,7 +1311,7 @@ document.addEventListener("DOMContentLoaded", function () {
 const listenAllEvents = (selectorPrefix = String()) => {
     selectorPrefix += " ";
     $(selectorPrefix + ".selectpicker").selectpicker({
-        iconBase: 'fa'
+        iconBase: bootstrapVersion === 5 ? 'fa' : 'glyphicon'
     });
     if (bootstrapVersion === 3) {
         $(selectorPrefix + "input[type=checkbox][data-toggle^=toggle]").bootstrapToggle();
@@ -1427,7 +1427,7 @@ class MessageBox {
         $(MessageBox.jQueryModalContentId).html(content);
     }
     static showModal() {
-        if (MessageBox.bootstrapVersion < 5) {
+        if (bootstrapVersion < 5) {
             $(MessageBox.jQueryModalId)
                 .modal()
                 .on("shown.bs.modal", function () {
@@ -1473,14 +1473,14 @@ class MessageBox {
         html += "\" role=\"document\">\r\n";
         html += "    <div class=\"modal-content\">\r\n";
         html += "      <div class=\"modal-header\">\r\n";
-        if (MessageBox.bootstrapVersion >= 4) {
+        if (bootstrapVersion >= 4) {
             html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
         }
-        else if (MessageBox.bootstrapVersion >= 5) {
+        else if (bootstrapVersion >= 5) {
             html +=
                 '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
         }
-        else if (MessageBox.bootstrapVersion == 3) {
+        else if (bootstrapVersion == 3) {
             html +=
                 '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
         }
@@ -1521,11 +1521,11 @@ class MessageBox {
         html += "        </table>\r\n";
         html += "      </div>\r\n";
         html += "      <div class=\"modal-footer\">\r\n";
-        if (MessageBox.bootstrapVersion == 3) {
+        if (bootstrapVersion == 3) {
             html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-dismiss="modal"></button>\r\n';
             html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-dismiss="modal"></button>\r\n';
         }
-        else if (MessageBox.bootstrapVersion == 4) {
+        else if (bootstrapVersion == 4) {
             html += '        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-dismiss="modal"></button>\r\n';
             html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-dismiss="modal"></button>\r\n';
         }
@@ -1570,7 +1570,6 @@ MessageBox.jQueryModalButton1Id = "#site-modal-btn1";
 MessageBox.jQueryModalButton2Id = "#site-modal-btn2";
 MessageBox.modalId = MessageBox.jQueryModalId.substring(1);
 MessageBox.button1Id = MessageBox.jQueryModalButton1Id.substring(1);
-MessageBox.bootstrapVersion = 5;
 const messageBox = MessageBox;
 var ModalSize;
 (function (ModalSize) {
@@ -1770,7 +1769,13 @@ class _LegacyModal extends ModalBase {
         if ($(modalIdSelector).length) {
             $(modalIdSelector).remove();
         }
-        $(modalHtml).appendTo($("body"));
+        const $form = $("form");
+        if ($form.length) {
+            $(modalHtml).appendTo($form);
+        }
+        else {
+            $(modalHtml).appendTo($("body"));
+        }
         this.setTitle(title);
         this.showModal();
     }
@@ -1803,7 +1808,13 @@ class _LegacyModal extends ModalBase {
                             if ($(modalIdSelector).length) {
                                 $(modalIdSelector).remove();
                             }
-                            $(modalHtml).appendTo($("body"));
+                            const $form = $("form");
+                            if ($form.length) {
+                                $(modalHtml).appendTo($form);
+                            }
+                            else {
+                                $(modalHtml).appendTo($("body"));
+                            }
                             this.setTitle(title);
                             this.showModal();
                         });

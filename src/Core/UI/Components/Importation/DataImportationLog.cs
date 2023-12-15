@@ -139,7 +139,11 @@ internal class DataImportationLog
                 .AppendText("&nbsp;")
                 .AppendText(Reporter.UserId.ToString(CultureInfo.CurrentCulture));
         }
-        
+
+        panel.HtmlBuilderContent
+              .Append(HtmlTag.Br)
+              .AppendText(Reporter.ErrorLog.ToString().Replace("\r\n", "<br>"));
+
         return panel.BuildHtml();
     }
 
