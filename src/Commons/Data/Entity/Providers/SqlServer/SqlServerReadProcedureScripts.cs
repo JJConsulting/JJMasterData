@@ -11,7 +11,7 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 public class SqlServerReadProcedureScripts : SqlServerScriptsBase
 {
     private MasterDataCommonsOptions Options { get; }
-    public SqlServerInfo SqlServerInfo { get; }
+    private SqlServerInfo SqlServerInfo { get; }
 
     public SqlServerReadProcedureScripts(IOptions<MasterDataCommonsOptions> options,
                                          SqlServerInfo sqlServerInfo)
@@ -35,7 +35,16 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         var sql = new StringBuilder();
         string procedureFinalName = Options.GetReadProcedureName(element);
 
-        sql.Append("CREATE OR ALTER PROCEDURE [");
+        if (SqlServerInfo.GetCompatibilityLevel() >= 130)
+        {
+            sql.Append("CREATE OR ALTER PROCEDURE [");
+        }
+        else
+        {
+            sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
+            sql.Append("CREATE PROCEDURE [");
+        }
+
         sql.Append(procedureFinalName);
         sql.AppendLine("] ");
         sql.AppendLine("@orderby VARCHAR(MAX), ");
@@ -454,11 +463,12 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         sql.AppendLine(" IS NOT NULL");
         sql.Append(Tab);
         sql.AppendLine("BEGIN");
-        sql.Append(Tab, 2);
-        sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
+        
 
         if (SqlServerInfo.GetCompatibilityLevel() >= 130)
-        { 
+        {
+            sql.Append(Tab, 2);
+            sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
             sql.Append($"""
                                        EXISTS (
                                            SELECT 1
@@ -469,7 +479,10 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
         }
         else
         {
-            sql.AppendLine(" ( '");
+            sql.Append(Tab, 2);
+            sql.AppendLine("DECLARE @likein      NVARCHAR(MAX)");
+            sql.Append(Tab, 2);
+            sql.AppendLine("SET @likein = ' AND ( '");
             sql.Append(Tab, 2);
             sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", fieldName);
             sql.AppendLine("");
@@ -489,6 +502,7 @@ public class SqlServerReadProcedureScripts : SqlServerScriptsBase
             sql.AppendFormat("SET @likein = @likein  + '{0} LIKE ' + CHAR(39) + '%' + @{0} + '%' + CHAR(39) + ' ) '", fieldName);
             sql.AppendLine("");
             sql.Append(Tab, 2);
+            sql.AppendLine("SET @sqlWhere = @sqlWhere + @likein");
         }
 
         sql.Append(Tab);

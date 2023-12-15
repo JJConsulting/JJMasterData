@@ -33,7 +33,7 @@ public class SqlServerScripts
         var fields = element.Fields
             .ToList()
             .FindAll(x => x.DataBehavior is FieldBehavior.Real);
-        return SqlServerWriteProcedureScripts.GetWriteScript(element, fields);
+        return WriteProcedureScripts.GetWriteScript(element, fields);
     }
 
     public string GetReadScript(Element element)

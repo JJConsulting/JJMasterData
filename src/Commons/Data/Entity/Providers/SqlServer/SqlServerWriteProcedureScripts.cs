@@ -1,10 +1,10 @@
-﻿using System;
+﻿using JJMasterData.Commons.Configuration.Options;
+using JJMasterData.Commons.Data.Entity.Models;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JJMasterData.Commons.Configuration.Options;
-using JJMasterData.Commons.Data.Entity.Models;
-using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
@@ -14,14 +14,16 @@ public class SqlServerWriteProcedureScripts : SqlServerScriptsBase
     private const string UpdateInitial = "A";
     private const string DeleteInitial = "E";
     private MasterDataCommonsOptions Options { get; }
+    private SqlServerInfo SqlServerInfo { get; }
 
-    public SqlServerWriteProcedureScripts(IOptions<MasterDataCommonsOptions> options)
+    public SqlServerWriteProcedureScripts(IOptions<MasterDataCommonsOptions> options,
+                                          SqlServerInfo sqlServerInfo)
     {
         Options = options.Value;
+        SqlServerInfo = sqlServerInfo;
     }
 
     public string GetWriteProcedureScript(Element element)
-
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -30,10 +32,18 @@ public class SqlServerWriteProcedureScripts : SqlServerScriptsBase
             throw new ArgumentNullException(nameof(Element.Fields));
 
         var sql = new StringBuilder();
-        
         string procedureFinalName = Options.GetWriteProcedureName(element);
 
-        sql.Append("CREATE OR ALTER PROCEDURE [");
+        if (SqlServerInfo.GetCompatibilityLevel() >= 130)
+        {
+            sql.Append("CREATE OR ALTER PROCEDURE [");
+        }
+        else
+        {
+            sql.AppendLine(GetSqlDropIfExists(procedureFinalName));
+            sql.Append("CREATE PROCEDURE [");
+        }
+
         sql.Append(procedureFinalName);
         sql.AppendLine("] ");
         sql.AppendLine("@action varchar(1), ");
@@ -73,7 +83,7 @@ public class SqlServerWriteProcedureScripts : SqlServerScriptsBase
         return sql.ToString();
     }
 
-    internal static string GetWriteScript(Element element, IReadOnlyCollection<ElementField> fields)
+    internal string GetWriteScript(Element element, IReadOnlyCollection<ElementField> fields)
     {
         var sql = new StringBuilder();
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
@@ -319,4 +329,5 @@ public class SqlServerWriteProcedureScripts : SqlServerScriptsBase
     {
         return element.Fields.Any(f => !f.IsPk && f.DataBehavior == FieldBehavior.Real);
     }
+
 }

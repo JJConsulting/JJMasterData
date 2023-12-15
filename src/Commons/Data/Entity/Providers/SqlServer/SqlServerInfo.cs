@@ -2,51 +2,50 @@
 
 public class SqlServerInfo
 {
-    private readonly DataAccess dataAccess;
-    private static int majorVersion;
-    private static int compatibilityLevel;
+    private readonly DataAccess _dataAccess;
+    private static int _majorVersion;
+    private static int _compatibilityLevel;
 
     public SqlServerInfo(DataAccess dataAccess)
     {
-        this.dataAccess = dataAccess;
+        this._dataAccess = dataAccess;
     }
 
     public int GetMajorVersion()
     {
-        if (majorVersion > 0)
-            return majorVersion;
+        if (_majorVersion > 0)
+            return _majorVersion;
 
         try
         {
-            var ret = dataAccess.GetResult("SELECT SERVERPROPERTY('productversion')");
+            var ret = _dataAccess.GetResult("SELECT SERVERPROPERTY('productversion')");
             var version = ret.ToString().Split('.')[0];
-            majorVersion = int.Parse(version);
+            _majorVersion = int.Parse(version);
         }
         catch
         {
-            majorVersion = 1;
+            _majorVersion = 1;
         }
 
-        return majorVersion;
+        return _majorVersion;
     }
 
     public int GetCompatibilityLevel()
     {
-        if (compatibilityLevel > 0)
-            return compatibilityLevel;
+        if (_compatibilityLevel > 0)
+            return _compatibilityLevel;
 
         try
         {
-            var ret = dataAccess.GetResult("select compatibility_level from sys.databases where name = DB_NAME()");
-            var version = ret.ToString();
-            compatibilityLevel = int.Parse(version);
+            var ret = _dataAccess.GetResult("select compatibility_level from sys.databases where name = DB_NAME()");
+            _compatibilityLevel = int.Parse(ret.ToString());
         }
         catch
         {
-            compatibilityLevel = 100;
+            _compatibilityLevel = 100;
         }
 
-        return compatibilityLevel;
+        return _compatibilityLevel;
     }
 }
 
