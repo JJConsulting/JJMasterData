@@ -148,10 +148,10 @@
         urlBuilder.addQueryParameter("routeContext", routeContext);
 
         DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
-
+        const requestOptions = getRequestOptions();
         DataImportationModal.getInstance().showUrl({
             url: urlBuilder.build(),
-            requestOptions: {method: "POST", body: new FormData(document.querySelector("form"))}
+            requestOptions: requestOptions
         }, "Import", ModalSize.ExtraLarge).then(_ => {
             UploadAreaListener.listenFileUpload()
         })
@@ -214,13 +214,14 @@
             if (pastedText != undefined) {
                 document.querySelector<HTMLInputElement>("#pasteValue").value = pastedText;
 
+                
                 let urlBuilder = new UrlBuilder();
-
                 urlBuilder.addQueryParameter("routeContext", routeContext)
                 urlBuilder.addQueryParameter("dataImportationOperation", "processPastedText")
+                const requestOptions = getRequestOptions();
                 DataImportationModal.getInstance().showUrl({
                     url: urlBuilder.build(),
-                    requestOptions: {method: "POST", body: new FormData(document.querySelector("form"))}
+                    requestOptions: requestOptions
                 }, "Import", ModalSize.Small).then(_ => {
                     DataImportationHelper.start(componentName, routeContext, gridRouteContext)
                 })

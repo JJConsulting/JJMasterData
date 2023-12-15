@@ -9,10 +9,11 @@ class TextFileHelper {
 
         const modal = new Modal();
         modal.modalId = modalId;
+        const requestOptions = getRequestOptions();
 
         modal.showUrl({
             url: url,
-            requestOptions: {method: "POST", body: new FormData(document.querySelector("form"))}
+            requestOptions: requestOptions
         }, title, ModalSize.ExtraLarge).then(_ => {
             listenAllEvents("#" + modalId)
         })

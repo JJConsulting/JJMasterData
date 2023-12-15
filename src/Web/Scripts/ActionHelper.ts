@@ -133,16 +133,11 @@ class ActionHelper {
             modal.modalId = componentName + "-modal";
             
             SpinnerOverlay.show();
-            
+            const requestOptions = getRequestOptions();
             modal.showUrl({
-                url: urlBuilder.build(), requestOptions: {
-                    method: "POST",
-                    body: new FormData(document.querySelector("form"))
-                }
+                url: urlBuilder.build(), requestOptions: requestOptions
             }, modalTitle).then(function (data) {
-
                 SpinnerOverlay.hide();
-
                 listenAllEvents("#" + modal.modalId + " ")    
                 
                 if (typeof data === "object") {
@@ -153,7 +148,7 @@ class ActionHelper {
                 }
             })
         } else {
-            if(!isSubmit){
+            if (!isSubmit) {
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
 
@@ -169,7 +164,7 @@ class ActionHelper {
                         }
                 }});
             } 
-            else{
+            else {
                 document.forms[0].requestSubmit();
             }
         }

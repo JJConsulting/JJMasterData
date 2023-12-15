@@ -9,11 +9,9 @@
 
 <script type="text/javascript">
     function saveIndexes() {
-   
-        fetch('@Url.Action("Detail", "Indexes", new { elementName = ViewBag.ElementName })', {
-        method:"POST",
-            body: new FormData(document.querySelector("form"))
-        }).then(response=>response.json()).then(data=>{
+        const requestOptions = getRequestOptions();
+        fetch('@Url.Action("Detail", "Indexes", new { elementName = ViewBag.ElementName })', requestOptions)
+        .then(response=>response.json()).then(data=>{
             if (data.success){
                  window.parent.defaultModal.hide();
                  window.parent.location.reload();

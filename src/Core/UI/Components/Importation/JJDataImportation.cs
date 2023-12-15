@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Extensions;
+﻿using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
@@ -22,6 +17,10 @@ using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace JJMasterData.Core.UI.Components;
 

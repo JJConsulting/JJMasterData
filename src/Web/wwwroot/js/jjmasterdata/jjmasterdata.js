@@ -107,11 +107,9 @@ class ActionHelper {
             const modal = new Modal();
             modal.modalId = componentName + "-modal";
             SpinnerOverlay.show();
+            const requestOptions = getRequestOptions();
             modal.showUrl({
-                url: urlBuilder.build(), requestOptions: {
-                    method: "POST",
-                    body: new FormData(document.querySelector("form"))
-                }
+                url: urlBuilder.build(), requestOptions: requestOptions
             }, modalTitle).then(function (data) {
                 SpinnerOverlay.hide();
                 listenAllEvents("#" + modal.modalId + " ");
@@ -389,10 +387,8 @@ class DataDictionaryUtils {
             return false;
         }
         SpinnerOverlay.show();
-        fetch(url, {
-            method: "POST",
-            body: new FormData(document.querySelector("form"))
-        }).then((response) => __awaiter(this, void 0, void 0, function* () {
+        const requestOptions = getRequestOptions();
+        fetch(url, requestOptions).then((response) => __awaiter(this, void 0, void 0, function* () {
             const blob = yield response.blob();
             const contentDisposition = response.headers.get('Content-Disposition');
             const fileNameMatch = /filename="(.*)"/.exec(contentDisposition);
@@ -451,10 +447,9 @@ class DataExportationHelper {
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("dataExportationOperation", "startProcess");
-        fetch(urlBuilder.build(), {
-            method: "POST",
-            body: new FormData(document.querySelector("form"))
-        }).then(response => response.text()).then((html) => __awaiter(this, void 0, void 0, function* () {
+        const requestOptions = getRequestOptions();
+        fetch(urlBuilder.build(), requestOptions)
+            .then(response => response.text()).then((html) => __awaiter(this, void 0, void 0, function* () {
             const modalBody = "#data-exportation-modal-" + componentName + " .modal-body ";
             document.querySelector(modalBody).innerHTML = html;
             listenAllEvents(modalBody);
@@ -724,9 +719,10 @@ class DataImportationHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+        const requestOptions = getRequestOptions();
         DataImportationModal.getInstance().showUrl({
             url: urlBuilder.build(),
-            requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) }
+            requestOptions: requestOptions
         }, "Import", ModalSize.ExtraLarge).then(_ => {
             UploadAreaListener.listenFileUpload();
         });
@@ -782,9 +778,10 @@ class DataImportationHelper {
                 let urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", routeContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "processPastedText");
+                const requestOptions = getRequestOptions();
                 DataImportationModal.getInstance().showUrl({
                     url: urlBuilder.build(),
-                    requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) }
+                    requestOptions: requestOptions
                 }, "Import", ModalSize.Small).then(_ => {
                     DataImportationHelper.start(componentName, routeContext, gridRouteContext);
                 });
@@ -1929,8 +1926,7 @@ var PageState;
 })(PageState || (PageState = {}));
 class PostFormValuesOptions {
 }
-function postFormValues(options) {
-    SpinnerOverlay.show();
+function getRequestOptions() {
     const formData = $("form").serialize();
     const requestOptions = {
         method: "POST",
@@ -1939,6 +1935,11 @@ function postFormValues(options) {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
     };
+    return requestOptions;
+}
+function postFormValues(options) {
+    SpinnerOverlay.show();
+    const requestOptions = getRequestOptions();
     fetch(options.url, requestOptions)
         .then(response => {
         var _a;
@@ -2215,9 +2216,10 @@ class TextFileHelper {
         const modalId = fieldName + "-upload-modal";
         const modal = new Modal();
         modal.modalId = modalId;
+        const requestOptions = getRequestOptions();
         modal.showUrl({
             url: url,
-            requestOptions: { method: "POST", body: new FormData(document.querySelector("form")) }
+            requestOptions: requestOptions
         }, title, ModalSize.ExtraLarge).then(_ => {
             listenAllEvents("#" + modalId);
         });

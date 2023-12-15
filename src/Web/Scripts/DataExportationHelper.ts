@@ -48,11 +48,9 @@ class DataExportationHelper {
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","startProcess")
-
-        fetch(urlBuilder.build(),{
-            method:"POST",
-            body: new FormData(document.querySelector<HTMLFormElement>("form"))
-        }).then(response=>response.text()).then(async html => {
+        const requestOptions = getRequestOptions();
+        fetch(urlBuilder.build(), requestOptions)
+            .then(response => response.text()).then(async html => {
             const modalBody = "#data-exportation-modal-" + componentName + " .modal-body ";
             document.querySelector<HTMLElement>(modalBody).innerHTML = html;
             

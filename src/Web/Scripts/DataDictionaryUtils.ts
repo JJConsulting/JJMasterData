@@ -65,10 +65,9 @@
         }
         
         SpinnerOverlay.show();
-        fetch(url, {
-            method:"POST",
-            body: new FormData(document.querySelector("form"))
-        }).then(async response=>{
+        const requestOptions = getRequestOptions();
+
+        fetch(url, requestOptions).then(async response=>{
             const blob = await response.blob()
             const contentDisposition = response.headers.get('Content-Disposition');
             const fileNameMatch = /filename="(.*)"/.exec(contentDisposition);
