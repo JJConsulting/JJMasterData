@@ -24,6 +24,7 @@ internal class DataPanelControl
 
     
     public string ParentComponentName { get; }
+
     public string Name { get; }
 
     public FormElement FormElement { get; }
@@ -116,10 +117,7 @@ internal class DataPanelControl
 
             object? value = null;
             if (Values != null && Values.ContainsKey(field.Name))
-            {
                 value = FieldsService.FormatValue(field, Values[field.Name]);
-                
-            }
 
             if (lineGroup != field.LineGroup)
             {
@@ -132,7 +130,8 @@ internal class DataPanelControl
             var htmlField = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.FormGroup);
 
-            if (IsRange(field, PageState))
+            bool isRange = IsRange(field, PageState);
+            if (isRange)
             {
                 htmlField.WithCssClass("row");
                 htmlField.WithCssClass(field.CssClass);
@@ -141,7 +140,7 @@ internal class DataPanelControl
             row?.Append(htmlField);
 
             string fieldClass;
-            if (IsRange(field, PageState))
+            if (isRange)
             {
                 fieldClass = string.Empty;
             }
@@ -166,15 +165,11 @@ internal class DataPanelControl
 
             if (field.Component != FormComponent.CheckBox)
             {
-                var label = ComponentFactory.Html.Label.Create(field);
-
-                if (IsViewModeAsStatic)
-                    label.CssClass += "fw-bold";
-                
+                var label = CreateLabel(field, isRange);
+                label.CssClass += "fw-bold";
                 htmlField.AppendComponent(label);
             }
                 
-
             if (IsViewModeAsStatic)
                 htmlField.Append(await GetStaticField(field));
             else
@@ -183,11 +178,8 @@ internal class DataPanelControl
 
         return html;
     }
-    
-    private static bool IsRange(FormElementField field, PageState pageState)
-    {
-        return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
-    }
+
+   
 
     private async Task<HtmlBuilder> GetHtmlFormHorizontal(List<FormElementField> fields)
     {
@@ -250,9 +242,10 @@ internal class DataPanelControl
             if (Values != null && Values.TryGetValue(f.Name, out var nonFormattedValue))
                 value = FieldsService.FormatValue(f, nonFormattedValue);
 
-            var label = ComponentFactory.Html.Label.Create(f);
+            var isRange = IsRange(f, PageState);
+            var label = CreateLabel(f, isRange);
             label.CssClass = labelClass;
-
+            
             var cssClass = string.Empty;
             if (BootstrapHelper.Version == 3 && Errors != null && Errors.ContainsKey(f.Name))
                 cssClass += " has-error";
@@ -287,7 +280,7 @@ internal class DataPanelControl
             row?.WithCssClass(cssClass)
              .AppendComponent(label);
 
-            if (IsRange(f, PageState))
+            if (isRange)
             {
                 row?.Append(await GetControlFieldHtml(f, value));
             }
@@ -299,12 +292,28 @@ internal class DataPanelControl
                     col.Append(IsViewModeAsStatic ? await GetStaticField(f) : await GetControlFieldHtml(f, value));
                 })!;
             }
-
         }
 
         return html;
     }
 
+    private static bool IsRange(FormElementField field, PageState pageState)
+    {
+        return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
+    }
+
+    private JJLabel CreateLabel(FormElementField field, bool isRange)
+    {
+        var label = ComponentFactory.Html.Label.Create(field);
+        label.LabelFor = FieldNamePrefix + field.Name;
+
+        if (IsViewModeAsStatic)
+            label.LabelFor = null;
+        else if (isRange)
+            label.LabelFor += "_from";
+
+        return label;
+    }
 
     private async Task<HtmlBuilder> GetStaticField(FormElementField f)
     {

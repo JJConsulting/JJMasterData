@@ -1476,14 +1476,14 @@ class MessageBox {
         html += "\" role=\"document\">\r\n";
         html += "    <div class=\"modal-content\">\r\n";
         html += "      <div class=\"modal-header\">\r\n";
-        if (MessageBox.bootstrapVersion >= 4) {
+        if (bootstrapVersion >= 4) {
             html += "        <h4 id=\"site-modal-title\" class=\"modal-title\"></h4>\r\n";
         }
-        else if (MessageBox.bootstrapVersion >= 5) {
+        else if (bootstrapVersion >= 5) {
             html +=
                 '        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>\r\n';
         }
-        else if (MessageBox.bootstrapVersion == 3) {
+        else if (bootstrapVersion == 3) {
             html +=
                 '        <h4 id="site-modal-title" class="modal-title"><button type="button" class="close" data-dismiss="modal">&times;</button></h4>\r\n';
         }
@@ -1524,11 +1524,11 @@ class MessageBox {
         html += "        </table>\r\n";
         html += "      </div>\r\n";
         html += "      <div class=\"modal-footer\">\r\n";
-        if (MessageBox.bootstrapVersion == 3) {
+        if (bootstrapVersion == 3) {
             html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-dismiss="modal"></button>\r\n';
             html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-dismiss="modal"></button>\r\n';
         }
-        else if (MessageBox.bootstrapVersion == 4) {
+        else if (bootstrapVersion == 4) {
             html += '        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-dismiss="modal"></button>\r\n';
             html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-dismiss="modal"></button>\r\n';
         }

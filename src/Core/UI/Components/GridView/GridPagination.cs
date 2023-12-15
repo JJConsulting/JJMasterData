@@ -149,7 +149,7 @@ internal class GridPagination(JJGridView gridView)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass($"col-sm-3 {BootstrapHelper.TextRight}");
-        div.Append(HtmlTag.Label, label =>
+        div.Append(HtmlTag.Span, label =>
         {
             label.WithAttribute("id", $"infotext_{GridView.Name}");
             label.WithCssClass("small");
