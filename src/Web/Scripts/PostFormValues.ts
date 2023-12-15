@@ -4,10 +4,8 @@ class PostFormValuesOptions{
     error?: (errorMessage: string) => void;
 }
 
-function postFormValues(options : PostFormValuesOptions) {
-    SpinnerOverlay.show();
+function getRequestOptions() {
     const formData = $("form").serialize();
-    
     const requestOptions = {
         method: "POST",
         body: formData,
@@ -15,7 +13,12 @@ function postFormValues(options : PostFormValuesOptions) {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
     };
-    
+    return requestOptions;
+}
+
+function postFormValues(options : PostFormValuesOptions) {
+    SpinnerOverlay.show();
+    const requestOptions = getRequestOptions();
     fetch(options.url, requestOptions)
         .then(response => {
             if (response.headers.get("content-type")?.includes("application/json")) {
