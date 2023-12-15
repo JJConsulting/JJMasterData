@@ -131,7 +131,7 @@ internal class DataPanelControl
             if (isRange)
             {
                 htmlField.WithCssClass("row");
-                htmlField.WithCssClass(field.CssClass);
+                htmlField.WithCssClass("col-sm-5");
             }
             
             row?.Append(htmlField);
