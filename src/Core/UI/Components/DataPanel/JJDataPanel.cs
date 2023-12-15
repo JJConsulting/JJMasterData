@@ -107,6 +107,7 @@ public class JJDataPanel : AsyncComponent
     internal FieldsService FieldsService { get; }
     internal FormValuesService FormValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
+    private UrlRedirectService UrlRedirectService { get; }
     internal IComponentFactory ComponentFactory { get; }
 
     #endregion
@@ -121,6 +122,7 @@ public class JJDataPanel : AsyncComponent
         FieldsService fieldsService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
+        UrlRedirectService urlRedirectService,
         IComponentFactory componentFactory
     ) 
     {
@@ -131,6 +133,7 @@ public class JJDataPanel : AsyncComponent
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
+        UrlRedirectService = urlRedirectService;
         ComponentFactory = componentFactory;
         Values = new Dictionary<string, object>();
         Errors = new Dictionary<string, string>();
@@ -147,8 +150,9 @@ public class JJDataPanel : AsyncComponent
         FieldsService fieldsService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
+        UrlRedirectService urlRedirectService,
         IComponentFactory componentFactory
-    ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, componentFactory)
+    ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, urlRedirectService,componentFactory)
     {
         Name = $"{ComponentNameGenerator.Create(formElement.Name)}-data-panel";
         FormElement = formElement;
@@ -299,27 +303,8 @@ public class JJDataPanel : AsyncComponent
         return FieldsService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }
     
-    internal async Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)
+    internal Task<JsonComponentResult> GetUrlRedirectResult(ActionMap actionMap)
     {
-        var urlRedirectAction = actionMap.GetAction<UrlRedirectAction>(FormElement);
-
-        var dbValues = await EntityRepository.GetFieldsAsync(FormElement, actionMap.PkFieldValues);
-        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement,new FormStateData(dbValues,UserValues,PageState), true, FieldNamePrefix);
-        
-        DataHelper.CopyIntoDictionary(values, actionMap.PkFieldValues);
-        
-        var formStateData = new FormStateData(values, PageState);
-        var parsedUrl = ExpressionsService.ReplaceExpressionWithParsedValues(System.Web.HttpUtility.UrlDecode(urlRedirectAction.UrlRedirect), formStateData);
-        var parsedTitle =  ExpressionsService.ReplaceExpressionWithParsedValues(urlRedirectAction.ModalTitle, formStateData);
-        var model = new UrlRedirectModel
-        {
-            IsIframe = urlRedirectAction.IsIframe,
-            UrlRedirect = parsedUrl!,
-            ModalTitle = parsedTitle!,
-            UrlAsModal = urlRedirectAction.IsModal,
-            ModalSize = urlRedirectAction.ModalSize
-        };
-        
-        return new JsonComponentResult(model);
+        return UrlRedirectService.GetUrlRedirectResult(this, actionMap);
     }
 }

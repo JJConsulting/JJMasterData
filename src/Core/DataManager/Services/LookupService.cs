@@ -16,16 +16,12 @@ using JJMasterData.Core.UI.Components;
 namespace JJMasterData.Core.DataManager.Services;
 
 public class LookupService(IFormValues formValues,
-    IDataDictionaryRepository dataDictionaryRepository,
-    IEntityRepository entityRepository,
     ExpressionsService expressionsService,
     IEncryptionService encryptionService,
     ElementMapService elementMapService,
     MasterDataUrlHelper urlHelper)
 {
     private IFormValues FormValues { get; } = formValues;
-    private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
-    private IEntityRepository EntityRepository { get; } = entityRepository;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private ElementMapService ElementMapService { get; } = elementMapService;

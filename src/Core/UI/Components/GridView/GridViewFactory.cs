@@ -26,6 +26,7 @@ internal class GridViewFactory(IHttpContext currentContext,
         FormValuesService formValuesService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IGridEventHandlerResolver gridEventHandlerResolver,
+        UrlRedirectService urlRedirectService,
         IComponentFactory componentFactory)
     : IFormElementComponentFactory<JJGridView>
 {
@@ -35,6 +36,7 @@ internal class GridViewFactory(IHttpContext currentContext,
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private IGridEventHandlerResolver GridEventHandlerResolver { get; } = gridEventHandlerResolver;
+    private UrlRedirectService UrlRedirectService { get; } = urlRedirectService;
     private IComponentFactory ComponentFactory { get; } = componentFactory;
     private IEntityRepository EntityRepository { get; } = entityRepository;
     private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
@@ -54,6 +56,7 @@ internal class GridViewFactory(IHttpContext currentContext,
             FieldsService, 
             FormValuesService,
             StringLocalizer,
+            UrlRedirectService,
             ComponentFactory);
 
         var eventHandler = GridEventHandlerResolver.GetGridEventHandler(formElement.Name);
