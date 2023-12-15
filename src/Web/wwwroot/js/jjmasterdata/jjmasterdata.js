@@ -1991,7 +1991,6 @@ class SearchBoxListener {
                 }
             }
             const url = urlBuilder.build();
-            console.log(url);
             const jjSearchBoxSelector = "#" + hiddenInputId + "_text";
             const jjSearchBoxHiddenSelector = "#" + hiddenInputId;
             $(this).blur(function () {

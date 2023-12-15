@@ -33,7 +33,6 @@ using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-
 #if NET48
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Tasks;
@@ -578,12 +577,9 @@ public class JJFormView : AsyncComponent
 
     private void AppendFormViewHiddenInputs(HtmlBuilder html)
     {
-        html.AppendHiddenInput($"form-view-page-state-{Name}", 
-            ((int)PageState).ToString());
-
+        html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
         html.AppendHiddenInput($"form-view-action-map-{Name}",
             EncryptionService.EncryptActionMap(CurrentActionMap));
-
         html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
             EncryptionService.EncryptDictionary(RelationValues));
     }
@@ -720,8 +716,8 @@ public class JJFormView : AsyncComponent
         switch (PageState)
         {
             case PageState.Insert:
-                var formContext = new FormContext((IDictionary<string, object?>)RelationValues, PageState);
-                return await GetFormResult(formContext, false);
+                return await GetFormResult(new FormContext((IDictionary<string, object?>)RelationValues, PageState),
+                    false);
             case PageState.Update:
                 formValues ??= await GetFormValuesAsync();
                 return await GetFormResult(new FormContext(formValues, PageState), true);
@@ -748,10 +744,7 @@ public class JJFormView : AsyncComponent
         PageState = PageState.Insert;
 
         if (string.IsNullOrEmpty(insertAction.ElementNameToSelect))
-        {
             return await GetFormResult(new FormContext(RelationValues!, PageState.Insert), false);
-        }
-            
 
         return await GetInsertSelectionListResult();
     }
