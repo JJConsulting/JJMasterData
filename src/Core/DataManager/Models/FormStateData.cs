@@ -28,7 +28,7 @@ public class FormStateData
         PageState pageState)
     {
         UserValues = ObjectCloner.DeepCopy(userValues);
-        Values = values;
+        Values = ObjectCloner.DeepCopy(values);
         PageState = pageState;
     }
 
