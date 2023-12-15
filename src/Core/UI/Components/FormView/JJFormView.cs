@@ -16,6 +16,7 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -463,7 +464,7 @@ public class JJFormView : AsyncComponent
 
         if (PageState is PageState.Insert && GridView.ToolBarActions.InsertAction.ReopenForm)
         {
-            var formResult = await GetFormResult(new FormContext(RelationValues!, PageState.Insert), false);
+            var formResult = await GetFormResult(new FormContext(ObjectCloner.DeepCopy(RelationValues)!, PageState.Insert), false);
 
             if (formResult is HtmlComponentResult htmlComponent)
             {
@@ -716,7 +717,7 @@ public class JJFormView : AsyncComponent
         switch (PageState)
         {
             case PageState.Insert:
-                return await GetFormResult(new FormContext((IDictionary<string, object?>)RelationValues, PageState),
+                return await GetFormResult(new FormContext((IDictionary<string, object?>)ObjectCloner.DeepCopy(RelationValues), PageState),
                     false);
             case PageState.Update:
                 formValues ??= await GetFormValuesAsync();
@@ -744,7 +745,7 @@ public class JJFormView : AsyncComponent
         PageState = PageState.Insert;
 
         if (string.IsNullOrEmpty(insertAction.ElementNameToSelect))
-            return await GetFormResult(new FormContext(RelationValues!, PageState.Insert), false);
+            return await GetFormResult(new FormContext(ObjectCloner.DeepCopy(RelationValues)!, PageState.Insert), false);
 
         return await GetInsertSelectionListResult();
     }
