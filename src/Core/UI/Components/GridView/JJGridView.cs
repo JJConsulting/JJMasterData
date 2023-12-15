@@ -574,6 +574,8 @@ public class JJGridView : AsyncComponent
         {
             int rowIndex = int.Parse(CurrentContext.Request.QueryString["gridViewRowIndex"]);
 
+            await SetDataSource();
+            
             var htmlResponse = await GetTableRowHtmlAsync(rowIndex);
 
             return new ContentComponentResult(new HtmlBuilder(htmlResponse));
@@ -743,9 +745,11 @@ public class JJGridView : AsyncComponent
     {
         var row = DataSource?[rowIndex];
 
-        return await Table.Body
-            .GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex)
-            .AggregateAsync(string.Empty, (current, td) => current + td);
+        string result = string.Empty;
+        await foreach (var builder in Table.Body.GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
+            result = result + builder;
+        
+        return result;
     }
     
 
@@ -840,6 +844,7 @@ public class JJGridView : AsyncComponent
         {
             var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
             string functionname = $"do_rowreload_{Name}";
+            var routeContext = HttpUtility.JavaScriptStringEncode(EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(FormElement, ComponentContext.GridViewRow)));
             if (listFieldsPost.Count > 0)
             {
                 script.AppendLine("");
@@ -849,9 +854,9 @@ public class JJGridView : AsyncComponent
                 script.AppendLine("\t\tvar frm = $('form'); ");
                 script.AppendLine("\t\tvar surl = frm.attr('action'); ");
                 script.AppendLine("\t\tif (surl.includes('?'))");
-                script.AppendLine("\t\t\tsurl += '&context=gridViewRow&gridViewRowIndex=' + nRow;");
+                script.AppendLine($"\t\t\tsurl += '&routeContext={routeContext}&gridViewRowIndex=' + nRow;");
                 script.AppendLine("\t\telse");
-                script.AppendLine("\t\t\tsurl += '?context=gridViewRow&gridViewRowIndex=' + nRow;");
+                script.AppendLine($"\t\t\tsurl += '?routeContext={routeContext}&gridViewRowIndex=' + nRow;");
                 script.AppendLine("");
                 script.AppendLine("\t\tsurl += '&componentName=' + objname;");
                 script.AppendLine($"\t\tsurl += '&gridViewName={Name}';");
