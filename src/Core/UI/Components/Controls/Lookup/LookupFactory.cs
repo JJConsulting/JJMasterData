@@ -1,31 +1,40 @@
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class LookupFactory(IFormValues formValues,
+internal class LookupFactory(
+        IHttpRequest httpRequest,
+        FormValuesService formValuesService,
         LookupService lookupService,
-        MasterDataUrlHelper urlHelper,
         IComponentFactory componentFactory,
-        ILoggerFactory loggerFactory)
+        IEncryptionService encryptionService,
+        RouteContextFactory routeContextFactory
+        )
     : IControlFactory<JJLookup>
 {
-    private IFormValues FormValues { get; } = formValues;
+    private IHttpRequest HttpRequest { get; } = httpRequest;
+    private FormValuesService FormValuesService { get; } = formValuesService;
     private LookupService LookupService { get; } = lookupService;
-    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IComponentFactory ComponentFactory { get; } = componentFactory;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
+    private RouteContextFactory RouteContextFactory { get; } = routeContextFactory;
 
-    private ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
     public JJLookup Create()
     {
         return new JJLookup(
             null,
             null,
-            FormValues,
+            HttpRequest,
+            RouteContextFactory,
+            FormValuesService,
+            EncryptionService,
             LookupService,
             ComponentFactory);
     }
@@ -35,9 +44,15 @@ internal class LookupFactory(IFormValues formValues,
         var lookup = new JJLookup(
             field,
             controlContext,
-            FormValues,
+            HttpRequest,
+            RouteContextFactory,
+            FormValuesService,
+            EncryptionService,
             LookupService,
             ComponentFactory);
+
+        lookup.ElementName = formElement.Name;
+        lookup.ParentElementName = formElement.ParentName;
         
         return lookup;
     }

@@ -101,9 +101,12 @@ public class JJUploadView : AsyncComponent
         get
         {
             var files = GetFilesDataTable();
-            if (_gridView != null)
-                return _gridView;
             
+            if (_gridView != null)
+            {
+                _gridView.DataSource = EnumerableHelper.ConvertToDictionaryList(files);
+                return _gridView;
+            }
 
             _gridView = ComponentFactory.GridView.Create(new FormElement(files));
             _gridView.FormElement.Name = Name;

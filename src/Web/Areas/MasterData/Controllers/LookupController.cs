@@ -15,15 +15,11 @@ using Microsoft.Extensions.Localization;
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class LookupController(
-        LookupService lookupService,
-        FormValuesService formValuesService,
         IEncryptionService encryptionService,
         IFormElementComponentFactory<JJFormView> formViewFactory,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : MasterDataController
 {
-    private LookupService LookupService { get; } = lookupService;
-    private FormValuesService FormValuesService { get; } = formValuesService;
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
@@ -49,22 +45,6 @@ public class LookupController(
         };
         
         return View(model);
-    }
-
-    [ServiceFilter<FormElementDecryptionFilter>]
-    public async Task<IActionResult> GetDescription(
-        FormElement formElement,
-        string fieldName,
-        string componentName,
-        PageState pageState)
-    {
-        var elementMap = formElement.Fields[fieldName].DataItem!.ElementMap;
-        var formValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(formElement, new FormStateData(new Dictionary<string, object?>(), new Dictionary<string, object?>(), pageState), true);
-        var formStateData = new FormStateData(formValues, pageState);
-        var selectedValue = LookupService.GetSelectedValue(componentName);
-        
-        var description = await LookupService.GetDescriptionAsync(elementMap!, formStateData, selectedValue, false);
-        return Json(new LookupResultDto(selectedValue!, description!));
     }
 
     private void ConfigureLookupForm(JJFormView form, LookupParameters lookupParameters)
