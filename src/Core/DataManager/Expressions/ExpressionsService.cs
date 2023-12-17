@@ -29,12 +29,12 @@ public class ExpressionsService(
     }
 
     public string? ReplaceExpressionWithParsedValues(
-        string? expression, 
+        string? expression,
         FormStateData formStateData)
     {
         var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
 
-        if (expression != null) 
+        if (expression != null)
             return ExpressionHelper.ReplaceExpression(expression, parsedValues);
 
         return null;
@@ -51,29 +51,28 @@ public class ExpressionsService(
             throw new JJMasterDataException($"Expression type not supported: {expressionType}.");
 
         object? result;
-        
+
         try
         {
             Logger.LogDebug("Executing expression: {Expression}", expression);
 
             var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
             var parsedExpression = splittedExpression[1];
-            
+
             result = provider.Evaluate(parsedExpression, parsedValues);
         }
-
         catch (Exception ex)
         {
-            var exception = new ExpressionException("Unhandled exception at a expression provider.",ex)
+            var exception = new ExpressionException("Unhandled exception at a expression provider.", ex)
             {
                 Expression = expression
             };
 
-            Logger.LogError(exception,"Error retrieving expression at {Provider} provider. Expression: {Expression}",provider.Prefix, expression);
+            Logger.LogError(exception, "Error retrieving expression at {Provider} provider. Expression: {Expression}", provider.Prefix, expression);
 
             throw exception;
         }
-        
+
         return ParseBool(result);
     }
 
@@ -94,7 +93,7 @@ public class ExpressionsService(
             throw new ArgumentNullException(nameof(field));
 
         var splittedExpression = expression.Split([':'], 2);
-        var expressionType =splittedExpression[0];
+        var expressionType = splittedExpression[0];
         if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IAsyncExpressionProvider) is not IAsyncExpressionProvider provider)
         {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}");
@@ -105,7 +104,7 @@ public class ExpressionsService(
             var parsedExpression = splittedExpression[1];
             var result = await provider.EvaluateAsync(parsedExpression, parsedValues);
 
-            if (result is not string stringResult) 
+            if (result is not string stringResult)
                 return result;
 
             return field.DataType switch
@@ -120,12 +119,12 @@ public class ExpressionsService(
 
         catch (Exception ex)
         {
-            var exception = new ExpressionException("Unhandled exception at a expression provider.",ex)
+            var exception = new ExpressionException("Unhandled exception at a expression provider.", ex)
             {
                 Expression = expression
             };
 
-            Logger.LogError(exception,"Error retrieving expression at {Provider} provider\nExpression: {Expression}\nField: {FieldName}",provider,expression, field.Name);
+            Logger.LogError(exception, "Error retrieving expression at {Provider} provider\nExpression: {Expression}\nField: {FieldName}", provider, expression, field.Name);
 
             throw exception;
         }

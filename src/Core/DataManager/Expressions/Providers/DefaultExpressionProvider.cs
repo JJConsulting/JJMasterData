@@ -1,6 +1,8 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
@@ -15,19 +17,37 @@ public class DefaultExpressionProvider : IBooleanExpressionProvider, IAsyncExpre
     {
         using var dt = new DataTable();
         var result = dt.Compute(replacedExpression, string.Empty).ToString();
-
         return result!;
     }
 
-    public bool Evaluate(string expression, IDictionary<string,object?> parsedValues)
+    public bool Evaluate(string expression, IDictionary<string, object?> parsedValues)
     {
-        var replacedExpression= ExpressionHelper.ReplaceExpression(expression, parsedValues);
+        var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
         return StringManager.ParseBool(EvaluateObject(replacedExpression));
     }
-    
-    public Task<object?> EvaluateAsync(string expression, IDictionary<string,object?> parsedValues)
+
+    public Task<object?> EvaluateAsync(string expression, IDictionary<string, object?> parsedValues)
     {
-        var replacedExpression= ExpressionHelper.ReplaceExpression(expression, parsedValues);
-        return Task.FromResult<object?>(EvaluateObject(replacedExpression));
+        var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
+        try
+        {
+            return Task.FromResult<object?>(EvaluateObject(replacedExpression));
+        }
+        catch (Exception ex)
+        {
+            var error = new StringBuilder();
+            error.AppendLine("Unhandled exception at a expression provider");
+            error.AppendLine("Expression:");
+            error.AppendLine(expression);
+            error.AppendLine("Replaced Expression:");
+            error.AppendLine(replacedExpression);
+            error.AppendLine("Error Message:");
+            error.AppendLine(ex.Message);
+            throw new ExpressionException(error.ToString(), ex)
+            {
+                Expression = expression
+            };
+        }
+
     }
 }
