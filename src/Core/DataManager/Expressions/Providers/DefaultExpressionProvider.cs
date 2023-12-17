@@ -36,13 +36,12 @@ public class DefaultExpressionProvider : IBooleanExpressionProvider, IAsyncExpre
         catch (Exception ex)
         {
             var error = new StringBuilder();
-            error.AppendLine("Unhandled exception at a expression provider");
+            error.AppendLine(ex.Message);
             error.AppendLine("Expression:");
             error.AppendLine(expression);
             error.AppendLine("Replaced Expression:");
             error.AppendLine(replacedExpression);
-            error.AppendLine("Error Message:");
-            error.AppendLine(ex.Message);
+            
             throw new ExpressionException(error.ToString(), ex)
             {
                 Expression = expression
