@@ -508,6 +508,7 @@ public class JJGridView : AsyncComponent
     internal ExpressionsService ExpressionsService { get; }
 
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private UrlRedirectService UrlRedirectService { get; }
     internal IComponentFactory ComponentFactory { get; }
     internal IEntityRepository EntityRepository { get; }
 
@@ -531,6 +532,7 @@ public class JJGridView : AsyncComponent
         FieldsService fieldsService,
         FormValuesService formValuesService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
+        UrlRedirectService urlRedirectService,
         IComponentFactory componentFactory)
     {
         Name = $"{ComponentNameGenerator.Create(formElement.Name)}-grid-view";
@@ -550,6 +552,7 @@ public class JJGridView : AsyncComponent
         ExpressionsService = expressionsService;
         EncryptionService = encryptionService;
         StringLocalizer = stringLocalizer;
+        UrlRedirectService = urlRedirectService;
         ComponentFactory = componentFactory;
         EntityRepository = entityRepository;
         CurrentContext = currentContext;
@@ -603,6 +606,11 @@ public class JJGridView : AsyncComponent
             var jjSearchBox = ComponentFactory.Controls.Create(FormElement,field, formStateData, Name) as JJSearchBox;
             jjSearchBox!.Name = GridFilter.FilterFieldPrefix + jjSearchBox.Name;
             return await jjSearchBox.GetItemsResult();
+        }
+
+        if (ComponentContext is ComponentContext.UrlRedirect)
+        {
+            return await UrlRedirectService.GetUrlRedirectResult(this,CurrentActionMap);
         }
         
         return new RenderedComponentResult(await GetHtmlBuilderAsync());

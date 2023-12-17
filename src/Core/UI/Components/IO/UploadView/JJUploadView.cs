@@ -306,7 +306,18 @@ public class JJUploadView : AsyncComponent
         }
         else
         {
-            html.Append(await GetGridViewHtml());
+            var result = await GetGridViewResult();
+
+            if (result is RenderedComponentResult renderedComponent)
+            {
+                html.Append(renderedComponent.HtmlBuilder);
+            }
+            else
+            {
+                return result;
+            }
+            
+     
         }
 
         html.AppendComponent(await GetPreviewModalHtml());
@@ -445,9 +456,9 @@ public class JJUploadView : AsyncComponent
         return panelContent;
     }
 
-    private Task<HtmlBuilder> GetGridViewHtml()
+    private Task<ComponentResult> GetGridViewResult()
     {
-        return GridView.GetHtmlBuilderAsync();
+        return GridView.GetResultAsync();
         
     }
 

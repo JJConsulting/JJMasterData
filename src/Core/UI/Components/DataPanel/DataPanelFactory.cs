@@ -18,6 +18,7 @@ internal class DataPanelFactory(IEntityRepository entityRepository,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
         IComponentFactory componentFactory,
+        UrlRedirectService urlRedirectService,
         MasterDataUrlHelper urlHelper)
     : IFormElementComponentFactory<JJDataPanel>
 {
@@ -29,6 +30,7 @@ internal class DataPanelFactory(IEntityRepository entityRepository,
     private FormValuesService FormValuesService { get; } = formValuesService;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
     private IComponentFactory ComponentFactory { get; } = componentFactory;
+    private UrlRedirectService UrlRedirectService { get; } = urlRedirectService;
     private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
 
     public JJDataPanel Create(FormElement formElement)
@@ -42,6 +44,7 @@ internal class DataPanelFactory(IEntityRepository entityRepository,
             FieldsService, 
             FormValuesService, 
             ExpressionsService,
+            UrlRedirectService,
             ComponentFactory);
     }
 
