@@ -10,7 +10,7 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 /// Representation of a metadata field.
 /// </summary>
 /// <remarks>2017-03-22 - JJTeam</remarks>
-[DebuggerDisplay("Name = {Name} DataType = {DataType}")]
+[DebuggerDisplay("Name = {Name}, DataType = {DataType}")]
 public class ElementField
 {
     /// <summary>

@@ -2064,30 +2064,23 @@ class SearchBoxListener {
 }
 class SliderListener {
     static listenSliders(selectorPrefix = String()) {
-        let sliders = document.getElementsByClassName("jjslider");
+        let sliders = document.querySelectorAll(selectorPrefix + ".jjslider");
         Array.from(sliders).forEach((slider) => {
-            let sliderInput = document.getElementById(slider.id + "-value");
+            const sliderInput = document.getElementById(slider.id + "-value");
             document.getElementById(slider.id).addEventListener('change', function () {
                 this.setAttribute('value', (this).value);
             });
             slider.oninput = function () {
-                let decimalPlaces = $(this).attr("jj-decimal-places");
-                if (decimalPlaces == null)
-                    decimalPlaces = "0";
-                let sliderValue = (this).value;
-                if (localeCode === 'pt')
-                    sliderInput.value = $.number(sliderValue, decimalPlaces, ",", ".");
-                else
-                    sliderInput.value = $.number(sliderValue, decimalPlaces);
+                sliderInput.value = (this).value;
             };
         });
     }
     static listenInputs(selectorPrefix = String()) {
-        let inputs = document.getElementsByClassName(selectorPrefix + "jjslider-value");
+        let inputs = document.querySelectorAll(selectorPrefix + ".jjslider-value");
         Array.from(inputs).forEach((input) => {
             let slider = document.getElementById(input.id.replace("-value", ""));
             input.oninput = function () {
-                slider.value = $("#" + input.id).val();
+                slider.value = document.getElementById(input.id).value;
             };
         });
     }
