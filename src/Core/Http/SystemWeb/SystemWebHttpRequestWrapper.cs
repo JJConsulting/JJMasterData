@@ -16,7 +16,7 @@ internal class SystemWebHttpRequestWrapper(IQueryString queryString, IFormValues
     public IFormValues Form  => form;
     public bool IsPost => Request.HttpMethod.Equals("POST");
     public IQueryString QueryString { get; } = queryString;
-
+    public string ContentType => Request.ContentType;
     public HttpPostedFile GetFile(string file) => Request.Files[file];
     public object GetUnvalidated(string key) => Request.Unvalidated[key];
 

@@ -10,7 +10,7 @@
             });
 
             slider.oninput = function () {
-                let decimalPlaces = $(this).attr("jjdecimalplaces");
+                let decimalPlaces = $(this).attr("jj-decimal-places");
                 if (decimalPlaces == null)
                     decimalPlaces = "0";
 

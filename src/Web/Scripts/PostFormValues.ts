@@ -5,15 +5,12 @@ class PostFormValuesOptions{
 }
 
 function getRequestOptions() {
-    const formData = $("form").serialize();
-    const requestOptions = {
+    const formData = new FormData(document.querySelector("form"));
+
+    return {
         method: "POST",
-        body: formData,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
+        body: formData
     };
-    return requestOptions;
 }
 
 function postFormValues(options : PostFormValuesOptions) {

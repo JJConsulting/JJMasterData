@@ -20,14 +20,14 @@ public class FormValuesService(
     IEntityRepository entityRepository,
     FieldValuesService fieldValuesService,
     IEncryptionService encryptionService,
-    IFormValues httpFormValues)
+    IHttpRequest httpRequest)
 {
     private IEntityRepository EntityRepository { get; } = entityRepository;
     private FieldValuesService FieldValuesService { get; } = fieldValuesService;
     private IEncryptionService EncryptionService { get; } = encryptionService;
-    private IFormValues FormValues { get; } = httpFormValues;
+    private IFormValues FormValues { get; } = httpRequest.Form;
 
-    public IDictionary<string, object?> GetFormValues(FormElement formElement, PageState pageState,
+    private IDictionary<string, object?> GetFormValues(FormElement formElement,
         string? fieldPrefix = null)
     {
         if (formElement == null)
@@ -77,7 +77,7 @@ public class FormValuesService(
 
     private static object HandleNumericComponent(object value, FieldType dataType)
     {
-        var culture = CultureInfo.InvariantCulture;
+        var culture =  CultureInfo.CurrentCulture;
         object parsedValue = 0;
         
         switch (dataType)
@@ -112,7 +112,7 @@ public class FormValuesService(
         
         if (FormValues.ContainsFormValues() && autoReloadFormFields)
         {
-            var formValues = GetFormValues(formElement, formStateData.PageState, prefix);
+            var formValues = GetFormValues(formElement, prefix);
             DataHelper.CopyIntoDictionary(formStateData.Values, formValues, true);
         }
         

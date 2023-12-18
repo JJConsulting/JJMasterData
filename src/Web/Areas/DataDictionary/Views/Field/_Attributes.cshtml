@@ -39,17 +39,17 @@
     case FormComponent.Slider or FormComponent.Number:
         <div class="col-sm-2">
             <label for="minValue" title="@StringLocalizer["Minimum Value"]" class="@BootstrapHelper.Label">@StringLocalizer["Minimum Value"]</label>
-            <input class="form-control jjdecimal" type="number" name="minValue" id="minValue" value="@Model.GetAttr(FormElementField.MinValueAttribute)"/>
+            <input class="form-control jj-numeric" type="number" name="minValue" id="minValue" value="@Model.GetAttr(FormElementField.MinValueAttribute)"/>
         </div>
         <div class="col-sm-2">
             <label for="maxValue" title="@StringLocalizer["Maximum Value"]" class="@BootstrapHelper.Label">@StringLocalizer["Maximum Value"]</label>
-            <input class="form-control jjdecimal" type="number" name="maxValue" id="maxValue" value="@Model.GetAttr(FormElementField.MaxValueAttribute)"/>
+            <input class="form-control jj-numeric" type="number" name="maxValue" id="maxValue" value="@Model.GetAttr(FormElementField.MaxValueAttribute)"/>
         </div>
         <div class="col-sm-2">
             <label for="step" @BootstrapHelper.GetDataToggle("tooltip") 
                    title="@StringLocalizer["Defines the interval at which the value changes."]"
                    class="@BootstrapHelper.Label">@StringLocalizer["Step"]</label>
-            <input id="step" name="step" class="form-control jjdecimal" type="number" value="@Model.GetAttr(FormElementField.StepAttribute)"/>
+            <input id="step" name="step" class="form-control jj-numeric" type="number" value="@Model.GetAttr(FormElementField.StepAttribute)"/>
         </div>
         break;
     case FormComponent.TextArea:

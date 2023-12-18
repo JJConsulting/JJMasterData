@@ -117,7 +117,7 @@ public class FormElement : Element
         Relationships = relationships;
         Options = options ?? new FormElementOptions();
         ApiOptions = apiOptions ?? new FormElementApiOptions();
-        Panels = panels ?? new List<FormElementPanel>();
+        Panels = panels ?? [];
     }
 
     private static void SetFieldType(ElementField field, Type type)

@@ -9,5 +9,6 @@ public interface IHttpRequest
     string ApplicationPath { get; }
     string this[string key] { get; }
     public IQueryString QueryString { get; }
-    IFormValues Form { get; }
+    IFormValues Form { get; } 
+    string ContentType { get; }
 }

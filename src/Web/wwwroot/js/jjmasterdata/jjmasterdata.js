@@ -847,14 +847,18 @@ class DataPanelHelper {
         });
     }
 }
-function applyDecimalPlaces() {
-    let decimalPlaces = $(this).attr("jjdecimalplaces");
-    if (decimalPlaces == null)
-        decimalPlaces = "2";
-    if (localeCode === 'pt')
-        $(this).number(true, decimalPlaces, ",", ".");
-    else
-        $(this).number(true, decimalPlaces);
+function applyDecimalPlaces(element) {
+    var _a, _b, _c;
+    if (element.getAttribute("type") == "number")
+        return;
+    let decimalPlaces = (_a = element.getAttribute("jj-decimal-places")) !== null && _a !== void 0 ? _a : 2;
+    let decimalSeparator = (_b = element.getAttribute("jj-decimal-separator")) !== null && _b !== void 0 ? _b : '.';
+    let groupSeparator = (_c = element.getAttribute("jj-group-separator")) !== null && _c !== void 0 ? _c : ',';
+    new AutoNumeric(element, {
+        decimalCharacter: decimalSeparator,
+        digitGroupSeparator: groupSeparator,
+        decimalPlaces: decimalPlaces
+    });
 }
 function listenExpressionType(name, hintList, isBoolean) {
     document.getElementById(name + '-ExpressionType').addEventListener('change', function () {
@@ -1342,7 +1346,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     if (bootstrapVersion === 5) {
         TooltipListener.listen(selectorPrefix);
     }
-    $(selectorPrefix + ".jjdecimal").each(applyDecimalPlaces);
+    document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces);
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
             if (settings.url != null &&
@@ -1940,15 +1944,11 @@ var PageState;
 class PostFormValuesOptions {
 }
 function getRequestOptions() {
-    const formData = $("form").serialize();
-    const requestOptions = {
+    const formData = new FormData(document.querySelector("form"));
+    return {
         method: "POST",
-        body: formData,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
+        body: formData
     };
-    return requestOptions;
 }
 function postFormValues(options) {
     SpinnerOverlay.show();
@@ -2071,7 +2071,7 @@ class SliderListener {
                 this.setAttribute('value', (this).value);
             });
             slider.oninput = function () {
-                let decimalPlaces = $(this).attr("jjdecimalplaces");
+                let decimalPlaces = $(this).attr("jj-decimal-places");
                 if (decimalPlaces == null)
                     decimalPlaces = "0";
                 let sliderValue = (this).value;

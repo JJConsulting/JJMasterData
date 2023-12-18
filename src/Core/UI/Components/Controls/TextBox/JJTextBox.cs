@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Globalization;
+using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
@@ -57,7 +58,7 @@ public class JJTextBox : ControlBase
         if (NumberOfDecimalPlaces > 0)
         {
             inputType = "text";
-            CssClass += " jjdecimal";
+            CssClass += " jj-numeric";
         }
 
         var html = new HtmlBuilder(HtmlTag.Input)
@@ -71,9 +72,11 @@ public class JJTextBox : ControlBase
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
             .WithAttributeIf(NumberOfDecimalPlaces == 0 && InputType == InputType.Number, "onkeypress",
                 "return jjutil.justNumber(event);")
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jjdecimalplaces",
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-decimal-places",
                 NumberOfDecimalPlaces.ToString())
-            .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jjdecimal")
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-decimal-separator",CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-group-separator",CultureInfo.CurrentUICulture.NumberFormat.NumberGroupSeparator)
+            .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-numeric")
             .WithAttributeIfNotEmpty("value", Text)
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
             .WithAttributeIf(!Enabled, "disabled", "disabled");

@@ -61,7 +61,7 @@ public class JJSlider(IFormValues formValues, IControlFactory<JJTextBox> textBox
            .WithNameAndId(Name)
            .WithCssClass("jjslider form-range")
            .WithAttributeIf(!Enabled,"disabled")
-           .WithAttributeIf(NumberOfDecimalPlaces > 0 , "jjdecimalplaces", NumberOfDecimalPlaces.ToString())
+           .WithAttributeIf(NumberOfDecimalPlaces > 0 , "jj-decimal-places", NumberOfDecimalPlaces.ToString())
            .WithAttribute("min", MinValue.ToString(CultureInfo.InvariantCulture))
            .WithAttribute("max", MaxValue.ToString(CultureInfo.InvariantCulture))
            .WithAttribute("step", Step.ToString(CultureInfo.InvariantCulture))

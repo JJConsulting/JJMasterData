@@ -25,10 +25,10 @@ public static class AssetPipelineExtensions
         {
             "_content/JJMasterData.Web/js/jquery/jquery.js",
             "_content/JJMasterData.Web/js/jquery/jquery-form/jquery.form.js",
-            "_content/JJMasterData.Web/js/jquery/jquery-number/jquery.number.min.js",
             "_content/JJMasterData.Web/js/jquery/jquery-ui/jquery-ui.min.js",
             "_content/JJMasterData.Web/js/jquery/jquery-validation/jquery.validate.min.js",
             "_content/JJMasterData.Web/js/jquery/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
+            "_content/JJMasterData.Web/js/autonumeric/autoNumeric.min.js",
             "_content/JJMasterData.Web/js/flatpickr/flatpickr.min.js",
             "_content/JJMasterData.Web/js/flatpickr/l10n/pt.min.js",
             "_content/JJMasterData.Web/js/flatpickr/l10n/en.min.js",

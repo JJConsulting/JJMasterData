@@ -15,6 +15,7 @@ internal class HttpRequestWrapper : IHttpRequest
     public string AbsoluteUri { get; }
     public string ApplicationPath { get; }
     public bool IsPost { get; }
+    public string ContentType { get; }
     private HttpRequest Request { get; }
     public HttpRequestWrapper(
         IHttpContextAccessor httpContextAccessor, 
@@ -34,6 +35,7 @@ internal class HttpRequestWrapper : IHttpRequest
         AbsoluteUri = request.GetDisplayUrl();
         ApplicationPath = request.PathBase;
         IsPost = HttpMethod.Equals("POST");
+        ContentType = request.ContentType;
     }
 
     public IFormFile GetFile(string file)
