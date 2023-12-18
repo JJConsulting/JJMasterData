@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using System.Web;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;

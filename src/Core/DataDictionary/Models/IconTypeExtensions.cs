@@ -6,7 +6,7 @@ public static class IconTypeExtensions
 {
     public static string GetCssClass(this IconType icon)
     {
-        if ((int)icon <= 691)
+        if ((int)icon <= 692)
         {
             var description = PascalToParamCase(icon.ToString());
             return $"fa fa-{description}";
