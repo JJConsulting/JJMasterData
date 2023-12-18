@@ -50,22 +50,22 @@ public class ActionMap
         }
     }
     
-    internal BasicAction GetAction(FormElement formElement)
+    internal BasicAction? GetAction(FormElement formElement)
     {
         return GetAction<BasicAction>(formElement);
     }
     
-    internal TAction GetAction<TAction>(FormElement formElement) where TAction : BasicAction
+    internal TAction? GetAction<TAction>(FormElement formElement) where TAction : BasicAction
     {
         var action = ActionSource switch
         {
-            ActionSource.GridTable => formElement.Options.GridTableActions.First(a => a.Name.Equals(ActionName)),
-            ActionSource.GridToolbar =>  formElement.Options.GridToolbarActions.First(a => a.Name.Equals(ActionName)),
-            ActionSource.FormToolbar =>  formElement.Options.FormToolbarActions.First(a => a.Name.Equals(ActionName)),
-            ActionSource.Field => formElement.Fields[FieldName!].Actions.Get(ActionName),
-            _ => throw new JJMasterDataException("Invalid ActionSource"),
+            ActionSource.GridTable => formElement.Options.GridTableActions.GetOrDefault(ActionName),
+            ActionSource.GridToolbar => formElement.Options.GridToolbarActions.GetOrDefault(ActionName),
+            ActionSource.FormToolbar => formElement.Options.FormToolbarActions.GetOrDefault(ActionName),
+            ActionSource.Field => formElement.Fields[FieldName!].Actions.GetOrDefault(ActionName),
+            _ => throw new JJMasterDataException("Invalid ActionSource")
         };
 
-        return (TAction)action;
+        return action as TAction;
     }
 }

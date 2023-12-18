@@ -807,7 +807,12 @@ public class JJGridView : AsyncComponent
     private Task<JJMessageBox?> ExecuteSqlCommand()
     {
         var action = CurrentActionMap!.GetAction(FormElement);
+        
+        if (action is null)
+            throw new JJMasterDataException("Action not found at your FormElement");
+        
         var gridSqlAction = new GridSqlCommandAction(this);
+        
         return gridSqlAction.ExecuteSqlCommand(CurrentActionMap, (SqlCommandAction)action);
     }
 

@@ -36,6 +36,11 @@ public abstract class FormElementActionList : IList<BasicAction>
     {
         return List.First(a => a.Name == actionName);
     }
+    
+    public BasicAction? GetOrDefault(string actionName)
+    {
+        return List.FirstOrDefault(a => a.Name == actionName);
+    }
 
     public List<BasicAction> GetAllSorted()
     {

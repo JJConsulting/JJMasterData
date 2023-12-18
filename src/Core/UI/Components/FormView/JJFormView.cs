@@ -588,7 +588,11 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetSqlCommandActionResult()
     {
         JJMessageBox? messageBox = null;
-        var sqlAction = CurrentActionMap!.GetAction<SqlCommandAction>(FormElement);
+        var sqlAction = CurrentActionMap?.GetAction<SqlCommandAction>(FormElement);
+
+        if (sqlAction is null)
+            throw new JJMasterDataException("Action not found at your FormElement");
+        
         try
         {
             var sqlCommand = ExpressionsService.ReplaceExpressionWithParsedValues(sqlAction.SqlCommand, await GetFormStateDataAsync());
