@@ -222,7 +222,7 @@ public class DataImportationWorker(DataImportationContext context,
     /// <summary>
     /// Preenche um hashtable com o nome do campor e o valor
     /// </summary>
-    private IDictionary<string, object> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField, string[] cols)
+    private Dictionary<string, object> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField, string[] cols)
     {
         var values = new Dictionary<string, object>();
         for (int i = 0; i < listField.Count; i++)

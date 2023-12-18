@@ -173,7 +173,7 @@ public class FieldController(FieldService fieldService, IControlFactory<JJSearch
         return RedirectToIndex(elementName, field);
     }
 
-    private IActionResult RedirectToIndex(string elementName, FormElementField field)
+    private RedirectToActionResult RedirectToIndex(string elementName, FormElementField field)
     {
         TempData.Put("field", field);
         TempData["error"] = ViewBag.Error;

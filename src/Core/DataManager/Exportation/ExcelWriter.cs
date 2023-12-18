@@ -196,7 +196,7 @@ public class ExcelWriter(ExpressionsService expressionsService,
         return value;
     }
 
-    private async Task GenerateHeader(System.IO.TextWriter sw)
+    private async Task GenerateHeader(StreamWriter sw)
     {
         await sw.WriteLineAsync("\t\t\t<tr>");
         foreach (var field in VisibleFields)

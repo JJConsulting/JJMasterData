@@ -138,7 +138,7 @@ public class TextWriter(ExpressionsService expressionsService,
         }
     }
 
-    private async Task GenerateHeader(System.IO.TextWriter sw)
+    private async Task GenerateHeader(StreamWriter sw)
     {
         bool isFirst = true;
         foreach (var field in VisibleFields)

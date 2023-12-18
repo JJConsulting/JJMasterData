@@ -17,8 +17,8 @@ public partial class HtmlBuilder
 {
     private readonly string? _rawText;
     private readonly bool _hasRawText;
-    private readonly IDictionary<string, string> _attributes;
-    private readonly IList<HtmlBuilder> _children;
+    private readonly Dictionary<string, string> _attributes;
+    private readonly List<HtmlBuilder> _children;
 
     /// <summary>
     /// Tag of the current builder.

@@ -89,7 +89,7 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
         return RedirectToIndex(elementName, newPanel);
     }
 
-    private IActionResult RedirectToIndex(string elementName, FormElementPanel panel)
+    private RedirectToActionResult RedirectToIndex(string elementName, FormElementPanel panel)
     {
         TempData.Put("panel",panel);
         TempData["error"] = ViewBag.Error;

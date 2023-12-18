@@ -16,7 +16,7 @@ public class InternalRedirectController(IComponentFactory componentFactory, IEnc
 {
     private string? _elementName;
     private RelationshipViewType _relationshipType;
-    private IDictionary<string, object> RelationValues { get; } = new Dictionary<string, object>();
+    private Dictionary<string, object> RelationValues { get; } = new Dictionary<string, object>();
 
     public async Task<IActionResult> Index(string parameters)
     {

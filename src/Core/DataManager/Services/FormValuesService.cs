@@ -27,7 +27,7 @@ public class FormValuesService(
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private IFormValues FormValues { get; } = httpRequest.Form;
 
-    private IDictionary<string, object?> GetFormValues(FormElement formElement,
+    private Dictionary<string, object?> GetFormValues(FormElement formElement,
         string? fieldPrefix = null)
     {
         if (formElement == null)

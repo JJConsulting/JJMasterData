@@ -153,7 +153,7 @@ public class MasterDataStringLocalizer : IStringLocalizer
             await EntityRepository.SetValuesAsync(element, value);
     }
 
-    private IEnumerable<IDictionary<string,object?>> ConvertDictionaryToList(IDictionary<string, string> dictionary,
+    private List<Dictionary<string,object?>> ConvertDictionaryToList(IDictionary<string, string> dictionary,
         string culture)
     {
         return dictionary.Select(pair => new Dictionary<string,object?>

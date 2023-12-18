@@ -33,7 +33,7 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
         });
     }
     
-    private IDictionary<string, object> GetFilters(DataElementMap elementMap, object? value, FormStateData? formStateData)
+    private Dictionary<string, object> GetFilters(DataElementMap elementMap, object? value, FormStateData? formStateData)
     {
         var filters = new Dictionary<string, object>();
 

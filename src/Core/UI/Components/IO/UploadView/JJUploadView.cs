@@ -650,7 +650,7 @@ public class JJUploadView : AsyncComponent
         return html;
     }
 
-    private static IDictionary<string, object> ConvertFormFileToDictionary(FormFileContent file)
+    private static Dictionary<string, object> ConvertFormFileToDictionary(FormFileContent file)
     {
         var dictionary = new Dictionary<string, object>
         {

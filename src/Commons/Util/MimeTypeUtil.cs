@@ -6,7 +6,7 @@ namespace JJMasterData.Commons.Util;
 public static class MimeTypeUtil
 {
 
-    private static readonly IDictionary<string, string> _mappings = new Dictionary<string, string>
+    private static readonly Dictionary<string, string> _mappings = new Dictionary<string, string>
         (StringComparer.InvariantCultureIgnoreCase) {
 
             #region Big freaking list of mime types
