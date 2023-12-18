@@ -186,7 +186,7 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
 
                 break;
             case FieldType.Float:
-                if (!double.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture, out _))
+                if (!float.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture, out _))
                 {
                     return Localizer["{0} field has an invalid number",
                         fieldName];

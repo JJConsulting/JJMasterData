@@ -19,18 +19,12 @@ namespace JJMasterData.Core.DataManager.Services;
 public class FormValuesService(
     IEntityRepository entityRepository,
     FieldValuesService fieldValuesService,
-    DataItemService dataItemService,
-    LookupService lookupService,
     IEncryptionService encryptionService,
-    IQueryString queryString,
     IFormValues httpFormValues)
 {
     private IEntityRepository EntityRepository { get; } = entityRepository;
     private FieldValuesService FieldValuesService { get; } = fieldValuesService;
-    private DataItemService DataItemService { get; } = dataItemService;
-    private LookupService LookupService { get; } = lookupService;
     private IEncryptionService EncryptionService { get; } = encryptionService;
-    private IQueryString QueryString { get; } = queryString;
     private IFormValues FormValues { get; } = httpFormValues;
 
     public IDictionary<string, object?> GetFormValues(FormElement formElement, PageState pageState,
@@ -89,7 +83,7 @@ public class FormValuesService(
         switch (dataType)
         {
             case FieldType.Float:
-                if (double.TryParse(value.ToString(), NumberStyles.Any, culture, out var floatValue))
+                if (float.TryParse(value.ToString(), NumberStyles.Any, culture, out var floatValue))
                     parsedValue = floatValue;
                 break;
             case FieldType.Int:

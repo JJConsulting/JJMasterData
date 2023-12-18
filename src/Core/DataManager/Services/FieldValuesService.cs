@@ -83,13 +83,13 @@ public class FieldValuesService(ExpressionsService expressionsService)
         
         foreach (var d in defaultValues)
         {
-            if (!formValues.ContainsKey(d.Key))
+            if (!formValues.TryGetValue(d.Key, out var value))
             {
                 formValues.Add(d.Key, d.Value);
             }
             else
             {
-                if ((formValues[d.Key] == null || string.IsNullOrEmpty(formValues[d.Key]?.ToString())) && replaceNullValues)
+                if ((value == null || string.IsNullOrEmpty(value.ToString())) && replaceNullValues)
                 {
                     formValues[d.Key] = d.Value;
                 }

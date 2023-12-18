@@ -37,7 +37,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 stringValue = GetNumericValueAsString(field, value);
                 break;
             case FormComponent.Currency:
-                if (double.TryParse(value?.ToString(),NumberStyles.Currency,CultureInfo.CurrentCulture, out var currencyValue))
+                if (float.TryParse(value?.ToString(),NumberStyles.Currency,CultureInfo.CurrentCulture, out var currencyValue))
                 {
                     var cultureInfo = CultureInfo.CurrentCulture;
                     var numberFormatInfo = (NumberFormatInfo)cultureInfo.NumberFormat.Clone();
@@ -79,7 +79,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         string stringValue = null;
         if (field.DataType == FieldType.Float)
         {
-            if (double.TryParse(value.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture,
+            if (float.TryParse(value.ToString(), NumberStyles.Any, CultureInfo.CurrentCulture,
                     out var floatValue))
                 stringValue = floatValue.ToString($"N{field.NumberOfDecimalPlaces}");
         }

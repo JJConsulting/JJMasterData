@@ -309,7 +309,7 @@ internal class GridFilter(JJGridView gridView)
         var fieldType = field.DataType;
         var component = field.Component;
         
-        if (double.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var numericValue))
+        if (float.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var numericValue))
             return numericValue;
     
         if (fieldType is FieldType.DateTime or FieldType.DateTime2 && component == FormComponent.Date)
