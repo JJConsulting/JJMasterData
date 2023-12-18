@@ -39,18 +39,32 @@ class ActionHelper {
             }
         }
 
-        const currentFormActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
-        if(currentFormActionInput){
-            currentFormActionInput.value = encryptedActionMap;
+        const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName);
+        const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
+
+        if (formViewActionInput) {
+            formViewActionInput.value = encryptedActionMap;
+        } else {
+            const newFormInput = document.createElement("input");
+            newFormInput.id = "form-view-action-map-" + componentName;
+            newFormInput.name = "form-view-action-map-" + componentName;
+            newFormInput.type = "hidden";
+            newFormInput.value = encryptedActionMap;
+            document.querySelector('form').appendChild(newFormInput);
+        }
+        
+        if (gridViewActionInput) {
+            gridViewActionInput.value = encryptedActionMap;
         }
         else{
-            const newInput = document.createElement("input");
-            newInput.id = "form-view-action-map-" + componentName;
-            newInput.name = "form-view-action-map-" + componentName;
-            newInput.value = encryptedActionMap;
-            document.querySelector('form').appendChild(newInput);
+            const newGridInput = document.createElement("input");
+            newGridInput.id = "grid-view-action-map-" + componentName;
+            newGridInput.name = "grid-view-action-map-" + componentName;
+            newGridInput.type = "hidden";
+            newGridInput.value = encryptedActionMap;
+            document.querySelector('form').appendChild(newGridInput);
         }
-
+   
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("componentName", componentName);
