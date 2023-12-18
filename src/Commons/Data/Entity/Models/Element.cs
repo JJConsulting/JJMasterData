@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
 /// <summary> 
-/// Represents a database element.
+/// Metadata representation of a database element.
 /// </summary>
 /// <remarks>
-/// Created at 2017-03-22 by JJTeam
+/// 2017-03-22 - JJTeam
 /// </remarks>
+[DebuggerDisplay("Name = {Name}")]
 public class Element
 {
     [JsonProperty("name")]

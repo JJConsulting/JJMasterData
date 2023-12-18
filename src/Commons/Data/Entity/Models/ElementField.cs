@@ -1,14 +1,16 @@
 ﻿#nullable enable
 
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
 
 /// <summary>
-/// Field Info
+/// Representation of a metadata field.
 /// </summary>
-/// <remarks>2017-03-22 JJTeam</remarks>
+/// <remarks>2017-03-22 - JJTeam</remarks>
+[DebuggerDisplay("Name = {Name} DataType = {DataType}")]
 public class ElementField
 {
     /// <summary>
