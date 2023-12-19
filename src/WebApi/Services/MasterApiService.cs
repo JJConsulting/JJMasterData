@@ -378,7 +378,7 @@ public class MasterApiService(ExpressionsService expressionsService,
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private IDictionary<string, object> ParseFilter(FormElement metadata, IDictionary<string, object>? paramValues)
+    private Dictionary<string, object> ParseFilter(FormElement metadata, IDictionary<string, object>? paramValues)
     {
         var filters = GetDefaultFilter(metadata);
         if (paramValues == null)
@@ -394,7 +394,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return filters;
     }
 
-    private IDictionary<string, object> GetDefaultFilter(FormElement formElement, bool loadQueryString = false)
+    private Dictionary<string, object> GetDefaultFilter(FormElement formElement, bool loadQueryString = false)
     {
         if (_httpContext == null)
             throw new NullReferenceException(nameof(_httpContext));
@@ -459,7 +459,7 @@ public class MasterApiService(ExpressionsService expressionsService,
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private IDictionary<string, object?>? GetDiff(
+    private static Dictionary<string, object?>? GetDiff(
         IDictionary<string, object?> original,
         IDictionary<string, object?> result, 
         FormElementApiOptions apiOptions)
