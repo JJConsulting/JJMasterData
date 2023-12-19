@@ -80,6 +80,6 @@ public class GridScripts(JJGridView gridView)
 
     public object GetReloadFilterScript()
     {
-        return $"GridViewFilterHelper.reload('{gridView.Name}','{gridView.Filter.Name}','{GetEncryptedRouteContext(ComponentContext.GridViewFilterReload)}')";
+        return $"setTimeout(()=>GridViewFilterHelper.reload('{gridView.Name}','{gridView.Filter.Name}','{GetEncryptedRouteContext(ComponentContext.GridViewFilterReload)}'),200)";
     }
 }

@@ -16,7 +16,7 @@ class GridViewFilterHelper {
         postFormValues({
             url: urlBuilder.build(), 
             success: (content) => {
-                document.getElementById(filterPanelName).innerHTML = content;
+                HTMLHelper.setOuterHTML(filterPanelName, content)
             }
         })
     }
