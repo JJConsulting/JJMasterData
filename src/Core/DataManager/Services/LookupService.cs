@@ -39,18 +39,6 @@ public class LookupService(IFormValues formValues,
         return UrlHelper.GetUrl("Index", "Lookup", "MasterData",new { lookupParameters = encryptedLookupParameters });
     }
 
-    public string GetDescriptionUrl(string elementName, string fieldName, string componentName, PageState? pageState)
-    {
-        return UrlHelper.GetUrl("GetDescription", "Lookup","MasterData", 
-            new
-            {
-                elementName = EncryptionService.EncryptStringWithUrlEscape(elementName),
-                componentName,
-                fieldName,
-                pageState
-            });
-    }
-
     public async Task<string?> GetDescriptionAsync(
         DataElementMap elementMap,
         FormStateData? formStateData,

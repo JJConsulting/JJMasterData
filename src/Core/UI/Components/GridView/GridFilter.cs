@@ -10,6 +10,7 @@ using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
@@ -86,14 +87,6 @@ internal class GridFilter(JJGridView gridView)
             return _currentFilter;
         }
         
-        // var filters = CurrentContext.Request.Form[$"grid-view-filters-{GridView.Name}"];
-        // if (!string.IsNullOrEmpty(filters))
-        // {
-        //     var filterJson = GridView.EncryptionService.DecryptStringWithUrlUnescape(filters);
-        //     _currentFilter = JsonConvert.DeserializeObject<Dictionary<string, object>>(filterJson) ?? new Dictionary<string, object>();
-        //     return _currentFilter;
-        // }
-
         if (sessionFilter != null && (CurrentContext.Request.Form.ContainsFormValues() || IsDynamicPost()))
         {
             _currentFilter = sessionFilter;
@@ -308,9 +301,9 @@ internal class GridFilter(JJGridView gridView)
     {
         var fieldType = field.DataType;
         var component = field.Component;
-        
-        if (float.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var numericValue))
-            return numericValue;
+
+        if (component is FormComponent.Number)
+            return FormValuesService.HandleNumericComponent(fieldType, value);
     
         if (fieldType is FieldType.DateTime or FieldType.DateTime2 && component == FormComponent.Date)
         {

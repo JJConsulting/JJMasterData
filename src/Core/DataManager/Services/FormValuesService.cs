@@ -60,7 +60,7 @@ public class FormValuesService(
                     if (value is null)
                         break;
 
-                    value = HandleNumericComponent(value, field.DataType);
+                    value = HandleNumericComponent(field.DataType, value);
 
                     break;
                 case FormComponent.CheckBox:
@@ -75,9 +75,12 @@ public class FormValuesService(
         return values;
     }
 
-    private static object HandleNumericComponent(object value, FieldType dataType)
+    internal static object? HandleNumericComponent(FieldType dataType, object? value)
     {
-        var culture =  CultureInfo.CurrentCulture;
+        if (value is null)
+            return value;
+        
+        var culture = CultureInfo.CurrentCulture;
         object parsedValue = 0;
         
         switch (dataType)
