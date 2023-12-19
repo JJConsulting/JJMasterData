@@ -25,6 +25,7 @@ public static class SystemWebHelper
             }
 
             currentContext.Response.Clear();
+            currentContext.Response.StatusCode = result.StatusCode;
             currentContext.Response.Write(result.Content!);
             currentContext.Response.End();
         }

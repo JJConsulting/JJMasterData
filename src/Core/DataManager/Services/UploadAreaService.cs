@@ -53,7 +53,7 @@ public class UploadAreaService(IHttpContext currentContext, IStringLocalizer<Mas
             dto.SuccessMessage = message;
 
         }
-        catch (Exception ex)
+        catch (JJMasterDataException ex)
         {
             dto.ErrorMessage = ex.Message;
         }

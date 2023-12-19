@@ -2275,11 +2275,28 @@ class UploadAreaListener {
             parallelUploads: options.parallelUploads,
             url: options.url
         });
-        const onSuccess = (file = null) => {
-            if (dropzone.getQueuedFiles().length === 0) {
-                if (options.jsCallback) {
-                    eval(options.jsCallback);
+        const onSuccess = (files = null) => {
+            const processFile = (file) => {
+                const jsonResponse = JSON.parse(file.xhr.responseText);
+                if (jsonResponse.error) {
+                    const previewElement = file.previewElement;
+                    previewElement.classList.remove("dz-success");
+                    previewElement.classList.add("dz-error");
+                    const errorElement = previewElement.querySelector('.dz-error-message');
+                    errorElement.textContent = jsonResponse.error;
+                    return;
                 }
+                if (dropzone.getQueuedFiles().length === 0) {
+                    if (options.jsCallback) {
+                        eval(options.jsCallback);
+                    }
+                }
+            };
+            if (Array.isArray(files)) {
+                files.forEach(processFile);
+            }
+            else {
+                processFile(files);
             }
         };
         if (options.allowMultipleFiles) {

@@ -150,11 +150,8 @@ public class JJUploadArea : AsyncComponent
             UploadAreaService.OnFileUploadedAsync += OnFileUploadedAsync;
 
         var dto = await UploadAreaService.UploadFileAsync(formFile, AllowedTypes);
-        
-        var result = new JsonComponentResult(dto)
-        {
-            StatusCode = !string.IsNullOrEmpty(dto.ErrorMessage) ? 400 : 200
-        };
+
+        var result = new JsonComponentResult(dto);
         
         return result;
     }
