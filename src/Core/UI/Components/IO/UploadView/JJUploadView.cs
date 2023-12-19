@@ -53,6 +53,7 @@ public class JJUploadView : AsyncComponent
     public event EventHandler<FormRenameFileEventArgs> OnBeforeRenameFile;
     public event EventHandler<FormDownloadFileEventArgs> OnBeforeDownloadFile;
     
+    internal string ParentName { get; set; }
     public bool ShowAddFiles { get; set; }
     
     public bool IsCollapseExpandedByDefault { get; set; }
@@ -110,6 +111,7 @@ public class JJUploadView : AsyncComponent
 
             _gridView = ComponentFactory.GridView.Create(new FormElement(files));
             _gridView.FormElement.Name = Name;
+            _gridView.FormElement.ParentName = ParentName;
             _gridView.FormElement.Title = Title;
             _gridView.FormElement.SubTitle = SubTitle;
             

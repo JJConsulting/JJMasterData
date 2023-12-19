@@ -200,6 +200,9 @@ public class JJDataPanel : AsyncComponent
         
         var control = ComponentFactory.Controls.Create<TControl>(FormElement, field, controlContext);
         control.Name = FieldNamePrefix + fieldName;
+
+        if (control is JJTextFile textFile)
+            textFile.ParentName = FormElement.Name;
         
         return await control.GetResultAsync();
     }

@@ -29,7 +29,7 @@ public class JJTextFile(IHttpRequest request,
     internal IEncryptionService EncryptionService { get; } = encryptionService;
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
-
+    internal string ParentName { get; set; }
     public string FieldName { get; set; }
     
     public IDictionary<string, object> FormStateValues
@@ -78,6 +78,7 @@ public class JJTextFile(IHttpRequest request,
             
             _uploadView = ComponentFactory.UploadView.Create();
             _uploadView.Name = $"{FormElementField.Name}-upload-view";
+            _uploadView.ParentName = ParentName;
             _uploadView.Title = string.Empty;
             _uploadView.AutoSave = false;
             _uploadView.ShowAddFiles = PageState is not PageState.View;
