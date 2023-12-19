@@ -82,7 +82,6 @@
                 const nextIndex = (currentIndex + 1) % focusableElements.length;
                 const nextElement = focusableElements[nextIndex];
                 nextElement.focus();
-                console.log(nextElement.id)
             }
         },
 
