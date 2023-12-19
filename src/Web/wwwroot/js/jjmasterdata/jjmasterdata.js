@@ -331,12 +331,22 @@ class CollapsePanelListener {
         let nameSelector = "#" + componentName;
         let collapseSelector = '#' + componentName + '-is-open';
         let collapseElement = document.querySelector(nameSelector);
-        collapseElement.addEventListener("hidden.bs.collapse", function () {
-            document.querySelector(collapseSelector).value = "0";
-        });
-        collapseElement.addEventListener("show.bs.collapse", function () {
-            document.querySelector(collapseSelector).value = "1";
-        });
+        if (bootstrapVersion === 5) {
+            collapseElement.addEventListener("hidden.bs.collapse", function () {
+                document.querySelector(collapseSelector).value = "0";
+            });
+            collapseElement.addEventListener("show.bs.collapse", function () {
+                document.querySelector(collapseSelector).value = "1";
+            });
+        }
+        else {
+            $(nameSelector).on('hidden.bs.collapse', function () {
+                $(collapseSelector).val("0");
+            });
+            $(nameSelector).on('show.bs.collapse', function () {
+                $(collapseSelector).val("1");
+            });
+        }
     }
 }
 class DataDictionaryUtils {

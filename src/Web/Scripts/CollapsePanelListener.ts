@@ -5,12 +5,22 @@ class CollapsePanelListener{
 
         let collapseElement = document.querySelector(nameSelector);
 
-        collapseElement.addEventListener("hidden.bs.collapse", function() {
-            document.querySelector<HTMLInputElement>(collapseSelector).value = "0";
-        });
+        if(bootstrapVersion === 5){
+            collapseElement.addEventListener("hidden.bs.collapse", function () {
+                document.querySelector<HTMLInputElement>(collapseSelector).value = "0";
+            });
+            collapseElement.addEventListener("show.bs.collapse", function () {
+                document.querySelector<HTMLInputElement>(collapseSelector).value = "1";
+            });
+        }
+        else{
+            $(nameSelector).on('hidden.bs.collapse', function () {
+                $(collapseSelector).val("0");
+            });
 
-        collapseElement.addEventListener("show.bs.collapse", function() {
-            document.querySelector<HTMLInputElement>(collapseSelector).value = "1";
-        });
+            $(nameSelector).on('show.bs.collapse', function () {
+                $(collapseSelector).val("1");
+            });
+        }
     }
 }
