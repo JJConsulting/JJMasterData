@@ -24,6 +24,8 @@
     
     if(bootstrapVersion === 5){
         TooltipListener.listen(selectorPrefix)
+    }else{
+        $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
     }
     
     document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces)
