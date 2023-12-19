@@ -152,8 +152,8 @@ internal class GridTableBody(JJGridView gridView)
                     };
                     
                     await OnRenderCellAsync(this, args);
-                    
-                    td.Append(args.HtmlResult);
+
+                    td.Append(args.HtmlResult ?? cell);
                 }
                 else
                 {
