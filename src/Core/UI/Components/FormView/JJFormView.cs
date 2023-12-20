@@ -1558,54 +1558,7 @@ public class JJFormView : AsyncComponent
 
     [Obsolete("Please use GridView.ExportAction")]
     public ExportAction ExportAction => GridView.ExportAction;
-
-    [Obsolete("Please use GridView.GridTableActions.EditAction")]
-    public EditAction EditAction
-    {
-        get
-        {
-            return FormElement.Options.GridTableActions.EditAction;
-        }
-    }
     
-    [Obsolete("Please use GridView.GridTableActions.ViewAction")]
-    public ViewAction ViewAction
-    {
-        get
-        {
-            return FormElement.Options.GridTableActions.ViewAction;
-        }
-    }
-    
-    [Obsolete("Please use GridView.GridTableActions.DeleteAction")]
-    public DeleteAction DeleteAction
-    {
-        get
-        {
-            return FormElement.Options.GridTableActions.DeleteAction;
-        }
-    }
-    [Obsolete("Please use GridView.GridToolbarActions.InsertAction")]
-    public InsertAction InsertAction
-    {
-        get
-        {
-            return FormElement.Options.GridToolbarActions.InsertAction;
-        }
-    }
-    
-    [Obsolete("Please use GridView.IsExportPost")]
-    public bool IsExportPost()
-    {
-        return GridView.IsExportPost();
-    }
-
-    [Obsolete("Please use GridView.DataSource")]
-    public IList<Dictionary<string, object?>>? DataSource
-    {
-        get => GridView.DataSource;
-        set => GridView.DataSource = value;
-    }
     #endregion
 
     public static implicit operator JJGridView(JJFormView formView) => formView.GridView;

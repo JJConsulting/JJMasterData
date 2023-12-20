@@ -458,6 +458,7 @@ public class JJGridView : AsyncComponent
     public ExportAction ExportAction => ToolbarActions.ExportAction;
     public ConfigAction ConfigAction => ToolbarActions.ConfigAction;
     public SortAction SortAction => ToolbarActions.SortAction;
+    public InsertAction InsertAction => ToolbarActions.InsertAction;
     
     public ViewAction ViewAction => GridTableActions.ViewAction;
     public EditAction EditAction => GridTableActions.EditAction;
