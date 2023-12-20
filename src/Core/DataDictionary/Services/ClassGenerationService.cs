@@ -20,7 +20,7 @@ public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepo
 
         foreach (var item in formElement.Fields.ToList())
         {
-            var propertyName = StringManager.GetStringWithoutAccents(item.Name.Replace(" ", "").Replace("-", " ").Replace("_", " "));
+            var propertyName = StringManager.ToParamCase(item.Name);
             var propertyType = GetPropertyType(item.DataType, item.IsRequired);
             var property = propertyTemplate.Replace("@PropertyName", ToCamelCase(propertyName)).Replace("@PropertyType", propertyType);
 
@@ -41,15 +41,19 @@ public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepo
 
     private static string GetPropertyType(FieldType dataTypeField, bool required)
     {
-        return dataTypeField switch
+        var type =  dataTypeField switch
         {
             FieldType.Date or FieldType.DateTime or FieldType.DateTime2 => "DateTime",
             FieldType.Float => "double",
             FieldType.Int => "int",
             FieldType.Bit => "bool",
-            FieldType.NText or FieldType.NVarchar or FieldType.Text or FieldType.Varchar => required ? "string" : "string?",
-            _ => "",
+            FieldType.UniqueIdentifier => "Guid",
+            FieldType.Time => "TimeSpan",
+            FieldType.NText or FieldType.NVarchar or FieldType.Text or FieldType.Varchar => "string",
+            _ => "object"
         };
+
+        return required ? type : type + "?";
     }
 
     private static string ToCamelCase(string value)

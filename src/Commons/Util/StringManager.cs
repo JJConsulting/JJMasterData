@@ -579,4 +579,22 @@ public static class StringManager
 
         return paramCaseString.ToString();
     }
+    
+    public static string ToPascalCase(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return input;
+        }
+
+        var textInfo = CultureInfo.CurrentCulture.TextInfo;
+        var words = input.Split(new char[] { ' ', '_', '-' }, StringSplitOptions.RemoveEmptyEntries);
+
+        for (var i = 0; i < words.Length; i++)
+        {
+            words[i] = textInfo.ToTitleCase(words[i].ToLower());
+        }
+
+        return string.Join("", words);
+    }
 }
