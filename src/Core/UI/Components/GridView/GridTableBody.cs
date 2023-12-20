@@ -122,9 +122,15 @@ internal class GridTableBody(JJGridView gridView)
                 HtmlBuilder cell;
                 if (field.DataItem is not null && field.DataItem.ShowIcon)
                 {
-                    var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,null,value.ToString()).FirstOrDefaultAsync();
+                    var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData, null,
+                            value.ToString()).FirstOrDefaultAsync(d=>d.Id == value.ToString());
                     cell = new HtmlBuilder(HtmlTag.Div);
                     cell.AppendComponent(new JJIcon(dataItemValue!.Icon,dataItemValue.IconColor ?? string.Empty));
+                    if (dataItemValue.Description is not null)
+                    {
+                        cell.WithToolTip(dataItemValue.Description);
+                    }
+
                     cell.AppendIf(dataItemValue.Description is not null && field.DataItem.ReplaceTextOnGrid, HtmlTag.Span, span =>
                     {
                         span.AppendText(field.DataItem.ReplaceTextOnGrid ? dataItemValue.Description! : dataItemValue.Id);
