@@ -89,18 +89,32 @@
         });
     }
 
-    function loadIframe(url, panelId) {
-        $("#sortable-grid a").removeClass("active");
-
-        if (panelId != "")
-            $("#" + panelId).addClass("active");
-
-        $.get(url, function (data) {
-            $("#field-details").html(data);
-            listenAllEvents("#field-details ");
-            savePanelState();
-            resizeContainer();
+    function loadDetails(url, panelId) {
+        document.querySelectorAll("#sortable-grid a").forEach(element => {
+            element.classList.remove("active");
         });
+        
+        if (panelId !== "") {
+            const panel = document.getElementById(panelId);
+            if (panel) {
+                panel.classList.add("active");
+            }
+        }
+        
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                HTMLHelper.setInnerHTML("field-details", data);
+                listenAllEvents("#field-details ");
+                savePanelState();
+                document.getElementById("selectedFields").value = "";
+                resizeContainer();
+            })
     }
 
     function searchFields(oDom) {
@@ -127,7 +141,7 @@
         <div class="col-sm-3">
             <div class="input-group jjsearch" style="margin-bottom: 15px;margin-top: 1px;">
                 <span class="input-group-btn">
-                    <button type="button" class="@BootstrapHelper.DefaultButton" onclick="loadIframe('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
+                    <button type="button" class="@BootstrapHelper.DefaultButton" onclick="loadDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
                         <span class="fa fa-plus"></span>
                     </button>
                 </span>
@@ -151,7 +165,7 @@
                         @foreach (FormElementPanel panel in ViewBag.Panels)
                         {
                             nLine++;
-                            <a href="javascript:loadIframe('@Url.Action("Detail", new { elementName = ViewBag.ElementName, panelId = panel.PanelId })', '@panel.PanelId' );"
+                            <a href="javascript:loadDetails('@Url.Action("Detail", new { elementName = ViewBag.ElementName, panelId = panel.PanelId })', '@panel.PanelId' );"
                                class="list-group-item @(panel.PanelId.Equals(Model.PanelId) ? "active" : "")"
                                id="@panel.PanelId">
                                 <div style="height: 33px;">
