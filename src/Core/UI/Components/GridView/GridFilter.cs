@@ -302,7 +302,7 @@ internal class GridFilter(JJGridView gridView)
         var fieldType = field.DataType;
         var component = field.Component;
 
-        if (component is FormComponent.Number)
+        if (component is FormComponent.Number && !string.IsNullOrEmpty(value))
             return FormValuesService.HandleNumericComponent(fieldType, value);
     
         if (fieldType is FieldType.DateTime or FieldType.DateTime2 && component == FormComponent.Date)
