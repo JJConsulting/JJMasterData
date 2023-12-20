@@ -1475,17 +1475,6 @@ public class JJFormView : AsyncComponent
         };
     }
     
-#if NETFRAMEWORK
-    [Obsolete("Please use GetCurrentFilterAsync")]
-    public IDictionary<string, object?> CurrentFilter
-    {
-        get
-        {
-            return AsyncHelper.RunSync(()=>GridView.GetCurrentFilterAsync());
-        }
-    }
-#endif
-    
     
     #region "Legacy inherited GridView compatibility"
 
