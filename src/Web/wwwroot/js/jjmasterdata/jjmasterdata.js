@@ -294,10 +294,14 @@ class CodeMirrorWrapper {
             lineNumbers: !options.singleLine,
             autofocus: false,
             autohint: true,
+            scrollbarStyle: options.singleLine ? "null" : "native",
+            viewportMargin: options.singleLine ? Infinity : null,
             extraKeys: { "Ctrl-Space": "autocomplete" }
         });
         if (options.singleLine) {
-            codeMirrorTextArea.setSize(null, 29);
+            const inputElement = document.querySelector(".form-select");
+            const inputStyle = window.getComputedStyle(inputElement);
+            codeMirrorTextArea.getWrapperElement().style.height = inputStyle.height;
             codeMirrorTextArea.on("beforeChange", function (instance, change) {
                 const newText = change.text.join("").replace(/\n/g, "");
                 change.update(change.from, change.to, [newText]);

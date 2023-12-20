@@ -6,6 +6,7 @@ using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
@@ -212,6 +213,8 @@ public class RelationshipsController(RelationshipsService relationshipsService,
         var formElement = await relationshipsService.DataDictionaryRepository.GetFormElementAsync(elementName);
 
         var relationship = formElement.Relationships.GetById(id);
+        
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(relationshipsService.GetAutocompleteHintsList(formElement));
         
         return new RelationshipsLayoutDetailsViewModel(elementName, "Relationships")
         {
