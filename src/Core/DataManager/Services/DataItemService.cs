@@ -45,7 +45,7 @@ public class DataItemService(IEntityRepository entityRepository,
         }
     }
 
-    public async IAsyncEnumerable<DataItemValue> GetValuesAsync(
+    public async Task<List<DataItemValue>> GetValuesAsync(
         FormElementDataItem dataItem,
         FormStateData formStateData,
         string? searchText = null,
@@ -56,19 +56,11 @@ public class DataItemService(IEntityRepository entityRepository,
         switch (dataItemType)
         {
             case DataItemType.Manual:
-            {
-                foreach (var item in GetItemsValues(dataItem, searchId, searchText))
-                    yield return item;
-                yield break;
-            }
+                return GetItemsValues(dataItem, searchId, searchText).ToList();
             case DataItemType.SqlCommand:
-                await foreach (var value in GetSqlCommandValues(dataItem, formStateData,searchId, searchText))
-                    yield return value;
-                yield break;
+                return await GetSqlCommandValues(dataItem, formStateData, searchId, searchText).ToListAsync();
             case DataItemType.ElementMap:
-                await foreach (var value in GetElementMapValues(dataItem, formStateData, searchId,searchText))
-                    yield return value;
-                yield break;
+                return await GetElementMapValues(dataItem, formStateData, searchId,searchText).ToListAsync();
             default:
                 throw new JJMasterDataException("Invalid DataItemType.");
         }

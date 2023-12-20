@@ -135,8 +135,7 @@ public class JJUploadView : AsyncComponent
             _gridView.FilterAction.SetVisible(false);
             _gridView.EmptyDataText = "There is no file to display";
             _gridView.ShowHeaderWhenEmpty = false;
-        
-            _gridView.GridTableActions.Clear();
+            
             _gridView.GridTableActions.Add(DownloadAction);
             
             _gridView.OnRenderActionAsync += (_, args) =>

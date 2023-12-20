@@ -332,7 +332,7 @@ public class JJSearchBox : ControlBase
         }
         else
         {
-            _values ??= await DataItemService.GetValuesAsync(DataItem, FormStateData, null, searchId).ToListAsync<DataItemValue>();
+            _values ??= await DataItemService.GetValuesAsync(DataItem, FormStateData, null, searchId);
         }
 
         var item = _values?.ToList().Find(x => x.Id.Equals(searchId));
@@ -346,7 +346,7 @@ public class JJSearchBox : ControlBase
     /// <summary>
     /// Recover values from the given text.
     /// </summary>
-    public async Task<List<DataItemValue>> GetValuesAsync(string? searchText)
+    private async Task<List<DataItemValue>> GetValuesAsync(string? searchText)
     {
         var list = new List<DataItemValue>();
         if (OnSearchQuery != null)
@@ -360,10 +360,7 @@ public class JJSearchBox : ControlBase
         }
         else
         {
-            await foreach (var value in DataItemService.GetValuesAsync(DataItem, FormStateData, searchText, null))
-            {
-                list.Add(value);
-            }
+            list.AddRange(await DataItemService.GetValuesAsync(DataItem, FormStateData, searchText));
         }
 
         return list;

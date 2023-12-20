@@ -71,7 +71,7 @@ public class JJComboBox : ControlBase
         if (DataItem == null)
             throw new ArgumentException($"FormElementDataItem property is null for JJComboBox {Name}");
 
-        var values = await GetValuesAsync().ToListAsync();
+        var values = await GetValuesAsync();
 
         if (ReadOnly && Enabled)
         {
@@ -192,7 +192,7 @@ public class JJComboBox : ControlBase
         return selectedText;
     }
 
-    public IAsyncEnumerable<DataItemValue> GetValuesAsync()
+    public Task<List<DataItemValue>> GetValuesAsync()
     {
         return DataItemService.GetValuesAsync(DataItem,FormStateData);
     }
@@ -239,8 +239,8 @@ public class JJComboBox : ControlBase
 
     public async Task<DataItemValue?> GetValueAsync(string? searchId)
     {
-        var values = DataItemService.GetValuesAsync(DataItem,FormStateData,null,searchId);
-        return await values.FirstOrDefaultAsync<DataItemValue>(v=> v.Id==searchId);
+        var values = await DataItemService.GetValuesAsync(DataItem,FormStateData,null,searchId);
+        return values.FirstOrDefault(v=> v.Id==searchId);
     }
     
 

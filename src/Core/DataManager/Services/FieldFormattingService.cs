@@ -61,9 +61,9 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
 
                 values.TryGetValue(field.Name, out var searchId);
                 
-                var searchBoxValues = DataItemService.GetValuesAsync(field.DataItem, searchFormData, null, searchId?.ToString());
+                var searchBoxValues = await DataItemService.GetValuesAsync(field.DataItem, searchFormData, null, searchId?.ToString());
 
-                var rowValue = await searchBoxValues.FirstOrDefaultAsync(v => v.Id == fieldValue?.ToString());
+                var rowValue = searchBoxValues.FirstOrDefault(v => v.Id == fieldValue?.ToString());
                 
                 return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
             default:

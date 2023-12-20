@@ -122,8 +122,9 @@ internal class GridTableBody(JJGridView gridView)
                 HtmlBuilder cell;
                 if (field.DataItem is not null && field.DataItem.ShowIcon)
                 {
-                    var dataItemValue = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData, null,
-                            value.ToString()).FirstOrDefaultAsync(d=>d.Id == value.ToString());
+                    var dataItemValues =await  GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData, null,
+                        value.ToString());
+                    var dataItemValue = dataItemValues.FirstOrDefault(d=>d.Id == value.ToString());
                     cell = new HtmlBuilder(HtmlTag.Div);
                     cell.AppendComponent(new JJIcon(dataItemValue!.Icon,dataItemValue.IconColor ?? string.Empty));
                     if (dataItemValue.Description is not null)

@@ -40,7 +40,7 @@ internal class GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStri
             if (field.DataItem != null)
                 cbo.DataItem = field.DataItem;
 
-            var values = await cbo.GetValuesAsync().ToListAsync();
+            var values = await cbo.GetValuesAsync();
             
             if (values is { Count: > 0 })
             {
