@@ -451,15 +451,20 @@ public class JJGridView : AsyncComponent
 
     public int TotalOfRecords { get; set; }
 
-    public LegendAction LegendAction => ToolBarActions.LegendAction;
-    public RefreshAction RefreshAction => ToolBarActions.RefreshAction;
-    public FilterAction FilterAction => ToolBarActions.FilterAction;
-    public ImportAction ImportAction => ToolBarActions.ImportAction;
-    public ExportAction ExportAction => ToolBarActions.ExportAction;
-    public ConfigAction ConfigAction => ToolBarActions.ConfigAction;
-    public SortAction SortAction => ToolBarActions.SortAction;
-    public GridToolbarActionList ToolBarActions => FormElement.Options.GridToolbarActions;
-    public GridTableActionList GridActions => FormElement.Options.GridTableActions;
+    public LegendAction LegendAction => ToolbarActions.LegendAction;
+    public RefreshAction RefreshAction => ToolbarActions.RefreshAction;
+    public FilterAction FilterAction => ToolbarActions.FilterAction;
+    public ImportAction ImportAction => ToolbarActions.ImportAction;
+    public ExportAction ExportAction => ToolbarActions.ExportAction;
+    public ConfigAction ConfigAction => ToolbarActions.ConfigAction;
+    public SortAction SortAction => ToolbarActions.SortAction;
+    
+    public ViewAction ViewAction => GridTableActions.ViewAction;
+    public EditAction EditAction => GridTableActions.EditAction;
+    public DeleteAction DeleteAction => GridTableActions.DeleteAction;
+    
+    public GridToolbarActionList ToolbarActions => FormElement.Options.GridToolbarActions;
+    public GridTableActionList GridTableActions => FormElement.Options.GridTableActions;
     
     private ActionMap? CurrentActionMap
     {
@@ -1368,34 +1373,34 @@ public class JJGridView : AsyncComponent
         return !(!ShowPagging || CurrentPage == 0 || CurrentSettings.RecordsPerPage == 0 || TotalOfRecords == 0);
     }
 
-    public void AddToolBarAction(SqlCommandAction action)
+    public void AddToolbarAction(SqlCommandAction action)
     {
         ValidateAction(action);
-        ToolBarActions.Add(action);
+        ToolbarActions.Add(action);
     }
 
-    public void AddToolBarAction(UrlRedirectAction action)
+    public void AddToolbarAction(UrlRedirectAction action)
     {
         ValidateAction(action);
-        ToolBarActions.Add(action);
+        ToolbarActions.Add(action);
     }
 
-    public void AddToolBarAction(InternalAction action)
+    public void AddToolbarAction(InternalAction action)
     {
         ValidateAction(action);
-        ToolBarActions.Add(action);
+        ToolbarActions.Add(action);
     }
 
-    public void AddToolBarAction(SubmitAction action)
+    public void AddToolbarAction(SubmitAction action)
     {
         ValidateAction(action);
-        ToolBarActions.Add(action);
+        ToolbarActions.Add(action);
     }
 
-    public void AddToolBarAction(ScriptAction action)
+    public void AddToolbarAction(ScriptAction action)
     {
         ValidateAction(action);
-        ToolBarActions.Add(action);
+        ToolbarActions.Add(action);
     }
 
     /// <summary>
@@ -1409,14 +1414,14 @@ public class JJGridView : AsyncComponent
         if (string.IsNullOrEmpty(actionName))
             throw new ArgumentNullException(nameof(actionName));
 
-        var action = ToolBarActions.First(x => x.Name.Equals(actionName));
+        var action = ToolbarActions.First(x => x.Name.Equals(actionName));
 
         switch (action)
         {
             case null:
                 throw new ArgumentException(StringLocalizer["Action {0} not found", actionName]);
             case ScriptAction or UrlRedirectAction or InternalAction:
-                ToolBarActions.Remove(action);
+                ToolbarActions.Remove(action);
                 break;
             default:
                 throw new ArgumentException("This action can not be removed");
@@ -1426,31 +1431,25 @@ public class JJGridView : AsyncComponent
     public void AddGridAction(SqlCommandAction action)
     {
         ValidateAction(action);
-        GridActions.Add(action);
+        GridTableActions.Add(action);
     }
 
     public void AddGridAction(UrlRedirectAction action)
     {
         ValidateAction(action);
-        GridActions.Add(action);
+        GridTableActions.Add(action);
     }
 
     public void AddGridAction(InternalAction action)
     {
         ValidateAction(action);
-        GridActions.Add(action);
+        GridTableActions.Add(action);
     }
 
     public void AddGridAction(ScriptAction action)
     {
         ValidateAction(action);
-        GridActions.Add(action);
-    }
-
-    private void AddGridAction(BasicAction action)
-    {
-        ValidateAction(action);
-        GridActions.Add(action);
+        GridTableActions.Add(action);
     }
 
     /// <summary>
@@ -1465,13 +1464,13 @@ public class JJGridView : AsyncComponent
         if (string.IsNullOrEmpty(actionName))
             throw new ArgumentNullException(nameof(actionName));
 
-        var action = GridActions.First(x => x.Name.Equals(actionName));
+        var action = GridTableActions.First(x => x.Name.Equals(actionName));
         switch (action)
         {
             case null:
                 throw new ArgumentException(StringLocalizer["Action {0} not found", actionName]);
             case ScriptAction or UrlRedirectAction or InternalAction:
-                GridActions.Remove(action);
+                GridTableActions.Remove(action);
                 break;
             default:
                 throw new ArgumentException("This action can not be removed");
@@ -1480,12 +1479,12 @@ public class JJGridView : AsyncComponent
 
     public BasicAction GetToolBarAction(string actionName)
     {
-        return ToolBarActions.First(x => x.Name.Equals(actionName));
+        return ToolbarActions.First(x => x.Name.Equals(actionName));
     }
 
     public BasicAction GetGridAction(string actionName)
     {
-        return GridActions.First(x => x.Name.Equals(actionName));
+        return GridTableActions.First(x => x.Name.Equals(actionName));
     }
 
     /// <summary>

@@ -24,7 +24,7 @@ internal class GridToolbar(JJGridView gridView)
 
     private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlBuilderEnumerable()
     {
-        var actions = GridView.ToolBarActions.OrderBy(x => x.Order).ToList();
+        var actions = GridView.ToolbarActions.OrderBy(x => x.Order).ToList();
         var actionButtonFactory = GridView.ComponentFactory.ActionButton;
         var formStateData = await GridView.GetFormStateDataAsync();
         

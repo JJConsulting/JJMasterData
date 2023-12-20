@@ -191,7 +191,7 @@ public class JJFormView : AsyncComponent
             _gridView.UserValues = UserValues;
             _gridView.ShowTitle = ShowTitle;
 
-            _gridView.ToolBarActions.Add(new DeleteSelectedRowsAction());
+            _gridView.ToolbarActions.Add(new DeleteSelectedRowsAction());
 
             return _gridView;
         }
@@ -355,7 +355,7 @@ public class JJFormView : AsyncComponent
         childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
         
         var isInsertSelection = PageState is PageState.Insert &&
-                                GridView.ToolBarActions.InsertAction.ElementNameToSelect ==
+                                GridView.ToolbarActions.InsertAction.ElementNameToSelect ==
                                 childFormView.FormElement.Name;
         
         childFormView.ShowTitle = isInsertSelection;
@@ -366,8 +366,8 @@ public class JJFormView : AsyncComponent
         if (!isInsertSelection)
             return childFormView;
 
-        childFormView.GridView.GridActions.Add(new InsertSelectionAction());
-        childFormView.GridView.ToolBarActions.Add(GetInsertSelectionBackAction());
+        childFormView.GridView.GridTableActions.Add(new InsertSelectionAction());
+        childFormView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
         
         childFormView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
 
@@ -462,7 +462,7 @@ public class JJFormView : AsyncComponent
             return new RedirectComponentResult(UrlRedirect!);
         
 
-        if (PageState is PageState.Insert && GridView.ToolBarActions.InsertAction.ReopenForm)
+        if (PageState is PageState.Insert && GridView.ToolbarActions.InsertAction.ReopenForm)
         {
             var formResult = await GetFormResult(new FormContext(ObjectCloner.DeepCopy(RelationValues)!, PageState.Insert), false);
 
@@ -733,7 +733,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertResult()
     {
-        var insertAction = GridView.ToolBarActions.InsertAction;
+        var insertAction = GridView.ToolbarActions.InsertAction;
         var formData = new FormStateData(RelationValues!, UserValues, PageState.List);
 
         bool isVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression, formData);
@@ -756,7 +756,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetInsertSelectionListResult()
     {
-        var insertAction = GridView.ToolBarActions.InsertAction;
+        var insertAction = GridView.ToolbarActions.InsertAction;
         var html = new HtmlBuilder(HtmlTag.Div);
         html.AppendHiddenInput($"form-view-insert-selection-values-{Name}");
         var formElement = await DataDictionaryRepository.GetFormElementAsync(insertAction.ElementNameToSelect);
@@ -766,9 +766,9 @@ public class JJFormView : AsyncComponent
         formView.UserValues = UserValues;
         formView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
         
-        formView.GridView.ToolBarActions.Add(GetInsertSelectionBackAction());
+        formView.GridView.ToolbarActions.Add(GetInsertSelectionBackAction());
 
-        formView.GridView.GridActions.Add(new InsertSelectionAction());
+        formView.GridView.GridTableActions.Add(new InsertSelectionAction());
 
         var result = await formView.GetFormResultAsync();
 
@@ -802,7 +802,7 @@ public class JJFormView : AsyncComponent
         var insertValues = EncryptionService.DecryptDictionary(FormValues[$"form-view-insert-selection-values-{Name}"]);
         var html = new HtmlBuilder(HtmlTag.Div);
         
-        var childElementName = GridView.ToolBarActions.InsertAction.ElementNameToSelect;
+        var childElementName = GridView.ToolbarActions.InsertAction.ElementNameToSelect;
         var childElement = await DataDictionaryRepository.GetFormElementAsync(childElementName);
         
         var selectionValues = await EntityRepository.GetFieldsAsync(childElement, insertValues);
@@ -1009,7 +1009,7 @@ public class JJFormView : AsyncComponent
             return new ContentComponentResult(html);
         }
 
-        AuditLogView.GridView.AddToolBarAction(goBackAction);
+        AuditLogView.GridView.AddToolbarAction(goBackAction);
         AuditLogView.DataPanel = DataPanel;
         PageState = PageState.AuditLog;
         return await AuditLogView.GetResultAsync();
@@ -1034,7 +1034,7 @@ public class JJFormView : AsyncComponent
         DataImportation.BackButton.OnClientClick = "DataImportationModal.getInstance().hide()";
         DataImportation.ProcessOptions = action.ProcessOptions;
         DataImportation.EnableAuditLog =ExpressionsService.GetBoolValue(
-                GridView.ToolBarActions.AuditLogGridToolbarAction.VisibleExpression, formStateData);
+                GridView.ToolbarActions.AuditLogGridToolbarAction.VisibleExpression, formStateData);
 
         var result = await DataImportation.GetResultAsync();
 
@@ -1479,10 +1479,10 @@ public class JJFormView : AsyncComponent
     #region "Legacy inherited GridView compatibility"
 
     [Obsolete("Please use GridView.GridActions")]
-    public GridTableActionList GridActions => GridView.GridActions;
+    public GridTableActionList GridActions => GridView.GridTableActions;
 
     [Obsolete("Please use GridView.ToolBarActions")]
-    public GridToolbarActionList ToolBarActions => GridView.ToolBarActions;
+    public GridToolbarActionList ToolBarActions => GridView.ToolbarActions;
 
     [Obsolete("Please use GridView.SetCurrentFilter")]
     public void SetCurrentFilter(string filterKey, object filterValue)
@@ -1492,46 +1492,7 @@ public class JJFormView : AsyncComponent
 
     [Obsolete("Please use GridView.GetSelectedGridValues")]
     public List<Dictionary<string, object>> GetSelectedGridValues() => GridView.GetSelectedGridValues();
-
-    [Obsolete("Please use GridView.AddToolBarAction")]
-    public void AddToolBarAction(UserCreatedAction userCreatedAction)
-    {
-        switch (userCreatedAction)
-        {
-            case UrlRedirectAction urlRedirectAction:
-                GridView.AddToolBarAction(urlRedirectAction);
-                break;
-            case SqlCommandAction sqlCommandAction:
-                GridView.AddToolBarAction(sqlCommandAction);
-                break;
-            case ScriptAction scriptAction:
-                GridView.AddToolBarAction(scriptAction);
-                break;
-            case InternalAction internalAction:
-                GridView.AddToolBarAction(internalAction);
-                break;
-        }
-    }
-
-    [Obsolete("Please use GridView.AddGridAction")]
-    public void AddGridAction(UserCreatedAction userCreatedAction)
-    {
-        switch (userCreatedAction)
-        {
-            case UrlRedirectAction urlRedirectAction:
-                GridView.AddGridAction(urlRedirectAction);
-                break;
-            case SqlCommandAction sqlCommandAction:
-                GridView.AddGridAction(sqlCommandAction);
-                break;
-            case ScriptAction scriptAction:
-                GridView.AddGridAction(scriptAction);
-                break;
-            case InternalAction internalAction:
-                GridView.AddGridAction(internalAction);
-                break;
-        }
-    }
+    
 
     [Obsolete("Please use GridView.ClearSelectedGridValues")]
     public void ClearSelectedGridValues()
@@ -1594,59 +1555,10 @@ public class JJFormView : AsyncComponent
     {
          GridView.SetGridOptions(options);
     }
-    
-
-
-    [Obsolete("Please use GridView.AddGridAction()")]
-    public void AddGridAction(BasicAction action)
-    {
-        switch (action)
-        {
-            case SqlCommandAction sqlCommandAction:
-                GridView.AddGridAction(sqlCommandAction);
-                break;
-            case UrlRedirectAction url:
-                GridView.AddGridAction(url);
-                break;
-            case InternalAction internalAction:
-                GridView.AddGridAction(internalAction);
-                break;
-            case ScriptAction scriptAction:
-                GridView.AddGridAction(scriptAction);
-                break;
-        }
-    }
-    
-    [Obsolete("Please use GridView.AddToolBarAction()")]
-    public void AddToolBarAction(BasicAction action)
-    {
-        switch (action)
-        {
-            case SqlCommandAction sqlCommandAction:
-                GridView.AddToolBarAction(sqlCommandAction);
-                break;
-            case UrlRedirectAction url:
-                GridView.AddToolBarAction(url);
-                break;
-            case InternalAction internalAction:
-                GridView.AddToolBarAction(internalAction);
-                break;
-            case ScriptAction scriptAction:
-                GridView.AddToolBarAction(scriptAction);
-                break;
-        }
-    }
-
 
     [Obsolete("Please use GridView.ExportAction")]
-    public ExportAction ExportAction
-    {
-        get
-        {
-            return GridView.ExportAction;
-        }
-    }
-    
+    public ExportAction ExportAction => GridView.ExportAction;
+
     [Obsolete("Please use GridView.GridTableActions.EditAction")]
     public EditAction EditAction
     {

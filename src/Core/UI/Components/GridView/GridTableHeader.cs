@@ -38,7 +38,7 @@ internal class GridTableHeader
 
     private IEnumerable<HtmlBuilder> GetActionsThList()
     {
-        var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
+        var basicActions = GridView.GridTableActions.OrderBy(x => x.Order).ToList();
         var actions = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var actionsWithGroupCount = basicActions.Count(x => x.IsVisible && x.IsGroup);
 

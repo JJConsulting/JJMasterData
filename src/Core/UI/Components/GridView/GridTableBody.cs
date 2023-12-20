@@ -206,7 +206,7 @@ internal class GridTableBody(JJGridView gridView)
 
     public async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlListAsync(FormStateData formStateData)
     {
-        var basicActions = GridView.GridActions.OrderBy(x => x.Order).ToList();
+        var basicActions = GridView.GridTableActions.OrderBy(x => x.Order).ToList();
         var actionsWithoutGroup = basicActions.FindAll(x => x.IsVisible && !x.IsGroup);
         var groupedActions = basicActions.FindAll(x => x.IsVisible && x.IsGroup);
         await foreach (var action in GetActionsWithoutGroupHtmlAsync(actionsWithoutGroup, formStateData))
