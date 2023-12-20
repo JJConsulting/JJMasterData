@@ -1,6 +1,8 @@
 #if NETFRAMEWORK
 
+using System;
 using System.Web;
+using System.Web.Mvc;
 using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.Http.SystemWeb;
@@ -13,14 +15,25 @@ internal class SystemWebHttpRequestWrapper(IQueryString queryString, IFormValues
     public string UserAgent =>  Request.UserAgent;
     public string AbsoluteUri => Request.Url.AbsoluteUri;
     public string ApplicationPath=>  Request.ApplicationPath;
+
+    public string ApplicationUri
+    {
+        get
+        {
+            var request = HttpContext.Current.Request;
+            var uri = new Uri($"{request.Url.Scheme}://{request.Url.Authority}{new UrlHelper(request.RequestContext).Content("~")}");
+
+            if(!request.IsLocal)
+                return uri.GetComponents(UriComponents.AbsoluteUri & ~UriComponents.Port,
+                    UriFormat.UriEscaped);
+
+            return uri.ToString();
+        }
+    }
     public IFormValues Form  => form;
-    public bool IsPost => Request.HttpMethod.Equals("POST");
     public IQueryString QueryString { get; } = queryString;
     public string ContentType => Request.ContentType;
-    public HttpPostedFile GetFile(string file) => Request.Files[file];
-    public object GetUnvalidated(string key) => Request.Unvalidated[key];
 
     public string this[string key] => Request[key];
-    public string GetFormValue(string key) => Request.Form.Get(key);
 }
 #endif

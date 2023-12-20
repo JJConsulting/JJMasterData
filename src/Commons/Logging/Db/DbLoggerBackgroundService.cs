@@ -10,7 +10,7 @@ namespace JJMasterData.Commons.Logging.Db;
 
 internal class DbLoggerBackgroundService : LoggerBackgroundService<DbLoggerBuffer>
 {
-    public readonly IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IOptionsMonitor<DbLoggerOptions> _options;
     
     private bool TableExists { get; set; }

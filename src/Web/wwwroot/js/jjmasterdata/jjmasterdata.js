@@ -1356,6 +1356,9 @@ const listenAllEvents = (selectorPrefix = String()) => {
     if (bootstrapVersion === 5) {
         TooltipListener.listen(selectorPrefix);
     }
+    else {
+        $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
+    }
     document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces);
     $(document).on({
         ajaxSend: function (event, jqXHR, settings) {
@@ -2481,7 +2484,6 @@ var jjutil = (function () {
                 const nextIndex = (currentIndex + 1) % focusableElements.length;
                 const nextElement = focusableElements[nextIndex];
                 nextElement.focus();
-                console.log(nextElement.id);
             }
         },
         replaceEntertoTab: function (objid) {

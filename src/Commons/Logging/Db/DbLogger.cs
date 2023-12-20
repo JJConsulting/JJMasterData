@@ -39,7 +39,7 @@ internal class DbLogger : ILogger
         _loggerBuffer.Enqueue(entry);
     }
 
-    public string GetMessage(EventId eventId, string formatterMessage, Exception? exception)
+    private static string GetMessage(EventId eventId, string formatterMessage, Exception? exception)
     {
         var message = new StringBuilder();
         message.AppendLine(eventId.Name);

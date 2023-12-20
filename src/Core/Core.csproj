@@ -17,6 +17,7 @@
     
     <ItemGroup Condition="'$(TargetFramework)' == 'net4.8'">
         <Reference Include="System.Web" />
+        <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.7"/>
     </ItemGroup>
 
     <!--Runtime dependencies-->
