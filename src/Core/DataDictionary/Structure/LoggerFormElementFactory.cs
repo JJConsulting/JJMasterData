@@ -15,7 +15,6 @@ public class LoggerFormElementFactory(IOptions<DbLoggerOptions> options,MasterDa
     private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private DbLoggerOptions Options { get; } = options.Value;
-    public string ElementName { get; } = options.Value.TableName;
 
     public FormElement GetFormElement()
     {

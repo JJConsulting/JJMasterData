@@ -15,7 +15,6 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class LogController(IFormElementComponentFactory<JJFormView> formViewFactory,
         LoggerFormElementFactory loggerFormElementFactory,
         IEntityRepository entityRepository,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptions<DbLoggerOptions> options)
     : DataDictionaryController
 {
@@ -24,7 +23,6 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
     private LoggerFormElementFactory LoggerFormElementFactory { get; } = loggerFormElementFactory;
     private IEntityRepository EntityRepository { get; } = entityRepository;
-    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     public async Task<IActionResult> Index()
     {

@@ -53,6 +53,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddMasterDataCommonsServices(this IServiceCollection services,IConfiguration configuration = null)
     {
         services.AddOptions<MasterDataCommonsOptions>().BindConfiguration("JJMasterData");
+        services.AddOptions<DbLoggerOptions>().BindConfiguration("Logging:Database");
 
         services.AddLocalization();
         services.AddMemoryCache();

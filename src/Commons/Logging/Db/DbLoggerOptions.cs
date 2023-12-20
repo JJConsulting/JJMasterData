@@ -1,6 +1,6 @@
 ﻿namespace JJMasterData.Commons.Logging.Db;
 
-public record DbLoggerOptions
+public class DbLoggerOptions
 {
     public string TableName { get; set; } = "tb_log";
     
