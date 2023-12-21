@@ -3,6 +3,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using JJMasterData.Core.DataDictionary;
 
 namespace JJMasterData.FormElementImportator;
 
@@ -28,12 +29,12 @@ public class ImportService(IDataDictionaryRepository dataDictionaryRepository, I
             {
                 var json = new StreamReader(file).ReadToEnd();
 
-                var dicParser = JsonConvert.DeserializeObject<FormElement>(json);
+                var dicParser = FormElementSerializer.Deserialize(json);
 
                 if (dicParser != null)
                 {
                     Console.WriteLine($@"SetDictionary: {dicParser.Name}");
-                    DataDictionaryRepository.InsertOrReplaceAsync(dicParser).GetAwaiter().GetResult();
+                    DataDictionaryRepository.InsertOrReplace(dicParser);
 
                     folderDictionaries.Add(dicParser);
                 }
