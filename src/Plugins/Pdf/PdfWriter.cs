@@ -304,8 +304,8 @@ public class PdfWriter(ExpressionsService expressionsService,
         string value = string.Empty;
         string selectedValue = values[field.Name].ToString();
         var formStateData = new FormStateData(values, PageState.List);
-        var dataItemValues = DataItemService.GetValuesAsync(field.DataItem!, formStateData);
-        var item = await dataItemValues.FirstAsync(v=>v.Id == selectedValue);
+        var dataItemValues = await DataItemService.GetValuesAsync(field.DataItem!, formStateData);
+        var item =  dataItemValues.First(v=>v.Id == selectedValue);
 
         if (item != null)
         {
