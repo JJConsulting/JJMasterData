@@ -2,7 +2,7 @@
 using JJMasterData.Core.DataDictionary.Models;
 using Newtonsoft.Json;
 
-namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
+namespace JJMasterData.LegacyMetadataMigrator.FormElementMigration;
 
 
 public class MetadataOptions

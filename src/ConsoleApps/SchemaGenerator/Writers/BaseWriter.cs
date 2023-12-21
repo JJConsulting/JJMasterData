@@ -1,9 +1,8 @@
-using JJMasterData.ConsoleApp.Models.JsonSchema;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Serialization;
 
-namespace JJMasterData.ConsoleApp.Writers;
+namespace JJMasterData.SchemaGenerator.Writers;
 
 public abstract class BaseWriter 
 {

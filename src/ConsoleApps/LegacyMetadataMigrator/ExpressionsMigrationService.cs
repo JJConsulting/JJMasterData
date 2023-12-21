@@ -7,7 +7,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.ConsoleApp.Services;
+namespace JJMasterData.LegacyMetadataMigrator;
 
 public class ExpressionsMigrationService(IEntityRepository entityRepository, 
     IDataDictionaryRepository dataDictionaryRepository,

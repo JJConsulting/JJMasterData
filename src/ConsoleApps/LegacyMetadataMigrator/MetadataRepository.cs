@@ -3,16 +3,16 @@
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.ConsoleApp.Models.FormElementMigration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
+using JJMasterData.LegacyMetadataMigrator.FormElementMigration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace JJMasterData.ConsoleApp.Repository;
+namespace JJMasterData.LegacyMetadataMigrator;
 
 public class MetadataRepository(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options)
 {

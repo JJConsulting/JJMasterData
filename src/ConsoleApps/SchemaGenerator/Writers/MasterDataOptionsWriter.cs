@@ -1,8 +1,7 @@
-using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Web.Configuration.Options;
 using Newtonsoft.Json.Schema;
 
-namespace JJMasterData.ConsoleApp.Writers;
+namespace JJMasterData.SchemaGenerator.Writers;
 
 public class MasterDataOptionsWriter : BaseWriter
 {

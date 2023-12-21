@@ -1,11 +1,10 @@
 using JJMasterData.Commons.Data;
-using JJMasterData.ConsoleApp.Repository;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace JJMasterData.ConsoleApp.Services;
+namespace JJMasterData.LegacyMetadataMigrator;
 
 public class FormElementMigrationService(IDataDictionaryRepository dataDictionaryRepository, 
     MetadataRepository metadataRepository,

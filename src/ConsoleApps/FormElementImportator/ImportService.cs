@@ -4,7 +4,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace JJMasterData.ConsoleApp.Services;
+namespace JJMasterData.FormElementImportator;
 
 public class ImportService(IDataDictionaryRepository dataDictionaryRepository, IConfiguration configuration)
 {

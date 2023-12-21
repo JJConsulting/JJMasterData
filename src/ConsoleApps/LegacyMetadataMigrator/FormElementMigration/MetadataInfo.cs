@@ -1,7 +1,7 @@
 #nullable disable
 using Newtonsoft.Json;
 
-namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
+namespace JJMasterData.LegacyMetadataMigrator.FormElementMigration;
 
 public class MetadataInfo
 {

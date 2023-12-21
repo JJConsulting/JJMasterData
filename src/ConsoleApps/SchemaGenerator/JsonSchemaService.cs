@@ -1,6 +1,6 @@
-using JJMasterData.ConsoleApp.Writers;
+using JJMasterData.SchemaGenerator.Writers;
 
-namespace JJMasterData.ConsoleApp.Services;
+namespace JJMasterData.SchemaGenerator;
 
 public class JsonSchemaService(MasterDataOptionsWriter masterDataOptionsWriter, FormElementWriter formElementWriter)
 {

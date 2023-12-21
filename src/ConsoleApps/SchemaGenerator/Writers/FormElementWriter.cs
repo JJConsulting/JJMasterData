@@ -1,6 +1,6 @@
 using JJMasterData.Core.DataDictionary.Models;
 
-namespace JJMasterData.ConsoleApp.Writers;
+namespace JJMasterData.SchemaGenerator.Writers;
 
 public class FormElementWriter : BaseWriter
 {

@@ -5,7 +5,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
 using Newtonsoft.Json;
 
-namespace JJMasterData.ConsoleApp.Models.FormElementMigration;
+namespace JJMasterData.LegacyMetadataMigrator.FormElementMigration;
 
 [JsonObject("elementInfo")]
 public class Metadata

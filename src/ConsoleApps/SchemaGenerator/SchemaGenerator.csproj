@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>JJMasterData.SchemaGenerator</AssemblyName>
+        <RootNamespace>JJMasterData.SchemaGenerator</RootNamespace>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
+        <ProjectReference Include="..\..\Web\Web.csproj" />
+    </ItemGroup>
+
+</Project>
