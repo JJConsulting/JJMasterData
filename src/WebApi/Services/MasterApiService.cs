@@ -364,8 +364,7 @@ public class MasterApiService(ExpressionsService expressionsService,
                 if (field.Component is FormComponent.ComboBox or FormComponent.Search)
                 {
                     formValues.DataItems = await DataItemService
-                        .GetValuesAsync(field.DataItem!, formData, null,null )
-                        .ToListAsync();
+                        .GetValuesAsync(field.DataItem!, formData, null, null);
                 }
             }
 
