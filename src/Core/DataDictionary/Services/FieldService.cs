@@ -295,18 +295,18 @@ public class FieldService(IValidationDictionary validationDictionary,
             return;
         }
 
-        var childField = childFormElement.Fields[elementMap.FieldId];
+        var childField = childFormElement.Fields[elementMap.IdFieldName];
 
         if (field.DataType != childField.DataType)
-            AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldId] DataType must be the same of your field."]);
+            AddError(nameof(elementMap.DescriptionFieldName), StringLocalizer["[FieldId] DataType must be the same of your field."]);
         
-        if(dataItem.ShowIcon && elementMap.FieldIconId is null)
-            AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldIconId] is required."]);
+        if(dataItem.ShowIcon && elementMap.IconIdFieldName is null)
+            AddError(nameof(elementMap.DescriptionFieldName), StringLocalizer["[FieldIconId] is required."]);
         
-        if (elementMap.FieldId.Equals(elementMap.FieldDescription))
-            AddError(nameof(elementMap.FieldDescription), StringLocalizer["[FieldDescription] can not be equal a [FieldId]"]);
+        if (elementMap.IdFieldName.Equals(elementMap.DescriptionFieldName))
+            AddError(nameof(elementMap.DescriptionFieldName), StringLocalizer["[FieldDescription] can not be equal a [FieldId]"]);
         
-        if (dataItem.ReplaceTextOnGrid && string.IsNullOrEmpty(elementMap.FieldDescription))
+        if (dataItem.ReplaceTextOnGrid && string.IsNullOrEmpty(elementMap.DescriptionFieldName))
             AddError(nameof(dataItem.ReplaceTextOnGrid), StringLocalizer["[ReplaceTextOnGrid] requires a [FieldDescription]"]);
     }
 
@@ -367,8 +367,8 @@ public class FieldService(IValidationDictionary validationDictionary,
             AddError(nameof(elementMapFilter.ExpressionValue), StringLocalizer["Invalid filter field"]);
         }
 
-        if (string.IsNullOrEmpty(elementMap.FieldId))
-            AddError(nameof(elementMap.FieldId),
+        if (string.IsNullOrEmpty(elementMap.IdFieldName))
+            AddError(nameof(elementMap.IdFieldName),
                 StringLocalizer["Required [{0}] field", StringLocalizer["Field Key"]]);
 
         if (string.IsNullOrEmpty(elementMap.ElementName))
@@ -377,12 +377,12 @@ public class FieldService(IValidationDictionary validationDictionary,
         if (IsValid)
         {
             var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
-            var fieldKey = childElement.Fields[elementMap.FieldId];
+            var fieldKey = childElement.Fields[elementMap.IdFieldName];
             if (!fieldKey.IsPk & fieldKey.Filter.Type == FilterMode.None)
             {
                 string err = StringLocalizer["Field [{0}] invalid, as it is not PK or not configured as a filter",
-                    elementMap.FieldId];
-                AddError(nameof(elementMap.FieldId), err);
+                    elementMap.IdFieldName];
+                AddError(nameof(elementMap.IdFieldName), err);
             }
         }
 

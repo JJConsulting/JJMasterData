@@ -13,16 +13,16 @@ public class DataElementMap
     public string ElementName { get; set; } = null!;
 
     [JsonProperty("fieldKey")]
-    public string FieldId { get; set; } = null!;
+    public string IdFieldName { get; set; } = null!;
 
     [JsonProperty("fieldDescription")]
-    public string? FieldDescription { get; set; }= null!;
+    public string? DescriptionFieldName { get; set; }= null!;
     
     [JsonProperty("iconId")] 
-    public string? FieldIconId { get; set; }
+    public string? IconIdFieldName { get; set; }
     
     [JsonProperty("iconColor")]
-    public string? FieldIconColor { get; set; }
+    public string? IconColorFieldName { get; set; }
     
     [JsonProperty("popUpSize")]
     public ModalSize ModalSize { get; set; }

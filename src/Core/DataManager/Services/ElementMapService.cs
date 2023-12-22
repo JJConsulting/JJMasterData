@@ -51,7 +51,7 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
         }
         else
         {
-            filters[elementMap.FieldId] = value?.ToString()!;
+            filters[elementMap.IdFieldName] = value?.ToString()!;
         }
        
         return filters;

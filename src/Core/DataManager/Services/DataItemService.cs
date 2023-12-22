@@ -111,19 +111,19 @@ public class DataItemService(IEntityRepository entityRepository,
         {
             var item = new DataItemValue
             {
-                Id = value[elementMap!.FieldId]?.ToString()
+                Id = value[elementMap!.IdFieldName]?.ToString()
             };
 
-            if (elementMap.FieldDescription != null) 
-                item.Description = value[elementMap.FieldDescription]?.ToString();
+            if (elementMap.DescriptionFieldName != null) 
+                item.Description = value[elementMap.DescriptionFieldName]?.ToString();
             
             if (dataItem.ShowIcon)
             {
-                if (elementMap.FieldIconId != null)
-                    item.Icon = (IconType)int.Parse(value[elementMap.FieldIconId]?.ToString() ?? string.Empty);
+                if (elementMap.IconIdFieldName != null)
+                    item.Icon = (IconType)int.Parse(value[elementMap.IconIdFieldName]?.ToString() ?? string.Empty);
                 
-                if (elementMap.FieldIconColor != null)
-                    item.IconColor = value[elementMap.FieldIconColor]?.ToString();
+                if (elementMap.IconColorFieldName != null)
+                    item.IconColor = value[elementMap.IconColorFieldName]?.ToString();
             }
 
             if (searchText == null || item.Description!.ToLower().Contains(searchText.ToLower()))

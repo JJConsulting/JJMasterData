@@ -30,7 +30,7 @@ public class LookupService(IFormValues formValues,
 
     public string GetFormViewUrl(DataElementMap elementMap, FormStateData? formStateData, string componentName)
     {
-        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.FieldId,elementMap.FieldDescription,
+        var lookupParameters = new LookupParameters(elementMap.ElementName, componentName, elementMap.IdFieldName,elementMap.DescriptionFieldName,
             elementMap.EnableElementActions, elementMap.Filters);
 
         var encryptedLookupParameters =
@@ -58,11 +58,11 @@ public class LookupService(IFormValues formValues,
                 return null;
         }
 
-        IDictionary<string, object?> fields;
+        IDictionary<string, object?> values;
         
         try
         {
-            fields = await ElementMapService.GetFieldsAsync(elementMap, value, formStateData);
+            values = await ElementMapService.GetFieldsAsync(elementMap, value, formStateData);
         }
         catch
         {
@@ -70,11 +70,11 @@ public class LookupService(IFormValues formValues,
         }
 
 
-        if (string.IsNullOrEmpty(elementMap.FieldDescription))
-            return fields[elementMap.FieldId]?.ToString();
+        if (string.IsNullOrEmpty(elementMap.DescriptionFieldName) && values.TryGetValue(elementMap.IdFieldName, out var id))
+            return id?.ToString();
 
-        if (elementMap.FieldDescription != null)
-            return fields.Any() ? fields[elementMap.FieldDescription]?.ToString() : null;
+        if (elementMap.DescriptionFieldName != null && values.TryGetValue(elementMap.DescriptionFieldName, out var description))
+            return description?.ToString();
 
         return null;
     }

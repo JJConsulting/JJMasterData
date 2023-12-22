@@ -195,7 +195,7 @@ public class JJLookup : ControlBase
         
         await div.AppendControlAsync(idTextBox);
         
-        if (!string.IsNullOrEmpty(ElementMap!.FieldDescription))
+        if (!string.IsNullOrEmpty(ElementMap!.DescriptionFieldName))
         {
             if (BootstrapHelper.Version == 3)
             {

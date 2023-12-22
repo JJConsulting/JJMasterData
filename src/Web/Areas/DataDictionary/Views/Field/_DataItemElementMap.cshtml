@@ -13,13 +13,13 @@
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-3 required">
             <label class="@BootstrapHelper.Label">@StringLocalizer["Id"]</label>
-            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldId,
+            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.IdFieldName,
                 new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                 new { @class = "form-control form-select" })
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-3">
             <label class="@BootstrapHelper.Label">@StringLocalizer["Description"]</label>
-            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldDescription,
+            @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.DescriptionFieldName,
                 new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                 new { @class = "form-control form-select" })
         </div>
@@ -28,13 +28,13 @@
         {
             <div class="@BootstrapHelper.FormGroup col-sm-3">
                 <label class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldIconId,
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.IconIdFieldName,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                     new { @class = "form-control form-select" })
             </div>
             <div class="@BootstrapHelper.FormGroup col-sm-3">
                 <label class="@BootstrapHelper.Label">@StringLocalizer["Icon Color"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.FieldIconColor,
+                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.IconColorFieldName,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                     new { @class = "form-control form-select" })
             </div>
