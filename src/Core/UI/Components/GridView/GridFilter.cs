@@ -62,6 +62,9 @@ internal class GridFilter(JJGridView gridView)
         if (_currentFilter != null)
             return _currentFilter;
         
+        _currentFilter ??= new Dictionary<string, object>();
+        
+        DataHelper.CopyIntoDictionary(_currentFilter, _userFilters);
      
         //Action is captured here, because the user can call GetCurrentFilterAsync before GetResultAsync()
         var currentFilterAction = CurrentContext.Request.Form[$"grid-view-filter-action-{GridView.Name}"];
@@ -83,17 +86,18 @@ internal class GridFilter(JJGridView gridView)
         
         if (sessionFilter != null && GridView.MaintainValuesOnLoad)
         {
-            _currentFilter = sessionFilter;
+            DataHelper.CopyIntoDictionary(_currentFilter, sessionFilter);
             return _currentFilter;
         }
         
         if (sessionFilter != null && (CurrentContext.Request.Form.ContainsFormValues() || IsDynamicPost()))
         {
-            _currentFilter = sessionFilter;
+            DataHelper.CopyIntoDictionary(_currentFilter, sessionFilter);
             return _currentFilter;
         }
 
         await ApplyCurrentFilter(null);
+        
         return _currentFilter ?? new Dictionary<string, object>();
     }
     
@@ -125,9 +129,7 @@ internal class GridFilter(JJGridView gridView)
                 values[r.Key] = r.Value;
             }
         }
-        
-        DataHelper.CopyIntoDictionary(values, _userFilters);
-        
+
         var queryString = GetFilterQueryString();
         if (queryString != null)
         {
@@ -140,8 +142,6 @@ internal class GridFilter(JJGridView gridView)
 
         var defaultValues =
             await GridView.FieldsService.MergeWithDefaultValuesAsync(GridView.FormElement, new FormStateData(values,GridView.UserValues, PageState.List));
-
-        _currentFilter ??= new Dictionary<string, object>();
         
         DataHelper.CopyIntoDictionary(values, defaultValues);
         DataHelper.CopyIntoDictionary(_currentFilter, values);
