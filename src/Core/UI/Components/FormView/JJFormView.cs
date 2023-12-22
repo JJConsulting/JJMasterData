@@ -33,6 +33,7 @@ using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 #if NET48
 using JJMasterData.Commons.Configuration;
@@ -287,6 +288,7 @@ public class JJFormView : AsyncComponent
     private IEnumerable<IPluginHandler> PluginHandlers { get; }
     private IOptions<MasterDataCoreOptions> Options { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+    private ILogger<JJFormView> Logger { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
     internal FormService FormService { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -308,6 +310,7 @@ public class JJFormView : AsyncComponent
         IEnumerable<IPluginHandler> pluginHandlers,
         IOptions<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
+        ILogger<JJFormView> logger,
         IComponentFactory componentFactory)
     {
         FormElement = formElement;
@@ -322,6 +325,7 @@ public class JJFormView : AsyncComponent
         PluginHandlers = pluginHandlers;
         Options = options;
         StringLocalizer = stringLocalizer;
+        Logger = logger;
         DataDictionaryRepository = dataDictionaryRepository;
         ComponentFactory = componentFactory;
         formService.EnableErrorLinks = true;
@@ -534,7 +538,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetFormActionResult()
     {
         SetFormServiceEvents();
-
+        
         ComponentResult? result;
         if (CurrentAction is ViewAction)
             result = await GetViewResult();
@@ -602,6 +606,7 @@ public class JJFormView : AsyncComponent
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "Error while executing SQL Command Action.");
             var message = ExceptionManager.GetMessage(ex);
             messageBox = ComponentFactory.Html.MessageBox.Create(message, MessageIcon.Error);
         }
@@ -629,6 +634,7 @@ public class JJFormView : AsyncComponent
         }
         catch (Exception exception)
         {
+            Logger.LogError(exception,"Error while executing Plugin Action.");
             result = PluginActionResult.Error(StringLocalizer["Error"], exception.Message);
         }
         

@@ -118,6 +118,8 @@ internal class GridFilter(JJGridView gridView)
     
     public async Task ApplyCurrentFilter(IDictionary<string, object> values)
     {
+        _currentFilter ??= new Dictionary<string, object>();
+
         if (values == null)
         {
             values = GridView.RelationValues;

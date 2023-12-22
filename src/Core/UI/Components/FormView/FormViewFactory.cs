@@ -13,6 +13,7 @@ using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.UI.Components;
@@ -28,6 +29,7 @@ internal class FormViewFactory(
     IEnumerable<IPluginHandler> pluginHandlers,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IOptions<MasterDataCoreOptions> options,
+    ILoggerFactory loggerFactory,
     IComponentFactory factory,
     IFormEventHandlerResolver formEventHandlerResolver
     ) : IFormElementComponentFactory<JJFormView>
@@ -46,6 +48,7 @@ internal class FormViewFactory(
             pluginHandlers,
             options,
             stringLocalizer,
+            loggerFactory.CreateLogger<JJFormView>(),
             factory);
         
         return formView;

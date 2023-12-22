@@ -3,11 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data;
 
+[DebuggerDisplay("Sql = {Sql}, Type = {Type}")]
 public class DataAccessCommand
 {
     [Obsolete("Please use Type property")]

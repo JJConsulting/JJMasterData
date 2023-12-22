@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data;
 
+[DebuggerDisplay("Name = {Name}, Value = {Value}, Type = {Type}")]
 public class DataAccessParameter
 {
     /// <summary>
