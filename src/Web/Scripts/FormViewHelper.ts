@@ -27,14 +27,14 @@ class FormViewHelper {
 
     static setPageState(componentName: string, pageState: PageState, routeContext: string) {
         document.querySelector<HTMLInputElement>(`#form-view-page-state-${componentName}`).value = pageState.toString();
-        document.querySelector<HTMLInputElement>(`#form-view-action-map-${componentName}`).value = String();
+        document.querySelector<HTMLInputElement>(`#current-action-map-${componentName}`).value = String();
 
         this.refreshFormView(componentName, routeContext);
     }
 
     static setPanelState(componentName: string, pageState: PageState, routeContext: string) {
         document.querySelector<HTMLInputElement>(`#form-view-panel-state-${componentName}`).value = pageState.toString();
-        document.querySelector<HTMLInputElement>(`#form-view-action-map-${componentName}`).value = String();
+        document.querySelector<HTMLInputElement>(`#current-action-map-${componentName}`).value = String();
 
         this.refreshFormView(componentName, routeContext);
     }

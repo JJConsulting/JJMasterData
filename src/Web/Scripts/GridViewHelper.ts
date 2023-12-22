@@ -88,7 +88,7 @@ class GridViewHelper {
 
 
     static clearCurrentFormAction(componentName){
-        const currentFormAction = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
+        const currentFormAction = document.querySelector<HTMLInputElement>("#current-action-map-" + componentName);
         
         if(currentFormAction)
             currentFormAction.value = "";

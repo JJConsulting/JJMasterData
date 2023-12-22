@@ -14,7 +14,7 @@ class ActionHelper {
         }
 
         const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName);
-        const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
+        const formViewActionInput = document.querySelector<HTMLInputElement>("#current-action-map-" + componentName);
         
         if(gridViewActionInput){
             gridViewActionInput.value = encryptedActionMap;
@@ -40,14 +40,14 @@ class ActionHelper {
         }
 
         const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName);
-        const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
+        const formViewActionInput = document.querySelector<HTMLInputElement>("#current-action-map-" + componentName);
 
         if (formViewActionInput) {
             formViewActionInput.value = encryptedActionMap;
         } else {
             const newFormInput = document.createElement("input");
-            newFormInput.id = "form-view-action-map-" + componentName;
-            newFormInput.name = "form-view-action-map-" + componentName;
+            newFormInput.id = "current-action-map-" + componentName;
+            newFormInput.name = "current-action-map-" + componentName;
             newFormInput.type = "hidden";
             newFormInput.value = encryptedActionMap;
             document.querySelector('form').appendChild(newFormInput);
@@ -124,7 +124,7 @@ class ActionHelper {
         }
 
         const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName);
-        const formViewActionInput = document.querySelector<HTMLInputElement>("#form-view-action-map-" + componentName);
+        const formViewActionInput = document.querySelector<HTMLInputElement>("#current-action-map-" + componentName);
 
         if (gridViewActionInput) {
             gridViewActionInput.value = "";

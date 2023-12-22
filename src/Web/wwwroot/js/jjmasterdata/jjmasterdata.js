@@ -18,7 +18,7 @@ class ActionHelper {
             }
         }
         const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
-        const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
+        const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
         if (gridViewActionInput) {
             gridViewActionInput.value = encryptedActionMap;
         }
@@ -39,14 +39,14 @@ class ActionHelper {
             }
         }
         const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
-        const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
+        const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
         if (formViewActionInput) {
             formViewActionInput.value = encryptedActionMap;
         }
         else {
             const newFormInput = document.createElement("input");
-            newFormInput.id = "form-view-action-map-" + componentName;
-            newFormInput.name = "form-view-action-map-" + componentName;
+            newFormInput.id = "current-action-map-" + componentName;
+            newFormInput.name = "current-action-map-" + componentName;
             newFormInput.type = "hidden";
             newFormInput.value = encryptedActionMap;
             document.querySelector('form').appendChild(newFormInput);
@@ -103,7 +103,7 @@ class ActionHelper {
             }
         }
         const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
-        const formViewActionInput = document.querySelector("#form-view-action-map-" + componentName);
+        const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
         if (gridViewActionInput) {
             gridViewActionInput.value = "";
         }
@@ -953,12 +953,12 @@ class FormViewHelper {
     }
     static setPageState(componentName, pageState, routeContext) {
         document.querySelector(`#form-view-page-state-${componentName}`).value = pageState.toString();
-        document.querySelector(`#form-view-action-map-${componentName}`).value = String();
+        document.querySelector(`#current-action-map-${componentName}`).value = String();
         this.refreshFormView(componentName, routeContext);
     }
     static setPanelState(componentName, pageState, routeContext) {
         document.querySelector(`#form-view-panel-state-${componentName}`).value = pageState.toString();
-        document.querySelector(`#form-view-action-map-${componentName}`).value = String();
+        document.querySelector(`#current-action-map-${componentName}`).value = String();
         this.refreshFormView(componentName, routeContext);
     }
     static insertSelection(componentName, insertValues, routeContext) {
@@ -1143,7 +1143,7 @@ class GridViewHelper {
         GridViewHelper.refreshGrid(componentName, routeContext);
     }
     static clearCurrentFormAction(componentName) {
-        const currentFormAction = document.querySelector("#form-view-action-map-" + componentName);
+        const currentFormAction = document.querySelector("#current-action-map-" + componentName);
         if (currentFormAction)
             currentFormAction.value = "";
     }

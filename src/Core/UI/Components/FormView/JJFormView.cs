@@ -231,11 +231,12 @@ public class JJFormView : AsyncComponent
             if (_currentActionMap != null)
                 return _currentActionMap;
 
-            string encryptedActionMap = CurrentContext.Request.Form[$"form-view-action-map-{Name}"];
+            var encryptedActionMap = CurrentContext.Request.Form[$"current-action-map-{Name}"];
             if (string.IsNullOrEmpty(encryptedActionMap))
                 return null;
 
             _currentActionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
+            
             return _currentActionMap;
         }
     }
@@ -579,7 +580,7 @@ public class JJFormView : AsyncComponent
     private void AppendFormViewHiddenInputs(HtmlBuilder html)
     {
         html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
-        html.AppendHiddenInput($"form-view-action-map-{Name}",
+        html.AppendHiddenInput($"current-action-map-{Name}",
             EncryptionService.EncryptActionMap(CurrentActionMap));
         html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
             EncryptionService.EncryptDictionary(RelationValues));
@@ -986,7 +987,7 @@ public class JJFormView : AsyncComponent
         var actionMap = _currentActionMap;
         var script = new StringBuilder();
         script.Append($"document.getElementById('form-view-page-state-{Name}').value = '{(int)PageState.List}'; ");
-        script.Append($"document.getElementById('form-view-action-map-{Name}').value = null; ");
+        script.Append($"document.getElementById('current-action-map-{Name}').value = null; ");
         script.AppendLine("document.forms[0].submit(); ");
 
         var goBackAction = new ScriptAction

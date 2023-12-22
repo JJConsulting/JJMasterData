@@ -184,6 +184,17 @@ public class JJDataPanel : AsyncComponent
                 var html = await GetPanelHtmlBuilderAsync();
                 return new ContentComponentResult(html);
             }
+            case ComponentContext.UrlRedirect:
+            {
+                string encryptedActionMap = CurrentContext.Request.Form[$"current-action-map-{Name}"];
+                if (string.IsNullOrEmpty(encryptedActionMap))
+                    return null;
+
+                var actionMap = EncryptionService.DecryptActionMap(encryptedActionMap);
+                
+                return await GetUrlRedirectResult(actionMap);
+            }
+         
             default:
                 return new RenderedComponentResult(await GetPanelHtmlBuilderAsync());
         }
