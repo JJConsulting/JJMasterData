@@ -13,7 +13,7 @@ public class LoggerTest
     {
         var buffer = new Mock<FileLoggerBuffer>();
         var options = new Mock<IOptionsMonitor<FileLoggerOptions>>();
-        var fileLogger = new FileLogger(buffer.Object,options.Object);
+        var fileLogger = new FileLogger("TestCategory",buffer.Object,options.Object);
         fileLogger.LogInformation("Test");
         
         var exception = Record.Exception(() => fileLogger.LogInformation("Test"));
@@ -25,7 +25,7 @@ public class LoggerTest
     public void LogAtDatabaseTest()
     {
         var buffer = new Mock<DbLoggerBuffer>();
-        var dbLogger = new DbLogger(buffer.Object);
+        var dbLogger = new DbLogger("TestCategory",buffer.Object);
         
         var exception = Record.Exception(() => dbLogger.LogInformation("Test"));
         Assert.Null(exception);
