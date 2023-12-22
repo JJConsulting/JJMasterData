@@ -13,17 +13,17 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class OracleProvider : EntityProviderBase
+public class OracleProvider(
+    DataAccess dataAccess,
+    IOptions<MasterDataCommonsOptions> options,
+    ILoggerFactory loggerFactory)
+    : EntityProviderBase(dataAccess, options, loggerFactory)
 {
     private const string InsertKeyword = "I";
     private const string UpdateKeyword = "A";
     private const string DeleteKeyword = "E";
     private const string Tab = "\t";
     public override string VariablePrefix => "p_";
-
-    public OracleProvider(DataAccess dataAccess, IOptions<MasterDataCommonsOptions> options, ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
-    {
-    }
 
     public override string GetCreateTableScript(Element element)
     {

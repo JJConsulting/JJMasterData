@@ -4,19 +4,13 @@ using JJMasterData.Commons.Data.Entity.Models;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class SqlServerScripts
+public class SqlServerScripts(
+    SqlServerReadProcedureScripts sqlServerReadProcedureScripts,
+    SqlServerWriteProcedureScripts writeProcedureScripts)
 {
-    private SqlServerReadProcedureScripts ReadProcedureScripts { get; }
+    private SqlServerReadProcedureScripts ReadProcedureScripts { get; } = sqlServerReadProcedureScripts;
 
-    private SqlServerWriteProcedureScripts WriteProcedureScripts { get; }
-
-    public SqlServerScripts(
-        SqlServerReadProcedureScripts sqlServerReadProcedureScripts,
-        SqlServerWriteProcedureScripts writeProcedureScripts)
-    {
-        ReadProcedureScripts = sqlServerReadProcedureScripts;
-        WriteProcedureScripts = writeProcedureScripts;
-    }
+    private SqlServerWriteProcedureScripts WriteProcedureScripts { get; } = writeProcedureScripts;
 
     public string GetReadProcedureScript(Element element)
     {

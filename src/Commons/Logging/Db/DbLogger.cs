@@ -6,15 +6,8 @@ using System.Text;
 
 namespace JJMasterData.Commons.Logging.Db;
 
-internal class DbLogger : ILogger
+internal class DbLogger(string categoryName, LoggerBuffer loggerBuffer) : ILogger
 {
-    private readonly DbLoggerBuffer _loggerBuffer;
-
-    public DbLogger(DbLoggerBuffer loggerBuffer)
-    {
-        _loggerBuffer = loggerBuffer;
-    }
-
     public IDisposable BeginScope<TState>(TState state) => default!;
 
     public bool IsEnabled(LogLevel logLevel)
@@ -33,18 +26,24 @@ internal class DbLogger : ILogger
             Created = DateTime.Now,
             LogLevel = (int)logLevel,
             Event = eventId.Name ?? string.Empty,
-            Message = message
+            Message = message,
+            Category = categoryName
         };
         
-        _loggerBuffer.Enqueue(entry);
+        loggerBuffer.Enqueue(entry);
     }
 
     private static string GetMessage(EventId eventId, string formatterMessage, Exception? exception)
     {
         var message = new StringBuilder();
-        message.AppendLine(eventId.Name);
-        message.AppendLine(formatterMessage);
+        if (eventId.Name != null)
+        {
+            message.Append($"Event - {eventId}");
+            message.AppendLine(eventId.Name);
+        }
 
+        message.AppendLine(formatterMessage);
+        
         if (exception != null)
         {
             message.AppendLine(LoggerDecoration.GetMessageException(exception));

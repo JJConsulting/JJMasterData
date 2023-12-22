@@ -8,26 +8,21 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.Db;
 
-internal class DbLoggerBackgroundService : LoggerBackgroundService<DbLoggerBuffer>
+internal class DbLoggerBackgroundService(
+    DbLoggerBuffer loggerBuffer,
+    IOptionsMonitor<DbLoggerOptions> optionsMonitor,
+    IServiceProvider serviceProvider)
+    : LoggerBackgroundService<DbLoggerBuffer>(loggerBuffer)
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IOptionsMonitor<DbLoggerOptions> _options;
-    
     private bool TableExists { get; set; }
-    
-    public DbLoggerBackgroundService(DbLoggerBuffer loggerBuffer, IOptionsMonitor<DbLoggerOptions> optionsMonitor,IServiceProvider serviceProvider) : base(loggerBuffer)
-    {
-        _serviceProvider = serviceProvider;
-        _options = optionsMonitor;
-    }
 
     protected override async Task LogAsync(LogMessage entry, CancellationToken cancellationToken)
     {
-        var options = _options.CurrentValue;
+        var options = optionsMonitor.CurrentValue;
         var dbValues = GetDictionary(entry, options);
         var element = DbLoggerElement.GetInstance(options);
 
-        using var scope = _serviceProvider.CreateScope();
+        using var scope = serviceProvider.CreateScope();
         var entityRepository = scope.ServiceProvider.GetRequiredService<IEntityRepository>();
         if (!TableExists)
         {
@@ -42,13 +37,13 @@ internal class DbLoggerBackgroundService : LoggerBackgroundService<DbLoggerBuffe
         await entityRepository.InsertAsync(element, dbValues);
     }
 
-    private Dictionary<string, object> GetDictionary(LogMessage entry, DbLoggerOptions options)
+    private static Dictionary<string, object> GetDictionary(LogMessage entry, DbLoggerOptions options)
     {
         return new Dictionary<string, object>
         {
             [options.CreatedColumnName] = entry.Created,
             [options.LevelColumnName] = entry.LogLevel,
-            [options.EventColumnName] = entry.Event,
+            [options.CategoryColumnName] = entry.Category,
             [options.MessageColumnName] = entry.Message,
         };
     }

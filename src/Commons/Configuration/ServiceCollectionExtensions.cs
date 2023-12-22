@@ -62,16 +62,14 @@ public static class ServiceCollectionExtensions
         services.Add(new ServiceDescriptor(typeof(IStringLocalizer<>), typeof(MasterDataStringLocalizer<>), ServiceLifetime.Transient));
         services.AddLogging(builder =>
         {
+            //We can't have control when Db and File are enabled/disabled dynamically
+            builder.AddDbLoggerProvider();
+            builder.AddFileLoggerProvider();
+            
             if (configuration != null)
             {
                 var loggingOptions = configuration.GetSection("Logging");
                 builder.AddConfiguration(loggingOptions);
-
-                if (loggingOptions.GetSection(DbLoggerProvider.ProviderName) != null)
-                    builder.AddDbLoggerProvider();
-
-                if (loggingOptions.GetSection(FileLoggerProvider.ProviderName) != null)
-                    builder.AddFileLoggerProvider();
             }
         });
 

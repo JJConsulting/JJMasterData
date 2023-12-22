@@ -1,19 +1,12 @@
 ﻿namespace JJMasterData.Commons.Logging.File;
 
-public class FileLoggerOptions
+public class FileLoggerOptions(string fileName)
 {
-    public string FileName { get; set; }
+    public string FileName { get; set; } = fileName;
 
     public FileLoggerFormatting Formatting { get; set; }
 
-    public FileLoggerOptions()
+    public FileLoggerOptions() : this("Log/AppLog-yyyyMMdd.txt")
     {
-        FileName = "Log/AppLog-yyyyMMdd.txt";
     }
-
-    public FileLoggerOptions(string fileName)
-    {
-        FileName = fileName;
-    }
-
 }

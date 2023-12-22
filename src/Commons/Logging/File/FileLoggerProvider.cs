@@ -1,23 +1,25 @@
+using System;
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Logging.File;
 
 [ProviderAlias(ProviderName)]
-internal class FileLoggerProvider : ILoggerProvider
+internal class FileLoggerProvider(FileLoggerBuffer buffer, IOptionsMonitor<FileLoggerOptions> options)
+    : ILoggerProvider
 {
-    public const string ProviderName = "File";
+    private const string ProviderName = "File";
 
-    private readonly ILogger _logger;
+    private readonly ConcurrentDictionary<string, FileLogger> _loggers =
+        new(StringComparer.OrdinalIgnoreCase);
 
-    public FileLoggerProvider(FileLoggerBuffer buffer, IOptionsMonitor<FileLoggerOptions> options)
-    {
-        _logger = new FileLogger(buffer,options);
-    }
-    public ILogger CreateLogger(string categoryName) => _logger;
+
+    public ILogger CreateLogger(string categoryName) =>
+        _loggers.GetOrAdd(categoryName, name => new FileLogger(name, buffer,options));
 
     public void Dispose()
     {
-        
+        _loggers.Clear();
     }
 }

@@ -7,20 +7,11 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Logging.File;
 
-internal class FileLogger : ILogger
+internal class FileLogger(
+    string categoryName,
+    LoggerBuffer buffer, 
+    IOptionsMonitor<FileLoggerOptions> options) : ILogger
 {
-    private readonly FileLoggerBuffer _buffer;
-    private readonly IOptionsMonitor<FileLoggerOptions> _options;
-
-    /// <summary>
-    /// Creates a new instance of <see cref="FileLogger" />.
-    /// </summary>
-    public FileLogger(FileLoggerBuffer buffer, IOptionsMonitor<FileLoggerOptions> options)
-    {
-        _buffer = buffer;
-        _options = options;
-    }
-
     public IDisposable BeginScope<TState>(TState state) => default!;
 
     /// <summary>
@@ -51,18 +42,19 @@ internal class FileLogger : ILogger
         var entry = new LogMessage
         {
             Created = DateTime.Now,
+            Category = categoryName,
             LogLevel = (int)logLevel,
             Event = eventId.Name ?? string.Empty,
             Message = message
         };
 
-        _buffer.Enqueue(entry);
+        buffer.Enqueue(entry);
     }
 
-    public string GetMessage(LogLevel logLevel, EventId eventId, Exception exception, string formatterMessage)
+    private string GetMessage(LogLevel logLevel, EventId eventId, Exception exception, string formatterMessage)
     {
         var log = new StringBuilder();
-        var formatting = _options.CurrentValue.Formatting;
+        var formatting = options.CurrentValue.Formatting;
 
         switch (formatting)
         {
@@ -70,7 +62,7 @@ internal class FileLogger : ILogger
 
                 log.Append(DateTime.Now);
                 log.Append(" ");
-
+                log.AppendFormat(" [{0}] ", categoryName);
                 log.Append("(");
                 log.Append(logLevel.ToString());
                 log.AppendLine(")");
@@ -88,6 +80,8 @@ internal class FileLogger : ILogger
                         log.AppendFormat(" [{0}] ", eventId.Name);
                     }
 
+                    log.AppendFormat(" [{0}] ", categoryName);
+                    
                     log.AppendFormat(" {0} ", formatterMessage);
 
                     if (exception != null)
@@ -105,6 +99,7 @@ internal class FileLogger : ILogger
                         Event = eventId.Name,
                         logLevel,
                         Message = formatterMessage,
+                        Category = categoryName,
                         exception
                     }, new JsonSerializerSettings
                     {

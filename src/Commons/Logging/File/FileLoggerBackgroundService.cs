@@ -6,18 +6,14 @@ using System.Threading.Tasks;
 
 namespace JJMasterData.Commons.Logging.File;
 
-public class FileLoggerBackgroundService : LoggerBackgroundService<FileLoggerBuffer>
+public class FileLoggerBackgroundService(
+    FileLoggerBuffer loggerBuffer,
+    IOptionsMonitor<FileLoggerOptions> optionsMonitor)
+    : LoggerBackgroundService<FileLoggerBuffer>(loggerBuffer)
 {
-    private readonly IOptionsMonitor<FileLoggerOptions> _optionsMonitor;
-
-    public FileLoggerBackgroundService(FileLoggerBuffer loggerBuffer, IOptionsMonitor<FileLoggerOptions> optionsMonitor) : base(loggerBuffer)
-    {
-        _optionsMonitor = optionsMonitor;
-    }
-    
     protected override async Task LogAsync(LogMessage logMessage, CancellationToken cancellationToken)
     {
-        var options = _optionsMonitor.CurrentValue;
+        var options = optionsMonitor.CurrentValue;
         var path = FileIO.ResolveFilePath(options.FileName);
         var directory = Path.GetDirectoryName(path);
 

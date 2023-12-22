@@ -8,20 +8,16 @@ using System.Text;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class SqlServerWriteProcedureScripts : SqlServerScriptsBase
+public class SqlServerWriteProcedureScripts(
+    IOptions<MasterDataCommonsOptions> options,
+    SqlServerInfo sqlServerInfo)
+    : SqlServerScriptsBase
 {
     private const string InsertInitial = "I";
     private const string UpdateInitial = "A";
     private const string DeleteInitial = "E";
-    private MasterDataCommonsOptions Options { get; }
-    private SqlServerInfo SqlServerInfo { get; }
-
-    public SqlServerWriteProcedureScripts(IOptions<MasterDataCommonsOptions> options,
-                                          SqlServerInfo sqlServerInfo)
-    {
-        Options = options.Value;
-        SqlServerInfo = sqlServerInfo;
-    }
+    private MasterDataCommonsOptions Options { get; } = options.Value;
+    private SqlServerInfo SqlServerInfo { get; } = sqlServerInfo;
 
     public string GetWriteProcedureScript(Element element)
     {

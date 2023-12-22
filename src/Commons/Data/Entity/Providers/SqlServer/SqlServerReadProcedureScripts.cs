@@ -8,18 +8,14 @@ using System.Text;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class SqlServerReadProcedureScripts : SqlServerScriptsBase
+public class SqlServerReadProcedureScripts(
+    IOptions<MasterDataCommonsOptions> options,
+    SqlServerInfo sqlServerInfo)
+    : SqlServerScriptsBase
 {
-    private MasterDataCommonsOptions Options { get; }
-    private SqlServerInfo SqlServerInfo { get; }
+    private MasterDataCommonsOptions Options { get; } = options.Value;
+    private SqlServerInfo SqlServerInfo { get; } = sqlServerInfo;
 
-    public SqlServerReadProcedureScripts(IOptions<MasterDataCommonsOptions> options,
-                                         SqlServerInfo sqlServerInfo)
-    {
-        Options = options.Value;
-        SqlServerInfo = sqlServerInfo;
-    }
-    
     public string GetReadProcedureScript(Element element)
     {
         if (element == null)

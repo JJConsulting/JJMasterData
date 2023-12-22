@@ -11,18 +11,12 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
-public class EntityRepository : IEntityRepository
+public class EntityRepository(DataAccess dataAccess, ILoggerFactory loggerFactory, EntityProviderBase provider)
+    : IEntityRepository
 {
-    private ILoggerFactory LoggerFactory { get; }
-    private DataAccess DataAccess { get; }
-    private EntityProviderBase Provider { get; }
-
-    public EntityRepository(DataAccess dataAccess, ILoggerFactory loggerFactory, EntityProviderBase provider)
-    {
-        LoggerFactory = loggerFactory;
-        DataAccess = dataAccess;
-        Provider = provider;
-    }
+    private ILoggerFactory LoggerFactory { get; } = loggerFactory;
+    private DataAccess DataAccess { get; } = dataAccess;
+    private EntityProviderBase Provider { get; } = provider;
 
     public int Update(Element element, IDictionary<string, object?> values)
     {

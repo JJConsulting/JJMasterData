@@ -12,7 +12,7 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 /// 2017-03-22 - JJTeam
 /// </remarks>
 [DebuggerDisplay("Name = {Name}")]
-public class Element
+public class Element()
 {
     [JsonProperty("name")]
     [Display(Name = "Element Name")]
@@ -22,14 +22,14 @@ public class Element
     public string Info { get; set; }
     
     [JsonProperty("fields")]
-    public ElementFieldList Fields { get; set; }
-    
+    public ElementFieldList Fields { get; set; } = new();
+
     [JsonProperty("indexes")]
-    public List<ElementIndex> Indexes { get; set; }
-    
+    public List<ElementIndex> Indexes { get; set; } = new();
+
     [JsonProperty("relations")]
-    public List<ElementRelationship> Relationships { get; set; }
-    
+    public List<ElementRelationship> Relationships { get; set; } = new();
+
     [JsonProperty("tableName")]
     [Display(Name = "Table Name")]
     public string TableName { get; set; }
@@ -51,7 +51,7 @@ public class Element
     public string WriteProcedureName { get; set; }
     
     [JsonProperty("sync")]
-    public bool EnableSynchronism { get; set; }
+    public bool EnableSynchronism { get; set; } = false;
 
     /// <summary>
     /// Works online or offline on synchronized devices
@@ -61,16 +61,7 @@ public class Element
     /// <para>Default = SyncMode.Online</para>
     /// </remarks>
     [JsonProperty("mode")]
-    public SynchronismMode SynchronismMode { get; set; }
-
-    public Element()
-    {
-        Fields = new ElementFieldList();
-        Indexes = new List<ElementIndex>();
-        Relationships = new List<ElementRelationship>();
-        SynchronismMode = SynchronismMode.Online;
-        EnableSynchronism = false;
-    }
+    public SynchronismMode SynchronismMode { get; set; } = SynchronismMode.Online;
 
     public Element(string name) : this()
     {

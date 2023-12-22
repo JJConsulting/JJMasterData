@@ -16,26 +16,21 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class SqlServerProvider : EntityProviderBase
+public class SqlServerProvider(
+    DataAccess dataAccess,
+    SqlServerScripts sqlServerScripts,
+    IMemoryCache memoryCache,
+    IOptions<MasterDataCommonsOptions> options,
+    ILoggerFactory loggerFactory)
+    : EntityProviderBase(dataAccess, options, loggerFactory)
 {
     private readonly TimeSpan _cacheExpiration = new (4, 0, 0);
-    private SqlServerScripts SqlServerScripts { get; }
-    private IMemoryCache MemoryCache { get; }
+    private SqlServerScripts SqlServerScripts { get; } = sqlServerScripts;
+    private IMemoryCache MemoryCache { get; } = memoryCache;
     private const string InsertInitial = "I";
     private const string UpdateInitial = "A";
     private const string DeleteInitial = "E";
     public override string VariablePrefix => "@";
-
-    public SqlServerProvider(
-        DataAccess dataAccess,
-        SqlServerScripts sqlServerScripts, 
-        IMemoryCache memoryCache,
-        IOptions<MasterDataCommonsOptions> options, 
-        ILoggerFactory loggerFactory) : base(dataAccess, options,loggerFactory)
-    {
-        SqlServerScripts = sqlServerScripts;
-        MemoryCache = memoryCache;
-    }
 
     public override string GetCreateTableScript(Element element)
     {

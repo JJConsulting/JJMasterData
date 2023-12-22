@@ -2,18 +2,12 @@
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
-public abstract class EntityResult<T>
+public abstract class EntityResult<T>(T data, int totalOfRecords)
 {
-    public T Data { get; }
-    
+    public T Data { get; } = data;
+
     /// <summary>
     /// TotalOfRecords at the EntityResult source.
     /// </summary>
-    public int TotalOfRecords { get; }
-
-    protected EntityResult(T data, int totalOfRecords)
-    {
-        Data = data;
-        TotalOfRecords = totalOfRecords;
-    }
+    public int TotalOfRecords { get; } = totalOfRecords;
 }

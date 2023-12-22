@@ -52,10 +52,10 @@ public static class DbLoggerElement
                 },
                 new ElementField
                 {
-                    Name = options.EventColumnName,
-                    Label = "Event",
+                    Name = options.CategoryColumnName,
+                    Label = "Category",
                     DataType = FieldType.Varchar,
-                    Size = 50,
+                    Size = 500,
                     Filter =
                     {
                         Type = FilterMode.Contain

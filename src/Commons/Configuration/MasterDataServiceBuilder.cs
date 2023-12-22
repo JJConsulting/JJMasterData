@@ -9,15 +9,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace JJMasterData.Commons.Configuration;
 
-public class MasterDataServiceBuilder
+public class MasterDataServiceBuilder(IServiceCollection services)
 {
-    public IServiceCollection Services { get; }
+    public IServiceCollection Services { get; } = services;
 
-    public MasterDataServiceBuilder(IServiceCollection services)
-    {
-        Services = services;
-    }
-    
     public MasterDataServiceBuilder WithBackgroundTaskManager<T>() where T : class, IBackgroundTaskManager
     {
         Services.Replace(ServiceDescriptor.Transient<IBackgroundTaskManager, T>());

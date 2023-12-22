@@ -1,15 +1,9 @@
 ﻿namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class SqlServerInfo
+public class SqlServerInfo(DataAccess dataAccess)
 {
-    private readonly DataAccess _dataAccess;
     private static int _majorVersion;
     private static int _compatibilityLevel;
-
-    public SqlServerInfo(DataAccess dataAccess)
-    {
-        this._dataAccess = dataAccess;
-    }
 
     public int GetMajorVersion()
     {
@@ -18,7 +12,7 @@ public class SqlServerInfo
 
         try
         {
-            var ret = _dataAccess.GetResult("SELECT SERVERPROPERTY('productversion')");
+            var ret = dataAccess.GetResult("SELECT SERVERPROPERTY('productversion')");
             var version = ret.ToString().Split('.')[0];
             _majorVersion = int.Parse(version);
         }
@@ -37,7 +31,7 @@ public class SqlServerInfo
 
         try
         {
-            var ret = _dataAccess.GetResult("select compatibility_level from sys.databases where name = DB_NAME()");
+            var ret = dataAccess.GetResult("select compatibility_level from sys.databases where name = DB_NAME()");
             _compatibilityLevel = int.Parse(ret.ToString());
         }
         catch

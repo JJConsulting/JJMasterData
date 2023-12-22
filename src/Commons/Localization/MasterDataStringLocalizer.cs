@@ -41,28 +41,20 @@ public sealed class MasterDataStringLocalizer<TResourceSource> : IStringLocalize
 }
 
 
-public class MasterDataStringLocalizer : IStringLocalizer
+public class MasterDataStringLocalizer(
+    string resourceName,
+    ResourceManagerStringLocalizer resourcesStringLocalizer,
+    IEntityRepository entityRepository,
+    IMemoryCache cache,
+    IOptions<MasterDataCommonsOptions> options)
+    : IStringLocalizer
 {
-    private ResourceManagerStringLocalizer ResourceManagerStringLocalizer { get; }
-    private IEntityRepository EntityRepository { get; }
-    private IMemoryCache Cache { get; }
-    private MasterDataCommonsOptions Options { get; }
+    private ResourceManagerStringLocalizer ResourceManagerStringLocalizer { get; } = resourcesStringLocalizer;
+    private IEntityRepository EntityRepository { get; } = entityRepository;
+    private IMemoryCache Cache { get; } = cache;
+    private MasterDataCommonsOptions Options { get; } = options.Value;
 
-    private string ResourceName { get; }
-    
-    public MasterDataStringLocalizer(
-        string resourceName,
-        ResourceManagerStringLocalizer resourcesStringLocalizer,
-        IEntityRepository entityRepository, 
-        IMemoryCache cache,
-        IOptions<MasterDataCommonsOptions> options)
-    {
-        ResourceName = resourceName;
-        ResourceManagerStringLocalizer = resourcesStringLocalizer;
-        EntityRepository = entityRepository;
-        Cache = cache;
-        Options = options.Value;
-    }
+    private string ResourceName { get; } = resourceName;
 
     public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {

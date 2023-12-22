@@ -7,14 +7,14 @@ namespace JJMasterData.Commons.Data.Entity.Models;
 /// Informações de filtro
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-public class ElementFilter
+public class ElementFilter(FilterMode type)
 {
     /// <summary>
     /// Filter type
     /// </summary>
     [JsonProperty("type")]
     [Display(Name = "Filter Mode")]
-    public FilterMode Type { get; set; }
+    public FilterMode Type { get; set; } = type;
 
     /// <summary>
     /// Required filter
@@ -22,13 +22,7 @@ public class ElementFilter
     [JsonProperty("isrequired")]
     public bool IsRequired { get; set; }
 
-    public ElementFilter()
+    public ElementFilter() : this(FilterMode.None)
     {
-        Type = FilterMode.None;
-    }
-
-    public ElementFilter(FilterMode type)
-    {
-        Type = type;
     }
 }

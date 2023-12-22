@@ -14,20 +14,11 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public class PlainTextReader
+public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReader> logger)
 {
-    private ILogger<PlainTextReader> Logger { get; }
-    private readonly EntityProviderBase _provider;
+    private ILogger<PlainTextReader> Logger { get; } = logger;
     public bool ShowLogInfo { get; init; }
-    public string Delimiter { get; init; }
-
-
-    public PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReader> logger)
-    {
-        Logger = logger;
-        _provider = provider;
-        Delimiter = "|";
-    }
+    public string Delimiter { get; init; } = "|";
 
 
     public async Task<string> GetFieldsListAsTextAsync(Element element, EntityParameters entityParameters)
@@ -35,7 +26,7 @@ public class PlainTextReader
         var sRet = new StringBuilder();
         var dStart = DateTime.Now;
         var culture = CultureInfo.CreateSpecificCulture("en-US");
-        var dataAccess = _provider.DataAccess;
+        var dataAccess = provider.DataAccess;
         string currentField = null;
         DbConnection conn = null;
 
@@ -43,9 +34,9 @@ public class PlainTextReader
 
         try
         {
-            var totalParameter = new DataAccessParameter($"{_provider.VariablePrefix}qtdtotal", 1, DbType.Int32, 0,
+            var totalParameter = new DataAccessParameter($"{provider.VariablePrefix}qtdtotal", 1, DbType.Int32, 0,
                 ParameterDirection.InputOutput);
-            var cmd = _provider.GetReadCommand(element, entityParameters, totalParameter);
+            var cmd = provider.GetReadCommand(element, entityParameters, totalParameter);
             var providerFactory = SqlClientFactory.Instance;
             conn = providerFactory.CreateConnection();
             if (conn == null)

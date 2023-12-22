@@ -10,24 +10,17 @@ using Newtonsoft.Json.Linq;
 
 namespace JJMasterData.Commons.Configuration.Options;
 
-public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
+public class WritableJsonOptions<T>(
+    IOptionsMonitor<T> options,
+    string section,
+    string filePath)
+    : IWritableOptions<T>
+    where T : class, new()
 {
-    private readonly IOptionsMonitor<T> _options;
-    private readonly string _section;
-    public string FilePath { get; }
+    public string FilePath { get; } = filePath;
 
-    public WritableJsonOptions(
-        IOptionsMonitor<T> options,
-        string section,
-        string filePath)
-    {
-        _options = options;
-        _section = section;
-        FilePath = filePath;
-    }
-
-    public T Value => _options.CurrentValue;
-    public T Get(string? name) => _options.Get(name);
+    public T Value => options.CurrentValue;
+    public T Get(string? name) => options.Get(name);
 
     public async Task UpdateAsync(Action<T> applyChanges)
     {
@@ -57,9 +50,9 @@ public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
             jObject = JsonConvert.DeserializeObject<JObject>(content);
         }
 
-        if (jObject != null && jObject.TryGetValue(_section, out var section))
+        if (jObject != null && jObject.TryGetValue(section, out var value))
         {
-            sectionObject = JsonConvert.DeserializeObject<T>(section.ToString());
+            sectionObject = JsonConvert.DeserializeObject<T>(value.ToString());
         }
         else
         {
@@ -72,7 +65,7 @@ public class WritableJsonOptions<T> : IWritableOptions<T> where T : class, new()
 
         if (jObject != null)
         {
-            jObject[_section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
+            jObject[section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
 
             var serializedObject = JsonConvert.SerializeObject(jObject, Formatting.Indented);
 

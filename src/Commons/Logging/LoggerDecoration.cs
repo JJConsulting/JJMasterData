@@ -29,7 +29,7 @@ internal static class LoggerDecoration
         }
 
         message.AppendLine();
-        message.AppendLine("Stacktrace:");
+        message.AppendLine("StackTrace:");
         message.AppendLine(exception.StackTrace);
 
         message.AppendLine();
@@ -45,7 +45,7 @@ internal static class LoggerDecoration
         var message = new StringBuilder();
         foreach (DictionaryEntry data in exception.Data)
         {
-            string? key = data.Key?.ToString();
+            var key = data.Key?.ToString();
             if (key == null)
                 continue;
 
@@ -55,7 +55,7 @@ internal static class LoggerDecoration
             message.AppendLine();
             message.Append(key);
             message.AppendLine(": ");
-            message.Append(data.Value?.ToString());
+            message.Append(data.Value);
         }
 
         return message.ToString();

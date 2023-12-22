@@ -1,20 +1,22 @@
+using System;
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Logging.Db;
 
 [ProviderAlias(ProviderName)]
-internal class DbLoggerProvider : ILoggerProvider
+internal class DbLoggerProvider(DbLoggerBuffer buffer) : ILoggerProvider
 {
-    public const string ProviderName = "Database";
+    private const string ProviderName = "Database";
 
-    private readonly ILogger _logger;
+    private readonly ConcurrentDictionary<string, DbLogger> _loggers =
+        new(StringComparer.OrdinalIgnoreCase);
 
-    public DbLoggerProvider(DbLoggerBuffer buffer)
+    public ILogger CreateLogger(string categoryName) =>
+        _loggers.GetOrAdd(categoryName, name => new DbLogger(name, buffer));
+
+    public void Dispose()
     {
-        _logger = new DbLogger(buffer);
+        _loggers.Clear();
     }
-
-    public ILogger CreateLogger(string categoryName) => _logger;
-
-    public void Dispose(){}
 }

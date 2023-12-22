@@ -15,19 +15,15 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
-public abstract class EntityProviderBase
+public abstract class EntityProviderBase(
+    DataAccess dataAccess,
+    IOptions<MasterDataCommonsOptions> options,
+    ILoggerFactory loggerFactory)
 {
-    internal DataAccess DataAccess { get; set; }
-    protected MasterDataCommonsOptions Options { get; }
-    private ILoggerFactory LoggerFactory { get; }
+    internal DataAccess DataAccess { get; set; } = dataAccess;
+    protected MasterDataCommonsOptions Options { get; } = options.Value;
+    private ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
-    protected EntityProviderBase(DataAccess dataAccess, IOptions<MasterDataCommonsOptions> options, ILoggerFactory loggerFactory)
-    {
-        DataAccess = dataAccess;
-        Options = options.Value;
-        LoggerFactory = loggerFactory;
-    }
-    
     public abstract string VariablePrefix { get; }
     public abstract string GetCreateTableScript(Element element);
     public abstract string? GetWriteProcedureScript(Element element);

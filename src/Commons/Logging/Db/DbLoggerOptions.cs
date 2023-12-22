@@ -8,5 +8,5 @@ public class DbLoggerOptions
     public string CreatedColumnName { get; set; } = "log_dat_evento";
     public string LevelColumnName { get; set; } = "log_txt_tipo";
     public string MessageColumnName { get; set; } = "log_txt_message";
-    public string EventColumnName { get; set; } = "log_txt_source";
+    public string CategoryColumnName { get; set; } = "log_txt_source";
 }
