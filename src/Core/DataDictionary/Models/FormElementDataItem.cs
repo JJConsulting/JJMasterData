@@ -71,5 +71,10 @@ public class FormElementDataItem
     [Display(Name="Show Icon")]
     public bool ShowIcon { get; set; }
 
-    public bool HasSqlExpression() => !string.IsNullOrWhiteSpace(Command?.Sql);
+    public bool HasSqlCommand() => !string.IsNullOrWhiteSpace(Command?.Sql);
+
+    public bool HasElementMap()
+    {
+        return ElementMap != null;
+    }
 }

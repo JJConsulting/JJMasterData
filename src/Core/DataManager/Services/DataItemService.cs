@@ -68,12 +68,12 @@ public class DataItemService(IEntityRepository entityRepository,
 
     private static DataItemType GetDataItemType(FormElementDataItem dataItem)
     {
-        if (dataItem.HasSqlExpression())
+        if (dataItem.HasSqlCommand())
             return DataItemType.SqlCommand;
-        if (dataItem.Items != null && dataItem.Items.Any())
-            return DataItemType.Manual;
+        if (dataItem.HasElementMap())
+            return DataItemType.ElementMap;
         
-        return DataItemType.ElementMap;
+        return DataItemType.Manual;
     }
 
     private static IEnumerable<DataItemValue> GetItemsValues(FormElementDataItem dataItem, string? searchId, string? searchText)
