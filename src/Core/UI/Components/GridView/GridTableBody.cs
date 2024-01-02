@@ -44,7 +44,7 @@ internal class GridTableBody(JJGridView gridView)
         }
     }
 
-    internal async Task<HtmlBuilder> GetRowHtml(IDictionary<string,object?> row, int index)
+    private async Task<HtmlBuilder> GetRowHtml(IDictionary<string,object?> row, int index)
     {
         var tr = new HtmlBuilder(HtmlTag.Tr);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
@@ -105,7 +105,7 @@ internal class GridTableBody(JJGridView gridView)
             }
 
             var td = new HtmlBuilder(HtmlTag.Td);
-            string style = GetTdStyle(field);
+            var style = GetTdStyle(field);
             td.WithAttributeIf(string.IsNullOrEmpty(style), "style", style!);
             td.WithAttributeIfNotEmpty( "style", style);
             td.WithAttribute("onclick", onClickScript);
@@ -120,19 +120,22 @@ internal class GridTableBody(JJGridView gridView)
                 value = objValue?.ToString() ?? string.Empty;
                 var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
                 HtmlBuilder cell;
-                if (field.DataItem is not null && field.DataItem.ShowIcon)
+                if (field.DataItem is not null && field.DataItem.ShowIcon && field.DataItem.ReplaceTextOnGrid)
                 {
                     var dataItemValues =await  GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData, null,
                         value.ToString());
                     var dataItemValue = dataItemValues.FirstOrDefault(d=>d.Id == value.ToString());
                     cell = new HtmlBuilder(HtmlTag.Div);
-                    cell.AppendComponent(new JJIcon(dataItemValue!.Icon,dataItemValue.IconColor ?? string.Empty));
+                    var icon = new JJIcon(dataItemValue!.Icon, dataItemValue.IconColor ?? string.Empty);
+
                     if (dataItemValue.Description is not null)
                     {
-                        cell.WithToolTip(dataItemValue.Description);
+                        icon.Tooltip = dataItemValue.Description;
                     }
 
-                    cell.AppendIf(dataItemValue.Description is not null && field.DataItem.ReplaceTextOnGrid, HtmlTag.Span, span =>
+                    cell.AppendComponent(icon);
+                    
+                    cell.Append(HtmlTag.Span, span =>
                     {
                         span.AppendText(field.DataItem.ReplaceTextOnGrid ? dataItemValue.Description! : dataItemValue.Id);
                         span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
