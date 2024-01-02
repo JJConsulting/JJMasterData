@@ -1,4 +1,5 @@
 #if NETFRAMEWORK
+using System;
 using System.Web;
 using System.Web.SessionState;
 using JJMasterData.Core.Http.Abstractions;
@@ -17,6 +18,16 @@ internal class SystemWebHttpSessionWrapper : IHttpSession
     public void SetSessionValue(string key, object value) => Session[key] = value;
 
     public T GetSessionValue<T>(string key) => (T)Session[key];
-    public bool HasSession() => Session != null;
+    public bool HasSession()
+    {
+        try
+        {
+            return Session != null;
+        }
+        catch 
+        {
+            return false;
+        }
+    }
 }
 #endif
