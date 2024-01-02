@@ -12,8 +12,8 @@ public class JJIcon : HtmlComponent
     /// </remarks>
     public string IconClass { get; set; }
     public string Color { get; set; }
-    public string Title { get; set; }
-
+    public string Tooltip { get; set; }
+    
     internal JJIcon() { }
 
     public JJIcon(IconType icon)
@@ -26,9 +26,9 @@ public class JJIcon : HtmlComponent
         Color = color;
     }
 
-    public JJIcon(IconType icon, string color, string title) : this(icon, color)
+    public JJIcon(IconType icon, string color, string tooltip) : this(icon, color)
     {
-        Title = title;
+        Tooltip = tooltip;
     }
 
     public JJIcon(string iconClass)
@@ -41,9 +41,9 @@ public class JJIcon : HtmlComponent
         Color = color;
     }
 
-    public JJIcon(string iconClass, string color, string title) : this(iconClass, color)
+    public JJIcon(string iconClass, string color, string tooltip) : this(iconClass, color)
     {
-        Title = title;
+        Tooltip = tooltip;
     }
     
     internal override HtmlBuilder BuildHtml()
@@ -53,7 +53,7 @@ public class JJIcon : HtmlComponent
             .WithAttributes(Attributes)
             .WithCssClass(IconClass)
             .WithCssClass(CssClass)
-            .WithToolTip(Title)
+            .WithToolTip(Tooltip)
             .WithAttributeIf(!string.IsNullOrEmpty(Color), "style",$"color:{Color}");
 
         return element;

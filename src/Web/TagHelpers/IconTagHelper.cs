@@ -27,7 +27,7 @@ public class IconTagHelper : TagHelper
 
         if (Tooltip != null)
         {
-            icon.Title = Tooltip;
+            icon.Tooltip = Tooltip;
         }
         
         output.TagMode = TagMode.StartTagAndEndTag;
