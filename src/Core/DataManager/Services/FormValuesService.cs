@@ -13,6 +13,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -55,6 +56,12 @@ public class FormValuesService(
                         value = null;
                     break;
                 case FormComponent.Currency:
+                    if (value is null)
+                        break;
+                    
+                    value = HandleCurrencyComponent(field, value);
+
+                    break;
                 case FormComponent.Slider: 
                 case FormComponent.Number:
                     if (value is null)
@@ -73,6 +80,31 @@ public class FormValuesService(
         }
 
         return values;
+    }
+    
+    internal static object? HandleCurrencyComponent(FormElementField field, object? value)
+    {
+        if (value is null)
+            return value;
+        
+        var cultureInfo = field.Attributes.TryGetValue("cultureInfo", out var cultureInfoName)
+            ? CultureInfo.GetCultureInfo(cultureInfoName.ToString()!) : CultureInfo.CurrentUICulture;
+        
+        object parsedValue = 0;
+        
+        switch (field.DataType)
+        {
+            case FieldType.Float:
+                if (float.TryParse(value.ToString(), NumberStyles.Currency | NumberStyles.AllowCurrencySymbol, cultureInfo, out var floatValue))
+                    parsedValue = floatValue;
+                break;
+            case FieldType.Int:
+                if (int.TryParse(value.ToString(), NumberStyles.Currency | NumberStyles.AllowCurrencySymbol, cultureInfo, out var numericValue))
+                    parsedValue = numericValue;
+                break;
+        }
+
+        return parsedValue;
     }
 
     internal static object? HandleNumericComponent(FieldType dataType, object? value)

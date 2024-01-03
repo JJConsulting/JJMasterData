@@ -20,7 +20,7 @@ public class TextGroupFactory(
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private IComponentFactory<JJLinkButtonGroup> LinkButtonGroupFactory { get; } = linkButtonGroupFactory;
     private ActionButtonFactory ActionButtonFactory { get; } = actionButtonFactory;
-
+    
     public JJTextGroup Create()
     {
         return new JJTextGroup(LinkButtonGroupFactory,FormValues);
@@ -31,8 +31,10 @@ public class TextGroupFactory(
         var textGroup = Create(field);
 
         if (field.Component == FormComponent.Currency)
+        {
             value = value?.ToString().Replace(RegionInfo.CurrentRegion.CurrencySymbol, string.Empty).Trim();
-
+        }
+        
         textGroup.Text = value?.ToString() ?? string.Empty;
         
         return textGroup;
@@ -115,10 +117,21 @@ public class TextGroupFactory(
         {
             case FormComponent.Currency:
                 listClass.Add(BootstrapHelper.TextRight);
-                textGroup.Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol);
+
                 textGroup.MaxLength = 18;
-                textGroup.InputType = InputType.Number;
-                textGroup.SetAttr("onclick", "this.select();");
+                
+                if (textGroup.Attributes.TryGetValue("cultureInfo", out var cultureInfoName))
+                {
+                    var cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName);
+                    textGroup.CultureInfo = cultureInfo;
+                    textGroup.Addons = new InputAddons(cultureInfo.NumberFormat.CurrencySymbol);
+                }
+                else
+                {
+                    textGroup.Addons = new InputAddons(CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol);
+                }
+                
+                textGroup.InputType = InputType.Currency;
                 textGroup.SetAttr("onkeypress", "return jjutil.justNumber(event);");
                 break;
             case FormComponent.Number:

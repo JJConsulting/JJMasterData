@@ -12,6 +12,8 @@ public class JJTextBox : ControlBase
 
     public int NumberOfDecimalPlaces { get; set; }
 
+    public CultureInfo CultureInfo { get; set; } = CultureInfo.CurrentCulture;
+    
     public double? MinValue
     {
         get
@@ -72,11 +74,16 @@ public class JJTextBox : ControlBase
             .WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString())
             .WithAttributeIf(NumberOfDecimalPlaces == 0 && InputType == InputType.Number, "onkeypress",
                 "return jjutil.justNumber(event);")
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-decimal-places",
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType is InputType.Number or InputType.Currency, "jj-decimal-places",
                 NumberOfDecimalPlaces.ToString())
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-decimal-separator",CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator)
-            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-group-separator",CultureInfo.CurrentUICulture.NumberFormat.NumberGroupSeparator)
-            .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-numeric")
+            
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-decimal-separator",CultureInfo.NumberFormat.NumberDecimalSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Number, "jj-group-separator",CultureInfo.NumberFormat.NumberGroupSeparator)
+            
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Currency, "jj-decimal-separator",CultureInfo.NumberFormat.CurrencyDecimalSeparator)
+            .WithAttributeIf(NumberOfDecimalPlaces > 0 && InputType == InputType.Currency, "jj-group-separator",CultureInfo.NumberFormat.CurrencyGroupSeparator)
+            
+            .WithCssClassIf(NumberOfDecimalPlaces > 0 && InputType  is InputType.Number or InputType.Currency, "jj-numeric")
             .WithAttributeIfNotEmpty("value", Text)
             .WithAttributeIf(ReadOnly, "readonly", "readonly")
             .WithAttributeIf(!Enabled, "disabled", "disabled");
