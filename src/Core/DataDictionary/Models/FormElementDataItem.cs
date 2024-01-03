@@ -77,4 +77,6 @@ public class FormElementDataItem
     {
         return ElementMap != null;
     }
+
+    public bool HasItems() => Items?.Count > 0;
 }

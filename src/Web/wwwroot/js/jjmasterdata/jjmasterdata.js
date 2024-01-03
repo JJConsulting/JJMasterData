@@ -796,6 +796,7 @@ class DataImportationHelper {
         urlBuilder.addQueryParameter("dataImportationOperation", "help");
         postFormValues({
             url: urlBuilder.build(), success: html => {
+                DataImportationHelper.removePasteListener();
                 document.querySelector("#" + componentName).innerHTML = html;
             }
         });
@@ -1782,10 +1783,6 @@ class _Modal extends ModalBase {
 class _LegacyModal extends ModalBase {
     constructor() {
         super();
-        let onModalHidden = this.onModalHidden;
-        $("#" + this.modalId).on('hidden.bs.modal', function () {
-            onModalHidden();
-        });
     }
     get modalTitle() {
         return this._modalTitle;
@@ -1827,6 +1824,10 @@ class _LegacyModal extends ModalBase {
     }
     showModal() {
         $(`#${this.modalId}`).modal();
+        let onModalHidden = this.onModalHidden;
+        $("#" + this.modalId).one('hidden.bs.modal', function () {
+            onModalHidden();
+        });
         $("iframe").on("load", () => {
             SpinnerOverlay.hide();
         });

@@ -68,6 +68,8 @@ public class DataItemService(IEntityRepository entityRepository,
 
     private static DataItemType GetDataItemType(FormElementDataItem dataItem)
     {
+        if (dataItem.HasItems())
+            return DataItemType.Manual;
         if (dataItem.HasSqlCommand())
             return DataItemType.SqlCommand;
         if (dataItem.HasElementMap())

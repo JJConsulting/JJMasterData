@@ -129,7 +129,7 @@ public class DataImportationWorker(DataImportationContext context,
         Thread.CurrentThread.CurrentCulture = Culture;
 
         //recuperando campos a serem importados
-        var listField = GetListImportedField();
+        var fieldList = GetListImportedField();
 
         string[] stringSeparators = ["\r\n"];
         string[] rows = RawData.Split(stringSeparators, StringSplitOptions.None);
@@ -140,15 +140,15 @@ public class DataImportationWorker(DataImportationContext context,
         {
              Values = new Dictionary<string, object>(),
              PageState = PageState.Import,
-             UserValues = new Dictionary<string, object>()
+             UserValues = UserValues
         });
-        var formData = new FormStateData(defaultValues, PageState.Import);
+        var formStateData = new FormStateData(defaultValues, UserValues, PageState.Import);
 
         //executa script antes da execuçao
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
-            var parsedSql = ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandBeforeProcess, formData);
+            var parsedSql = ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandBeforeProcess, formStateData);
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql));
         }
 
@@ -174,14 +174,14 @@ public class DataImportationWorker(DataImportationContext context,
 
             //Verifica quantidade de colunas do arquivo
             string[] cols = line.Split(Separator);
-            if (cols.Length != listField.Count)
+            if (cols.Length != fieldList.Count)
             {
                 currentProcess.Error++;
 
                 string error = string.Empty;
                 error += StringLocalizer["Invalid number of fields."];
                 error += " ";
-                error += StringLocalizer["Expected {0} Received {1}.", listField.Count, cols.Length];
+                error += StringLocalizer["Expected {0} Received {1}.", fieldList.Count, cols.Length];
                 currentProcess.AddError(error);
 
                 error += StringLocalizer["Click on the [Help] link for more information regarding the file layout."];
@@ -192,7 +192,7 @@ public class DataImportationWorker(DataImportationContext context,
             if (isFirstRow)
             {
                 isFirstRow = false;
-                string colName1 = listField[0].LabelOrName;
+                string colName1 = fieldList[0].LabelOrName;
                 if (colName1.Trim().ToLower().Equals(cols[0].Trim().ToLower()))
                 {
                     currentProcess.AddError(StringLocalizer["File header ignored"]);
@@ -201,7 +201,7 @@ public class DataImportationWorker(DataImportationContext context,
                 }
             }
 
-            var values = GetDictionaryWithNameAndValue(listField, cols);
+            var values = GetDictionaryWithNameAndValue(fieldList, cols);
             await SetFormValues(values, currentProcess);
             Reporter(currentProcess);
             token.ThrowIfCancellationRequested();
@@ -211,13 +211,15 @@ public class DataImportationWorker(DataImportationContext context,
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
-            string parsedSql = ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandAfterProcess, formData);
+            string parsedSql = ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandAfterProcess, formStateData);
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
         }
 
         if (OnAfterProcessAsync != null)
             await OnAfterProcessAsync(this, new FormAfterActionEventArgs());
     }
+
+    internal IDictionary<string, object> UserValues { get; set; } = new Dictionary<string,object>();
 
     /// <summary>
     /// Preenche um hashtable com o nome do campor e o valor
@@ -272,7 +274,7 @@ public class DataImportationWorker(DataImportationContext context,
     {
         try
         {
-            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData( fileValues, PageState.Import), true);
+            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData( fileValues, UserValues, PageState.Import));
             var ret = await FormService.InsertOrReplaceAsync(FormElement, values, DataContext);
 
             if (ret.IsValid)

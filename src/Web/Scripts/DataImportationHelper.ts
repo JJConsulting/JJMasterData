@@ -191,6 +191,7 @@
         urlBuilder.addQueryParameter("dataImportationOperation", "help");
         postFormValues({
             url: urlBuilder.build(), success: html => {
+                DataImportationHelper.removePasteListener();
                 document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
             }
         })

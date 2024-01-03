@@ -195,10 +195,6 @@ class _LegacyModal extends ModalBase{
 
     constructor() {
         super();
-        let onModalHidden = this.onModalHidden;
-        $("#"+this.modalId).on('hidden.bs.modal', function () {
-            onModalHidden()
-        });
     }
     
     private createModalHtml(content: string, isIframe: boolean) {
@@ -240,6 +236,11 @@ class _LegacyModal extends ModalBase{
     private showModal() {
         $(`#${this.modalId}`).modal();
 
+        let onModalHidden = this.onModalHidden;
+        $("#" + this.modalId).one('hidden.bs.modal', function () {
+            onModalHidden();
+        });
+        
         $("iframe").on("load", () => {
             SpinnerOverlay.hide();
         });

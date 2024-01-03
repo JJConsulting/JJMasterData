@@ -68,7 +68,7 @@ internal class FormViewFactory(
         formView.FormService.AddFormEventHandler(formEventHandler);
         if (formEventHandler != null)
         {
-            return formEventHandler.OnFormElementLoadAsync(this, new FormElementLoadEventArgs(formElement))!;
+            return formEventHandler.OnFormElementLoadAsync(formView, new FormElementLoadEventArgs(formElement))!;
         }
 
         return Task.CompletedTask;

@@ -245,11 +245,8 @@ public class JJDataImportation : ProcessComponent
 
     private HtmlBuilder GetUploadAreaCollapse(string keyprocess)
     {
-        var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.DataImportation);        
-        var gridRouteContext = RouteContext.FromFormElement(FormElement, ComponentContext.GridViewReload);
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
-            .AppendScript($"DataImportationHelper.addPasteListener('{Name}', '{EncryptionService.EncryptRouteContext(routeContext)}', '{EncryptionService.EncryptRouteContext(gridRouteContext)}');")
             .AppendHiddenInput("filename")
             .Append(HtmlTag.TextArea, area =>
             {
@@ -314,7 +311,7 @@ public class JJDataImportation : ProcessComponent
         var worker = DataImportationWorkerFactory.Create(new DataImportationContext(FormElement, dataContext, postedText, separator));
         worker.UserId = UserId;
         worker.ProcessOptions = ProcessOptions;
-        
+        worker.UserValues = UserValues;
         worker.FormService.OnAfterUpdateAsync += OnAfterUpdateAsync;
         worker.FormService.OnAfterInsertAsync += OnAfterInsertAsync;
         worker.FormService.OnAfterDeleteAsync += OnAfterDeleteAsync;
