@@ -49,7 +49,7 @@ public class JJCollapsePanel : HtmlComponent
         FormValues = formValues;
         ButtonPosition = Position.Right;
         Name = "collapse1";
-        Buttons = new List<JJLinkButton>();
+        Buttons = [];
         Color = PanelColor.Default;
         TitleIcon = null;
         HtmlBuilderContent = new HtmlBuilder();

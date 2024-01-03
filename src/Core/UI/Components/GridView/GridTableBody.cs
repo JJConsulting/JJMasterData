@@ -236,7 +236,7 @@ internal class GridTableBody(JJGridView gridView)
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("table-action");
 
-        var btnGroup = new JJLinkButtonGroup();
+        var btnGroup = GridView.ComponentFactory.Html.LinkButtonGroup.Create();
         
         var factory = GridView.ComponentFactory.ActionButton;
         

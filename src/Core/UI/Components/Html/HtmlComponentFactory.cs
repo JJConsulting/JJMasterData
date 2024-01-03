@@ -9,12 +9,11 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class HtmlComponentFactory(IStringLocalizer<MasterDataResources> stringLocalizer,
+public class HtmlComponentFactory(
+    IStringLocalizer<MasterDataResources> stringLocalizer,
     IHttpContext currentContext,
-    MasterDataUrlHelper urlHelper,
     IServiceProvider serviceProvider)
 {
-    private readonly MasterDataUrlHelper _urlHelper = urlHelper;
 
     public AlertFactory Alert => new();
 
@@ -43,6 +42,6 @@ public class HtmlComponentFactory(IStringLocalizer<MasterDataResources> stringLo
     public ToolbarFactory Toolbar => new();
     
     public ValidationSummaryFactory ValidationSummary =>  new(stringLocalizer);
-    
+    public LinkButtonGroupFactory LinkButtonGroup => new(stringLocalizer);
 }
 

@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.UI.Html;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJLinkButtonGroup : HtmlComponent
+public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocalizer) : HtmlComponent
 {
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private List<JJLinkButton> _actions;
 
     /// <summary>
@@ -13,7 +16,7 @@ public class JJLinkButtonGroup : HtmlComponent
     /// </summary>
     public List<JJLinkButton> Actions
     {
-        get => _actions ??= new List<JJLinkButton>();
+        get => _actions ??= [];
         set => _actions = value;
     }
 
@@ -22,7 +25,7 @@ public class JJLinkButtonGroup : HtmlComponent
     public string CaretText { get; set; }
     
     public string MoreActionsText { get; set; }
-    
+
     internal override HtmlBuilder BuildHtml()
     {
         var inputGroup = new HtmlBuilder(HtmlTag.Div)
@@ -32,7 +35,10 @@ public class JJLinkButtonGroup : HtmlComponent
             .WithCssClass(CssClass);
 
         AddActionsAt(inputGroup);
-
+        
+        if (BootstrapHelper.Version == 5)
+            inputGroup.WithToolTip(MoreActionsText ?? StringLocalizer["More"]);
+        
         return inputGroup;
     }
 
@@ -61,7 +67,7 @@ public class JJLinkButtonGroup : HtmlComponent
         }
     }
 
-    private void AddGroupActions(HtmlBuilder ul, List<JJLinkButton> listAction)
+    private static void AddGroupActions(HtmlBuilder ul, List<JJLinkButton> listAction)
     {
         foreach (var action in listAction)
         {
@@ -96,7 +102,7 @@ public class JJLinkButtonGroup : HtmlComponent
             .AppendIf(BootstrapHelper.Version == 3, HtmlTag.Span, s =>
             {
                 s.WithCssClass("caret")
-                    .WithToolTip(MoreActionsText ?? "More Options");
+                    .WithToolTip(MoreActionsText ?? StringLocalizer["More"]);
             });
             
         return html;

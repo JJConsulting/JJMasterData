@@ -17,5 +17,5 @@ public class NCalcExpressionProviderOptions
     /// <summary>
     /// Additional functions to be used at expressions. Check NCalc wiki for more information
     /// </summary>
-    public List<EvaluateFunctionHandler> AdditionalFunctions { get; set; } = new();
+    public List<EvaluateFunctionHandler> AdditionalFunctions { get; set; } = [];
 }

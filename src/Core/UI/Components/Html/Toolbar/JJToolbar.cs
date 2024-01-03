@@ -8,7 +8,7 @@ public class JJToolbar : HtmlComponent
     public List<HtmlBuilder> Items { get; set; }
     internal JJToolbar()
     {
-        Items = new List<HtmlBuilder>();
+        Items = [];
     }
 
     internal override HtmlBuilder BuildHtml()

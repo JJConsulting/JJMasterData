@@ -12,7 +12,7 @@ public class JJAlert : HtmlComponent
     public PanelColor Color { get; set; }
     public IconType? Icon { get; set; }
     public string? Title { get; set; }
-    public List<string> Messages { get; } = new();
+    public List<string> Messages { get; } = [];
     public HtmlBuilder? InnerHtml { get; set; }
     
     public bool ShowCloseButton { get; set; }

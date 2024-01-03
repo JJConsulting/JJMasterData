@@ -21,7 +21,7 @@ public class ElementIndex
 
     public ElementIndex()
     {
-        Columns = new List<string>();
+        Columns = [];
     }
 
     public ElementIndex(bool isUnique, params string[] columns)

@@ -34,7 +34,7 @@ public class DataAccessCommand
     {
         Sql = string.Empty;
         Type = CommandType.Text;
-        Parameters = new List<DataAccessParameter>();
+        Parameters = [];
     }
 
     [SetsRequiredMembers]

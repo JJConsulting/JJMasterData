@@ -31,5 +31,5 @@ public class MasterDataWebOptions : MasterDataCoreOptions
     /// <summary>
     /// Custom scripts to be added at _MasterDataScripts. The paths are relative.
     /// </summary>
-    public List<string> CustomScriptsPaths { get; } = new();
+    public List<string> CustomScriptsPaths { get; } = [];
 }

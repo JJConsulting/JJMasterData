@@ -9,17 +9,17 @@ namespace JJMasterData.Core.DataDictionary.Models;
 
 public class FormElementRelationshipList : IList<FormElementRelationship>
 {
-    private readonly IList<FormElementRelationship> _formRelationships;
+    private readonly List<FormElementRelationship> _formRelationships;
     private readonly List<ElementRelationship> _baseRelationships;
 
     public FormElementRelationshipList()
     {
-        _formRelationships = new List<FormElementRelationship>();
-        _baseRelationships = new List<ElementRelationship>();
+        _formRelationships = [];
+        _baseRelationships = [];
     }
     
     [JsonConstructor]
-    private FormElementRelationshipList(IList<FormElementRelationship> formRelationships)
+    private FormElementRelationshipList(List<FormElementRelationship> formRelationships)
     {
         _baseRelationships = formRelationships.Where(r => r.ElementRelationship != null)
             .Select(r => r.ElementRelationship).ToList();
@@ -29,7 +29,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
     public FormElementRelationshipList(List<ElementRelationship> baseFields)
     {
         _baseRelationships = baseFields;
-        _formRelationships = new List<FormElementRelationship>();
+        _formRelationships = [];
         if (baseFields.Count > 0)
         {
             _formRelationships.Add(new FormElementRelationship(true));
@@ -104,7 +104,7 @@ public class FormElementRelationshipList : IList<FormElementRelationship>
 
     public int Count => _formRelationships.Count;
 
-    public bool IsReadOnly => _formRelationships.IsReadOnly;
+    public bool IsReadOnly => false;
 
     #endregion
 

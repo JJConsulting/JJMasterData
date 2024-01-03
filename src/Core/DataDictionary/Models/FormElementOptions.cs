@@ -26,8 +26,8 @@ public class FormElementOptions
     {
         Grid = new GridUI();
         Form = new FormUI();
-        GridToolbarActions = new GridToolbarActionList();
-        FormToolbarActions = new FormToolbarActionList();
+        GridToolbarActions = [];
+        FormToolbarActions = [];
         GridTableActions = new GridTableActionList();
     }
 
@@ -41,8 +41,8 @@ public class FormElementOptions
     {
         Grid = gridUI ?? new GridUI();
         Form = formUI ?? new FormUI();
-        GridToolbarActions = gridToolbarActions ?? new GridToolbarActionList();
+        GridToolbarActions = gridToolbarActions ?? [];
         GridTableActions = gridTableActions ?? new GridTableActionList();
-        FormToolbarActions = formToolbarActions ?? new FormToolbarActionList();
+        FormToolbarActions = formToolbarActions ?? [];
     }
 }

@@ -41,7 +41,7 @@ public static class LinqExtensions
         var methodName = orderByDirection.Equals("ASC") ? "OrderBy" : "OrderByDescending";
         var method = typeof(Enumerable).GetMethods().FirstOrDefault(m => m.Name == methodName && m.GetParameters().Length == 2);
         var genericMethod = method!.MakeGenericMethod(typeof(T), propInfo.PropertyType);     
-        return (IEnumerable<T>) genericMethod.Invoke(null, new object[] { query, expr.Compile() });
+        return (IEnumerable<T>) genericMethod.Invoke(null, [query, expr.Compile()]);
     }
 
  

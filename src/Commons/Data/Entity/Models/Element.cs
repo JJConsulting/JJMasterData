@@ -22,13 +22,13 @@ public class Element()
     public string Info { get; set; }
     
     [JsonProperty("fields")]
-    public ElementFieldList Fields { get; set; } = new();
+    public ElementFieldList Fields { get; set; } = [];
 
     [JsonProperty("indexes")]
-    public List<ElementIndex> Indexes { get; set; } = new();
+    public List<ElementIndex> Indexes { get; set; } = [];
 
     [JsonProperty("relations")]
-    public List<ElementRelationship> Relationships { get; set; } = new();
+    public List<ElementRelationship> Relationships { get; set; } = [];
 
     [JsonProperty("tableName")]
     [Display(Name = "Table Name")]

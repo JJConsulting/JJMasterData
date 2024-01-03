@@ -11,7 +11,7 @@ public class FormActionRedirect
     public string ElementNameRedirect { get; set; }
 
     [JsonProperty("entityReferences")]
-    public List<FormActionRelationField> RelationFields { get; } = new();
+    public List<FormActionRelationField> RelationFields { get; } = [];
 
     [JsonProperty("viewType")]
     public RelationshipViewType ViewType { get; set; }

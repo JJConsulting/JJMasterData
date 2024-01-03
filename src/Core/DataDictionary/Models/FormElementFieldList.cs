@@ -18,7 +18,7 @@ public class FormElementFieldList : IList<FormElementField>
     
     public FormElementFieldList()
     {
-        _baseFields = new ElementFieldList();
+        _baseFields = [];
         _formFields = new List<FormElementField>();
     }
     [JsonConstructor]

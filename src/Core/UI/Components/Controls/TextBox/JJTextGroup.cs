@@ -6,12 +6,12 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class JJTextGroup(IFormValues formValues) : JJTextBox(formValues)
+public class JJTextGroup(IComponentFactory<JJLinkButtonGroup> linkButtonGroupFactory, IFormValues formValues) : JJTextBox(formValues)
 {
     /// <summary>
     /// Actions of input
     /// </summary>
-    public List<JJLinkButton> Actions { get; } = new();
+    public List<JJLinkButton> Actions { get; } = [];
 
     /// <summary>
     /// Text info on left of component
@@ -85,11 +85,9 @@ public class JJTextGroup(IFormValues formValues) : JJTextBox(formValues)
             inputGroup.Append(builderGroup);
         }
 
-        var btnGroup = new JJLinkButtonGroup
-        {
-            Actions = Actions,
-            ShowAsButton = true
-        };
+        var btnGroup = linkButtonGroupFactory.Create();
+        btnGroup.Actions = Actions;
+        btnGroup.ShowAsButton = true;
 
         //Add builder Actions
         btnGroup.AddActionsAt(builderGroup);

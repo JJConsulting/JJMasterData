@@ -28,7 +28,7 @@ public class JJTabNav : HtmlComponent
     internal JJTabNav(IFormValues formValues)
     {
         Name = "nav1";
-        ListTab = new List<NavContent>();
+        ListTab = [];
         FormValues = formValues;
     }
 

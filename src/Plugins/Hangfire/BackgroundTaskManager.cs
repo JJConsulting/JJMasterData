@@ -11,7 +11,7 @@ namespace JJMasterData.Hangfire;
 
 public sealed class BackgroundTaskManager: IBackgroundTaskManager
 {
-    internal static List<TaskWrapper> Tasks { get; }= new();
+    internal static List<TaskWrapper> Tasks { get; }= [];
 
     internal static TaskWrapper GetTask(string key)
     {

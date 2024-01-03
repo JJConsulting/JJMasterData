@@ -58,7 +58,7 @@ public abstract class BaseService(IValidationDictionary validationDictionary,
         if (name.Length > 64)
             AddError(nameof(name), StringLocalizer["The [Name] field cannot contain more than 64 characters."]);
 
-        string[] chars = { "&", "?", "=", ",", "'", "[", "]", "/", "\\", "+", "!", " " };
+        string[] chars = ["&", "?", "=", ",", "'", "[", "]", "/", "\\", "+", "!", " "];
         foreach (string c in chars)
         {
             if (name.Contains(c))

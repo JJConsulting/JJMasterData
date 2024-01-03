@@ -14,8 +14,8 @@ public static class Validate
     /// <returns>Retorna Verdadeiro caso o CNPJ seja valido</returns> 
     public static bool ValidCnpj(string cnpj)
     {
-        int[] multiplicador1 = { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
-        int[] multiplicador2 = { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+        int[] multiplicador1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+        int[] multiplicador2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
 
         cnpj = cnpj.Trim();
         cnpj = cnpj.Replace(".", "").Replace("-", "").Replace("/", "").Replace("_", "");
@@ -134,8 +134,8 @@ public static class Validate
     /// <returns>Retorna Verdadeiro caso o CPF seja valido</returns> 
     public static bool ValidCpf(string cpf)
     {
-        int[] multiplicador1 = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
-        int[] multiplicador2 = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+        int[] multiplicador1 = [10, 9, 8, 7, 6, 5, 4, 3, 2];
+        int[] multiplicador2 = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
 
         cpf = cpf.Trim();
         cpf = StringManager.ClearCpfCnpjChars(cpf);
@@ -232,7 +232,7 @@ public static class Validate
         int soma = 0;
         int resto = 0;
         int digitoRetorno;
-        int[] peso = { 4, 3, 2, 9, 8, 7, 6, 5 };
+        int[] peso = [4, 3, 2, 9, 8, 7, 6, 5];
 
         for (int i = 0; i < chave.Length; i++)
         {

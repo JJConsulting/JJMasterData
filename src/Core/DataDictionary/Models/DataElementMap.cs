@@ -34,7 +34,7 @@ public class DataElementMap
             var filters = new Dictionary<string, object>();
             
             
-            foreach (var item in MapFilters ?? new List<DataElementMapFilter>())
+            foreach (var item in MapFilters ?? [])
                 filters.Add(item.FieldName, item.ExpressionValue);
                 
             return filters;
@@ -55,7 +55,7 @@ public class DataElementMap
     }
 
     [JsonProperty("mapFilters")]
-    public List<DataElementMapFilter> MapFilters { get; set; } = new();
+    public List<DataElementMapFilter> MapFilters { get; set; } = [];
 
 
     [JsonProperty("enableElementActions")]

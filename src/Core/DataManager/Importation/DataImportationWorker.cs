@@ -131,7 +131,7 @@ public class DataImportationWorker(DataImportationContext context,
         //recuperando campos a serem importados
         var listField = GetListImportedField();
 
-        string[] stringSeparators = { "\r\n" };
+        string[] stringSeparators = ["\r\n"];
         string[] rows = RawData.Split(stringSeparators, StringSplitOptions.None);
         currentProcess.TotalRecords = rows.Length;
         currentProcess.Message = StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];

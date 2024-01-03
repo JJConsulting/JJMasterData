@@ -132,7 +132,7 @@ public class MetadataRepository(IEntityRepository entityRepository, IOptions<Mas
         }
 
         //Tokio
-        if (dicParser.Form is { Panels: null }) dicParser.Form.Panels = new List<FormElementPanel>();
+        if (dicParser.Form is { Panels: null }) dicParser.Form.Panels = [];
 
         //Professor
         if (dicParser.Form != null)

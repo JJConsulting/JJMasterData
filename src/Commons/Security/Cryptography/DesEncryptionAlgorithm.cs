@@ -11,7 +11,7 @@ namespace JJMasterData.Commons.Security.Cryptography;
 /// </summary>
 public class DesEncryptionAlgorithm : IEncryptionAlgorithm
 {
-    private static readonly byte[] Iv = { 12, 34, 56, 78, 90, 102, 114, 126 };
+    private static readonly byte[] Iv = [12, 34, 56, 78, 90, 102, 114, 126];
     
     public string EncryptString(string plainText, string secretKey)
     {

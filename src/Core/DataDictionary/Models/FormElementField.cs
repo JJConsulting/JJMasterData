@@ -182,7 +182,7 @@ public class FormElementField : ElementField
         ValidateRequest = true;
         VisibleExpression = "val:1";
         EnableExpression = "val:1";
-        Actions = new FormElementFieldActionList();
+        Actions = [];
     }
 
     public FormElementField(ElementField elementField)
@@ -231,7 +231,7 @@ public class FormElementField : ElementField
         }
         Export = true;
         ValidateRequest = true;
-        Actions = new FormElementFieldActionList();
+        Actions = [];
     }
 
 

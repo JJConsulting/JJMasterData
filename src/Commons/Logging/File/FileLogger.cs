@@ -62,7 +62,7 @@ internal class FileLogger(
 
                 log.Append(DateTime.Now);
                 log.Append(" ");
-                log.AppendFormat(" [{0}] ", categoryName);
+                log.Append($" [{categoryName}] ");
                 log.Append("(");
                 log.Append(logLevel.ToString());
                 log.AppendLine(")");
@@ -72,17 +72,17 @@ internal class FileLogger(
                 break;
             case FileLoggerFormatting.Compact:
                 {
-                    log.AppendFormat("{0:yyyy-MM-dd HH:mm:ss+00:00} -", DateTime.Now);
-                    log.AppendFormat(" [{0}] ", logLevel);
+                    log.Append($"{DateTime.Now:yyyy-MM-dd HH:mm:ss+00:00} -");
+                    log.Append($" [{logLevel}] ");
 
                     if (!string.IsNullOrWhiteSpace(eventId.Name))
                     {
-                        log.AppendFormat(" [{0}] ", eventId.Name);
+                        log.Append($" [{eventId.Name}] ");
                     }
 
-                    log.AppendFormat(" [{0}] ", categoryName);
-                    
-                    log.AppendFormat(" {0} ", formatterMessage);
+                    log.Append($" [{categoryName}] ");
+
+                    log.Append($" {formatterMessage} ");
 
                     if (exception != null)
                     {

@@ -3,27 +3,27 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class TextGroupFactory(IFormValues formValues,
-        IEncryptionService encryptionService,
+public class TextGroupFactory(
+        IFormValues formValues,
         IStringLocalizer<MasterDataResources> stringLocalizer,
+        IComponentFactory<JJLinkButtonGroup> linkButtonGroupFactory,
         ActionButtonFactory actionButtonFactory)
     : IControlFactory<JJTextGroup>
 {
     private IFormValues FormValues { get; } = formValues;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private IComponentFactory<JJLinkButtonGroup> LinkButtonGroupFactory { get; } = linkButtonGroupFactory;
     private ActionButtonFactory ActionButtonFactory { get; } = actionButtonFactory;
 
     public JJTextGroup Create()
     {
-        return new JJTextGroup(FormValues);
+        return new JJTextGroup(LinkButtonGroupFactory,FormValues);
     }
     
     public JJTextGroup Create(FormElementField field, object value)
@@ -99,7 +99,7 @@ public class TextGroupFactory(IFormValues formValues,
 
     public JJTextGroup CreateTextDate()
     {
-        var textGroup = new JJTextGroup(FormValues);
+        var textGroup = new JJTextGroup(LinkButtonGroupFactory,FormValues);
         SetDefaultAttrs(textGroup, FormComponent.Date);
         return textGroup;
     }

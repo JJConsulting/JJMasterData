@@ -239,10 +239,8 @@ public class JJTextFile(IHttpRequest request,
             return btn.GetHtmlBuilder();
         }
 
-        var btnGroup = new JJLinkButtonGroup
-        {
-            CaretText = $"{files.Length}&nbsp;{StringLocalizer["Files"]}"
-        };
+        var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
+        btnGroup.CaretText = $"{files.Length}&nbsp;{StringLocalizer["Files"]}";
 
         btnGroup.Attributes.Add("onclick","event.stopPropagation()");
         

@@ -4,6 +4,6 @@ namespace JJMasterData.Python.Configuration.Options;
 
 public class PythonEngineOptions
 {
-    public List<string> AdditionalScriptsPaths { get; } = new List<string>();
+    public List<string> AdditionalScriptsPaths { get; } = [];
     public string ElementScriptsPath { get; set; }
 }

@@ -31,7 +31,7 @@ public partial class HtmlBuilder
     public HtmlBuilder()
     {
         _attributes = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-        _children = new List<HtmlBuilder>();
+        _children = [];
     }
 
     /// <summary>

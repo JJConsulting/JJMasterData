@@ -23,7 +23,7 @@ public class JJModalDialog : HtmlComponent
     {
         Name = "jjmodal";
         Size = ModalSize.Small;
-        Buttons = new List<JJLinkButton>();
+        Buttons = [];
     }
 
     internal override HtmlBuilder BuildHtml()

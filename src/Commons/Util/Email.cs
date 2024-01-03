@@ -20,8 +20,10 @@ public class Email
         List<Attachment> listAttach = null;
         if (filePath != null && filePath.Trim().Length > 0)
         {
-            listAttach = new List<Attachment>();
-            listAttach.Add(new Attachment(filePath));
+            listAttach =
+            [
+                new Attachment(filePath)
+            ];
         }
 
         return SendMail(toEmail, ccEmail, ccoEmail, subject, body, IsBodyHtml, listAttach);
@@ -32,8 +34,10 @@ public class Email
         List<Attachment> listAttach = null;
         if (filePath != null && filePath.Trim().Length > 0)
         {
-            listAttach = new List<Attachment>();
-            listAttach.Add(new Attachment(filePath));
+            listAttach =
+            [
+                new Attachment(filePath)
+            ];
         }
 
         ConfigSmtp osmtpconfig = null;
@@ -51,8 +55,10 @@ public class Email
             byte[] byteArray = Encoding.UTF8.GetBytes(fileContent);
             MemoryStream stream = new MemoryStream(byteArray);
 
-            listAttach = new List<Attachment>();
-            listAttach.Add(new Attachment(stream, fileName));
+            listAttach =
+            [
+                new Attachment(stream, fileName)
+            ];
         }
 
         return SendMail(toEmail, ccEmail, ccoEmail, subject, body, IsBodyHtml, listAttach);

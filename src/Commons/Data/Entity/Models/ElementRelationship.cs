@@ -23,12 +23,12 @@ public class ElementRelationship
 
     public ElementRelationship()
     {
-        Columns = new List<ElementRelationshipColumn>();
+        Columns = [];
     }
 
     public ElementRelationship(string childElement, params ElementRelationshipColumn[] columns)
     {
-        Columns = new List<ElementRelationshipColumn>();
+        Columns = [];
         ChildElement = childElement;
         if (columns != null)
             Columns.AddRange(columns);

@@ -31,7 +31,7 @@ public class JJValidationSummary : HtmlComponent
     internal JJValidationSummary() 
     {
         Visible = true;
-        Errors = new List<string>();
+        Errors = [];
         ShowCloseButton = true;
     }
 

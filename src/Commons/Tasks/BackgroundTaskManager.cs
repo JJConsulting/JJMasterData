@@ -8,7 +8,7 @@ namespace JJMasterData.Commons.Tasks;
 
 internal sealed class BackgroundTaskManager : IBackgroundTaskManager
 {
-    private readonly List<TaskWrapper> _tasks = new();
+    private readonly List<TaskWrapper> _tasks = [];
 
     private TaskWrapper GetTask(string key)
     {

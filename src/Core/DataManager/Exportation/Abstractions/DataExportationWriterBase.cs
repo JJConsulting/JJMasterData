@@ -64,7 +64,7 @@ public abstract class DataExportationWriterBase(ExpressionsService expressionsSe
             {
                 var defaultValues = new Dictionary<string, object>();
                 var formData = new FormStateData(defaultValues, PageState.List);
-                _fields = new List<FormElementField>();
+                _fields = [];
 
                 foreach (var field in FormElement.Fields)
                 {
@@ -278,7 +278,7 @@ public abstract class DataExportationWriterBase(ExpressionsService expressionsSe
 
         title = StringManager.GetStringWithoutAccents(title);
 
-        string[] escapeChars = { "/", "\\", "|", ":", "*", ">", "<", "+", "=", "&", "%", "$", "#", "@", " " };
+        string[] escapeChars = ["/", "\\", "|", ":", "*", ">", "<", "+", "=", "&", "%", "$", "#", "@", " "];
 
         foreach (var @char in escapeChars)
         {

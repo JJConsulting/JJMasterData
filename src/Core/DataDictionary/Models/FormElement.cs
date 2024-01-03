@@ -47,7 +47,7 @@ public class FormElement : Element
     public FormElement()
     {
         Fields = new FormElementFieldList(base.Fields);
-        Panels = new List<FormElementPanel>();
+        Panels = [];
         Options = new FormElementOptions();
         Relationships = new FormElementRelationshipList(base.Relationships);
         ApiOptions = new FormElementApiOptions();
@@ -70,7 +70,7 @@ public class FormElement : Element
 
         base.Fields = element.Fields;
         Fields = new FormElementFieldList(element.Fields);
-        Panels = new List<FormElementPanel>();
+        Panels = [];
         ApiOptions = new FormElementApiOptions();
         Options = new FormElementOptions();
     }
@@ -113,7 +113,8 @@ public class FormElement : Element
     {
         base.Fields = new ElementFieldList(fields.Cast<ElementField>().ToList());
         Fields = fields;
-        base.Relationships = new List<ElementRelationship>(relationships.Where(r=>r.ElementRelationship != null).Select(r=>r.ElementRelationship).ToList()!);
+        base.Relationships =
+            [..relationships.Where(r => r.ElementRelationship != null).Select(r => r.ElementRelationship).ToList()!];
         Relationships = relationships;
         Options = options ?? new FormElementOptions();
         ApiOptions = apiOptions ?? new FormElementApiOptions();

@@ -591,7 +591,7 @@ public partial class DataAccess
             string sqlBatch = string.Empty;
             script += $"\n{markpar}"; // make sure last batch is executed. 
 
-            foreach (string line in script.Split(new[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (string line in script.Split(["\n", "\r"], StringSplitOptions.RemoveEmptyEntries))
             {
                 if (line.ToUpperInvariant().Trim() == markpar)
                 {

@@ -7,20 +7,20 @@ internal static class ReservedWords
 
     public static List<string> GetReservedMasterDataKeywords()
     {
-        return new List<string>
-        {
+        return
+        [
             "PAG",
             "REGPORPAG",
             "ORDERBY",
             "TOT",
             "PAGESTATE"
-        };
+        ];
     }
 
     public static List<string> GetReservedDatabaseKeywords()
     {
-        return new List<string>
-        {
+        return
+        [
             "ADD",
             "EXTERNAL",
             "PROCEDURE",
@@ -714,7 +714,7 @@ internal static class ReservedWords
             "HOLD",
             "REGR_SYY",
             "ZONE"
-        };
+        ];
     }
 
 }

@@ -35,16 +35,16 @@ public class GridToolbarActions
     public AuditLogGridToolbarAction AuditLogGridToolbarAction { get; set; } = new();
 
     [JsonProperty("commandActions")]
-    private List<SqlCommandAction> CommandActions { get; set; } = new();
+    private List<SqlCommandAction> CommandActions { get; set; } = [];
 
     [JsonProperty("urlRedirectActions")]
-    private List<UrlRedirectAction> UrlRedirectActions { get; set; } = new();
+    private List<UrlRedirectAction> UrlRedirectActions { get; set; } = [];
 
     [JsonProperty("internalActions")]
-    private List<InternalAction> InternalActions { get; set; } = new();
+    private List<InternalAction> InternalActions { get; set; } = [];
 
     [JsonProperty("jsActions")]
-    private List<ScriptAction> JsActions { get; set; } = new();
+    private List<ScriptAction> JsActions { get; set; } = [];
 
 
     public void Set(BasicAction action)

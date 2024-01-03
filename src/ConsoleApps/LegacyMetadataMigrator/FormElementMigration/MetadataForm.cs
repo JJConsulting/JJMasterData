@@ -10,7 +10,7 @@ namespace JJMasterData.LegacyMetadataMigrator.FormElementMigration;
 public class MetadataForm
 {
     [JsonProperty("formfields")]
-    public List<MetadataFormField> FormFields { get; set; } = new();
+    public List<MetadataFormField> FormFields { get; set; } = [];
 
     [JsonProperty("title")]
     public string Title { get; set; }
@@ -19,5 +19,5 @@ public class MetadataForm
     public string SubTitle { get; set; }
 
     [JsonProperty("panels")]
-    public List<FormElementPanel> Panels { get; set; } = new();
+    public List<FormElementPanel> Panels { get; set; } = [];
 }

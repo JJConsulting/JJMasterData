@@ -13,7 +13,7 @@ public abstract class FormElementActionList : IList<BasicAction>
     protected List<BasicAction> List { get; init; }
     protected FormElementActionList()
     {
-        List = new List<BasicAction>();
+        List = [];
     }
 
     [JsonConstructor]

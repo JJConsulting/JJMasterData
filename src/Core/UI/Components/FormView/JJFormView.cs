@@ -1280,10 +1280,8 @@ public class JJFormView : AsyncComponent
 
         if (actions.Any(a => a.IsGroup))
         {
-            var btnGroup = new JJLinkButtonGroup
-            {
-                CaretText = StringLocalizer["More"]
-            };
+            var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
+            btnGroup.CaretText = StringLocalizer["More"];
 
             foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
             {
@@ -1553,7 +1551,7 @@ public class JJFormView : AsyncComponent
     [Obsolete("Please use GridView.GetGridValuesAsync()")]
     public List<Dictionary<string,object?>> GetGridValues()
     {
-        return AsyncHelper.RunSync(()=>GridView.GetGridValuesAsync()) ?? new List<Dictionary<string, object?>>();
+        return AsyncHelper.RunSync(()=>GridView.GetGridValuesAsync()) ?? [];
     }
     #endif
     
