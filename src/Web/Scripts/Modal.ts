@@ -294,22 +294,20 @@ class _LegacyModal extends ModalBase{
                         window.open(response.url, '_blank').focus();
                     }
                     else {
-                        return response.text().then((htmlData)=>{
-                            const modalHtml = this.createModalHtml(htmlData, false); // Not using iframe
-
+                        return response.text().then((htmlData) => {
+                            const modalHtml = this.createModalHtml(htmlData, false);
                             const modalIdSelector = `#${this.modalId}`;
                             if ($(modalIdSelector).length) {
+                                $(modalIdSelector).hide();
+                                $(".modal-backdrop").remove()
                                 $(modalIdSelector).remove();
                             }
-
                             const $form = $("form");
-
                             if ($form.length) {
                                 $(modalHtml).appendTo($form);
                             } else {
                                 $(modalHtml).appendTo($("body"));
                             }
-                            
                             this.setTitle(title);
                             this.showModal();
                         });

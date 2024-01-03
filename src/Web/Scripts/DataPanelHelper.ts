@@ -7,8 +7,6 @@ class DataPanelHelper {
         urlBuilder.addQueryParameter("fieldName",fieldName)
         urlBuilder.addQueryParameter("routeContext",routeContext)
         
-        const form = document.querySelector("form");
-        
         postFormValues({
             url: urlBuilder.build(),
             success: data => {

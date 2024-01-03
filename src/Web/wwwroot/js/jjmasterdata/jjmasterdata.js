@@ -879,7 +879,6 @@ class DataPanelHelper {
         urlBuilder.addQueryParameter("panelName", componentName);
         urlBuilder.addQueryParameter("fieldName", fieldName);
         urlBuilder.addQueryParameter("routeContext", routeContext);
-        const form = document.querySelector("form");
         postFormValues({
             url: urlBuilder.build(),
             success: data => {
@@ -1879,6 +1878,8 @@ class _LegacyModal extends ModalBase {
                             const modalHtml = this.createModalHtml(htmlData, false);
                             const modalIdSelector = `#${this.modalId}`;
                             if ($(modalIdSelector).length) {
+                                $(modalIdSelector).hide();
+                                $(".modal-backdrop").remove();
                                 $(modalIdSelector).remove();
                             }
                             const $form = $("form");
@@ -2276,10 +2277,12 @@ class TextFileHelper {
         const modal = new Modal();
         modal.modalId = modalId;
         const requestOptions = getRequestOptions();
+        SpinnerOverlay.show();
         modal.showUrl({
             url: url,
             requestOptions: requestOptions
         }, title, ModalSize.ExtraLarge).then(_ => {
+            SpinnerOverlay.hide();
             listenAllEvents("#" + modalId);
         });
     }

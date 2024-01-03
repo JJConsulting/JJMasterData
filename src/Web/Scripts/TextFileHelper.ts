@@ -10,11 +10,13 @@ class TextFileHelper {
         const modal = new Modal();
         modal.modalId = modalId;
         const requestOptions = getRequestOptions();
+        SpinnerOverlay.show();
 
         modal.showUrl({
             url: url,
             requestOptions: requestOptions
         }, title, ModalSize.ExtraLarge).then(_ => {
+            SpinnerOverlay.hide();
             listenAllEvents("#" + modalId)
         })
     }
