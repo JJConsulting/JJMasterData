@@ -2,7 +2,7 @@
 @using JJMasterData.Core.UI
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IComponentFactory ComponentFactory
-
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.AddElementViewModel
 
 <jj-title title="@ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml()" subtitle="@StringLocalizer["Add Element"]"/>
 
@@ -13,17 +13,15 @@
         <div class="@BootstrapHelper.FormGroup col-sm-12">
             <div class="input-group">
                 <span class="input-group-text">
-                    <checkbox name="importFields" class="mt-0" value="true" label="Import fields"/>
+                    <checkbox for="ImportFields" class="mt-0" value="true" label="Import fields"/>
                 </span>
                 <div class="form-floating">
                     <input
                         maxlength="64"
                         type="text"
                         class="form-control"
-                        name="tableName"
-                        id="tableName"
-                        placeholder="Table or View Name">
-                    <label for="tableName">Table Or View Name</label>
+                        asp-for="Name">
+                    <label asp-for="Name"></label>
                 </div>
             </div>
         </div>
@@ -47,11 +45,11 @@
 {
     <script lang="javascript" type="text/javascript">
         $(document).ready(function () {
-            $("#txtTableName").keyup(function () {
+            $("#@Html.IdFor(m=>Model.Name)").keyup(function () {
                 if ($(this).val().length > 30)
-                    $("#divWarning").css("display", "");
+                    $("#div-warning").css("display", "");
                 else
-                    $("#divWarning").css("display", "none");
+                    $("#div-warning").css("display", "none");
             });
         });
     </script>

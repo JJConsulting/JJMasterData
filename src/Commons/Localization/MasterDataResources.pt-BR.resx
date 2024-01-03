@@ -1793,7 +1793,7 @@
     <value>Data de Nascimento obrigatória</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Mandatory dictionary name field" xml:space="preserve">
+  <data name="[New Element Name] field is required." xml:space="preserve">
     <value>Campo nome do dicionário obrigatório</value>
     <comment>JJMasterDataWeb</comment>
   </data>

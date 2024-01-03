@@ -109,11 +109,18 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
 
     #region Duplicate Entity
 
-    public async Task<bool> DuplicateEntityAsync(string originName, string newName)
+    public async Task<bool> DuplicateEntityAsync(string originalElementName, string newName)
     {
+        bool originalElementExists = await DataDictionaryRepository.ExistsAsync(originalElementName);
+        if (!originalElementExists)
+        {
+            AddError("OriginalElementName", StringLocalizer["Original Element Name {0} does not exists", originalElementName]);
+        }
+            
+        
         if (await ValidateEntityAsync(newName))
         {
-            var dicParser = await DataDictionaryRepository.GetFormElementAsync(originName);
+            var dicParser = await DataDictionaryRepository.GetFormElementAsync(originalElementName);
             dicParser.Name = newName;
             await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
         }
@@ -121,20 +128,14 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         return IsValid;
     }
 
-    public async Task<bool> ValidateEntityAsync(string name)
+    private async Task<bool> ValidateEntityAsync(string name)
     {
-        if (!ValidateName(name))
-            return false;
+        bool isNullOrWhitespace = string.IsNullOrWhiteSpace(name);
+        if (isNullOrWhitespace)
+            AddError("Name", StringLocalizer["[New Element Name] field is required."]);
 
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            AddError("Name", StringLocalizer["Mandatory dictionary name field"]);
-        }
-
-        if (await DataDictionaryRepository.ExistsAsync(name))
-        {
-            AddError("Name", StringLocalizer["There is already a dictionary with the name "] + name);
-        }
+        if (!isNullOrWhitespace && await DataDictionaryRepository.ExistsAsync(name))
+            AddError("Name", StringLocalizer["Element {0} already exists.", name]);
 
         return IsValid;
     }

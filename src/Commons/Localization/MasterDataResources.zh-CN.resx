@@ -1805,7 +1805,7 @@
     <value>强制出生日期</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Mandatory dictionary name field" xml:space="preserve">
+  <data name="[New Element Name] field is required." xml:space="preserve">
     <value>必填字典名称字段</value>
     <comment>JJMasterDataWeb</comment>
   </data>

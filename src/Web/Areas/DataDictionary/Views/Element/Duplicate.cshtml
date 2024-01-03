@@ -2,29 +2,36 @@
 @using JJMasterData.Core.UI
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IComponentFactory ComponentFactory
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.DuplicateElementViewModel
 
-<div class="@BootstrapHelper.PageHeader">
-    <h1>
-        @Html.Raw(ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml())
-        <small>@StringLocalizer["Duplicate Dictionary"]</small>
-    </h1>
-</div>
-
+<jj-title 
+    title="@ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml()" 
+    subtitle="@StringLocalizer["Duplicate Element"]"/>
 
 @using (Html.BeginForm())
 {
     <div class="row">
-        <div class="@BootstrapHelper.FormGroup col-sm-4">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Required field"]">@StringLocalizer["Source dictionary"]</label>
-            @Html.TextBox("originName", null, new { @class = "form-control", @readonly = "readonly" })
-        </div>
-
-        <div class="@BootstrapHelper.FormGroup col-sm-8 required">
-            <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Required field"]">@StringLocalizer["New Dictionary Name"]</label>
-            @Html.TextBox("newName", "", new { @class = "form-control", maxlength = "64", placeholder = StringLocalizer["Enter a table or view name"] })
+        <div class="col-sm-12">
+            <div class="input-group mb-3">
+                <div class="form-floating">
+                    <input
+                        maxlength="64"
+                        type="text"
+                        class="form-control"
+                        asp-for="OriginalElementName">
+                    <label asp-for="OriginalElementName"></label>
+                </div>
+                  <div class="form-floating">
+                      <input
+                          maxlength="64"
+                          type="text"
+                          class="form-control"
+                          asp-for="NewElementName">
+                      <label asp-for="NewElementName"></label>
+                  </div>
+            </div>
         </div>
     </div>
-
 
     <partial name="_DatabaseWarning"/>
 
@@ -35,16 +42,9 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-12">
-            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="location.href='@Url.Action("Index")'">
-                <span class="fa fa-arrow-left"></span>
-                <span>&nbsp;@StringLocalizer["Back"]</span>
-            </button>
-
-            <button id="btnNext" class="@BootstrapHelper.DefaultButton" type="submit">
-                <span class="fa fa-forward"></span>
-                @StringLocalizer["Next"]
-            </button>
+        <div class="col-sm-6">
+            <link-button icon="Times" text="@StringLocalizer["Cancel"]" type="@LinkButtonType.Button" on-client-click="location.href='@Url.Action("Index")'"/>
+            <link-button icon="Clone" text="@StringLocalizer["Duplicate"]" type="LinkButtonType.Submit"/>
         </div>
     </div>
 }
@@ -53,11 +53,11 @@
 {
     <script lang="javascript" type="text/javascript">
         $(document).ready(function () {
-            $("#txtTableName").keyup(function () {
+            $("#@Html.IdFor(m=>Model.NewElementName)").keyup(function () {
                 if ($(this).val().length > 30)
-                    $("#divWarning").css("display", "");
+                    $("#div-warning").css("display", "");
                 else
-                    $("#divWarning").css("display", "none");
+                    $("#div-warning").css("display", "none");
             });
         });
     </script>

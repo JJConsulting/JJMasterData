@@ -78,7 +78,7 @@ public class DataDictionaryFormElementFactory(IOptions<MasterDataCoreOptions> op
         {
             Icon = IconType.Pencil,
             Name = "tools",
-            Tooltip = StringLocalizer["Field Maintenance"],
+            Tooltip = StringLocalizer["Edit"],
             EnableExpression = "exp:'T' <> '{type}'",
             IsDefaultOption = true
         };

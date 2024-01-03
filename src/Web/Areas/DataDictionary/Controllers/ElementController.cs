@@ -22,24 +22,17 @@ public class ElementController(
 {
     public async Task<IActionResult> Index()
     {
-        try
-        {
-            await elementService.CreateStructureIfNotExistsAsync();
-            
-            var formView = elementService.GetFormView();
-            var result = await formView.GetResultAsync();
-            
-            if (result is IActionResult actionResult)
-                return actionResult;
+        await elementService.CreateStructureIfNotExistsAsync();
+        
+        var formView = elementService.GetFormView();
+        var result = await formView.GetResultAsync();
+        
+        if (result is IActionResult actionResult)
+            return actionResult;
 
-            ViewBag.FormViewHtml = result.Content!;
-            
-            return View();
-        }
-        catch (DataAccessException)
-        {
-            return RedirectToAction("Index", "Options", new { Area = "DataDictionary", isFullscreen = true });
-        }
+        ViewBag.FormViewHtml = result.Content!;
+        
+        return View();
     }
 
     public IActionResult Add()
@@ -108,9 +101,9 @@ public class ElementController(
         }
     }
 
-    public IActionResult Duplicate(string elementName)
+    public IActionResult Duplicate(string? elementName = null)
     {
-        return View(new { originName = elementName });
+        return View(new DuplicateElementViewModel{ OriginalElementName = elementName });
     }
 
     public async Task<IActionResult> ClassSourceCode(string elementName)
@@ -138,9 +131,9 @@ public class ElementController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add(string tableName, bool importFields)
+    public async Task<IActionResult> Add(AddElementViewModel model)
     {
-        var element = await elementService.CreateEntityAsync(tableName, importFields);
+        var element = await elementService.CreateEntityAsync(model.Name, model.ImportFields);
         if (element != null)
         {
             return RedirectToAction("Index", "Entity", new { elementName = element.Name });
@@ -152,15 +145,20 @@ public class ElementController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> Duplicate(string originName, string newName)
+    public async Task<IActionResult> Duplicate(DuplicateElementViewModel model)
     {
-        if (await elementService.DuplicateEntityAsync(originName, newName))
+        JJValidationSummary validationSummary;
+        if (!ModelState.IsValid)
         {
-            return RedirectToAction("Index", new { elementName = newName });
+            validationSummary = elementService.GetValidationSummary();
+            ViewBag.Error = validationSummary.GetHtml();
         }
+            
+        if (await elementService.DuplicateEntityAsync(model.OriginalElementName!, model.NewElementName!))
+            return RedirectToAction("Index", new { elementName = model.NewElementName });
 
-        var jjValidationSummary = elementService.GetValidationSummary();
-        ViewBag.Error = jjValidationSummary.GetHtml();
+        validationSummary = elementService.GetValidationSummary();
+        ViewBag.Error = validationSummary.GetHtml();
         return View();
     }
 
