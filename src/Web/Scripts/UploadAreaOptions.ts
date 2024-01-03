@@ -35,7 +35,7 @@ class UploadAreaOptions {
         if(!this.url){
             let routeContext = element.getAttribute("route-context");
             let queryStringParams = element.getAttribute("query-string-params");
-            let urlBuilder = new UrlBuilder();
+            const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext)
 
             const params = queryStringParams.split('&');

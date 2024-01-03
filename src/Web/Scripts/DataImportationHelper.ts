@@ -53,7 +53,7 @@
         showSpinnerOnPost = false;
 
 
-        let urlBuilder = new UrlBuilder()
+        const urlBuilder = new UrlBuilder()
         urlBuilder.addQueryParameter("routeContext", importationRouteContext)
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress")
         urlBuilder.addQueryParameter("componentName", componentName)
@@ -141,11 +141,15 @@
                 if (!result.IsProcessing) {
 
                     clearInterval(DataImportationHelper.intervalId)
-                    let urlBuilder = new UrlBuilder();
+                    const urlBuilder = new UrlBuilder();
                     urlBuilder.addQueryParameter("routeContext", importationRouteContext)
                     urlBuilder.addQueryParameter("dataImportationOperation", "log")
-                    DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.ExtraLarge).then(_ => {
-                        GridViewHelper.refreshGrid(componentName.replace("-importation",String()), gridRouteContext)
+
+                    postFormValues({
+                        url: urlBuilder.build(), success: html => {
+                            document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
+                            GridViewHelper.refreshGrid(componentName.replace("-importation",String()), gridRouteContext)
+                        }
                     })
                 }
             })
@@ -154,7 +158,7 @@
             });
     }
 
-    static show(componentName: string, routeContext: string, gridRouteContext: string) {
+    static show(componentName: string, modalTitle: string, routeContext: string, gridRouteContext: string) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
 
@@ -163,7 +167,7 @@
         DataImportationModal.getInstance().showUrl({
             url: urlBuilder.build(),
             requestOptions: requestOptions
-        }, "Import", ModalSize.ExtraLarge).then(_ => {
+        }, modalTitle, ModalSize.ExtraLarge).then(_ => {
             UploadAreaListener.listenFileUpload()
         })
     }
@@ -172,7 +176,12 @@
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
-        DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.ExtraLarge);
+        postFormValues({
+            url: urlBuilder.build(), success: html => {
+                DataImportationHelper.removePasteListener();
+                document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
+            }
+        })
     }
 
     static start(componentName, routeContext, gridRouteContext) {
@@ -200,7 +209,7 @@
     static stop(componentName, routeContext, stopLabel) {
         showSpinnerOnPost = false;
 
-        let urlBuilder = new UrlBuilder()
+        const urlBuilder = new UrlBuilder()
         urlBuilder.addQueryParameter("routeContext", routeContext)
         urlBuilder.addQueryParameter("dataImportationOperation", "stop")
         urlBuilder.addQueryParameter("componentName", componentName)
@@ -226,17 +235,17 @@
             if (pastedText != undefined) {
                 document.querySelector<HTMLInputElement>("#pasteValue").value = pastedText;
                 
-                let urlBuilder = new UrlBuilder();
+                const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", routeContext)
                 urlBuilder.addQueryParameter("dataImportationOperation", "processPastedText")
                 const requestOptions = getRequestOptions();
-                DataImportationModal.getInstance().showUrl({
-                    url: urlBuilder.build(),
-                    requestOptions: requestOptions
-                }, "Import", ModalSize.Small).then(_ => {
-                    DataImportationHelper.start(componentName, routeContext, gridRouteContext)
-                })
 
+                postFormValues({
+                    url: urlBuilder.build(), success: html => {
+                        document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
+                        DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+                    }
+                })
             }
             return false;
         }
@@ -245,15 +254,16 @@
     }
     
     static uploadCallback(componentName: string, routeContext: string, gridRouteContext: string){
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext)
         urlBuilder.addQueryParameter("dataImportationOperation", "loading")
-        const requestOptions = getRequestOptions();
-        DataImportationModal.getInstance().showUrl({
+
+        postFormValues({
             url: urlBuilder.build(),
-            requestOptions: requestOptions
-        }, "Import", ModalSize.Small).then(_ => {
-            DataImportationHelper.start(componentName, routeContext, gridRouteContext)
+            success: html => {
+                document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
+                DataImportationHelper.start(componentName, routeContext, gridRouteContext)
+            }
         })
     }
 

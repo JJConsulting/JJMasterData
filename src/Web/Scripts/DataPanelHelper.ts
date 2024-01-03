@@ -2,7 +2,7 @@ class DataPanelHelper {
     
     static reload(componentName, fieldName, routeContext) {
 
-        let urlBuilder = new UrlBuilder()
+        const urlBuilder = new UrlBuilder()
         urlBuilder.addQueryParameter("panelName",componentName)
         urlBuilder.addQueryParameter("fieldName",fieldName)
         urlBuilder.addQueryParameter("routeContext",routeContext)

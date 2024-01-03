@@ -1449,15 +1449,11 @@
     <value>Importar campos</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Import File" xml:space="preserve">
-    <value>Importar Arquivo</value>
+  <data name="Upload File" xml:space="preserve">
+    <value>Upload de Arquivo</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Import File - Help" xml:space="preserve">
-    <value>Importar Arquivo - Ajuda</value>
-    <comment>JJMasterDataCore</comment>
-  </data>
-  <data name="Import started on" xml:space="preserve">
+  <data name="Importation started on" xml:space="preserve">
     <value>Importação iniciada em</value>
     <comment>JJMasterDataCore</comment>
   </data>
@@ -1913,7 +1909,7 @@
     <value>Nenhum dicionário localizado</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="No dot or comma" xml:space="preserve">
+  <data name="No dot or comma." xml:space="preserve">
     <value>Sem ponto ou virgula</value>
     <comment>JJMasterDataCore</comment>
   </data>
@@ -2925,8 +2921,8 @@
     <value>Redirecionamento Url</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Use comma as separator for {0} decimal places" xml:space="preserve">
-    <value>Utilizar virgula como separador de {0} casas decimais</value>
+  <data name="Use '{0}' as separator for {1} decimal places." xml:space="preserve">
+    <value>Utilizar vírgula como separador de {1} casas decimais</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Use filters to reduce export volume, if you need to perform this operation frequently, contact your system administrator." xml:space="preserve">

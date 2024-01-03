@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ internal class DataImportationHelp
     {
         var panel = new JJCollapsePanel(DataImportation.CurrentContext.Request.Form)
         {
-            Title = "Import File - Help",
+            Title = StringLocalizer["Help"],
             TitleIcon = new JJIcon(IconType.QuestionCircle),
             ExpandedByDefault = true,
             HtmlBuilderContent = await GetHtmlContent()
@@ -172,12 +173,14 @@ internal class DataImportationHelp
             text.Append(StringLocalizer[$"Format ({Format.DateFormat}) example:"]);
             text.Append(" ");
             text.Append(DateTime.Now.ToString($"{Format.DateFormat}"));
+            text.Append(".");
         }
         else if (field.Component == FormComponent.DateTime)
         {
             text.Append(StringLocalizer[$"Format ({Format.DateTimeFormat}) example:"]);
             text.Append(" ");
             text.Append(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
+            text.Append(".");
         }
         else if (field.Component == FormComponent.ComboBox)
         {
@@ -187,12 +190,11 @@ internal class DataImportationHelp
         }
         else if (field.Component == FormComponent.CheckBox)
         {
-            text.Append("(1,S,Y) ");
-            text.Append(StringLocalizer["Selected"]);
+            text.Append("(1, 0).");
         }
         else if (field.DataType == FieldType.Int)
         {
-            text.Append(StringLocalizer["No dot or comma"]);
+            text.Append(StringLocalizer["No dot or comma."]);
         }
         else if (field.DataType == FieldType.Float)
         {
@@ -201,7 +203,7 @@ internal class DataImportationHelp
                 text.Append(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
             }
 
-            text.Append(DataImportation.StringLocalizer["Use comma as separator for {0} decimal places", field.NumberOfDecimalPlaces]);
+            text.Append(DataImportation.StringLocalizer["Use '{0}' as separator for {1} decimal places.", CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator,field.NumberOfDecimalPlaces]);
         }
         else
         {

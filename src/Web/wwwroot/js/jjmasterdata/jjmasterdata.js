@@ -434,7 +434,7 @@ class DataExportationHelper {
     static startProgressVerification(componentName, routeContext) {
         return __awaiter(this, void 0, void 0, function* () {
             DataExportationHelper.setSpinner();
-            let urlBuilder = new UrlBuilder();
+            const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "checkProgress");
@@ -448,7 +448,7 @@ class DataExportationHelper {
     }
     static stopExportation(componentName, routeContext, stopMessage) {
         return __awaiter(this, void 0, void 0, function* () {
-            let urlBuilder = new UrlBuilder();
+            const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
             urlBuilder.addQueryParameter("dataExportationOperation", "stopProcess");
@@ -456,7 +456,7 @@ class DataExportationHelper {
         });
     }
     static openExportPopup(componentName, routeContext) {
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("dataExportationOperation", "showOptions");
@@ -470,7 +470,7 @@ class DataExportationHelper {
         });
     }
     static startExportation(componentName, routeContext) {
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("gridViewName", componentName);
         urlBuilder.addQueryParameter("dataExportationOperation", "startProcess");
@@ -671,7 +671,7 @@ class DataImportationHelper {
     }
     static checkProgress(componentName, importationRouteContext, gridRouteContext) {
         showSpinnerOnPost = false;
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", importationRouteContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
         urlBuilder.addQueryParameter("componentName", componentName);
@@ -754,11 +754,14 @@ class DataImportationHelper {
             }
             if (!result.IsProcessing) {
                 clearInterval(DataImportationHelper.intervalId);
-                let urlBuilder = new UrlBuilder();
+                const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", importationRouteContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
-                DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.ExtraLarge).then(_ => {
-                    GridViewHelper.refreshGrid(componentName.replace("-importation", String()), gridRouteContext);
+                postFormValues({
+                    url: urlBuilder.build(), success: html => {
+                        document.querySelector("#" + componentName).innerHTML = html;
+                        GridViewHelper.refreshGrid(componentName.replace("-importation", String()), gridRouteContext);
+                    }
                 });
             }
         })
@@ -766,7 +769,7 @@ class DataImportationHelper {
             console.error('Error fetching data:', error);
         });
     }
-    static show(componentName, routeContext, gridRouteContext) {
+    static show(componentName, modalTitle, routeContext, gridRouteContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
@@ -774,7 +777,7 @@ class DataImportationHelper {
         DataImportationModal.getInstance().showUrl({
             url: urlBuilder.build(),
             requestOptions: requestOptions
-        }, "Import", ModalSize.ExtraLarge).then(_ => {
+        }, modalTitle, ModalSize.ExtraLarge).then(_ => {
             UploadAreaListener.listenFileUpload();
         });
     }
@@ -782,7 +785,12 @@ class DataImportationHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "log");
-        DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.ExtraLarge);
+        postFormValues({
+            url: urlBuilder.build(), success: html => {
+                DataImportationHelper.removePasteListener();
+                document.querySelector("#" + componentName).innerHTML = html;
+            }
+        });
     }
     static start(componentName, routeContext, gridRouteContext) {
         DataImportationHelper.setSpinner();
@@ -803,7 +811,7 @@ class DataImportationHelper {
     }
     static stop(componentName, routeContext, stopLabel) {
         showSpinnerOnPost = false;
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "stop");
         urlBuilder.addQueryParameter("componentName", componentName);
@@ -827,15 +835,15 @@ class DataImportationHelper {
             e.preventDefault();
             if (pastedText != undefined) {
                 document.querySelector("#pasteValue").value = pastedText;
-                let urlBuilder = new UrlBuilder();
+                const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", routeContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "processPastedText");
                 const requestOptions = getRequestOptions();
-                DataImportationModal.getInstance().showUrl({
-                    url: urlBuilder.build(),
-                    requestOptions: requestOptions
-                }, "Import", ModalSize.Small).then(_ => {
-                    DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+                postFormValues({
+                    url: urlBuilder.build(), success: html => {
+                        document.querySelector("#" + componentName).innerHTML = html;
+                        DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+                    }
                 });
             }
             return false;
@@ -843,15 +851,15 @@ class DataImportationHelper {
         document.addEventListener("paste", DataImportationHelper.pasteEventListener, { once: true });
     }
     static uploadCallback(componentName, routeContext, gridRouteContext) {
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
         urlBuilder.addQueryParameter("dataImportationOperation", "loading");
-        const requestOptions = getRequestOptions();
-        DataImportationModal.getInstance().showUrl({
+        postFormValues({
             url: urlBuilder.build(),
-            requestOptions: requestOptions
-        }, "Import", ModalSize.Small).then(_ => {
-            DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+            success: html => {
+                document.querySelector("#" + componentName).innerHTML = html;
+                DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+            }
         });
     }
     static removePasteListener() {
@@ -876,7 +884,7 @@ class DataImportationModal {
 }
 class DataPanelHelper {
     static reload(componentName, fieldName, routeContext) {
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("panelName", componentName);
         urlBuilder.addQueryParameter("fieldName", fieldName);
         urlBuilder.addQueryParameter("routeContext", routeContext);
@@ -2051,7 +2059,7 @@ class SearchBoxListener {
             if (showImageLegend == null)
                 showImageLegend = false;
             const form = $("form");
-            let urlBuilder = new UrlBuilder();
+            const urlBuilder = new UrlBuilder();
             for (const pair of queryString.split("&")) {
                 const [key, value] = pair.split("=");
                 if (key && value) {
@@ -2389,7 +2397,7 @@ class UploadAreaOptions {
         if (!this.url) {
             let routeContext = element.getAttribute("route-context");
             let queryStringParams = element.getAttribute("query-string-params");
-            let urlBuilder = new UrlBuilder();
+            const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext);
             const params = queryStringParams.split('&');
             for (let i = 0; i < params.length; i++) {

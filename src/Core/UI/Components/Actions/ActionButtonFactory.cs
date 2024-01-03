@@ -108,7 +108,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                 break;
             
             case ImportAction:
-                var importationScripts = new DataImportationScripts(actionContext.ParentComponentName, actionContext.FormElement, EncryptionService);
+                var importationScripts = new DataImportationScripts($"{actionContext.ParentComponentName}-importation", actionContext.FormElement,StringLocalizer, EncryptionService);
                 button.OnClientClick =
                     importationScripts.GetShowScript();
                 break;
@@ -116,7 +116,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
             case ExportAction:
                 var exportationScripts = new DataExportationScripts(actionContext.ParentComponentName, actionContext.FormElement, EncryptionService);
                 button.OnClientClick =
-                    exportationScripts.GetExportPopupScript();
+                    exportationScripts.GetExportModalScript();
                 break;
             case FilterAction filterAction:
                 if (filterAction.ShowAsCollapse)

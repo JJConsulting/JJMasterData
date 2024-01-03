@@ -257,8 +257,8 @@ public class JJDataImportation : ProcessComponent
 
         var collapsePanel = new JJCollapsePanel(CurrentContext.Request.Form)
         {
-            TitleIcon = new JJIcon(IconType.FolderOpenO),
-            Title = StringLocalizer["Import File"],
+            TitleIcon = new JJIcon(IconType.Upload),
+            Title = StringLocalizer["Upload File"],
             ExpandedByDefault = ExpandedByDefault,
             HtmlBuilderContent =  UploadArea.GetUploadAreaHtmlBuilder()
         };

@@ -22,7 +22,7 @@
 
             const form = $("form");
             
-            let urlBuilder = new UrlBuilder();
+            const urlBuilder = new UrlBuilder();
             for (const pair of queryString.split("&")) {
                 const [key, value] = pair.split("=");
                 if (key && value) {

@@ -1457,15 +1457,11 @@
     <value>导入字段</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Import File" xml:space="preserve">
+  <data name="Upload File" xml:space="preserve">
     <value>导入文件</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Import File - Help" xml:space="preserve">
-    <value>导入文件 - 帮助</value>
-    <comment>JJMasterDataCore</comment>
-  </data>
-  <data name="Import started on" xml:space="preserve">
+  <data name="Importation started on" xml:space="preserve">
     <value>导入开始于</value>
     <comment>JJMasterDataCore</comment>
   </data>
@@ -1925,7 +1921,7 @@
     <value>找不到字典</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="No dot or comma" xml:space="preserve">
+  <data name="No dot or comma." xml:space="preserve">
     <value>没有点或逗号</value>
     <comment>JJMasterDataCore</comment>
   </data>
@@ -2949,7 +2945,7 @@
     <value>Url 跳转</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Use comma as separator for {0} decimal places" xml:space="preserve">
+  <data name="Use '{0}' as separator for {1} decimal places." xml:space="preserve">
     <value>使用逗号作为 {0} 位小数的分隔符</value>
     <comment>JJMasterDataCore</comment>
   </data>

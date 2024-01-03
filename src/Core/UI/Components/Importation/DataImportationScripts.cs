@@ -1,16 +1,24 @@
 #nullable enable
 
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Routing;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataImportationScripts(string name, FormElement formElement, IEncryptionService encryptionService)
+internal class DataImportationScripts(
+    string name,
+    FormElement formElement, 
+    IStringLocalizer<MasterDataResources> stringLocalizer,
+    IEncryptionService encryptionService)
 {
     private string Name { get; } = name;
+    private string ModalTitle { get; } = formElement.Options.GridToolbarActions.ImportAction.Tooltip;
     private FormElement FormElement { get; } = formElement;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private IEncryptionService EncryptionService { get; } = encryptionService;
 
     private string GetEncryptedRouteContext(ComponentContext context = ComponentContext.DataImportation)
@@ -20,13 +28,13 @@ internal class DataImportationScripts(string name, FormElement formElement, IEnc
         return encryptedRouteContext;
     }
 
-    public DataImportationScripts(JJDataImportation dataImportation) : this(dataImportation.Name, dataImportation.FormElement, dataImportation.EncryptionService)
+    public DataImportationScripts(JJDataImportation dataImportation) : this(dataImportation.Name, dataImportation.FormElement, dataImportation.StringLocalizer, dataImportation.EncryptionService)
     {
     }
     
     public string GetShowScript()
     {
-        return $"DataImportationHelper.show('{Name}','{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
+        return $"DataImportationHelper.show('{Name}','{StringLocalizer[ModalTitle]}','{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
     }
 
     

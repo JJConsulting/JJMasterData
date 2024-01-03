@@ -36,7 +36,7 @@ internal class DataExportationScripts(string componentName,FormElement formEleme
         return $"DataExportationHelper.stopExportation('{Name}','{EncryptedRouteContext}','{stopMessage}');";
     }
     
-    public string GetExportPopupScript()
+    public string GetExportModalScript()
     {
         return $"DataExportationHelper.openExportPopup('{Name}','{EncryptedRouteContext}');";
     }

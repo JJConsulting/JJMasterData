@@ -2,7 +2,7 @@ class DataExportationHelper {
     static async startProgressVerification(componentName: string, routeContext: string) {
         DataExportationHelper.setSpinner();
 
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","checkProgress")
@@ -17,7 +17,7 @@ class DataExportationHelper {
     }
 
     static async stopExportation(componentName: string, routeContext: string, stopMessage: string) {
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","stopProcess")
@@ -27,7 +27,7 @@ class DataExportationHelper {
 
 
     static openExportPopup(componentName: string, routeContext: string) {
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","showOptions")
@@ -44,7 +44,7 @@ class DataExportationHelper {
 
     static startExportation(componentName: string, routeContext: string) {
 
-        let urlBuilder = new UrlBuilder();
+        const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext",routeContext)
         urlBuilder.addQueryParameter("gridViewName",componentName)
         urlBuilder.addQueryParameter("dataExportationOperation","startProcess")

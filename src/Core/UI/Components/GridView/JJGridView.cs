@@ -993,7 +993,7 @@ public class JJGridView : AsyncComponent
         var modal = new JJModalDialog
         {
             Name = $"config-modal-{Name}",
-            Title = "Configure View"
+            Title = StringLocalizer["Configure Grid"]
         };
 
         var btnOk = ComponentFactory.Html.LinkButton.Create();
