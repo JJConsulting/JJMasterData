@@ -9,7 +9,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
     private DataExportationScripts Scripts { get; } = dataExportation.Scripts;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = dataExportation.StringLocalizer;
 
-    internal HtmlBuilder GetHtmlProcess()
+    internal HtmlBuilder GetLoadingHtml()
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         
@@ -37,8 +37,7 @@ internal class DataExportationLog(JJDataExportation dataExportation)
             });
             
             div.Append(HtmlTag.Br);
-            div.Append(HtmlTag.Br);
-            div.Append(HtmlTag.Br);
+            div.WithCssClass("mb-1");
 
             div.Append(HtmlTag.A, a =>
             {

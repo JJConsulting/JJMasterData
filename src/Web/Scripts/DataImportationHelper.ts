@@ -8,33 +8,45 @@
     private static pasteEventListener;
     private static intervalId;
 
-    private static setLoadMessage() {
-        const options = {
-            lines: 13, // The number of lines to draw
-            length: 38, // The length of each line
-            width: 17, // The line thickness
-            radius: 45, // The radius of the inner circle
-            scale: 0.2, // Scales overall size of the spinner
-            corners: 1, // Corner roundness (0..1)
-            color: "#000", // #rgb or #rrggbb or array of colors
-            opacity: 0.3, // Opacity of the lines
-            rotate: 0, // The rotation offset
-            direction: 1, // 1: clockwise, -1: counterclockwise
-            speed: 1.2, // Rounds per second
-            trail: 62, // Afterglow percentage
-            fps: 20, // Frames per second when using setTimeout() as a fallback for CSS
-            zIndex: 2e9, // The z-index (defaults to 2000000000)
-            className: "spinner", // The CSS class to assign to the spinner
-            top: "50%", // Top position relative to parent
-            left: "50%", // Left position relative to parent
-            shadow: false, // Whether to render a shadow
-            hwaccel: false, // Whether to use hardware acceleration
-            position: "absolute" // Element positioning
-
-        };
-        const target = document.getElementById('impSpin');
-        // @ts-ignore
-        new Spinner(options).spin(target);
+    private static setSpinner() {
+        const target = document.getElementById('data-importation-spinner');
+        
+        if(bootstrapVersion < 5){
+            const options = {
+                className: "spinner",
+                color: "#000",
+                corners: 1,
+                direction: 1,
+                fps: 20,
+                hwaccel: false,
+                left: "50%",
+                length: 38,
+                lines: 13,
+                opacity: 0.3,
+                position: "absolute",
+                radius: 45,
+                rotate: 0,
+                scale: 0.2,
+                shadow: false,
+                speed: 1.2,
+                top: "50%",
+                trail: 62,
+                width: 17,
+                zIndex: 2e9
+            };
+            // @ts-ignore
+            new Spinner(options).spin(target);
+        }
+        else{
+            const spinnerDiv = document.createElement('div');
+            spinnerDiv.classList.add('spinner-border','text-primary','spinner-border-lg',);
+            spinnerDiv.setAttribute('role', 'status');
+            const spanElement = document.createElement('span');
+            spanElement.classList.add('visually-hidden');
+            spanElement.textContent = 'Loading...';
+            spinnerDiv.appendChild(spanElement);
+            target.append(spinnerDiv);
+        }
     }
 
     private static checkProgress(componentName, importationRouteContext, gridRouteContext) {
@@ -46,8 +58,7 @@
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress")
         urlBuilder.addQueryParameter("componentName", componentName)
         const url = urlBuilder.build()
-
-
+        
         fetch(url, {
             method: 'GET',
             cache: 'no-cache',
@@ -134,7 +145,7 @@
                     urlBuilder.addQueryParameter("routeContext", importationRouteContext)
                     urlBuilder.addQueryParameter("dataImportationOperation", "log")
                     DataImportationModal.getInstance().showUrl({url: urlBuilder.build()}, "Import", ModalSize.ExtraLarge).then(_ => {
-                        GridViewHelper.refreshGrid(componentName, gridRouteContext)
+                        GridViewHelper.refreshGrid(componentName.replace("-importation",String()), gridRouteContext)
                     })
                 }
             })
@@ -166,7 +177,7 @@
 
     static start(componentName, routeContext, gridRouteContext) {
 
-        DataImportationHelper.setLoadMessage();
+        DataImportationHelper.setSpinner();
 
         DataImportationHelper.intervalId = setInterval(function () {
             DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
@@ -190,7 +201,7 @@
 
         let urlBuilder = new UrlBuilder()
         urlBuilder.addQueryParameter("routeContext", routeContext)
-        urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress")
+        urlBuilder.addQueryParameter("dataImportationOperation", "stop")
         urlBuilder.addQueryParameter("componentName", componentName)
         const url = urlBuilder.build()
 
@@ -213,7 +224,6 @@
             e.preventDefault();
             if (pastedText != undefined) {
                 document.querySelector<HTMLInputElement>("#pasteValue").value = pastedText;
-
                 
                 let urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", routeContext)
@@ -231,6 +241,19 @@
         }
 
         document.addEventListener("paste", DataImportationHelper.pasteEventListener, {once: true});
+    }
+    
+    static uploadCallback(componentName: string, routeContext: string, gridRouteContext: string){
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext)
+        urlBuilder.addQueryParameter("dataImportationOperation", "loading")
+        const requestOptions = getRequestOptions();
+        DataImportationModal.getInstance().showUrl({
+            url: urlBuilder.build(),
+            requestOptions: requestOptions
+        }, "Import", ModalSize.Small).then(_ => {
+            DataImportationHelper.start(componentName, routeContext, gridRouteContext)
+        })
     }
 
     static removePasteListener() {

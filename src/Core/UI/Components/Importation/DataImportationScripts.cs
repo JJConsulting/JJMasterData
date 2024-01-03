@@ -9,9 +9,9 @@ namespace JJMasterData.Core.UI.Components;
 
 internal class DataImportationScripts(string name, FormElement formElement, IEncryptionService encryptionService)
 {
-    public string Name { get; } = name;
-    public FormElement FormElement { get; } = formElement;
-    public IEncryptionService EncryptionService { get; } = encryptionService;
+    private string Name { get; } = name;
+    private FormElement FormElement { get; } = formElement;
+    private IEncryptionService EncryptionService { get; } = encryptionService;
 
     private string GetEncryptedRouteContext(ComponentContext context = ComponentContext.DataImportation)
     {
@@ -43,5 +43,10 @@ internal class DataImportationScripts(string name, FormElement formElement, IEnc
     public string GetLogScript()
     {
         return $"DataImportationHelper.showLog('{Name}','{GetEncryptedRouteContext()}')";
+    }
+    
+    public string GetUploadCallbackScript()
+    {
+        return $"DataImportationHelper.uploadCallback('{Name}','{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
     }
 }

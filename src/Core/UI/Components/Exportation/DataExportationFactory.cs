@@ -9,7 +9,6 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exportation;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -27,7 +26,6 @@ internal class DataExportationFactory(
     IStringLocalizer<MasterDataResources> stringLocalizer,
     ILoggerFactory loggerFactory,
     IComponentFactory componentFactory,
-    MasterDataUrlHelper urlHelper,
     IEncryptionService encryptionService,
     DataExportationWriterFactory dataExportationWriterFactory
         ) : IFormElementComponentFactory<JJDataExportation>
@@ -49,8 +47,7 @@ internal class DataExportationFactory(
             stringLocalizer, 
             componentFactory,
             loggerFactory, 
-            httpContext, 
-            urlHelper,
+            httpContext,
             encryptionService,
             dataExportationWriterFactory);
     }

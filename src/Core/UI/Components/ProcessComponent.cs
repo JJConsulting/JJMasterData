@@ -71,7 +71,7 @@ public abstract class ProcessComponent(
 
     internal bool IsRunning() => BackgroundTaskManager.IsRunning(ProcessKey);
 
-    internal void StopExportation() => BackgroundTaskManager.Abort(ProcessKey);
+    internal void StopImportation() => BackgroundTaskManager.Abort(ProcessKey);
     
     private string BuildProcessKey()
     {

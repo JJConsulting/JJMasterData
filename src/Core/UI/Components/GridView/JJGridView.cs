@@ -98,7 +98,7 @@ public class JJGridView : AsyncComponent
             _dataImportation = ComponentFactory.DataImportation.Create(FormElement);
             _dataImportation.UserValues = UserValues;
             _dataImportation.ProcessOptions = ImportAction.ProcessOptions;
-            _dataImportation.Name = $"{Name}_dataimp";
+            _dataImportation.Name = $"{Name}-importation";
 
             return _dataImportation;
         }
@@ -1128,7 +1128,7 @@ public class JJGridView : AsyncComponent
                         }
                     }
 
-                    var html = new DataExportationLog(DataExportation).GetHtmlProcess();
+                    var html = new DataExportationLog(DataExportation).GetLoadingHtml();
                     return new ContentComponentResult(html);
                 }
             case "checkProgress":
@@ -1137,7 +1137,7 @@ public class JJGridView : AsyncComponent
                     return new JsonComponentResult(dto);
                 }
             case "stopProcess":
-                DataExportation.StopExportation();
+                DataExportation.StopImportation();
                 return new JsonComponentResult(new {});
         }
 

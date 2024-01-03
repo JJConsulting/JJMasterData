@@ -17,7 +17,6 @@ using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
@@ -32,8 +31,6 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 public class JJDataExportation : ProcessComponent
 {
-    private readonly MasterDataUrlHelper _urlHelper;
-    private readonly IEncryptionService _encryptionService;
     private DataExportationScripts _dataExportationScripts;
 
 
@@ -76,14 +73,11 @@ public class JJDataExportation : ProcessComponent
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory,
         ILoggerFactory loggerFactory,
-        IHttpContext currentContext,
-        MasterDataUrlHelper urlHelper, 
+        IHttpContext currentContext, 
         IEncryptionService encryptionService, 
         DataExportationWriterFactory dataExportationWriterFactory) : 
         base(currentContext, expressionsService, fieldsService, backgroundTaskManager, loggerFactory.CreateLogger<ProcessComponent>(),encryptionService,stringLocalizer)
     {
-        _urlHelper = urlHelper;
-        _encryptionService = encryptionService;
         DataExportationWriterFactory = dataExportationWriterFactory;
         ComponentFactory = componentFactory;
         CurrentContext = currentContext;
@@ -97,7 +91,7 @@ public class JJDataExportation : ProcessComponent
         ComponentResult result;
         
         if (IsRunning())
-            result = new ContentComponentResult(new DataExportationLog(this).GetHtmlProcess());
+            result = new ContentComponentResult(new DataExportationLog(this).GetLoadingHtml());
         else
             result = new ContentComponentResult(new DataExportationSettings(this).GetHtmlBuilder());
         

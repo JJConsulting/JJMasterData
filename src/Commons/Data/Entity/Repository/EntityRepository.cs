@@ -7,14 +7,12 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
-public class EntityRepository(DataAccess dataAccess, ILoggerFactory loggerFactory, EntityProviderBase provider)
+public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider)
     : IEntityRepository
 {
-    private ILoggerFactory LoggerFactory { get; } = loggerFactory;
     private DataAccess DataAccess { get; } = dataAccess;
     private EntityProviderBase Provider { get; } = provider;
 
@@ -53,6 +51,8 @@ public class EntityRepository(DataAccess dataAccess, ILoggerFactory loggerFactor
     }
 
     public Task<bool> TableExistsAsync(string tableName) => DataAccess.TableExistsAsync(tableName);
+
+    public bool TableExists(string tableName) => DataAccess.TableExists(tableName);
     
     public async Task SetCommandAsync(DataAccessCommand command)
     {
@@ -101,6 +101,11 @@ public class EntityRepository(DataAccess dataAccess, ILoggerFactory loggerFactor
     }
 
     public Task CreateDataModelAsync(Element element) => Provider.CreateDataModelAsync(element);
+
+    public void CreateDataModel(Element element)
+    {
+        Provider.CreateDataModel(element);
+    }
 
     ///<inheritdoc cref="IEntityRepository.GetCreateTableScript"/>
     public string GetCreateTableScript(Element element) => Provider.GetCreateTableScript(element);

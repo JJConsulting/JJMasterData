@@ -1,6 +1,6 @@
 class DataExportationHelper {
     static async startProgressVerification(componentName: string, routeContext: string) {
-        DataExportationHelper.setLoadMessage();
+        DataExportationHelper.setSpinner();
 
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext",routeContext)
@@ -113,36 +113,47 @@ class DataExportationHelper {
         }
     }
     
-    
-    
-    static setLoadMessage() {
-        const options = {
-            lines: 13 // The number of lines to draw
-            , length: 38 // The length of each line
-            , width: 17 // The line thickness
-            , radius: 45 // The radius of the inner circle
-            , scale: 0.2 // Scales overall size of the spinner
-            , corners: 1 // Corner roundness (0..1)
-            , color: "#000" // #rgb or #rrggbb or array of colors
-            , opacity: 0.3 // Opacity of the lines
-            , rotate: 0 // The rotation offset
-            , direction: 1 // 1: clockwise, -1: counterclockwise
-            , speed: 1.2 // Rounds per second
-            , trail: 62 // Afterglow percentage
-            , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
-            , zIndex: 2e9 // The z-index (defaults to 2000000000)
-            , className: "spinner" // The CSS class to assign to the spinner
-            , top: "50%" // Top position relative to parent
-            , left: "50%" // Left position relative to parent
-            , shadow: false // Whether to render a shadow
-            , hwaccel: false // Whether to use hardware acceleration
-            , position: "absolute" // Element positioning
-
-        }
+    private static setSpinner() {
         const target = document.getElementById('data-exportation-spinner-');
-        // @ts-ignore
-        var spinner = new Spinner(options).spin(target);
+
+        if(bootstrapVersion < 5){
+            const options = {
+                className: "spinner",
+                color: "#000",
+                corners: 1,
+                direction: 1,
+                fps: 20,
+                hwaccel: false,
+                left: "50%",
+                length: 38,
+                lines: 13,
+                opacity: 0.3,
+                position: "absolute",
+                radius: 45,
+                rotate: 0,
+                scale: 0.2,
+                shadow: false,
+                speed: 1.2,
+                top: "50%",
+                trail: 62,
+                width: 17,
+                zIndex: 2e9
+            };
+            // @ts-ignore
+            new Spinner(options).spin(target);
+        }
+        else{
+            const spinnerDiv = document.createElement('div');
+            spinnerDiv.classList.add('spinner-border','text-primary','spinner-border-lg',);
+            spinnerDiv.setAttribute('role', 'status');
+            const spanElement = document.createElement('span');
+            spanElement.classList.add('visually-hidden');
+            spanElement.textContent = 'Loading...';
+            spinnerDiv.appendChild(spanElement);
+            target.append(spinnerDiv);
+        }
     }
+
     
     private static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");

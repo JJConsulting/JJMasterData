@@ -1717,7 +1717,7 @@
     <value>Paisagem</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Last Import" xml:space="preserve">
+  <data name="Last Importation" xml:space="preserve">
     <value>Última Importação</value>
     <comment>JJMasterDataCore</comment>
   </data>
@@ -2589,7 +2589,7 @@
     <value>Parar a exportação.</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Stop the import." xml:space="preserve">
+  <data name="Stop the importation." xml:space="preserve">
     <value>Parar a importação.</value>
     <comment>JJMasterDataCore</comment>
   </data>
@@ -3415,7 +3415,7 @@
     <value>Tipo de arquivo não permitido. Extensões permitidas: {0}</value>
   </data>
   <data name="Click here to upload or drag &amp; drop files" xml:space="preserve">
-    <value>Clique aqui para ou arraste arquivos</value>
+    <value>Clique aqui para fazer upload ou arraste arquivos</value>
   </data>
   <data name="Click here to upload files" xml:space="preserve">
     <value>Clique aqui para fazer upload de arquivos</value>

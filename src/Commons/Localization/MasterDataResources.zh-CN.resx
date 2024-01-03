@@ -1725,7 +1725,7 @@
     <value>空格</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Last Import" xml:space="preserve">
+  <data name="Last Importation" xml:space="preserve">
     <value>上次导入</value>
     <comment>JJMasterDataCore</comment>
   </data>
@@ -2609,7 +2609,7 @@
     <value>停止导出.</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Stop the import." xml:space="preserve">
+  <data name="Stop the importation." xml:space="preserve">
     <value>停止导入</value>
     <comment>JJMasterDataCore</comment>
   </data>

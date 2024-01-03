@@ -8,6 +8,7 @@ using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -58,7 +59,7 @@ public class MasterDataStringLocalizer(
 
     public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
-        return Task.Run(GetAllStringsAsDictionary).GetAwaiter().GetResult().Select(e=>new LocalizedString(e.Key, e.Value));
+        return GetAllStringsAsDictionary().Select(e=>new LocalizedString(e.Key, e.Value));
     }
 
     public LocalizedString this[string? name]
@@ -95,31 +96,26 @@ public class MasterDataStringLocalizer(
 
         if (Cache.TryGetValue<Dictionary<string, string>>(cacheKey, out var cachedDictionary))
         {
-            if (cachedDictionary.TryGetValue(key, out var cachedValue))
-                return cachedValue;
-            return key;
+            return cachedDictionary.GetValueOrDefault(key, key);
         }
 
-        var localizedStrings = Task.Run(GetAllStringsAsDictionary).GetAwaiter().GetResult();
+        var localizedStrings = GetAllStringsAsDictionary();
         
         Cache.Set(cacheKey, localizedStrings);
 
-        if (localizedStrings.TryGetValue(key, out var localizedValue))
-            return localizedValue;
-   
-        return key;
+        return localizedStrings.GetValueOrDefault(key, key);
     }
 
-    private async Task<IDictionary<string, string>> GetAllStringsAsDictionary()
+    private Dictionary<string, string> GetAllStringsAsDictionary()
     {
         string culture = Thread.CurrentThread.CurrentCulture.Name;
 
         var element = MasterDataStringLocalizerElement.GetElement(Options);
 
-        var tableExists = await EntityRepository.TableExistsAsync(element.TableName);
+        var tableExists = EntityRepository.TableExists(element.TableName);
         
         if (!tableExists)
-            await EntityRepository.CreateDataModelAsync(element);
+             EntityRepository.CreateDataModel(element);
 
         var stringLocalizerValues = GetStringLocalizerValues();
         var databaseValues = GetDatabaseValues(element, culture);
@@ -134,15 +130,15 @@ public class MasterDataStringLocalizer(
             return stringLocalizerValues;
         }
         
-        await SetDatabaseValues(element, ConvertDictionaryToList(stringLocalizerValues, culture));
+        SetDatabaseValues(element, ConvertDictionaryToList(stringLocalizerValues, culture));
 
         return stringLocalizerValues;
     }
 
-    private async Task SetDatabaseValues(Element element, IEnumerable<IDictionary<string,object?>> values)
+    private void SetDatabaseValues(Element element, IEnumerable<IDictionary<string,object?>> values)
     {
         foreach (var value in values)
-            await EntityRepository.SetValuesAsync(element, value);
+            EntityRepository.SetValues(element, value);
     }
 
     private List<Dictionary<string,object?>> ConvertDictionaryToList(IDictionary<string, string> dictionary,

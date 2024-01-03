@@ -39,7 +39,7 @@ public class JJDataImportation : ProcessComponent
 
     #region "Properties"
 
-    private JJUploadArea _upload;
+    private JJUploadArea _uploadArea;
     private JJLinkButton _backButton;
     private JJLinkButton _helpButton;
     private JJLinkButton _logButton;
@@ -52,7 +52,7 @@ public class JJDataImportation : ProcessComponent
 
     public JJLinkButton LogButton => _logButton ??= GetLogButton();
 
-    public JJUploadArea UploadArea => _upload ??= GetUploadArea();
+    public JJUploadArea UploadArea => _uploadArea ??= GetUploadArea();
     
     public bool EnableAuditLog { get; set; }
 
@@ -134,10 +134,10 @@ public class JJDataImportation : ProcessComponent
                 return new JsonComponentResult(reporterProgress);
             }
             case "stop":
-                StopExportation();
-                return new JsonComponentResult(new {isProcessing = false});
+                StopImportation();
+                return new JsonComponentResult(new {IsProcessing = false});
             case "log":
-                htmlBuilder = GetHtmlLogProcess();
+                htmlBuilder = GetLogHtml();
                 break;
             case "help":
                 htmlBuilder = await new DataImportationHelp(this).GetHtmlHelpAsync();
@@ -149,13 +149,16 @@ public class JJDataImportation : ProcessComponent
                     string pasteValue = CurrentContext.Request.Form["pasteValue"];
                     ImportInBackground(pasteValue);
                 }
-                htmlBuilder = GetHtmlWaitProcess();
+                htmlBuilder = GetLoadingHtml();
                 break;
             }
+            case "loading":
+                htmlBuilder = GetLoadingHtml();
+                break;
             default:
             {
                 if (IsRunning())
-                    htmlBuilder = GetHtmlWaitProcess();
+                    htmlBuilder = GetLoadingHtml();
                 else
                     htmlBuilder = GetUploadAreaCollapse(ProcessKey);
                 break;
@@ -165,7 +168,7 @@ public class JJDataImportation : ProcessComponent
         return new ContentComponentResult(htmlBuilder);
     }
 
-    private HtmlBuilder GetHtmlLogProcess()
+    private HtmlBuilder GetLogHtml()
     {
         var html = new DataImportationLog(this).GetHtmlLog()
          .AppendHiddenInput("filename")
@@ -174,7 +177,7 @@ public class JJDataImportation : ProcessComponent
         return html;
     }
 
-    private HtmlBuilder GetHtmlWaitProcess()
+    private HtmlBuilder GetLoadingHtml()
     {
         var reporter = GetCurrentReporter();
         if (reporter == null)
@@ -185,50 +188,56 @@ public class JJDataImportation : ProcessComponent
             .WithAttribute("style", "text-align: center;")
             .Append(HtmlTag.Div, spin =>
             {
-                spin.WithAttribute("id", "impSpin")
+                spin.WithAttribute("id", "data-importation-spinner")
                     .WithAttribute("style", "position: relative; height: 80px");
             })
-            .AppendText("&nbsp;&nbsp;&nbsp;")
-            .AppendText(StringLocalizer["Waiting..."])
-            .Append(HtmlTag.Br).Append(HtmlTag.Br)
+            .AppendDiv(div =>
+            {
+                div.AppendText(StringLocalizer["Waiting..."]);
+                div.WithCssClass("mt-1 mb-1");
+            })
             .Append(HtmlTag.Div, msg =>
             {
                 msg.WithAttribute("id", "process-status")
-                   .WithAttribute("style", "display:none")
-                   .Append(HtmlTag.Div, status =>
-                   {
-                       status.WithAttribute("id", "divStatus");
-                   })
-                   .Append(HtmlTag.Span, resume =>
-                   {
-                       resume.WithAttribute("id", "process-message");
-                   });
+                    .WithAttribute("style", "display:none")
+                    .Append(HtmlTag.Div, status =>
+                    {
+                        status.WithAttribute("id", "divStatus");
+                    })
+                    .Append(HtmlTag.Span, resume =>
+                    {
+                        resume.WithAttribute("id", "process-message");
+                    });
             })
             .Append(HtmlTag.Div, div =>
             {
                 div.WithAttribute("style", "width:50%;")
-                   .WithCssClass(BootstrapHelper.CenterBlock)
-                   .Append(HtmlTag.Div, progress =>
-                   {
-                       progress.WithCssClass("progress")
-                           .Append(HtmlTag.Div, bar =>
+                    .WithCssClass(BootstrapHelper.CenterBlock)
+                    .Append(HtmlTag.Div, progress =>
+                    {
+                        progress.WithCssClass("progress")
+                            .Append(HtmlTag.Div, bar =>
                             {
                                 bar.WithCssClass("progress-bar")
-                                   .WithAttribute("role", "progressbar")
-                                   .WithAttribute("style", "width:0;")
-                                   .WithAttribute("aria-valuemin", "0")
-                                   .WithAttribute("aria-valuemax", "100")
-                                   .AppendText("0%");
+                                    .WithAttribute("role", "progressbar")
+                                    .WithAttribute("style", "width:0;")
+                                    .WithAttribute("aria-valuemin", "0")
+                                    .WithAttribute("aria-valuemax", "100")
+                                    .AppendText("0%");
                             });
-                   });
+                    });
             })
-            .Append(new DataImportationLog(this).GetHtmlResume())
-            .Append(HtmlTag.Br).Append(HtmlTag.Br);
+            .AppendDiv(div =>
+            {
+                div.Append(new DataImportationLog(this).GetHtmlResume());
+                div.WithCssClass("mb-2");
+            });
 
         var btnStop = ComponentFactory.Html.LinkButton.Create();
+        btnStop.Type = LinkButtonType.Button;
         btnStop.OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]);
-        btnStop.IconClass = IconType.Stop.GetCssClass();
-        btnStop.Text = StringLocalizer["Stop the import."];
+        btnStop.Icon = IconType.Stop;
+        btnStop.Text = StringLocalizer["Stop the importation."];
         html.AppendComponent(btnStop);
 
         return html;
@@ -252,14 +261,9 @@ public class JJDataImportation : ProcessComponent
         var collapsePanel = new JJCollapsePanel(CurrentContext.Request.Form)
         {
             TitleIcon = new JJIcon(IconType.FolderOpenO),
-            Title = "Import File",
+            Title = StringLocalizer["Import File"],
             ExpandedByDefault = ExpandedByDefault,
-            HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
-                .Append(HtmlTag.Label, label =>
-                {
-                    label.AppendText(StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", UploadArea.AllowedTypes]);
-                })
-                .Append( UploadArea.GetUploadAreaHtmlBuilder())
+            HtmlBuilderContent =  UploadArea.GetUploadAreaHtmlBuilder()
         };
 
         html.AppendComponent(collapsePanel);
@@ -373,7 +377,7 @@ public class JJDataImportation : ProcessComponent
 
     private JJLinkButton GetHelpButton()
     {
-        var button = ComponentFactory.Html.LinkButton.Create();;
+        var button = ComponentFactory.Html.LinkButton.Create();
         button.IconClass = "fa fa-question-circle";
         button.Text = "Help";
         button.ShowAsButton = true;
@@ -397,9 +401,11 @@ public class JJDataImportation : ProcessComponent
         area.RouteContext.ComponentContext = ComponentContext.DataImportationFileUpload;
         area.Multiple = false;
         area.EnableCopyPaste = false;
-        area.JsCallback = DataImportationScripts.GetLogScript();
+        area.JsCallback = DataImportationScripts.GetUploadCallbackScript();
         area.Name += "-import";
         area.AllowedTypes = "txt,csv,log";
+        area.CustomUploadAreaLabel = StringLocalizer["Paste Excel rows or drag and drop files of type: {0}", area.AllowedTypes];
+
         return area;
     }
 }

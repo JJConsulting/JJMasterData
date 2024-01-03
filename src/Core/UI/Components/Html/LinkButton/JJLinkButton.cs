@@ -1,4 +1,5 @@
-﻿using JJMasterData.Commons.Localization;
+﻿using System.ComponentModel;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Html;
@@ -26,8 +27,10 @@ public class JJLinkButton : HtmlComponent
         set => _spinner = value;
     }
     
+    [Localizable(false)]
     public string Text { get; set; }
     
+    [Localizable(false)]
     public string Tooltip { get; set; }
 
     /// <summary>

@@ -433,7 +433,7 @@ class DataDictionaryUtils {
 class DataExportationHelper {
     static startProgressVerification(componentName, routeContext) {
         return __awaiter(this, void 0, void 0, function* () {
-            DataExportationHelper.setLoadMessage();
+            DataExportationHelper.setSpinner();
             let urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", routeContext);
             urlBuilder.addQueryParameter("gridViewName", componentName);
@@ -529,31 +529,43 @@ class DataExportationHelper {
             }
         });
     }
-    static setLoadMessage() {
-        const options = {
-            lines: 13,
-            length: 38,
-            width: 17,
-            radius: 45,
-            scale: 0.2,
-            corners: 1,
-            color: "#000",
-            opacity: 0.3,
-            rotate: 0,
-            direction: 1,
-            speed: 1.2,
-            trail: 62,
-            fps: 20,
-            zIndex: 2e9,
-            className: "spinner",
-            top: "50%",
-            left: "50%",
-            shadow: false,
-            hwaccel: false,
-            position: "absolute"
-        };
+    static setSpinner() {
         const target = document.getElementById('data-exportation-spinner-');
-        var spinner = new Spinner(options).spin(target);
+        if (bootstrapVersion < 5) {
+            const options = {
+                className: "spinner",
+                color: "#000",
+                corners: 1,
+                direction: 1,
+                fps: 20,
+                hwaccel: false,
+                left: "50%",
+                length: 38,
+                lines: 13,
+                opacity: 0.3,
+                position: "absolute",
+                radius: 45,
+                rotate: 0,
+                scale: 0.2,
+                shadow: false,
+                speed: 1.2,
+                top: "50%",
+                trail: 62,
+                width: 17,
+                zIndex: 2e9
+            };
+            new Spinner(options).spin(target);
+        }
+        else {
+            const spinnerDiv = document.createElement('div');
+            spinnerDiv.classList.add('spinner-border', 'text-primary', 'spinner-border-lg');
+            spinnerDiv.setAttribute('role', 'status');
+            const spanElement = document.createElement('span');
+            spanElement.classList.add('visually-hidden');
+            spanElement.textContent = 'Loading...';
+            spinnerDiv.appendChild(spanElement);
+            target.append(spinnerDiv);
+        }
     }
     static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
@@ -619,31 +631,43 @@ class DataExportationHelper {
     }
 }
 class DataImportationHelper {
-    static setLoadMessage() {
-        const options = {
-            lines: 13,
-            length: 38,
-            width: 17,
-            radius: 45,
-            scale: 0.2,
-            corners: 1,
-            color: "#000",
-            opacity: 0.3,
-            rotate: 0,
-            direction: 1,
-            speed: 1.2,
-            trail: 62,
-            fps: 20,
-            zIndex: 2e9,
-            className: "spinner",
-            top: "50%",
-            left: "50%",
-            shadow: false,
-            hwaccel: false,
-            position: "absolute"
-        };
-        const target = document.getElementById('impSpin');
-        new Spinner(options).spin(target);
+    static setSpinner() {
+        const target = document.getElementById('data-importation-spinner');
+        if (bootstrapVersion < 5) {
+            const options = {
+                className: "spinner",
+                color: "#000",
+                corners: 1,
+                direction: 1,
+                fps: 20,
+                hwaccel: false,
+                left: "50%",
+                length: 38,
+                lines: 13,
+                opacity: 0.3,
+                position: "absolute",
+                radius: 45,
+                rotate: 0,
+                scale: 0.2,
+                shadow: false,
+                speed: 1.2,
+                top: "50%",
+                trail: 62,
+                width: 17,
+                zIndex: 2e9
+            };
+            new Spinner(options).spin(target);
+        }
+        else {
+            const spinnerDiv = document.createElement('div');
+            spinnerDiv.classList.add('spinner-border', 'text-primary', 'spinner-border-lg');
+            spinnerDiv.setAttribute('role', 'status');
+            const spanElement = document.createElement('span');
+            spanElement.classList.add('visually-hidden');
+            spanElement.textContent = 'Loading...';
+            spinnerDiv.appendChild(spanElement);
+            target.append(spinnerDiv);
+        }
     }
     static checkProgress(componentName, importationRouteContext, gridRouteContext) {
         showSpinnerOnPost = false;
@@ -734,7 +758,7 @@ class DataImportationHelper {
                 urlBuilder.addQueryParameter("routeContext", importationRouteContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
                 DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.ExtraLarge).then(_ => {
-                    GridViewHelper.refreshGrid(componentName, gridRouteContext);
+                    GridViewHelper.refreshGrid(componentName.replace("-importation", String()), gridRouteContext);
                 });
             }
         })
@@ -761,7 +785,7 @@ class DataImportationHelper {
         DataImportationModal.getInstance().showUrl({ url: urlBuilder.build() }, "Import", ModalSize.ExtraLarge);
     }
     static start(componentName, routeContext, gridRouteContext) {
-        DataImportationHelper.setLoadMessage();
+        DataImportationHelper.setSpinner();
         DataImportationHelper.intervalId = setInterval(function () {
             DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
         }, 3000);
@@ -780,7 +804,7 @@ class DataImportationHelper {
         showSpinnerOnPost = false;
         let urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
-        urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress");
+        urlBuilder.addQueryParameter("dataImportationOperation", "stop");
         urlBuilder.addQueryParameter("componentName", componentName);
         const url = urlBuilder.build();
         fetch(url).then(response => response.json()).then(data => {
@@ -816,6 +840,18 @@ class DataImportationHelper {
             return false;
         };
         document.addEventListener("paste", DataImportationHelper.pasteEventListener, { once: true });
+    }
+    static uploadCallback(componentName, routeContext, gridRouteContext) {
+        let urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("dataImportationOperation", "loading");
+        const requestOptions = getRequestOptions();
+        DataImportationModal.getInstance().showUrl({
+            url: urlBuilder.build(),
+            requestOptions: requestOptions
+        }, "Import", ModalSize.Small).then(_ => {
+            DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+        });
     }
     static removePasteListener() {
         if (DataImportationHelper.pasteEventListener) {

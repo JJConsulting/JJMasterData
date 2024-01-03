@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
@@ -14,8 +15,10 @@ public class JJCollapsePanel : HtmlComponent
     }
     public Position ButtonPosition { get; set; }
 
+    [LocalizationRequired]
     public string Title { get; set; }
 
+    [LocalizationRequired]
     public string SubTitle { get; set; }
 
     public JJIcon TitleIcon { get; set; }

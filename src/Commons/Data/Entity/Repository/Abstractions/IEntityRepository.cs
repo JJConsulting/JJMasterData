@@ -167,4 +167,6 @@ public interface IEntityRepository
     Task<DataTable> GetDataTableAsync(Element element, EntityParameters? entityParameters = null);
     int GetCount(Element element, IDictionary<string, object?> filters);
     Task<int> GetCountAsync(Element element, IDictionary<string, object?> filters);
+    bool TableExists(string tableName);
+    void CreateDataModel(Element element);
 }

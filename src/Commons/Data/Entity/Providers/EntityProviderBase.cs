@@ -166,6 +166,13 @@ public abstract class EntityProviderBase(
 
         return new DictionaryListResult(list, totalRecords);
     }
+    
+    public void CreateDataModel(Element element)
+    {
+        var sqlScripts = GetDataModelScripts(element);
+        DataAccess.ExecuteBatch(sqlScripts);
+    }
+    
     public async Task CreateDataModelAsync(Element element)
     {
         var sqlScripts = GetDataModelScripts(element);

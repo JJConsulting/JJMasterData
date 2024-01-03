@@ -124,11 +124,9 @@ internal class DataImportationLog
             ExpandedByDefault = true,
             HtmlBuilderContent = new HtmlBuilder(HtmlTag.Div)
                 .Append(HtmlTag.B,b=>b.AppendText(StringLocalizer["Start:"]))
-                .AppendText("&nbsp;")
                 .AppendText(Reporter.StartDate.ToString(CultureInfo.CurrentCulture))
                 .Append(HtmlTag.Br)
                 .Append(HtmlTag.B,b=>b.AppendText(StringLocalizer["End:"]))
-                .AppendText("&nbsp;")
                 .AppendText(Reporter.EndDate.ToString(CultureInfo.CurrentCulture))
         };
 

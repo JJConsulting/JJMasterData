@@ -56,8 +56,13 @@ public class JJUploadArea : AsyncComponent
     
     public string SizeErrorLabel { get; set; } = "File is too big. Max file size: {0} mb";
 
-    public string GetImportLabel()
+    public string? CustomUploadAreaLabel { get; set; }
+
+    private string GetUploadAreaLabel()
     {
+        if (CustomUploadAreaLabel != null)
+            return CustomUploadAreaLabel;
+        
         if (EnableDragDrop && !EnableCopyPaste)
             return "Click here to upload or drag & drop files";
 
@@ -180,7 +185,7 @@ public class JJUploadArea : AsyncComponent
         div.WithAttribute("allowed-types", GetAllowedTypes());     
         div.WithAttribute("max-files", Multiple ? MaxFiles : 1);
         div.WithAttribute("parallel-uploads", ParallelUploads);
-        div.WithAttribute("drag-drop-label", StringLocalizer[GetImportLabel()]);
+        div.WithAttribute("drag-drop-label", StringLocalizer[GetUploadAreaLabel()]);
         div.WithAttribute("cancel-label", StringLocalizer[CancelLabel]);
         div.WithAttribute("abort-label", StringLocalizer[AbortLabel]);
         div.WithAttribute("extension-not-allowed-label", StringLocalizer[ExtensionNotAllowedLabel, AllowedTypes]);
