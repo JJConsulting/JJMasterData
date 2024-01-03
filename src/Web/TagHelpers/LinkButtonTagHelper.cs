@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
@@ -20,9 +21,11 @@ public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory) : Ta
     public bool? Enabled { get; set; }
     
     [HtmlAttributeName("text")]
+    [LocalizationRequired]
     public string? Text { get; set; }
     
     [HtmlAttributeName("tooltip")]
+    [LocalizationRequired]
     public string? Tooltip { get; set; }
     
     [HtmlAttributeName("type")]
