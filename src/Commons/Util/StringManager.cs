@@ -590,7 +590,7 @@ public static class StringManager
         }
 
         var textInfo = CultureInfo.CurrentCulture.TextInfo;
-        var words = input.Split([' ', '_', '-'], StringSplitOptions.RemoveEmptyEntries);
+        var words = input.Split(new[] { ' ', '_', '-' }, StringSplitOptions.RemoveEmptyEntries);
 
         for (var i = 0; i < words.Length; i++)
         {
