@@ -277,15 +277,14 @@ class CheckboxHelper {
 class CodeMirrorWrapperOptions {
 }
 class CodeMirrorWrapper {
-    static isCodeMirrorConfigured(elementId) {
-        const textArea = document.querySelector("#" + elementId);
+    static isCodeMirrorConfigured(textArea) {
         return textArea.codeMirrorInstance != null;
     }
     static setupCodeMirror(elementId, options) {
-        const textArea = document.querySelector("#" + elementId + "-ExpressionValue");
+        const textArea = document.getElementById(elementId);
         if (!textArea)
             return;
-        if (this.isCodeMirrorConfigured(elementId + "-ExpressionValue"))
+        if (this.isCodeMirrorConfigured(textArea))
             return;
         const codeMirrorTextArea = CodeMirror.fromTextArea(textArea, {
             mode: options.mode,
@@ -960,7 +959,7 @@ function listenExpressionType(name, hintList, isBoolean) {
             textArea.setAttribute('class', 'form-control');
             textArea.innerText = expressionValueInput.value;
             expressionValueEditor.innerHTML = textArea.outerHTML;
-            CodeMirrorWrapper.setupCodeMirror(name, { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
+            CodeMirrorWrapper.setupCodeMirror(name + '-ExpressionValue', { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
         }
     });
 }

@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Models;
@@ -63,6 +64,10 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
             else if (Session.HasSession() && Session[field] != null)
             {
                 parsedValue = Session[field];
+            }
+            else if (HttpContext.User?.HasClaim(c => c.Type == field) ?? false)
+            {
+                parsedValue = HttpContext.User.Claims.First(c => c.Type == field).Value;
             }
             else
             {

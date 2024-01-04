@@ -8,20 +8,17 @@ class CodeMirrorWrapperOptions{
 }
 
 class CodeMirrorWrapper{
-    private static isCodeMirrorConfigured(elementId) {
-        const textArea = document.querySelector("#"+elementId);
-        
+    private static isCodeMirrorConfigured(textArea) {
         // ReSharper disable once TsNotResolved
         return textArea.codeMirrorInstance != null;
     }
     static setupCodeMirror(elementId: string, options: CodeMirrorWrapperOptions) {
-        
-        const textArea = document.querySelector("#" + elementId + "-ExpressionValue");
+        const textArea = document.getElementById(elementId);
         
         if(!textArea)
             return;
         
-        if (this.isCodeMirrorConfigured(elementId + "-ExpressionValue"))
+        if (this.isCodeMirrorConfigured(textArea))
             return;
         
         const codeMirrorTextArea = CodeMirror.fromTextArea(textArea, {
