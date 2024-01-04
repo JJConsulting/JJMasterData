@@ -168,7 +168,7 @@ public class SqlServerReadProcedureScripts(
                         sql.Append(Tab, 2);
                         sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
                         sql.Append(field.Name);
-                        sql.Append(" BETWEEN ' @");
+                        sql.Append(" BETWEEN @");
                         sql.Append(field.Name);
                         sql.Append("_from AND  @");
                         sql.Append(field.Name);
