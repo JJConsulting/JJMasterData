@@ -395,8 +395,7 @@ internal class GridFilter(JJGridView gridView)
     }
 
 
-
-    public Dictionary<string, object>  GetFilterQueryString()
+    private Dictionary<string, object>  GetFilterQueryString()
     {
         Dictionary<string, object>  values = null;
         var fieldsFilter = GridView.FormElement.Fields.ToList().FindAll(x => x.Filter.Type != FilterMode.None);

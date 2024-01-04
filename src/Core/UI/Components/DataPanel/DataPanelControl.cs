@@ -147,7 +147,7 @@ internal class DataPanelControl
             }
             else
             {
-                if (field.Component == FormComponent.TextArea | field.Component == FormComponent.CheckBox)
+                if (field.Component is FormComponent.TextArea or FormComponent.CheckBox)
                     fieldClass = "col-sm-12";
                 else
                     fieldClass = colClass;
@@ -294,7 +294,7 @@ internal class DataPanelControl
         return html;
     }
 
-    private static bool IsRange(FormElementField field, PageState pageState)
+    private static bool IsRange(ElementField field, PageState pageState)
     {
         return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
     }

@@ -5,9 +5,11 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components.TextRange;
 
-internal class TextRangeFactory(IHttpContext httpContext,
+internal class TextRangeFactory(
+        IHttpContext httpContext,
         IStringLocalizer<MasterDataResources> stringLocalizer,
-        TextGroupFactory textGroupFactory)
+        TextGroupFactory textGroupFactory
+        )
     : IControlFactory<JJTextRange>
 {
 
@@ -17,7 +19,7 @@ internal class TextRangeFactory(IHttpContext httpContext,
 
     public JJTextRange Create()
     {
-        return new JJTextRange(HttpContext.Request.Form, TextGroupFactory,StringLocalizer);
+        return new JJTextRange(HttpContext.Request.Form,StringLocalizer);
     }
 
     public JJTextRange Create(FormElement formElement, FormElementField field, ControlContext context)
@@ -31,7 +33,7 @@ internal class TextRangeFactory(IHttpContext httpContext,
 
         var range = Create();
         range.FieldType = field.DataType;
-        range.FromField = TextGroupFactory.CreateTextDate();
+        range.FromField = TextGroupFactory.Create(field);
         range.FromField.Text = valueFrom;
         range.FromField.Name = $"{field.Name}_from";
         range.FromField.PlaceHolder = StringLocalizer["From"];
@@ -42,7 +44,7 @@ internal class TextRangeFactory(IHttpContext httpContext,
             valueTo = values[$"{field.Name}_to"].ToString();
         }
 
-        range.ToField = TextGroupFactory.CreateTextDate();
+        range.ToField = TextGroupFactory.Create(field);
         range.ToField.Text = valueTo;
         range.ToField.Name = $"{field.Name}_to";
         range.ToField.PlaceHolder = StringLocalizer["To"];

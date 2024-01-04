@@ -8,11 +8,10 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components.TextRange;
 
-public class JJTextRange(IFormValues formValues, IControlFactory<JJTextGroup> textBoxGroupFactory,
+public class JJTextRange(IFormValues formValues,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     : ControlBase(formValues)
 {
-    private IControlFactory<JJTextGroup> TextBoxGroupFactory { get; } = textBoxGroupFactory;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     internal ControlBase FromField { get; set; }
