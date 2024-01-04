@@ -229,7 +229,7 @@ public class JJDataImportation : ProcessComponent
             })
             .AppendDiv(div =>
             {
-                div.Append(new DataImportationLog(this).GetHtmlResume());
+                div.Append(new DataImportationLog(this).GetSummaryHtml());
                 div.WithCssClass("mb-2");
             });
 
@@ -270,7 +270,6 @@ public class JJDataImportation : ProcessComponent
             row.Append(HtmlTag.Div, col =>
             {
                 col.WithCssClass("col-sm-12");
-                col.AppendComponent(BackButton);
                 col.AppendComponent(HelpButton);
 
                 var pipeline = BackgroundTaskManager.GetProgress<IProgressReporter>(keyprocess);
@@ -368,7 +367,7 @@ public class JJDataImportation : ProcessComponent
         button.IconClass = "fa fa-arrow-left";
         button.Text = "Back";
         button.ShowAsButton = true;
-        button.OnClientClick = "uploadFile1Obj.remove();";
+        button.OnClientClick = DataImportationScripts.GetBackScript();
         return button;
     }
 

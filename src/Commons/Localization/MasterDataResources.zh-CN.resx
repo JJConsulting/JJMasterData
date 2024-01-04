@@ -461,7 +461,7 @@
     <value>点击这里.</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Click on the [Help] link for more information regarding the file layout." xml:space="preserve">
+  <data name="Click on the Help button for more information regarding the file layout." xml:space="preserve">
     <value>单击 [帮助] 链接以获取有关文件布局的更多信息。</value>
     <comment>JJMasterDataCore</comment>
   </data>

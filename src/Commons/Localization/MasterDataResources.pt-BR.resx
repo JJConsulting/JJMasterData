@@ -461,8 +461,8 @@
     <value>clique aqui.</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Click on the [Help] link for more information regarding the file layout." xml:space="preserve">
-    <value>Clique no link [Ajuda] para mais informações referente ao layout do arquivo.</value>
+  <data name="Click on the Help button for more information regarding the file layout." xml:space="preserve">
+    <value>Clique no botão de Ajuda para mais informações referentes ao layout do arquivo.</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Close" xml:space="preserve">

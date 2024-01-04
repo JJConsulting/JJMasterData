@@ -184,7 +184,7 @@ public class DataImportationWorker(DataImportationContext context,
                 error += StringLocalizer["Expected {0} Received {1}.", fieldList.Count, cols.Length];
                 currentProcess.AddError(error);
 
-                error += StringLocalizer["Click on the [Help] link for more information regarding the file layout."];
+                error += StringLocalizer["Click on the Help button for more information regarding the file layout."];
                 throw new JJMasterDataException(error);
             }
 

@@ -1038,7 +1038,6 @@ public class JJFormView : AsyncComponent
         PageState = PageState.Import;
 
         DataImportation.UserValues = UserValues;
-        DataImportation.BackButton.OnClientClick = "DataImportationModal.getInstance().hide()";
         DataImportation.ProcessOptions = action.ProcessOptions;
         DataImportation.EnableAuditLog =ExpressionsService.GetBoolValue(
                 GridView.ToolbarActions.AuditLogGridToolbarAction.VisibleExpression, formStateData);

@@ -27,17 +27,17 @@ internal class DataImportationLog
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .AppendComponent(GetAlertPanel())
-            .Append(GetHtmlResume())
+            .Append(GetSummaryHtml())
             .Append(HtmlTag.Div, div =>
             {
                 div.AppendText("&nbsp;");
             })
-            .Append(GetHtmlLogDetails());
+            .Append(GetLogDetailsHtml());
 
         return html;
     }
 
-    public HtmlBuilder GetHtmlResume()
+    public HtmlBuilder GetSummaryHtml()
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("style", "text-align: center;")
@@ -115,7 +115,7 @@ internal class DataImportationLog
         return html;
     }
 
-    private HtmlBuilder GetHtmlLogDetails()
+    private HtmlBuilder GetLogDetailsHtml()
     {
         var panel = new JJCollapsePanel(CurrentContext.Request.Form)
         {

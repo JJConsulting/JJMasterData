@@ -32,6 +32,11 @@ internal class DataImportationScripts(
     {
     }
     
+    public string GetBackScript()
+    {
+        return $"DataImportationHelper.back('{Name}', '{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
+    }
+    
     public string GetShowScript()
     {
         return $"DataImportationHelper.show('{Name}','{StringLocalizer[ModalTitle]}','{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";

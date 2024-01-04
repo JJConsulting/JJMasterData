@@ -17,8 +17,8 @@ namespace JJMasterData.Core.UI.Components;
 
 internal class DataImportationHelp
 {
-    public JJDataImportation DataImportation { get; private set; }
-    public IStringLocalizer<MasterDataResources> StringLocalizer { get; private set; }
+    private JJDataImportation DataImportation { get; set; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; set; }
     internal DataImportationHelp(JJDataImportation dataImportation)
     {
         DataImportation = dataImportation;
@@ -118,7 +118,7 @@ internal class DataImportationHelp
             });
             tr.Append(HtmlTag.Td, td =>
             {
-                td.AppendText((string)field.LabelOrName);
+                td.AppendText(field.LabelOrName);
                 td.AppendIf(field.IsPk, HtmlTag.Span, span =>
                 {
                     span.WithCssClass("fa fa-star")
@@ -301,9 +301,9 @@ internal class DataImportationHelp
     {
         var btnBack = DataImportation.ComponentFactory.Html.LinkButton.Create();
         btnBack.IconClass = "fa fa-arrow-left";
-        btnBack.Text = "Back";
+        btnBack.Text = StringLocalizer["Back"];
         btnBack.ShowAsButton = true;
-        btnBack.OnClientClick = DataImportation.DataImportationScripts.GetShowScript();
+        btnBack.OnClientClick = DataImportation.DataImportationScripts.GetBackScript();
 
         return btnBack;
     }

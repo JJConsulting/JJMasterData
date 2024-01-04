@@ -669,7 +669,7 @@ class DataImportationHelper {
             target.append(spinnerDiv);
         }
     }
-    static checkProgress(componentName, importationRouteContext, gridRouteContext) {
+    static checkProgress(componentName, importationRouteContext, gridRouteContext, intervalId) {
         showSpinnerOnPost = false;
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", importationRouteContext);
@@ -753,7 +753,7 @@ class DataImportationHelper {
                 DataImportationHelper.errorCount = result.Error;
             }
             if (!result.IsProcessing) {
-                clearInterval(DataImportationHelper.intervalId);
+                clearInterval(intervalId);
                 const urlBuilder = new UrlBuilder();
                 urlBuilder.addQueryParameter("routeContext", importationRouteContext);
                 urlBuilder.addQueryParameter("dataImportationOperation", "log");
@@ -772,14 +772,23 @@ class DataImportationHelper {
     static show(componentName, modalTitle, routeContext, gridRouteContext) {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", routeContext);
-        DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
         const requestOptions = getRequestOptions();
         DataImportationModal.getInstance().showUrl({
             url: urlBuilder.build(),
             requestOptions: requestOptions
         }, modalTitle, ModalSize.ExtraLarge).then(_ => {
+            DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
             UploadAreaListener.listenFileUpload();
         });
+    }
+    static back(componentName, routeContext, gridRouteContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        postFormValues({ url: urlBuilder.build(), success: html => {
+                document.querySelector("#" + componentName).innerHTML = html;
+                DataImportationHelper.addPasteListener(componentName, routeContext, gridRouteContext);
+                UploadAreaListener.listenFileUpload();
+            } });
     }
     static showLog(componentName, routeContext) {
         const urlBuilder = new UrlBuilder();
@@ -794,8 +803,8 @@ class DataImportationHelper {
     }
     static start(componentName, routeContext, gridRouteContext) {
         DataImportationHelper.setSpinner();
-        DataImportationHelper.intervalId = setInterval(function () {
-            DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext);
+        let intervalId = setInterval(function () {
+            DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext, intervalId);
         }, 3000);
     }
     static help(componentName, routeContext) {
