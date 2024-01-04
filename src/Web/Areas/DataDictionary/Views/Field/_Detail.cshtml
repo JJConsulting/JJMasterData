@@ -199,7 +199,7 @@
                     }
                     <select asp-for="Component" class="form-control form-select" onchange="this.form.submit();" asp-items="componentList.OrderBy(c=>c.Group.Name).ThenBy(c=>c.Text)"></select>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+                <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label " asp-for="AutoPostBack"></label>
 
                     <tooltip title="When changing the content, it reloads all form fields"/>

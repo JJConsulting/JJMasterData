@@ -87,9 +87,12 @@ public class FormValuesService(
         if (value is null)
             return value;
         
-        var cultureInfo = field.Attributes.TryGetValue("cultureInfo", out var cultureInfoName)
-            ? CultureInfo.GetCultureInfo(cultureInfoName.ToString()!) : CultureInfo.CurrentUICulture;
-        
+        CultureInfo cultureInfo;
+        if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
+            cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName?.ToString()!);
+        else
+            cultureInfo = CultureInfo.CurrentUICulture;
+
         object parsedValue = 0;
         
         switch (field.DataType)

@@ -24,7 +24,8 @@ public class FormElementField : ElementField
     public const string MaxValueAttribute = "max";
     public const string StepAttribute = "step";
     public const string IsSwitchAttribute = "is-switch";
-    public const string MultipleDates = "multiple-dates";
+    public const string MultipleDatesAttribute = "multiple-dates";
+    public const string CultureInfoAttribute = "culture-info";
     
     [JsonProperty("component")] public FormComponent Component { get; set; }
 

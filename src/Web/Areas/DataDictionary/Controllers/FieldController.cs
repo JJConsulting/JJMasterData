@@ -284,9 +284,11 @@ public class FieldController(FieldService fieldService, IControlFactory<JJSearch
                 or FormComponent.DateTime
                 or FormComponent.Hour:
                 field.SetAttr(FormElementField.AutocompletePickerAttribute, Request.Form[FormElementField.AutocompletePickerAttribute] == "true");
-                field.SetAttr(FormElementField.MultipleDates, Request.Form[FormElementField.MultipleDates] == "true");
+                field.SetAttr(FormElementField.MultipleDatesAttribute, Request.Form[FormElementField.MultipleDatesAttribute] == "true");
                 break;
-
+            case FormComponent.Currency:
+                field.SetAttr(FormElementField.CultureInfoAttribute, Request.Form[FormElementField.CultureInfoAttribute].ToString());
+                break;
         }
     }
 

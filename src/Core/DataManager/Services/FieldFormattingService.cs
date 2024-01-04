@@ -37,8 +37,11 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 stringValue = GetCurrencyValueAsString(field, value);
                 break;
             case FormComponent.Currency:
-                var cultureInfo = field.Attributes.TryGetValue("cultureInfo", out var cultureInfoName)
-                    ? CultureInfo.GetCultureInfo(cultureInfoName.ToString()) : CultureInfo.CurrentUICulture;
+                CultureInfo cultureInfo;
+                if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
+                    cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName.ToString());
+                else
+                    cultureInfo = CultureInfo.CurrentUICulture;
                 if (float.TryParse(value?.ToString(),NumberStyles.Currency,cultureInfo, out var currencyValue))
                 {
                     stringValue = currencyValue.ToString($"C{field.NumberOfDecimalPlaces}", cultureInfo);
@@ -76,9 +79,12 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
 
     private static string GetCurrencyValueAsString(FormElementField field, object value)
     {
-        var cultureInfo = field.Attributes.TryGetValue("cultureInfo", out var cultureInfoName)
-            ? CultureInfo.GetCultureInfo(cultureInfoName.ToString()) : CultureInfo.CurrentUICulture;
-        
+        CultureInfo cultureInfo;
+        if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
+            cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName.ToString());
+        else
+            cultureInfo = CultureInfo.CurrentUICulture;
+
         string stringValue = null;
         if (field.DataType == FieldType.Float)
         {

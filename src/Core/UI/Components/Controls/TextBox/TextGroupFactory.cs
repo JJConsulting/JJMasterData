@@ -120,7 +120,7 @@ public class TextGroupFactory(
 
                 textGroup.MaxLength = 18;
                 
-                if (textGroup.Attributes.TryGetValue("cultureInfo", out var cultureInfoName))
+                if (textGroup.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) && !string.IsNullOrEmpty(cultureInfoName))
                 {
                     var cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName);
                     textGroup.CultureInfo = cultureInfo;

@@ -5,6 +5,11 @@
 @using JJMasterData.Core.UI.Components
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 
+@{
+    var cultures = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures);
+}
+
+
 @if (Model.Component is FormComponent.Text 
     or FormComponent.Number 
     or FormComponent.Password
@@ -36,16 +41,33 @@
                 value="@(Model.GetAttr(FormElementField.IsSwitchAttribute) is true)"/>
         </div>
         break;
+    case FormComponent.Currency:
+        <div class="col-sm-4">
+            <label for="@FormElementField.CultureInfoAttribute" class="form-label">@StringLocalizer["Culture"]</label>
+            <select class="form-select" name="@FormElementField.CultureInfoAttribute" id="@FormElementField.CultureInfoAttribute">
+                <option value="">@StringLocalizer["--Select--"]</option>
+                @{
+                    var selectedCulture = Model.GetAttr(FormElementField.CultureInfoAttribute);
+                }
+                @foreach (var culture in cultures)
+                {
+                    var isSelected = selectedCulture?.ToString() == culture.Name;
+                        <option selected="@isSelected"
+                            value="@culture.Name">@($"{culture.DisplayName} - {culture.NumberFormat.CurrencySymbol}")</option>
+                }
+            </select>
+        </div>
+        break;
     case FormComponent.Slider or FormComponent.Number:
-        <div class="col-sm-2">
+        <div class="col-sm-4">
             <label for="minValue" title="@StringLocalizer["Minimum Value"]" class="@BootstrapHelper.Label">@StringLocalizer["Minimum Value"]</label>
             <input class="form-control jj-numeric" type="number" name="minValue" id="minValue" value="@Model.GetAttr(FormElementField.MinValueAttribute)"/>
         </div>
-        <div class="col-sm-2">
+        <div class="col-sm-4">
             <label for="maxValue" title="@StringLocalizer["Maximum Value"]" class="@BootstrapHelper.Label">@StringLocalizer["Maximum Value"]</label>
             <input class="form-control jj-numeric" type="number" name="maxValue" id="maxValue" value="@Model.GetAttr(FormElementField.MaxValueAttribute)"/>
         </div>
-        <div class="col-sm-2">
+        <div class="col-sm-4">
             <label for="step" @BootstrapHelper.GetDataToggle("tooltip") 
                    title="@StringLocalizer["Defines the interval at which the value changes."]"
                    class="@BootstrapHelper.Label">@StringLocalizer["Step"]</label>
@@ -53,13 +75,13 @@
         </div>
         break;
     case FormComponent.TextArea:
-        <div class="@BootstrapHelper.FormGroup col-sm-2">
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
             <label class="@BootstrapHelper.Label " for="txtTextAreaRows" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Number of lines in the text box"]">@StringLocalizer["Rows"]</label>
             <input class="form-control" id="txtTextAreaRows" name="txtTextAreaRows" maxlength="100" type="number" min="1" max="5000" placeholder="5" value="@Model.GetAttr(FormElementField.RowsAttribute)">
         </div>
         break;
     case FormComponent.Lookup:
-        <div class="@BootstrapHelper.FormGroup col-sm-2">
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
             <label class="@BootstrapHelper.Label " for="cboLkPopUpSize">@StringLocalizer["Modal Size"]</label>
             <select id="cboLkPopUpSize" name="cboLkPopUpSize" class="form-control form-select" asp-items="@Html.GetEnumSelectList<ModalSize>()"></select>
         </div>
@@ -72,7 +94,7 @@
     case FormComponent.Date:
     case FormComponent.DateTime:
     case FormComponent.Hour:
-        <div class="@BootstrapHelper.FormGroup col-sm-2">
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
             <label class="@BootstrapHelper.Label "
                 for="@FormElementField.AutocompletePickerAttribute">
                 @StringLocalizer["Autocomplete"]
@@ -84,15 +106,15 @@
                       value="@(Model.GetAttr(FormElementField.AutocompletePickerAttribute) is true)"/>
         </div>
         
-        <div class="@BootstrapHelper.FormGroup col-sm-2">
+        <div class="@BootstrapHelper.FormGroup col-sm-4">
             <label class="@BootstrapHelper.Label "
-                   for="@FormElementField.MultipleDates">
+                   for="@FormElementField.MultipleDatesAttribute">
                 @StringLocalizer["Allow multiple dates"]
             </label>
-            <checkbox name="@(FormElementField.MultipleDates)" 
+            <checkbox name="@(FormElementField.MultipleDatesAttribute)" 
                       switch="true"
                       switch-size="CheckBoxSwitchSize.Medium"
-                      value="@(Model.GetAttr(FormElementField.MultipleDates) is true)"/>
+                      value="@(Model.GetAttr(FormElementField.MultipleDatesAttribute) is true)"/>
         </div>
         break;
 }
