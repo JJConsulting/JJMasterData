@@ -81,7 +81,6 @@ public class JJTextFile(IHttpRequest request,
             _uploadView.ParentName = ParentName;
             _uploadView.Title = string.Empty;
             _uploadView.AutoSave = false;
-            _uploadView.ShowAddFiles = PageState is not PageState.View;
             _uploadView.JsCallback = Scripts.GetShowScript();
             _uploadView.RenameAction.SetVisible(true);
             
@@ -98,7 +97,7 @@ public class JJTextFile(IHttpRequest request,
             
             _uploadView.ViewGallery = dataFile.ViewGallery;
 
-            if (!Enabled)
+            if (!Enabled || PageState is PageState.View)
                 _uploadView.Disable();
 
             return _uploadView;
