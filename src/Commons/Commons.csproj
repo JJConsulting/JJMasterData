@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net4.8;netstandard2.0;net6.0;net7.0;net8.0;</TargetFrameworks>
+		<TargetFramework>netstandard2.0</TargetFramework>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<LangVersion>12</LangVersion>
 		<Nullable>disable</Nullable>
@@ -50,8 +50,5 @@
 	  <Compile Update="Data\Entity\Models\AsyncExpressionAttribute.cs">
 	    <DependentUpon>ExpressionAttribute.cs</DependentUpon>
 	  </Compile>
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Security\" />
 	</ItemGroup>
 </Project>
