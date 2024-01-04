@@ -59,12 +59,12 @@ public class GridScripts(JJGridView gridView)
         return $"GridViewSelectionHelper.selectAll('{gridView.Name}','{encryptedRouteContext}')";
     }
     
-    public string GetConfigUIScript(ConfigAction action, IDictionary<string, object> formValues)
+    public string GetGridSettingsScript(ConfigAction action, IDictionary<string, object> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, gridView.FormElement, formValues, action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
-
-        return $"GridViewHelper.openSettingsModal('{gridView.Name}','{encryptedActionMap}');";
+        var encryptedRouteContext = GetEncryptedRouteContext();
+        return $"GridViewHelper.setGridSettings('{gridView.Name}','{encryptedRouteContext}','{encryptedActionMap}');";
     }
 
     public string GetCloseConfigUIScript()

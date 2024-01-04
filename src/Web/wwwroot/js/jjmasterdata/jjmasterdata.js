@@ -1129,26 +1129,26 @@ class GridViewFilterHelper {
     }
 }
 class GridViewHelper {
-    static openSettingsModal(componentName, encryptedActionMap) {
+    static setGridSettings(componentName, encryptedRouteContext, encryptedActionMap) {
         const gridViewActionInput = document.getElementById("grid-view-action-map-" + componentName);
         const gridViewPageInput = document.getElementById("grid-view-page-" + componentName);
         const gridViewRowInput = document.getElementById("grid-view-row-" + componentName);
-        const form = document.querySelector("form");
-        if (gridViewActionInput && gridViewPageInput && gridViewRowInput && form) {
+        if (gridViewActionInput && gridViewPageInput && gridViewRowInput) {
             gridViewActionInput.value = encryptedActionMap;
             gridViewPageInput.value = "1";
             gridViewRowInput.value = "";
             this.clearCurrentFormAction(componentName);
-            form.requestSubmit();
+            this.closeSettingsModal(componentName, false);
+            GridViewHelper.refreshGrid(componentName, encryptedRouteContext);
         }
     }
-    static closeSettingsModal(componentName) {
-        const form = document.querySelector("form");
+    static closeSettingsModal(componentName, clearFormValues = true) {
         const checkboxes = document.querySelectorAll("form");
         const modalId = "config-modal-" + componentName;
         const modalElement = document.getElementById("config-modal-" + componentName);
-        if (form) {
-            form.reset();
+        if (clearFormValues) {
+            const form = document.querySelector("form");
+            form === null || form === void 0 ? void 0 : form.reset();
         }
         if (checkboxes) {
             checkboxes.forEach((checkbox) => {

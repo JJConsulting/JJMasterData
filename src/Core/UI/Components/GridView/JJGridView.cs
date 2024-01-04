@@ -1000,7 +1000,7 @@ public class JJGridView : AsyncComponent
         btnOk.Text = "Ok";
         btnOk.IconClass = "fa fa-check";
         btnOk.ShowAsButton = true;
-        btnOk.OnClientClick = Scripts.GetConfigUIScript(ConfigAction, RelationValues);
+        btnOk.OnClientClick = Scripts.GetGridSettingsScript(ConfigAction, RelationValues);
         modal.Buttons.Add(btnOk);
 
         var btnCancel = ComponentFactory.Html.LinkButton.Create();
