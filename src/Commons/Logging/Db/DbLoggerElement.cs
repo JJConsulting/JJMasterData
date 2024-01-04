@@ -55,7 +55,7 @@ public static class DbLoggerElement
                     Name = options.CategoryColumnName,
                     Label = "Category",
                     DataType = FieldType.Varchar,
-                    Size = 500,
+                    Size = -1,
                     Filter =
                     {
                         Type = FilterMode.Contain
