@@ -10,8 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -28,16 +28,16 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         IOptions<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEntityRepository entityRepository,
-        IEncryptionService encryptionService,
         IDataDictionaryRepository dataDictionaryRepository,
         DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
         MasterDataUrlHelper urlHelper)
     : BaseService(validationDictionary, dataDictionaryRepository, stringLocalizer)
 {
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
-    private IEncryptionService EncryptionService { get; } = encryptionService;
     private DataDictionaryFormElementFactory DataDictionaryFormElementFactory { get; } = dataDictionaryFormElementFactory;
     private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IEntityRepository EntityRepository { get; } =  entityRepository;
+
     private readonly MasterDataCoreOptions _options = options.Value;
 
     #region Add Dictionary
@@ -50,7 +50,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         Element element;
         if (importFields)
         {
-            element = await entityRepository.GetElementFromTableAsync(tableName);
+            element = await EntityRepository.GetElementFromTableAsync(tableName);
         }
         else
         {
@@ -80,7 +80,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
 
         if (importFields & IsValid)
         {
-            var exists = await entityRepository.TableExistsAsync(tableName);
+            var exists = await EntityRepository.TableExistsAsync(tableName);
             if (!exists)
                 AddError("Name", StringLocalizer["Table not found"]);
         }
@@ -130,12 +130,16 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
 
     private async Task<bool> ValidateEntityAsync(string name)
     {
-        bool isNullOrWhitespace = string.IsNullOrWhiteSpace(name);
-        if (isNullOrWhitespace)
-            AddError("Name", StringLocalizer["[New Element Name] field is required."]);
-
-        if (!isNullOrWhitespace && await DataDictionaryRepository.ExistsAsync(name))
-            AddError("Name", StringLocalizer["Element {0} already exists.", name]);
+        var isNullOrWhitespace = string.IsNullOrWhiteSpace(name);
+        switch (isNullOrWhitespace)
+        {
+            case true:
+                AddError("Name", StringLocalizer["[New Element Name] field is required."]);
+                break;
+            case false when await DataDictionaryRepository.ExistsAsync(name):
+                AddError("Name", StringLocalizer["Element {0} already exists.", name]);
+                break;
+        }
 
         return IsValid;
     }
@@ -144,11 +148,17 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
     public JJFormView GetFormView()
     {
         var formView = FormViewFactory.Create(DataDictionaryFormElementFactory.GetFormElement());
+        
         formView.GridView.SetCurrentFilter(DataDictionaryStructure.Type,"F");
+
+        if (!formView.GridView.CurrentOrder.Any())
+        {
+            formView.GridView.CurrentOrder.AddOrReplace(DataDictionaryStructure.LastModified, OrderByDirection.Desc);
+        }
         
         formView.GridView.EnableMultiSelect = true;
-        
         formView.GridView.FilterAction.ExpandedByDefault = true;
+        
         formView.GridView.OnDataLoadAsync += async (_, args) =>
         {
             var filter = DataDictionaryFilter.FromDictionary(args.Filters!);
@@ -162,7 +172,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
             args.TotalOfRecords = result.TotalOfRecords;
         };
 
-        formView.GridView.OnRenderActionAsync += (sender, args) =>
+        formView.GridView.OnRenderActionAsync += (_, args) =>
         {
             var elementName = args.FieldValues["name"]?.ToString();
             

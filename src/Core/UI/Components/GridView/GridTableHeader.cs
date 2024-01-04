@@ -137,12 +137,12 @@ internal class GridTableHeader
     }
 
     private HtmlBuilder GetAscendingIcon() => new JJIcon("fa fa-sort-amount-asc").GetHtmlBuilder()
-        .WithToolTip(StringLocalizer["Descending order"]);
-
-    private HtmlBuilder GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc").GetHtmlBuilder()
         .WithToolTip(StringLocalizer["Ascending order"]);
 
-    private string GetFieldStyle(FormElementField field)
+    private HtmlBuilder GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc").GetHtmlBuilder()
+        .WithToolTip(StringLocalizer["Descending order"]);
+
+    private static string GetFieldStyle(FormElementField field)
     {
         string style = string.Empty;
         switch (field.Component)

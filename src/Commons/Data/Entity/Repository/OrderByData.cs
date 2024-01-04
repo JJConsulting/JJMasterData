@@ -1,20 +1,17 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
 public class OrderByData
 {
-    private Dictionary<string,OrderByDirection> Fields { get; }
-    
-    // ReSharper disable once ConvertConstructorToMemberInitializers
-    public OrderByData()
-    {
-        Fields = new Dictionary<string, OrderByDirection>();
-    }
+    private Dictionary<string,OrderByDirection> Fields { get; } = new();
 
+    public bool Any() => Fields.Any();
+    
     public string? ToQueryParameter()
     {
         string? queryParameter = null;
