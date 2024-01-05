@@ -22,7 +22,7 @@ public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepo
         {
             var propertyName = StringManager.ToPascalCase(item.Name);
             var propertyType = GetPropertyType(item.DataType, item.IsRequired);
-            var property = propertyTemplate.Replace("@PropertyName", ToCamelCase(propertyName)).Replace("@PropertyType", propertyType);
+            var property = propertyTemplate.Replace("@PropertyName", propertyName).Replace("@PropertyType", propertyType);
 
             properties.AppendLine($"\t[JsonProperty( \"{item.Name}\")] ");
             properties.AppendLine($"\t{property}");
@@ -54,16 +54,5 @@ public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepo
         };
 
         return required ? type : type + "?";
-    }
-
-    private static string ToCamelCase(string value)
-    {
-        if (string.IsNullOrEmpty(value)) return value;
-        
-        string formattedValue = string.Empty;
-        value.Split(' ').ToList().ForEach(x => formattedValue += x.FirstCharToUpper());
-
-        return formattedValue;
-
     }
 }
