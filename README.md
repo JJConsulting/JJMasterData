@@ -58,9 +58,9 @@ See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles
 
 4. Open `JJMasterData.sln `file at your IDE
 
-5. Set the `JJMasterData.WebEntryPoint` as startup project
+5. Set the `WebEntryPoint` as startup project
 
-6. At `src/JJMasterData.Web` run at your terminal
+6. At `src/Web` run at your terminal
 ```bash
 npm i
 ```
