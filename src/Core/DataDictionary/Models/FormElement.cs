@@ -125,17 +125,16 @@ public class FormElement : Element
     {
         if (type == typeof(int) ||
             type == typeof(short) ||
-            type == typeof(int) ||
             type == typeof(long) ||
             type == typeof(ushort) ||
             type == typeof(uint) ||
-            type == typeof(ulong) ||
-            type == typeof(float))
+            type == typeof(ulong))
         {
             field.DataType = FieldType.Int;
         }
         else if (type == typeof(decimal) ||
-                 type == typeof(double))
+                 type == typeof(double) || 
+                 type == typeof(float))
         {
             field.DataType = FieldType.Float;
         }

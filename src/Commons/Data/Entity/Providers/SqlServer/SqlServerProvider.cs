@@ -284,6 +284,7 @@ public class SqlServerProvider(
             return FieldType.Int;
 
         if (databaseType.Equals("float") ||
+            databaseType.Equals("decimal") ||
             databaseType.Equals("numeric") ||
             databaseType.Equals("money") ||
             databaseType.Equals("smallmoney") ||
@@ -356,10 +357,10 @@ public class SqlServerProvider(
         };
 
         cmdPks.Parameters.Add(new DataAccessParameter("@table_name", tableName));
-        var dtPks = await DataAccess.GetDataTableAsync(cmdPks);
-        foreach (DataRow row in dtPks.Rows)
+        var primaryKeys = await DataAccess.GetDictionaryListAsync(cmdPks);
+        foreach (var row in primaryKeys)
         {
-            element.Fields[row["COLUMN_NAME"].ToString()].IsPk = true;
+            element.Fields[row["COLUMN_NAME"]?.ToString()].IsPk = true;
         }
 
         return element;

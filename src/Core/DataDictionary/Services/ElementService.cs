@@ -88,7 +88,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         return IsValid;
     }
 
-    public static string GetElementName(string tablename)
+    private static string GetElementName(string tablename)
     {
         string elementName;
         if (tablename.ToLower().StartsWith("tb_"))
@@ -97,12 +97,8 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
             elementName = tablename[2..];
         else
             elementName = tablename;
-
-        elementName = elementName.Replace('_', ' ');
-        elementName = elementName.FirstCharToUpper();
-        elementName = elementName.Replace(" ", "");
         
-        return elementName;
+        return StringManager.ToPascalCase(elementName);
     }
 
     #endregion
