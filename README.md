@@ -31,24 +31,65 @@ JJMasterData is an open-source .NET library to help you create dynamic CRUDs qui
 <br>
 
 ## Features
-- Pages generated at runtime 🔥
+- Components generated at runtime 🔥
 - Data exportation & importation ↔️
 - Database script generation ✍️
 - Plugins support by interfaces 🪄
-
+- Multiple forms using relationships⛓️
+  
 <br>
 
 ## Getting Started
 
 https://github.com/JJConsulting/JJMasterData/assets/28662273/9b874c9d-2a2f-4d3b-9e78-846db446def2
 
-You can paste the appsettings.json url from [here](https://raw.githubusercontent.com/JJConsulting/JJMasterData/main/jjmasterdata.json)
+1. Create an ASP.NET Core project (it can be Blazor, MVC, Razor Pages, whetever you like...)
+2. Install `JJMasterData.Web`
+```shell
+dotnet add package JJMasterData.Web
+```
+3. Configure your `IConfiguration` source with a connection string at `JJMasterData:ConnectionString` and a secret key at `JJMasterData:SecretKey`
+```json
+{
+  "JJMasterData": {
+    "DataDictionaryTableName": "MasterData",
+    "ConnectionString": "Server=localhost;Database=JJMasterData;Integrated Security=True;Trust Server Certificate=true",
+    "ReadProcedurePattern": "{tablename}Get",
+    "WriteProcedurePattern": "{tablename}Set",
+    "SecretKey": "ExampleSecretKey"
+  }
+}
+```
+3. At `Program.cs` add the following lines:
+```
+using JJMasterData.Web.Configuration;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddJJMasterDataWeb();
+
+///...
+
+var app = builder.Build();
+
+///...
+
+app.UseJJMasterDataWeb();
+app.MapJJMasterData();
+
+app.Run();
+```
+4. Create a `wwwroot` folder if your project is empty
+5. Run the project and visit `/en-US/DataDictionary/Element/Index` <br>
+<img width="960" alt="image" src="https://github.com/JJConsulting/JJMasterData/assets/52143624/d6208ef1-3206-4504-b0e8-4cdd1a874fe9">
+
+You can get the appsettings.json schema URL from [here](https://raw.githubusercontent.com/JJConsulting/JJMasterData/main/jjmasterdata.json)
 
 See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles/getting_started.html).
 
 <br>
 
-## Building from source 🧰
+### Building from source 🧰
 1. Install [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 2. Install [NodeJS](https://nodejs.org/en/download/)
@@ -57,21 +98,13 @@ See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles
 
 4. Open `JJMasterData.sln `file at your IDE
 
-5. Set the `JJMasterData.WebExample` as startup project
+5. Set the `WebEntryPoint` as startup project
 
-6. At `src/JJMasterData.Web` run at your terminal
+6. At `src/Web` run at your terminal
 ```bash
 npm i
 ```
-7. It will be necessary to add a database of your choice. You will need add a ConnectionString at your `IConfiguration` source.<br>
-![image](https://user-images.githubusercontent.com/100393691/203789109-ef71f492-3f90-4739-8c41-8a92890c72dc.png)
-
-8. Run the project
-
-9. This is the expected output <br>
-![image](https://user-images.githubusercontent.com/52143624/205990349-fc9c24d1-c9e6-4729-a334-4d0487222d29.png)
-
-
+7. Run the project
 ## Special Thanks
 
 #### Code contributors
