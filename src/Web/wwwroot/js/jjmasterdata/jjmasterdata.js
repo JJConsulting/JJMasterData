@@ -917,9 +917,9 @@ function applyDecimalPlaces(element) {
     var _a, _b, _c;
     if (element.getAttribute("type") == "number")
         return;
-    let decimalPlaces = (_a = element.getAttribute("jj-decimal-places")) !== null && _a !== void 0 ? _a : 2;
-    let decimalSeparator = (_b = element.getAttribute("jj-decimal-separator")) !== null && _b !== void 0 ? _b : '.';
-    let groupSeparator = (_c = element.getAttribute("jj-group-separator")) !== null && _c !== void 0 ? _c : ',';
+    const decimalPlaces = (_a = element.getAttribute("jj-decimal-places")) !== null && _a !== void 0 ? _a : 2;
+    const decimalSeparator = (_b = element.getAttribute("jj-decimal-separator")) !== null && _b !== void 0 ? _b : '.';
+    const groupSeparator = (_c = element.getAttribute("jj-group-separator")) !== null && _c !== void 0 ? _c : ',';
     new AutoNumeric(element, {
         decimalCharacter: decimalSeparator,
         digitGroupSeparator: groupSeparator,

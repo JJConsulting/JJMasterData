@@ -178,7 +178,7 @@ public class FieldController(FieldService fieldService, IControlFactory<JJSearch
         TempData.Put("field", field);
         TempData["error"] = ViewBag.Error;
         TempData["selected-tab"] = Request.Form["selected-tab"].ToString();
-        TempData["originalName"] = Request.Form["originalName"].ToString();
+        TempData["originalName"] = string.IsNullOrEmpty(Request.Form["originalName"].ToString()) ? field.Name : Request.Form["originalName"].ToString();
 
         return RedirectToAction("Index", new { elementName });
     }
