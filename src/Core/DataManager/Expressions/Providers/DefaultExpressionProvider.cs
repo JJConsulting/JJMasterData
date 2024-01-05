@@ -13,10 +13,12 @@ public class DefaultExpressionProvider : IBooleanExpressionProvider, IAsyncExpre
 {
     public string Prefix => "exp";
     public string Title => "Expression";
-    private static string EvaluateObject(string replacedExpression)
+    
+    private static readonly DataTable _expressionsDataTable = new();
+    
+    private static object EvaluateObject(string replacedExpression)
     {
-        using var dt = new DataTable();
-        var result = dt.Compute(replacedExpression, string.Empty).ToString();
+        var result = _expressionsDataTable.Compute(replacedExpression, string.Empty);
         return result!;
     }
 

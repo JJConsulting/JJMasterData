@@ -20,7 +20,7 @@ public class ClassGenerationService(IDataDictionaryRepository dataDictionaryRepo
 
         foreach (var item in formElement.Fields.ToList())
         {
-            var propertyName = StringManager.ToParamCase(item.Name);
+            var propertyName = StringManager.ToPascalCase(item.Name);
             var propertyType = GetPropertyType(item.DataType, item.IsRequired);
             var property = propertyTemplate.Replace("@PropertyName", ToCamelCase(propertyName)).Replace("@PropertyType", propertyType);
 

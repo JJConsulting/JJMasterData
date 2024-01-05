@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using JJMasterData.Commons.Localization;
 using Microsoft.Extensions.Localization;
 
@@ -584,19 +586,23 @@ public static class StringManager
     
     public static string ToPascalCase(string input)
     {
-        if (string.IsNullOrEmpty(input))
-        {
-            return input;
-        }
+        // Find word parts using the following rules:
+        // 1. all lowercase starting at the beginning is a word
+        // 2. all caps is a word.
+        // 3. first letter caps, followed by all lowercase is a word
+        // 4. the entire string must decompose into words according to 1,2,3.
+        // Note that 2&3 together ensure MPSUser is parsed as "MPS" + "User".
 
-        var textInfo = CultureInfo.CurrentCulture.TextInfo;
-        var words = input.Split(new[] { ' ', '_', '-' }, StringSplitOptions.RemoveEmptyEntries);
+        var m = Regex.Match(input, "^(?<word>^[a-z]+|[A-Z]+|[A-Z][a-z]+)+$");
+        var g = m.Groups["word"];
 
-        for (var i = 0; i < words.Length; i++)
-        {
-            words[i] = textInfo.ToTitleCase(words[i].ToLower());
-        }
-
-        return string.Join("", words);
+        // Take each word and convert individually to TitleCase
+        // to generate the final output.  Note the use of ToLower
+        // before ToTitleCase because all caps is treated as an abbreviation.
+        var t = Thread.CurrentThread.CurrentCulture.TextInfo;
+        var sb = new StringBuilder();
+        foreach (var c in g.Captures.Cast<Capture>())
+            sb.Append(t.ToTitleCase(c.Value.ToLower()));
+        return sb.ToString();
     }
 }
