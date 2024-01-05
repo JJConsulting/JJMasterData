@@ -25,7 +25,7 @@
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label asp-for="SubmitOnSave" class="@BootstrapHelper.Label">@StringLocalizer["Submit On Save"]</label>
-                    <tooltip title="If true, the entire page will be reloaded after saving the form, else, a AJAX request is made to reload just the current form. If inside a modal, this option will be ignored."/>
+                    <tooltip title="@StringLocalizer["If true, the entire page will be reloaded after saving the form, else, a AJAX request is made to reload just the current form. If inside a modal, this option will be ignored."]"/>
                     <checkbox for="SubmitOnSave" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
             </div>

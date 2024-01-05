@@ -40,16 +40,16 @@ public class FormElementDataItem
     public FirstOptionMode FirstOption { get; set; } = FirstOptionMode.None;
 
     /// <summary>
-    /// Substituir o valor do campo com a descrição da combo ao exibir a grid (Default = true)
+    /// Replace the field value with the description or description/icon when displaying the grid (Default = true)
     /// </summary>
     /// <remarks>
-    /// Se utilizar filtro de campos na query ({CAMPO}), o texto pode ser exibido incorretamente na grid.
-    /// O sistema faz cache dos dados da combo do primeiro registro exibido na lista.<br></br>
-    /// Nesse caso por questão de desempenho recomendamos desabilitar essa opção e 
-    /// criar um novo campo do tipo VIEWONLY para tratar o resultado na procedure
+    /// If you use a field filter in the query ({FIELD}), the text may be displayed incorrectly in the grid.
+    /// The system caches the combo data from the first record displayed in the list.<br></br>
+    /// In this case, for performance reasons, we recommend disabling this option and
+    /// create a new field of type VIEWONLY to handle the result in the procedure
     /// </remarks>
     [JsonProperty("replacetextongrid")]
-    [Display(Name="Replace Text On Grid")]
+    [Display(Name="Replace On Grid")]
     public bool ReplaceTextOnGrid { get; set; } = true;
 
     /// <remarks>

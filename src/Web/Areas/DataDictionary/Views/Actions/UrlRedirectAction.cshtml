@@ -32,13 +32,12 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-1">
                     <label asp-for="IsModal" class="@BootstrapHelper.Label">@StringLocalizer["Is Modal"]</label>
-                    <tooltip/> 
                     <checkbox for="IsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-8">
                     <label class="@BootstrapHelper.Label" >@StringLocalizer["Modal Title"]</label>
-                    <tooltip title="Support runtime values, for example: {OrderId}"/>
+                    <tooltip title="@StringLocalizer["Supports runtime values. Example: Order {OrderId}"]"/>
                     @Html.TextBoxFor(model => model.ModalTitle, new { @class = "form-control" })
                 </div>
                 
@@ -47,7 +46,7 @@
                     <label asp-for="IsIframe" class="@BootstrapHelper.Label">
                         @StringLocalizer["Iframe"]
                     </label>
-                    <tooltip title="If the redirect is in a modal will render a iframe in the body (not recommended in most cases)"/>
+                    <tooltip title="@StringLocalizer["If the redirect is in a modal will render a iframe in the body (not recommended in most cases)."]"/>
                     <checkbox for="IsIframe" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
 

@@ -27,7 +27,9 @@ public class FormElementField : ElementField
     public const string MultipleDatesAttribute = "multiple-dates";
     public const string CultureInfoAttribute = "culture-info";
     
-    [JsonProperty("component")] public FormComponent Component { get; set; }
+    [JsonProperty("component")]
+    [Display(Name = "Component")]
+    public FormComponent Component { get; set; }
 
     /// <remarks>
     /// [See expressions](../articles/expressions.md)
@@ -76,7 +78,7 @@ public class FormElementField : ElementField
     /// Class name (CSS) to be appended in object group rendering
     /// </summary>
     [JsonProperty("cssClass")]
-    [Display(Name = "Css Class")]
+    [Display(Name = "CSS Class")]
     public string? CssClass { get; set; }
 
     /// <summary>

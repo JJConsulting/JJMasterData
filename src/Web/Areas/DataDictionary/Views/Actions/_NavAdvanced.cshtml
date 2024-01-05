@@ -9,21 +9,21 @@
     @if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsUserCreated))
     {
         <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-            <expression for="VisibleExpression" icon="IconType.Eye" tooltip="Boolean expression to show the action. Check expressions at the docs for more information"/>
+            <expression for="VisibleExpression" icon="IconType.Eye" tooltip="@StringLocalizer["Boolean expression to show the action. See the docs for more information."]"/>
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-            <expression for="EnableExpression" icon="IconType.Pencil" tooltip="Boolean expression to enable the action. Check expressions at the docs for more information"/>
+            <expression for="EnableExpression" icon="IconType.Pencil" tooltip="@StringLocalizer["Boolean expression to enable the action. See the docs for more information."]"/>
         </div>
     }
 </div>
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         <label class="@BootstrapHelper.Label" asp-for="ConfirmationMessage">@StringLocalizer["Confirmation Message"]</label>
-        <tooltip title="If not null or empty, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}"/>
+        <tooltip title="@StringLocalizer["If not null or empty, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}"]"/>
         @Html.TextBoxFor(model => model.ConfirmationMessage, new { @class = "form-control", placeholder = StringLocalizer["Are you sure you want to execute this action?"] })
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
-        <label asp-for="CssClass" class="@BootstrapHelper.Label">@StringLocalizer["Css Class"]</label>
+        <label asp-for="CssClass" class="@BootstrapHelper.Label">@StringLocalizer["CSS Class"]</label>
         @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
     </div>
 </div>
@@ -53,14 +53,14 @@
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label asp-for="DividerLine" class="@BootstrapHelper.Label">@StringLocalizer["Divider Line"]</label>
-        <tooltip title="Show a separator before this action"/>
+        <tooltip title="@StringLocalizer["Show a separator before this action."]"/>
         <checkbox for="DividerLine" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
     @if (ViewBag.ContextAction is ActionSource.FormToolbar)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-2">
             <label asp-for="Location" class="@BootstrapHelper.Label">@StringLocalizer["Location"]</label>
-            <tooltip title="If not in a relationship, Panel is considered the same as Bottom."/>
+            <tooltip title="@StringLocalizer["If not in a relationship, Panel is considered the same as Bottom."]"/>
             <div class="input-append">
                 <select asp-for="Location" class="form-select" asp-items="Html.GetEnumSelectList<FormToolbarActionLocation>()"></select>
             </div>

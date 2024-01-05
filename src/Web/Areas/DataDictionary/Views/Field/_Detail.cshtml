@@ -84,7 +84,7 @@
 
                 <div class="@BootstrapHelper.FormGroup col-sm-5 required">
                     <label class="@BootstrapHelper.Label " asp-for="Name"></label>
-                    <tooltip title="Name of the field at your data source."/>
+                    <tooltip title="@StringLocalizer["Name of the field at the database."]"/>
                     @if (isCustomizedField)
                     {
                         <input asp-for="Name" maxlength="64" class="form-control" readonly="readonly"/>
@@ -97,7 +97,7 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-7">
                     <label class="@BootstrapHelper.Label " asp-for="Label"></label>
-                    <tooltip title="Name of the field displayed at the form."/>
+                    <tooltip title="@StringLocalizer["Name of the field displayed at the form."]"/>
                         
                     @Html.TextBoxFor(model => model.Label, new { @class = "form-control" })
                 </div>
@@ -111,7 +111,7 @@
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " asp-for="DataBehavior"></label>
 
-                    <tooltip title="Field behavior in relation to the database"/>
+                    <tooltip title="@StringLocalizer["Field behavior in relation to the database."]"/>
 
                     <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
                 </div>
@@ -127,7 +127,7 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2">
                     <label class="@BootstrapHelper.Label " asp-for="Size"></label>
-                    <tooltip title="Field size. At SQL Server use -1 to use the MAX keyword."/>
+                    <tooltip title="@StringLocalizer["Field size. Use -1 to use the MAX keyword."]"/>
                     @Html.TextBoxFor(model => model.Size, new { @class = "form-control" })
                 </div>
                 <div class="col-sm-3">
@@ -152,7 +152,7 @@
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
                     <label class="@BootstrapHelper.Label " asp-for="HelpDescription">
                     </label>
-                    <tooltip title="The help text will be displayed like this on the form."/>
+                    <tooltip title="@StringLocalizer["The help text will be displayed like this on the form."]"/>
                     @Html.TextBoxFor(model => model.HelpDescription, new { @class = "form-control" })
                 </div>
             </div>
@@ -160,14 +160,14 @@
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
                     <label class="@BootstrapHelper.Label " asp-for="CssClass"></label>
-                    <tooltip title="Class name (CSS) one to be assigned to object group rendering"/>
+                    <tooltip title="@StringLocalizer["Class name (CSS) to be assigned to object group rendering."]"/>
 
                     @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
                 </div>
 
                 <div class="@BootstrapHelper.FormGroup col-sm-2">
                     <label class="@BootstrapHelper.Label " asp-for="LineGroup"></label>
-                    <tooltip title="Row number at the form, used to break the line in the form flex layout."/>
+                    <tooltip title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
 
                     @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
                 </div>
@@ -180,7 +180,7 @@
                 {
                     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                         <label class="@BootstrapHelper.Label " asp-for="ValidateRequest"></label>
-                        <tooltip title="Validates possibly dangerous values on request on .NET Framework 4.8"/>
+                        <tooltip title="@StringLocalizer["Validates possibly dangerous values on request on .NET Framework 4.8."]"/>
                         <checkbox for="ValidateRequest" switch="true"/>
                     </div>
                 }
@@ -202,7 +202,7 @@
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
                     <label class="@BootstrapHelper.Label " asp-for="AutoPostBack"></label>
 
-                    <tooltip title="When changing the content, it reloads all form fields"/>
+                    <tooltip title="@StringLocalizer["When changing the value, it performs a POST request to the server and reloads all form fields."]"/>
 
                     <checkbox for="AutoPostBack" switch="true"/>
                 </div>
@@ -267,16 +267,16 @@
         <div id="div-advanced" class="tab-pane fade @Active("#div-advanced")">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <expression for="DefaultValue" icon="IconType.Check" tooltip="Expression for a default value. Check expressions at the docs for more information."/>
+                    <expression for="DefaultValue" icon="IconType.Check" tooltip="@StringLocalizer["Expression for a default value. See the docs for more information."]"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <expression for="VisibleExpression" icon="IconType.Eye" tooltip="Boolean expression to show the field. Check expressions at the docs for more information."/>
+                    <expression for="VisibleExpression" icon="IconType.Eye" tooltip="@StringLocalizer["Boolean expression to show the field. See the docs for more information."]"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-                    <expression for="EnableExpression" icon="IconType.Pencil" tooltip="Boolean expression to enable the field. Check expressions at the docs for more information."/>
+                    <expression for="EnableExpression" icon="IconType.Pencil" tooltip="@StringLocalizer["Boolean expression to enable the field. See the docs for more information."]"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <expression for="TriggerExpression" icon="IconType.Bolt" tooltip="Expression triggered whenever a field triggers a POST to the server. Check expressions at the docs for more information."/>
+                    <expression for="TriggerExpression" icon="IconType.Bolt" tooltip="@StringLocalizer["Expression triggered whenever a field performs a POST to the server. See the documentation for more information."]"/>
                 </div>
             </div>
         </div>
@@ -286,8 +286,8 @@
         <div class="col-sm-12">
             @if (isCustomizedField)
             {
-                <alert title="@StringLocalizer["CustomizedField"]"
-                       message="@StringLocalizer["CustomizedFieldMessage"]" 
+                <alert title="@StringLocalizer["Customized Field"]"
+                       message="@StringLocalizer["This field is inside an event handler and its behavior can be modified at runtime. You also cannot delete or modify your name."]" 
                        icon="IconType.SolidCircleInfo" 
                        color="Info"/>
             }

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace JJMasterData.Web.TagHelpers;
@@ -5,7 +6,9 @@ namespace JJMasterData.Web.TagHelpers;
 
 public class TooltipTagHelper : TagHelper
 {
-    [HtmlAttributeName("title")] public string Title { get; set; } = null!;
+    [HtmlAttributeName("title")] 
+    [LocalizationRequired]
+    public string Title { get; set; } = null!;
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {

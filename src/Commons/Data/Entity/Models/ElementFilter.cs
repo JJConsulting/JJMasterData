@@ -20,6 +20,7 @@ public class ElementFilter(FilterMode type)
     /// Required filter
     /// </summary>
     [JsonProperty("isrequired")]
+    [Display(Name = "Required")]
     public bool IsRequired { get; set; }
 
     public ElementFilter() : this(FilterMode.None)

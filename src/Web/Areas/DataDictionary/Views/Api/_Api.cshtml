@@ -35,7 +35,7 @@ function checkAllToggle(checkAllCheckbox) {
             @StringLocalizer["Verb"]
         </th>
         <th>
-            @StringLocalizer["Verb Description"]
+            @StringLocalizer["Description"]
         </th>
     </tr>
     </thead>
@@ -115,7 +115,7 @@ function checkAllToggle(checkAllCheckbox) {
     <div class="row">
         <div class="@BootstrapHelper.FormGroup col-sm-5">
             <label class="@BootstrapHelper.Label " asp-for="ApiOptions.ApplyUserIdOn"></label>
-            <tooltip title="Apply the current logged user in this field."/> 
+            <tooltip title="@StringLocalizer["Apply the current logged user in this field."]"/> 
             @Html.DropDownListFor(model => Model.ApiOptions.ApplyUserIdOn, new SelectList(Model.ElementFields, "Name", "Name"), StringLocalizer["(No Apply)"], new { @class = "form-control form-select" })
         </div>
         <div class="@BootstrapHelper.FormGroup col-sm-2">

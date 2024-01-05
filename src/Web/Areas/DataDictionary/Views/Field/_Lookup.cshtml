@@ -19,7 +19,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
         <label class="@BootstrapHelper.Label " asp-for="DataItem!.ReplaceTextOnGrid"></label>
-        <tooltip title="Replace the field value with the description in the grid"/>
+        <tooltip title="@StringLocalizer["Execute the data item in every row, replacing the id at the grid."]"/>
         <checkbox for="DataItem!.ReplaceTextOnGrid" switch="true"/>
     </div>
 

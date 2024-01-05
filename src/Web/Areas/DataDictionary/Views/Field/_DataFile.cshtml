@@ -44,11 +44,11 @@
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") data-placement="right" title="@StringLocalizer["Folder Path"]">@StringLocalizer["FolderPath"]</label>
+        <label class="@BootstrapHelper.Label" asp-for="DataFile!.FolderPath" ></label>
         @Html.TextBoxFor(model => model.DataFile!.FolderPath, new { maxlength = "400", @class = "form-control" })
         
         <span class="help-block">
-            @StringLocalizer["You can use for example: "] {app.path}/DataDictionaries/AnotherFolder
+            @StringLocalizer["You can use for example:"] {app.path}/Files/ExampleFolder
         </span>
     </div>
 
@@ -59,26 +59,24 @@
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        @Html.LabelFor(m=>m.DataFile!.MaxFileSize,@StringLocalizer["Max File Size (MB)"], new {@class = BootstrapHelper.Label})
+        @Html.LabelFor(m=>m.DataFile!.MaxFileSize, new {@class = BootstrapHelper.Label})
         <slider configure="ConfigureSlider"/>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " asp-for="DataFile!.ViewGallery">@StringLocalizer["View Gallery"]</label>
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.ViewGallery"></label>
         <checkbox for="DataFile!.ViewGallery" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " asp-for="DataFile!.DragDrop" >@StringLocalizer["DragDrop"]</label>
-        <tooltip title="Allow dragging files"/>
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.DragDrop"></label>
         <checkbox for="DataFile!.DragDrop" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " asp-for="DataFile!.MultipleFile" >@StringLocalizer["MultipleFile"]</label>
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.MultipleFile" ></label>
         <checkbox for="DataFile!.MultipleFile" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-2">
-        <label class="@BootstrapHelper.Label " asp-for="DataFile!.ExportAsLink">@StringLocalizer["ExportAsLink"]</label>
-        <tooltip title="Export file name with download link"/>
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.ExportAsLink"></label>
         <checkbox for="DataFile!.ExportAsLink" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
 

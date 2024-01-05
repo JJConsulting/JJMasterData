@@ -7,7 +7,7 @@
 <div class="row">
     <div class="col-sm-4">
         <label class="@BootstrapHelper.Label"  asp-for="Form.FormCols"></label>
-        <tooltip title="Number of columns where fields will be rendered by default"/>
+        <tooltip title="@StringLocalizer["Number of columns where fields will be rendered by default."]"/>
         
         @Html.DropDownListFor(model => Model.Form.FormCols, new[]
         {
@@ -27,13 +27,12 @@
     
     <div class="col-sm-4">
         <label class="@BootstrapHelper.Label" asp-for="Form.ShowViewModeAsStatic"></label>
-        <tooltip title="When the panel is in PageState.View show only the values without the components."/>
+        <tooltip title="@StringLocalizer["When the panel is in PageState.View show only the values without the components."]"/>
         <checkbox for="Form.ShowViewModeAsStatic" switch="true"/>
     </div>
     
     <div class="@BootstrapHelper.FormGroup col-sm-4 required">
         <label class="@BootstrapHelper.Label " asp-for="Form.EnterKey"></label>
-        <tooltip title="Behavior of the Enter key on the form"></tooltip>
         <select asp-for="Form.EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
     </div>
 </div>

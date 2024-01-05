@@ -44,7 +44,7 @@ public class FormElementPanel
     public string EnableExpression { get; set; } = "val:1";
 
     [JsonProperty("cssClass")]
-    [Display(Name = "Css Class")]
+    [Display(Name = "CSS Class")]
     public string? CssClass { get; set; }
 
     public bool HasTitle()

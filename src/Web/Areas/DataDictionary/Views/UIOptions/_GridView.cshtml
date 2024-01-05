@@ -1,6 +1,6 @@
 @using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.FormElementOptions
-
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-4">
@@ -15,25 +15,24 @@
 
         <div class="col-sm-4">
             <label class="@BootstrapHelper.Label" asp-for="Grid.EnableMultiSelect"></label>
-            <tooltip title="Allows you to select multiple lines in the grid"/>
+            <tooltip title="@StringLocalizer["Allows you to select multiple lines in the grid."]"/>
             <checkbox for="Grid.EnableMultiSelect" switch="true"/>
         </div>
 
         <div class="col-sm-4">
             <label class="@BootstrapHelper.Label" asp-for="Grid.MaintainValuesOnLoad"></label>
-            <tooltip title="Maintains grid filters, order, and pagination"/>
+            <tooltip title="@StringLocalizer["Maintains grid filters, order and pagination."]"/>
             <checkbox for="Grid.MaintainValuesOnLoad" switch="true"/>
         </div>
 
         <div class="col-sm-4">
             <label class="@BootstrapHelper.Label" asp-for="Grid.ShowRowHover"></label>
-            <tooltip title="Change the line color on mouseover"/>
+            <tooltip title="@StringLocalizer["Change the line color on mouseover."]"/>
             <checkbox for="Grid.ShowRowHover" switch="true"/>
         </div>
 
         <div class="col-sm-4">
             <label class="@BootstrapHelper.Label" asp-for="Grid.ShowRowStriped"></label>
-            <tooltip title="Display zebra columns"/>
             <checkbox for="Grid.ShowRowStriped" switch="true"/>
         </div>
 
@@ -70,13 +69,13 @@
         </div>
 
         <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.TotalPaggingButton" title="Total buttons on paging"></label>
+            <label class="@BootstrapHelper.Label" asp-for="Grid.TotalPaggingButton"></label>
             <input asp-for="Grid.TotalPaggingButton" class="form-control">
         </div>
 
         <div class="col-sm-4">
             <label class="@BootstrapHelper.Label" asp-for="Grid.EmptyDataText"></label>
-            <tooltip title="Text shown when there are no records to be applied"/>
+            <tooltip title="@StringLocalizer["Text shown when there are no records."]"/>
             <input asp-for="Grid.EmptyDataText" class="form-control"/>
         </div>
     </div>

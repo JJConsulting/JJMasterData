@@ -285,8 +285,8 @@
     <value>Permite que você exporte o campo</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Allows you to select multiple lines in the grid" xml:space="preserve">
-    <value>Permite selecionar multiplas linhas na Grid</value>
+  <data name="Allows you to select multiple lines in the grid." xml:space="preserve">
+    <value>Permite selecionar multiplas linhas na grid.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Allows you to upload multiple files" xml:space="preserve">
@@ -409,10 +409,6 @@
     <value>Cancelar</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Change a line color on mouseover" xml:space="preserve">
-    <value>Alterar a cor da linha ao passar o mouse</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Change History" xml:space="preserve">
     <value>Histórico de Alterações</value>
     <comment>JJMasterDataCore</comment>
@@ -437,11 +433,7 @@
     <value>Classe</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Class name (CSS) one to be assigned to object group rendering" xml:space="preserve">
-    <value>Nome da classe (CSS) a ser acrescentado na renderização do grupo do objeto</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="Class name (CSS) to be added when rendering the object group" xml:space="preserve">
+  <data name="Class name (CSS) to be assigned to object group rendering." xml:space="preserve">
     <value>Nome da classe (CSS) a ser acrescentado na renderização do grupo do objeto</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -555,10 +547,6 @@
   </data>
   <data name="Copy to Clipboard" xml:space="preserve">
     <value>Copiar para area de transferência</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="CssClass" xml:space="preserve">
-    <value>Classe CSS</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Culture Code" xml:space="preserve">
@@ -1061,7 +1049,7 @@
     <value>Campo</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="Field behavior in relation to the database" xml:space="preserve">
+  <data name="Field behavior in relation to the database." xml:space="preserve">
     <value>Comportamento do campo em relação ao banco de dados</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -1706,7 +1694,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Label" xml:space="preserve">
-    <value>Rótulo</value>
+    <value>Label</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Landscape" xml:space="preserve">
@@ -1745,10 +1733,6 @@
     <value>Linha</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="LineGroup" xml:space="preserve">
-    <value>Grupo de Linha</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Lines" xml:space="preserve">
     <value>linhas</value>
     <comment>JJMasterDataWeb</comment>
@@ -1765,8 +1749,8 @@
     <value>Log</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Maintains grid filters, order and pagination" xml:space="preserve">
-    <value>Mantem os filtros, ordem e paginação da grid</value>
+  <data name="Maintains grid filters, order and pagination." xml:space="preserve">
+    <value>Manteé os filtros, ordem e paginação da grid.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="MaintainValuesOnLoad" xml:space="preserve">
@@ -1937,14 +1921,6 @@
     <value>Nenhum registro localizado</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="No relationships found" xml:space="preserve">
-    <value>Nenhuma relação encontrada</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="No relationship registered." xml:space="preserve">
-    <value>Nenhum relacionamento cadastrado.</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Not order" xml:space="preserve">
     <value>Não Ordenar</value>
     <comment>JJMasterDataCore</comment>
@@ -1953,7 +1929,7 @@
     <value>Número máximo de registros excedido em {0}, contate o administrador.</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="Number of columns where fields will be rendered by default" xml:space="preserve">
+  <data name="Number of columns where fields will be rendered by default." xml:space="preserve">
     <value>Número de colunas onde os campos serão renderizados por padrão</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -2377,10 +2353,6 @@
     <value>Retornar duas colunas na query Id, Descrição</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Row counter, used to break the line in the form (row class)" xml:space="preserve">
-    <value>Contador da linha, utilizado para quebrar a linha no form (classe row)</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Row:" xml:space="preserve">
     <value>Linha:</value>
     <comment>JJMasterDataCore</comment>
@@ -2645,10 +2617,6 @@
     <value>Texto</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Text applied when there are no records to be applied" xml:space="preserve">
-    <value>Texto aplicado quando não há registros para ser aplicado</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="The field [NumberOfDecimalPlaces] cannot be defined with the type" xml:space="preserve">
     <value>Campo [NumberOfDecimalPlaces] não pode ser configurado com o tipo </value>
     <comment>JJMasterDataWeb</comment>
@@ -2666,7 +2634,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="The help text will be displayed like this on the form." xml:space="preserve">
-    <value>Texto de ajuda, será exibido dessa maneira no formulário.</value>
+    <value>O texto de ajuda será exibido dessa maneira no formulário.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="The maximum limit of this configuration is determined by the configuration performed on the application server." xml:space="preserve">
@@ -2961,10 +2929,6 @@
     <value>Validar Requisição</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Validates possibly dangerous values on request" xml:space="preserve">
-    <value>Valida valores possívelmente perigosos no request</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Value" xml:space="preserve">
     <value>Valor</value>
     <comment>JJMasterDataWeb</comment>
@@ -3041,8 +3005,8 @@
     <value>O que você pode fazer</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="When changing the content, it reloads all form fields" xml:space="preserve">
-    <value>Ao alterar o conteúdo recarrega todos os campos do formulário</value>
+  <data name="When changing the value, it performs a POST request to the server and reloads all form fields." xml:space="preserve">
+    <value>Ao alterar o valor, realiza uma requisição POST e recarrega todos os campos do formulário.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="When enabling this property when exporting files to excel or pdf a link will be added" xml:space="preserve">
@@ -3443,11 +3407,11 @@
   <data name="Jump to page..." xml:space="preserve">
     <value>Pular para página...</value>
   </data>
-  <data name="CustomizedFieldMessage" xml:space="preserve">
-    <value>Este campo está dentro de um manipulador de eventos e seu comportamento pode ser modificado em tempo de execução. Você também não pode excluir ou modificar seu nome.</value>
-  </data>
-  <data name="CustomizedField" xml:space="preserve">
+  <data name="Customized Field" xml:space="preserve">
     <value>Campo customizado</value>
+  </data>
+  <data name="This field is inside an event handler and its behavior can be modified at runtime. You also cannot delete or modify your name." xml:space="preserve">
+    <value>Este campo está dentro de um manipulador de eventos e seu comportamento pode ser modificado em tempo de execução. Você também não pode excluir ou modificar seu nome.</value>
   </data>
   <data name="1. Text" xml:space="preserve">
     <value>1. Texto</value>
@@ -3532,5 +3496,221 @@
   </data>
   <data name="Render" xml:space="preserve">
     <value>Renderizar</value>
+  </data>
+  <data name="Last Modified" xml:space="preserve">
+    <value>Última Modificação</value>
+  </data>
+  <data name="Internationalization" xml:space="preserve">
+    <value>Internacionalização</value>
+  </data>
+  <data name="If not null or empty, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}" xml:space="preserve">
+    <value>Se vazio ou nulo, mostra uma mensagem de confirmação antes de executar a ação. Suporta valores do runtime, por exemplo: {PedidoId}</value>
+  </data>
+  <data name="Supports runtime values. Example: Order {OrderId}" xml:space="preserve">
+    <value>Suporta valores do runtime. Exemplo: Pedido {PedidoId}</value>
+  </data>
+  <data name="Supports runtime values. Example: {CustomerName}" xml:space="preserve">
+    <value>Suporta valores do runtime. Exemplo: {ClienteNome}</value>
+  </data>
+  <data name="Only relationships will be shown here, because you need to map the foreign keys to be used at your SET procedure." xml:space="preserve">
+    <value>Apenas relacionamentos são mostrados aqui, pois você deve mapear suas chaves estrangeiras na sua procedure de SET.</value>
+  </data>
+  <data name="Trigger the action when the value of the field is changed." xml:space="preserve">
+    <value>Gatilha a ação quando o valor do campo é alterado.</value>
+  </data>
+  <data name="If true, the entire page will be reloaded after saving the form, else, a AJAX request is made to reload just the current form. If inside a modal, this option will be ignored." xml:space="preserve">
+    <value>Se verdadeiro, a página inteira será recarregada após salvar o form, senão, uma requisição AJAX será feita para recarregar apenas o formulário. Se dentro de um modal, essa opção será ignorada.</value>
+  </data>
+  <data name="If not in a relationship, Panel is considered the same as Bottom." xml:space="preserve">
+    <value>Se não estiver em um relacionamento, Panel é considerado o mesmo que Bottom.</value>
+  </data>
+  <data name="Show a separator before this action." xml:space="preserve">
+    <value>Mostrar um separador antes desta ação.</value>
+  </data>
+  <data name="Boolean expression to enable the action. See the docs for more information." xml:space="preserve">
+    <value>Expressão booleana para habilitar a ação. Verifique a documentação para mais informações.</value>
+  </data>
+  <data name="Boolean expression to show the action. See the docs for more information." xml:space="preserve">
+    <value>Expressão booleana para mostrar a ação. Verifique a documentação para mais informações.</value>
+  </data>
+  <data name="Expression for a default value. See the docs for more information." xml:space="preserve">
+    <value>Expressão para um valor padrão. Verifique a documentação para mais informações.</value>
+  </data>
+  <data name="Boolean expression to show the field. See the docs for more information." xml:space="preserve">
+    <value>Expressão booleana para mostrar o campo. Verifique a documentação para mais informações.</value>
+  </data>
+  <data name="Boolean expression to enable the field. See the docs for more information." xml:space="preserve">
+    <value>Expressão booleana para habilitar o campo. Verifique a documentação para mais informações.</value>
+  </data>
+  <data name="Expression triggered whenever a field performs a POST to the server. See the documentation for more information." xml:space="preserve">
+    <value>Expressão ativada sempre que um campo realiza um POST para o servidor. Verifique a documentação para mais informações.</value>
+  </data>
+  <data name="Row number at the form, used to break the line in the form flex layout." xml:space="preserve">
+    <value>Número da linha no formulário, usado para quebrar a linha no layout.</value>
+  </data>
+  <data name="Apply the current logged user in this field." xml:space="preserve">
+    <value>Aplicar o usuário logado neste campo.</value>
+  </data>
+  <data name="No relationships found." xml:space="preserve">
+    <value>Nenhum relacionamento encontrado.</value>
+  </data>
+  <data name="Elements" xml:space="preserve">
+    <value>Elementos</value>
+  </data>
+  <data name="Filter Mode" xml:space="preserve">
+    <value>Modo do Filtro</value>
+  </data>
+  <data name="Enable Exportation " xml:space="preserve">
+    <value>Habilitar Exportação</value>
+  </data>
+  <data name="Line Group" xml:space="preserve">
+    <value>Group de Linha</value>
+  </data>
+  <data name="Is Modal" xml:space="preserve">
+    <value>É Modal</value>
+  </data>
+  <data name="CSS Class" xml:space="preserve">
+    <value>Classe CSS</value>
+  </data>
+  <data name="If the redirect is in a modal will render a iframe in the body (not recommended in most cases)." xml:space="preserve">
+    <value>Se o redirect for dentro de um modal, utilizar um iframe no body (não recomendado na maioria dos casos).</value>
+  </data>
+  <data name="Developer only information about the element." xml:space="preserve">
+    <value>Informação apenas para o desenvolvedor sobre o elemento.</value>
+  </data>
+  <data name="Enable Write Procedure" xml:space="preserve">
+    <value>Habilitar Procedure de Escrita</value>
+  </data>
+  <data name="Enable Read Procedure" xml:space="preserve">
+    <value>Habilitar Procedure de Leitura</value>
+  </data>
+  <data name="No indexes found." xml:space="preserve">
+    <value>Nenhum índice foi encontrado.</value>
+  </data>
+  <data name="Show View Mode as Static" xml:space="preserve">
+    <value>Mostrar Modo de Visualização como Estático</value>
+  </data>
+  <data name="Use Vertical Layout " xml:space="preserve">
+    <value>Usar Layout Vertical</value>
+  </data>
+  <data name="Use Vertical Layout At Filter" xml:space="preserve">
+      <value>Usar Layout Vertical No Filtro</value>
+  </data>
+  <data name="Empty Data Text" xml:space="preserve">
+    <value>Texto para dados vazios</value>
+  </data>
+  <data name="Text shown when there are no records." xml:space="preserve">
+    <value>Texto mostrado para quando não existem registros.</value>
+  </data>
+  <data name="Enter Key Behavior" xml:space="preserve">
+    <value>Comportamento da Tecla Enter</value>
+  </data>
+  <data name="Unique identifier of the element." xml:space="preserve">
+    <value>Identificador único do elemento.</value>
+  </data>
+  <data name="Table where the element data is stored." xml:space="preserve">
+    <value>Tabela onde os dados do elemento são armazenados.</value>
+  </data>
+  <data name="Allow Multiple Files" xml:space="preserve">
+    <value>Permitir múltiplos arquivos</value>
+  </data>
+  <data name="Export as Link" xml:space="preserve">
+    <value>Exportar como Link</value>
+  </data>
+  <data name="Show Files in Gallery" xml:space="preserve">
+    <value>Mostrar Arquivos em Galeria</value>
+  </data>
+  <data name="Max File Size (MB)" xml:space="preserve">
+    <value>Tamanho Máximo do Arquivo (MB)</value>
+  </data>
+  <data name="Folder Path" xml:space="preserve">
+    <value>Caminho do Arquivo</value>
+  </data>
+  <data name="You can use for example:" xml:space="preserve">
+    <value>Você pode usar por exemplo:</value>
+  </data>
+  <data name="Execute Query On Grid" xml:space="preserve">
+    <value>Executar Query na Grid</value>
+  </data>
+  <data name="Execute the DataItem in every row, replacing the id at the grid." xml:space="preserve">
+    <value>Executa o DataItem em todas as linhas, substituindo o id na grid.</value>
+  </data>
+  <data name="Replace On Grid" xml:space="preserve">
+    <value>Substituir na Grid</value>
+  </data>
+  <data name="Name of the field at the database." xml:space="preserve">
+    <value>Nome do campo no banco de dados.</value>
+  </data>
+  <data name="Name of the field displayed at the form." xml:space="preserve">
+    <value>Nome do campo exibido no formulário.</value>
+  </data>
+  <data name="Change the line color on mouseover." xml:space="preserve">
+    <value>Mudar a cor da linha no hover do mouse.</value>
+  </data>
+  <data name="Show Icon" xml:space="preserve">
+    <value>Mostrar Ícone</value>
+  </data>
+  <data name="Enable Multi Select" xml:space="preserve">
+    <value>Habilitar multiseleção</value>
+  </data>
+  <data name="Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table." xml:space="preserve">
+    <value>Cuidado ao utilizar essa opção! Você provavelmente deve utilizar ela para campos de apenas escrita ou guardar os valores em outra tabela.</value>
+  </data>
+  <data name="When the panel is in PageState.View show only the values without the components." xml:space="preserve">
+    <value>Quando o painel está no modo visualuização, mostra apenas os valores sem os componentes.</value>
+  </data>
+  <data name="Validates possibly dangerous values on request on .NET Framework 4.8." xml:space="preserve">
+    <value>Valida valores potencialmente perigosos na requisição no .NET Framework 4.8</value>
+  </data>
+  <data name="Field size. Use -1 to use the MAX keyword." xml:space="preserve">
+    <value>Tamanho do campo. Utilize -1 para utilizar a keyword MAX.</value>
+  </data>
+  <data name="Default" xml:space="preserve">
+    <value>Padrão</value>
+  </data>
+  <data name="Next page" xml:space="preserve">
+    <value>Próxima página</value>
+  </data>
+  <data name="Previous page" xml:space="preserve">
+    <value>Página anterior</value>
+  </data>
+  <data name="Configure Grid" xml:space="preserve">
+      <value>Configurar Grid</value>
+  </data>
+  <data name="Create or Alter Read Procedure" xml:space="preserve">
+    <value>Criar ou Alterar Procedure de Leitura</value>
+  </data>
+  <data name="Create or Alter Write Procedure" xml:space="preserve">
+    <value>Criar ou Alterar Procedure de Escrita</value>
+  </data>
+  <data name="Create or Alter All Stored Procedures" xml:space="preserve">
+    <value>Criar ou Alterar Todas as Procedures</value>
+  </data>
+  <data name="Execute Alter Table" xml:space="preserve">
+    <value>Executar Alter Table</value>
+  </data>
+  <data name="Alter Table" xml:space="preserve">
+    <value>Alterar Tabela</value>
+  </data>
+  <data name="Create Table" xml:space="preserve">
+    <value>Criar Tabela</value>
+  </data>
+  <data name="Create Table And All Stored Procedures" xml:space="preserve">
+    <value>Criar Tabela e Todas as Procedures</value>
+  </data>
+  <data name="Create Table And Write Procedure" xml:space="preserve">
+    <value>Criar Tabela e Procedure de Escrita</value>
+  </data>
+  <data name="Create Table And Read Procedure" xml:space="preserve">
+    <value>Criar Tabela e Proceure de Leitura</value>
+  </data>
+  <data name="Grid Table" xml:space="preserve">
+    <value>Tabela da Grid</value>
+  </data>
+  <data name="Grid Toolbar" xml:space="preserve">
+    <value>Toolbar da Grid</value>
+  </data>
+  <data name="Form Toolbar" xml:space="preserve">
+    <value>Toolbar do Formulário</value>
   </data>
 </root>

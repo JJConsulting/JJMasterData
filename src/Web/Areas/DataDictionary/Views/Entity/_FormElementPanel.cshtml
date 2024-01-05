@@ -7,12 +7,12 @@
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         <label asp-for="FormElement.Title" class="form-label"></label>
-        <tooltip title="Supports runtime values. Example: Order {OrderId}"/>
+        <tooltip title="@StringLocalizer["Supports runtime values. Example: Order {OrderId}"]"/>
         @Html.TextBoxFor(model => model.FormElement.Title, Model.HtmlAttributes)
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         <label asp-for="FormElement.SubTitle" class="form-label"></label>
-        <tooltip title="Supports runtime from fields. Example: {CustomerName}"/>
+        <tooltip title="@StringLocalizer["Supports runtime values. Example: {CustomerName}"]"/>
         @Html.TextBoxFor(model => model.FormElement.SubTitle, Model.HtmlAttributes)
     </div>
 </div>

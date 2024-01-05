@@ -21,7 +21,7 @@
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divReplaceTextOnGrid">
         <label class="@BootstrapHelper.Label " asp-for="DataItem!.ReplaceTextOnGrid"></label>
-        <tooltip title="Replace the field value with the description in the grid"/>
+        <tooltip title="@StringLocalizer["Execute the data item in every row, replacing the id at the grid."]"/>
         <checkbox for="DataItem!.ReplaceTextOnGrid" switch="true"/>
     </div>
 
@@ -34,7 +34,6 @@
     }
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
             <label class="@BootstrapHelper.Label " asp-for="DataItem!.ShowIcon"></label>
-            <tooltip title="Display a FontAwesome icon alongside the options"/>
             <checkbox for="DataItem!.ShowIcon" switch="true" onchange="this.form.requestSubmit();"/>
     </div>
     
@@ -42,7 +41,7 @@
     {
         <div class="@BootstrapHelper.FormGroup col-sm-2 required">
             <label class="@BootstrapHelper.Label " asp-for="DataItem!.EnableMultiSelect"></label>
-            <tooltip title="Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table."/>
+            <tooltip title="@StringLocalizer["Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table."]"/>
             <checkbox for="DataItem!.EnableMultiSelect" switch="true"/>
         </div>
     }

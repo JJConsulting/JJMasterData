@@ -11,16 +11,16 @@ public class FormElementDataFile
     /// Physical path where the file will be saved
     /// </summary>
     [Required]
+    [Display(Name = "Folder Path")]
     public string FolderPath { get; set; } = null!;
-
-    /// <summary>
-    /// Maximum file size in bytes
-    /// </summary>
+    
     [JsonProperty("maxFileSize")]
+    [Display(Name = "Max File Size (MB)")]
     public int MaxFileSize { get; set; }
     
     
     [JsonProperty("dragDrop")]
+    [Display(Name = "Drag and Drop")]
     public bool DragDrop { get; set; }
 
     /// <summary>
@@ -31,6 +31,7 @@ public class FormElementDataFile
     /// Example: txt,csv,log
     /// </remarks>
     [Required]
+    [Display(Name = "Allowed Extensions")]
     public string AllowedTypes { get; set; } = "*";
 
     /// <summary>
@@ -38,12 +39,14 @@ public class FormElementDataFile
     /// Default: True
     /// </summary>
     [JsonProperty("multipleFile")]
+    [Display(Name = "Allow Multiple Files")]
     public bool MultipleFile { get; set; }
 
     /// <summary>
     /// Export file name with download link
     /// </summary>
     [JsonProperty("exportAsLink")]
+    [Display(Name = "Export as Link")]
     public bool ExportAsLink { get; set; }
 
 
@@ -51,6 +54,7 @@ public class FormElementDataFile
     /// Preview images in gallery format
     /// </summary>
     [JsonProperty("viewGallery")]
+    [Display(Name = "Show Files in Gallery")]
     public bool ViewGallery { get; set; }
 
 }
