@@ -1937,8 +1937,8 @@
     <value>Número de casas decimais</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Number of lines in the text box" xml:space="preserve">
-    <value>Número de linhas na caixa de texto</value>
+  <data name="Number of lines in the text box." xml:space="preserve">
+    <value>Número de linhas na caixa de texto.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Object" xml:space="preserve">

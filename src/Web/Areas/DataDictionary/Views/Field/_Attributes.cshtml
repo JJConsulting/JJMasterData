@@ -76,7 +76,8 @@
         break;
     case FormComponent.TextArea:
         <div class="@BootstrapHelper.FormGroup col-sm-4">
-            <label class="@BootstrapHelper.Label " for="txtTextAreaRows" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Number of lines in the text box"]">@StringLocalizer["Rows"]</label>
+            <label class="@BootstrapHelper.Label " for="txtTextAreaRows">@StringLocalizer["Rows"]</label>
+            <tooltip title="@StringLocalizer["Number of lines in the text box."]"/>
             <input class="form-control" id="txtTextAreaRows" name="txtTextAreaRows" maxlength="100" type="number" min="1" max="5000" placeholder="5" value="@Model.GetAttr(FormElementField.RowsAttribute)">
         </div>
         break;
