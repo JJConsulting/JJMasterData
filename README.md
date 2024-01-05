@@ -31,11 +31,12 @@ JJMasterData is an open-source .NET library to help you create dynamic CRUDs qui
 <br>
 
 ## Features
-- Pages generated at runtime 🔥
+- Components generated at runtime 🔥
 - Data exportation & importation ↔️
 - Database script generation ✍️
 - Plugins support by interfaces 🪄
-
+- Multiple forms using relationships⛓️
+  
 <br>
 
 ## Getting Started
@@ -57,20 +58,29 @@ See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles
 
 4. Open `JJMasterData.sln `file at your IDE
 
-5. Set the `JJMasterData.WebExample` as startup project
+5. Set the `JJMasterData.WebEntryPoint` as startup project
 
 6. At `src/JJMasterData.Web` run at your terminal
 ```bash
 npm i
 ```
-7. It will be necessary to add a database of your choice. You will need add a ConnectionString at your `IConfiguration` source.<br>
-![image](https://user-images.githubusercontent.com/100393691/203789109-ef71f492-3f90-4739-8c41-8a92890c72dc.png)
+7. It will be necessary to add a database of your choice. You will need add a ConnectionString at `JJMasterData:ConnectionString` in your `IConfiguration` source.<br>
+Take this `appsettings.json` snippet as an example:
+```json
+{
+  "JJMasterData": {
+    "DataDictionaryTableName": "MasterData",
+    "ConnectionString": "Server=localhost;Database=JJMasterData;Integrated Security=True;Trust Server Certificate=true",
+    "ReadProcedurePattern": "{tablename}Get",
+    "WriteProcedurePattern": "{tablename}Set",
+    "SecretKey": "ExampleSecretKey"
+  }
+}
+```
+9. Run the project
 
-8. Run the project
-
-9. This is the expected output <br>
-![image](https://user-images.githubusercontent.com/52143624/205990349-fc9c24d1-c9e6-4729-a334-4d0487222d29.png)
-
+10. This is the expected output at `/en-US/DataDictionary/Element/Index` <br>
+<img width="960" alt="image" src="https://github.com/JJConsulting/JJMasterData/assets/52143624/d6208ef1-3206-4504-b0e8-4cdd1a874fe9">
 
 ## Special Thanks
 
