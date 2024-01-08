@@ -154,6 +154,7 @@ public class DataDictionaryFormElementFactory(IOptions<MasterDataCoreOptions> op
             IsModal = true,
             IsIframe = false,
             ModalTitle = StringLocalizer["About"],
+            ModalSize = ModalSize.ExtraLarge,
             UrlRedirect = UrlHelper.GetUrl("Index", "About", "DataDictionary"),
             Order = 13,
             CssClass = BootstrapHelper.PullRight
@@ -184,6 +185,7 @@ public class DataDictionaryFormElementFactory(IOptions<MasterDataCoreOptions> op
             Icon = IconType.Code,
             ShowAsButton = true,
             IsModal = true,
+            ModalSize = ModalSize.ExtraLarge,
             ModalTitle = StringLocalizer["Application Options"],
             UrlRedirect = UrlHelper.GetUrl("Index", "Options", "DataDictionary"),
             Order = 12,
@@ -195,11 +197,12 @@ public class DataDictionaryFormElementFactory(IOptions<MasterDataCoreOptions> op
         var btnResources = new UrlRedirectAction
         {
             Name = "btnI18n",
-            Tooltip = StringLocalizer["Internationalization"],
+            Tooltip = StringLocalizer["Localization"],
             Icon = IconType.Globe,
             ShowAsButton = true,
             IsModal = true,
-            ModalTitle = StringLocalizer["Internationalization"],
+            ModalTitle = StringLocalizer["Localization"],
+            ModalSize = ModalSize.ExtraLarge,
             UrlRedirect = UrlHelper.GetUrl("Index", "Localization", "DataDictionary"),
             Order = 11,
             CssClass = BootstrapHelper.PullRight

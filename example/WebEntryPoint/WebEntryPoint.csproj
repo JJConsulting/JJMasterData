@@ -21,5 +21,10 @@
     <ItemGroup>
         <InternalsVisibleTo Include="JJMasterData.Web.Test" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Include="wwwroot\bootstrap.css" />
+      <None Include="wwwroot\bootstrap.css.map" />
+    </ItemGroup>
     
 </Project>

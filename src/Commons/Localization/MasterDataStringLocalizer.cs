@@ -130,28 +130,10 @@ public class MasterDataStringLocalizer(
             return stringLocalizerValues;
         }
         
-        SetDatabaseValues(element, ConvertDictionaryToList(stringLocalizerValues, culture));
 
         return stringLocalizerValues;
     }
-
-    private void SetDatabaseValues(Element element, IEnumerable<IDictionary<string,object?>> values)
-    {
-        foreach (var value in values)
-            EntityRepository.SetValues(element, value);
-    }
-
-    private List<Dictionary<string,object?>> ConvertDictionaryToList(IDictionary<string, string> dictionary,
-        string culture)
-    {
-        return dictionary.Select(pair => new Dictionary<string,object?>
-        {
-            { "cultureCode", culture },
-            { "resourceKey", pair.Key },
-            { "resourceValue", pair.Value },
-            { "resourceOrigin", ResourceName}
-        }).ToList();
-    }
+    
 
     private Dictionary<string, string> GetStringLocalizerValues()
     {

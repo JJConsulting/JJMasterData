@@ -5,7 +5,10 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Services;
 
-public class LocalizationService(IFormElementComponentFactory<JJFormView> formViewFactory,LocalizationFormElementFactory localizationFormElementFactory,IMemoryCache memoryCache)
+public class LocalizationService(
+    IFormElementComponentFactory<JJFormView> formViewFactory,
+    LocalizationFormElementFactory localizationFormElementFactory,
+    IMemoryCache memoryCache)
 {
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
     private LocalizationFormElementFactory LocalizationFormElementFactory { get; } = localizationFormElementFactory;
@@ -17,38 +20,21 @@ public class LocalizationService(IFormElementComponentFactory<JJFormView> formVi
 
         var formView = FormViewFactory.Create(formElement);
 
+        formView.OnAfterInsertAsync += ClearCache;
+        formView.OnAfterUpdateAsync += ClearCache;
+
         return formView;
     }
-    
-    public void OnAfterInsert(object sender, FormAfterActionEventArgs args) => ClearCache();
 
-    public void OnAfterUpdate(object sender, FormAfterActionEventArgs args) => ClearCache();
-
-    public void OnBeforeInsert(object sender, FormBeforeActionEventArgs args) =>
-        ValidateEspecialChars(sender, args);
-
-    public void OnBeforeUpdate(object sender, FormBeforeActionEventArgs args) =>
-        ValidateEspecialChars(sender, args);
-    
-    private void ClearCache()
+    private Task ClearCache(object sender, FormAfterActionEventArgs args)
     {
-        MemoryCache.Remove($"JJMasterData.Commons.Localization.JJMasterDataResources_localization_strings_{Thread.CurrentThread.CurrentCulture.Name}");
+        ClearCache();
+        return Task.CompletedTask;
     }
 
-    private static void ValidateEspecialChars(object? sender, FormBeforeActionEventArgs e)
+    private void ClearCache()
     {
-        if (e?.Values == null)
-            return;
-
-        if (e.Values.Count == 0)
-            return;
-
-        if (e.Values["resourceKey"]!.ToString()!.Contains("'") ||
-            e.Values["resourceKey"]!.ToString()!.Contains("\"") ||
-            e.Values["resourceValue"]!.ToString()!.Contains("'") ||
-            e.Values["resourceValue"]!.ToString()!.Contains("\""))
-        {
-            e.Errors.Add("Error", "Character \' not allowed");
-        }
+        MemoryCache.Remove(
+            $"JJMasterData.Commons.Localization.MasterDataResources_localization_strings_{Thread.CurrentThread.CurrentCulture.Name}");
     }
 }

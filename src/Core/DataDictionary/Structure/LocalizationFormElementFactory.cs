@@ -16,13 +16,9 @@ public class LocalizationFormElementFactory(IOptions<MasterDataCommonsOptions> o
         var supportedCultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
             
         var element = MasterDataStringLocalizerElement.GetElement(Options);
-        
-        var formElement = new FormElement(element)
-        {
-            Title = "Resources",
-            SubTitle = "Languages"
-        };
 
+        var formElement = new FormElement(element);
+        formElement.Options.Grid.ShowTitle = false;
         formElement.Fields["resourceKey"].IsRequired = true;
         formElement.Fields["resourceOrigin"].VisibleExpression = "val:0";
         formElement.Fields["resourceOrigin"].Export = false;

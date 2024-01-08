@@ -29,7 +29,7 @@ public class MasterDataCommonsOptions
     /// <summary>
     /// Default value: JJMasterDataResources <br></br>
     /// </summary>
-    public string LocalizationTableName { get; set; } = "JJMasterDataResources";
+    public string LocalizationTableName { get; set; } = "MasterDataResources";
 
     /// <summary>
     /// Default value: {tablename}Get <br></br>
