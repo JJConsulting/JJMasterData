@@ -3,4 +3,4 @@
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 [Area("MasterData")]
-public abstract class MasterDataController : Controller { }
+public abstract class MasterDataController : Controller;
