@@ -23,12 +23,12 @@
         <label class="@BootstrapHelper.Label " asp-for="DataItem!.GridBehavior"></label>
         <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
               <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
-                    <option value="0">Id</option>
-                    <option value="1">Description</option>
+                    <option value="0">@StringLocalizer["Id"]</option>
+                    <option value="1">@StringLocalizer["Description"]</option>
                     @if (Model.DataItem!.ShowIcon)
                     {
-                        <option value="2">Icon</option>
-                        <option value="3">Icon With Description</option>
+                        <option value="2">@StringLocalizer["Icon"]</option>
+                        <option value="3">@StringLocalizer["Icon with Description"]</option>
                     }
                 </select>
     </div>

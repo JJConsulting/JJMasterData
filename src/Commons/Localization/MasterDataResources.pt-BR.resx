@@ -3716,4 +3716,10 @@
   <data name="In any option except Id, every row will be evaluated at runtime." xml:space="preserve">
     <value>Em qualquer opção exceto Id, toda linha vai ser executada no runtime.</value>
   </data>
+  <data name="Grid Behavior" xml:space="preserve">
+    <value>Comportamento na Grid</value>
+  </data>
+  <data name="Icon with Description" xml:space="preserve">
+    <value>Icon com Descrição</value>
+  </data>
 </root>
