@@ -34,24 +34,18 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
         }
 
         var formView = FormViewFactory.Create(formElement);
-        formView.GridView.CurrentOrder = OrderByData.FromString($"{Options.CreatedColumnName} DESC");
-
+        formView.ShowTitle = false;
+        if (!formView.GridView.CurrentOrder.Any())
+        {
+            formView.GridView.CurrentOrder.AddOrReplace(Options.CreatedColumnName, OrderByDirection.Desc);
+        }
 
         formView.GridView.OnRenderCellAsync += (sender, args) =>
         {
-            string? message = string.Empty;
-            if (args.Field.Name.Equals(Options.MessageColumnName))
-            {
-                message = args.DataRow[Options.MessageColumnName].ToString()?.Replace("\n", "<br>");
-            }
-            else
-            {
-                if (args.Sender is HtmlComponent component)
-                {
-                    message = component.GetHtml();
-                }
+            if (!args.Field.Name.Equals(Options.MessageColumnName))
+                return Task.CompletedTask;
             
-            }
+            var message = args.DataRow[Options.MessageColumnName].ToString()?.Replace("\n", "<br>");
             args.HtmlResult = new HtmlBuilder(message ?? string.Empty);
 
             return Task.CompletedTask;
@@ -68,7 +62,7 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
     [HttpGet]
     public async Task<IActionResult> ClearAll()
     {
-        string sql = $"TRUNCATE TABLE {Options.TableName}";
+        var sql = $"TRUNCATE TABLE {Options.TableName}";
 
         await EntityRepository.SetCommandAsync(new DataAccessCommand(sql));
 
