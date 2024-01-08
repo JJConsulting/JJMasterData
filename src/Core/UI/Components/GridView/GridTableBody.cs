@@ -44,7 +44,7 @@ internal class GridTableBody(JJGridView gridView)
         }
     }
 
-    private async Task<HtmlBuilder> GetRowHtml(IDictionary<string,object?> row, int index)
+    private async Task<HtmlBuilder> GetRowHtml(IDictionary<string, object?> row, int index)
     {
         var tr = new HtmlBuilder(HtmlTag.Tr);
         var basicActions = GridView.FormElement.Options.GridTableActions.OrderBy(x => x.Order).ToList();
@@ -59,7 +59,7 @@ internal class GridTableBody(JJGridView gridView)
         return tr;
     }
 
-    internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(IDictionary<string,object?> row, int index)
+    internal async IAsyncEnumerable<HtmlBuilder> GetTdHtmlList(IDictionary<string, object?> row, int index)
     {
         var values = await GetValues(row);
         var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
@@ -72,7 +72,7 @@ internal class GridTableBody(JJGridView gridView)
             var checkBox = await GetMultiSelectCheckbox(row, index, values);
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("jj-checkbox");
-            
+
             await td.AppendControlAsync(checkBox);
 
             if (!GridView.EnableEditMode && onClickScript == string.Empty)
@@ -94,8 +94,9 @@ internal class GridTableBody(JJGridView gridView)
             yield return actionHtml;
         }
     }
-    
-    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(IDictionary<string,object?> row, int index, IDictionary<string, object?> values, string onClickScript)
+
+    private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(IDictionary<string, object?> row, int index,
+        IDictionary<string, object?> values, string onClickScript)
     {
         await foreach (var field in GridView.GetVisibleFieldsAsync())
         {
@@ -107,7 +108,7 @@ internal class GridTableBody(JJGridView gridView)
             var td = new HtmlBuilder(HtmlTag.Td);
             var style = GetTdStyle(field);
             td.WithAttributeIf(string.IsNullOrEmpty(style), "style", style!);
-            td.WithAttributeIfNotEmpty( "style", style);
+            td.WithAttributeIfNotEmpty("style", style);
             td.WithAttribute("onclick", onClickScript);
 
             if (GridView.EnableEditMode && field.DataBehavior != FieldBehavior.ViewOnly)
@@ -120,30 +121,37 @@ internal class GridTableBody(JJGridView gridView)
                 value = objValue?.ToString() ?? string.Empty;
                 var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
                 HtmlBuilder cell;
-                if (field.DataItem is not null && field.DataItem.ShowIcon && field.DataItem.GridBehavior is DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription)
+                if (field.DataItem is not null && field.DataItem.ShowIcon &&
+                    field.DataItem.GridBehavior is DataItemGridBehavior.Icon
+                        or DataItemGridBehavior.IconWithDescription)
                 {
-                    var dataItemValues =await  GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData, null,
+                    var dataItemValues = await GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData,
+                        null,
                         value.ToString());
-                    var dataItemValue = dataItemValues.FirstOrDefault(d=>d.Id == value.ToString());
+                    var dataItemValue = dataItemValues.FirstOrDefault(d => d.Id == value.ToString());
                     cell = new HtmlBuilder(HtmlTag.Div);
                     var icon = new JJIcon(dataItemValue!.Icon, dataItemValue.IconColor ?? string.Empty);
 
-                    if (field.DataItem.GridBehavior is DataItemGridBehavior.Icon && dataItemValue.Description is not null)
+                    if (field.DataItem.GridBehavior is DataItemGridBehavior.Icon &&
+                        dataItemValue.Description is not null)
                     {
                         icon.Tooltip = dataItemValue.Description;
+                        icon.CssClass += "fa-lg";
                     }
 
                     cell.AppendComponent(icon);
-                    
-                    cell.AppendIf(field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription,HtmlTag.Span, span =>
-                    {
-                        span.AppendText(dataItemValue.Description ?? dataItemValue.Id);
-                        span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
-                    });
+
+                    cell.AppendIf(field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription, HtmlTag.Span,
+                        span =>
+                        {
+                            span.AppendText(dataItemValue.Description ?? dataItemValue.Id);
+                            span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
+                        });
                 }
                 else if (field.DataFile is not null)
                 {
-                    var textFile =  GridView.ComponentFactory.Controls.Create<JJTextFile>(GridView.FormElement, field, new(formStateData,Name,value));
+                    var textFile = GridView.ComponentFactory.Controls.Create<JJTextFile>(GridView.FormElement, field,
+                        new(formStateData, Name, value));
                     cell = textFile.GetButtonGroupHtml();
                 }
                 else
@@ -151,6 +159,7 @@ internal class GridTableBody(JJGridView gridView)
                     value = await GridView.FieldsService.FormatGridValueAsync(field, values, GridView.UserValues);
                     cell = new HtmlBuilder(value?.ToString()?.Trim() ?? string.Empty);
                 }
+
                 if (OnRenderCellAsync != null)
                 {
                     var args = new GridCellEventArgs
@@ -160,7 +169,7 @@ internal class GridTableBody(JJGridView gridView)
                         HtmlResult = cell,
                         Sender = new JJText(value?.ToString())
                     };
-                    
+
                     await OnRenderCellAsync(this, args);
 
                     td.Append(args.HtmlResult ?? cell);
@@ -175,7 +184,8 @@ internal class GridTableBody(JJGridView gridView)
         }
     }
 
-    private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, IDictionary<string,object?> row, int index, IDictionary<string, object?> values,
+    private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, IDictionary<string, object?> row,
+        int index, IDictionary<string, object?> values,
         string? value)
     {
         var name = GridView.GetFieldName(field.Name, values);
@@ -185,11 +195,12 @@ internal class GridTableBody(JJGridView gridView)
 
         div.WithCssClassIf(hasError, BootstrapHelper.HasError);
 
-        var control = GridView.ComponentFactory.Controls.Create(GridView.FormElement, field, new(values, GridView.UserValues, PageState.List),name, value);
+        var control = GridView.ComponentFactory.Controls.Create(GridView.FormElement, field,
+            new(values, GridView.UserValues, PageState.List), name, value);
         control.Name = name;
         control.Attributes.Add("gridViewRowIndex", index.ToString());
         control.CssClass = field.Name;
-        
+
         if (OnRenderCellAsync != null)
         {
             var args = new GridCellEventArgs { Field = field, DataRow = row, Sender = control };
@@ -209,7 +220,7 @@ internal class GridTableBody(JJGridView gridView)
         {
             await div.AppendControlAsync(control);
         }
-          
+
 
         return div;
     }
@@ -231,26 +242,27 @@ internal class GridTableBody(JJGridView gridView)
     }
 
 
-    private async Task<HtmlBuilder> GetActionsGroupHtmlAsync(IEnumerable<BasicAction> actions, FormStateData formStateData)
+    private async Task<HtmlBuilder> GetActionsGroupHtmlAsync(IEnumerable<BasicAction> actions,
+        FormStateData formStateData)
     {
         var td = new HtmlBuilder(HtmlTag.Td);
         td.WithCssClass("table-action");
 
         var btnGroup = GridView.ComponentFactory.Html.LinkButtonGroup.Create();
-        
+
         var factory = GridView.ComponentFactory.ActionButton;
-        
+
         foreach (var groupedAction in actions.Where(a => a.IsGroup).ToList())
         {
             btnGroup.ShowAsButton = groupedAction.ShowAsButton;
             var linkButton = factory.CreateGridTableButton(groupedAction, GridView, formStateData);
 
-            if ( OnRenderActionAsync != null)
+            if (OnRenderActionAsync != null)
             {
                 var args = new ActionEventArgs(groupedAction, linkButton, formStateData.Values);
                 await OnRenderActionAsync(GridView, args);
             }
-            
+
             btnGroup.Actions.Add(linkButton);
         }
 
@@ -259,22 +271,23 @@ internal class GridTableBody(JJGridView gridView)
     }
 
 
-    private async IAsyncEnumerable<HtmlBuilder> GetActionsWithoutGroupHtmlAsync(IEnumerable<BasicAction> actionsWithoutGroup, FormStateData formStateData)
+    private async IAsyncEnumerable<HtmlBuilder> GetActionsWithoutGroupHtmlAsync(
+        IEnumerable<BasicAction> actionsWithoutGroup, FormStateData formStateData)
     {
         var factory = GridView.ComponentFactory.ActionButton;
         foreach (var action in actionsWithoutGroup)
         {
             var td = new HtmlBuilder(HtmlTag.Td);
             td.WithCssClass("table-action");
-            var link =  factory.CreateGridTableButton(action, GridView, formStateData);
+            var link = factory.CreateGridTableButton(action, GridView, formStateData);
             if (OnRenderActionAsync is not null)
             {
                 var args = new ActionEventArgs(action, link, formStateData.Values);
 
-        
+
                 await OnRenderActionAsync(GridView, args);
-                
-                
+
+
                 if (args.HtmlResult != null)
                 {
                     td.AppendText(args.HtmlResult);
@@ -294,7 +307,11 @@ internal class GridTableBody(JJGridView gridView)
         switch (field.Component)
         {
             case FormComponent.ComboBox:
-                if (field.DataItem is { ShowIcon: true, GridBehavior: DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription })
+                if (field.DataItem is
+                    {
+                        ShowIcon: true,
+                        GridBehavior: DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription
+                    })
                 {
                     return "text-align:center;";
                 }
@@ -308,13 +325,15 @@ internal class GridTableBody(JJGridView gridView)
                     if (!field.IsPk)
                         return "text-align:right";
                 }
+
                 break;
         }
 
         return string.Empty;
     }
 
-    private async Task<JJCheckBox> GetMultiSelectCheckbox(IDictionary<string,object?> row, int index, IDictionary<string, object?> values)
+    private async Task<JJCheckBox> GetMultiSelectCheckbox(IDictionary<string, object?> row, int index,
+        IDictionary<string, object?> values)
     {
         string pkValues = DataHelper.ParsePkValues(GridView.FormElement, values, ';');
         var td = new HtmlBuilder(HtmlTag.Td);
@@ -332,7 +351,7 @@ internal class GridTableBody(JJGridView gridView)
         };
 
         var selectedGridValues = GridView.GetSelectedGridValues();
-        
+
         checkBox.IsChecked = selectedGridValues.Any(x => x.Any(kvp => kvp.Value.Equals(pkValues)));
 
         if (OnRenderSelectedCellAsync is not null)
@@ -342,9 +361,9 @@ internal class GridTableBody(JJGridView gridView)
                 DataRow = row,
                 CheckBox = checkBox
             };
-            
+
             await OnRenderSelectedCellAsync(GridView, args);
-            
+
             if (args.CheckBox != null)
                 return checkBox;
         }
@@ -358,7 +377,7 @@ internal class GridTableBody(JJGridView gridView)
             return string.Empty;
 
         var factory = GridView.ComponentFactory.ActionButton;
-        
+
         var actionButton = factory.CreateGridTableButton(defaultAction, GridView, formStateData);
 
         if (OnRenderActionAsync != null)
@@ -383,12 +402,13 @@ internal class GridTableBody(JJGridView gridView)
         return string.Empty;
     }
 
-    private async Task<IDictionary<string, object?>> GetValues(IDictionary<string,object?> row)
+    private async Task<IDictionary<string, object?>> GetValues(IDictionary<string, object?> row)
     {
         if (!GridView.EnableEditMode)
             return row;
 
         var prefixName = GridView.GetFieldName(string.Empty, row);
-        return await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(GridView.FormElement, new FormStateData(row, GridView.UserValues,PageState.List), GridView.AutoReloadFormFields, prefixName);
+        return await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(GridView.FormElement,
+            new FormStateData(row, GridView.UserValues, PageState.List), GridView.AutoReloadFormFields, prefixName);
     }
 }
