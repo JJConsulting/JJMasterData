@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -12,7 +11,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -23,13 +21,14 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Importation;
 
-public class DataImportationWorker(DataImportationContext context,
-        FormService formService,
-        ExpressionsService expressionsService,
-        IEntityRepository entityRepository,
-        FieldValuesService fieldValuesService,
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        ILogger<DataImportationWorker> logger)
+public class DataImportationWorker(
+    DataImportationContext context,
+    FormService formService,
+    ExpressionsService expressionsService,
+    IEntityRepository entityRepository,
+    FieldValuesService fieldValuesService,
+    IStringLocalizer<MasterDataResources> stringLocalizer,
+    ILogger<DataImportationWorker> logger)
     : IBackgroundTaskWorker
 {
     #region "Events"
@@ -49,7 +48,7 @@ public class DataImportationWorker(DataImportationContext context,
     internal DataContext DataContext { get; } = context.DataContext;
 
     public string RawData { get; } = context.RawData;
-    public char Separator { get;} = context.Separator;
+    public char Separator { get; } = context.Separator;
 
     internal ExpressionsService ExpressionsService { get; } = expressionsService;
 
@@ -114,7 +113,6 @@ public class DataImportationWorker(DataImportationContext context,
                 currentProcess.EndDate = DateTime.Now;
                 Reporter(currentProcess);
             }
-
         }, token);
     }
 
@@ -134,13 +132,14 @@ public class DataImportationWorker(DataImportationContext context,
         string[] stringSeparators = ["\r\n"];
         string[] rows = RawData.Split(stringSeparators, StringSplitOptions.None);
         currentProcess.TotalRecords = rows.Length;
-        currentProcess.Message = StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
-        
+        currentProcess.Message =
+            StringLocalizer["Importing {0} records...", currentProcess.TotalRecords.ToString("N0")];
+
         var defaultValues = await FieldValuesService.GetDefaultValuesAsync(FormElement, new FormStateData()
         {
-             Values = new Dictionary<string, object>(),
-             PageState = PageState.Import,
-             UserValues = UserValues
+            Values = new Dictionary<string, object>(),
+            PageState = PageState.Import,
+            UserValues = UserValues
         });
         var formStateData = new FormStateData(defaultValues, UserValues, PageState.Import);
 
@@ -148,7 +147,9 @@ public class DataImportationWorker(DataImportationContext context,
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandBeforeProcess))
         {
-            var parsedSql = ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandBeforeProcess, formStateData);
+            var parsedSql =
+                ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandBeforeProcess,
+                    formStateData);
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql));
         }
 
@@ -211,7 +212,8 @@ public class DataImportationWorker(DataImportationContext context,
         if (currentProcess.TotalRecords > 0 &&
             !string.IsNullOrEmpty(ProcessOptions?.CommandAfterProcess))
         {
-            string parsedSql = ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandAfterProcess, formStateData);
+            string parsedSql =
+                ExpressionsService.ReplaceExpressionWithParsedValues(ProcessOptions.CommandAfterProcess, formStateData);
             await EntityRepository.SetCommandAsync(new DataAccessCommand(parsedSql!));
         }
 
@@ -219,27 +221,20 @@ public class DataImportationWorker(DataImportationContext context,
             await OnAfterProcessAsync(this, new FormAfterActionEventArgs());
     }
 
-    internal IDictionary<string, object> UserValues { get; set; } = new Dictionary<string,object>();
+    internal IDictionary<string, object> UserValues { get; set; } = new Dictionary<string, object>();
 
     /// <summary>
     /// Preenche um hashtable com o nome do campor e o valor
     /// </summary>
-    private static Dictionary<string, object> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField, string[] cols)
+    private static Dictionary<string, object> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField,
+        string[] cols)
     {
         var values = new Dictionary<string, object>();
         for (int i = 0; i < listField.Count; i++)
         {
             var field = listField[i];
-            string value = cols[i];
-            if (field.Component == FormComponent.CheckBox)
-            {
-                if (StringManager.ParseBool(value))
-                    value = "1";
-                else
-                    value = "0";
-            }
-
-            values.Add(field.Name, value);
+            var value = cols[i];
+            FormValuesService.HandleFieldValue(field, values, value);
         }
 
         return values;
@@ -262,6 +257,7 @@ public class DataImportationWorker(DataImportationContext context,
             if (visible && field.DataBehavior == FieldBehavior.Real)
                 list.Add(field);
         }
+
         return list;
     }
 
@@ -274,7 +270,8 @@ public class DataImportationWorker(DataImportationContext context,
     {
         try
         {
-            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement, new FormStateData( fileValues, UserValues, PageState.Import));
+            var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,
+                new FormStateData(fileValues, UserValues, PageState.Import));
             var ret = await FormService.InsertOrReplaceAsync(FormElement, values, DataContext);
 
             if (ret.IsValid)
@@ -306,6 +303,7 @@ public class DataImportationWorker(DataImportationContext context,
 
                     sErr.Append(err.Value);
                 }
+
                 currentProcess.AddError(sErr.ToString());
             }
         }

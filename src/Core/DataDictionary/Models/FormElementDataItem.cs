@@ -10,10 +10,9 @@ namespace JJMasterData.Core.DataDictionary.Models;
 /// Configurações de objetos do tipo lista
 /// </summary>
 /// <remarks>2017-03-22 JJTeam</remarks>
-public class FormElementDataItem 
+public class FormElementDataItem
 {
-    [JsonProperty("dataItemType")]
-    public DataItemType DataItemType { get; set; }
+    [JsonProperty("dataItemType")] public DataItemType DataItemType { get; set; }
 
     /// <summary>
     /// Command executed to recover DataItemValues. Returns two columns:
@@ -22,10 +21,9 @@ public class FormElementDataItem
     /// </summary>
     [JsonProperty("command")]
     public DataAccessCommand? Command { get; set; }
-    
-    [JsonProperty("itens")]
-    public IList<DataItemValue>? Items { get; set; }
-    
+
+    [JsonProperty("itens")] public IList<DataItemValue>? Items { get; set; }
+
     /// <summary>
     /// Relationship with another Element to recover values
     /// </summary>
@@ -37,15 +35,16 @@ public class FormElementDataItem
     /// </summary>
     [JsonProperty("firstoption")]
     public FirstOptionMode FirstOption { get; set; } = FirstOptionMode.None;
-    
+
     /// <remarks>
     /// Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.
     /// </remarks>
     [JsonProperty("enableMultiSelect")]
-    [Display(Name="Enable Multi Select")]
+    [Display(Name = "Enable Multi Select")]
     public bool EnableMultiSelect { get; set; }
-    
+
     [Display(Name = "Grid Behavior")]
+    [JsonProperty("gridBehavior")]
     public DataItemGridBehavior GridBehavior { get; set; }
 
     /// <summary>
@@ -57,9 +56,9 @@ public class FormElementDataItem
     /// propriedade ReplaceTextOnGrid esta configurada para falso.
     /// </remarks>
     [JsonProperty("showimagelegend")]
-    [Display(Name="Show Icon")]
+    [Display(Name = "Show Icon")]
     public bool ShowIcon { get; set; }
-    
+
     public bool HasSqlCommand() => !string.IsNullOrWhiteSpace(Command?.Sql);
 
     public bool HasElementMap() => ElementMap != null;

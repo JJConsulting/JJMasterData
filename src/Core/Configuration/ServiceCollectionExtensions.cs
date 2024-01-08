@@ -16,30 +16,30 @@ public static class ServiceCollectionExtensions
     public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services)
     {
         services.AddMasterDataCoreServices();
-        
+
         return services.AddJJMasterDataCommons();
     }
 
     public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
-        Action<MasterDataCoreOptions> configureCore, IConfiguration loggingConfiguration = null)
+        Action<MasterDataCoreOptions> configureCore)
     {
         var coreOptions = new MasterDataCoreOptions();
 
         configureCore(coreOptions);
 
         services.PostConfigure(configureCore);
-        
+
         services.AddMasterDataCoreServices();
-        return services.AddJJMasterDataCommons(ConfigureJJMasterDataCommonsOptions, loggingConfiguration);
+        return services.AddJJMasterDataCommons(ConfigureJJMasterDataCommonsOptions);
 
         void ConfigureJJMasterDataCommonsOptions(MasterDataCommonsOptions options)
         {
-            if (coreOptions.ConnectionString != null) 
+            if (coreOptions.ConnectionString != null)
                 options.ConnectionString = coreOptions.ConnectionString;
-            
-            if(coreOptions.ConnectionProvider != default)
+
+            if (coreOptions.ConnectionProvider != default)
                 options.ConnectionProvider = coreOptions.ConnectionProvider;
-            
+
             if (coreOptions.LocalizationTableName != null)
                 options.LocalizationTableName = coreOptions.LocalizationTableName;
 
@@ -49,17 +49,18 @@ public static class ServiceCollectionExtensions
             if (coreOptions.WriteProcedurePattern != null)
                 options.WriteProcedurePattern = coreOptions.WriteProcedurePattern;
 
-            if (coreOptions.SecretKey != null) 
+            if (coreOptions.SecretKey != null)
                 options.SecretKey = coreOptions.SecretKey;
         }
     }
 
-    public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services, IConfiguration configuration)
+    public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
+        IConfiguration configuration)
     {
         services.Configure<MasterDataCoreOptions>(configuration.GetJJMasterData());
-        
+
         services.AddMasterDataCoreServices();
-        
+
         return services.AddJJMasterDataCommons(configuration);
     }
 
@@ -73,12 +74,12 @@ public static class ServiceCollectionExtensions
         services.AddEventHandlers();
         services.AddExpressionServices();
         services.AddActionServices();
-        
+
         services.AddScoped<IDataDictionaryRepository, SqlDataDictionaryRepository>();
-        
+
         services.AddScoped<IExcelWriter, ExcelWriter>();
         services.AddScoped<ITextWriter, TextWriter>();
-        
+
         services.AddFactories();
     }
 }

@@ -13,7 +13,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
-using JJMasterData.Core.UI.Components;
 
 namespace JJMasterData.Core.DataManager.Services;
 
@@ -38,7 +37,7 @@ public class FormValuesService(
         foreach (var field in formElement.Fields)
         {
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
-            
+
 #if NET48
             object? value = field.ValidateRequest
                 ? FormValues[fieldName]
@@ -46,63 +45,71 @@ public class FormValuesService(
 #else
             object? value = FormValues[fieldName];
 #endif
-            switch (field.Component)
-            {
-                case FormComponent.Date when field.DataType is FieldType.DateTime or FieldType.DateTime2:
-                case FormComponent.DateTime when field.DataType is FieldType.DateTime or FieldType.DateTime2:
-                    if (value is not null && !string.IsNullOrEmpty(value.ToString()))
-                        value = DateTime.Parse(value.ToString()!);
-                    else
-                        value = null;
-                    break;
-                case FormComponent.Currency:
-                    if (value is null)
-                        break;
-                    
-                    value = HandleCurrencyComponent(field, value);
-
-                    break;
-                case FormComponent.Slider: 
-                case FormComponent.Number:
-                    if (value is null)
-                        break;
-
-                    value = HandleNumericComponent(field.DataType, value);
-
-                    break;
-                case FormComponent.CheckBox:
-                    value = StringManager.ParseBool(value);
-                    break;
-            }
-
-            if(value is not null)
-                values.Add(field.Name, value);
+            HandleFieldValue(field, values, value);
         }
 
         return values;
     }
-    
+
+    internal static void HandleFieldValue(FormElementField field, IDictionary<string, object?> values, object? value)
+    {
+        switch (field.Component)
+        {
+            case FormComponent.Date:
+            case FormComponent.DateTime:
+                if (value is not null && !string.IsNullOrEmpty(value.ToString()))
+                    value = DateTime.Parse(value.ToString()!);
+                else
+                    value = null;
+                break;
+            case FormComponent.Currency:
+                if (value is null)
+                    break;
+
+                value = HandleCurrencyComponent(field, value);
+
+                break;
+            case FormComponent.Slider:
+            case FormComponent.Number:
+                if (value is null)
+                    break;
+
+                value = HandleNumericComponent(field.DataType, value);
+
+                break;
+            case FormComponent.CheckBox:
+                value = StringManager.ParseBool(value);
+                break;
+        }
+
+        if (value is not null)
+            values.Add(field.Name, value);
+    }
+
     internal static object? HandleCurrencyComponent(FormElementField field, object? value)
     {
         if (value is null)
             return value;
-        
+
         CultureInfo cultureInfo;
-        if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
+        if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) &&
+            !string.IsNullOrEmpty(cultureInfoName?.ToString()))
             cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName?.ToString()!);
         else
             cultureInfo = CultureInfo.CurrentUICulture;
 
         object parsedValue = 0;
-        
+
         switch (field.DataType)
         {
             case FieldType.Float:
-                if (float.TryParse(value.ToString(), NumberStyles.Currency | NumberStyles.AllowCurrencySymbol, cultureInfo, out var floatValue))
+                if (float.TryParse(value.ToString(), NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
+                        cultureInfo, out var floatValue))
                     parsedValue = floatValue;
                 break;
             case FieldType.Int:
-                if (int.TryParse(value.ToString(), NumberStyles.Currency | NumberStyles.AllowCurrencySymbol, cultureInfo, out var numericValue))
+                if (int.TryParse(value.ToString(), NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
+                        cultureInfo, out var numericValue))
                     parsedValue = numericValue;
                 break;
         }
@@ -114,10 +121,10 @@ public class FormValuesService(
     {
         if (value is null)
             return value;
-        
+
         var culture = CultureInfo.CurrentCulture;
         object parsedValue = 0;
-        
+
         switch (dataType)
         {
             case FieldType.Float:
@@ -147,16 +154,16 @@ public class FormValuesService(
             var dbValues = await GetDbValues(formElement);
             DataHelper.CopyIntoDictionary(formStateData.Values, dbValues);
         }
-        
+
         if (FormValues.ContainsFormValues() && autoReloadFormFields)
         {
             var formValues = GetFormValues(formElement, prefix);
             DataHelper.CopyIntoDictionary(formStateData.Values, formValues, true);
         }
-        
-        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData, !FormValues.ContainsFormValues());
-    }
 
+        return await FieldValuesService.MergeWithExpressionValuesAsync(formElement, formStateData,
+            !FormValues.ContainsFormValues());
+    }
 
 
     private async Task<IDictionary<string, object?>> GetDbValues(Element element)
@@ -173,7 +180,6 @@ public class FormValuesService(
             {
                 return EncryptionService.DecryptDictionary(encryptedFkValues)!;
             }
-            
         }
 
         if (encryptedPkValues is null)
