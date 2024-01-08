@@ -25,6 +25,66 @@ namespace JJMasterData.Core.UI.Components;
 
 public class JJDataImportation : ProcessComponent
 {
+    #region "Events"
+
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterInsertAsync;
+    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
+
+    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
+    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterProcessAsync;
+
+    #endregion
+
+    #region "Properties"
+
+    private JJUploadArea _uploadArea;
+    private JJLinkButton _backButton;
+    private JJLinkButton _helpButton;
+    private JJLinkButton _logButton;
+    private RouteContext _routeContext;
+    private DataImportationScripts _dataImportationScripts;
+
+    public JJLinkButton BackButton => _backButton ??= GetBackButton();
+
+    public JJLinkButton HelpButton => _helpButton ??= GetHelpButton();
+
+    public JJLinkButton LogButton => _logButton ??= GetLogButton();
+
+    public JJUploadArea UploadArea => _uploadArea ??= GetUploadArea();
+
+    public bool EnableAuditLog { get; set; }
+
+    /// <summary>
+    /// Default: true (panel is open by default)
+    /// </summary>
+    public bool ExpandedByDefault { get; set; } = true;
+
+    internal FormService FormService { get; }
+    internal IComponentFactory ComponentFactory { get; }
+    private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
+
+    internal RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+
+            return _routeContext;
+        }
+    }
+
+    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+
+    internal DataImportationScripts DataImportationScripts =>
+        _dataImportationScripts ??= new DataImportationScripts(this);
+
+    #endregion
+    
     #region "Constructors"
 
     public JJDataImportation(
@@ -350,64 +410,4 @@ public class JJDataImportation : ProcessComponent
 
         return area;
     }
-
-    #region "Events"
-
-    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterDeleteAsync;
-    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterInsertAsync;
-    internal event AsyncEventHandler<FormAfterActionEventArgs> OnAfterUpdateAsync;
-
-    public event AsyncEventHandler<FormBeforeActionEventArgs> OnBeforeImportAsync;
-    public event AsyncEventHandler<FormAfterActionEventArgs> OnAfterProcessAsync;
-
-    #endregion
-
-    #region "Properties"
-
-    private JJUploadArea _uploadArea;
-    private JJLinkButton _backButton;
-    private JJLinkButton _helpButton;
-    private JJLinkButton _logButton;
-    private RouteContext _routeContext;
-    private DataImportationScripts _dataImportationScripts;
-
-    public JJLinkButton BackButton => _backButton ??= GetBackButton();
-
-    public JJLinkButton HelpButton => _helpButton ??= GetHelpButton();
-
-    public JJLinkButton LogButton => _logButton ??= GetLogButton();
-
-    public JJUploadArea UploadArea => _uploadArea ??= GetUploadArea();
-
-    public bool EnableAuditLog { get; set; }
-
-    /// <summary>
-    /// Default: true (panel is open by default)
-    /// </summary>
-    public bool ExpandedByDefault { get; set; } = true;
-
-    internal FormService FormService { get; }
-    internal IComponentFactory ComponentFactory { get; }
-    private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
-
-    internal RouteContext RouteContext
-    {
-        get
-        {
-            if (_routeContext != null)
-                return _routeContext;
-
-            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
-            _routeContext = factory.Create();
-
-            return _routeContext;
-        }
-    }
-
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
-
-    internal DataImportationScripts DataImportationScripts =>
-        _dataImportationScripts ??= new DataImportationScripts(this);
-
-    #endregion
 }
