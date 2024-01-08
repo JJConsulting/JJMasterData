@@ -119,7 +119,7 @@ public class ExpressionsService(
 
         catch (Exception ex)
         {
-            var exception = new ExpressionException("Unhandled exception at a expression provider.", ex)
+            var exception = new ExpressionException($"Unhandled exception at a expression provider.\nField: {field}", ex)
             {
                 Expression = expression
             };
