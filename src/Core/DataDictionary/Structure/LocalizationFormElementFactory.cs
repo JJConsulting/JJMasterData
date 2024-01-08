@@ -35,7 +35,7 @@ public class LocalizationFormElementFactory(IOptions<MasterDataCommonsOptions> o
         cultureField.DataItem = new FormElementDataItem
         {
             Items = new List<DataItemValue>(),
-            ReplaceTextOnGrid = false
+            GridBehavior = DataItemGridBehavior.Id
         };
         foreach (var cultureInfo in supportedCultures)
         {

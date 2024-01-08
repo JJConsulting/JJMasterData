@@ -17,10 +17,18 @@
         </select>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-        <label class="@BootstrapHelper.Label " asp-for="DataItem!.ReplaceTextOnGrid"></label>
-        <tooltip title="@StringLocalizer["Execute the data item in every row, replacing the id at the grid."]"/>
-        <checkbox for="DataItem!.ReplaceTextOnGrid" switch="true"/>
+    <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divReplaceTextOnGrid">
+        <label class="@BootstrapHelper.Label " asp-for="DataItem!.GridBehavior"></label>
+        <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
+           <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
+                    <option value="0">Id</option>
+                    <option value="1">Description</option>
+                    @if (Model.DataItem!.ShowIcon)
+                    {
+                        <option value="2">Icon</option>
+                        <option value="3">Icon With Description</option>
+                    }
+                </select>
     </div>
 
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">

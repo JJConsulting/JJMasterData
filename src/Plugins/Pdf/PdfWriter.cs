@@ -309,11 +309,11 @@ public class PdfWriter(ExpressionsService expressionsService,
 
         if (item != null)
         {
-            if (field.DataItem!.ReplaceTextOnGrid)
+            if (field.DataItem!.GridBehavior is DataItemGridBehavior.Description)
             {
                 value = $" {item.Description.Trim()}";
             }
-            if (field.DataItem.ShowIcon)
+            if (field.DataItem!.GridBehavior is DataItemGridBehavior.Icon || field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription)  
             {
                 image = new Text(item.Icon.GetUnicode().ToString());
                 var color = ColorTranslator.FromHtml(item.IconColor);

@@ -231,9 +231,9 @@ public class FieldService(IValidationDictionary validationDictionary,
             if (string.IsNullOrEmpty(dataItem.Command.Sql))
                 AddError("Command.Sql", StringLocalizer["[Field Command.Sql] required"]);
 
-            if (dataItem.ReplaceTextOnGrid && !dataItem.Command.Sql.Contains("{SearchId}"))
+            if (dataItem.GridBehavior is not DataItemGridBehavior.Id && !dataItem.Command.Sql.Contains("{SearchId}"))
             {
-                AddError("Command.Sql", "{SearchId} is required at queries using ReplaceTextOnGrid. " +
+                AddError("Command.Sql", "{SearchId} is required at queries not using GridBehavior.Id " +
                                         "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/search_id.html\">the docs</a> for more information.");
             }
         }
@@ -306,8 +306,8 @@ public class FieldService(IValidationDictionary validationDictionary,
         if (elementMap.IdFieldName.Equals(elementMap.DescriptionFieldName))
             AddError(nameof(elementMap.DescriptionFieldName), StringLocalizer["[FieldDescription] can not be equal a [FieldId]"]);
         
-        if (dataItem.ReplaceTextOnGrid && string.IsNullOrEmpty(elementMap.DescriptionFieldName))
-            AddError(nameof(dataItem.ReplaceTextOnGrid), StringLocalizer["[ReplaceTextOnGrid] requires a [FieldDescription]"]);
+        if (dataItem.GridBehavior is DataItemGridBehavior.Description || dataItem.GridBehavior is DataItemGridBehavior.IconWithDescription && string.IsNullOrEmpty(elementMap.DescriptionFieldName))
+            AddError(nameof(dataItem.GridBehavior), StringLocalizer["[GridBehavior] requires a [FieldDescription]"]);
     }
 
     private void ValidateDataFile(FieldBehavior dataBehavior, FormElementDataFile dataFile)

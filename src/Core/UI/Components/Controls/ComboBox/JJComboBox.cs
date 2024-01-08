@@ -220,12 +220,10 @@ public class JJComboBox : ControlBase
             }.BuildHtml();
 
             div.Append(icon);
-
-            if (DataItem.ReplaceTextOnGrid)
-            {
-                div.AppendText("&nbsp;");
-                div.AppendText(label);
-            }
+            
+            div.AppendText("&nbsp;");
+            div.AppendText(label);
+            
             description = div.ToString();
         }
         else

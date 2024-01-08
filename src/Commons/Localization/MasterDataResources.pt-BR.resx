@@ -3713,4 +3713,7 @@
   <data name="Form Toolbar" xml:space="preserve">
     <value>Toolbar do Formulário</value>
   </data>
+  <data name="In any option except Id, every row will be evaluated at runtime." xml:space="preserve">
+    <value>Em qualquer opção exceto Id, toda linha vai ser executada no runtime.</value>
+  </data>
 </root>

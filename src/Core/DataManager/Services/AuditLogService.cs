@@ -129,7 +129,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptions<Master
         origin.Component = FormComponent.ComboBox;
         origin.DataItem = new FormElementDataItem
         {
-            ReplaceTextOnGrid = true
+            GridBehavior = DataItemGridBehavior.IconWithDescription
         };
         foreach (int i in Enum.GetValues(typeof(DataContextSource)))
         {
@@ -141,9 +141,8 @@ public class AuditLogService(IEntityRepository entityRepository, IOptions<Master
         action.Component = FormComponent.ComboBox;
         action.DataItem = new FormElementDataItem
         {
-            ReplaceTextOnGrid = true
+            GridBehavior = DataItemGridBehavior.IconWithDescription
         };
-        action.DataItem.ReplaceTextOnGrid = true;
         action.DataItem.ShowIcon = true;
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
         action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", IconType.Pencil, "#ffbf00"));

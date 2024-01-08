@@ -42,7 +42,7 @@ public class LoggerFormElementFactory(IOptions<DbLoggerOptions> options,MasterDa
                 new("5", LogLevel.Critical.ToString(), IconType.Fire,  "#FF5733"), 
                 new("6", LogLevel.None.ToString(), IconType.CircleO,  "#808080")
             },
-            ReplaceTextOnGrid = true,
+            GridBehavior = DataItemGridBehavior.Icon,
             ShowIcon = true
         };
         

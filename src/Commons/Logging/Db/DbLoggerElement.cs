@@ -16,6 +16,8 @@ public static class DbLoggerElement
         {
             Name = options.TableName,
             TableName = options.TableName,
+            UseReadProcedure = false,
+            UseWriteProcedure = false,
             Info = "System Log",
             Fields =
             {

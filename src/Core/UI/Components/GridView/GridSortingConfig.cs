@@ -108,7 +108,7 @@ internal class GridSortingConfig
         var tbody = new HtmlBuilder(HtmlTag.Tbody);
         tbody.WithAttribute("id", $"sortable-{Name}");
         tbody.WithCssClass("ui-sortable jjsortable");
-        
+
         ComboBox.DataItem.ShowIcon = true;
         ComboBox.DataItem.Items = new List<DataItemValue>
         {

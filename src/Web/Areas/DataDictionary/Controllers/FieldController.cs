@@ -230,7 +230,7 @@ public class FieldController(FieldService fieldService, IControlFactory<JJSearch
         if (field.Component is not FormComponent.Lookup && field.Component is not FormComponent.Search && field.Component is not FormComponent.ComboBox) 
             return;
 
-        ViewBag.ElementNameList = await fieldService.GetElementListAsync();
+        ViewBag.ElementNameList = (await fieldService.GetElementListAsync()).OrderBy(e=>e.Key);
 
         field.DataItem.ElementMap ??= new DataElementMap();
         ViewBag.ElementFieldList = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap);

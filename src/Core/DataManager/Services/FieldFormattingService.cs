@@ -50,7 +50,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                     stringValue = null;
                 break;
             case FormComponent.Lookup
-                 when field.DataItem is { ReplaceTextOnGrid: true }:
+                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id}:
                 var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
                 var formData = new FormStateData(values, PageState.List);
                 stringValue = await LookupService.GetDescriptionAsync(field.DataItem.ElementMap, formData, value.ToString(), allowOnlyNumerics);
@@ -59,7 +59,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 stringValue = StringManager.ParseBool(value) ? "Sim" : "Não";
                 break;
             case FormComponent.Search or FormComponent.ComboBox
-                 when field.DataItem is { ReplaceTextOnGrid: true }:
+                 when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
                 var searchFormData = new FormStateData(values, userValues, PageState.List);
 
                 values.TryGetValue(field.Name, out var searchId);

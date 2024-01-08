@@ -120,7 +120,7 @@ internal class GridTableBody(JJGridView gridView)
                 value = objValue?.ToString() ?? string.Empty;
                 var formStateData = new FormStateData(values, GridView.UserValues, PageState.List);
                 HtmlBuilder cell;
-                if (field.DataItem is not null && field.DataItem.ShowIcon && field.DataItem.ReplaceTextOnGrid)
+                if (field.DataItem is not null && field.DataItem.ShowIcon && field.DataItem.GridBehavior is DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription)
                 {
                     var dataItemValues =await  GridView.DataItemService.GetValuesAsync(field.DataItem, formStateData, null,
                         value.ToString());
@@ -128,16 +128,16 @@ internal class GridTableBody(JJGridView gridView)
                     cell = new HtmlBuilder(HtmlTag.Div);
                     var icon = new JJIcon(dataItemValue!.Icon, dataItemValue.IconColor ?? string.Empty);
 
-                    if (dataItemValue.Description is not null)
+                    if (field.DataItem.GridBehavior is DataItemGridBehavior.Icon && dataItemValue.Description is not null)
                     {
                         icon.Tooltip = dataItemValue.Description;
                     }
 
                     cell.AppendComponent(icon);
                     
-                    cell.Append(HtmlTag.Span, span =>
+                    cell.AppendIf(field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription,HtmlTag.Span, span =>
                     {
-                        span.AppendText(field.DataItem.ReplaceTextOnGrid ? dataItemValue.Description! : dataItemValue.Id);
+                        span.AppendText(dataItemValue.Description ?? dataItemValue.Id);
                         span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
                     });
                 }
@@ -294,7 +294,7 @@ internal class GridTableBody(JJGridView gridView)
         switch (field.Component)
         {
             case FormComponent.ComboBox:
-                if (field.DataItem is { ShowIcon: true, ReplaceTextOnGrid: false })
+                if (field.DataItem is { ShowIcon: true, GridBehavior: DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription })
                 {
                     return "text-align:center;";
                 }
