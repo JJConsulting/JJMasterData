@@ -13,26 +13,26 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class DataImportationFactory(IDataDictionaryRepository dataDictionaryRepository,
-        IEntityRepository entityRepository,
-        ExpressionsService expressionsService,
-        IBackgroundTaskManager backgroundTaskManager,
-        FormService formService,
-        FieldsService fieldsService,
-        IFormEventHandlerResolver formEventHandlerResolver,
-        IHttpContext httpContext,
-        IComponentFactory componentFactory,
-        DataImportationWorkerFactory dataImportationWorkerFactory,
-        IEncryptionService encryptionService,
-        ILoggerFactory loggerFactory,
-        IStringLocalizer<MasterDataResources> stringLocalizer)
+internal class DataImportationFactory(
+    IDataDictionaryRepository dataDictionaryRepository,
+    IEntityRepository entityRepository,
+    ExpressionsService expressionsService,
+    IBackgroundTaskManager backgroundTaskManager,
+    FormService formService,
+    FieldsService fieldsService,
+    IFormEventHandlerResolver formEventHandlerResolver,
+    IHttpContext httpContext,
+    IComponentFactory componentFactory,
+    DataImportationWorkerFactory dataImportationWorkerFactory,
+    IEncryptionService encryptionService,
+    ILoggerFactory loggerFactory,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
     : IFormElementComponentFactory<JJDataImportation>
 {
     private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
@@ -71,16 +71,18 @@ internal class DataImportationFactory(IDataDictionaryRepository dataDictionaryRe
             DataHelper.GetCurrentUserId(HttpContext, null));
 
         var formEvent = FormEventHandlerResolver.GetFormEventHandler(elementName);
-        
+
         var dataImp = Create(formElement);
-        
+
         if (formEvent != null)
         {
             await formEvent.OnFormElementLoadAsync(dataContext, new FormElementLoadEventArgs(formElement));
-            
+
             dataImp.OnBeforeImportAsync += formEvent.OnBeforeImportAsync;
         }
-        
+
+        dataImp.Name = elementName + "-importation";
+
         return dataImp;
     }
 }
