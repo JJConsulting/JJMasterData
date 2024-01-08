@@ -63,14 +63,14 @@ public class DataImportationWorker(
     internal FormService FormService { get; } = formService;
 
 #if NETFRAMEWORK
-    private HttpContext HttpContext { get; } = HttpContext.Current;
+    private System.Web.HttpContext HttpContext { get; } = System.Web.HttpContext.Current;
 #endif
     public Task RunWorkerAsync(CancellationToken token)
     {
         return Task.Run(async () =>
         {
 #if NETFRAMEWORK
-            HttpContext.Current = HttpContext;
+            System.Web.HttpContext.Current = HttpContext;
 #endif
             var currentProcess = new DataImportationReporter();
             try
