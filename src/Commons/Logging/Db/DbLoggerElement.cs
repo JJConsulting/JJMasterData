@@ -32,17 +32,6 @@ public static class DbLoggerElement
                 },
                 new ElementField
                 {
-                    Name = options.CreatedColumnName,
-                    Label = "Created",
-                    DataType = FieldType.DateTime2,
-                    Size = 5,
-                    Filter =
-                    {
-                        Type = FilterMode.Range
-                    }
-                },
-                new ElementField
-                {
                     Name = options.LevelColumnName,
                     Label = "Level",
                     DataType = FieldType.Int,
@@ -50,6 +39,17 @@ public static class DbLoggerElement
                     Filter =
                     {
                         Type = FilterMode.Equal
+                    }
+                },
+                new ElementField
+                {
+                    Name = options.CreatedColumnName,
+                    Label = "Created",
+                    DataType = FieldType.DateTime2,
+                    Size = 5,
+                    Filter =
+                    {
+                        Type = FilterMode.Range
                     }
                 },
                 new ElementField

@@ -1674,6 +1674,7 @@ class ModalBase {
     constructor() {
         this.modalId = "jjmasterdata-modal";
         this.modalSize = ModalSize.ExtraLarge;
+        this.centered = true;
     }
 }
 class _Modal extends ModalBase {

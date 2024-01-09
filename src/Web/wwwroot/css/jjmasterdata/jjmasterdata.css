@@ -631,7 +631,7 @@ button.dropdown-toggle.form-control {
 
 .modal-iframe {
     width: 100%;
-    height: 100vh;
+    height: 80vh;
     border: 0
 }
 

@@ -24,7 +24,7 @@ abstract class ModalBase{
     public constructor() {
         this.modalId = "jjmasterdata-modal";
         this.modalSize = ModalSize.ExtraLarge;
-
+        this.centered = true;
     }
     
     abstract showIframe(url: string, title: string, size: ModalSize);
