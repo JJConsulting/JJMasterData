@@ -55,6 +55,12 @@ public class DataDictionaryFilter
     {
         var result = new Dictionary<string, object>();
         
+        
+        if (Name != null)
+        {
+            result[DataDictionaryStructure.Name] = Name;
+        }
+        
         if (ContainsTableName != null && ContainsTableName.Any())
         {
             string tableNameFilter = string.Empty;
