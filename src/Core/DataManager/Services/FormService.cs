@@ -265,56 +265,6 @@ public class FormService(IEntityRepository entityRepository,
         return result;
     }
 
-    public void AddFormEventHandler(IFormEventHandler formEventHandler)
-    {
-        if (formEventHandler != null)
-        {
-            AddEventHandlers(formEventHandler);
-        }
-    }
-
-    private void AddEventHandlers(IFormEventHandler eventHandler)
-    {
-        var type = eventHandler.GetType();
-        
-        
-        OnBeforeInsertAsync += eventHandler.OnBeforeInsertAsync;
-        OnBeforeDeleteAsync += eventHandler.OnBeforeDeleteAsync;
-        
-
-        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeUpdateAsync)))
-        {
-            OnBeforeUpdateAsync += eventHandler.OnBeforeUpdateAsync;
-        }
-
-        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeImportAsync)))
-        {
-            OnBeforeImportAsync += eventHandler.OnBeforeImportAsync;
-        }
-
-        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterDeleteAsync)))
-        {
-            OnAfterDeleteAsync += eventHandler.OnAfterDeleteAsync;
-        }
-
-        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterInsertAsync)))
-        {
-            OnAfterInsertAsync += eventHandler.OnAfterInsertAsync;
-        }
-
-        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterUpdateAsync)))
-        {
-            OnAfterUpdateAsync += eventHandler.OnAfterUpdateAsync;
-        }
-    }
-
-    private static bool IsMethodImplemented(Type type, string methodName)
-    {
-        var method = type.GetMethod(methodName);
-
-        return method is not null;
-    }
-
     private bool IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string, object> formValues)
     {
         var formState = new FormStateData(formValues, pageState);

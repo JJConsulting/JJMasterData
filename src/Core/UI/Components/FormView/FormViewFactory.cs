@@ -65,7 +65,7 @@ internal class FormViewFactory(
     private Task SetFormEventHandlerAsync(JJFormView formView, FormElement formElement)
     {
         var formEventHandler = formEventHandlerResolver.GetFormEventHandler(formElement.Name);
-        formView.FormService.AddFormEventHandler(formEventHandler);
+        formView.AddFormEventHandler(formEventHandler);
         if (formEventHandler != null)
         {
             return formEventHandler.OnFormElementLoadAsync(formView, new FormElementLoadEventArgs(formElement))!;

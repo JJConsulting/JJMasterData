@@ -26,6 +26,7 @@ using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
@@ -54,7 +55,7 @@ public class JJFormView : AsyncComponent
 {
     #region "Events"
     
-
+    public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeImportAsync;
     public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeInsertAsync;
     public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeUpdateAsync;
     public event AsyncEventHandler<FormBeforeActionEventArgs>? OnBeforeDeleteAsync;
@@ -125,6 +126,7 @@ public class JJFormView : AsyncComponent
                 return _dataImportation;
 
             _dataImportation = GridView.DataImportation;
+            _dataImportation.OnBeforeImportAsync += OnBeforeImportAsync;
             _dataImportation.OnAfterDeleteAsync += OnAfterDeleteAsync;
             _dataImportation.OnAfterInsertAsync += OnAfterInsertAsync;
             _dataImportation.OnAfterUpdateAsync += OnAfterUpdateAsync;
@@ -1477,6 +1479,57 @@ public class JJFormView : AsyncComponent
             IsModal = ComponentContext is ComponentContext.Modal,
             ParentComponentName = Name
         };
+    }
+    
+    public void AddFormEventHandler(IFormEventHandler? formEventHandler)
+    {
+        if (formEventHandler != null)
+        {
+            AddEventHandlers(formEventHandler);
+        }
+    }
+
+    private void AddEventHandlers(IFormEventHandler eventHandler)
+    {
+        var type = eventHandler.GetType();
+        
+        
+        OnBeforeInsertAsync += eventHandler.OnBeforeInsertAsync;
+        OnBeforeDeleteAsync += eventHandler.OnBeforeDeleteAsync;
+        
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeUpdateAsync)))
+        {
+            OnBeforeUpdateAsync += eventHandler.OnBeforeUpdateAsync;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnBeforeImportAsync)))
+        {
+            OnBeforeImportAsync += eventHandler.OnBeforeImportAsync;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterDeleteAsync)))
+        {
+            OnAfterDeleteAsync += eventHandler.OnAfterDeleteAsync;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterInsertAsync)))
+        {
+            OnAfterInsertAsync += eventHandler.OnAfterInsertAsync;
+        }
+
+        if (IsMethodImplemented(type, nameof(eventHandler.OnAfterUpdateAsync)))
+        {
+            OnAfterUpdateAsync += eventHandler.OnAfterUpdateAsync;
+        }
+    }
+
+
+    private static bool IsMethodImplemented(Type type, string methodName)
+    {
+        var method = type.GetMethod(methodName);
+
+        return method is not null;
     }
     
     
