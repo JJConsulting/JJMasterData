@@ -229,11 +229,11 @@ public class FieldController(FieldService fieldService, IControlFactory<JJSearch
 
         if (field.Component is not FormComponent.Lookup && field.Component is not FormComponent.Search && field.Component is not FormComponent.ComboBox) 
             return;
-
-        ViewBag.ElementNameList = (await fieldService.GetElementListAsync()).OrderBy(e=>e.Key);
-
+        
         field.DataItem.ElementMap ??= new DataElementMap();
-        ViewBag.ElementFieldList = await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap);
+        
+        ViewBag.ElementNameList = (await fieldService.GetElementListAsync()).OrderBy(e=>e.Key);
+        ViewBag.ElementFieldList = (await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap)).OrderBy(e=>e.Key);
     }
     private void RecoverCustomAttibutes(ref FormElementField field)
     {
