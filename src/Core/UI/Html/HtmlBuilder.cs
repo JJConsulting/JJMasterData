@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 
 namespace JJMasterData.Core.UI.Html;
 
@@ -138,7 +139,7 @@ public partial class HtmlBuilder
         var attributes = new StringBuilder();
         foreach (var item in _attributes)
         {
-            attributes.Append($" {item.Key}=\"{item.Value}\"");
+            attributes.Append($" {item.Key}=\"{HttpUtility.HtmlAttributeEncode(item.Value)}\"");
         }
         return attributes.ToString();
     }
