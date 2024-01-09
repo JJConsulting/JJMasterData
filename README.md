@@ -81,7 +81,8 @@ app.Run();
 ```
 4. Create a `wwwroot` folder if your project is empty
 5. Run the project and visit `/en-US/DataDictionary/Element/Index` <br>
-<img width="960" alt="image" src="https://github.com/JJConsulting/JJMasterData/assets/52143624/d6208ef1-3206-4504-b0e8-4cdd1a874fe9">
+<img width="960" alt="image" src="https://github.com/JJConsulting/JJMasterData/assets/52143624/c4bf083d-38e1-486d-aaf2-2177d7ad77ef">
+
 
 You can get the appsettings.json schema URL from [here](https://raw.githubusercontent.com/JJConsulting/JJMasterData/main/jjmasterdata.json)
 
