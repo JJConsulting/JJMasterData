@@ -8,7 +8,7 @@ namespace JJMasterData.Core.DataManager.IO;
 
 public class FormFilePathBuilder(FormElement formElement)
 {
-    private FormElement FormElement { get; set; } = formElement;
+    private FormElement FormElement { get; } = formElement;
 
     public string GetFolderPath(FormElementField field, IDictionary<string, object> formValues)
     {

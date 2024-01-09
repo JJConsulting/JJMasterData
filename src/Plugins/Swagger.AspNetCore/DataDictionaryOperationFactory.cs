@@ -10,8 +10,8 @@ namespace JJMasterData.Swagger.AspNetCore;
 
 internal class DataDictionaryOperationFactory
 {
-    private FormElement FormElement { get; set; }
-    private FormElementApiOptions Options { get; set; }
+    private FormElement FormElement { get; }
+    private FormElementApiOptions Options { get; }
     private string ModelName => FormElement.Name.ToLower().Replace("tb_", string.Empty).Replace("vw_", string.Empty);
     internal DataDictionaryOperationFactory(FormElement formElement, FormElementApiOptions options)
     {

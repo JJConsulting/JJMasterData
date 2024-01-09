@@ -24,7 +24,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Tag of the current builder.
     /// </summary>
-    public HtmlBuilderTag? Tag { get; private set; }
+    public HtmlBuilderTag? Tag { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlBuilder"/> class.

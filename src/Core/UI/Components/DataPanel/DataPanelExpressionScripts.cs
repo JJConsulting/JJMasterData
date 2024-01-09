@@ -9,7 +9,7 @@ namespace JJMasterData.Core.UI.Components;
 
 internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
 {
-    private JJDataPanel DataPanel { get; set; } = dataPanel;
+    private JJDataPanel DataPanel { get; } = dataPanel;
 
     private FormElement FormElement => DataPanel.FormElement;
 

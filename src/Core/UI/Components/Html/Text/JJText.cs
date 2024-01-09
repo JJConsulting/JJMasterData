@@ -7,7 +7,7 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 public class JJText : HtmlComponent
 {
-    private string Text { get; set; }
+    private string Text { get; }
 
     public JJText(string text)
     {

@@ -26,7 +26,7 @@ public class FormFileManager(string memoryFilesSessionName,
     /// <summary>
     /// Session variable name
     /// </summary>
-    private string MemoryFilesSessionName { get; set; } = $"{memoryFilesSessionName}_files";
+    private string MemoryFilesSessionName { get; } = $"{memoryFilesSessionName}_files";
 
     /// <summary>
     /// Always apply changes from files on disk,
