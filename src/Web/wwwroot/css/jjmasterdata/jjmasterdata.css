@@ -225,12 +225,6 @@ a.disabled {
     margin: 5px;
 }
 
-@media (min-width: 768px) {
-    .table-responsive {
-        overflow: visible;
-    }
-}
-
 .jjform-action .default-option {
     cursor: pointer !important;
 }

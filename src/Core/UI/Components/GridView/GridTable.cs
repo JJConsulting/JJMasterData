@@ -15,11 +15,11 @@ internal class GridTable(JJGridView gridView)
 
     public async Task<HtmlBuilder> GetHtmlBuilder()
     {
+        var div = new HtmlBuilder(HtmlTag.Div);
+        div.WithCssClassIf(Settings.IsResponsive,  "table-responsive");
+        
         var table = new HtmlBuilder(HtmlTag.Table);
-
         table.WithCssClass("table");
-
-        table.WithCssClassIf(Settings.IsResponsive, "table-responsive");
         table.WithCssClassIf(Settings.ShowBorder, "table-bordered");
         table.WithCssClassIf(Settings.ShowRowHover, "table-hover");
         table.WithCssClassIf(Settings.ShowRowStriped, "table-striped");
@@ -28,6 +28,8 @@ internal class GridTable(JJGridView gridView)
         table.Append(await Header.GetHtmlBuilderAsync());
         table.Append(await Body.GetHtmlBuilderAsync());
 
-        return table;
+        div.Append(table);
+        
+        return div;
     }
 }
