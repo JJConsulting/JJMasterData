@@ -15,8 +15,7 @@ public class ImportService(IDataDictionaryRepository dataDictionaryRepository, I
     public void Import()
     {
         Console.WriteLine(AppContext.BaseDirectory);
-        Console.WriteLine(@"Starting Process...
-");
+        Console.WriteLine("Starting Process...");
 
         var start = DateTime.Now;
         
@@ -29,30 +28,30 @@ public class ImportService(IDataDictionaryRepository dataDictionaryRepository, I
             {
                 var json = new StreamReader(file).ReadToEnd();
 
-                var dicParser = FormElementSerializer.Deserialize(json);
+                var formElement = FormElementSerializer.Deserialize(json);
 
-                if (dicParser != null)
+                if (formElement != null)
                 {
-                    Console.WriteLine($@"SetDictionary: {dicParser.Name}");
-                    DataDictionaryRepository.InsertOrReplace(dicParser);
+                    DataDictionaryRepository.InsertOrReplace(formElement);
+                    
+                    Console.WriteLine($@"Saving FormElement: {formElement.Name}");
 
-                    folderDictionaries.Add(dicParser);
+                    folderDictionaries.Add(formElement);
                 }
             }
         }
 
-        foreach (var dicParser in databaseDictionaries)
+        foreach (var formElement in databaseDictionaries)
         {
-            if (!folderDictionaries.Exists(dic => dic.Name.Equals(dicParser.Name)))
+            if (!folderDictionaries.Exists(dic => dic.Name.Equals(formElement.Name)))
             {
-                Console.WriteLine($@"DelDictionary: {dicParser.Name}");
-                DataDictionaryRepository.DeleteAsync(dicParser.Name).GetAwaiter().GetResult();
+                Console.WriteLine($@"Deleting FormElement: {formElement.Name}");
+                DataDictionaryRepository.DeleteAsync(formElement.Name).GetAwaiter().GetResult();
 
             }
         }
 
-        Console.WriteLine($@"
-Process started: {start}");
-        Console.WriteLine($@"Process finished: {DateTime.Now}");
+        Console.WriteLine($"Process started: {start}");
+        Console.WriteLine($"Process finished: {DateTime.Now}");
     }
 }

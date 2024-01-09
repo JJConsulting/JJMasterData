@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
@@ -106,14 +107,14 @@ public class TextGroupFactory(
         return textGroup;
     }
 
-    private void SetDefaultAttrs(JJTextGroup textGroup, FormComponent type)
+    private void SetDefaultAttrs(JJTextGroup textGroup, FormComponent component)
     {
         var listClass = new List<string>
         {
             "form-control"
         };
 
-        switch (type)
+        switch (component)
         {
             case FormComponent.Currency:
                 listClass.Add(BootstrapHelper.TextRight);
@@ -187,7 +188,7 @@ public class TextGroupFactory(
                     "'mask': '[(99) 99999-9999]', 'placeholder':'', 'greedy': 'false'");
                 break;
             case FormComponent.Hour:
-                var btn = GetDateAction(textGroup.Enabled);
+                var btn = GetDateAction(component,textGroup.Enabled);
                 btn.IconClass = "fa fa-clock";
                 textGroup.Actions.Add(btn);
 
@@ -200,7 +201,7 @@ public class TextGroupFactory(
                 break;
             case FormComponent.Date:
                 textGroup.GroupCssClass = "flatpickr date jjform-date";
-                textGroup.Actions.Add(GetDateAction(textGroup.Enabled));
+                textGroup.Actions.Add(GetDateAction(component,textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 10;
                 // textGroup.SetAttr("data-inputmask",
@@ -209,7 +210,7 @@ public class TextGroupFactory(
                 break;
             case FormComponent.DateTime:
                 textGroup.GroupCssClass = "flatpickr date jjform-datetime";
-                textGroup.Actions.Add(GetDateAction(textGroup.Enabled));
+                textGroup.Actions.Add(GetDateAction(component,textGroup.Enabled));
                 textGroup.InputType = InputType.Text;
                 textGroup.MaxLength = 19;
                 // textGroup.SetAttr("data-inputmask",
@@ -224,11 +225,11 @@ public class TextGroupFactory(
         textGroup.SetAttr("class", string.Join(" ", listClass));
     }
 
-    private JJLinkButton GetDateAction(bool isEnabled)
+    private JJLinkButton GetDateAction(FormComponent component, bool isEnabled)
     {
         var btn = ActionButtonFactory.Create();
-        btn.IconClass = $"fa fa-{BootstrapHelper.DateIcon}";
-        btn.Tooltip = StringLocalizer["Calendar"];
+        btn.IconClass =component is FormComponent.Hour ? IconType.SolidClock.GetCssClass() : $"fa fa-{BootstrapHelper.DateIcon}";
+        btn.Tooltip = component is FormComponent.Hour ? StringLocalizer["Clock"] : StringLocalizer["Calendar"];
         btn.Enabled = isEnabled;
         btn.SetAttr("data-toggle", "date");
         btn.SetAttr("tabindex", "-1");

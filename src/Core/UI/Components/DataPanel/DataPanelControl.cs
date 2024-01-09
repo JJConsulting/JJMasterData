@@ -163,7 +163,8 @@ internal class DataPanelControl
             if (field.Component != FormComponent.CheckBox)
             {
                 var label = CreateLabel(field, isRange);
-                label.CssClass += "fw-bold";
+                if(PageState is not PageState.Filter)
+                    label.CssClass += "fw-bold";
                 htmlField.AppendComponent(label);
             }
                 

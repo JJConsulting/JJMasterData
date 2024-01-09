@@ -1378,7 +1378,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Icon" xml:space="preserve">
-    <value>Icone</value>
+    <value>Ícone</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="IconId" xml:space="preserve">
@@ -3720,6 +3720,12 @@
     <value>Comportamento na Grid</value>
   </data>
   <data name="Icon with Description" xml:space="preserve">
-    <value>Icon com Descrição</value>
+    <value>Ícone com Descrição</value>
+  </data>
+  <data name="Calendar" xml:space="preserve">
+    <value>Calendário</value>
+  </data>
+  <data name="Clock" xml:space="preserve">
+    <value>Relógio</value>
   </data>
 </root>

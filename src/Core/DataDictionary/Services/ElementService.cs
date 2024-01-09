@@ -168,6 +168,23 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
             args.TotalOfRecords = result.TotalOfRecords;
         };
 
+        formView.GridView.OnRenderCellAsync += (_, args) =>
+        {
+            if (args.Field.Name == DataDictionaryStructure.Name)
+            {
+                if (args.DataRow.TryGetValue("info", out var info) && !string.IsNullOrWhiteSpace(info?.ToString()))
+                {
+                    args.HtmlResult.AppendSpan(span =>
+                    {
+                        span.WithCssClass("fa fa-question-circle help-description");
+                        span.WithToolTip(info!.ToString());
+                    });
+                }
+            }
+
+            return Task.CompletedTask;
+        };
+
         formView.GridView.OnRenderActionAsync += (_, args) =>
         {
             var elementName = args.FieldValues["name"]?.ToString();

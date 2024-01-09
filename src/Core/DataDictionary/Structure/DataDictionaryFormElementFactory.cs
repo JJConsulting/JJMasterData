@@ -30,6 +30,8 @@ public class DataDictionaryFormElementFactory(IOptions<MasterDataCoreOptions> op
         
         AddActions(formElement);
 
+        formElement.Options.Grid.UseVerticalLayoutAtFilter = true;
+        
         return formElement;
     }
 
@@ -49,10 +51,13 @@ public class DataDictionaryFormElementFactory(IOptions<MasterDataCoreOptions> op
 
     private void ConfigureFields(FormElement formElement)
     {
-        formElement.Fields[DataDictionaryStructure.Name].VisibleExpression = "exp:'{PageState}' <> 'Filter'";
+        formElement.Fields[DataDictionaryStructure.Name].CssClass = "col-sm-4";
+        formElement.Fields[DataDictionaryStructure.TableName].CssClass = "col-sm-4";
         formElement.Fields[DataDictionaryStructure.Type].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.Owner].VisibleExpression= "val:0";
+        formElement.Fields[DataDictionaryStructure.Info].VisibleExpression= "val:0";
         formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.Text;
+        formElement.Fields[DataDictionaryStructure.Json].CssClass = "col-sm-4";
         formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: '{PageState}' = 'Filter'";
         formElement.Fields[DataDictionaryStructure.Json].HelpDescription = StringLocalizer["Filter by any data within the data dictionary structure."];
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
