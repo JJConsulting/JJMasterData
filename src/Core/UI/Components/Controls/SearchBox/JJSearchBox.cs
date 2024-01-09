@@ -141,7 +141,12 @@ public class JJSearchBox : ControlBase
     /// </summary>
     public async Task<string?> GetSelectedValueAsync()
     {
-        if (AutoReloadFormFields && string.IsNullOrEmpty(_selectedValue) && Request.Form.ContainsFormValues())
+        if (!string.IsNullOrEmpty(_selectedValue))
+        {
+            return _selectedValue;
+        }
+        
+        if (AutoReloadFormFields && Request.Form.ContainsFormValues())
         {
             _selectedValue = Request.Form[Name];
         }
@@ -171,7 +176,7 @@ public class JJSearchBox : ControlBase
 
     private IHttpRequest Request { get; }
     private IEncryptionService EncryptionService { get; }
-    public DataItemService DataItemService { get; }
+    private DataItemService DataItemService { get; }
     public FormStateData FormStateData { get; internal set; }
 
     public string SelectedValue
