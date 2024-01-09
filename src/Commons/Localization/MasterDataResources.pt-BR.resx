@@ -3438,7 +3438,7 @@
     <value>Nome da Tabela</value>
   </data>
   <data name="Filter For Anything" xml:space="preserve">
-    <value>Filter por qualquer coisa</value>
+    <value>Filtre por qualquer coisa</value>
   </data>
   <data name="EnableSynchronism" xml:space="preserve">
     <value>Sincronismo Habilitado</value>
@@ -3447,7 +3447,7 @@
     <value>Última Modificação</value>
   </data>
   <data name="Filter by any data within the data dictionary structure." xml:space="preserve">
-    <value>Filter por qualquer dado dentro da estrutura do dicionário de dados.</value>
+    <value>Filtre por qualquer dado dentro da estrutura do dicionário de dados.</value>
   </data>
   <data name="1. String" xml:space="preserve">
     <value>1. String</value>
