@@ -3560,11 +3560,11 @@
   <data name="Filter Mode" xml:space="preserve">
     <value>Modo do Filtro</value>
   </data>
-  <data name="Enable Exportation " xml:space="preserve">
+  <data name="Enable Exportation" xml:space="preserve">
     <value>Habilitar Exportação</value>
   </data>
   <data name="Line Group" xml:space="preserve">
-    <value>Group de Linha</value>
+    <value>Grupo de Linha</value>
   </data>
   <data name="Is Modal" xml:space="preserve">
     <value>É Modal</value>
@@ -3727,5 +3727,14 @@
   </data>
   <data name="Clock" xml:space="preserve">
     <value>Relógio</value>
+  </data>
+  <data name="Data Behavior" xml:space="preserve">
+    <value>Comportamento</value>
+  </data>
+  <data name="Warning: This software is protected by the GNU license." xml:space="preserve">
+    <value>Aviso: Este software é protegido pela licença GNU.</value>
+  </data>
+  <data name="C# Class" xml:space="preserve">
+    <value>Classe C#</value>
   </data>
 </root>
