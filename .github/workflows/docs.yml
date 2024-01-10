@@ -1,20 +1,38 @@
-
-
-name: Docs
-
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
+permissions:
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+  
 jobs:
-  docfx:
-    runs-on: self-hosted
-
+  publish-docs:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Dotnet Setup
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.x
 
-      - name: Publish DocFX website
-        run: |
-               cd doc\Documentation
-               docfx metadata
-               docfx build
-               xcopy .\_site C:\WebSites\JJ\JJSiteInstitucional\docs\JJMasterData\v4 /s /e /y
+    - run: dotnet tool update -g docfx
+    - run: docfx doc/Documentation/docfx.json
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: 'doc/Documentation/_site'
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
