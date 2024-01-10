@@ -64,16 +64,39 @@ public class ActionScripts(ExpressionsService expressionsService,
         ActionSource actionSource
     )
     {
-        var actionMap = actionContext.ToActionMap(actionSource);
-        var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
 
-        var routeContext = RouteContext.FromFormElement(actionContext.FormElement, ComponentContext.UrlRedirect);
+        if (actionSource is ActionSource.Field or ActionSource.FormToolbar)
+        {
+            var actionMap = actionContext.ToActionMap(actionSource);
+            var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
+            
+            var routeContext = RouteContext.FromFormElement(actionContext.FormElement, ComponentContext.UrlRedirect);
 
-        var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
+            var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
 
-        return
-            $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            return
+                $"ActionHelper.executeRedirectAction('{actionContext.ParentComponentName}','{encryptedRouteContext}','{encryptedActionMap}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+        }
+
+        var script = new StringBuilder();
+        string url = ExpressionsService.ReplaceExpressionWithParsedValues(action.UrlRedirect, actionContext.FormStateData);
+        string isModal = action.IsModal ? "true" : "false";
+        string modalTitle = action.ModalTitle;
+        
+        script.Append("ActionHelper.doUrlRedirect('");
+        script.Append(url);
+        script.Append("',");
+        script.Append(isModal);
+        script.Append(",'");
+        script.Append(modalTitle);
+        script.Append("','");
+        script.Append(StringLocalizer[action.ConfirmationMessage]);
+        script.Append("','");
+        script.Append(action.ModalSize);
+        script.Append("');");
+
+        return script.ToString();
     }
 
     public string GetFormActionScript(ActionContext actionContext, ActionSource actionSource, bool encode = true)

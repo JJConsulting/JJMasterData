@@ -76,6 +76,21 @@ class ActionHelper {
         return true;
     }
 
+    static doUrlRedirect(url, isModal, title, confirmMessage, modalSize: ModalSize = 1) {
+        if (confirmMessage) {
+            const result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        if (isModal) {
+            popup.show(title, url, modalSize);
+        }
+        else {
+            window.location.href = url;
+        }
+    }
+
     private static executeUrlRedirect(url: string) {
         postFormValues({
             url: url,
@@ -83,7 +98,7 @@ class ActionHelper {
                 if (data.urlAsModal) {
                     if(data.isIframe){
                         defaultModal.showIframe(data.urlRedirect, data.modalTitle, data.modalSize);
-                    } 
+                    }
                     else{
                         defaultModal.showUrl(data.urlRedirect, data.modalTitle, data.modalSize);
                     }

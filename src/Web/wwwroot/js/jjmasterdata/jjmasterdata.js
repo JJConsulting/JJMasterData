@@ -69,6 +69,20 @@ class ActionHelper {
         this.executeUrlRedirect(url);
         return true;
     }
+    static doUrlRedirect(url, isModal, title, confirmMessage, modalSize = 1) {
+        if (confirmMessage) {
+            const result = confirm(confirmMessage);
+            if (!result) {
+                return false;
+            }
+        }
+        if (isModal) {
+            popup.show(title, url, modalSize);
+        }
+        else {
+            window.location.href = url;
+        }
+    }
     static executeUrlRedirect(url) {
         postFormValues({
             url: url,

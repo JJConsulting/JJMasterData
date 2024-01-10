@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
@@ -68,6 +70,9 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
 
     public IDictionary<string, object?> GetFields(Element element, Dictionary<string, object> primaryKeys)
     {
+        if (!primaryKeys.Any())
+            throw new ArgumentException("Your need at least one value at your primary keys.", nameof(primaryKeys));
+        
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = Provider.GetReadCommand(element,new EntityParameters
@@ -90,6 +95,9 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
 
     public async Task<IDictionary<string, object?>> GetFieldsAsync(Element element, IDictionary<string, object> primaryKeys)
     {
+        if (!primaryKeys.Any())
+            throw new ArgumentException("Your need at least one value at your primary keys.", nameof(primaryKeys));
+        
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
         var cmd = Provider.GetReadCommand(element,new EntityParameters
