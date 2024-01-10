@@ -80,7 +80,7 @@ public class ActionScripts(ExpressionsService expressionsService,
         }
 
         var script = new StringBuilder();
-        string url = ExpressionsService.ReplaceExpressionWithParsedValues(action.UrlRedirect, actionContext.FormStateData);
+        string url = ExpressionsService.ReplaceExpressionWithParsedValues(HttpUtility.UrlDecode(action.UrlRedirect), actionContext.FormStateData);
         string isModal = action.IsModal ? "true" : "false";
         string isIframe = action.IsIframe ? "true" : "false";
         string modalTitle = action.ModalTitle;
