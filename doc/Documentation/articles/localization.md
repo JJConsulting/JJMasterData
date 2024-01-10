@@ -21,7 +21,7 @@ Go to ```/en-us/DataDictionary/Localization``` or click at the localization moda
 <br>
 
 > [!TIP] 
-> By default we write the resources in a table, allowed the user create dictionaries dynamically by adding translated words and texts, you can set the table name with the TableResources property in the JJMasterDataOptions class.
+> By default we write the resources in a table, allowed the user create dictionaries dynamically by adding translated words and texts, you can set the table name with the LocalizationTableName property in the <xref:JJMasterData.Commons.Configuration.Options.MasterDataCommonsOptions> class.
 
 ## Implement IStringLocalizer<MasterDataResources>
 
