@@ -63,8 +63,8 @@
       },
       "_gitUrlPattern": "github",
       "_disableSideFilter":true,
-      "_appTitle": "JJMasterData",
       "_appLogoPath": "logo.png",
+
       "_appFooter": "Sun Version - 4.0.x",
       "_copyrightFooter":"2023 JJConsulting. All rights reserved."
     },
