@@ -2323,8 +2323,8 @@ class TextFileHelper {
         });
     }
     static refreshInputs(id, presentationText, valueText) {
-        const presentationElement = window.parent.document.getElementById(`${id}-presentation`);
-        const valueElement = window.parent.document.getElementById(id);
+        const presentationElement = document.getElementById(`${id}-presentation`);
+        const valueElement = document.getElementById(id);
         if (presentationElement) {
             presentationElement.value = presentationText;
         }

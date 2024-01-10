@@ -126,7 +126,7 @@ public class JJTextFile(IHttpRequest request,
 
         if (result is RenderedComponentResult uploadViewResult)
         {
-            html.Append((HtmlBuilder)uploadViewResult.HtmlBuilder);
+            html.Append(uploadViewResult.HtmlBuilder);
             html.AppendScript(Scripts.GetRefreshScript());
         }
         else 

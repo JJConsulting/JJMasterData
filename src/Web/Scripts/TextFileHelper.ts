@@ -22,8 +22,8 @@ class TextFileHelper {
     }
 
     static refreshInputs(id: string, presentationText: string, valueText: string) {
-        const presentationElement = window.parent.document.getElementById(`${id}-presentation`) as HTMLInputElement;
-        const valueElement = window.parent.document.getElementById(id) as HTMLInputElement;
+        const presentationElement = document.getElementById(`${id}-presentation`) as HTMLInputElement;
+        const valueElement =document.getElementById(id) as HTMLInputElement;
 
         if (presentationElement) {
             presentationElement.value = presentationText;
