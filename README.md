@@ -24,7 +24,7 @@
 JJMasterData is an open-source .NET library to help you create dynamic CRUDs quickly from data dictionaries (database metadata), along with other boilerplate-intensive things like exporting and importing data.
 
 ## Useful Links
-* [Library Documentation](https://jjconsulting.tech/docs/jjmasterdata/v3)
+* [Library Documentation](https://md.jjconsulting.tech)
 * [NuGet.Org](https://www.nuget.org/profiles/jjconsulting)
 * [Community Discord Server](https://discord.gg/s9F2ntBXnn)
 
@@ -109,10 +109,11 @@ npm i
 ## Special Thanks
 
 #### Code contributors
-![Alt](https://repobeats.axiom.co/api/embed/d509fb71a5aae2a10fe80b8d163936470ef90925.svg "Repobeats analytics image")
 <a href="https://github.com/jjconsulting/JJMasterData/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=jjconsulting/jjmasterdata" />
 </a>
+![Alt](https://repobeats.axiom.co/api/embed/d509fb71a5aae2a10fe80b8d163936470ef90925.svg "Repobeats analytics image")
+
 
 <br>
 
