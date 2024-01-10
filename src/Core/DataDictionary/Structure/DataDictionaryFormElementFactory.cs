@@ -189,6 +189,7 @@ public class DataDictionaryFormElementFactory(
                 OnClientClick =
                     $"DataDictionaryUtils.exportElement('{ComponentNameGenerator.Create(_options.DataDictionaryTableName)}', '{UrlHelper.GetUrl("Export", "Element", "DataDictionary")}', '{StringLocalizer["Select one or more dictionaries"]}');"
             },
+            
             new UrlRedirectAction
             {
                 Name = "btnLog",
@@ -202,6 +203,7 @@ public class DataDictionaryFormElementFactory(
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
             },
+            
             new UrlRedirectAction
             {
                 Name = "btnAppSettings",
