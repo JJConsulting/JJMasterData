@@ -82,6 +82,7 @@ public class ActionScripts(ExpressionsService expressionsService,
         var script = new StringBuilder();
         string url = ExpressionsService.ReplaceExpressionWithParsedValues(action.UrlRedirect, actionContext.FormStateData);
         string isModal = action.IsModal ? "true" : "false";
+        string isIframe = action.IsIframe ? "true" : "false";
         string modalTitle = action.ModalTitle;
         
         script.Append("ActionHelper.doUrlRedirect('");
@@ -91,9 +92,11 @@ public class ActionScripts(ExpressionsService expressionsService,
         script.Append(",'");
         script.Append(modalTitle);
         script.Append("','");
+        script.Append((int)action.ModalSize);
+        script.Append("',");
+        script.Append(isIframe);
+        script.Append(",'");
         script.Append(StringLocalizer[action.ConfirmationMessage]);
-        script.Append("','");
-        script.Append(action.ModalSize);
         script.Append("');");
 
         return script.ToString();

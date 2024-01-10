@@ -76,15 +76,20 @@ class ActionHelper {
         return true;
     }
 
-    static doUrlRedirect(url, isModal, title, confirmMessage, modalSize: ModalSize = 1) {
-        if (confirmMessage) {
-            const result = confirm(confirmMessage);
+    static doUrlRedirect(url, isModal, modalTitle,modalSize, isIframe,confirmationMessage) {
+        if (confirmationMessage) {
+            const result = confirm(confirmationMessage);
             if (!result) {
                 return false;
             }
         }
         if (isModal) {
-            popup.show(title, url, modalSize);
+            if(isIframe){
+                defaultModal.showIframe(url, modalTitle, modalSize);
+            }
+            else{
+                defaultModal.showUrl(url, modalTitle, modalSize);
+            }
         }
         else {
             window.location.href = url;

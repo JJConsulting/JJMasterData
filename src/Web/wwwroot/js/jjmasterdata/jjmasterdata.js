@@ -69,15 +69,20 @@ class ActionHelper {
         this.executeUrlRedirect(url);
         return true;
     }
-    static doUrlRedirect(url, isModal, title, confirmMessage, modalSize = 1) {
-        if (confirmMessage) {
-            const result = confirm(confirmMessage);
+    static doUrlRedirect(url, isModal, modalTitle, modalSize, isIframe, confirmationMessage) {
+        if (confirmationMessage) {
+            const result = confirm(confirmationMessage);
             if (!result) {
                 return false;
             }
         }
         if (isModal) {
-            popup.show(title, url, modalSize);
+            if (isIframe) {
+                defaultModal.showIframe(url, modalTitle, modalSize);
+            }
+            else {
+                defaultModal.showUrl(url, modalTitle, modalSize);
+            }
         }
         else {
             window.location.href = url;
@@ -1633,8 +1638,8 @@ class MessageBox {
             html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-dismiss="modal"></button>\r\n';
         }
         else {
-            html += '        <button type="button" id="site-modal-btn1" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
-            html += '        <button type="button" id="site-modal-btn2" class="btn btn-secondary" data-bs-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn1" class="btn btn-default" data-bs-dismiss="modal"></button>\r\n';
+            html += '        <button type="button" id="site-modal-btn2" class="btn btn-default" data-bs-dismiss="modal"></button>\r\n';
         }
         html += "      </div>\r\n";
         html += "    </div>\r\n";
@@ -1688,7 +1693,6 @@ class ModalBase {
     constructor() {
         this.modalId = "jjmasterdata-modal";
         this.modalSize = ModalSize.ExtraLarge;
-        this.centered = true;
     }
 }
 class _Modal extends ModalBase {
