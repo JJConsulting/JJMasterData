@@ -112,10 +112,13 @@ npm i
 <a href="https://github.com/jjconsulting/JJMasterData/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=jjconsulting/jjmasterdata" />
 </a>
+
+<br>
+
 ![Alt](https://repobeats.axiom.co/api/embed/d509fb71a5aae2a10fe80b8d163936470ef90925.svg "Repobeats analytics image")
 
 
-<br>
+
 
 ## Bugs and feature requests 🐛
 Have a bug or a feature request? 
