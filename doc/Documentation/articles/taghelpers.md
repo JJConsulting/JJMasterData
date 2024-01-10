@@ -54,4 +54,4 @@ In the example above the following HTML code is generated
         url-action="http://www.jjconsulting.tech"
         text="JJ Consulting"/>
 ````
-You can check all available TagHelpers at <xhref:JJMasterData.Web.TagHelpers>
+You can check all available TagHelpers at <a href="/api/JJMasterData.Web.TagHelpers.html">API reference</a>.

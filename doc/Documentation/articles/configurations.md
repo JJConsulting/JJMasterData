@@ -64,23 +64,23 @@ builder.Services.AddJJMasterDataWeb();
 ```
 You can change any property from:
 
-- <xhref:JJMasterData.Commons.Configuration.Options.MasterDataCommonsOptions>
-- <xhref:JJMasterData.Core.Configuration.Options.MasterDataCoreOptions>
-- <xhref:JJMasterData.Web.Configuration.Options.MasterDataWebOptions>
+- <xref:JJMasterData.Commons.Configuration.Options.MasterDataCommonsOptions>
+- <xref:JJMasterData.Core.Configuration.Options.MasterDataCoreOptions>
+- <xref:JJMasterData.Web.Configuration.Options.MasterDataWebOptions>
 <br>
 
 **Logging**
 [Read more](logging.md) about logging.
 
-**Internationalization**
+**Localization**
 ```cs
-builder.Services.AddJJMasterDataWeb();
-builder.Services.AddUrlRequestCultureProvider(
-    new CultureInfo("zh-CN"),
-    new CultureInfo("en-US")
-);
+app.UseJJMasterDataWeb(options =>
+{
+    options.AdditionalCultures.Add(new CultureInfo("es-AR"));
+});
+
 ```
-[Read more](internationalization.md) about internationalization.
+[Read more](localization.md) about localization.
 <br>
 
 

@@ -12,20 +12,25 @@ namespace JJMasterData.Web.Configuration;
 public static class WebApplicationExtensions
 {
     
-    public static WebApplication UseJJMasterDataWeb(this WebApplication app, string defaultCulture = "en-US")
+    public static WebApplication UseJJMasterDataWeb(this WebApplication app, Action<MasterDataRoutingOptions>? configure = null)
     {
         app.UseSession();
 
         app.UseRequestLocalization(options =>
         {
-            var supportedCultures = new[]
+            var routingOptions = new MasterDataRoutingOptions();
+            configure?.Invoke(routingOptions);
+            
+            var supportedCultures = new List<CultureInfo>
             {
-                new CultureInfo("en-US"),
-                new CultureInfo("pt-BR"),
-                new CultureInfo("zh-CN")
+                new("en-US"),
+                new("pt-BR"),
+                new("zh-CN")
             };
+            
+            supportedCultures.AddRange(routingOptions.AdditionalCultures);
 
-            options.DefaultRequestCulture = new RequestCulture(defaultCulture);
+            options.DefaultRequestCulture = new RequestCulture(routingOptions.DefaultCulture);
             options.SupportedCultures = supportedCultures;
             options.SupportedUICultures = supportedCultures;
 
@@ -45,7 +50,7 @@ public static class WebApplicationExtensions
                 }
                 else
                 {
-                    currentCulture = defaultCulture;
+                    currentCulture = routingOptions.DefaultCulture;
                 }
 
                 var requestCulture = new ProviderCultureResult(currentCulture);
@@ -87,7 +92,7 @@ public static class WebApplicationExtensions
             pattern = $"{options.Prefix.Replace("/", string.Empty)}/{pattern}";
 
         if (options.EnableCultureProvider)
-            pattern = $"/{{culture={options.DefaultCulture}}}/{pattern}";
+            pattern = $"/{{culture}}/{pattern}";
 
         return app.MapControllerRoute(
             name: "JJMasterData",

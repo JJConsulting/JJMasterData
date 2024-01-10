@@ -11,10 +11,10 @@
     href: custom_rules.md
   - name: TagHelpers
     href: taghelpers.md
+  - name: Localization
+    href: localization.md
   - name: Logging
     href: logging.md
-  - name: Internationalization
-    href: internationalization.md
   - name: Authorization
     href: authorization.md
   - name: Expressions

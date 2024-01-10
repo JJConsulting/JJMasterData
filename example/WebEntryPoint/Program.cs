@@ -1,5 +1,6 @@
 // This is a debug and example purposes Program.cs
 
+using System.Globalization;
 using JJMasterData.NCalc.Configuration;
 using JJMasterData.Web.Configuration;
 using Microsoft.AspNetCore.ResponseCompression;
