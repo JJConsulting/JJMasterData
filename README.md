@@ -86,7 +86,7 @@ app.Run();
 
 You can get the appsettings.json schema URL from [here](https://raw.githubusercontent.com/JJConsulting/JJMasterData/main/jjmasterdata.json)
 
-See all steps in [documentation](https://portal.jjconsulting.tech/jjdoc/articles/getting_started.html).
+See all steps in [documentation](https://md.jjconsulting.tech/articles/getting_started.html).
 
 <br>
 
