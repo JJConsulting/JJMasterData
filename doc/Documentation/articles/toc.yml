@@ -31,7 +31,7 @@
     href: tutorials/source_control.md
   - name: UI Options
     href: tutorials/ui_options.md
-  - name: Configuring Data Upload
+  - name: Configuring File Upload
     href: tutorials/data_file.md
   - name: Importing and Exporting Data Dictionaries
     href: tutorials/import_export.md

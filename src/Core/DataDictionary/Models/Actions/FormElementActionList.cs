@@ -57,15 +57,17 @@ public abstract class FormElementActionList : IList<BasicAction>
 
     public void Add(BasicAction item)
     {
-        ValidateAction(item);
         List.Add(item);
+    }
+    
+    public void AddRange(IEnumerable<BasicAction> items)
+    {
+        List.AddRange(items);
     }
 
 
     public void Set(BasicAction item)
     {
-        ValidateAction(item);
-
         var existingAction = List.FirstOrDefault(a => a.Name == item.Name);
         if (existingAction != null)
         {
@@ -108,7 +110,6 @@ public abstract class FormElementActionList : IList<BasicAction>
 
     public void Insert(int index, BasicAction item)
     {
-        ValidateAction(item);
         List.Insert(index, item);
     }
 
@@ -126,15 +127,6 @@ public abstract class FormElementActionList : IList<BasicAction>
     {
         get => List[index];
         set => List[index] = value;
-    }
-
-    internal static void ValidateAction(BasicAction action)
-    {
-        if (action == null)
-            throw new ArgumentNullException(nameof(action));
-
-        if (string.IsNullOrEmpty(action.Name))
-            throw new ArgumentException("Property name action is not valid");
     }
     
     protected void EnsureActionExists<T>() where T : BasicAction, new()

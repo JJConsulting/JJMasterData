@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data.Entity.Models;
 using Newtonsoft.Json;
@@ -9,17 +10,24 @@ namespace JJMasterData.Core.DataDictionary.Models.Actions;
 /// </summary>
 public abstract class BasicAction
 {
-    /// <summary>
-    /// Identifier of the component
-    /// </summary>
-    /// <remarks>
-    /// <div class="IMPORTANT">
-    ///<h5>IMPORTANT</h5>
-    ///<p>Don't try to create a action with a repeated name. This can cause unforessen consequences.</p>
-    ///</div>
-    /// </remarks>
+    private string _name;
+
+    ///  <summary>
+    ///  Identifier of the component
+    ///  </summary>
+    ///  <exception cref="ArgumentNullException"></exception>
+    ///  <remarks>
+    ///  <div class="IMPORTANT">
+    /// <h5>IMPORTANT</h5>
+    /// <p>Don't try to create a action with a repeated name. This can cause unforessen consequences.</p>
+    /// </div>
+    ///  </remarks>
     [JsonProperty("name")]
-    public string Name { get; set; }
+    public string Name
+    {
+        get => _name;
+        set => _name = value ?? throw new ArgumentException("Action name cannot be null");
+    }
 
     /// <summary>
     /// Action description

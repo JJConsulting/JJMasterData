@@ -27,12 +27,4 @@ public class GridTableActionList : FormElementActionList
         EnsureActionExists<EditAction>();
         EnsureActionExists<ViewAction>();
     }
-
-    public void Add(UserCreatedAction item)
-    {
-        ValidateAction(item);
-        List.Add(item);
-        
-    }
-
 }
