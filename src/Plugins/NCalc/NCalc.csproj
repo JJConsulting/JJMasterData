@@ -12,10 +12,10 @@
         <PackageId>JJMasterData.NCalc</PackageId>
         <PackageTags>ncalc,jjmasterdata</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageReleaseNotes>Updated NCalc to 3.9.0 (Case insensitive support.)</PackageReleaseNotes>
-   	    <Version>1.0.1</Version>
-    	<AssemblyVersion>1.0.1</AssemblyVersion>
-      <FileVersion>1.0.1</FileVersion>
+        <PackageReleaseNotes>Updated NCalc to 3.10.0</PackageReleaseNotes>
+   	    <Version>1.0.2</Version>
+    	<AssemblyVersion>1.0.2</AssemblyVersion>
+      <FileVersion>1.0.2</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="NCalcSync" Version="3.9.0" />
+      <PackageReference Include="NCalcSync" Version="3.10.0" />
     </ItemGroup>
 
 
