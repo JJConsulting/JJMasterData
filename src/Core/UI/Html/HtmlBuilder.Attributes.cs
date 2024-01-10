@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
+using System.Web;
 
 namespace JJMasterData.Core.UI.Html;
 
@@ -139,7 +140,7 @@ public partial class HtmlBuilder
     {
         if (tooltip != null && !string.IsNullOrEmpty(tooltip))
         {
-            _attributes["title"] = tooltip;
+            _attributes["title"] = HttpUtility.HtmlAttributeEncode(tooltip);
             _attributes[BootstrapHelper.DataToggle] = "tooltip";
         }
 
