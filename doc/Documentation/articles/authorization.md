@@ -109,7 +109,6 @@ If you want to protect specific actions or fields in your DataDictionary, you wi
 own [JJFormView](components/form_view.md) in your custom view.
 <br>
 
-
 > [!TIP]
 > Don't forget to secure every policy in **production**, this is just a example for learning purposes.
 

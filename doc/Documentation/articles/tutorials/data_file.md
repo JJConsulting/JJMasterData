@@ -1,7 +1,7 @@
 
-# DataFile - Configuring Data Upload
+# DataFile - Configuring File Upload
 
-JJDataFile is the component responsible to manipulate files at your FormView.
+<xref:JJMasterData.Core.UI.Components.JJTextFile> is the component responsible to manipulate files at your <xref:JJMasterData.Core.UI.Components.JJFormView>.
 
 ## How to configure a property folder path?
 

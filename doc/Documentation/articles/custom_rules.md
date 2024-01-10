@@ -13,7 +13,6 @@ The first way is the recommended, Event Handlers don't customize the database an
 ## Overview
 The purpose of a class implementing <xref:JJMasterData.Core.Events.Abstractions.IFormEventHandler>, is to patronize the customizations and programmatically customize your dictionary rules without a custom view.
 
-
 To customize your business rules you can use one of these:
 
 ## C# interface implementations

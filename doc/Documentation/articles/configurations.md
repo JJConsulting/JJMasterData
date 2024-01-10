@@ -70,6 +70,7 @@ You can change any property from:
 <br>
 
 **Logging**
+
 [Read more](logging.md) about logging.
 
 **Localization**

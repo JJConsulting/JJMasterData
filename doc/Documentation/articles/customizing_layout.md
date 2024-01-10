@@ -4,9 +4,9 @@ By default a bootstrap.min.css is added, but you can modified it.<br>
 
 You have two options.
 
-## Using your own layout
+## Using your own Bootstrap
 
-Setting `CustomBootstrapPath` to `true` the link from default `bootstrap.min.css` not will be generate in `_MasterDataStylesheets` and your custom path will be used.
+Setting the `CustomBootstrapPath` property, `bootstrap.min.css` not will be generate in `_MasterDataStylesheets` and your custom path will be used.
 ```cs
 builder.Services.AddJJMasterDataWeb(o =>
 {
@@ -16,17 +16,13 @@ builder.Services.AddJJMasterDataWeb(o =>
 > [!TIP]
 > You can also set this variable in a `appsettings.json`, see how to do this in [configurations](configurations.md) section.
 
-In your project folder Views/Shared add the files:
-```
-_MasterDataLayout.cshtml
-_MasterDataLayout.Modal.cshtml
-```
-> [!TIP]
-> You can modified the layout name, setting the variables `JJMasterDataWeb.LayoutPath` and `JJMasterDataWeb.ModalLayoutPath`
+## Using your own Layout
 
-Inside this file put a your custom link with the .css file.<br>
-It'll look like this:
+To use your own the layout, modify the properties `LayoutPath` and `ModalLayoutPath` at <xref:JJMasterData.Web.Configuration.Options.MasterDataWebOptions>
 
+Also don't forget to add our partials to have the required front-end dependencies.
+
+Your custom layout will look like this:
 ```html
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
@@ -54,6 +50,3 @@ It'll look like this:
 </body>
 </html>
 ```
-At runtime, the system will check if the `_MasterDataLayout.cshtml` & `_MasterDataLayout.PopUp.cshtml` (or your custom layouts path) exist, if so, it will use the layouts configured in that files.
-
-#
