@@ -97,7 +97,7 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
             .WithAttribute("aria-haspopup", "true")
             .WithAttribute("aria-expanded", "false")
             .WithCssClass("dropdown-toggle")
-            .WithCssClassIf(ShowAsButton, BootstrapHelper.DefaultButton)
+            .WithCssClassIf(ShowAsButton, "btn btn-default")
             .AppendTextIf(!string.IsNullOrEmpty(CaretText), CaretText)
             .AppendIf(BootstrapHelper.Version == 3, HtmlTag.Span, s =>
             {

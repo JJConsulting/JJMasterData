@@ -327,7 +327,7 @@
 
     void Refresh()
     {
-        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
+        <a class="btn btn-default btn-small" href="@Url.Action("Index", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
             <span class="fa fa-refresh fa-fw fa-fw"></span>
             <span>@StringLocalizer["Refresh"]</span>
         </a>
@@ -335,7 +335,7 @@
 
     void Delete()
     {
-        <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
+        <a class="btn btn-default btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
             <span class="fa fa-trash"></span>
             <span>@StringLocalizer["Delete"]</span>
         </a>
@@ -343,7 +343,7 @@
 
     void Copy()
     {
-        <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="copy();">
+        <button type="button" class="btn btn-default btn-small" onclick="copy();">
             <span class="fa fa-files-o fa-fw fa-fw"></span>
             <span>&nbsp;@StringLocalizer["Copy"]</span>
         </button>

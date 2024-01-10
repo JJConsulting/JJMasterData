@@ -84,7 +84,7 @@ public class JJTextRange(IFormValues formValues,
         return new HtmlBuilder(HtmlTag.Button)
             .WithAttribute("type", "button")
             .WithAttribute("id", $"dropdown_{Name}")
-            .WithCssClass($"dropdown-toggle{BootstrapHelper.DefaultButton}")
+            .WithCssClass($"dropdown-toggle btn btn-default")
             .WithAttribute("aria-haspopup", "true")
             .WithAttribute("aria-expanded", "true")
             .WithAttribute(BootstrapHelper.DataToggle, "dropdown")

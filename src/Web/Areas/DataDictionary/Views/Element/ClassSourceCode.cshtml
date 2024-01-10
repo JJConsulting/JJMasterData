@@ -4,7 +4,7 @@
 <div class="jjrelative">
     <div class="bs-clipboard">
         <div class="btn-group">
-            <button type="button" class="@BootstrapHelper.DefaultButton btn-small btn-sm" onclick="copyContent(this);" data-placement="top" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Copy to Clipboard"]">
+            <button type="button" class="btn btn-default btn-small btn-sm" onclick="copyContent(this);" data-placement="top" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Copy to Clipboard"]">
                 <span class="fa fa-copy fa-fw"></span>
                 &nbsp;@StringLocalizer["Copy"]
             </button>
@@ -29,7 +29,7 @@
 
         setTimeout(function() {
             $(obj).html(btnContent)
-                .attr("class", "@BootstrapHelper.DefaultButton btn-small btn-sm");
+                .attr("class", "btn btn-default btn-small btn-sm");
         },2000);
     }
 

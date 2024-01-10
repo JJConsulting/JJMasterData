@@ -126,17 +126,17 @@
                 <span>&nbsp;@StringLocalizer["Save"]</span>
             </button>
 
-            <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Index", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })">
+            <a class="btn btn-default btn-small" href="@Url.Action("Index", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })">
                 <span class="fa fa-refresh fa-fw fa-fw"></span>
                 <span>&nbsp;@StringLocalizer["Refresh"]</span>
             </a>
 
-            <a class="@BootstrapHelper.DefaultButton btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })">
+            <a class="btn btn-default btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })">
                 <span class="fa fa-trash"></span>
                 <span>&nbsp;@StringLocalizer["Delete"]</span>
             </a>
 
-            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="copy();">
+            <button type="button" class="btn btn-default btn-small" onclick="copy();">
                 <span class="fa fa-files-o fa-fw fa-fw"></span>
                 <span>&nbsp;@StringLocalizer["Copy"]</span>
             </button>

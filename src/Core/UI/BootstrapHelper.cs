@@ -14,15 +14,6 @@ public static class BootstrapHelper
     public static int Version { get; set; } = 5;
     #endregion
 
-    #region Button
-    private static string Button(string className) => $" btn btn-{className}";
-    public static string DefaultButton => Version switch
-    {
-        >= 4 => Button("secondary"),
-        _ => Button("default")
-    };
-    #endregion
-
     #region Panel
     public static string GetPanel(string className)
     {

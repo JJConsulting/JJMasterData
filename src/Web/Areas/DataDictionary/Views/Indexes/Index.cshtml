@@ -38,7 +38,7 @@
 {
     <div class="row">
         <div class="col-sm-8">
-            <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="defaultModal.showIframe('@Url.Action("Detail", "Indexes", new { elementName = ViewBag.ElementName })','ElementIndex');">
+            <button type="button" class="btn btn-default btn-small" onclick="defaultModal.showIframe('@Url.Action("Detail", "Indexes", new { elementName = ViewBag.ElementName })','ElementIndex');">
                 <span class="fa fa-plus-circle"></span>
                 <span>&nbsp;@StringLocalizer["New Index"]</span>
             </button>

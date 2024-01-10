@@ -151,7 +151,7 @@ public class JJLinkButton : HtmlComponent
                 !cssClass.Contains(" btn") &&
                 !cssClass.Equals("btn"))
             {
-                cssClass += BootstrapHelper.DefaultButton; 
+                cssClass += " btn btn-default"; 
             }
         }
 

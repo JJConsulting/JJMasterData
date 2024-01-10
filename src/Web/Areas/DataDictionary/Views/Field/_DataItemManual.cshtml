@@ -93,7 +93,7 @@
                                 @Html.Raw(await iconSearchBox.GetResultAsync())
                             </div>
                             <div class="col-sm-2">
-                                <button class="@BootstrapHelper.DefaultButton" type="button" onclick="defaultModal.showUrl('@Url.Action("Index", "Icons")','Icons',);">
+                                <button class="btn btn-default" type="button" onclick="defaultModal.showUrl('@Url.Action("Index", "Icons")','Icons',);">
                                     <span class="fa fa-search"></span>
                                 </button>
                             </div>
@@ -117,11 +117,11 @@
         <tr>
             <td colspan="@(showImage ? 5 : 3)">
                 <div class="btn-group dropup">
-                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small" onclick="addDataItem(1);">
+                    <button type="button" class="btn btn-default btn-small" onclick="addDataItem(1);">
                         <span class="fa fa-plus-circle"></span>
                         <span>&nbsp;@StringLocalizer["Add"]</span>
                     </button>
-                    <button type="button" class="@BootstrapHelper.DefaultButton btn-small dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-default btn-small dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
                         <span class="caret"></span>
                         <span class="sr-only">@StringLocalizer["Toggle Dropdown"]</span>
                     </button>
@@ -135,7 +135,7 @@
                     </ul>
                 </div>
 
-                <button class="@BootstrapHelper.DefaultButton btn-small" onclick="removeAllDataItem();">
+                <button class="btn btn-default btn-small" onclick="removeAllDataItem();">
                     <span class="fa fa-trash"></span>
                     <span>&nbsp;@StringLocalizer["Remove All"]</span>
                 </button>

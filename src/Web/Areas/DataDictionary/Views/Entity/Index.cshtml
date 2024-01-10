@@ -19,7 +19,7 @@
     <input asp-for="MenuId" hidden/>
     <div class="row">
         <div class="col-sm-12">
-            <button name="action" type="button" onclick="location.href='@Url.Action("Edit", new { elementName = Model.ElementName })'" class="@BootstrapHelper.DefaultButton btn-small">
+            <button name="action" type="button" onclick="location.href='@Url.Action("Edit", new { elementName = Model.ElementName })'" class="btn btn-default btn-small">
                 <span class="fa fa-pencil"></span>
                 <span>&nbsp;@StringLocalizer["Edit"]</span>
             </button>

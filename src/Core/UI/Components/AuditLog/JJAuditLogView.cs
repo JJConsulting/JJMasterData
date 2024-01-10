@@ -305,7 +305,7 @@ public class JJAuditLogView : AsyncComponent
     {
         var btn = _componentFactory.Html.LinkButton.Create();
         btn.Type = LinkButtonType.Button;
-        btn.CssClass = $"{BootstrapHelper.DefaultButton} btn-small";
+        btn.CssClass = "btn btn-default btn-small";
         btn.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{FormElement.Name}','');";
         btn.IconClass = IconType.ArrowLeft.GetCssClass();
         btn.Text = StringLocalizer["Back"];

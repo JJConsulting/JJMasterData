@@ -13,11 +13,11 @@
     <input asp-for="MenuId" hidden/>
     <div class="row">
         <div class="col-sm-12">
-            <button type="submit" class="@BootstrapHelper.DefaultButton btn-small">
+            <button type="submit" class="btn btn-default btn-small">
                 <span class="fa fa-check"></span>
                 <span>&nbsp;@StringLocalizer["Save"]</span>
             </button>
-            <button class="@BootstrapHelper.DefaultButton btn-small" type="button" onclick="location.href='@Url.Action("Index" ,new {elementName = Model.ElementName})'">
+            <button class="btn btn-default btn-small" type="button" onclick="location.href='@Url.Action("Index" ,new {elementName = Model.ElementName})'">
                 <span class="fa fa-times">
                 </span>
                 <span>&nbsp;@StringLocalizer["Cancel"]</span>
