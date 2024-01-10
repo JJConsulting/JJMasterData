@@ -50,6 +50,7 @@ Dynamic values will be recovered in the following order:
 2. FormValues
 3. System keywords
 4. UserSession
+5. Claims
 
 ## Examples
 

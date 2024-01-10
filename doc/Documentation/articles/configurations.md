@@ -5,22 +5,23 @@
 There are three ways to configure an application:
 <br><br>
 
-**1)** Add configuration key in appsettings.json. On .NET Framework you will need to add `IConfiguration` via `Microsoft.Extensions.Configuration`
+**1)** Add your configuration keys in appsettings.json. On .NET Framework you will need to add `IConfiguration` via `Microsoft.Extensions.Configuration`
 
 > [!TIP]
 > To autocomplete with JJMasterData keys in your text editor, put this URL in the JSON Schema of your IDE.
 (https://raw.githubusercontent.com/JJConsulting/JJMasterData/main/jjmasterdata.json
-<details><summary> >> appsettings.json (click to expand)</summary><br>
+
+<details><summary> >> Example appsettings.json (click to expand)</summary><br>
 
 ```json
 {
   "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "ConnectionString": "data source=data source=localhost;initial catalog=JJMasterData;Integrated Security=True"
-  },
   "JJMasterData": {
+    "ConnectionStrings": {
+      "ConnectionString": "data source=data source=localhost;initial catalog=JJMasterData;Integrated Security=True"
+    },
     "DataDictionaryTableName": "tb_masterdata",
-    "ResourcesTableName": "tb_masterdata_resources",
+    "LocalizationTableName": "tb_masterdata_localization",
     "ReadProcedurePattern": "{tablename}Get",
     "WriteProcedurePattern": "{tablename}Set"
   },
@@ -45,7 +46,6 @@ builder.Services.AddJJMasterDataWeb(options =>
 });
 ```
 
-
 **3)** By custom `IConfiguration` sources
 ```cs
 //Any IConfiguration sources
@@ -54,23 +54,16 @@ builder.Configuration.AddXmlFile("my_custom_source.xml");
 //That simple
 builder.Services.AddJJMasterDataWeb();
 ```
-
 ## What to configure?
 
-**Global Options**
-```cs
-///Edit your options at appsettings.json or pass IConfiguration via parameter.
-builder.Services.AddJJMasterDataWeb();
-```
+**MasterData Options**
 You can change any property from:
 
 - <xref:JJMasterData.Commons.Configuration.Options.MasterDataCommonsOptions>
 - <xref:JJMasterData.Core.Configuration.Options.MasterDataCoreOptions>
 - <xref:JJMasterData.Web.Configuration.Options.MasterDataWebOptions>
 <br>
-
 **Logging**
-
 [Read more](logging.md) about logging.
 
 **Localization**

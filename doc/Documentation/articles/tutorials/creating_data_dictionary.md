@@ -27,7 +27,7 @@ With JJMasterData you will be able to import or create your table and organize i
 After you will access the Entity window and you will find the following items:
 
 ## Entity
-- **Dictionary name**: It will be the name that will represent your metadata.
+- **Element name**: It will be the name that will represent your metadata.
 - **Table Name**: Name of the table where your records will be stored.
 - **Get procedure** Name: Name of the procedure that will read the records. 
   You can view the procedure created by clicking on *more*, *Get Script* and then *Get Procedure*.

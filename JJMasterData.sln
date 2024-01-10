@@ -74,7 +74,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NCalc", "src\Plugins\NCalc\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SchemaGenerator", "src\ConsoleApps\SchemaGenerator\SchemaGenerator.csproj", "{29388C67-8C15-4EAE-836C-15BA812846F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormElementImportator", "src\ConsoleApps\FormElementImportator\FormElementImportator.csproj", "{8FB84AE3-4FBC-492F-B3BE-4B7000CEDFE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormElementImporter", "src\ConsoleApps\FormElementImporter\FormElementImporter.csproj", "{8FB84AE3-4FBC-492F-B3BE-4B7000CEDFE1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyMetadataMigrator", "src\ConsoleApps\LegacyMetadataMigrator\LegacyMetadataMigrator.csproj", "{5325D0BE-1C2F-4A5E-8A30-8A443DE17C53}"
 EndProject

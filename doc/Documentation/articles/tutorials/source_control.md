@@ -1,10 +1,10 @@
-# Using ConsoleApp to version control Form Elements
+# Using FormElementImporter to version control Form Elements
 
 
 ## Configuration
-At your ConsoleApp `appsettings.json` at `JJMasterData` section you must set:
-- DataDictionaryFolderPath: The folder where your version controled dictionaries are stored. 
-- ConnectionString: The connection string where your data dictionaries will be imported
+At your FormElementImporter.exe root, in your `appsettings.json` at `JJMasterData` section you must set:
+- DataDictionaryFolderPath: The folder where your version controlled FormElements are stored. 
+- ConnectionString: The connection string where your FormElements will be imported
 
 ```json
 {
@@ -17,5 +17,4 @@ At your ConsoleApp `appsettings.json` at `JJMasterData` section you must set:
 ```
 
 At your CI/CD pipeline simply run
-
-`JJMasterData.ConsoleApp.exe import`
+`JJMasterData.FormElementImporter.exe`
