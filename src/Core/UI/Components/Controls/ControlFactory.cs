@@ -11,10 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class ControlFactory(IServiceScopeFactory serviceScopeFactory,
+public class ControlFactory(IServiceProvider serviceProvider,
     ExpressionsService expressionsService)
 {
-    private IServiceScopeFactory ServiceScopeFactory { get; } = serviceScopeFactory;
+    private IServiceProvider ServiceProvider { get; } = serviceProvider;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
 
     public IControlFactory<JJCheckBox> CheckBox => GetControlFactory<JJCheckBox>();
@@ -27,15 +27,7 @@ public class ControlFactory(IServiceScopeFactory serviceScopeFactory,
     public IControlFactory<JJTextGroup> TextGroup => GetControlFactory<JJTextGroup>();
     public IControlFactory<JJTextFile> TextFile => GetControlFactory<JJTextFile>();
     public IControlFactory<JJTextRange> TextRange => GetControlFactory<JJTextRange>();
-
-    private IServiceProvider ServiceProvider
-    {
-        get
-        {
-            var scope = ServiceScopeFactory.CreateScope();
-            return scope.ServiceProvider;
-        }
-    }
+    
 
     private IControlFactory<TControl> GetControlFactory<TControl>() where TControl : ControlBase
     {

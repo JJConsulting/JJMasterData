@@ -2322,6 +2322,19 @@ class TextFileHelper {
             listenAllEvents("#" + modalId);
         });
     }
+    static refresh(fieldName, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        urlBuilder.addQueryParameter("fieldName", fieldName);
+        const url = urlBuilder.build();
+        postFormValues({ url: url, success: function (html) {
+                const modalId = fieldName + "-upload-modal";
+                const modal = document.getElementById(modalId);
+                const modalBody = modal.querySelector('.modal-body');
+                HTMLHelper.setInnerHTML(modalBody, html);
+                listenAllEvents("#" + modalId);
+            } });
+    }
     static refreshInputs(id, presentationText, valueText) {
         const presentationElement = document.getElementById(`${id}-presentation`);
         const valueElement = document.getElementById(id);

@@ -102,6 +102,9 @@
       <Compile Update="DataDictionary\Models\Actions\GridTableActionList.cs">
         <DependentUpon>FormElementActionList.cs</DependentUpon>
       </Compile>
+      <Compile Update="UI\Components\FileComponentResult.cs">
+        <DependentUpon>ComponentResult.cs</DependentUpon>
+      </Compile>
     </ItemGroup>
     
     

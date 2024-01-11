@@ -147,7 +147,7 @@ public class JJFormView : AsyncComponent
             _dataPanel.FormUI = FormElement.Options.Form;
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
-            _dataPanel.PageState = PageState;
+            _dataPanel.PageState = PanelState;
 
             return _dataPanel;
         }
@@ -403,7 +403,7 @@ public class JJFormView : AsyncComponent
             case ComponentContext.GridViewFilterSearchBox:
                 return await GridView.GetResultAsync();
             case ComponentContext.DownloadFile:
-                return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
+                return ComponentFactory.Downloader.Create().GetDownloadResult();
             case ComponentContext.AuditLogView:
                 return await AuditLogView.GetResultAsync();
             case ComponentContext.DataImportation or ComponentContext.DataImportationFileUpload:

@@ -149,7 +149,14 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
     {
         return Provider.GetFieldsListAsTextAsync(element, parameters ?? new EntityParameters(), showLogInfo, delimiter);
     }
-    
+
+    public List<Dictionary<string, object?>> GetDictionaryList(Element element, EntityParameters? parameters = null)
+    {
+        var result = Provider.GetDictionaryList(element, parameters ?? new EntityParameters(), false);
+        
+        return result.Data;
+    }
+
     public async Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(
         Element element,
         EntityParameters? parameters = null

@@ -142,6 +142,8 @@ public abstract class EntityProviderBase(
         return numberRowsAffected;
     }
     
+    
+    
     public async Task<DictionaryListResult> GetDictionaryListAsync(
         Element element,
         EntityParameters entityParameters,

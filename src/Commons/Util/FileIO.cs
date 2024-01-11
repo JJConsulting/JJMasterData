@@ -8,6 +8,20 @@ namespace JJMasterData.Commons.Util;
 
 public class FileIO
 {
+    public static string GetFileNameFromPath(string filePath)
+    {
+        if (string.IsNullOrEmpty(filePath))
+            return string.Empty;
+
+        var lastSeparatorIndex = filePath.LastIndexOfAny(['\\', '/']);
+
+        if (lastSeparatorIndex >= 0 && lastSeparatorIndex < filePath.Length - 1)
+        {
+            return filePath[(lastSeparatorIndex + 1)..];
+        }
+
+        return filePath;
+    }
     /// <summary>
     /// Retorna o tipo do arquivo em minusculo
     /// </summary>
@@ -58,7 +72,6 @@ public class FileIO
     {
         return MasterDataCommonsOptions.IsNetFramework ? AppDomain.CurrentDomain.BaseDirectory : Environment.CurrentDirectory;
     }
-
 
     ///<summary>
     ///Carrega os registros de um diretório em um DataTable

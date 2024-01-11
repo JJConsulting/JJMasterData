@@ -16,6 +16,11 @@ public class RouteContext
     {
         ComponentContext = ComponentContext.RenderComponent;
     }
+    
+    public RouteContext(ComponentContext componentContext)
+    {
+        ComponentContext = componentContext;
+    }
 
     internal RouteContext(string? elementName, string? parentElementName, ComponentContext componentContext)
     {

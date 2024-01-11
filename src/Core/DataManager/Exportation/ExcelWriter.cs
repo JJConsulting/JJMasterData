@@ -9,6 +9,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
@@ -23,16 +24,18 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exportation;
 
-public class ExcelWriter(ExpressionsService expressionsService,
+public class ExcelWriter(
+        ExpressionsService expressionsService,
+        IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptions<MasterDataCoreOptions> options,
-        ControlFactory controlFactory,
         ILoggerFactory loggerFactory,
         IEntityRepository entityRepository)
-    : DataExportationWriterBase(expressionsService,
+    : DataExportationWriterBase(
+        encryptionService,
+        expressionsService,
         stringLocalizer,
         options,
-        controlFactory,
         loggerFactory.CreateLogger<DataExportationWriterBase>()), IExcelWriter
 {
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;

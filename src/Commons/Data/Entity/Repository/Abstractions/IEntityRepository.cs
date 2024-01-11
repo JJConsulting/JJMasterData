@@ -154,6 +154,17 @@ public interface IEntityRepository
         EntityParameters? parameters = null,
         bool recoverTotalOfRecords = true);
 
+    
+    DictionaryListResult GetDictionaryListResult(
+        Element element,
+        EntityParameters? parameters = null,
+        bool recoverTotalOfRecords = true);
+    
+    List<Dictionary<string,object?>> GetDictionaryList(
+        Element element,
+        EntityParameters? parameters = null
+    );
+    
     Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(
         Element element,
         EntityParameters? parameters = null
