@@ -23,7 +23,7 @@ public static class SystemWebHelper
         else if (result is FileComponentResult fileComponentResult)
         {
             var filePath = fileComponentResult.Content;
-            var fileName = FileIO.GetFileNameFromPath(filePath);
+            var fileName = Path.GetFileName(filePath);
 
             var file = new MemoryStream(File.ReadAllBytes(filePath));
             currentContext.Response.ClearHeaders();

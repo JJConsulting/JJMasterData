@@ -6,22 +6,8 @@ using JJMasterData.Commons.Configuration.Options;
 
 namespace JJMasterData.Commons.Util;
 
-public class FileIO
+public static class FileIO
 {
-    public static string GetFileNameFromPath(string filePath)
-    {
-        if (string.IsNullOrEmpty(filePath))
-            return string.Empty;
-
-        var lastSeparatorIndex = filePath.LastIndexOfAny(['\\', '/']);
-
-        if (lastSeparatorIndex >= 0 && lastSeparatorIndex < filePath.Length - 1)
-        {
-            return filePath[(lastSeparatorIndex + 1)..];
-        }
-
-        return filePath;
-    }
     /// <summary>
     /// Retorna o tipo do arquivo em minusculo
     /// </summary>
