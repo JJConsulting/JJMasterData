@@ -153,9 +153,11 @@ public class JJUploadView : AsyncComponent
                     var fileName = args.FieldValues["Name"].ToString();
                     var file = FormFileManager.GetFile(fileName);
                     var isInMemory = file?.IsInMemory ?? false;
-                    if (isInMemory)
+                    var isRenamed = file?.IsRenamed ?? false;
+                    if (isInMemory || isRenamed)
                     {
                         args.LinkButton.Enabled = false;
+                        args.LinkButton.Tooltip = StringLocalizer["Save your form to download this file."];
                     }
                     else
                     {

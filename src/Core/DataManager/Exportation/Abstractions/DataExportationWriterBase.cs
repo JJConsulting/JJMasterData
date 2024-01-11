@@ -157,7 +157,7 @@ public abstract class DataExportationWriterBase(
         }
         catch (Exception ex)
         {
-            string message = $"Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
+            string message = "Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
             throw new JJMasterDataException(message, ex);
         }  
 

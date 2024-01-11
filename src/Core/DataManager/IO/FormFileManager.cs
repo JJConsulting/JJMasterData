@@ -102,8 +102,9 @@ public class FormFileManager(string memoryFilesSessionName,
             files.Remove(file);
             
             file.Content.FileName = newName;
-            file.OldName = currentName;
+            file.OldName ??= currentName;
             
+            file.IsRenamed = true;
             files.Add(file);
             
             MemoryFiles = files;
