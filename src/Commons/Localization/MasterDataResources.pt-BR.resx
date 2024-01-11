@@ -3737,4 +3737,7 @@
   <data name="C# Class" xml:space="preserve">
     <value>Classe C#</value>
   </data>
+  <data name="Is Compact" xml:space="preserve">
+    <value>É Compacta</value>
+  </data>
 </root>

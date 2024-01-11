@@ -17,7 +17,7 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
     private const string TableRowsStriped = "grid-view-table-rowstriped";
     private const string TableRowHover = "grid-view-table-rowhover";
     private const string TableIsHeaderFixed = "grid-view-table-header-fixed";
-
+    private const string TableIsCompact = "grid-view-table-is-compact";
     public GridSettings LoadFromForm()
     {
         var gridSettings = new GridSettings();
@@ -27,6 +27,7 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
         var tableRowsStriped = currentContext.Request[TableRowsStriped];
         var tableRowHover = currentContext.Request[TableRowHover];
         var tableIsHeaderFixed = currentContext.Request[TableIsHeaderFixed];
+        var tableIsCompact = currentContext.Request[TableIsCompact];
 
         if (int.TryParse(tableRegPerPage, out var totalPerPage))
             gridSettings.RecordsPerPage = totalPerPage;
@@ -38,7 +39,7 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
         gridSettings.ShowRowStriped = StringManager.ParseBool(tableRowsStriped);
         gridSettings.ShowRowHover = StringManager.ParseBool(tableRowHover);
         gridSettings.IsHeaderFixed = StringManager.ParseBool(tableIsHeaderFixed);
-
+        gridSettings.IsCompact = StringManager.ParseBool(tableIsCompact);
         return gridSettings;
     }
 
@@ -55,21 +56,21 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
 
         if (isPaginationEnabled)
         {
-            div.Append(GetPaginationElement(gridSettings));
+            div.Append(GetPaginationHtml(gridSettings));
         }
         else
         {
             div.AppendHiddenInput(TableTotalPerPage, gridSettings.RecordsPerPage.ToString());
         }
 
-        div.Append(GetShowBorderElement(gridSettings));
-        div.Append(GetShowRowsStripedElement(gridSettings));
-        div.Append(GetHighlightLineElement(gridSettings));
-
+        div.Append(GetShowBorderHtml(gridSettings));
+        div.Append(GetShowRowsStripedHtml(gridSettings));
+        div.Append(GetHighlightLineHtml(gridSettings));
+        div.Append(GetIsCompactHtml(gridSettings));
         return div;
     }
 
-    private HtmlBuilder GetHighlightLineElement(GridSettings gridSettings)
+    private HtmlBuilder GetHighlightLineHtml(GridSettings gridSettings)
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
@@ -84,12 +85,30 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
             div.WithCssClass("col-sm-8");
             div.Append(GetDataToggleElement(TableRowHover, gridSettings.ShowRowHover));
         });
-
-
+        
         return div;
     }
 
-    private HtmlBuilder GetShowRowsStripedElement(GridSettings gridSettings)
+    private HtmlBuilder GetIsCompactHtml(GridSettings gridSettings)
+    {
+        var div = new HtmlBuilder(HtmlTag.Div)
+            .WithCssClass($"{BootstrapHelper.FormGroup} row")
+            .Append(HtmlTag.Label, label =>
+            {
+                label.WithAttribute("for", TableIsCompact);
+                label.WithCssClass("col-sm-4");
+                label.AppendText(stringLocalizer["Is Compact"]);
+            });
+        div.Append(HtmlTag.Div, div =>
+        {
+            div.WithCssClass("col-sm-8");
+            div.Append(GetDataToggleElement(TableIsCompact, gridSettings.IsCompact));
+        });
+        
+        return div;
+    }
+    
+    private HtmlBuilder GetShowRowsStripedHtml(GridSettings gridSettings)
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
@@ -108,7 +127,7 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
         return div;
     }
 
-    private HtmlBuilder GetShowBorderElement(GridSettings gridSettings)
+    private HtmlBuilder GetShowBorderHtml(GridSettings gridSettings)
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
@@ -128,7 +147,7 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
         return div;
     }
 
-    private HtmlBuilder GetPaginationElement(GridSettings gridSettings)
+    private HtmlBuilder GetPaginationHtml(GridSettings gridSettings)
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
@@ -148,7 +167,7 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
         return div;
     }
 
-    private HtmlBuilder GetTotalPerPageSelectElement(GridSettings gridSettings)
+    private static HtmlBuilder GetTotalPerPageSelectElement(GridSettings gridSettings)
     {
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass("form-control form-select")
