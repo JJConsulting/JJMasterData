@@ -140,6 +140,9 @@ public class JJUploadView : AsyncComponent
             _gridView.ViewAction.SetVisible(false);
             _gridView.EditAction.SetVisible(false);
             _gridView.DeleteAction.SetVisible(false);
+            _gridView.ExportAction.SetVisible(false);
+            _gridView.RefreshAction.SetVisible(false);
+            _gridView.ConfigAction.SetVisible(false);
             
             _gridView.GridTableActions.Add(DownloadAction);
             

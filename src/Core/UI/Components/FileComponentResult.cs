@@ -19,10 +19,11 @@ public class FileComponentResult(string filePath) : ComponentResult
 #if NET
     public async Task ExecuteResultAsync(Microsoft.AspNetCore.Mvc.ActionContext context)
     {
+        var fileName = FileIO.GetFileNameFromPath(FilePath);
         var fileBytes = await File.ReadAllBytesAsync(FilePath);
-        var fileContentResult = new FileContentResult(fileBytes, "application/octet-stream")
+        var fileContentResult = new FileContentResult(fileBytes,  MimeTypeUtil.GetMimeType(fileName))
         {
-            FileDownloadName = FileIO.GetFileNameFromPath(FilePath)
+            FileDownloadName = fileName
         };
 
         await fileContentResult.ExecuteResultAsync(context);
