@@ -97,7 +97,7 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
             {
                 label.WithAttribute("for", TableIsCompact);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(stringLocalizer["Is Compact"]);
+                label.AppendText(stringLocalizer["Compact Mode"]);
             });
         div.Append(HtmlTag.Div, div =>
         {

@@ -158,6 +158,6 @@ public class GridUI
     public bool UseVerticalLayoutAtFilter { get; set; } 
     
     [JsonProperty("isCompact")]
-    [Display(Name = "Is Compact")]
+    [Display(Name = "Compact Mode")]
     public bool IsCompact { get; set; }
 }
