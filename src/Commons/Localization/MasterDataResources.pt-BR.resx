@@ -3737,4 +3737,7 @@
   <data name="C# Class" xml:space="preserve">
     <value>Classe C#</value>
   </data>
+  <data name="Compact Mode" xml:space="preserve">
+    <value>Modo Compacto</value>
+  </data>
 </root>

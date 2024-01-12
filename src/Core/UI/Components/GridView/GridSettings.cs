@@ -21,6 +21,8 @@ public class GridSettings
     public bool ShowRowHover { get; set; } = true;
 
     public bool IsResponsive { get; set; } = true;
+    
+    public bool IsCompact { get; set; } = true;
 
     public bool IsHeaderFixed { get; set; }
 }

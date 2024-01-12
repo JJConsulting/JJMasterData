@@ -20,6 +20,7 @@ internal class GridTable(JJGridView gridView)
         
         var table = new HtmlBuilder(HtmlTag.Table);
         table.WithCssClass("table");
+        table.WithCssClassIf(Settings.IsCompact, "table-sm");
         table.WithCssClassIf(Settings.ShowBorder, "table-bordered");
         table.WithCssClassIf(Settings.ShowRowHover, "table-hover");
         table.WithCssClassIf(Settings.ShowRowStriped, "table-striped");
