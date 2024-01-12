@@ -106,7 +106,7 @@ public class ElementField
     /// <para/>VIRTUAL  = Ignored in database operations
     /// </remarks>
     [JsonProperty("databehavior")]
-    [Display(Name = "Data Behavior")]
+    [Display(Name = "Behavior")]
     public FieldBehavior DataBehavior { get; set; } = FieldBehavior.Real;
 
     /// <summary>

@@ -110,9 +110,6 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " asp-for="DataBehavior"></label>
-
-                    <tooltip title="@StringLocalizer["Field behavior in relation to the database."]"/>
-
                     <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
@@ -165,7 +162,7 @@
                     @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
                 </div>
 
-                <div class="@BootstrapHelper.FormGroup col-sm-2">
+                <div class="@BootstrapHelper.FormGroup col-sm-3">
                     <label class="@BootstrapHelper.Label " asp-for="LineGroup"></label>
                     <tooltip title="@StringLocalizer["Row number at the form, used to break the line in the form flex layout."]"/>
 
@@ -209,7 +206,7 @@
 
                 @if (Model.Component is FormComponent.Number or FormComponent.Currency or FormComponent.Slider)
                 {
-                    <div class="@BootstrapHelper.FormGroup col-sm-2">
+                    <div class="@BootstrapHelper.FormGroup col-sm-4">
                         <label class="@BootstrapHelper.Label " asp-for="NumberOfDecimalPlaces"></label>
                         @Html.TextBoxFor(model => model.NumberOfDecimalPlaces, new { type = "number", @class = "form-control" })
                     </div>

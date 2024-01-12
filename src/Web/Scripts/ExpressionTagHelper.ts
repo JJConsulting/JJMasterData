@@ -33,13 +33,12 @@ function listenExpressionType(name, hintList, isBoolean) {
             expressionValueEditor.innerHTML = div.outerHTML;
         }
         else {
-            const textArea = document.createElement('textarea');
-            textArea.setAttribute('name', name + '-ExpressionValue');
-            textArea.setAttribute('id', name + '-ExpressionValue');
-            textArea.setAttribute('class', 'form-control');
-            textArea.innerText = expressionValueInput.value;
-            expressionValueEditor.innerHTML = textArea.outerHTML;
-            CodeMirrorWrapper.setupCodeMirror(name + '-ExpressionValue', { mode: 'text/x-sql', singleLine: true, hintList: hintList, hintKey: '{' });
+            const input = document.createElement('input');
+            input.setAttribute('name', name + '-ExpressionValue');
+            input.setAttribute('id', name + '-ExpressionValue');
+            input.setAttribute('class', 'form-control');
+            input.value = expressionValueInput.value;
+            expressionValueEditor.innerHTML = input.outerHTML;
         }
     });
 }

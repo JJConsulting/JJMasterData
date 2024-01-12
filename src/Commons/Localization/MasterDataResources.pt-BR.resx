@@ -3470,8 +3470,8 @@
   <data name="FormElement" xml:space="preserve">
     <value>Formulário do Elemento</value>
   </data>
-  <data name="Auto Reload Form Fields" xml:space="preserve">
-    <value>Recarregar valores do form automaticamente</value>
+  <data name="Auto Reload" xml:space="preserve">
+    <value>Recarregar Valores</value>
   </data>
   <data name="Modal Title" xml:space="preserve">
     <value>Título do Modal</value>
@@ -3728,7 +3728,7 @@
   <data name="Clock" xml:space="preserve">
     <value>Relógio</value>
   </data>
-  <data name="Data Behavior" xml:space="preserve">
+  <data name="Behavior" xml:space="preserve">
     <value>Comportamento</value>
   </data>
   <data name="Warning: This software is protected by the GNU license." xml:space="preserve">

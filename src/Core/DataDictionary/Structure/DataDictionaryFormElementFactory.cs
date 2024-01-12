@@ -34,6 +34,7 @@ public class DataDictionaryFormElementFactory(
 
         formElement.Options.Grid.IsCompact = true;
         formElement.Options.Grid.RecordsPerPage = 10;
+        formElement.Options.Grid.MaintainValuesOnLoad = true;
         formElement.Options.Grid.UseVerticalLayoutAtFilter = true;
 
         return formElement;
@@ -158,7 +159,7 @@ public class DataDictionaryFormElementFactory(
             {
                 Name = "btnHelp",
                 Tooltip = StringLocalizer["Help"],
-                Icon = IconType.SolidBookOpen,
+                Icon = IconType.Question,
                 ShowAsButton = true,
                 OnClientClick = "window.open('https://md.jjconsulting.tech', '_blank');",
                 Order = 13,

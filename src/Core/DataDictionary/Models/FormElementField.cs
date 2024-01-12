@@ -136,7 +136,7 @@ public class FormElementField : ElementField
     /// "SELECT ID, DESCR FROM TB_FOO WHERE TPVEND = {campo_tpvend}"
     /// </remarks>
     [JsonProperty("autoPostBack")]
-    [Display(Name = "Auto Reload Form Fields")]
+    [Display(Name = "Auto Reload")]
     public bool AutoPostBack { get; set; }
 
     /// <remarks>

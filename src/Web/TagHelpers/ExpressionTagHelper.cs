@@ -157,6 +157,7 @@ public class ExpressionTagHelper : TagHelper
                         div.Append(HtmlTag.Input, input =>
                         {
                             input.WithAttribute("hidden","hidden");
+                            input.WithCssClass("form-control");
                             input.WithNameAndId(name + "-ExpressionValue");
                             input.WithValue(selectedExpressionValue);
                         });
@@ -175,14 +176,12 @@ public class ExpressionTagHelper : TagHelper
                 }
                 else
                 {
-                    div.Append(HtmlTag.TextArea, textArea =>
+                    div.Append(HtmlTag.Input, input =>
                     {
-                        textArea.WithNameAndId(name + "-ExpressionValue");
-                        textArea.AppendText(selectedExpressionValue);
+                        input.WithCssClass("form-control");
+                        input.WithNameAndId(name + "-ExpressionValue");
+                        input.WithValue(selectedExpressionValue);
                     });
-
-                    div.AppendScript(
-                        $"onDOMReady(()=>{{CodeMirrorWrapper.setupCodeMirror('{name}-ExpressionValue',{{mode: 'text/x-sql',singleLine:true, hintList: {codeMirrorHintList}, hintKey: '{{'}});}})");
                 }
             });
             return div;
