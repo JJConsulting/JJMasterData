@@ -111,7 +111,7 @@ public class JJFileDownloader(
 
         if (!File.Exists(FilePath))
         {
-            var exception = new JJMasterDataException(StringLocalizer["File {0} not found!", FilePath]);
+            var exception = new JJMasterDataException(StringLocalizer["File {0} not found!", Path.GetFileName(FilePath)]);
             Logger.LogError(exception, "File {FilePath} not found!", FilePath);
             throw exception;
         }
