@@ -21,6 +21,13 @@ internal class TextFileScripts(JJTextFile textFile)
 
     public string GetRefreshScript()
     {
+        var routeContext = RouteContext.FromFormElement(textFile.FormElement, ComponentContext.TextFileUploadView);
+
+        return $"TextFileHelper.refresh('{textFile.FieldName}','{textFile.EncryptionService.EncryptRouteContext(routeContext)}')";
+    }
+    
+    public string GetRefreshInputsScript()
+    {
         return $"TextFileHelper.refreshInputs('{textFile.Name}','{textFile.GetPresentationText()}','{textFile.GetFileName()}')";
     }
     

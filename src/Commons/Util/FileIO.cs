@@ -6,7 +6,7 @@ using JJMasterData.Commons.Configuration.Options;
 
 namespace JJMasterData.Commons.Util;
 
-public class FileIO
+public static class FileIO
 {
     /// <summary>
     /// Retorna o tipo do arquivo em minusculo
@@ -58,7 +58,6 @@ public class FileIO
     {
         return MasterDataCommonsOptions.IsNetFramework ? AppDomain.CurrentDomain.BaseDirectory : Environment.CurrentDirectory;
     }
-
 
     ///<summary>
     ///Carrega os registros de um diretório em um DataTable

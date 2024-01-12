@@ -111,7 +111,7 @@ public class JJDataExportation : ProcessComponent
     {
         var downloader = ComponentFactory.Downloader.Create();
         downloader.FilePath = filePath;
-        return downloader.GetDownloadUrl(filePath);
+        return downloader.GetDownloadUrl();
     }
 
     private string GetFinishedMessageHtml(DataExportationReporter reporter)

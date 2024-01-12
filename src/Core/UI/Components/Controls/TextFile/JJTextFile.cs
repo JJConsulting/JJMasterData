@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
@@ -81,7 +82,7 @@ public class JJTextFile(IHttpRequest request,
             _uploadView.ParentName = ParentName;
             _uploadView.Title = string.Empty;
             _uploadView.AutoSave = false;
-            _uploadView.JsCallback = Scripts.GetShowScript();
+            _uploadView.JsCallback = Scripts.GetRefreshScript();
             _uploadView.RenameAction.SetVisible(true);
             
             if (HasPk())
@@ -127,7 +128,7 @@ public class JJTextFile(IHttpRequest request,
         if (result is RenderedComponentResult uploadViewResult)
         {
             html.Append(uploadViewResult.HtmlBuilder);
-            html.AppendScript(Scripts.GetRefreshScript());
+            html.AppendScript(Scripts.GetRefreshInputsScript());
         }
         else 
         {
@@ -266,6 +267,7 @@ public class JJTextFile(IHttpRequest request,
     {
         var filePath = GetFolderPath() + fileName;
         var fileDownloader = ComponentFactory.Downloader.Create();
-        return fileDownloader.GetDownloadUrl(filePath);
+        fileDownloader.FilePath = filePath;
+        return fileDownloader.GetDownloadUrl();
     }
 }

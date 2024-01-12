@@ -9,6 +9,7 @@ using System.Web;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Commons.Util;
@@ -16,6 +17,7 @@ using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Exportation.Configuration;
 using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
@@ -24,10 +26,11 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataManager.Exportation.Abstractions;
 
-public abstract class DataExportationWriterBase(ExpressionsService expressionsService,
+public abstract class DataExportationWriterBase(
+        IEncryptionService encryptionService,
+        ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptions<MasterDataCoreOptions> options,
-        ControlFactory controlFactory,
         ILogger<DataExportationWriterBase> logger)
     : IBackgroundTaskWorker, IExportationWriter
 {
@@ -39,15 +42,22 @@ public abstract class DataExportationWriterBase(ExpressionsService expressionsSe
 
     private DataExportationReporter _processReporter;
     private List<FormElementField> _fields;
+    private FormFilePathBuilder _pathBuilder;
 
+    private IEncryptionService EncryptionService { get; } = encryptionService;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
     protected IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private IOptions<MasterDataCoreOptions> Options { get; } = options;
 
-    public ControlFactory ControlFactory { get; } = controlFactory;
-
     private ILogger<DataExportationWriterBase> Logger { get; } = logger;
+    private FormFilePathBuilder PathBuilder => _pathBuilder ??= new FormFilePathBuilder(FormElement);
 
+    public string AbsoluteUri { get; internal set; }
+    
+    private string GetFolderPath(FormElementField field, IDictionary<string,object> values)
+    {
+        return PathBuilder.GetFolderPath(field, values);
+    }
 
     protected List<FormElementField> VisibleFields
     {
@@ -147,7 +157,7 @@ public abstract class DataExportationWriterBase(ExpressionsService expressionsSe
         }
         catch (Exception ex)
         {
-            string message = $"Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
+            string message = "Error on create directory, set a valid ExportationFolderPath on JJMasterData Options.";
             throw new JJMasterDataException(message, ex);
         }  
 
@@ -252,17 +262,9 @@ public abstract class DataExportationWriterBase(ExpressionsService expressionsSe
         var files = value.Split(',');
         if (files.Length != 1)
             return null;
-
-        string fileName = value;
-        var textFile = ControlFactory.TextFile.Create();
-        textFile.FormElement = FormElement;
-        textFile.FormElementField = field;
-        textFile.PageState = PageState.List;
-        textFile.Text = value;
-        textFile.FormStateValues = row;
-        textFile.Name = field.Name;
-
-        return textFile.GetDownloadLink(fileName, true);
+        
+        var filePath = GetFolderPath(field, row) + value;
+        return JJFileDownloader.GetExternalDownloadLink(EncryptionService,AbsoluteUri,filePath);
     }
 
 

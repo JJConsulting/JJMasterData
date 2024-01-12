@@ -21,6 +21,7 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
@@ -36,15 +37,16 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Pdf;
 
-public class PdfWriter(ExpressionsService expressionsService,
+public class PdfWriter(
+        IEncryptionService encryptionService,
+        ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IOptions<MasterDataCoreOptions> options,
         DataItemService dataItemService,
         ILogger<PdfWriter> logger,
         IEntityRepository entityRepository,
-        FieldFormattingService fieldFormattingService,
-        ControlFactory controlFactory)
-    : DataExportationWriterBase(expressionsService, stringLocalizer, options, controlFactory, logger), IPdfWriter
+        FieldFormattingService fieldFormattingService)
+    : DataExportationWriterBase(encryptionService,expressionsService, stringLocalizer, options, logger), IPdfWriter
 {
     public event EventHandler<GridCellEventArgs> OnRenderCell;
     public event AsyncEventHandler<GridCellEventArgs> OnRenderCellAsync;

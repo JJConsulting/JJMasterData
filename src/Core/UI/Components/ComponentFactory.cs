@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class ComponentFactory(IServiceScopeFactory scopeFactory) : IComponentFactory
+internal class ComponentFactory(IServiceProvider serviceProvider) : IComponentFactory
 {
     private RouteContext? _routeContext;
     private HtmlComponentFactory? _htmlComponentFactory;
-    private IServiceProvider ServiceProvider => scopeFactory.CreateScope().ServiceProvider;
+    private IServiceProvider ServiceProvider => serviceProvider;
 
     public IFormElementComponentFactory<JJAuditLogView> AuditLog =>
         GetFactory<IFormElementComponentFactory<JJAuditLogView>>();

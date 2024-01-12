@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
@@ -40,7 +41,7 @@ public class JJUploadView : AsyncComponent
     private const string Size = "Size";
     private const string LastWriteTime = "LastWriteTime";
 
-    private ScriptAction _downloadAction;
+    private UrlRedirectAction _downloadAction;
     private ScriptAction _deleteAction;
     private ScriptAction _renameAction;
     private JJGridView _gridView;
@@ -139,6 +140,9 @@ public class JJUploadView : AsyncComponent
             _gridView.ViewAction.SetVisible(false);
             _gridView.EditAction.SetVisible(false);
             _gridView.DeleteAction.SetVisible(false);
+            _gridView.ExportAction.SetVisible(false);
+            _gridView.RefreshAction.SetVisible(false);
+            _gridView.ConfigAction.SetVisible(false);
             
             _gridView.GridTableActions.Add(DownloadAction);
             
@@ -147,11 +151,20 @@ public class JJUploadView : AsyncComponent
                 if(args.ActionName.Equals(_downloadAction.Name))
                 {
                     var fileName = args.FieldValues["Name"].ToString();
-                    var isInMemory = FormFileManager.GetFile(fileName)?.IsInMemory ?? false;
-                    if (isInMemory)
+                    var file = FormFileManager.GetFile(fileName);
+                    var isInMemory = file?.IsInMemory ?? false;
+                    var isRenamed = file?.IsRenamed ?? false;
+                    if (isInMemory || isRenamed)
                     {
                         args.LinkButton.Enabled = false;
+                        args.LinkButton.Tooltip = StringLocalizer["Save your form to download this file."];
                     }
+                    else
+                    {
+                        var downloader = ComponentFactory.Downloader.Create();
+                        downloader.FilePath = FormFileManager.GetFilePath(fileName);
+                        args.LinkButton.UrlAction = downloader.GetDownloadUrl();
+                    } 
                 }
 
                 return Task.CompletedTask;
@@ -169,13 +182,12 @@ public class JJUploadView : AsyncComponent
         }
     }
 
-    public ScriptAction DownloadAction =>
-        _downloadAction ??= new ScriptAction
+    public UrlRedirectAction DownloadAction =>
+        _downloadAction ??= new UrlRedirectAction
         {
             Icon = IconType.CloudDownload,
             Tooltip = "Download File",
-            Name = "download-file",
-            OnClientClick = Scripts.GetDownloadFileScript()
+            Name = "download-file"
         };
 
     public ScriptAction DeleteAction
@@ -293,7 +305,7 @@ public class JJUploadView : AsyncComponent
 
             if (result is RenderedComponentResult renderedComponent)
             {
-                html.Append((HtmlBuilder)renderedComponent.HtmlBuilder);
+                html.Append(renderedComponent.HtmlBuilder);
             }
             else
             {
@@ -379,7 +391,7 @@ public class JJUploadView : AsyncComponent
             var filePath = Path.Combine(FormFileManager.FolderPath, fileName);
             var downloader = ComponentFactory.Downloader.Create();
             downloader.FilePath = filePath;
-            src = downloader.GetDownloadUrl(filePath);
+            src = downloader.GetDownloadUrl();
         }
 
         const string script = """
@@ -421,8 +433,13 @@ public class JJUploadView : AsyncComponent
         }
         catch (Exception ex)
         {
-            var messageBox = ComponentFactory.Html.MessageBox.Create(ex.Message, MessageIcon.Warning);
-            return (RenderedComponentResult) messageBox;
+            var alert = ComponentFactory.Html.Alert.Create();
+            alert.Title = ex.Message;
+            alert.Color = PanelColor.Warning;
+            alert.ShowCloseButton = true;
+            alert.Icon = IconType.SolidTriangleExclamation;
+        
+            return new RenderedComponentResult(alert.GetHtmlBuilder());
         }
 
         throw new InvalidOperationException("Invalid JJUploadView action.");
@@ -611,7 +628,8 @@ public class JJUploadView : AsyncComponent
         {
             var filePath = Path.Combine(FormFileManager.FolderPath, fileName);
             var downloader = ComponentFactory.Downloader.Create();
-            src = downloader.GetDownloadUrl(filePath);
+            downloader.FilePath = filePath;
+            src = downloader.GetDownloadUrl();
         }
 
         if (url.Contains('?'))
@@ -750,7 +768,7 @@ public class JJUploadView : AsyncComponent
             dataRow["Name"] = content.FileName;
             dataRow["Size"] = Format.FormatFileSize(content.Length);
             dataRow["LastWriteTime"] = content.LastWriteTime.ToDateTimeString();
-            dataRow["NameJS"] = content.FileName.Replace("'", "\\'");
+            dataRow["NameJS"] = HttpUtility.JavaScriptStringEncode(content.FileName);
             dt.Rows.Add(dataRow);
         }
 
@@ -778,9 +796,12 @@ public class JJUploadView : AsyncComponent
         RenameFile(currentName, newName);
 
         var text = StringLocalizer["File successfully renamed."];
-        var messageBox = ComponentFactory.Html.MessageBox.Create(text, MessageIcon.Info);
+        var alert = ComponentFactory.Html.Alert.Create();
+        alert.Title = text;
+        alert.ShowCloseButton = true;
+        alert.Icon = IconType.SolidCircleInfo;
         
-        return (RenderedComponentResult)messageBox;
+        return new RenderedComponentResult(alert.GetHtmlBuilder());
     }
 
     public void RenameFile(string currentName, string newName) =>
@@ -793,8 +814,12 @@ public class JJUploadView : AsyncComponent
     {
         FormFileManager.DeleteFile(fileName);
         var text = StringLocalizer["File successfully deleted."];
-        var htmlTitle = ComponentFactory.Html.MessageBox.Create(text, MessageIcon.Info);
-        return (RenderedComponentResult)htmlTitle;
+        var alert = ComponentFactory.Html.Alert.Create();
+        alert.Title = text;
+        alert.ShowCloseButton = true;
+        alert.Icon = IconType.SolidCircleInfo;
+        
+        return new RenderedComponentResult(alert.GetHtmlBuilder());
     }
     
     internal void DeleteAll() => 
@@ -809,7 +834,7 @@ public class JJUploadView : AsyncComponent
     public void SaveMemoryFiles(string folderPath) =>
         FormFileManager.SaveMemoryFiles(folderPath);
 
-    public RedirectComponentResult GetDownloadFileResult(string fileName)
+    public FileComponentResult GetDownloadFileResult(string fileName)
     {
         if (OnBeforeDownloadFile != null)
         {
@@ -826,7 +851,7 @@ public class JJUploadView : AsyncComponent
         }
         var downloader = ComponentFactory.Downloader.Create();
         downloader.FilePath = fileName;
-        return downloader.GetDirectDownloadRedirect();
+        return downloader.GetDownloadResult();
     }
 
     /// <summary>

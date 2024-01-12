@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
@@ -159,7 +158,7 @@ public class MasterDataStringLocalizer(
     {
         var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
         var filter = new Dictionary<string,object?> { { "cultureCode", culture} };
-        var result = Task.Run(()=> EntityRepository.GetDictionaryListResultAsync(element, new EntityParameters(){Filters = filter},false)).GetAwaiter().GetResult();
+        var result =EntityRepository.GetDictionaryListResult(element, new EntityParameters {Filters = filter},false);
         foreach (var row in result.Data)
         {
             values.Add(row["resourceKey"]!.ToString()!, row["resourceValue"]?.ToString());

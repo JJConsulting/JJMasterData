@@ -178,7 +178,7 @@ public class JJDataPanel : AsyncComponent
             case ComponentContext.LookupDescription:
                 return await GetFieldResultAsync<JJLookup>();
             case ComponentContext.DownloadFile:
-                return ComponentFactory.Downloader.Create().GetDirectDownloadFromUrl();
+                return ComponentFactory.Downloader.Create().GetDownloadResult();
             case ComponentContext.DataPanelReload:
             {
                 var html = await GetPanelHtmlBuilderAsync();
@@ -211,7 +211,7 @@ public class JJDataPanel : AsyncComponent
         
         var control = ComponentFactory.Controls.Create<TControl>(FormElement, field, controlContext);
         control.Name = FieldNamePrefix + fieldName;
-
+        
         if (control is JJTextFile textFile)
             textFile.ParentName = FormElement.Name;
         

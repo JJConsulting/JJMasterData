@@ -102,8 +102,9 @@ public class FormFileManager(string memoryFilesSessionName,
             files.Remove(file);
             
             file.Content.FileName = newName;
-            file.OldName = currentName;
-
+            file.OldName ??= currentName;
+            
+            file.IsRenamed = true;
             files.Add(file);
             
             MemoryFiles = files;
@@ -116,6 +117,11 @@ public class FormFileManager(string memoryFilesSessionName,
         var file = files.FirstOrDefault(x => fileName.Equals(x.Content.FileName) || fileName.Equals(x.OldName));
         
         return file;
+    }
+
+    public string GetFilePath(string fileName)
+    {
+        return Path.Combine(FolderPath, fileName);
     }
 
     public void CreateFile(FormFileContent fileContent, bool replaceIfExists)
