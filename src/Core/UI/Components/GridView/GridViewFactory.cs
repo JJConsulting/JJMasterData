@@ -120,7 +120,7 @@ internal class GridViewFactory(IHttpContext currentContext,
         grid.MaintainValuesOnLoad = gridOptions.MaintainValuesOnLoad;
         grid.ShowPagging = gridOptions.ShowPagging;
         grid.ShowToolbar = gridOptions.ShowToolBar;
-
+        
         if (!GridFormSettings.HasFormValues(grid.CurrentContext) || !grid.ShowToolbar || !grid.ConfigAction.IsVisible)
         {
             GridSettings settings = null;
@@ -136,6 +136,7 @@ internal class GridViewFactory(IHttpContext currentContext,
                 settings.RecordsPerPage = gridOptions.RecordsPerPage;
                 settings.TotalPaginationButtons = gridOptions.TotalPaggingButton;
                 settings.IsHeaderFixed = gridOptions.HeaderFixed;
+                settings.IsCompact = gridOptions.IsCompact;
             }
 
             grid.CurrentSettings = settings;

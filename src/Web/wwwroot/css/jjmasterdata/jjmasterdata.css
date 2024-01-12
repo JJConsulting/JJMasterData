@@ -764,3 +764,8 @@ input.form-control:read-only {
     --bs-btn-active-bg: #d4d4d4;
     --bs-btn-active-border-color: #8c8c8c;
 }
+
+/* Backport table-sm to Bootstrap 3 */
+.table-sm > :not(caption) > * > *{
+    padding: 0.25rem 0.25rem !important;
+}

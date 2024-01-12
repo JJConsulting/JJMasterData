@@ -32,6 +32,8 @@ public class DataDictionaryFormElementFactory(
 
         AddActions(formElement);
 
+        formElement.Options.Grid.IsCompact = true;
+        formElement.Options.Grid.RecordsPerPage = 10;
         formElement.Options.Grid.UseVerticalLayoutAtFilter = true;
 
         return formElement;
@@ -72,7 +74,6 @@ public class DataDictionaryFormElementFactory(
     {
         formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
         formElement.Options.GridToolbarActions.ExportAction.SetVisible(false);
-
         formElement.Options.GridTableActions.Clear();
 
         AddGridTableActions(formElement);
