@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;
 using System.ComponentModel;
+using JJMasterData.Core.UI;
 
 namespace JJMasterData.Web.TagHelpers;
 
@@ -87,25 +88,22 @@ public class ExpressionTagHelper : TagHelper
         var selectedExpressionType = splittedExpression?[0];
         var selectedExpressionValue = splittedExpression?[1] ?? string.Empty;
         string codeMirrorHintList = ViewContext.ViewBag.CodeMirrorHintList;
-        
-        var card = _cardFactory.Create();
-        card.Layout = PanelLayout.Collapse;
-        card.Icon = Icon;
-        card.Tooltip = _stringLocalizer[Tooltip!];
-        card.Title = For?.ModelExplorer.Metadata.GetDisplayName();
-        
 
-        card.HtmlBuilderContent.Append(HtmlTag.Div, div =>
+        var html = new HtmlBuilder(HtmlTag.Div);
+        html.Append(HtmlTag.Label, label =>
         {
-            div.WithCssClass("row");
-            div.Append(GetTypeSelect(name, selectedExpressionType));
-
-            div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue, codeMirrorHintList));
+            label.WithCssClass(BootstrapHelper.Label);
+            label.WithAttribute("for",name + "-ExpressionValue");
+            label.AppendText(For?.ModelExplorer.Metadata.GetDisplayName()!);
+            label.AppendSpan(span =>
+            {
+                span.WithCssClass("fa fa-question-circle help-description");
+                span.WithToolTip(Tooltip);
+            });
         });
-
-        var html = card.GetHtmlBuilder();
-
-        html.AppendScript($"listenExpressionType('{name}',{codeMirrorHintList}, {(IsBooleanExpression ? "true" : "false")})");
+        html.WithCssClass("row");
+        html.Append(GetTypeSelect(name, selectedExpressionType));
+        html.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue, codeMirrorHintList));
         
         output.TagMode = TagMode.StartTagAndEndTag;
         
@@ -141,48 +139,19 @@ public class ExpressionTagHelper : TagHelper
         return div;
     }
 
-    private HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType, string selectedExpressionValue, string codeMirrorHintList)
+    private static HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType, string selectedExpressionValue, string codeMirrorHintList)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("col-sm-10");
             div.Append(HtmlTag.Div, div =>
             {
                 div.WithId(name + "-ExpressionValueEditor");
-                
-                if ((selectedExpressionType == "val" || string.IsNullOrEmpty(selectedExpressionType)) && IsBooleanExpression)
+                div.Append(HtmlTag.Input, input =>
                 {
-                    div.Append(HtmlTag.Div, div =>
-                    {
-                        div.WithCssClass("form-switch form-switch-md form-check");
-                        div.Append(HtmlTag.Input, input =>
-                        {
-                            input.WithAttribute("hidden","hidden");
-                            input.WithCssClass("form-control");
-                            input.WithNameAndId(name + "-ExpressionValue");
-                            input.WithValue(selectedExpressionValue);
-                        });
-                        div.Append(HtmlTag.Input, checkbox =>
-                        {
-                            checkbox.WithNameAndId(name + "-ExpressionValue-checkbox");
-                            checkbox.WithAttribute("type", "checkbox");
-                            checkbox.WithAttribute("role", "switch");
-                            checkbox.WithAttribute("onchange", $"CheckboxHelper.check('{name + "-ExpressionValue"}')");
-                            checkbox.WithAttributeIf(StringManager.ParseBool(selectedExpressionValue) ,"checked");
-                            checkbox.WithValue(selectedExpressionValue);
-                            checkbox.WithCssClass("form-check-input");
-                        });
-                        
-                    });
-                }
-                else
-                {
-                    div.Append(HtmlTag.Input, input =>
-                    {
-                        input.WithCssClass("form-control");
-                        input.WithNameAndId(name + "-ExpressionValue");
-                        input.WithValue(selectedExpressionValue);
-                    });
-                }
+                    input.WithCssClass("form-control");
+                    input.WithNameAndId(name + "-ExpressionValue");
+                    input.WithValue(selectedExpressionValue);
+                });
             });
             return div;
     }

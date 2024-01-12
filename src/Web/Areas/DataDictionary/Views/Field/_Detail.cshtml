@@ -74,7 +74,7 @@
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-component" href="#div-component">@StringLocalizer["Component"]</a>
         </li>
         <li class="nav-item" id="nav-advanced" @Active("#div-advanced")>
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-advanced" href="#div-advanced">@StringLocalizer["Advanced"]</a>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") data-bs-target="#div-advanced" href="#div-advanced">@StringLocalizer["Expressions"]</a>
         </li>
     </ul>
 
@@ -275,6 +275,18 @@
                 <div class="@BootstrapHelper.FormGroup col-sm-12">
                     <expression for="TriggerExpression" icon="IconType.Bolt" tooltip="@StringLocalizer["Expression triggered whenever a field performs a POST to the server. See the documentation for more information."]"/>
                 </div>
+            </div>
+            <div class="row">
+                <collapse-panel title="@StringLocalizer["Help"]" color="Info" expanded-by-default="false" icon="InfoCircle">
+                    @StringLocalizer["It's possible to create conditionals using for example '{PageState}' = 'Variable' where 'Variable' can be:"]
+                    <ul>
+                        @foreach (var state in Enum.GetValues<PageState>())
+                        {
+                            <li>@state</li>
+                        }
+                    </ul>
+                    @StringLocalizer["You can also use any field from your element between {}."]
+                </collapse-panel>
             </div>
         </div>
     </div>
