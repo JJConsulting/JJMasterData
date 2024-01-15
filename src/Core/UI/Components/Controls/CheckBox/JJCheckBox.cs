@@ -67,9 +67,9 @@ public class JJCheckBox : ControlBase
     {
         var div = new HtmlBuilder(HtmlTag.Div);
 
-        div.WithCssClassIf(IsSwitch, $"form-switch");
+        div.WithCssClassIf(IsSwitch, "form-switch");
         div.WithCssClassIf(IsSwitch && SwitchSize is not null, SwitchSize?.GetDescription());
-        div.WithCssClass("form-check");
+        div.WithCssClassIf(!string.IsNullOrEmpty(Text), "form-check");
         
         div.Append(HtmlTag.Input, input =>
         {

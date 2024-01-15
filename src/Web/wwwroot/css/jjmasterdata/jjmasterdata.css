@@ -58,8 +58,6 @@
     color: white
 }
 
-/*Tables*/
-
 .table .table-action {
     text-align: center;
     width: 45px;
@@ -67,8 +65,7 @@
 
 .table .jj-checkbox {
     vertical-align: middle;
-    width: 70px;
-    padding-left: 24px;
+    text-align: center;
 }
 
     .table .jj-checkbox i {
