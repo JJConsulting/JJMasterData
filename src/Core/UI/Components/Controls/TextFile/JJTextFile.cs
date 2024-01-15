@@ -167,13 +167,11 @@ public class JJTextFile(IHttpRequest request,
 
         textGroup.Actions.Add(button);
 
-        var textGroupHtml = await textGroup.GetHtmlBuilderAsync();
+        var html = new HtmlBuilder();
+        html.Append(await textGroup.GetHtmlBuilderAsync());
+        html.Append(GetHiddenInputHtml());
         
-        var hiddenInput = GetHiddenInputHtml();
-
-        textGroupHtml.Append(hiddenInput);
-        
-        return textGroupHtml;
+        return html;
     }
 
     private HtmlBuilder GetHiddenInputHtml()
