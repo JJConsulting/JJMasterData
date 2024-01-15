@@ -59,6 +59,8 @@ public class LoggerFormElementFactory(IOptions<DbLoggerOptions> options,MasterDa
         formElement.Options.GridTableActions.Clear();
         
         formElement.Options.GridToolbarActions.Add(btnClearAll);
+
+        formElement.Options.Grid.IsCompact = true;
         
         return formElement;
     }

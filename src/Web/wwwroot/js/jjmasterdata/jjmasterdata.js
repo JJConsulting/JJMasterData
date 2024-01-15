@@ -1433,8 +1433,8 @@ class LookupHelper {
         if (descriptionInput) {
             descriptionInput.value = description;
         }
-        FeedbackIcon.setIcon(fieldName, FeedbackIcon.successClass);
-        window.parent.defaultModal.remove();
+        FeedbackIcon.setIcon("#" + fieldName, FeedbackIcon.successClass);
+        window.parent.defaultModal.hide();
     }
 }
 class LookupListener {

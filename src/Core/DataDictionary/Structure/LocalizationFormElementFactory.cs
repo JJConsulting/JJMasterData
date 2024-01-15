@@ -47,6 +47,8 @@ public class LocalizationFormElementFactory(IOptions<MasterDataCommonsOptions> o
             cultureField.DataItem.Items.Add(item);
         }
 
+        formElement.Options.Grid.IsCompact = true;
+        
         return formElement;
     }
 }

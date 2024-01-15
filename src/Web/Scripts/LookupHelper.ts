@@ -9,8 +9,8 @@ class LookupHelper {
             descriptionInput.value = description;
         }
 
-        FeedbackIcon.setIcon(fieldName, FeedbackIcon.successClass);
+        FeedbackIcon.setIcon("#" + fieldName, FeedbackIcon.successClass);
 
-        window.parent.defaultModal.remove();
+        window.parent.defaultModal.hide();
     }
 }
