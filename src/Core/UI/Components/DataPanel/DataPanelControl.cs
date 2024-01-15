@@ -342,6 +342,9 @@ internal class DataPanelControl
             foreach (var textGroupAction in textGroup.Actions)
                 textGroupAction.Enabled = false;
         
+        if(control is JJTextFile file)
+            file.ParentName = FormElement.Name;
+        
         if (PageState != PageState.Filter) 
             return control.GetHtmlBuilderAsync();
         

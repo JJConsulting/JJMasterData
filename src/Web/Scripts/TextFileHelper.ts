@@ -28,11 +28,10 @@ class TextFileHelper {
         const url = urlBuilder.build();
 
         postFormValues({url:url,success:function(html){
-            const modalId = fieldName + "-upload-modal";
-            const modal = document.getElementById(modalId);
-            const modalBody: HTMLElement = modal.querySelector('.modal-body');
-            HTMLHelper.setInnerHTML(modalBody, html);
-            listenAllEvents("#" + modalId);
+            const uploadViewSelector = "#" + fieldName + "-upload-view";
+            const uploadView: HTMLElement = document.querySelector(uploadViewSelector);
+            HTMLHelper.setInnerHTML(uploadView, html);
+            listenAllEvents(uploadViewSelector);
         }});
     }
 

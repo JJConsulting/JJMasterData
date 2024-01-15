@@ -93,6 +93,7 @@ public class JJTextFile(IHttpRequest request,
             _uploadView.UploadArea.MaxFileSize = dataFile.MaxFileSize;
             _uploadView.UploadArea.ShowFileSize = dataFile.ExportAsLink;
             _uploadView.UploadArea.AllowedTypes = dataFile.AllowedTypes;
+            _uploadView.UploadArea.EnableCopyPaste = dataFile.AllowPasting;
             _uploadView.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
             _uploadView.UploadArea.QueryStringParams["fieldName"] = FieldName;
             
@@ -110,36 +111,43 @@ public class JJTextFile(IHttpRequest request,
         switch (RouteContext.ComponentContext)
         {
             case ComponentContext.TextFileUploadView:
-                return await GetUploadViewResultAsync();
+            {
+                var result = await GetUploadViewResultAsync();
+
+                if (result is HtmlComponentResult htmlComponentResult)
+                    return new ContentComponentResult(htmlComponentResult.HtmlBuilder);
+
+                return result;
+            }
             case ComponentContext.TextFileFileUpload:
                 return await UploadView.UploadArea.GetResultAsync();
             default:
-                return new RenderedComponentResult(await GetHtmlTextGroup());
+                return new RenderedComponentResult(await GetRenderedComponentHtml());
         }
     }
 
     private async Task<ComponentResult> GetUploadViewResultAsync()
     {
-
-        var html = new HtmlBuilder();
-
         var result = await UploadView.GetUploadViewResult();
 
-        if (result is RenderedComponentResult uploadViewResult)
-        {
-            html.Append(uploadViewResult.HtmlBuilder);
-            html.AppendScript(Scripts.GetRefreshInputsScript());
-        }
-        else 
-        {
+        if (result is not RenderedComponentResult uploadViewResult)
             return result;
-        }
         
-        return new ContentComponentResult(html);
+        var html = new HtmlBuilder();
+        html.Append(uploadViewResult.HtmlBuilder);
+        html.AppendScript(Scripts.GetRefreshInputsScript());
+        return new RenderedComponentResult(html);
     }
 
-    private async Task<HtmlBuilder> GetHtmlTextGroup()
+    private async Task<HtmlBuilder> GetRenderedComponentHtml()
     {
+        if (FormElementField.DataFile!.ShowAsUploadView)
+        {
+            var uploadViewHtml = ((RenderedComponentResult)await GetUploadViewResultAsync()).HtmlBuilder;
+            uploadViewHtml.Append(GetHiddenInputHtml());
+            return uploadViewHtml;
+        }
+        
         if (!Enabled)
             UploadView.ClearMemoryFiles();
 
@@ -161,16 +169,20 @@ public class JJTextFile(IHttpRequest request,
 
         var textGroupHtml = await textGroup.GetHtmlBuilderAsync();
         
-        var html = new HtmlBuilder(HtmlTag.Div)
-            .Append(textGroupHtml)
-            .Append(HtmlTag.Input, i =>
-            {
-                i.WithAttribute("type", "hidden")
-                    .WithNameAndId(Name)
-                    .WithAttribute("value", GetFileName());
-            });
+        var hiddenInput = GetHiddenInputHtml();
 
-        return html;
+        textGroupHtml.Append(hiddenInput);
+        
+        return textGroupHtml;
+    }
+
+    private HtmlBuilder GetHiddenInputHtml()
+    {
+        var input = new HtmlBuilder(HtmlTag.Input);
+        input.WithAttribute("type", "hidden")
+            .WithNameAndId(Name)
+            .WithAttribute("value", GetFileName());
+        return input;
     }
 
     public void SaveMemoryFiles()

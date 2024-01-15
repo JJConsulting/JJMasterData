@@ -57,4 +57,11 @@ public class FormElementDataFile
     [Display(Name = "Show Files in Gallery")]
     public bool ViewGallery { get; set; }
 
+    [JsonProperty("allowPasting")]
+    [Display(Name = "Allow pasting files")]
+    public bool AllowPasting { get; set; } = true;
+    
+    [JsonProperty("showAsUploadView")]
+    [Display(Name = "Show as Upload View")]
+    public bool ShowAsUploadView { get; set; }
 }

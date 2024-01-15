@@ -2291,11 +2291,10 @@ class TextFileHelper {
         urlBuilder.addQueryParameter("fieldName", fieldName);
         const url = urlBuilder.build();
         postFormValues({ url: url, success: function (html) {
-                const modalId = fieldName + "-upload-modal";
-                const modal = document.getElementById(modalId);
-                const modalBody = modal.querySelector('.modal-body');
-                HTMLHelper.setInnerHTML(modalBody, html);
-                listenAllEvents("#" + modalId);
+                const uploadViewSelector = "#" + fieldName + "-upload-view";
+                const uploadView = document.querySelector(uploadViewSelector);
+                HTMLHelper.setInnerHTML(uploadView, html);
+                listenAllEvents(uploadViewSelector);
             } });
     }
     static refreshInputs(id, presentationText, valueText) {

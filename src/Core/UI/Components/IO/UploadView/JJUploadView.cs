@@ -134,7 +134,7 @@ public class JJUploadView : AsyncComponent
 
 
             _gridView.FilterAction.SetVisible(false);
-            _gridView.EmptyDataText = "There is no file to display";
+            _gridView.EmptyDataText = StringLocalizer["There is no files to display."];
             _gridView.ShowHeaderWhenEmpty = false;
             
             _gridView.ViewAction.SetVisible(false);
@@ -296,7 +296,7 @@ public class JJUploadView : AsyncComponent
         if (!string.IsNullOrEmpty(previewVideo))
             return new ContentComponentResult(GetHtmlPreviewVideo(previewVideo));
 
-        var html = new HtmlBuilder();
+        var html = new HtmlBuilder(HtmlTag.Div);
 
         var uploadAction = CurrentContext.Request.Form[$"upload-view-action-{Name}"];
         if (!string.IsNullOrEmpty(uploadAction))
@@ -339,6 +339,8 @@ public class JJUploadView : AsyncComponent
 
         html.AppendComponent(await GetPreviewModalHtml());
 
+        html.WithId(Name);
+        
         return new RenderedComponentResult(html);
     }
 
@@ -486,8 +488,9 @@ public class JJUploadView : AsyncComponent
 
     private async Task<HtmlBuilder> GetGalleryHtml()
     {
-        var files = FormFileManager.GetFiles();
-        if (files.Count <= 0) return null;
+        var files = GetFiles().FindAll(x => !x.Deleted);;
+        if (files.Count <= 0) 
+            return new JJAlert{Title = StringLocalizer["There is no files to display."]}.GetHtmlBuilder();
 
         foreach (var ac in GridView.GridTableActions)
         {
@@ -780,7 +783,7 @@ public class JJUploadView : AsyncComponent
         try
         {
             CreateFile(args.File);
-            args.SuccessMessage = "File sucessfully created.";
+            args.SuccessMessage = "File successfully created.";
         }
         catch (Exception ex)
         {
@@ -799,6 +802,7 @@ public class JJUploadView : AsyncComponent
         var alert = ComponentFactory.Html.Alert.Create();
         alert.Title = text;
         alert.ShowCloseButton = true;
+        alert.Color = PanelColor.Info;
         alert.Icon = IconType.SolidCircleInfo;
         
         return new RenderedComponentResult(alert.GetHtmlBuilder());
@@ -817,6 +821,7 @@ public class JJUploadView : AsyncComponent
         var alert = ComponentFactory.Html.Alert.Create();
         alert.Title = text;
         alert.ShowCloseButton = true;
+        alert.Color = PanelColor.Info;
         alert.Icon = IconType.SolidCircleInfo;
         
         return new RenderedComponentResult(alert.GetHtmlBuilder());
