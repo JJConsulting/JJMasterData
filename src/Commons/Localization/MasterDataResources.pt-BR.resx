@@ -3752,4 +3752,10 @@
   <data name="Expressions" xml:space="preserve">
     <value>Expressões</value>
   </data>
+  <data name="Read more about expressions " xml:space="preserve">
+    <value>Leia mais sobre expressões </value>
+  </data>
+  <data name=" in this link." xml:space="preserve">
+    <value>neste link.</value>
+  </data>
 </root>

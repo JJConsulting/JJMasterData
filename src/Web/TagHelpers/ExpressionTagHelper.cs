@@ -15,13 +15,10 @@ using JJMasterData.Core.UI;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class ExpressionTagHelper : TagHelper
+public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProviders) : TagHelper
 {
-    private readonly IEnumerable<IExpressionProvider> _expressionProviders;
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
-    private readonly IComponentFactory<JJCard> _cardFactory;
     private bool? _isBooleanExpression;
-    
+
     [HtmlAttributeName("for")]
     public ModelExpression? For { get; set; }
     
@@ -58,17 +55,7 @@ public class ExpressionTagHelper : TagHelper
     [ViewContext]
     [HtmlAttributeNotBound]
     public ViewContext ViewContext { get; set; } = null!;
-    
-    
-    public ExpressionTagHelper(
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        IEnumerable<IExpressionProvider> expressionProviders,
-        IComponentFactory<JJCard> cardFactory)
-    {
-        _expressionProviders = expressionProviders;
-        _stringLocalizer = stringLocalizer;
-        _cardFactory = cardFactory;
-    }
+
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
@@ -119,7 +106,7 @@ public class ExpressionTagHelper : TagHelper
             select.WithNameAndId(name + "-ExpressionType");
             select.WithCssClass("form-select");
             
-            foreach (var provider in _expressionProviders)
+            foreach (var provider in expressionProviders)
             {
                 if (IsBooleanExpression && provider is not IBooleanExpressionProvider)
                     continue;
@@ -148,6 +135,7 @@ public class ExpressionTagHelper : TagHelper
                 div.WithId(name + "-ExpressionValueEditor");
                 div.Append(HtmlTag.Input, input =>
                 {
+                    input.WithCssClass("font-monospace");
                     input.WithCssClass("form-control");
                     input.WithNameAndId(name + "-ExpressionValue");
                     input.WithValue(selectedExpressionValue);
