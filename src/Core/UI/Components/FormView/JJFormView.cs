@@ -147,7 +147,7 @@ public class JJFormView : AsyncComponent
             _dataPanel.FormUI = FormElement.Options.Form;
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
-            _dataPanel.PageState = PanelState;
+            _dataPanel.PageState = ContainsRelationships() ? PanelState : PageState;
 
             return _dataPanel;
         }
