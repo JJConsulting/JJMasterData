@@ -51,11 +51,6 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
 
     [HtmlAttributeName("icon")] 
     public IconType? Icon { get; set; }
-    
-    [ViewContext]
-    [HtmlAttributeNotBound]
-    public ViewContext ViewContext { get; set; } = null!;
-
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
@@ -74,7 +69,6 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         var splittedExpression = modelValue?.Split(':',2);
         var selectedExpressionType = splittedExpression?[0];
         var selectedExpressionValue = splittedExpression?[1] ?? string.Empty;
-        string codeMirrorHintList = ViewContext.ViewBag.CodeMirrorHintList;
 
         var html = new HtmlBuilder(HtmlTag.Div);
         html.Append(HtmlTag.Label, label =>
@@ -90,7 +84,7 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         });
         html.WithCssClass("row");
         html.Append(GetTypeSelect(name, selectedExpressionType));
-        html.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue, codeMirrorHintList));
+        html.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue));
         
         output.TagMode = TagMode.StartTagAndEndTag;
         
@@ -126,7 +120,7 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         return div;
     }
 
-    private static HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType, string selectedExpressionValue, string codeMirrorHintList)
+    private static HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType, string selectedExpressionValue)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("col-sm-10");
