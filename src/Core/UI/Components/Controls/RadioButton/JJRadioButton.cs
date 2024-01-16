@@ -21,6 +21,7 @@ internal class JJRadioButton(IFormValues formValues) : ControlBase(formValues)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("form-check");
+        div.WithCssClass(CssClass);
         div.WithCssClassIf(Layout is DataItemRadioLayout.Horizontal, "form-check-inline");
         div.AppendInput(input =>
         {
@@ -28,6 +29,7 @@ internal class JJRadioButton(IFormValues formValues) : ControlBase(formValues)
             input.WithAttributeIf(!Enabled || ReadOnly, "disabled");
             input.WithCssClass("form-check-input");
             input.WithValue(Text);
+            input.WithAttributes(Attributes);
             input.WithAttribute("type", "radio");
             input.WithAttributeIf(IsChecked, "checked");
         });
@@ -37,6 +39,7 @@ internal class JJRadioButton(IFormValues formValues) : ControlBase(formValues)
             label.WithAttribute("for", Id);
             label.Append(LabelHtml);
         });
+        
         return div;
     }
 }

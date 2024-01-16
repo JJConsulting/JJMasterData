@@ -43,6 +43,7 @@ public class JJRadioButtonGroup(
             AppendRadioButton(fieldSet, value);
         }
         
+        fieldSet.WithCssClass(CssClass);
 
         return new RenderedComponentResult(fieldSet);
     }
@@ -52,7 +53,7 @@ public class JJRadioButtonGroup(
         return DataItemService.GetValuesAsync(DataItem,FormStateData);
     }
 
-    public HtmlBuilder AppendRadioButton(HtmlBuilder html, DataItemValue item)
+    private void AppendRadioButton(HtmlBuilder html, DataItemValue item)
     {
         var radio = new JJRadioButton(FormValues)
         {
@@ -60,6 +61,7 @@ public class JJRadioButtonGroup(
             IsChecked = item.Id == SelectedValue,
             Enabled = Enabled,
             Text = item.Id,
+            Attributes = Attributes,
             Layout = DataItem.RadioLayout!.Value
         };
 
@@ -71,6 +73,5 @@ public class JJRadioButtonGroup(
         radio.LabelHtml.AppendText(item.Description!);
         
         html.Append(radio.GetHtmlBuilder());
-        return html;
     }
 }
