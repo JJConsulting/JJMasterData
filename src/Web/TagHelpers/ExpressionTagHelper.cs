@@ -15,13 +15,10 @@ using JJMasterData.Core.UI;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class ExpressionTagHelper : TagHelper
+public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProviders) : TagHelper
 {
-    private readonly IEnumerable<IExpressionProvider> _expressionProviders;
-    private readonly IStringLocalizer<MasterDataResources> _stringLocalizer;
-    private readonly IComponentFactory<JJCard> _cardFactory;
     private bool? _isBooleanExpression;
-    
+
     [HtmlAttributeName("for")]
     public ModelExpression? For { get; set; }
     
@@ -54,21 +51,6 @@ public class ExpressionTagHelper : TagHelper
 
     [HtmlAttributeName("icon")] 
     public IconType? Icon { get; set; }
-    
-    [ViewContext]
-    [HtmlAttributeNotBound]
-    public ViewContext ViewContext { get; set; } = null!;
-    
-    
-    public ExpressionTagHelper(
-        IStringLocalizer<MasterDataResources> stringLocalizer,
-        IEnumerable<IExpressionProvider> expressionProviders,
-        IComponentFactory<JJCard> cardFactory)
-    {
-        _expressionProviders = expressionProviders;
-        _stringLocalizer = stringLocalizer;
-        _cardFactory = cardFactory;
-    }
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
     {
@@ -87,7 +69,6 @@ public class ExpressionTagHelper : TagHelper
         var splittedExpression = modelValue?.Split(':',2);
         var selectedExpressionType = splittedExpression?[0];
         var selectedExpressionValue = splittedExpression?[1] ?? string.Empty;
-        string codeMirrorHintList = ViewContext.ViewBag.CodeMirrorHintList;
 
         var html = new HtmlBuilder(HtmlTag.Div);
         html.Append(HtmlTag.Label, label =>
@@ -103,7 +84,7 @@ public class ExpressionTagHelper : TagHelper
         });
         html.WithCssClass("row");
         html.Append(GetTypeSelect(name, selectedExpressionType));
-        html.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue, codeMirrorHintList));
+        html.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue));
         
         output.TagMode = TagMode.StartTagAndEndTag;
         
@@ -119,7 +100,7 @@ public class ExpressionTagHelper : TagHelper
             select.WithNameAndId(name + "-ExpressionType");
             select.WithCssClass("form-select");
             
-            foreach (var provider in _expressionProviders)
+            foreach (var provider in expressionProviders)
             {
                 if (IsBooleanExpression && provider is not IBooleanExpressionProvider)
                     continue;
@@ -139,7 +120,7 @@ public class ExpressionTagHelper : TagHelper
         return div;
     }
 
-    private static HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType, string selectedExpressionValue, string codeMirrorHintList)
+    private static HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType, string selectedExpressionValue)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
             div.WithCssClass("col-sm-10");
@@ -148,6 +129,7 @@ public class ExpressionTagHelper : TagHelper
                 div.WithId(name + "-ExpressionValueEditor");
                 div.Append(HtmlTag.Input, input =>
                 {
+                    input.WithCssClass("font-monospace");
                     input.WithCssClass("form-control");
                     input.WithNameAndId(name + "-ExpressionValue");
                     input.WithValue(selectedExpressionValue);

@@ -279,13 +279,15 @@
             <div class="row">
                 <collapse-panel title="@StringLocalizer["Help"]" color="Info" expanded-by-default="false" icon="InfoCircle">
                     @StringLocalizer["It's possible to create conditionals using for example '{PageState}' = 'Variable' where 'Variable' can be:"]
-                    <ul>
+                    <ul style="margin-top:1rem">
                         @foreach (var state in Enum.GetValues<PageState>())
                         {
                             <li>@state</li>
                         }
                     </ul>
                     @StringLocalizer["You can also use any field from your element between {}."]
+                    <br/>
+                    @StringLocalizer["Read more about expressions "] <a href="https://md.jjconsulting.tech/articles/expressions.html">@StringLocalizer[" in this link."]</a>
                 </collapse-panel>
             </div>
         </div>
