@@ -60,7 +60,7 @@ public class JJRadioButtonGroup(
             IsChecked = item.Id == SelectedValue,
             Enabled = Enabled,
             Text = item.Id,
-            Layout = DataItem.RadioLayout
+            Layout = DataItem.RadioLayout!.Value
         };
 
         if (DataItem.ShowIcon)

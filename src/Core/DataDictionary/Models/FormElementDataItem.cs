@@ -39,7 +39,7 @@ public class FormElementDataItem
 
     [JsonProperty("radioLayout")]
     [Display(Name = "Layout")]
-    public DataItemRadioLayout RadioLayout { get; set; } = DataItemRadioLayout.Horizontal;
+    public DataItemRadioLayout? RadioLayout { get; set; }
     
     /// <remarks>
     /// Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.
