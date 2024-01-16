@@ -92,7 +92,7 @@ internal class GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStri
     private FormElementField GetLegendField()
     {
         return FormElement.Fields.FirstOrDefault(f 
-            => f.Component == FormComponent.ComboBox && (f.DataItem?.ShowIcon ?? false));
+            => f.Component is FormComponent.ComboBox or FormComponent.RadioButtonGroup && (f.DataItem?.ShowIcon ?? false));
     }
 
 }

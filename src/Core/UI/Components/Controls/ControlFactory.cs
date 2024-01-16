@@ -103,6 +103,9 @@ public class ControlFactory(IServiceProvider serviceProvider,
                 }
                 
                 break;
+            case FormComponent.RadioButtonGroup:
+                control = Create<JJRadioButtonGroup>(formElement, field, context);
+                break;
             case FormComponent.TextArea:
                 control = Create<JJTextArea>(formElement, field, context);
                 break;

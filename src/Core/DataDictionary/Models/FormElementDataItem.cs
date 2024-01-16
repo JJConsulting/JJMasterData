@@ -34,8 +34,13 @@ public class FormElementDataItem
     /// Exibir texto (Todos) como primeira opção (Default = NONE)
     /// </summary>
     [JsonProperty("firstoption")]
+    [Display(Name = "First Option")]
     public FirstOptionMode FirstOption { get; set; } = FirstOptionMode.None;
 
+    [JsonProperty("radioLayout")]
+    [Display(Name = "Layout")]
+    public DataItemRadioLayout RadioLayout { get; set; } = DataItemRadioLayout.Horizontal;
+    
     /// <remarks>
     /// Be careful when using this option. You should probably use this option only for WriteOnly fields or store the values in another table.
     /// </remarks>

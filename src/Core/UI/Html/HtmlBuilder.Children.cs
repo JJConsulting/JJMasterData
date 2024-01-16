@@ -75,6 +75,16 @@ public partial class HtmlBuilder
         return Append(HtmlTag.Span, builderAction);
     }
     
+    public HtmlBuilder AppendInput(Action<HtmlBuilder>? builderAction = null)
+    {
+        return Append(HtmlTag.Input, builderAction);
+    }
+    
+    public HtmlBuilder AppendLabel(Action<HtmlBuilder>? builderAction = null)
+    {
+        return Append(HtmlTag.Label, builderAction);
+    }
+    
     public HtmlBuilder AppendLink(string text, string link)
     {
         var child = new HtmlBuilder(HtmlTag.A)
@@ -231,5 +241,4 @@ public partial class HtmlBuilder
 
         return this;
     }
-
 }

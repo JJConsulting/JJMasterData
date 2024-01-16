@@ -306,7 +306,7 @@ internal class GridTableBody(JJGridView gridView)
     {
         switch (field.Component)
         {
-            case FormComponent.ComboBox:
+            case FormComponent.ComboBox or FormComponent.RadioButtonGroup:
                 if (field.DataItem is
                     {
                         ShowIcon: true,

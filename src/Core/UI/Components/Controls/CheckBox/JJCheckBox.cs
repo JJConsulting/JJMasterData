@@ -11,10 +11,7 @@ public class JJCheckBox : ControlBase
 {
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private bool? _isChecked;
-
-    /// <remarks>
-    /// Default: "true"
-    /// </remarks>
+    
     public string Value { get; set; }
     
     public bool IsSwitch { get; set; }
@@ -42,8 +39,7 @@ public class JJCheckBox : ControlBase
         Enabled = true;
         Value = "true";
     }
-
-
+    
     protected override Task<ComponentResult> BuildResultAsync()
     {
         var html = GetHtmlBuilder();
@@ -73,26 +69,13 @@ public class JJCheckBox : ControlBase
         
         div.Append(HtmlTag.Input, input =>
         {
-            var checkboxHelperScript = $"CheckboxHelper.check('{Name.Replace(".", "_")}');";
-            
-            if (Attributes.ContainsKey("onchange"))
-            {
-                Attributes["onchange"] = checkboxHelperScript + Attributes["onchange"];
-            }
-            else
-            {
-                Attributes["onchange"] = checkboxHelperScript;
-            }
-
             if (ReadOnly)
                 Attributes["onclick"] = "return false";
-
-            var checkBoxName = Name + "-checkbox";
             
             input.WithAttributes(Attributes)
                 .WithAttribute("type", "checkbox")
-                .WithName(checkBoxName)
-                .WithId(checkBoxName.Replace(".","_"))
+                .WithName(Name)
+                .WithId(Name.Replace(".","_"))
                 .WithAttribute("value", Value)
                 .WithCssClass("form-check-input")
                 .WithAttributeIf(IsSwitch && BootstrapHelper.Version is 3,"data-toggle","toggle")
@@ -106,12 +89,12 @@ public class JJCheckBox : ControlBase
                 .WithAttributeIf(!Enabled, "disabled", "disabled");
         });
 
+        //This hidden checkbox ensures that a value is submitted even if the checkbox is unchecked, due to a HTML5 limitation.
         div.Append(HtmlTag.Input, input =>
         {
             input.WithAttribute("hidden", "hidden");
             input.WithName(Name);
-            input.WithId(Name.Replace(".", "_"));
-            input.WithValue(IsChecked ? Value : "false");
+            input.WithValue("false");
         });
 
         div.AppendIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
