@@ -227,7 +227,10 @@ public class FieldController(FieldService fieldService, IControlFactory<JJSearch
         ViewBag.FieldName = field.Name;
         ViewBag.Fields = formElement.Fields;
 
-        if (field.Component is not FormComponent.Lookup && field.Component is not FormComponent.Search && field.Component is not FormComponent.ComboBox) 
+        if (field.Component is not FormComponent.Lookup && 
+            field.Component is not FormComponent.Search && 
+            field.Component is not FormComponent.ComboBox && 
+            field.Component is not FormComponent.RadioButtonGroup) 
             return;
         
         field.DataItem.ElementMap ??= new DataElementMap();
