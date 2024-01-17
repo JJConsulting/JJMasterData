@@ -297,7 +297,7 @@ public class FieldService(IValidationDictionary validationDictionary,
 
         var childField = childFormElement.Fields[elementMap.IdFieldName];
 
-        if (field.DataType != childField.DataType)
+        if (field.DataType != childField.DataType && field.DataBehavior is FieldBehavior.Real)
             AddError(nameof(elementMap.DescriptionFieldName), StringLocalizer["[FieldId] DataType must be the same of your field."]);
         
         if(dataItem.ShowIcon && elementMap.IconIdFieldName is null)

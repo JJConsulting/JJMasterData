@@ -66,6 +66,26 @@
 
 @section Scripts{
 
+    <script>
+        function saveScrollPosition() {
+            const listField = document.getElementById('listField');
+            if (listField) {
+                sessionStorage.setItem('listFieldScrollPosition', listField.scrollTop);
+            }
+        }
+
+        function restoreScrollPosition() {
+            const listField = document.getElementById('listField');
+            const savedScrollPosition = sessionStorage.getItem('listFieldScrollPosition');
+            if (listField && savedScrollPosition) {
+                listField.scrollTop = parseInt(savedScrollPosition);
+                sessionStorage.removeItem('listFieldScrollPosition');
+            }
+        }
+        document.addEventListener("DOMContentLoaded", restoreScrollPosition)
+        window.addEventListener('beforeunload', saveScrollPosition);
+    </script>
+    
     <script type="text/javascript">
          function setupCodeMirror(){
             CodeMirrorWrapper.setupCodeMirror("DataItem_Command_Sql",{
