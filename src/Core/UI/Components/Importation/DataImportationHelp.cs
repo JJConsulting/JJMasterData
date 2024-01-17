@@ -168,48 +168,52 @@ internal class DataImportationHelp
     private async Task<string> GetFormatDescription(FormElementField field)
     {
         var text = new StringBuilder();
-        if (field.Component == FormComponent.Date)
+        switch (field.Component)
         {
-            text.Append(StringLocalizer[$"Format ({Format.DateFormat}) example:"]);
-            text.Append(" ");
-            text.Append(DateTime.Now.ToString($"{Format.DateFormat}"));
-            text.Append(".");
-        }
-        else if (field.Component == FormComponent.DateTime)
-        {
-            text.Append(StringLocalizer[$"Format ({Format.DateTimeFormat}) example:"]);
-            text.Append(" ");
-            text.Append(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
-            text.Append(".");
-        }
-        else if (field.Component == FormComponent.ComboBox)
-        {
-            text.Append(StringLocalizer["Inform the Id"]);
-            text.Append(" ");
-            text.Append(await GetHtmlComboHelp(field));
-        }
-        else if (field.Component == FormComponent.CheckBox)
-        {
-            text.Append("(1, 0).");
-        }
-        else if (field.DataType == FieldType.Int)
-        {
-            text.Append(StringLocalizer["No dot or comma."]);
-        }
-        else if (field.DataType == FieldType.Float)
-        {
-            if (field.Size > 0)
+            case FormComponent.Date:
+                text.Append(StringLocalizer[$"Format ({Format.DateFormat}) example:"]);
+                text.Append(" ");
+                text.Append(DateTime.Now.ToString($"{Format.DateFormat}"));
+                text.Append(".");
+                break;
+            case FormComponent.DateTime:
+                text.Append(StringLocalizer[$"Format ({Format.DateTimeFormat}) example:"]);
+                text.Append(" ");
+                text.Append(DateTime.Now.ToString($"{Format.DateTimeFormat}"));
+                text.Append(".");
+                break;
+            case FormComponent.ComboBox or FormComponent.RadioButtonGroup:
+                text.Append(StringLocalizer["Inform the Id"]);
+                text.Append(" ");
+                text.Append(await GetHtmlComboHelp(field));
+                break;
+            case FormComponent.CheckBox:
+                text.Append("(1, 0).");
+                break;
+            default:
             {
-                text.Append(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
-            }
+                if (field.DataType == FieldType.Int)
+                {
+                    text.Append(StringLocalizer["No dot or comma."]);
+                }
+                else if (field.DataType == FieldType.Float)
+                {
+                    if (field.Size > 0)
+                    {
+                        text.Append(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
+                    }
 
-            text.Append(DataImportation.StringLocalizer["Use '{0}' as separator for {1} decimal places.", CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator,field.NumberOfDecimalPlaces]);
-        }
-        else
-        {
-            if (field.Size > 0)
-            {
-                text.Append(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
+                    text.Append(DataImportation.StringLocalizer["Use '{0}' as separator for {1} decimal places.", CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator,field.NumberOfDecimalPlaces]);
+                }
+                else
+                {
+                    if (field.Size > 0)
+                    {
+                        text.Append(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
+                    }
+                }
+
+                break;
             }
         }
 

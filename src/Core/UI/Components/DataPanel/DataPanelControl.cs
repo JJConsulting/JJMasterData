@@ -160,11 +160,9 @@ internal class DataPanelControl
             if (PageState == PageState.View && FormUI.ShowViewModeAsStatic)
                 htmlField.WithCssClass("jjborder-static");
 
-            if (field.Component != FormComponent.CheckBox)
+            if (field.Component is not FormComponent.CheckBox)
             {
                 var label = CreateLabel(field, isRange);
-                if(PageState is not PageState.Filter)
-                    label.CssClass += "fw-bold";
                 htmlField.AppendComponent(label);
             }
                 

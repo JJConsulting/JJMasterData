@@ -147,7 +147,7 @@ internal class GridTableHeader
         string style = string.Empty;
         switch (field.Component)
         {
-            case FormComponent.ComboBox:
+            case FormComponent.ComboBox or FormComponent.RadioButtonGroup:
             {
                 if (field.DataItem is { ShowIcon: true, GridBehavior: DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription })
                 {

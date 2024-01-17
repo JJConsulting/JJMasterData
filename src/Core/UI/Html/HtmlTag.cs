@@ -40,5 +40,7 @@ public enum HtmlTag
     Img,
     Center,
     Video,
-    Form
+    Form,
+    FieldSet,
+    Legend
 }

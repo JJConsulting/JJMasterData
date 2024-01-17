@@ -247,7 +247,7 @@
                            })
                 }
             }
-            else if (Model.Component is FormComponent.ComboBox or FormComponent.Search)
+            else if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup)
             {
                 @await Html.PartialAsync("_DataItem", Model)
             }

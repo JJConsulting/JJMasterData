@@ -58,7 +58,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
             case FormComponent.CheckBox:
                 stringValue = StringManager.ParseBool(value) ? "Sim" : "Não";
                 break;
-            case FormComponent.Search or FormComponent.ComboBox
+            case FormComponent.Search or FormComponent.ComboBox or FormComponent.RadioButtonGroup
                  when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id }:
                 var searchFormData = new FormStateData(values, userValues, PageState.List);
 
