@@ -16,14 +16,11 @@ public static class EventHandlerServiceExtensions
     {
         services.AddScoped<IFormEventHandlerResolver,FormEventHandlerResolver>();
         services.AddScoped<IGridEventHandlerResolver,GridEventHandlerResolver>();
-
-        services.AddEventHandlers<IFormEventHandler>();
-        services.AddEventHandlers<IGridEventHandler>();
         
         return services;
     }
 
-    public static IServiceCollection AddEventHandlers<T>(this IServiceCollection services, params Assembly[] additionalAssemblies) where T : IEventHandler
+    public static IServiceCollection AddEventHandlers(this IServiceCollection services, params Assembly[] additionalAssemblies)
     {
         var assemblies = new List<Assembly>
         {
@@ -32,11 +29,19 @@ public static class EventHandlerServiceExtensions
 
         assemblies.AddRange(additionalAssemblies);
         
-        var types = ReflectionUtils.GetDefinedTypes<T>(assemblies);
+        var types = ReflectionUtils.GetDefinedTypes<IEventHandler>(assemblies);
 
-        foreach (var formEventHandlerType in types.Where(t=>!t.IsAbstract))
+        foreach (var eventType in types.Where(t=>!t.IsAbstract))
         {
-            services.Add(new ServiceDescriptor(typeof(T), formEventHandlerType, ServiceLifetime.Transient));
+            if (eventType.ImplementedInterfaces.Contains(typeof(IFormEventHandler)))
+            {
+                services.Add(new ServiceDescriptor(typeof(IFormEventHandler), eventType, ServiceLifetime.Transient));
+            }
+
+            if (eventType.ImplementedInterfaces.Contains(typeof(IGridEventHandler)))
+            {
+                services.Add(new ServiceDescriptor(typeof(IGridEventHandler), eventType, ServiceLifetime.Transient));
+            }
         }
 
         return services;

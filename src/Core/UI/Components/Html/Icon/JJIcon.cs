@@ -14,7 +14,7 @@ public class JJIcon : HtmlComponent
     public string Color { get; set; }
     public string Tooltip { get; set; }
     
-    internal JJIcon() { }
+    public JJIcon() { }
 
     public JJIcon(IconType icon)
     {
