@@ -27,15 +27,15 @@ public enum FormComponent
     ComboBox = 9,
     [Display(Name = "SearchBox", GroupName = "5. Data Item")]
     Search = 10,
-    [Display(GroupName = "8. Especial")]
-    RadioButton = 11,
+    [Display(Name = "RadioButtonGroup",GroupName = "5. Data Item")]
+    RadioButtonGroup = 11,
     [Display(GroupName = "4. Boolean")]
     CheckBox = 12,
     [Display(Name = "CNPJ", GroupName = "6. Mask")]
     Cnpj = 13,
     [Display(Name = "CPF", GroupName = "6. Mask")]
     Cpf = 14,
-    [Display(Name = "CNPJ / CPF", GroupName = "6. Mask")]
+    [Display(Name = "CNPJ/CPF", GroupName = "6. Mask")]
     CnpjCpf = 15,
     [Display(Name = "Currency", GroupName = "2. Numeric")]
     Currency = 16,
@@ -43,7 +43,7 @@ public enum FormComponent
     Tel = 17,
     [Display(Name = "CEP", GroupName = "6. Mask")]
     Cep = 18,
-    [Display(Name = "QR Code",GroupName = "8. Especial")]
+    [Display(Name = "QRCode",GroupName = "8. Especial")]
     QrCode = 19,
     [Display(GroupName = "8. Especial")]
     Location = 20,

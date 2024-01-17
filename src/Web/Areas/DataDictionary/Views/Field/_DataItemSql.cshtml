@@ -36,7 +36,7 @@
                 <i>@StringLocalizer["Optimizing the reading of SEARCH component records"]</i>
             </span>
         }
-        else if (Model.Component == FormComponent.ComboBox)
+        else if (Model.Component is FormComponent.ComboBox or FormComponent.RadioButtonGroup)
         {
             <span>
                 @StringLocalizer["{SearchId} retrieves the list record from the found ID that can be used in the query filter condition"]

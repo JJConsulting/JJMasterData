@@ -24,7 +24,7 @@
                 new { @class = "form-control form-select" })
         </div>
 
-        @if (Model.Component is FormComponent.ComboBox or FormComponent.Search && Model.DataItem!.ShowIcon)
+        @if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup && Model.DataItem!.ShowIcon)
         {
             <div class="@BootstrapHelper.FormGroup col-sm-3">
                 <label class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>

@@ -41,9 +41,17 @@
         </div>
     }
     <div class="@BootstrapHelper.FormGroup col-sm-2 required">
-            <label class="@BootstrapHelper.Label " asp-for="DataItem!.ShowIcon"></label>
-            <checkbox for="DataItem!.ShowIcon" switch="true" onchange="this.form.requestSubmit();"/>
+        <label class="@BootstrapHelper.Label " asp-for="DataItem!.ShowIcon"></label>
+        <checkbox for="DataItem!.ShowIcon" switch="true" onchange="this.form.requestSubmit();"/>
     </div>
+
+    @if (Model.Component is FormComponent.RadioButtonGroup)
+    {
+        <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+            <label class="@BootstrapHelper.Label " asp-for="DataItem!.RadioLayout"></label>
+            <select asp-for="DataItem!.RadioLayout" class="form-control form-select" asp-items="Html.GetEnumSelectList<DataItemRadioLayout>()"></select>
+        </div>
+    }
     
     @if (Model.Component is FormComponent.ComboBox)
     {

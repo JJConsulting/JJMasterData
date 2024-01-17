@@ -69,7 +69,7 @@ public class FieldService(IValidationDictionary validationDictionary,
 
     private static void RemoveUnusedProperties(FormElementField field)
     {
-        if (field.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.Lookup)
+        if (field.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.Lookup or FormComponent.RadioButtonGroup)
         {
             switch (field.DataItem!.DataItemType)
             {
@@ -173,7 +173,7 @@ public class FieldService(IValidationDictionary validationDictionary,
                 return IsValid;
             }
         }
-        else if (field.Component is FormComponent.Lookup or FormComponent.ComboBox or FormComponent.Search)
+        else if (field.Component is FormComponent.Lookup or FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup)
         {
             await ValidateDataItemAsync(field);
         }
