@@ -61,6 +61,13 @@ public partial class HtmlBuilder
         return this;
     }
     
+    public HtmlBuilder AppendBr()
+    {
+        var child = new HtmlBuilder(HtmlTag.Br);
+        Append(child);
+        return this;
+    }
+    
     /// <summary>
     /// Insert a HTML div as a child of caller builder.
     /// </summary>
