@@ -282,6 +282,17 @@ class CalendarListener {
         });
     }
 }
+class CheckboxHelper {
+    static check(name) {
+        const checkbox = document.querySelector(`#${name}-checkbox`);
+        if (checkbox === null || checkbox === void 0 ? void 0 : checkbox.checked) {
+            document.querySelector(`#${name}`).value = "true";
+        }
+        else {
+            document.querySelector(`#${name}`).value = "false";
+        }
+    }
+}
 class CodeMirrorWrapperOptions {
 }
 class CodeMirrorWrapper {

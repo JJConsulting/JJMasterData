@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
@@ -22,7 +23,17 @@ public class UrlRedirectService(IEntityRepository entityRepository, FormValuesSe
     {
         var urlRedirectAction = actionMap.GetAction<UrlRedirectAction>(dataPanel.FormElement);
 
-        var dbValues = await EntityRepository.GetFieldsAsync(dataPanel.FormElement, actionMap.PkFieldValues);
+        IDictionary<string,object> dbValues;
+
+        if (actionMap.PkFieldValues.Any())
+        {
+            dbValues = await EntityRepository.GetFieldsAsync(dataPanel.FormElement, actionMap.PkFieldValues);
+        }
+        else
+        {
+            dbValues = new Dictionary<string, object>();
+        }
+           
         var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(dataPanel.FormElement,new FormStateData(dbValues,dataPanel.UserValues,dataPanel.PageState), true, dataPanel.FieldNamePrefix);
         
         DataHelper.CopyIntoDictionary(values, actionMap.PkFieldValues);
