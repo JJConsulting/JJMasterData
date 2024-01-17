@@ -2689,8 +2689,8 @@
     <value>Não há eventos para exibir.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="There is no file to display" xml:space="preserve">
-    <value>Não existe arquivo para ser exibido</value>
+  <data name="There is no files to display." xml:space="preserve">
+    <value>Não existem arquivos para ser exibidos.</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="There is no record to apply" xml:space="preserve">
@@ -3751,6 +3751,9 @@
   </data>
   <data name="Expressions" xml:space="preserve">
     <value>Expressões</value>
+  </data>
+  <data name="Allow pasting files" xml:space="preserve">
+    <value>Permitir colar arquivos</value>
   </data>
   <data name="Read more about expressions " xml:space="preserve">
     <value>Leia mais sobre expressões </value>

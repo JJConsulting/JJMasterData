@@ -79,7 +79,14 @@
         <label class="@BootstrapHelper.Label " asp-for="DataFile!.ExportAsLink"></label>
         <checkbox for="DataFile!.ExportAsLink" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
-
+        <div class="@BootstrapHelper.FormGroup col-sm-2">
+            <label class="@BootstrapHelper.Label " asp-for="DataFile!.AllowPasting"></label>
+            <checkbox for="DataFile!.AllowPasting" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+        </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-2">
+        <label class="@BootstrapHelper.Label " asp-for="DataFile!.ShowAsUploadView"></label>
+        <checkbox for="DataFile!.ShowAsUploadView" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+    </div>
     <div class="col-sm-12">
         <a href="javascript:window.open('https://md.jjconsulting.tech/articles/tutorials/data_file.html', '_blank').focus();">@StringLocalizer["Need more help ?"]</a>
     </div>
