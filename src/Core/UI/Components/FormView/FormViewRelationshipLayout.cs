@@ -146,7 +146,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
         childElement.ParentName = ParentFormView.FormElement.ParentName ?? ParentFormView.FormElement.Name;
 
         var filter = new Dictionary<string, object?>();
-        foreach (var col in Enumerable.Where(relationship.ElementRelationship.Columns, col =>
+        foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
                      formContext.Values.ContainsKey(col.PkColumn)))
         {
             var value = formContext.Values[col.PkColumn];

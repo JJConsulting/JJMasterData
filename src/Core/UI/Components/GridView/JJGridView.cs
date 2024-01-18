@@ -65,9 +65,9 @@ public class JJGridView : AsyncComponent
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// using the proc informed in the FormElement;
     /// </remarks>
-    
     public event AsyncEventHandler<GridDataLoadEventArgs>? OnDataLoadAsync;
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
+    public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
     #endregion
 
     #region Properties
@@ -335,7 +335,19 @@ public class JJGridView : AsyncComponent
         }
     }
 
-    internal GridFilter Filter => _filter ??= new GridFilter(this);
+    internal GridFilter Filter
+    {
+        get
+        {
+            if (_filter != null) 
+                return _filter;
+            
+            _filter = new GridFilter(this);
+            _filter.OnFilterLoadAsync += OnFilterLoadAsync;
+
+            return _filter;
+        }
+    }
 
     internal GridTable Table
     {
@@ -648,7 +660,7 @@ public class JJGridView : AsyncComponent
         return html;
     }
 
-    public Task<IDictionary<string, object?>> GetCurrentFilterAsync()
+    public Task<Dictionary<string, object?>> GetCurrentFilterAsync()
     {
         return Filter.GetCurrentFilterAsync();
     }

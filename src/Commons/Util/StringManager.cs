@@ -19,10 +19,7 @@ public static class StringManager
         if (value == null)
             return false;
 
-        var stringValue = value.ToString().ToLower();
-        
-        if (string.IsNullOrWhiteSpace(stringValue))
-            return false;
+        var stringValue = value.ToString()?.ToLower();
         
         return stringValue switch
         {
