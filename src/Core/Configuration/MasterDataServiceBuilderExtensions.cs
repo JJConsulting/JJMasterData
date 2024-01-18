@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using System;
+using System.Reflection;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -30,6 +31,13 @@ public static class MasterDataServiceBuilderExtensions
     public static MasterDataServiceBuilder WithFormEventHandlerFactory<T>(this MasterDataServiceBuilder builder) where  T: class, IFormEventHandlerResolver
     {
         builder.Services.Replace(ServiceDescriptor.Transient<IFormEventHandlerResolver, T>());
+
+        return builder;
+    }
+    
+    public static MasterDataServiceBuilder WithEventHandlers(this MasterDataServiceBuilder builder, Assembly[] assemblies)
+    {
+        builder.Services.AddEventHandlers(assemblies);
 
         return builder;
     }
