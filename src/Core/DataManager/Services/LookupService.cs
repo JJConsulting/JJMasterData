@@ -19,13 +19,13 @@ public class LookupService(IFormValues formValues,
     ExpressionsService expressionsService,
     IEncryptionService encryptionService,
     ElementMapService elementMapService,
-    MasterDataUrlHelper urlHelper)
+    IMasterDataUrlHelper urlHelper)
 {
     private IFormValues FormValues { get; } = formValues;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private ElementMapService ElementMapService { get; } = elementMapService;
-    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
 
 
     public string GetFormViewUrl(DataElementMap elementMap, FormStateData? formStateData, string componentName)
@@ -36,7 +36,7 @@ public class LookupService(IFormValues formValues,
         var encryptedLookupParameters =
             EncryptionService.EncryptStringWithUrlEscape(lookupParameters.ToQueryString(ExpressionsService, formStateData));
         
-        return UrlHelper.GetUrl("Index", "Lookup", "MasterData",new { lookupParameters = encryptedLookupParameters });
+        return UrlHelper.Action("Index", "Lookup", new { Area = "MasterData", lookupParameters = encryptedLookupParameters });
     }
 
     public async Task<string?> GetDescriptionAsync(

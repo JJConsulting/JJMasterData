@@ -17,6 +17,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -30,12 +31,12 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
         DataDictionaryFormElementFactory dataDictionaryFormElementFactory,
-        MasterDataUrlHelper urlHelper)
+        IMasterDataUrlHelper urlHelper)
     : BaseService(validationDictionary, dataDictionaryRepository, stringLocalizer)
 {
     private IFormElementComponentFactory<JJFormView> FormViewFactory { get; } = formViewFactory;
     private DataDictionaryFormElementFactory DataDictionaryFormElementFactory { get; } = dataDictionaryFormElementFactory;
-    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IEntityRepository EntityRepository { get; } =  entityRepository;
 
     private readonly MasterDataCoreOptions _options = options.Value;
@@ -193,16 +194,16 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
             {
                 case "render":
                     args.LinkButton.OnClientClick =
-                        $"window.open('{UrlHelper.GetUrl("Render", "Form", "MasterData", new { elementName })}', '_blank').focus();";
+                        $"window.open('{UrlHelper.Action("Render", "Form", new {Area="MasterData", elementName })}', '_blank').focus();";
                     break;
                 case "tools":
-                    args.LinkButton.UrlAction = UrlHelper.GetUrl("Index", "Entity", "DataDictionary",
-                        new { elementName });
+                    args.LinkButton.UrlAction = UrlHelper.Action("Index", "Entity", 
+                        new { Area="DataDictionary", elementName });
                     args.LinkButton.OnClientClick = "";
                     break;
                 case "duplicate":
-                    args.LinkButton.UrlAction = UrlHelper.GetUrl("Duplicate", "Element", "DataDictionary",
-                        new { elementName });
+                    args.LinkButton.UrlAction = UrlHelper.Action("Duplicate", "Element", 
+                        new { Area="DataDictionary", elementName });
                     args.LinkButton.OnClientClick = "";
                     break;
             }

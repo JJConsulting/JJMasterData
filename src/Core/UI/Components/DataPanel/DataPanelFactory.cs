@@ -5,7 +5,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Services;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 
 namespace JJMasterData.Core.UI.Components;
@@ -18,8 +17,7 @@ internal class DataPanelFactory(IEntityRepository entityRepository,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
         IComponentFactory componentFactory,
-        UrlRedirectService urlRedirectService,
-        MasterDataUrlHelper urlHelper)
+        UrlRedirectService urlRedirectService)
     : IFormElementComponentFactory<JJDataPanel>
 {
     private IEntityRepository EntityRepository { get; } = entityRepository;
@@ -31,7 +29,6 @@ internal class DataPanelFactory(IEntityRepository entityRepository,
     private ExpressionsService ExpressionsService { get; } = expressionsService;
     private IComponentFactory ComponentFactory { get; } = componentFactory;
     private UrlRedirectService UrlRedirectService { get; } = urlRedirectService;
-    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
 
     public JJDataPanel Create(FormElement formElement)
     {
@@ -40,7 +37,6 @@ internal class DataPanelFactory(IEntityRepository entityRepository,
             EntityRepository, 
             HttpContext,
             EncryptionService, 
-            UrlHelper, 
             FieldsService, 
             FormValuesService, 
             ExpressionsService,

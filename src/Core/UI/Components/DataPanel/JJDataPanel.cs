@@ -14,7 +14,6 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Html;
@@ -103,7 +102,6 @@ public class JJDataPanel : AsyncComponent
     public IEntityRepository EntityRepository { get; }
     internal IHttpContext CurrentContext { get; }
     internal IEncryptionService EncryptionService { get; }
-    internal MasterDataUrlHelper UrlHelper { get; }
     internal FieldsService FieldsService { get; }
     internal FormValuesService FormValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
@@ -118,7 +116,6 @@ public class JJDataPanel : AsyncComponent
         IEntityRepository entityRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
-        MasterDataUrlHelper urlHelper,
         FieldsService fieldsService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
@@ -129,7 +126,6 @@ public class JJDataPanel : AsyncComponent
         EntityRepository = entityRepository;
         CurrentContext = currentContext;
         EncryptionService = encryptionService;
-        UrlHelper = urlHelper;
         FieldsService = fieldsService;
         FormValuesService = formValuesService;
         ExpressionsService = expressionsService;
@@ -146,13 +142,12 @@ public class JJDataPanel : AsyncComponent
         IEntityRepository entityRepository,
         IHttpContext currentContext,
         IEncryptionService encryptionService,
-        MasterDataUrlHelper urlHelper,
         FieldsService fieldsService,
         FormValuesService formValuesService,
         ExpressionsService expressionsService,
         UrlRedirectService urlRedirectService,
         IComponentFactory componentFactory
-    ) : this(entityRepository,  currentContext, encryptionService, urlHelper, fieldsService, formValuesService, expressionsService, urlRedirectService,componentFactory)
+    ) : this(entityRepository,  currentContext, encryptionService, fieldsService, formValuesService, expressionsService, urlRedirectService,componentFactory)
     {
         Name = $"{ComponentNameGenerator.Create(formElement.Name)}-data-panel";
         FormElement = formElement;
