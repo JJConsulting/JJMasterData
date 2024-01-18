@@ -306,7 +306,7 @@ public class FieldService(IValidationDictionary validationDictionary,
         if (elementMap.IdFieldName.Equals(elementMap.DescriptionFieldName))
             AddError(nameof(elementMap.DescriptionFieldName), StringLocalizer["[FieldDescription] can not be equal a [FieldId]"]);
         
-        if (dataItem.GridBehavior is DataItemGridBehavior.Description || dataItem.GridBehavior is DataItemGridBehavior.IconWithDescription && string.IsNullOrEmpty(elementMap.DescriptionFieldName))
+        if (dataItem.GridBehavior is DataItemGridBehavior.Description or DataItemGridBehavior.IconWithDescription && string.IsNullOrEmpty(elementMap.DescriptionFieldName))
             AddError(nameof(dataItem.GridBehavior), StringLocalizer["[GridBehavior] requires a [FieldDescription]"]);
     }
 

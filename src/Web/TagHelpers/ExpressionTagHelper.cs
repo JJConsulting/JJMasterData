@@ -28,8 +28,8 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
     [HtmlAttributeName("value")]
     public string? Value { get; set; }
     
-    [HtmlAttributeName("title")]
-    public string? Title { get; set; }
+    [HtmlAttributeName("label")]
+    public string? Label { get; set; }
     
     [HtmlAttributeName("tooltip")]
     [Localizable(false)]
@@ -71,16 +71,20 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         var selectedExpressionValue = splittedExpression?[1] ?? string.Empty;
 
         var html = new HtmlBuilder(HtmlTag.Div);
-        html.Append(HtmlTag.Label, label =>
+        var displayName = For?.ModelExplorer.Metadata.GetDisplayName() ?? Label;
+        html.AppendIf(displayName is not null,HtmlTag.Label, label =>
         {
             label.WithCssClass(BootstrapHelper.Label);
             label.WithAttribute("for",name + "-ExpressionValue");
-            label.AppendText(For?.ModelExplorer.Metadata.GetDisplayName()!);
-            label.AppendSpan(span =>
+            label.AppendText(displayName!);
+            if(!string.IsNullOrWhiteSpace(Tooltip))
             {
-                span.WithCssClass("fa fa-question-circle help-description");
-                span.WithToolTip(Tooltip);
-            });
+                label.AppendSpan(span =>
+                {
+                    span.WithCssClass("fa fa-question-circle help-description");
+                    span.WithToolTip(Tooltip);
+                });
+            }
         });
         html.WithCssClass("row");
         html.Append(GetTypeSelect(name, selectedExpressionType));
