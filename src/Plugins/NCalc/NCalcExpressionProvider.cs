@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.NCalc.Configuration;
@@ -14,7 +15,7 @@ public class NCalcExpressionProvider(IOptions<NCalcExpressionProviderOptions> op
     
     public bool Evaluate(string expression, IDictionary<string, object?> parsedValues)
     {
-        return (bool)(ExecuteNCalcExpression(expression, parsedValues) ?? false);
+        return StringManager.ParseBool(ExecuteNCalcExpression(expression, parsedValues));
     }
 
     private object? ExecuteNCalcExpression(string expression, IDictionary<string, object?> parsedValues)

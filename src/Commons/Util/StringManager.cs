@@ -19,13 +19,11 @@ public static class StringManager
         if (value == null)
             return false;
 
-        var stringValue = value.ToString();
+        var stringValue = value.ToString().ToLower();
         
         if (string.IsNullOrWhiteSpace(stringValue))
             return false;
         
-        stringValue = stringValue.Replace("val:", "").Trim();
-        stringValue = stringValue.ToLower();
         return stringValue switch
         {
             "true" => true,
