@@ -65,7 +65,7 @@ internal class GridTableHeader
             th.WithAttributeIfNotEmpty("style", style);
             th.Append(HtmlTag.Span, span =>
             {
-                if (GridView.EnableSorting && field.DataBehavior != FieldBehavior.Virtual)
+                if (GridView.EnableSorting && field.DataBehavior is FieldBehavior.Real)
                 {
                     SetSortAttributes(span, field);
                 }
