@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
@@ -35,7 +36,7 @@ internal class GridFilter(JJGridView gridView)
     private IStringLocalizer<MasterDataResources> StringLocalizer => GridView.StringLocalizer;
     public string Name => GridView.Name + "-filter";
 
-    public event EventHandler<GridFilterLoadEventArgs> OnFilterLoad;
+    public event AsyncEventHandler<GridFilterLoadEventArgs> OnFilterLoadAsync;
     
     internal async Task<HtmlBuilder> GetFilterHtml()
     {
@@ -178,8 +179,9 @@ internal class GridFilter(JJGridView gridView)
         
         var values = await GetCurrentFilterAsync();
 
-        OnFilterLoad?.Invoke(GridView,new GridFilterLoadEventArgs(){Filters = values});
-        
+        if (OnFilterLoadAsync != null)
+            await OnFilterLoadAsync(GridView, new GridFilterLoadEventArgs { Filters = values });
+
         var dataPanelControl = new DataPanelControl(GridView, values)
         {
             FieldNamePrefix = FilterFieldPrefix

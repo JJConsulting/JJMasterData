@@ -6,9 +6,10 @@ namespace JJMasterData.Core.UI.Events.Abstractions;
 
 public interface IGridEventHandler : IEventHandler
 {
-    public void OnFilterLoad(object sender, GridFilterLoadEventArgs eventArgs)
+    public Task OnFilterLoadAsync(object sender, GridFilterLoadEventArgs eventArgs)
 #if NET
     {
+        return Task.CompletedTask;
     }
 #else
         ;

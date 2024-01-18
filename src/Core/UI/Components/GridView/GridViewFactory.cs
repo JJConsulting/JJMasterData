@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -74,15 +73,8 @@ internal class GridViewFactory(IHttpContext currentContext,
         gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
         gridView.OnRenderActionAsync += eventHandler.OnRenderActionAsync;
         gridView.OnRenderCellAsync += eventHandler.OnRenderCellAsync;
-        gridView.OnFilterLoad += eventHandler.OnFilterLoad;
+        gridView.OnFilterLoadAsync += eventHandler.OnFilterLoadAsync;
         gridView.OnRenderSelectedCellAsync += eventHandler.OnRenderSelectedCellAsync;
-    }
-
-    private static bool IsMethodImplemented(Type type, string methodName)
-    {
-        var method = type.GetMethod(methodName);
-
-        return method is not null;
     }
 
     public JJGridView Create(DataTable dataTable)
