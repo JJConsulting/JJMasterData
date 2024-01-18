@@ -7,6 +7,9 @@ namespace JJMasterData.Core.UI.Events.Abstractions;
 public abstract class GridEventHandlerBase : IGridEventHandler
 {
     public abstract string ElementName { get; }
+    public void OnFilterLoad(object sender, GridFilterLoadEventArgs eventArgs)
+    {
+    }
     public virtual Task OnRenderCellAsync(object sender, GridCellEventArgs eventArgs) => Task.CompletedTask;
     public virtual Task OnRenderSelectedCellAsync(object sender, GridSelectedCellEventArgs eventArgs) => Task.CompletedTask;
     public virtual Task OnDataLoadAsync(object sender, GridDataLoadEventArgs eventArgs) => Task.CompletedTask;

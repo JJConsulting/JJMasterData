@@ -6,6 +6,14 @@ namespace JJMasterData.Core.UI.Events.Abstractions;
 
 public interface IGridEventHandler : IEventHandler
 {
+    public void OnFilterLoad(object sender, GridFilterLoadEventArgs eventArgs)
+#if NET
+    {
+    }
+#else
+        ;
+#endif
+    
     public Task OnRenderCellAsync(object sender, GridCellEventArgs eventArgs)
 #if NET
     {

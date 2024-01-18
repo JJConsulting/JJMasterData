@@ -74,6 +74,7 @@ internal class GridViewFactory(IHttpContext currentContext,
         gridView.OnDataLoadAsync += eventHandler.OnDataLoadAsync;
         gridView.OnRenderActionAsync += eventHandler.OnRenderActionAsync;
         gridView.OnRenderCellAsync += eventHandler.OnRenderCellAsync;
+        gridView.OnFilterLoad += eventHandler.OnFilterLoad;
         gridView.OnRenderSelectedCellAsync += eventHandler.OnRenderSelectedCellAsync;
     }
 
