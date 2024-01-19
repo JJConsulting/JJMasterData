@@ -56,7 +56,9 @@
                     <td>
                         @mapFilter.FieldName<i class="fa-solid fa-arrow-right"></i>@mapFilter.ExpressionValue
                         @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[index].FieldName, mapFilter.FieldName)
-                        @Html.HiddenFor(x => x.DataItem!.ElementMap!.MapFilters[index].ExpressionValue, mapFilter.ExpressionValue)
+                        <div style="display:none">
+                            <expression for="@Model.DataItem!.ElementMap!.MapFilters[index].ExpressionValue" value="mapFilter.ExpressionValue"/>
+                        </div>
                     </td>
                     <td style="width:80px;" align="center">
                         <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="Delete" onclick="removeElementMapFilter('@mapFilter.FieldName');">

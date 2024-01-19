@@ -81,7 +81,7 @@ public class ExpressionsService(
         return GetExpressionValueAsync(field.TriggerExpression, field, formStateData);
     }
 
-    private async Task<object?> GetExpressionValueAsync(
+    internal async Task<object?> GetExpressionValueAsync(
         string? expression,
         ElementField field,
         FormStateData formStateData)

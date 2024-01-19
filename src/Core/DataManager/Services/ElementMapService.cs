@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
@@ -18,22 +19,26 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
 
     public async Task<IDictionary<string, object?>> GetFieldsAsync(DataElementMap elementMap, object? value, FormStateData? formStateData)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
-        var filters = GetFilters(elementMap, value, formStateData);
-        return await EntityRepository.GetFieldsAsync(formElement, filters);
+        var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+        var filters = await GetFilters(childElement,elementMap, value, formStateData);
+        return await EntityRepository.GetFieldsAsync(childElement, filters);
     }
     
     public async Task<List<Dictionary<string, object?>>> GetDictionaryList(DataElementMap elementMap, object? value, FormStateData formStateData)
     {
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
-        var filters = GetFilters(elementMap, value, formStateData);
-        return await EntityRepository.GetDictionaryListAsync(formElement, new EntityParameters()
+        var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
+        var filters = await GetFilters(childElement,elementMap, value, formStateData);
+        return await EntityRepository.GetDictionaryListAsync(childElement, new EntityParameters
         {
             Filters = filters!
         });
     }
     
-    private Dictionary<string, object> GetFilters(DataElementMap elementMap, object? value, FormStateData? formStateData)
+    private async Task<Dictionary<string, object>> GetFilters(
+        FormElement childElement,
+        DataElementMap elementMap, 
+        object? value, 
+        FormStateData? formStateData)
     {
         var filters = new Dictionary<string, object>();
 
@@ -43,8 +48,9 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
             {
                 if (formStateData != null)
                 {
+                    var field = childElement.Fields[filter.Key];
                     var filterParsed =
-                        ExpressionsService.ReplaceExpressionWithParsedValues(filter.Value.ToString(), formStateData) ?? string.Empty;
+                        await ExpressionsService.GetExpressionValueAsync(filter.Value.ToString(), field,formStateData) ?? string.Empty;
                     filters[filter.Key] = filterParsed;
                 }
             }
