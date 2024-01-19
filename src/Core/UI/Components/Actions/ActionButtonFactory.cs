@@ -165,7 +165,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
         {
             switch (action)
             {
-                case CancelAction when !formView.ContainsRelationships():
+                case CancelAction when !formView.ContainsPanelState():
                 case BackAction:
                     if (actionContext.IsModal)
                     {

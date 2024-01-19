@@ -137,7 +137,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
         
         if (relationship.IsParent)
         {
-            return new RenderedComponentResult(await ParentFormView.GetRelationshipParentPanelHtml(parentPanel));
+            return new RenderedComponentResult(await ParentFormView.GetParentPanelHtmlAtRelationship(parentPanel));
         }
 
         var childElement =
@@ -161,32 +161,33 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
             case RelationshipViewType.View:
             {
                 var childValues =
-                    await ParentFormView.EntityRepository.GetFieldsAsync(childElement,
-                        (IDictionary<string, object>)filter);
-                var childDataPanel = ParentFormView.ComponentFactory.DataPanel.Create(childElement);
-                childDataPanel.FieldNamePrefix = $"{childDataPanel.Name}_";
-                childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
-                childDataPanel.UserValues = ParentFormView.UserValues;
-                childDataPanel.Values = childValues;
-                childDataPanel.RenderPanelGroup = false;
-                childDataPanel.FormUI = childElement.Options.Form;
-
-                return await childDataPanel.GetResultAsync();
+                    await ParentFormView.EntityRepository.GetFieldsAsync(childElement, filter!);
+                var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
+                childFormView.DataPanel.FieldNamePrefix = $"{childFormView.Name}_";
+                childFormView.DataPanel.Values = childValues;
+                childFormView.DataPanel.RenderPanelGroup = false;
+                childFormView.DataPanel.FormUI = childElement.Options.Form;
+                childFormView.PageState =  relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;;
+                childFormView.PanelState = PageState.View;
+                childFormView.IsChildFormView = true;
+                childFormView.UserValues = ParentFormView.UserValues;
+                childFormView.ShowTitle = false;
+                
+                return await childFormView.GetFormResultAsync();
             }
             case RelationshipViewType.List:
             {
                 var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
+                childFormView.ShowTitle = false;
                 childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
                 childFormView.UserValues = ParentFormView.UserValues;
-                childFormView.SetRelationshipPageState(relationship.ViewType);
+                childFormView.PageState = childFormView.GetRelationshipPageState(relationship.ViewType);
                 childFormView.RelationValues = mappedForeignKeys;
                 await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
                 childFormView.ShowTitle = false;
-
+                childFormView.IsChildFormView = true;
                 if (ParentFormView.PageState is PageState.View)
-                {
                     childFormView.DisableActionsAtViewMode();
-                }
                 
                 var result = await childFormView.GetFormResultAsync();
                 
