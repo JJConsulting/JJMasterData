@@ -76,6 +76,7 @@ public class JJGridView : AsyncComponent
     private string? _selectedRowsId;
     private int _currentPage;
     private GridSettings? _currentSettings;
+    private GridSettingsForm? _gridSettingsForm;
     private ExportOptions? _currentExportConfig;
     private GridFilter? _filter;
     private GridTable? _table;
@@ -300,6 +301,8 @@ public class JJGridView : AsyncComponent
         }
     }
 
+    internal GridSettingsForm GridSettingsForm => _gridSettingsForm ??= new(Name, CurrentContext, StringLocalizer);
+
     /// <summary>
     /// <see cref="GridSettings"/>
     /// </summary>
@@ -311,10 +314,9 @@ public class JJGridView : AsyncComponent
                 return _currentSettings;
             
             var action = CurrentActionMap?.GetAction(FormElement);
-            var form = new GridFormSettings(CurrentContext, StringLocalizer);
             if (action is ConfigAction)
             {
-                CurrentSettings = form.LoadFromForm();
+                CurrentSettings = GridSettingsForm.LoadFromForm();
                 return _currentSettings!;
             }
 
@@ -322,7 +324,7 @@ public class JJGridView : AsyncComponent
                 CurrentSettings = CurrentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{FormElement.Name}");
 
             if (_currentSettings == null)
-                CurrentSettings = form.LoadFromForm();
+                CurrentSettings = GridSettingsForm.LoadFromForm();
             
             return _currentSettings!;
         }
@@ -1021,9 +1023,7 @@ public class JJGridView : AsyncComponent
         btnCancel.ShowAsButton = true;
         btnCancel.OnClientClick = Scripts.GetCloseConfigUIScript();
         modal.Buttons.Add(btnCancel);
-
-        var form = new GridFormSettings(CurrentContext, StringLocalizer);
-        modal.HtmlBuilderContent = form.GetHtmlElement(IsPaggingEnabled(), CurrentSettings);
+        modal.HtmlBuilderContent = GridSettingsForm.GetHtmlBuilder(IsPaggingEnabled(), CurrentSettings);
 
         return modal.GetHtmlBuilder();
     }
