@@ -138,12 +138,15 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            _dataPanel ??= ComponentFactory.DataPanel.Create(FormElement);
+            if (_dataPanel == null)
+            {
+                _dataPanel = ComponentFactory.DataPanel.Create(FormElement);
+                _dataPanel.PageState = ContainsPanelState() || IsChildFormView ? PanelState : PageState;
+            }
             _dataPanel.ParentComponentName = Name;
             _dataPanel.FormUI = FormElement.Options.Form;
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
-            _dataPanel.PageState = ContainsPanelState() || IsChildFormView ? PanelState : PageState;
 
             return _dataPanel;
         }
@@ -218,7 +221,7 @@ public class JJFormView : AsyncComponent
             if (CurrentContext.Request.Form[$"form-view-panel-state-{Name}"] != null && _panelState is null)
                 _panelState = (PageState)int.Parse(CurrentContext.Request.Form[$"form-view-panel-state-{Name}"]);
 
-            return _panelState ?? PageState.View;
+            return _panelState ?? PageState.List;
         }
         set => _panelState = value;
     }
@@ -240,7 +243,7 @@ public class JJFormView : AsyncComponent
         }
     }
 
-    private BasicAction? CurrentAction
+    internal BasicAction? CurrentAction
     {
         get
         {
@@ -281,7 +284,7 @@ public class JJFormView : AsyncComponent
     
     internal IHttpContext CurrentContext { get; }
     internal IFormValues FormValues => CurrentContext.Request.Form;
-    public IQueryString QueryString => CurrentContext.Request.QueryString;
+    internal IQueryString QueryString => CurrentContext.Request.QueryString;
     internal IEntityRepository EntityRepository { get; }
     internal FieldValuesService FieldValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
@@ -355,7 +358,7 @@ public class JJFormView : AsyncComponent
         childFormView.FormElement.ParentName = RouteContext.ParentElementName;
         childFormView.UserValues = UserValues;
         childFormView.RelationValues = childFormView.GetRelationValuesFromForm();
-        childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
+        childFormView.DataPanel.FieldNamePrefix = $"{childFormView.Name}_";
         
         var isInsertSelection = PageState is PageState.Insert &&
                                 GridView.ToolbarActions.InsertAction.ElementNameToSelect ==
@@ -365,7 +368,6 @@ public class JJFormView : AsyncComponent
         
         if (PageState is PageState.View)
             childFormView.DisableActionsAtViewMode();
-
         
         childFormView.IsChildFormView = true;
         
@@ -484,7 +486,7 @@ public class JJFormView : AsyncComponent
         if (ContainsPanelState())
         {
             PanelState = PageState.View;
-            return await GetFormResult(new FormContext(values, PageState), false);
+            return await GetFormResult(new FormContext(values, PanelState), false);
         }
 
         PageState = PageState.List;
@@ -586,7 +588,7 @@ public class JJFormView : AsyncComponent
     {
         html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
         
-        if(IsChildFormView)
+        if(PageState is not PageState.List && PanelState is not PageState.List && IsChildFormView)
             html.AppendHiddenInput($"form-view-panel-state-{Name}", ((int)PanelState).ToString());
 
         html.AppendHiddenInput($"current-action-map-{Name}",
@@ -730,13 +732,16 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetDefaultResult(IDictionary<string, object?>? formValues = null)
     {
+        if (PageState is PageState.List || PanelState is PageState.List)
+            return await GetGridViewResult();
+        
         switch (PageState)
         {
             case PageState.Insert:
-                return await GetFormResult(new FormContext((IDictionary<string, object?>)ObjectCloner.DeepCopy(RelationValues), PageState),
+                return await GetFormResult(
+                    new FormContext((IDictionary<string, object?>)ObjectCloner.DeepCopy(RelationValues), PageState),
                     false);
-            case PageState.Update:
-            case PageState.View:
+            case PageState.Update or PageState.View:
                 formValues ??= await GetFormValuesAsync();
                 return await GetFormResult(new FormContext(formValues, PageState), true);
             default:
@@ -1069,11 +1074,11 @@ public class JJFormView : AsyncComponent
 
         var visibleRelationships = GetVisibleRelationships(values, pageState);
         
-        DataPanel.PageState = pageState;
+        DataPanel.PageState = CurrentAction is null ? PanelState : pageState;
         DataPanel.Errors = errors;
         DataPanel.Values = values;
         DataPanel.AutoReloadFormFields = autoReloadFormFields;
-
+        
         if (!visibleRelationships.Any() || visibleRelationships.All(r=>r.IsParent))
         {
             if (!IsChildFormView)
@@ -1116,9 +1121,6 @@ public class JJFormView : AsyncComponent
         toolbarActions.BackAction.SetVisible(true);
         
         html.AppendComponent(await GetFormToolbarAsync(bottomActions));
-
-        if(!IsChildFormView)
-            html.AppendHiddenInput($"form-view-panel-state-{Name}", ((int)PanelState).ToString());
         
         if (ComponentContext is ComponentContext.Modal)
         {
@@ -1421,20 +1423,6 @@ public class JJFormView : AsyncComponent
             return new Dictionary<string, object>();
 
         return EncryptionService.DecryptDictionary(encryptedRelationValues);
-    }
-
-    public PageState GetRelationshipPageState(RelationshipViewType relationshipViewType)
-    {
-        var relationshipPageState =
-            relationshipViewType == RelationshipViewType.List ? PageState.List : PageState.Update;
-
-        if (CurrentContext.Request.Form.ContainsFormValues())
-        {
-            var pageState = CurrentContext.Request.Form[$"form-view-page-state-{Name}"];
-            return pageState != null ? (PageState)int.Parse(pageState) : relationshipPageState;
-        }
-
-        return relationshipPageState;
     }
 
     private async Task<bool> IsAuditLogEnabled()
