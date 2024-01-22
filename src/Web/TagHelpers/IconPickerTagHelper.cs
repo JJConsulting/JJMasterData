@@ -75,7 +75,7 @@ public class IconPickerTagHelper(IControlFactory<JJComboBox> comboBoxFactory, IM
             div.WithCssClass("btn btn-default");
             div.AppendComponent(new JJIcon(IconType.Search));
             var url = UrlHelper.Action("Index", "Icons", new { inputId = name });
-            div.WithAttribute("onclick", $"iconsModal.showUrl('{url}', '{StringLocalizer["Icons"]}')");
+            div.WithAttribute("onclick", $"iconsModal.showUrl('{url}', '{StringLocalizer["Icons"]}', '{(int)ModalSize.ExtraLarge}')");
         });
         
         output.TagMode = TagMode.StartTagAndEndTag;
