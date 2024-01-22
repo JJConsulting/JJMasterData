@@ -72,10 +72,12 @@ public class IconPickerTagHelper(IControlFactory<JJComboBox> comboBoxFactory, IM
         await div.AppendControlAsync(comboBox);
         div.AppendDiv(div =>
         {
+            var tooltip = StringLocalizer["Search Icon"];
             div.WithCssClass("btn btn-default");
+            div.WithToolTip(tooltip);
             div.AppendComponent(new JJIcon(IconType.Search));
             var url = UrlHelper.Action("Index", "Icons", new { inputId = name });
-            div.WithAttribute("onclick", $"iconsModal.showUrl('{url}', '{StringLocalizer["Icons"]}', '{(int)ModalSize.ExtraLarge}')");
+            div.WithAttribute("onclick", $"iconsModal.showUrl('{url}', '{tooltip}', '{(int)ModalSize.ExtraLarge}')");
         });
         
         output.TagMode = TagMode.StartTagAndEndTag;
