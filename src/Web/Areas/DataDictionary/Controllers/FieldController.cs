@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class FieldController(FieldService fieldService, IControlFactory<JJSearchBox> searchBoxFactory)
+public class FieldController(FieldService fieldService)
     : DataDictionaryController
 {
     public async Task<IActionResult> Index(string elementName, string? fieldName)
@@ -62,18 +62,6 @@ public class FieldController(FieldService fieldService, IControlFactory<JJSearch
     [HttpPost]
     public async Task<IActionResult> Index(string elementName, string? fieldName, FormElementField? field)
     {
-        
-        var iconSearchBox = searchBoxFactory.Create();
-        iconSearchBox.Name = fieldName ?? "searchBox";
-        iconSearchBox.DataItem.ShowIcon = true;
-        iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
-            .Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
-
-        var iconSearchBoxResult = await iconSearchBox.GetResultAsync();
-
-        if (iconSearchBoxResult is IActionResult actionResult)
-            return actionResult;
-        
         var formElement = await fieldService.GetFormElementAsync(elementName);
         await PopulateViewBag(formElement, field);
         return View("Index", field);

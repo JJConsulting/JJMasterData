@@ -24,6 +24,9 @@ public class FormElementPanel
     [JsonProperty("color")]
     public PanelColor Color { get; set; } = PanelColor.Default;
 
+    [JsonProperty("icon")]
+    public IconType? Icon { get; set; }
+    
     [JsonProperty("expandedByDefault")]
     public bool ExpandedByDefault { get; set; }
 

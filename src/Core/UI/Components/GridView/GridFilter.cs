@@ -215,6 +215,7 @@ internal class GridFilter(JJGridView gridView)
             {
                 Name = $"grid-view-filter-collapse-{GridView.Name}",
                 HtmlBuilderContent = html,
+                TitleIcon = action.ShowIconAtCollapse ? new JJIcon(action.Icon) : null,
                 Title = GridView.StringLocalizer[action.Text]
             };
             panel.Buttons.Add(btnDoFilter);

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -18,16 +19,21 @@ public class FilterAction : GridToolbarAction
     /// and a panel with filters will be displayed above the grid.
     /// The filter's behavior remains the same.
     /// </remarks>
-
     [JsonProperty("showAsCollapse")]
+    [Display(Name = "Show as Collapse")]
     public bool ShowAsCollapse { get; set; }
 
+    [JsonProperty("showIconAtCollapse")]
+    [Display(Name = "Show Icon At Collapse")]
+    public bool ShowIconAtCollapse { get; set; }
+    
     /// <summary>
     /// Exibir o collapse painel aberto por padrão.
     /// Aplícavél somente se a propriedade ShowAsCollapse estiver habilitada
     /// <para></para>(Default = false)
     /// </summary>
     [JsonProperty("expandedByDefault")]
+    [Display(Name = "Expanded By Default")]
     public bool ExpandedByDefault { get; set; }
 
     /// <summary>
@@ -50,7 +56,7 @@ public class FilterAction : GridToolbarAction
         Name = ActionName;
         Tooltip = "Filter";
         Text = "Detailed Filters";
-        Icon = IconType.Binoculars;
+        Icon = IconType.Filter;
         ShowAsButton = true;
         CssClass = "float-end";
         Order = 10;

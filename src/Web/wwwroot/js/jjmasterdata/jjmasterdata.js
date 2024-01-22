@@ -2588,4 +2588,7 @@ function onDOMReady(callback) {
         callback();
     }
 }
+const iconsModal = new Modal();
+iconsModal.modalId = "icons-modal";
+iconsModal.centered = true;
 //# sourceMappingURL=jjmasterdata.js.map

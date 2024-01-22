@@ -68,6 +68,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
                 tabNav.ListTab.Add(new NavContent
                 {
                     Title = relationship.Panel.Title,
+                    Icon = relationship.Panel.Icon,
                     HtmlContent = renderedComponentResult.HtmlBuilder
                 });
             }
@@ -91,6 +92,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
                     Title = relationship.Panel.Title,
                     HtmlBuilderContent = content,
                     Color = relationship.Panel.Color,
+                    TitleIcon = relationship.Panel.Icon.HasValue ? new JJIcon(relationship.Panel.Icon.Value) : null,
                     ExpandedByDefault = relationship.Panel.ExpandedByDefault,
                     CssClass = relationship.Panel.CssClass
                 };
@@ -103,6 +105,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
                     Title = relationship.Panel.Title,
                     Color = relationship.Panel.Color,
                     Layout = relationship.Panel.Layout,
+                    Icon = relationship.Panel.Icon,
                     HtmlBuilderContent = content,
                     CssClass = relationship.Panel.CssClass
                 };

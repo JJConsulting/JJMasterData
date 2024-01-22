@@ -13,8 +13,7 @@ using Newtonsoft.Json;
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
 public class ActionsController(ActionsService actionsService,
-        IEnumerable<IPluginHandler> pluginHandlers,
-        IControlFactory<JJSearchBox> searchBoxFactory)
+        IEnumerable<IPluginHandler> pluginHandlers)
     : DataDictionaryController
 {
     public async Task<ActionResult> Index(string elementName)
@@ -50,29 +49,9 @@ public class ActionsController(ActionsService actionsService,
             _ => null
         };
 
-        var iconSearchBoxResult = await GetIconSearchBoxResult(action);
-
-        if (iconSearchBoxResult is IActionResult actionResult)
-            return actionResult;
-
-        ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
-
         await PopulateViewBag(elementName, action!, context, fieldName);
 
         return View(action!.GetType().Name, action);
-    }
-
-    private async Task<ComponentResult> GetIconSearchBoxResult(BasicAction? action)
-    {
-        var iconSearchBox = searchBoxFactory.Create();
-        iconSearchBox.DataItem.ShowIcon = true;
-        iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
-            .Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
-        iconSearchBox.SelectedValue = ((int)action!.Icon).ToString();
-        iconSearchBox.Name = "icon";
-
-        var iconSearchBoxResult = await iconSearchBox.GetResultAsync();
-        return iconSearchBoxResult;
     }
 
     public async Task<IActionResult> Add(
@@ -99,13 +78,6 @@ public class ActionsController(ActionsService actionsService,
             },
             _ => throw new JJMasterDataException("Invalid Action")
         };
-        
-        var iconSearchBoxResult = await GetIconSearchBoxResult(action);
-
-        if (iconSearchBoxResult is IActionResult actionResult)
-            return actionResult;
-
-        ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
 
         await PopulateViewBag(elementName, action, context, fieldName);
         return View(action.GetType().Name, action);
@@ -124,13 +96,6 @@ public class ActionsController(ActionsService actionsService,
         {
             await SaveAction(elementName, action, context, originalName, fieldName);
         }
-
-        var iconSearchBoxResult = await GetIconSearchBoxResult(action);
-
-        if (iconSearchBoxResult is IActionResult actionResult)
-            return actionResult;
-        
-        ViewBag.IconSearchBoxHtml = iconSearchBoxResult.Content;
         
         await PopulateViewBag(elementName, action, context, fieldName);
         

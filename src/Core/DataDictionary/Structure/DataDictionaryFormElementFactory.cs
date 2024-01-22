@@ -30,7 +30,7 @@ public class DataDictionaryFormElementFactory(
 
         var formElement = GetFormElement(element);
 
-        AddActions(formElement);
+        ConfigureActions(formElement);
 
         formElement.Options.Grid.IsCompact = true;
         formElement.Options.Grid.RecordsPerPage = 10;
@@ -71,12 +71,16 @@ public class DataDictionaryFormElementFactory(
         formElement.Fields[DataDictionaryStructure.EnableSynchronism].Component = FormComponent.CheckBox;
     }
 
-    private void AddActions(FormElement formElement)
+    private void ConfigureActions(FormElement formElement)
     {
         formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
         formElement.Options.GridToolbarActions.ExportAction.SetVisible(false);
+        
+        formElement.Options.GridToolbarActions.FilterAction.Text = "Filters";
+        formElement.Options.GridToolbarActions.FilterAction.ShowIconAtCollapse = true;
+        
         formElement.Options.GridTableActions.Clear();
-
+        
         AddGridTableActions(formElement);
 
         AddGridToolbarActions(formElement);

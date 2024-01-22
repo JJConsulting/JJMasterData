@@ -40,16 +40,14 @@ function filterIcons(filterText) {
   });
 }
 
-function saveIcon(selectedIcon, description) {        
-    let fieldIcon = window.document.getElementById('@Model.InputId');
-    fieldIcon.value = selectedIcon;
-
-    let fieldIconText = window.document.getElementById('@Model.InputId' + "_text");
-    fieldIconText.value = description;
-
-    fieldIconText.focus();
+function saveIcon(selectedIcon) {        
+    const picker = $('#@Model.InputId');
+    picker.selectpicker('val',selectedIcon);
+    picker.focus();
     
     iconsModal.hide()
+    
+
 }
 </script>
 
@@ -62,7 +60,7 @@ function saveIcon(selectedIcon, description) {
 <div class="row">
     @foreach (var icon in Enum.GetValues<IconType>())
     {
-        <div class="col-sm-2 icon text-center" onclick="saveIcon('@icon.GetId().ToString()', '@icon.GetDescription()');">
+        <div class="col-sm-2 icon text-center" onclick="saveIcon('@icon.GetId().ToString()');">
             <span class="@icon.GetCssClass() fa-3x"></span>
             <br/>
             <span>@icon.GetId()</span>
