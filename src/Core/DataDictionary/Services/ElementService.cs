@@ -52,6 +52,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
         if (importFields)
         {
             element = await EntityRepository.GetElementFromTableAsync(tableName);
+            element.Name = GetElementName(tableName);
         }
         else
         {

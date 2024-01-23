@@ -1762,7 +1762,7 @@
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Maintains grid filters, order and pagination." xml:space="preserve">
-    <value>Mantem os filtros, ordem e paginação da grid.</value>
+    <value>Mantém os filtros, ordem e paginação da grid.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="MaintainValuesOnLoad" xml:space="preserve">
