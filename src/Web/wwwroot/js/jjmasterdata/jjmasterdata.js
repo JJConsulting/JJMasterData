@@ -159,7 +159,7 @@ class ActionHelper {
                 urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
                 postFormValues({ url: urlBuilder.build(), success: (data) => {
                         if (typeof data === "string") {
-                            HTMLHelper.setInnerHTML(componentName, data);
+                            HTMLHelper.setOuterHTML(componentName, data);
                             listenAllEvents("#" + componentName);
                         }
                         else {
@@ -2011,6 +2011,9 @@ function postFormValues(options) {
         var _a;
         if ((_a = response.headers.get("content-type")) === null || _a === void 0 ? void 0 : _a.includes("application/json")) {
             return response.json();
+        }
+        else if (response.redirected) {
+            window.location.href = response.url;
         }
         else {
             return response.text();

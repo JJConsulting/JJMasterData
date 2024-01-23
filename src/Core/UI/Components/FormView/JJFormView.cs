@@ -468,7 +468,6 @@ public class JJFormView : AsyncComponent
         if (!string.IsNullOrEmpty(UrlRedirect))
             return new RedirectComponentResult(UrlRedirect!);
         
-
         if (PageState is PageState.Insert && GridView.ToolbarActions.InsertAction.ReopenForm)
         {
             var formResult = await GetFormResult(new FormContext(ObjectCloner.DeepCopy(RelationValues)!, PageState.Insert), false);
@@ -1098,7 +1097,7 @@ public class JJFormView : AsyncComponent
         if (ShowTitle)
             html.AppendComponent(GridView.GetTitle(values));
 
-        var layout = new FormViewRelationshipLayout(this);
+        var layout = new FormViewRelationshipLayout(this, visibleRelationships);
 
         await ConfigureFormToolbar();
 
@@ -1106,7 +1105,7 @@ public class JJFormView : AsyncComponent
 
         html.AppendComponent(await GetFormToolbarAsync(topActions));
 
-        var relationshipsResult = await layout.GetRelationshipsResult(visibleRelationships);
+        var relationshipsResult = await layout.GetRelationshipsResult();
 
         if (relationshipsResult is RenderedComponentResult renderedComponentResult)
         {
@@ -1135,8 +1134,17 @@ public class JJFormView : AsyncComponent
     {
         var formToolbarActions = FormElement.Options.FormToolbarActions;
 
+        if (PanelState is PageState.View)
+        {
+            formToolbarActions.CancelAction.SetVisible(false);
+            formToolbarActions.SaveAction.SetVisible(false);
+        }
+        
         switch (PageState)
         {
+            case PageState.Insert when PanelState is PageState.Insert && IsChildFormView:
+                formToolbarActions.CancelAction.SetVisible(false);
+                break;
             case PageState.Update when PanelState is PageState.View:
                 formToolbarActions.FormEditAction.SetVisible(true);
                 formToolbarActions.RemoveAll(a => a is SaveAction or CancelAction);
@@ -1150,6 +1158,7 @@ public class JJFormView : AsyncComponent
             {
                 if (IsChildFormView)
                     formToolbarActions.BackAction.SetVisible(false);
+                
                 formToolbarActions.AuditLogFormToolbarAction.SetVisible(await IsAuditLogEnabled());
                 break;
             }
