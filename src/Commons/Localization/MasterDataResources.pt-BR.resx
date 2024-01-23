@@ -3761,4 +3761,7 @@
   <data name=" in this link." xml:space="preserve">
     <value>neste link.</value>
   </data>
+  <data name="Search Icon" xml:space="preserve">
+    <value>Pesquisar Ícone</value>
+  </data>
 </root>

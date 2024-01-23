@@ -81,5 +81,4 @@
             SpinnerOverlay.hide()
         });
     }
-
 }

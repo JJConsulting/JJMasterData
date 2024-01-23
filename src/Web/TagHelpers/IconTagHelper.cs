@@ -16,7 +16,7 @@ public class IconTagHelper : TagHelper
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
 
-    public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override void Process(TagHelperContext context, TagHelperOutput output)
     {
         var icon = new JJIcon(Icon);
 
@@ -32,7 +32,5 @@ public class IconTagHelper : TagHelper
         
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(icon.GetHtml());
-
-        return Task.CompletedTask;
     }
 }

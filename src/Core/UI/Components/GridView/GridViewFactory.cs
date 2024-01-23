@@ -114,7 +114,7 @@ internal class GridViewFactory(IHttpContext currentContext,
         grid.ShowPagging = gridOptions.ShowPagging;
         grid.ShowToolbar = gridOptions.ShowToolBar;
         
-        if (!GridFormSettings.HasFormValues(grid.CurrentContext) || !grid.ShowToolbar || !grid.ConfigAction.IsVisible)
+        if (!grid.GridSettingsForm.HasFormValues() || !grid.ShowToolbar || !grid.ConfigAction.IsVisible)
         {
             GridSettings settings = null;
             if (grid.MaintainValuesOnLoad)

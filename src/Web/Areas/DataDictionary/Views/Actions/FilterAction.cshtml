@@ -25,11 +25,11 @@
         <div id="divFilterAction" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label">@StringLocalizer["ShowAsCollapse"]</label>
+                    <label class="@BootstrapHelper.Label" asp-for="ShowAsCollapse"></label>
                     <checkbox for="ShowAsCollapse" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
-                    <label class="@BootstrapHelper.Label" >@StringLocalizer["ExpandedByDefault"]</label>
+                    <label class="@BootstrapHelper.Label" asp-for="ExpandedByDefault"></label>
                     <checkbox for="ExpandedByDefault" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
                 <div class="col-sm-6">

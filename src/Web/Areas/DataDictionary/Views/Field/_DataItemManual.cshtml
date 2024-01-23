@@ -67,40 +67,27 @@
         {
             <tr>
                 <td>
-                    @Html.TextBox($"DataItem.Items[{i}].Id",
+                    @Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Id),
                         Model.DataItem.Items[i].Id, new { @class = "form-control" })
                 </td>
                 <td>
-                    @Html.TextBox($"DataItem.Items[{i}].Description",
+                    @Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Description),
                         Model.DataItem.Items[i].Description, new { @class = "form-control" })
                 </td>
 
                 @if (showImage)
                 {
                     <td>
-                        @{
-                            var iconSearchBox = SearchBoxFactory.Create();
-                            iconSearchBox.Name = Html.NameFor(m => m.DataItem!.Items![i].Icon);
-                            iconSearchBox.HtmlId = Html.IdFor(m => m.DataItem!.Items![i].Icon);
-                            iconSearchBox.DataItem.ShowIcon = true;
-                            iconSearchBox.SelectedValue = ((int)Model.DataItem.Items[i].Icon).ToString();
-                            iconSearchBox.DataItem.Items = Enum.GetValues<IconType>()
-                                .Select(i => new DataItemValue(i.GetId().ToString(), i.GetDescription(), i, "6a6a6a")).ToList();
-                        }
-
+                        
                         <div class="row" style="position:relative">
-                            <div class="col-sm-10">
-                                @Html.Raw(await iconSearchBox.GetResultAsync())
-                            </div>
-                            <div class="col-sm-2">
-                                <button class="btn btn-default" type="button" onclick="defaultModal.showUrl('@Url.Action("Index", "Icons")','Icons',);">
-                                    <span class="fa fa-search"></span>
-                                </button>
-                            </div>
+                            @{
+                                var value = Model.DataItem.Items[i].Icon;
+                            }
+                            <icon-picker name="@Html.NameFor(m => m.DataItem!.Items![i].Icon)" value="value"/>
                         </div>
                     </td>
                     <td>
-                        @Html.TextBox($"DataItem.Items[{i}].IconColor",
+                        @Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Icon),
                             Model.DataItem.Items[i].IconColor, new { @class = "form-control", type = "color" })
                     </td>
                 }

@@ -21,6 +21,7 @@ public class JJCollapsePanel : HtmlComponent
     [LocalizationRequired]
     public string SubTitle { get; set; }
 
+    [CanBeNull] 
     public JJIcon TitleIcon { get; set; }
 
     public string HtmlContent { get; set; }
@@ -101,7 +102,7 @@ public class JJCollapsePanel : HtmlComponent
             button.WithAttribute("id", $"heading-{Name.ToLower()}");
             button.WithDataAttribute("toggle", "collapse");
             button.WithDataAttribute("target", $"#collapse-{Name.ToLower()}");
-            button.AppendComponent(TitleIcon);
+            button.AppendComponentIf(TitleIcon != null, TitleIcon);
             button.AppendTextIf(TitleIcon != null, "&nbsp;");
             button.AppendText(Title);
         });
