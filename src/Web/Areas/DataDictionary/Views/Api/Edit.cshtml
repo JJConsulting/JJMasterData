@@ -1,9 +1,11 @@
 ﻿@using JJMasterData.Core.UI.Components
+@using JJMasterData.Web.TagHelpers
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using JJMasterData.Core.Http.Abstractions
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.ApiViewModel
-
-
+    
 @{
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["WebApi"]}";
 }
@@ -11,7 +13,7 @@
 <partial name="_Menu" model="Model"/>
 
 @{
-    var cancelLocation = @Url.Action("Index", new { elementName = Model.ElementName });
+    string cancelLocation = @Url.Action("Index", new { elementName = Model.ElementName })!;
 }
 
 @using (Html.BeginForm("Edit", "Api", FormMethod.Post))

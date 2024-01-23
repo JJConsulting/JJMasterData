@@ -35,7 +35,7 @@
 
     <div class="row">
         <div class="col-sm-6">
-            <link-button icon="Times" text="@StringLocalizer["Cancel"]" type="@LinkButtonType.Button" on-client-click="location.href='@Url.Action("Index")'"/>
+            <link-button icon="Times" text="@StringLocalizer["Cancel"]" type="@LinkButtonType.Button" on-client-click="location.href='@(Url.Action("Index")!)'"/>
             <link-button icon="Plus" text="@StringLocalizer["Add"]" type="LinkButtonType.Submit"/>
         </div>
     </div>
