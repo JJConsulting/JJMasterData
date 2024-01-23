@@ -67,6 +67,7 @@ public class DataDictionaryFormElementFactory(
         formElement.Fields[DataDictionaryStructure.Json].HelpDescription =
             StringLocalizer["Filter by any data within the data dictionary structure."];
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;
+        formElement.Fields[DataDictionaryStructure.LastModified].GridAlignment = GridAlignment.Right;
         formElement.Fields[DataDictionaryStructure.EnableSynchronism].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.EnableSynchronism].Component = FormComponent.CheckBox;
     }
