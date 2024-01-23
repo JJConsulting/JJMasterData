@@ -60,7 +60,7 @@ internal class GridTableHeader
         await foreach (var field in GridView.GetVisibleFieldsAsync())
         {
             var th = new HtmlBuilder(HtmlTag.Th);
-            string style = GetFieldStyle(field);
+            string style = GetThStyle(field);
 
             th.WithAttributeIfNotEmpty("style", style);
             th.Append(HtmlTag.Span, span =>
@@ -142,39 +142,44 @@ internal class GridTableHeader
     private HtmlBuilder GetDescendingIcon() => new JJIcon("fa fa-sort-amount-desc").GetHtmlBuilder()
         .WithToolTip(StringLocalizer["Descending order"]);
 
-    private static string GetFieldStyle(FormElementField field)
+    private static string GetThStyle(FormElementField field)
     {
-        string style = string.Empty;
+        switch (field.GridAlignment)
+        {
+            case GridAlignment.Left:
+                return "text-align:left";
+            case GridAlignment.Center:
+                return "text-align:center";
+            case GridAlignment.Right:
+                return "text-align:right";
+        }
         switch (field.Component)
         {
             case FormComponent.ComboBox or FormComponent.RadioButtonGroup:
             {
-                if (field.DataItem is { ShowIcon: true, GridBehavior: DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription })
-                {
-                    style = "text-align:center";
-                }
+                if (field.DataItem is { 
+                        ShowIcon: true,
+                        GridBehavior: DataItemGridBehavior.Icon or DataItemGridBehavior.IconWithDescription 
+                    })
+                    return "text-align:center";
 
                 break;
             }
             case FormComponent.CheckBox:
-                style = "text-align:center;width:60px;";
-                break;
-            case FormComponent.Cnpj:
-                style = "min-width:130px;";
-                break;
+                return "text-align:center;";
             default:
             {
                 if (field.DataType is FieldType.Float or FieldType.Int)
                 {
                     if (!field.IsPk)
-                        style = "text-align:right;";
+                        return "text-align:right;";
                 }
 
                 break;
             }
         }
 
-        return style;
+        return string.Empty;
     }
 
     private HtmlBuilder GetMultSelectThHtmlElement()

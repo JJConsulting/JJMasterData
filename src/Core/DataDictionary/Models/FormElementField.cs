@@ -172,6 +172,10 @@ public class FormElementField : ElementField
     [JsonProperty("internalNotes")]
     public string? InternalNotes { get; set; }
     
+    [JsonProperty("gridAlignment")]
+    [Display(Name = "Alignment At Grid")]
+    public GridAlignment GridAlignment { get; set; } 
+    
     /// <summary>
     /// The field will be disabled but the value send to the server
     /// </summary>

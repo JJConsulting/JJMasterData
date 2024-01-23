@@ -3804,4 +3804,16 @@
   <data name="Search Icon" xml:space="preserve">
     <value>Pesquisar Ícone</value>
   </data>
+  <data name="Alignment At Grid" xml:space="preserve">
+    <value>Alinhamento na Grid</value>
+  </data>
+  <data name="Left" xml:space="preserve">
+    <value>Esquerda</value>
+  </data>
+  <data name="Center" xml:space="preserve">
+    <value>Centro</value>
+  </data>
+  <data name="Right" xml:space="preserve">
+    <value>Direita</value>
+  </data>
 </root>
