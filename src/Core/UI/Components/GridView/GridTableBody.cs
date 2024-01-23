@@ -107,9 +107,8 @@ internal class GridTableBody(JJGridView gridView)
 
             var td = new HtmlBuilder(HtmlTag.Td);
             var style = GetTdStyle(field);
-            td.WithAttributeIf(string.IsNullOrEmpty(style), "style", style!);
             td.WithAttributeIfNotEmpty("style", style);
-            td.WithAttribute("onclick", onClickScript);
+            td.WithAttributeIfNotEmpty("onclick", onClickScript);
 
             if (GridView.EnableEditMode && field.DataBehavior != FieldBehavior.ViewOnly)
             {
