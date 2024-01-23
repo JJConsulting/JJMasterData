@@ -17,7 +17,7 @@ public class GridUI
     /// Se o RecordsPerPage for zero a paginação não será exibida
     /// </remarks>
     [JsonProperty("totalPerPage")]
-    [Display(Name = "Total Records Per Page")]
+    [Display(Name = "Total Of Records per Page")]
     public int RecordsPerPage { get; set; } = 5;
 
     /// <summary>

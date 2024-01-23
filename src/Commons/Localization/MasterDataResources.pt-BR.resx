@@ -1341,8 +1341,8 @@
     <value>Agrupador</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Header Fixed" xml:space="preserve">
-    <value>Fixar Cabeçalho</value>
+  <data name="Header Fixed At Scroll" xml:space="preserve">
+    <value>Fixar Cabeçalho no Scroll</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Help" xml:space="preserve">
@@ -1462,7 +1462,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="IndexName" xml:space="preserve">
-    <value>Nome do Indice</value>
+    <value>Nome do Índice</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Indicates whether the gridview header will be visible when there is no data" xml:space="preserve">
@@ -1741,6 +1741,18 @@
     <value>Tipo de lista</value>
     <comment>JJMasterDataWeb</comment>
   </data>
+  <data name="Primary Key Column" xml:space="preserve">
+    <value>Coluna da Chave Primária</value>
+  </data>
+  <data name="Update On Cascade" xml:space="preserve">
+    <value>Atualizar em Cascata</value>
+  </data>
+  <data name="Delete On Cascade" xml:space="preserve">
+    <value>Deletar em Cascata</value>
+  </data>
+  <data name="Foreign Key Column" xml:space="preserve">
+    <value>Coluna da Chave Estrangeira</value>
+  </data>
   <data name="ListType" xml:space="preserve">
     <value>Tipo de lista</value>
     <comment>JJMasterDataWeb</comment>
@@ -1750,7 +1762,7 @@
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Maintains grid filters, order and pagination." xml:space="preserve">
-    <value>Manteé os filtros, ordem e paginação da grid.</value>
+    <value>Mantem os filtros, ordem e paginação da grid.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="MaintainValuesOnLoad" xml:space="preserve">
@@ -2093,8 +2105,20 @@
     <value>Pré-Visualizar</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Primary key" xml:space="preserve">
-    <value>Chave primária</value>
+  <data name="Primary Key" xml:space="preserve">
+    <value>Chave Primária</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Foreign Key" xml:space="preserve">
+    <value>Chave Estrangeira</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="Relationship" xml:space="preserve">
+    <value>Relacionamento</value>
+    <comment>JJMasterDataWeb</comment>
+  </data>
+  <data name="New Relation" xml:space="preserve">
+    <value>Nova Relação</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Primary key not defined for dictionary {0}" xml:space="preserve">
@@ -2453,12 +2477,16 @@
     <value>Mostrar como botão</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Show rows striped" xml:space="preserve">
-    <value>Exibir linhas zebradas</value>
+  <data name="Show Rows Striped" xml:space="preserve">
+    <value>Exibir Linhas Zebradas</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Show table border" xml:space="preserve">
     <value>Exibir bordas na tabela</value>
+    <comment>JJMasterDataCore</comment>
+  </data>
+  <data name="Total Pagination Buttons" xml:space="preserve">
+    <value>Total de Botões na Paginação</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Show Title" xml:space="preserve">
@@ -2781,8 +2809,8 @@
     <value>Total de botões na paginação</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Total Records per page" xml:space="preserve">
-    <value>Total de Registros por pagina</value>
+  <data name="Total Of Records per Page" xml:space="preserve">
+    <value>Total de Registros por Página</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="TotalPaggingButton" xml:space="preserve">
@@ -3497,8 +3525,17 @@
   <data name="Render" xml:space="preserve">
     <value>Renderizar</value>
   </data>
+  <data name="Enable Sorting" xml:space="preserve">
+    <value>Habilitar Ordenação</value>
+  </data>
+  <data name="Enable Multiselect" xml:space="preserve">
+    <value>Habilitar Multiseleção</value>
+  </data>
   <data name="Last Modified" xml:space="preserve">
     <value>Última Modificação</value>
+  </data>
+  <data name="Show Row Hover" xml:space="preserve">
+    <value>Mostrar Hover da Linha</value>
   </data>
   <data name="Internationalization" xml:space="preserve">
     <value>Internacionalização</value>
@@ -3590,14 +3627,17 @@
   <data name="Show View Mode as Static" xml:space="preserve">
     <value>Mostrar Modo de Visualização como Estático</value>
   </data>
-  <data name="Use Vertical Layout " xml:space="preserve">
+  <data name="Use Vertical Layout" xml:space="preserve">
     <value>Usar Layout Vertical</value>
+  </data>
+  <data name="Form Columns" xml:space="preserve">
+    <value>Colunas do Form</value>
   </data>
   <data name="Use Vertical Layout At Filter" xml:space="preserve">
       <value>Usar Layout Vertical No Filtro</value>
   </data>
   <data name="Empty Data Text" xml:space="preserve">
-    <value>Texto para dados vazios</value>
+    <value>Texto para Dados Vazios</value>
   </data>
   <data name="Text shown when there are no records." xml:space="preserve">
     <value>Texto mostrado para quando não existem registros.</value>
