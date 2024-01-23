@@ -2802,7 +2802,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Tooltip" xml:space="preserve">
-    <value>Dica de ferramenta</value>
+    <value>Tooltip</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Total buttons on paging" xml:space="preserve">
