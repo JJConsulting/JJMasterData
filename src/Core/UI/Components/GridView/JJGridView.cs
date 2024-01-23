@@ -721,7 +721,7 @@ public class JJGridView : AsyncComponent
             if (DataSource?.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
                 html.Append(await GetNoRecordsAlert());
             
-            if (FormElement.Options.Grid.ShowPagging)
+            if (IsPagingEnabled())
             {
                 var gridPagination = new GridPagination(this);
 
@@ -1023,7 +1023,7 @@ public class JJGridView : AsyncComponent
         btnCancel.ShowAsButton = true;
         btnCancel.OnClientClick = Scripts.GetCloseConfigUIScript();
         modal.Buttons.Add(btnCancel);
-        modal.HtmlBuilderContent = GridSettingsForm.GetHtmlBuilder(IsPaggingEnabled(), CurrentSettings);
+        modal.HtmlBuilderContent = GridSettingsForm.GetHtmlBuilder(IsPagingEnabled(), CurrentSettings);
 
         return modal.GetHtmlBuilder();
     }
@@ -1381,7 +1381,7 @@ public class JJGridView : AsyncComponent
         return errors;
     }
 
-    internal bool IsPaggingEnabled()
+    internal bool IsPagingEnabled()
     {
         return !(!ShowPagging || CurrentPage == 0 || CurrentSettings.RecordsPerPage == 0 || TotalOfRecords == 0);
     }

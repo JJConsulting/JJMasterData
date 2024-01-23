@@ -182,7 +182,7 @@ internal class GridTableHeader
         var th = new HtmlBuilder(HtmlTag.Th);
 
         bool hasPages = true;
-        if (!GridView.IsPaggingEnabled())
+        if (!GridView.IsPagingEnabled())
         {
             hasPages = false;
         }
