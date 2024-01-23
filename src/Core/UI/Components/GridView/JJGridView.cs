@@ -68,7 +68,7 @@ public class JJGridView : AsyncComponent
     public event AsyncEventHandler<GridDataLoadEventArgs>? OnDataLoadAsync;
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
     public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
-    public event AsyncEventHandler<ToolbarActionEventArgs>? OnRenderToolbarActionAsync;
+    public event AsyncEventHandler<GridToolbarActionEventArgs>? OnRenderToolbarActionAsync;
     #endregion
 
     #region Properties

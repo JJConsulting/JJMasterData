@@ -12,7 +12,7 @@ internal class GridToolbar(JJGridView gridView)
 {
     private JJGridView GridView { get; } = gridView;
 
-    internal event AsyncEventHandler<ToolbarActionEventArgs> OnRenderToolbarActionAsync;
+    internal event AsyncEventHandler<GridToolbarActionEventArgs> OnRenderToolbarActionAsync;
     
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
@@ -61,7 +61,7 @@ internal class GridToolbar(JJGridView gridView)
 
             if (OnRenderToolbarActionAsync is not null)
             {
-                var args = new ToolbarActionEventArgs(action, linkButton);
+                var args = new GridToolbarActionEventArgs(action, linkButton);
                 await OnRenderToolbarActionAsync(GridView, args);
 
                 if (args.HtmlResult is not null)
