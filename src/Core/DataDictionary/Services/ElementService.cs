@@ -93,9 +93,9 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
     {
         string elementName;
         if (tablename.ToLower().StartsWith("tb_"))
-            elementName = tablename[3..];
+            elementName = tablename.Substring(3);
         else if (tablename.ToLower().StartsWith("tb"))
-            elementName = tablename[2..];
+            elementName = tablename.Substring(2);
         else
             elementName = tablename;
         

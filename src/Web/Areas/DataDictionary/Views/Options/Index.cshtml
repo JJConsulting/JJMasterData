@@ -1,9 +1,11 @@
 @using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.Http.Abstractions
 @using JJMasterData.Core.UI.Components
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.OptionsViewModel
+
 @inject IOptions<MasterDataWebOptions> Options
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-
+@inject IMasterDataUrlHelper UrlHelper
 @{
     ViewData["Title"] = StringLocalizer["Options"];
 }
@@ -25,7 +27,7 @@
     {
         <alert icon="IconType.InfoCircle"
                   color="Info"
-                  message="@Model.FilePath"
+                  message="@(Model.FilePath!)"
                   title="All changes will be saved in the file located at the path:"/>
     }
     
@@ -59,7 +61,7 @@
                     text="Home"/>
             }
             <link-button type="LinkButtonType.Submit" 
-                            url-action="@Url.Action("Save", "Options")" 
+                            url-action="@UrlHelper.Action("Save", "Options")" 
                             icon="Save" 
                             text="Save"/>
         </div>
