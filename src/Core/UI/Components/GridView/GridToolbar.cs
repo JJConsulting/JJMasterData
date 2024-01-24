@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models.Actions;
+using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
@@ -10,6 +12,8 @@ internal class GridToolbar(JJGridView gridView)
 {
     private JJGridView GridView { get; } = gridView;
 
+    internal event AsyncEventHandler<GridToolbarActionEventArgs> OnRenderToolbarActionAsync;
+    
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var toolbar = new JJToolbar();
@@ -55,6 +59,16 @@ internal class GridToolbar(JJGridView gridView)
                     break;
             }
 
+            if (OnRenderToolbarActionAsync is not null)
+            {
+                var args = new GridToolbarActionEventArgs(action, linkButton);
+                await OnRenderToolbarActionAsync(GridView, args);
+
+                if (args.HtmlResult is not null)
+                    yield return new HtmlBuilder(args.HtmlResult);
+            }
+
+            
             yield return linkButton.GetHtmlBuilder();
         }
     }

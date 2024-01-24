@@ -49,4 +49,12 @@ public interface IGridEventHandler : IEventHandler
 #else
         ;
 #endif
+    Task OnRenderToolbarActionAsync(object sender, GridToolbarActionEventArgs e)
+#if NET
+    {
+        return Task.CompletedTask;
+    }
+#else
+        ;
+#endif
 }

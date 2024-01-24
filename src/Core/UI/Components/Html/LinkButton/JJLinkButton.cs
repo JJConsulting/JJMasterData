@@ -29,6 +29,8 @@ public class JJLinkButton : HtmlComponent
     
     [Localizable(false)]
     public string Text { get; set; }
+
+    public HtmlBuilder InnerHtml { get; } = new();
     
     [Localizable(false)]
     public string Tooltip { get; set; }
@@ -123,7 +125,9 @@ public class JJLinkButton : HtmlComponent
                 {
                     s.AppendText($"&nbsp;{_stringLocalizer[Text]}");
                 });
-
+        
+        html.Append(InnerHtml);
+        
         if (_spinner != null)
             html.AppendComponent(Spinner);
 

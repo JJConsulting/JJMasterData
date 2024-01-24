@@ -68,6 +68,7 @@ public class JJGridView : AsyncComponent
     public event AsyncEventHandler<GridDataLoadEventArgs>? OnDataLoadAsync;
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
     public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
+    public event AsyncEventHandler<GridToolbarActionEventArgs>? OnRenderToolbarActionAsync;
     #endregion
 
     #region Properties
@@ -88,6 +89,7 @@ public class JJGridView : AsyncComponent
     private JJDataImportation? _dataImportation;
     private JJDataExportation? _dataExportation;
     private GridScripts? _gridScripts;
+    private GridToolbar? _toolbar;
 
     internal JJDataImportation DataImportation
     {
@@ -538,6 +540,21 @@ public class JJGridView : AsyncComponent
     internal DataItemService DataItemService { get; }
     internal IEncryptionService EncryptionService { get; }
 
+    private GridToolbar Toolbar
+    {
+        get
+        {
+            if (_toolbar is null)
+            {
+                _toolbar = new GridToolbar(this);
+                _toolbar.OnRenderToolbarActionAsync += OnRenderToolbarActionAsync;
+            }
+
+            return _toolbar;
+        }
+    }
+
+
     #endregion
 
     #region Constructors
@@ -810,7 +827,7 @@ public class JJGridView : AsyncComponent
         return titleComponent;
     }
 
-    internal Task<HtmlBuilder> GetToolbarHtmlBuilder() => new GridToolbar(this).GetHtmlBuilderAsync();
+    internal Task<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();
 
     public Task<HtmlBuilder> GetFilterHtmlAsync() => Filter.GetFilterHtml();
 
