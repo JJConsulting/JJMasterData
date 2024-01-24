@@ -57,10 +57,12 @@ public class FormValuesService(
         {
             case FormComponent.Date:
             case FormComponent.DateTime:
-                if (value is not null && !string.IsNullOrEmpty(value.ToString()))
+                if (value is null)
+                    break;
+                
+                if (!string.IsNullOrEmpty(value.ToString()))
                     value = DateTime.Parse(value.ToString()!);
-                else
-                    value = null;
+                
                 break;
             case FormComponent.Currency:
                 if (value is null)
@@ -78,7 +80,8 @@ public class FormValuesService(
 
                 break;
             case FormComponent.CheckBox:
-                value = StringManager.ParseBool(value);
+                if(value is not null)
+                    value = StringManager.ParseBool(value);
                 break;
         }
 
