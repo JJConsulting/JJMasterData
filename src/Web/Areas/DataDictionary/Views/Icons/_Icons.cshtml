@@ -1,6 +1,6 @@
 ﻿@using JJMasterData.Core.DataDictionary.Models
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.IconViewModel
-
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
 <style>
     .icon {
         margin-bottom: 5px;
@@ -14,7 +14,6 @@
 </style>
 
 
-
 <script lang="javascript" type="text/javascript">
 
 function handleFilterChange() {
@@ -23,31 +22,26 @@ function handleFilterChange() {
 }
 
 function filterIcons(filterText) {
-  const iconDivs = document.querySelectorAll('.icon');
+    const iconContainer = $('#icon-container');
+    const icons = iconContainer.find('.icon');
 
-  iconDivs.forEach(function (iconDiv) {
-    const idElement = iconDiv.querySelector('span:nth-of-type(2)');
-    const nameElement = iconDiv.querySelector('span:nth-of-type(3)');
+    filterText = filterText.toLowerCase(); 
 
-    const id = idElement.innerText;
-    const name = nameElement.innerText;
-  
-    if (filterText === '' || filterText ==  null || id.includes(filterText) || name.includes(filterText)) {
-      iconDiv.style.display = 'block';
-    } else {
-      iconDiv.style.display = 'none';
-    }
-  });
+    icons.each(function () {
+        const icon = $(this);
+        const iconText = icon.find('span:last-child').text().toLowerCase(); 
+
+        if (iconText.includes(filterText) || filterText === "") {
+            icon.show(); 
+        } else {
+            icon.hide();
+        }
+    });
 }
-
-function saveIcon(selectedIcon, description) {        
-    let fieldIcon = window.document.getElementById('@Model.InputId');
-    fieldIcon.value = selectedIcon;
-
-    let fieldIconText = window.document.getElementById('@Model.InputId' + "_text");
-    fieldIconText.value = description;
-
-    fieldIconText.focus();
+function saveIcon(selectedIcon) {        
+    const picker = $('#@Model.InputId');
+    picker.selectpicker('val',selectedIcon);
+    picker.focus();
     
     iconsModal.hide()
 }
@@ -55,14 +49,20 @@ function saveIcon(selectedIcon, description) {
 
 
 <div class="row">
-    <div class="col-sm-2">
-        <input placeholder="Filter" oninput="handleFilterChange()" class="form-control" id="filterInput" name="filterInput"/>
+    <div class="col-sm-12">
+        <input
+            id="filterInput"
+            maxlength="64"
+            type="text"
+            placeholder="@StringLocalizer["Filter"]"
+            class="form-control"
+            oninput="handleFilterChange()">
     </div>
 </div>
-<div class="row">
+<div id="icon-container" class="row">
     @foreach (var icon in Enum.GetValues<IconType>())
     {
-        <div class="col-sm-2 icon text-center" onclick="saveIcon('@icon.GetId().ToString()', '@icon.GetDescription()');">
+        <div class="col-sm-2 icon text-center" onclick="saveIcon('@icon.GetId().ToString()');">
             <span class="@icon.GetCssClass() fa-3x"></span>
             <br/>
             <span>@icon.GetId()</span>

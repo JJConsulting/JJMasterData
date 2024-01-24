@@ -4,7 +4,7 @@
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
-/// Action to return to the Grid at PageState.View.
+/// Action to return to the Grid at PageState.View or close the edit mode at a relationship.
 /// </summary>
 public class BackAction : FormToolbarAction
 {

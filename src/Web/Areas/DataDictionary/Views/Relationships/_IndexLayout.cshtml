@@ -9,8 +9,12 @@
 
     private static string GetRelationshipIconCssClass(FormElementRelationship relationship)
     {
+        if (relationship.Panel.Icon.HasValue)
+            return relationship.Panel.Icon.Value.GetCssClass();
+        
         if (relationship.IsParent)
             return "fa-crown";
+        
         return relationship.ViewType switch
         {
             RelationshipViewType.List => "fa-table-cells",

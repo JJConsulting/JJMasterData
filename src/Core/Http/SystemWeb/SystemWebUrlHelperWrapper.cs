@@ -1,5 +1,5 @@
-#nullable enable
-
+﻿#nullable enable
+#if !NET
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -9,19 +9,22 @@ using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace JJMasterData.Core.Http;
+namespace JJMasterData.Core.Http.SystemWeb;
 
-public class MasterDataUrlHelper(IHttpRequest httpRequest,IOptions<MasterDataCoreOptions> options)
+public class SystemWebUrlHelperWrapper(IHttpRequest httpRequest, IOptions<MasterDataCoreOptions> options)
+    : IMasterDataUrlHelper
 {
     private IHttpRequest HttpRequest { get; } = httpRequest;
-    private string? JJMasterDataUrl { get; } = options.Value.MasterDataUrl;
+    private string? MasterDataUrl { get; } = options.Value.MasterDataUrl;
+    private bool EnableCultureProvider { get; } = options.Value.EnableCultureProviderAtUrl;
 
-    public string GetUrl([AspMvcAction]string? action = null, [AspMvcController] string? controller = null,string? area = null, object? values = null)
+    public string Action([AspMvcAction]string? action = null, [AspMvcController] string? controller =
+ null, object? values = null)
     {
 
         string baseUrl;
         
-        if (JJMasterDataUrl is null || string.IsNullOrEmpty(JJMasterDataUrl))
+        if (MasterDataUrl is null || string.IsNullOrEmpty(MasterDataUrl))
         {
             var appPath = HttpRequest.ApplicationPath;
 
@@ -29,7 +32,7 @@ public class MasterDataUrlHelper(IHttpRequest httpRequest,IOptions<MasterDataCor
         }
         else
         {
-            baseUrl = JJMasterDataUrl;
+            baseUrl = MasterDataUrl;
         }
 
         if (!baseUrl.EndsWith("/"))
@@ -50,13 +53,19 @@ public class MasterDataUrlHelper(IHttpRequest httpRequest,IOptions<MasterDataCor
             valuesDictionary.Remove("elementName");
         }
         
+        if(valuesDictionary.TryGetValue("Area", out var areaValue))
+        {
+            valuesDictionary.Remove("Area");
+        }
+        
         var url = baseUrl;
 
-        url += $"{CultureInfo.CurrentUICulture}/";
+        if(EnableCultureProvider)
+            url += $"{CultureInfo.CurrentUICulture}/";
         
-        if (!string.IsNullOrEmpty(area))
+        if (!string.IsNullOrEmpty(areaValue))
         {
-            url += $"{area}/";
+            url += $"{areaValue}/";
         }
 
         if (!string.IsNullOrEmpty(controller))
@@ -82,4 +91,6 @@ public class MasterDataUrlHelper(IHttpRequest httpRequest,IOptions<MasterDataCor
 
         return url;
     }
+
 }
+#endif

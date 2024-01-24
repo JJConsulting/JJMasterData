@@ -71,10 +71,7 @@ public static partial class ServiceCollectionExtensions
 
             if (webOptions.DataDictionaryTableName != null)
                 options.DataDictionaryTableName = webOptions.DataDictionaryTableName;
-
-            if (webOptions.MasterDataUrl != null) 
-                options.MasterDataUrl = webOptions.MasterDataUrl;
-
+            
             if (webOptions.ConnectionString != null) 
                 options.ConnectionString = webOptions.ConnectionString;
             

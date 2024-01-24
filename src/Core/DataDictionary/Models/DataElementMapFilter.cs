@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using JJMasterData.Commons.Data.Entity.Models;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
@@ -9,6 +11,8 @@ public class DataElementMapFilter
     public string FieldName { get; set; }
 
     [JsonProperty("expressionValue")]
+    [AsyncExpression]
+    [Display(Name = "Expression")]
     public string ExpressionValue { get; set; }
 
 }

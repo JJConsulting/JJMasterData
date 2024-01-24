@@ -18,11 +18,14 @@ public class MasterDataCoreOptions : MasterDataCommonsOptions
     /// </summary>
     public string AuditLogTableName { get; set; } = "tb_masterdata_auditlog";
     
+    #if !NET
     /// <summary>
     /// Default value: null
     /// </summary>
     public string? MasterDataUrl { get; set; }
-    
+
+    public bool EnableCultureProviderAtUrl { get; set; } = true;
+    #endif
     /// <summary>
     /// Default value: {ApplicationPath}/JJExportationFiles
     /// </summary>

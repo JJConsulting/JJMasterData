@@ -1,11 +1,12 @@
-﻿using JJMasterData.Core.UI.Html;
+﻿using JJMasterData.Core.DataDictionary;
+using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
 public class NavContent
 {
-    public string Title { get; set; }
-
+    public required string Title { get; set; }
+    public required IconType? Icon { get; set; }
     public HtmlBuilder HtmlContent { get; set; }
     
 }

@@ -65,9 +65,9 @@ public class JJGridView : AsyncComponent
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// using the proc informed in the FormElement;
     /// </remarks>
-    
     public event AsyncEventHandler<GridDataLoadEventArgs>? OnDataLoadAsync;
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
+    public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
     #endregion
 
     #region Properties
@@ -76,6 +76,7 @@ public class JJGridView : AsyncComponent
     private string? _selectedRowsId;
     private int _currentPage;
     private GridSettings? _currentSettings;
+    private GridSettingsForm? _gridSettingsForm;
     private ExportOptions? _currentExportConfig;
     private GridFilter? _filter;
     private GridTable? _table;
@@ -300,6 +301,8 @@ public class JJGridView : AsyncComponent
         }
     }
 
+    internal GridSettingsForm GridSettingsForm => _gridSettingsForm ??= new(Name, CurrentContext, StringLocalizer);
+
     /// <summary>
     /// <see cref="GridSettings"/>
     /// </summary>
@@ -311,10 +314,9 @@ public class JJGridView : AsyncComponent
                 return _currentSettings;
             
             var action = CurrentActionMap?.GetAction(FormElement);
-            var form = new GridFormSettings(CurrentContext, StringLocalizer);
             if (action is ConfigAction)
             {
-                CurrentSettings = form.LoadFromForm();
+                CurrentSettings = GridSettingsForm.LoadFromForm();
                 return _currentSettings!;
             }
 
@@ -322,7 +324,7 @@ public class JJGridView : AsyncComponent
                 CurrentSettings = CurrentContext.Session.GetSessionValue<GridSettings>($"jjcurrentui_{FormElement.Name}");
 
             if (_currentSettings == null)
-                CurrentSettings = form.LoadFromForm();
+                CurrentSettings = GridSettingsForm.LoadFromForm();
             
             return _currentSettings!;
         }
@@ -335,7 +337,19 @@ public class JJGridView : AsyncComponent
         }
     }
 
-    internal GridFilter Filter => _filter ??= new GridFilter(this);
+    internal GridFilter Filter
+    {
+        get
+        {
+            if (_filter != null) 
+                return _filter;
+            
+            _filter = new GridFilter(this);
+            _filter.OnFilterLoadAsync += OnFilterLoadAsync;
+
+            return _filter;
+        }
+    }
 
     internal GridTable Table
     {
@@ -648,7 +662,7 @@ public class JJGridView : AsyncComponent
         return html;
     }
 
-    public Task<IDictionary<string, object?>> GetCurrentFilterAsync()
+    public Task<Dictionary<string, object?>> GetCurrentFilterAsync()
     {
         return Filter.GetCurrentFilterAsync();
     }
@@ -707,7 +721,7 @@ public class JJGridView : AsyncComponent
             if (DataSource?.Count == 0 && !string.IsNullOrEmpty(EmptyDataText))
                 html.Append(await GetNoRecordsAlert());
             
-            if (FormElement.Options.Grid.ShowPagging)
+            if (IsPagingEnabled())
             {
                 var gridPagination = new GridPagination(this);
 
@@ -1009,9 +1023,7 @@ public class JJGridView : AsyncComponent
         btnCancel.ShowAsButton = true;
         btnCancel.OnClientClick = Scripts.GetCloseConfigUIScript();
         modal.Buttons.Add(btnCancel);
-
-        var form = new GridFormSettings(CurrentContext, StringLocalizer);
-        modal.HtmlBuilderContent = form.GetHtmlElement(IsPaggingEnabled(), CurrentSettings);
+        modal.HtmlBuilderContent = GridSettingsForm.GetHtmlBuilder(IsPagingEnabled(), CurrentSettings);
 
         return modal.GetHtmlBuilder();
     }
@@ -1369,7 +1381,7 @@ public class JJGridView : AsyncComponent
         return errors;
     }
 
-    internal bool IsPaggingEnabled()
+    internal bool IsPagingEnabled()
     {
         return !(!ShowPagging || CurrentPage == 0 || CurrentSettings.RecordsPerPage == 0 || TotalOfRecords == 0);
     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager;
@@ -13,6 +14,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -26,14 +28,16 @@ internal class GridFilter(JJGridView gridView)
     
     internal const string FilterFieldPrefix = "filter_";
 
-    private IDictionary<string, object> _currentFilter;
-    private IDictionary<string, object> _userFilters;
+    private Dictionary<string, object> _currentFilter;
+    private Dictionary<string, object> _userFilters;
     private JJGridView GridView { get; } = gridView;
 
     private IHttpContext CurrentContext => GridView.CurrentContext;
     private IStringLocalizer<MasterDataResources> StringLocalizer => GridView.StringLocalizer;
     public string Name => GridView.Name + "-filter";
 
+    public event AsyncEventHandler<GridFilterLoadEventArgs> OnFilterLoadAsync;
+    
     internal async Task<HtmlBuilder> GetFilterHtml()
     {
         var filterAction = GridView.FilterAction;
@@ -57,7 +61,7 @@ internal class GridFilter(JJGridView gridView)
     /// Recupera o filtro atual da grid
     /// </summary>
     /// <returns></returns>
-    public async Task<IDictionary<string, object>> GetCurrentFilterAsync()
+    public async Task<Dictionary<string, object>> GetCurrentFilterAsync()
     {
         if (_currentFilter != null)
             return _currentFilter;
@@ -175,6 +179,9 @@ internal class GridFilter(JJGridView gridView)
         
         var values = await GetCurrentFilterAsync();
 
+        if (OnFilterLoadAsync != null)
+            await OnFilterLoadAsync(GridView, new GridFilterLoadEventArgs { Filters = values });
+
         var dataPanelControl = new DataPanelControl(GridView, values)
         {
             FieldNamePrefix = FilterFieldPrefix
@@ -208,6 +215,7 @@ internal class GridFilter(JJGridView gridView)
             {
                 Name = $"grid-view-filter-collapse-{GridView.Name}",
                 HtmlBuilderContent = html,
+                TitleIcon = action.ShowIconAtCollapse ? new JJIcon(action.Icon) : null,
                 Title = GridView.StringLocalizer[action.Text]
             };
             panel.Buttons.Add(btnDoFilter);

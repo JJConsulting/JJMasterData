@@ -7,6 +7,7 @@ using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
@@ -14,13 +15,13 @@ using Microsoft.IdentityModel.Tokens;
 namespace JJMasterData.Core.UI.Components;
 
 public class ActionScripts(ExpressionsService expressionsService,
-    MasterDataUrlHelper urlHelper,
+    IMasterDataUrlHelper urlHelper,
     IEncryptionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     private ExpressionsService ExpressionsService { get; } = expressionsService;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IEncryptionService EncryptionService { get; } = encryptionService;
     
     public string GetInternalUrlScript(InternalAction action, ActionContext actionContext)
@@ -47,9 +48,10 @@ public class ActionScripts(ExpressionsService expressionsService,
             }
         }
 
-        string url = UrlHelper.GetUrl("Index", "InternalRedirect", "MasterData",
+        string url = UrlHelper.Action("Index", "InternalRedirect",
             new
             {
+               Area="MasterData",
                 parameters = EncryptionService.EncryptStringWithUrlEscape(@params.ToString())
             });
 
@@ -125,7 +127,7 @@ public class ActionScripts(ExpressionsService expressionsService,
             var modalRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);
             var gridViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
             
-            actionData.ModalTitle = actionContext.FormElement.Title;
+            actionData.ModalTitle = actionContext.FormElement.Title ?? actionContext.FormElement.Name;
             actionData.EncryptedGridViewRouteContext = EncryptionService.EncryptRouteContext(gridViewRouteContext);
             actionData.EncryptedModalRouteContext = EncryptionService.EncryptRouteContext(modalRouteContext);
         }

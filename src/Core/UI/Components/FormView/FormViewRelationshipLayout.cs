@@ -11,11 +11,9 @@ using JJMasterData.Core.UI.Html;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class FormViewRelationshipLayout(JJFormView parentFormView)
+internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormElementRelationship> relationships)
 {
-    private JJFormView ParentFormView { get; } = parentFormView;
-
-    public async Task<ComponentResult> GetRelationshipsResult(List<FormElementRelationship> relationships)
+    public async Task<ComponentResult> GetRelationshipsResult()
     {
         var relationshipsDiv = new HtmlBuilder(HtmlTag.Div);
 
@@ -54,9 +52,9 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
 
     private async Task<ComponentResult> GetTabRelationshipsResult(List<FormElementRelationship> relationships)
     {
-        var tabNav = new JJTabNav(ParentFormView.CurrentContext.Request.Form)
+        var tabNav = new JJTabNav(parentFormView.CurrentContext.Request.Form)
         {
-            Name = $"relationships-tab-nav-{ParentFormView.DataPanel.Name}"
+            Name = $"relationships-tab-nav-{parentFormView.DataPanel.Name}"
         };
 
         foreach (var relationship in relationships.Where(r => r.Panel.Layout is PanelLayout.Tab))
@@ -68,6 +66,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
                 tabNav.ListTab.Add(new NavContent
                 {
                     Title = relationship.Panel.Title,
+                    Icon = relationship.Panel.Icon,
                     HtmlContent = renderedComponentResult.HtmlBuilder
                 });
             }
@@ -85,12 +84,13 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
         switch (relationship.Panel.Layout)
         {
             case PanelLayout.Collapse:
-                var collapse = new JJCollapsePanel(ParentFormView.CurrentContext.Request.Form)
+                var collapse = new JJCollapsePanel(parentFormView.FormValues)
                 {
-                    Name = $"{relationship.ElementRelationship?.ChildElement ?? ParentFormView.Name}-collapse-panel",
+                    Name = $"{relationship.ElementRelationship?.ChildElement ?? parentFormView.Name}-collapse-panel",
                     Title = relationship.Panel.Title,
                     HtmlBuilderContent = content,
                     Color = relationship.Panel.Color,
+                    TitleIcon = relationship.Panel.Icon.HasValue ? new JJIcon(relationship.Panel.Icon.Value) : null,
                     ExpandedByDefault = relationship.Panel.ExpandedByDefault,
                     CssClass = relationship.Panel.CssClass
                 };
@@ -103,6 +103,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
                     Title = relationship.Panel.Title,
                     Color = relationship.Panel.Color,
                     Layout = relationship.Panel.Layout,
+                    Icon = relationship.Panel.Icon,
                     HtmlBuilderContent = content,
                     CssClass = relationship.Panel.CssClass
                 };
@@ -131,69 +132,102 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView)
 
     private async Task<ComponentResult> GetRelationshipResult(FormElementRelationship relationship)
     {
-        var parentPanel = ParentFormView.DataPanel;
+        var parentPanel = parentFormView.DataPanel;
 
         var formContext = new FormContext(parentPanel.Values, parentPanel.Errors, parentPanel.PageState);
         
         if (relationship.IsParent)
         {
-            return new RenderedComponentResult(await ParentFormView.GetRelationshipParentPanelHtml(parentPanel));
+            return new RenderedComponentResult(await parentFormView.GetParentPanelHtmlAtRelationship(parentPanel));
         }
 
         var childElement =
-            await ParentFormView.DataDictionaryRepository.GetFormElementAsync(relationship.ElementRelationship!
+            await parentFormView.DataDictionaryRepository.GetFormElementAsync(relationship.ElementRelationship!
                 .ChildElement);
-        childElement.ParentName = ParentFormView.FormElement.ParentName ?? ParentFormView.FormElement.Name;
+        childElement.ParentName = parentFormView.FormElement.ParentName ?? parentFormView.FormElement.Name;
 
         var filter = new Dictionary<string, object?>();
-        foreach (var col in Enumerable.Where(relationship.ElementRelationship.Columns, col =>
+        foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
                      formContext.Values.ContainsKey(col.PkColumn)))
         {
             var value = formContext.Values[col.PkColumn];
             filter[col.FkColumn] = value;
-            ParentFormView.UserValues[col.FkColumn] = value;
+            parentFormView.UserValues[col.FkColumn] = value;
         }
 
-        var mappedForeignKeys = DataHelper.GetRelationValues(ParentFormView.FormElement, filter);
+
         switch (relationship.ViewType)
         {
             case RelationshipViewType.Update:
             case RelationshipViewType.View:
             {
-                var childValues =
-                    await ParentFormView.EntityRepository.GetFieldsAsync(childElement,
-                        (IDictionary<string, object>)filter);
-                var childDataPanel = ParentFormView.ComponentFactory.DataPanel.Create(childElement);
-                childDataPanel.FieldNamePrefix = $"{childDataPanel.Name}_";
-                childDataPanel.PageState = relationship.ViewType is RelationshipViewType.View ? PageState.View : PageState.Update;
-                childDataPanel.UserValues = ParentFormView.UserValues;
-                childDataPanel.Values = childValues;
-                childDataPanel.RenderPanelGroup = false;
-                childDataPanel.FormUI = childElement.Options.Form;
-
-                return await childDataPanel.GetResultAsync();
+                return await ConfigureOneToOneFormView(childElement, relationship, filter);
             }
             case RelationshipViewType.List:
             {
-                var childFormView = ParentFormView.ComponentFactory.FormView.Create(childElement);
-                childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
-                childFormView.UserValues = ParentFormView.UserValues;
-                childFormView.SetRelationshipPageState(relationship.ViewType);
-                childFormView.RelationValues = mappedForeignKeys;
-                await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
-                childFormView.ShowTitle = false;
-
-                if (ParentFormView.PageState is PageState.View)
-                {
-                    childFormView.DisableActionsAtViewMode();
-                }
-                
-                var result = await childFormView.GetFormResultAsync();
-                
-                return result;
+                return await ConfigureOneToManyFormView(childElement, filter);
             }
             default:
                 return new EmptyComponentResult();
         }
+    }
+
+    private async Task<ComponentResult> ConfigureOneToManyFormView(FormElement childElement, IDictionary<string, object?> filter)
+    {
+        var childFormView = parentFormView.ComponentFactory.FormView.Create(childElement);
+        childFormView.ShowTitle = false;
+        childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
+        childFormView.UserValues = parentFormView.UserValues;
+        childFormView.PageState = PageState.List;
+        childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
+        await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
+        childFormView.ShowTitle = false;
+        childFormView.IsChildFormView = true;
+        
+        if (parentFormView.PageState is PageState.View)
+            childFormView.DisableActionsAtViewMode();
+                
+        var result = await childFormView.GetFormResultAsync();
+                
+        return result;
+    }
+
+    private async Task<ComponentResult> ConfigureOneToOneFormView(FormElement childElement,
+        FormElementRelationship relationship, IDictionary<string, object?> filter)
+    {
+        IDictionary<string, object?>? childValues = null;
+        if (filter.Any())
+        {
+            childValues =
+                await parentFormView.EntityRepository.GetFieldsAsync(childElement, filter!);
+        }
+        
+        var childFormView = parentFormView.ComponentFactory.FormView.Create(childElement);
+
+        if (relationship.ViewType is RelationshipViewType.View)
+        {
+            childFormView.PageState = PageState.View;
+            childFormView.PanelState = PageState.View;
+        }
+
+        else
+        {
+            childFormView.PageState = childValues is not null ? PageState.Update : PageState.Insert;
+            childFormView.PanelState = childValues is not null ? PageState.View : PageState.Insert;
+        }
+        
+        childFormView.IsChildFormView = true;
+        childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
+        childFormView.UserValues = parentFormView.UserValues;
+        childFormView.ShowTitle = false;
+
+        if (childValues is not null)
+            childFormView.DataPanel.Values = childValues;
+                
+        childFormView.DataPanel.FieldNamePrefix = $"{childFormView.Name}_";
+        childFormView.DataPanel.RenderPanelGroup = false;
+        childFormView.DataPanel.FormUI = childElement.Options.Form;
+                
+        return await childFormView.GetFormResultAsync();
     }
 }

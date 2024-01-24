@@ -297,7 +297,7 @@ public class FieldService(IValidationDictionary validationDictionary,
 
         var childField = childFormElement.Fields[elementMap.IdFieldName];
 
-        if (field.DataType != childField.DataType)
+        if (field.DataType != childField.DataType && field.DataBehavior is FieldBehavior.Real)
             AddError(nameof(elementMap.DescriptionFieldName), StringLocalizer["[FieldId] DataType must be the same of your field."]);
         
         if(dataItem.ShowIcon && elementMap.IconIdFieldName is null)
@@ -306,7 +306,7 @@ public class FieldService(IValidationDictionary validationDictionary,
         if (elementMap.IdFieldName.Equals(elementMap.DescriptionFieldName))
             AddError(nameof(elementMap.DescriptionFieldName), StringLocalizer["[FieldDescription] can not be equal a [FieldId]"]);
         
-        if (dataItem.GridBehavior is DataItemGridBehavior.Description || dataItem.GridBehavior is DataItemGridBehavior.IconWithDescription && string.IsNullOrEmpty(elementMap.DescriptionFieldName))
+        if (dataItem.GridBehavior is DataItemGridBehavior.Description or DataItemGridBehavior.IconWithDescription && string.IsNullOrEmpty(elementMap.DescriptionFieldName))
             AddError(nameof(dataItem.GridBehavior), StringLocalizer["[GridBehavior] requires a [FieldDescription]"]);
     }
 

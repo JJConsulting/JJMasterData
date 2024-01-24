@@ -9,25 +9,26 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Class responsible to render the UI on JJGridView
 /// </summary>
-internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
+internal class GridSettingsForm(string name, IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private const string TableTotalPerPage = "grid-view-table-regperpage";
-    private const string TableTotalPaginationButtons = "grid-view-table-totalpagebuttons";
-    private const string TableBorder = "grid-view-table-border";
-    private const string TableRowsStriped = "grid-view-table-rowstriped";
-    private const string TableRowHover = "grid-view-table-rowhover";
-    private const string TableIsHeaderFixed = "grid-view-table-header-fixed";
-    private const string TableIsCompact = "grid-view-table-is-compact";
+    private readonly string _tableTotalPerPage = $"{name}-table-regperpage";
+    private readonly string _tableTotalPaginationButtons = $"{name}-table-totalpagebuttons";
+    private readonly string _tableBorder = $"{name}-table-border";
+    private readonly string _tableRowsStriped = $"{name}-table-rowstriped";
+    private readonly string _tableRowHover = $"{name}-table-rowhover";
+    private readonly string _tableIsHeaderFixed = $"{name}-table-header-fixed";
+    private readonly string _tableIsCompact = $"{name}-table-is-compact";
+    
     public GridSettings LoadFromForm()
     {
         var gridSettings = new GridSettings();
-        var tableRegPerPage = currentContext.Request[TableTotalPerPage];
-        var tableTotalPageButtons = currentContext.Request[TableTotalPaginationButtons];
-        var tableBorder = currentContext.Request[TableBorder];
-        var tableRowsStriped = currentContext.Request[TableRowsStriped];
-        var tableRowHover = currentContext.Request[TableRowHover];
-        var tableIsHeaderFixed = currentContext.Request[TableIsHeaderFixed];
-        var tableIsCompact = currentContext.Request[TableIsCompact];
+        var tableRegPerPage = currentContext.Request[_tableTotalPerPage];
+        var tableTotalPageButtons = currentContext.Request[_tableTotalPaginationButtons];
+        var tableBorder = currentContext.Request[_tableBorder];
+        var tableRowsStriped = currentContext.Request[_tableRowsStriped];
+        var tableRowHover = currentContext.Request[_tableRowHover];
+        var tableIsHeaderFixed = currentContext.Request[_tableIsHeaderFixed];
+        var tableIsCompact = currentContext.Request[_tableIsCompact];
 
         if (int.TryParse(tableRegPerPage, out var totalPerPage))
             gridSettings.RecordsPerPage = totalPerPage;
@@ -43,16 +44,16 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
         return gridSettings;
     }
 
-    internal static bool HasFormValues(IHttpContext currentContext) =>
-        currentContext.Request[TableTotalPerPage] != null;
+    internal bool HasFormValues() =>
+        currentContext.Request[_tableTotalPerPage] != null;
 
-    internal HtmlBuilder GetHtmlElement(bool isPaginationEnabled, GridSettings gridSettings)
+    internal HtmlBuilder GetHtmlBuilder(bool isPaginationEnabled, GridSettings gridSettings)
     {
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass($"{(BootstrapHelper.Version == 3 ? "form-horizontal" : string.Empty)}")
             .WithAttribute("role", "form")
-            .AppendHiddenInput(TableTotalPaginationButtons, gridSettings.TotalPaginationButtons.ToString())
-            .AppendHiddenInput(TableIsHeaderFixed, gridSettings.IsHeaderFixed ? "1" : "0");
+            .AppendHiddenInput(_tableTotalPaginationButtons, gridSettings.TotalPaginationButtons.ToString())
+            .AppendHiddenInput(_tableIsHeaderFixed, gridSettings.IsHeaderFixed ? "1" : "0");
 
         if (isPaginationEnabled)
         {
@@ -60,7 +61,7 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
         }
         else
         {
-            div.AppendHiddenInput(TableTotalPerPage, gridSettings.RecordsPerPage.ToString());
+            div.AppendHiddenInput(_tableTotalPerPage, gridSettings.RecordsPerPage.ToString());
         }
 
         div.Append(GetShowBorderHtml(gridSettings));
@@ -76,14 +77,14 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
             .Append(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", TableRowHover);
+                label.WithAttribute("for", _tableRowHover);
                 label.WithCssClass("col-sm-4");
                 label.AppendText(stringLocalizer["Highlight line on mouseover"]);
             });
         div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-8");
-            div.Append(GetDataToggleElement(TableRowHover, gridSettings.ShowRowHover));
+            div.Append(GetDataToggleElement(_tableRowHover, gridSettings.ShowRowHover));
         });
         
         return div;
@@ -95,14 +96,14 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
             .Append(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", TableIsCompact);
+                label.WithAttribute("for", _tableIsCompact);
                 label.WithCssClass("col-sm-4");
                 label.AppendText(stringLocalizer["Compact Mode"]);
             });
         div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-8");
-            div.Append(GetDataToggleElement(TableIsCompact, gridSettings.IsCompact));
+            div.Append(GetDataToggleElement(_tableIsCompact, gridSettings.IsCompact));
         });
         
         return div;
@@ -114,14 +115,14 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
             .Append(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", TableRowsStriped);
+                label.WithAttribute("for", _tableRowsStriped);
                 label.WithCssClass("col-sm-4");
                 label.AppendText(stringLocalizer["Show rows striped"]);
             });
         div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-8");
-            div.Append(GetDataToggleElement(TableRowsStriped, gridSettings.ShowRowStriped));
+            div.Append(GetDataToggleElement(_tableRowsStriped, gridSettings.ShowRowStriped));
         });
 
         return div;
@@ -133,14 +134,14 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
             .Append(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", TableBorder);
+                label.WithAttribute("for", _tableBorder);
                 label.WithCssClass("col-sm-4");
                 label.AppendText(stringLocalizer["Show table border"]);
             });
         div.Append(HtmlTag.Div, div =>
         {
             div.WithCssClass("col-sm-8");
-            div.Append(GetDataToggleElement(TableBorder, gridSettings.ShowBorder));
+            div.Append(GetDataToggleElement(_tableBorder, gridSettings.ShowBorder));
         });
 
 
@@ -153,7 +154,7 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
             .WithCssClass($"{BootstrapHelper.FormGroup} row")
             .Append(HtmlTag.Label, label =>
             {
-                label.WithAttribute("for", TableTotalPerPage);
+                label.WithAttribute("for", _tableTotalPerPage);
                 label.WithCssClass("col-sm-4");
                 label.AppendText(stringLocalizer["Records per Page"]);
             });
@@ -167,15 +168,15 @@ internal class GridFormSettings(IHttpContext currentContext, IStringLocalizer<Ma
         return div;
     }
 
-    private static HtmlBuilder GetTotalPerPageSelectElement(GridSettings gridSettings)
+    private HtmlBuilder GetTotalPerPageSelectElement(GridSettings gridSettings)
     {
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass("form-control form-select")
-            .WithNameAndId(TableTotalPerPage);
+            .WithNameAndId(_tableTotalPerPage);
 
-        for (int i = 1; i < 7; i++)
+        for (var i = 1; i < 7; i++)
         {
-            int page = i * 5;
+            var page = i * 5;
             select.Append(HtmlTag.Option, option =>
             {
                 option.WithAttributeIf(gridSettings.RecordsPerPage == page, "selected", "selected");

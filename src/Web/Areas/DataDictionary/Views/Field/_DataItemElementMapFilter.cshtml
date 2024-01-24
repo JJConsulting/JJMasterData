@@ -1,0 +1,42 @@
+﻿@using JJMasterData.Core.UI
+@using JJMasterData.Web.TagHelpers
+@model JJMasterData.Core.DataDictionary.Models.DataElementMapFilter
+
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+<collapse-panel title="@StringLocalizer["Filters"]" expanded-by-default="false" icon="Filter">
+           <div class="row">
+               <div class="@BootstrapHelper.FormGroup col-sm-2">
+                   <label class="@BootstrapHelper.Label">@StringLocalizer["Field"]</label>
+                   @Html.DropDownListFor(m=>m.FieldName,
+                       new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
+                       new { @class = "form-control" })
+               </div>
+               <div class="@BootstrapHelper.FormGroup col-sm-10">
+                   <expression for="ExpressionValue" label="Expression" icon="IconType.Filter"/>
+               </div>
+               <div class="col-sm-12">
+                   <link-button css-class="btn-small" text="Add" icon="CheckSquareO" on-client-click="addElementMapFilter();"/>
+               </div>
+           </div>
+       </collapse-panel>
+       <script lang="javascript" type="text/javascript">
+           function addElementMapFilter() {
+               const form = document.forms[0]; 
+               form.action = "@Url.Action("AddElementMapFilter", new { elementName = ViewBag.ElementName })";
+               form.submit();
+           }
+           
+           function removeElementMapFilter(elementMapFieldName) {
+               const form = document.forms[0];
+               const input = document.createElement("input");
+               input.type = "hidden";
+               input.id = "elementMapFieldName";
+               input.name = "elementMapFieldName";
+               input.value = elementMapFieldName;
+               form.appendChild(input);
+               form.action = "@Url.Action("RemoveElementMapFilter", new { elementName = ViewBag.ElementName })";
+               form.submit();
+           }
+       
+       </script>
+

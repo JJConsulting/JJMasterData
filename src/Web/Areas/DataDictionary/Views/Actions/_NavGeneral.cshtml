@@ -12,11 +12,6 @@
     };
 }
 
-<script>
-    const iconsModal = new Modal();
-    iconsModal.modalId = "action-icon-modal";
-</script>
-
 <div class="row">
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <label class="@BootstrapHelper.Label">@StringLocalizer["Name"]</label>
@@ -24,13 +19,7 @@
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6 required">
         <label for="icon" class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
-        <a href="javascript: void(0);"
-           @BootstrapHelper.GetDataToggle("tooltip")
-           title="Search Icon" onclick="iconsModal.showUrl({url:'@Url.Action("Index", "Icons", new { inputId = "icon" })'},'@StringLocalizer["Icons"]');"
-           style="text-decoration:none">
-            <span class="fa fa-search "></span>
-        </a>
-        @Html.Raw(ViewBag.IconSearchBoxHtml)
+        <icon-picker for="Icon"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         <label class="@BootstrapHelper.Label">@StringLocalizer["Text"]</label>

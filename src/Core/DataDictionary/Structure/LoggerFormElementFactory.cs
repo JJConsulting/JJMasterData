@@ -4,15 +4,16 @@ using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class LoggerFormElementFactory(IOptions<DbLoggerOptions> options,MasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer)
+public class LoggerFormElementFactory(IOptions<DbLoggerOptions> options,IMasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
-    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private DbLoggerOptions Options { get; } = options.Value;
 
@@ -53,7 +54,7 @@ public class LoggerFormElementFactory(IOptions<DbLoggerOptions> options,MasterDa
             Text = StringLocalizer["Clear Log"],
             ShowAsButton = true,
             ConfirmationMessage = StringLocalizer["Do you want to clear ALL logs?"],
-            UrlRedirect = UrlHelper.GetUrl("ClearAll", "Log", "DataDictionary")
+            UrlRedirect = UrlHelper.Action("ClearAll", "Log", new {Area="DataDictionary"})
         };
         
         formElement.Options.GridTableActions.Clear();

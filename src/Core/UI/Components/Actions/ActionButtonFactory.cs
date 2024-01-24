@@ -6,14 +6,14 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http;
+using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
 public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFactory,
     ExpressionsService expressionsService,
-    MasterDataUrlHelper urlHelper, 
+    IMasterDataUrlHelper urlHelper, 
     IEncryptionService encryptionService,
     IStringLocalizer<MasterDataResources> stringLocalizer)
 {
@@ -22,7 +22,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
     private ActionScripts _actionScripts;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
 
-    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private ActionScripts ActionScripts => _actionScripts ??= new ActionScripts(ExpressionsService, UrlHelper, EncryptionService, StringLocalizer);
@@ -164,7 +164,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
         {
             switch (action)
             {
-                case CancelAction when !formView.ContainsRelationships():
+                case CancelAction when !formView.ContainsPanelState():
                 case BackAction:
                     if (actionContext.IsModal)
                     {

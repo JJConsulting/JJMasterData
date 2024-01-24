@@ -20,6 +20,9 @@ function postFormValues(options : PostFormValuesOptions) {
         .then(response => {
             if (response.headers.get("content-type")?.includes("application/json")) {
                 return response.json();
+            }
+            else if (response.redirected) {
+                window.location.href = response.url;
             } else {
                 return response.text();
             }

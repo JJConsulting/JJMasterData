@@ -12,10 +12,10 @@
         <PackageId>JJMasterData.NCalc</PackageId>
         <PackageTags>ncalc,jjmasterdata</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageReleaseNotes>Updated NCalc to 3.10.0</PackageReleaseNotes>
-   	    <Version>1.0.2</Version>
-    	<AssemblyVersion>1.0.2</AssemblyVersion>
-      <FileVersion>1.0.2</FileVersion>
+        <PackageReleaseNotes>bugfix at IBooleanExpressionProvider implementation</PackageReleaseNotes>
+   	    <Version>1.0.3</Version>
+    	<AssemblyVersion>1.0.3</AssemblyVersion>
+      <FileVersion>1.0.3</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>

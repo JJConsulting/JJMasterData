@@ -13,18 +13,27 @@ public class FormElementPanel
     public int PanelId { get; set; }
 
     [JsonProperty("title")]
+    [Display(Name = "Title")]
     public string? Title { get; set; }
 
     [JsonProperty("subtitle")]
+    [Display(Name = "SubTitle")]
     public string? SubTitle { get; set; }
 
     [JsonProperty("layout")]
+    [Display(Name = "Layout")]
     public PanelLayout Layout { get; set; } = PanelLayout.Well;
 
     [JsonProperty("color")]
+    [Display(Name = "Color")]
     public PanelColor Color { get; set; } = PanelColor.Default;
 
+    [JsonProperty("icon")]
+    [Display(Name = "Icon")]
+    public IconType? Icon { get; set; }
+    
     [JsonProperty("expandedByDefault")]
+    [Display(Name = "Expanded By Default")]
     public bool ExpandedByDefault { get; set; }
 
     /// <remarks>

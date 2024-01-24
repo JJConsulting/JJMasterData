@@ -102,7 +102,6 @@ public class JJUploadArea : AsyncComponent
     public int MaxFiles { get; set; } = int.MaxValue;
     private IHttpContext CurrentContext { get; }
     private UploadAreaService UploadAreaService { get; }
-    private MasterDataUrlHelper UrlHelper { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private IEncryptionService EncryptionService { get; }
     
@@ -125,14 +124,12 @@ public class JJUploadArea : AsyncComponent
     public JJUploadArea(
         IHttpContext currentContext,
         UploadAreaService uploadAreaService,
-        MasterDataUrlHelper urlHelper,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         Name = "upload-area";
         CurrentContext = currentContext;
         UploadAreaService = uploadAreaService;
-        UrlHelper = urlHelper;
         StringLocalizer = stringLocalizer;
         EncryptionService = encryptionService;
         MaxFileSize = GetMaxRequestLength();

@@ -15,26 +15,26 @@ using JJMasterData.Core.UI;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProviders) : TagHelper
+public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProviders, IStringLocalizer<MasterDataResources> stringLocalizer) : TagHelper
 {
     private bool? _isBooleanExpression;
 
-    [HtmlAttributeName("for")]
+    [HtmlAttributeName("for")] 
     public ModelExpression? For { get; set; }
-    
-    [HtmlAttributeName("name")]
+
+    [HtmlAttributeName("name")] 
     public string? Name { get; set; }
 
-    [HtmlAttributeName("value")]
+    [HtmlAttributeName("value")] 
     public string? Value { get; set; }
-    
-    [HtmlAttributeName("title")]
-    public string? Title { get; set; }
-    
+
+    [HtmlAttributeName("label")] 
+    public string? Label { get; set; }
+
     [HtmlAttributeName("tooltip")]
     [Localizable(false)]
     public string? Tooltip { get; set; }
-    
+
     private bool IsBooleanExpression
     {
         get
@@ -49,7 +49,7 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         }
     }
 
-    [HtmlAttributeName("icon")] 
+    [HtmlAttributeName("icon")]
     public IconType? Icon { get; set; }
 
     public override void Process(TagHelperContext context, TagHelperOutput output)
@@ -66,75 +66,74 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
             modelValue = Value;
         }
 
-        var splittedExpression = modelValue?.Split(':',2);
+        var splittedExpression = modelValue?.Split(':', 2);
         var selectedExpressionType = splittedExpression?[0];
         var selectedExpressionValue = splittedExpression?[1] ?? string.Empty;
 
         var html = new HtmlBuilder(HtmlTag.Div);
-        html.Append(HtmlTag.Label, label =>
+        var displayName = For?.ModelExplorer.Metadata.GetDisplayName() ?? Label;
+        html.AppendIf(displayName is not null, HtmlTag.Label, label =>
         {
             label.WithCssClass(BootstrapHelper.Label);
-            label.WithAttribute("for",name + "-ExpressionValue");
-            label.AppendText(For?.ModelExplorer.Metadata.GetDisplayName()!);
-            label.AppendSpan(span =>
+            label.WithAttribute("for", name + "-ExpressionValue");
+            label.AppendText(displayName!);
+            if (!string.IsNullOrWhiteSpace(Tooltip))
             {
-                span.WithCssClass("fa fa-question-circle help-description");
-                span.WithToolTip(Tooltip);
-            });
+                label.AppendSpan(span =>
+                {
+                    span.WithCssClass("fa fa-question-circle help-description");
+                    span.WithToolTip(Tooltip);
+                });
+            }
         });
-        html.WithCssClass("row");
-        html.Append(GetTypeSelect(name, selectedExpressionType));
-        html.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue));
-        
+
+        html.AppendDiv(div =>
+        {
+            div.WithCssClass("input-group");
+            div.Append(GetTypeSelect(name, selectedExpressionType));
+            div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue));
+        });
+
         output.TagMode = TagMode.StartTagAndEndTag;
-        
+
         output.Content.SetHtmlContent(html.ToString());
     }
 
     private HtmlBuilder GetTypeSelect(string? name, string? selectedExpressionType)
     {
-        var div = new HtmlBuilder(HtmlTag.Div);
-        div.WithCssClass("col-sm-2");
-        div.Append(HtmlTag.Select, select =>
-        {
-            select.WithNameAndId(name + "-ExpressionType");
-            select.WithCssClass("form-select");
-            
-            foreach (var provider in expressionProviders)
-            {
-                if (IsBooleanExpression && provider is not IBooleanExpressionProvider)
-                    continue;
-                
-                select.Append(HtmlTag.Option, option =>
-                {
-                    if (selectedExpressionType == provider.Prefix)
-                    {
-                        option.WithAttribute("selected", "selected");
-                    }
+        var select = new HtmlBuilder(HtmlTag.Select);
+        select.WithNameAndId(name + "-ExpressionType");
+        select.WithCssClass("form-select");
 
-                    option.WithValue(provider.Prefix);
-                    option.AppendText(provider.Title);
-                });
-            }
-        });
-        return div;
+        foreach (var provider in expressionProviders)
+        {
+            if (IsBooleanExpression && provider is not IBooleanExpressionProvider)
+                continue;
+
+            select.Append(HtmlTag.Option, option =>
+            {
+                if (selectedExpressionType == provider.Prefix)
+                {
+                    option.WithAttribute("selected", "selected");
+                }
+
+                option.WithValue(provider.Prefix);
+                option.AppendText(stringLocalizer[provider.Title]);
+            });
+        }
+
+        return select;
     }
 
-    private static HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType, string selectedExpressionValue)
+    private static HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType,
+        string selectedExpressionValue)
     {
-        var div = new HtmlBuilder(HtmlTag.Div);
-            div.WithCssClass("col-sm-10");
-            div.Append(HtmlTag.Div, div =>
-            {
-                div.WithId(name + "-ExpressionValueEditor");
-                div.Append(HtmlTag.Input, input =>
-                {
-                    input.WithCssClass("font-monospace");
-                    input.WithCssClass("form-control");
-                    input.WithNameAndId(name + "-ExpressionValue");
-                    input.WithValue(selectedExpressionValue);
-                });
-            });
-            return div;
+        var input = new HtmlBuilder(HtmlTag.Input);
+        input.WithCssClass("font-monospace");
+        input.WithCssClass("form-control");
+        input.WithAttribute("style", "width:70%");
+        input.WithNameAndId(name + "-ExpressionValue");
+        input.WithValue(selectedExpressionValue);
+        return input;
     }
 }

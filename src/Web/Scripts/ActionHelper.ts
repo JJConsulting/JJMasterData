@@ -188,7 +188,7 @@ class ActionHelper {
 
                 postFormValues({url:urlBuilder.build(), success:(data)=>{
                         if (typeof data === "string") {
-                            HTMLHelper.setInnerHTML(componentName,data);
+                            HTMLHelper.setOuterHTML(componentName,data);
                             listenAllEvents("#" + componentName)
                         }
                         else{

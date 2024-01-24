@@ -17,11 +17,11 @@ public class DataDictionaryFormElementFactory(
     IOptions<MasterDataCoreOptions> options,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IHttpContext httpContext,
-    MasterDataUrlHelper urlHelper)
+    IMasterDataUrlHelper urlHelper)
 {
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private IHttpContext HttpContext { get; } = httpContext;
-    private MasterDataUrlHelper UrlHelper { get; } = urlHelper;
+    private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private readonly MasterDataCoreOptions _options = options.Value;
 
     public FormElement GetFormElement()
@@ -30,7 +30,7 @@ public class DataDictionaryFormElementFactory(
 
         var formElement = GetFormElement(element);
 
-        AddActions(formElement);
+        ConfigureActions(formElement);
 
         formElement.Options.Grid.IsCompact = true;
         formElement.Options.Grid.RecordsPerPage = 10;
@@ -71,12 +71,16 @@ public class DataDictionaryFormElementFactory(
         formElement.Fields[DataDictionaryStructure.EnableSynchronism].Component = FormComponent.CheckBox;
     }
 
-    private void AddActions(FormElement formElement)
+    private void ConfigureActions(FormElement formElement)
     {
         formElement.Options.GridToolbarActions.InsertAction.SetVisible(false);
         formElement.Options.GridToolbarActions.ExportAction.SetVisible(false);
+        
+        formElement.Options.GridToolbarActions.FilterAction.Text = "Filters";
+        formElement.Options.GridToolbarActions.FilterAction.ShowIconAtCollapse = true;
+        
         formElement.Options.GridTableActions.Clear();
-
+        
         AddGridTableActions(formElement);
 
         AddGridToolbarActions(formElement);
@@ -125,7 +129,7 @@ public class DataDictionaryFormElementFactory(
                 Text = StringLocalizer["New"],
                 Icon = IconType.Plus,
                 ShowAsButton = true,
-                UrlRedirect = UrlHelper.GetUrl("Add", "Element", "DataDictionary")
+                UrlRedirect = UrlHelper.Action("Add", "Element", new {Area="DataDictionary"})
             },
 
             new SubmitAction
@@ -137,7 +141,7 @@ public class DataDictionaryFormElementFactory(
                 IsGroup = false,
                 ConfirmationMessage = StringLocalizer["Do you want to delete ALL selected records?"],
                 ShowAsButton = true,
-                FormAction = UrlHelper.GetUrl("Delete", "Element", "DataDictionary"),
+                FormAction = UrlHelper.Action("Delete", "Element", new {Area="DataDictionary"}),
             },
 
             new UrlRedirectAction
@@ -150,7 +154,7 @@ public class DataDictionaryFormElementFactory(
                 IsIframe = false,
                 ModalTitle = StringLocalizer["About"],
                 ModalSize = ModalSize.ExtraLarge,
-                UrlRedirect = UrlHelper.GetUrl("Index", "About", "DataDictionary"),
+                UrlRedirect = UrlHelper.Action("Index", "About", new {Area="DataDictionary"}),
                 Order = 14,
                 CssClass = BootstrapHelper.PullRight
             },
@@ -175,7 +179,7 @@ public class DataDictionaryFormElementFactory(
                 IsModal = true,
                 IsIframe = false,
                 ModalTitle = "Import",
-                UrlRedirect = UrlHelper.GetUrl("Import", "Element", "DataDictionary"),
+                UrlRedirect = UrlHelper.Action("Import", "Element", new {Area="DataDictionary"}),
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
             },
@@ -189,7 +193,7 @@ public class DataDictionaryFormElementFactory(
                 Order = 10,
                 CssClass = BootstrapHelper.PullRight,
                 OnClientClick =
-                    $"DataDictionaryUtils.exportElement('{ComponentNameGenerator.Create(_options.DataDictionaryTableName)}', '{UrlHelper.GetUrl("Export", "Element", "DataDictionary")}', '{StringLocalizer["Select one or more dictionaries"]}');"
+                    $"DataDictionaryUtils.exportElement('{ComponentNameGenerator.Create(_options.DataDictionaryTableName)}', '{UrlHelper.Action("Export", "Element", new{Area="DataDictionary"})}', '{StringLocalizer["Select one or more dictionaries"]}');"
             },
             
             new UrlRedirectAction
@@ -201,7 +205,7 @@ public class DataDictionaryFormElementFactory(
                 IsModal = true,
                 ModalTitle = StringLocalizer["Log"],
                 ModalSize = ModalSize.ExtraLarge,
-                UrlRedirect = UrlHelper.GetUrl("Index", "Log", "DataDictionary"),
+                UrlRedirect = UrlHelper.Action("Index", "Log", new {Area="DataDictionary"}),
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
             },
@@ -215,7 +219,7 @@ public class DataDictionaryFormElementFactory(
                 IsModal = true,
                 ModalSize = ModalSize.ExtraLarge,
                 ModalTitle = StringLocalizer["Application Options"],
-                UrlRedirect = UrlHelper.GetUrl("Index", "Options", "DataDictionary"),
+                UrlRedirect = UrlHelper.Action("Index", "Options", new {Area="DataDictionary"}),
                 Order = 12,
                 CssClass = BootstrapHelper.PullRight
             },
@@ -229,7 +233,7 @@ public class DataDictionaryFormElementFactory(
                 IsModal = true,
                 ModalTitle = StringLocalizer["Localization"],
                 ModalSize = ModalSize.ExtraLarge,
-                UrlRedirect = UrlHelper.GetUrl("Index", "Localization", "DataDictionary"),
+                UrlRedirect = UrlHelper.Action("Index", "Localization", new {Area="DataDictionary"}),
                 Order = 11,
                 CssClass = BootstrapHelper.PullRight
             }

@@ -1,7 +1,7 @@
 ﻿namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
-/// Represents the dictionary in grid list mode
+/// Represents the state of a component.
 /// </summary>
 ///  <div class="NOTE">
 ///<h5>NOTE</h5>

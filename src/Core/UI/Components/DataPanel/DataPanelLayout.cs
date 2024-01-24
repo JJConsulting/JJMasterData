@@ -95,6 +95,7 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
                 var tabContent = new NavContent
                 {
                     Title = panel.Title,
+                    Icon = panel.Icon,
                     HtmlContent = htmlPanel
                 };
                 navTab.ListTab.Add(tabContent);
@@ -116,6 +117,7 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
             {
                 Title = panel.Title,
                 SubTitle = panel.SubTitle,
+                TitleIcon = panel.Icon.HasValue ? new JJIcon(panel.Icon.Value) : null,
                 Name = $"{Name}-panel-{GuidGenerator.FromValue(panel.PanelId.ToString())}",
                 CssClass = panel.CssClass,
                 HtmlBuilderContent = await GetHtmlForm(panel),
@@ -129,6 +131,7 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
         {
             Title = panel.Title,
             SubTitle = panel.SubTitle,
+            Icon = panel.Icon,
             Layout = panel.Layout,
             HtmlBuilderContent = await GetHtmlForm(panel)
         };

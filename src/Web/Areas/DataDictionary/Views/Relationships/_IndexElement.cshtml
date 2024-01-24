@@ -1,7 +1,10 @@
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.UI.Components
+@using JJMasterData.Core.Http.Abstractions
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.RelationshipsListViewModel
+
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+@inject IMasterDataUrlHelper UrlHelper
 
 <script type="text/javascript">
              function deleteRelationship() {
@@ -16,7 +19,7 @@
     <div class="col-sm-8">
         @{
             var newRelationLabel = @StringLocalizer["New Relation"];
-            var url = @Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName });
+            string url = @UrlHelper.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName });
         }
         <link-button icon="PlusCircle"
                         text="@StringLocalizer["New"]"
