@@ -95,6 +95,15 @@ For example, two fields with class `col-sm-6` in the form will be on the same li
 #### Line Group
 It's the field line within the grid system. Represents the bootstrap row class.
 
+#### Alignment at Grid
+When you want to have control of the alignment of a field at the Grid, you can use this option to override it.
+
+Without Alignment At Grid:
+![WithoutGridAlignment.png](../../media/WithoutGridAlignment.png)
+
+With Alignment At Grid at Right:
+![WithGridAlignment.png](../../media/WitgGridAlignment.png)
+
 #### Export
 You can define whether or not the field will be exported.
 
