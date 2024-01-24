@@ -210,7 +210,7 @@ public static class Validate
     public static bool ValidCpfCnpj(string value)
     {
         bool bRet = false;
-        if (!String.IsNullOrEmpty(value))
+        if (!string.IsNullOrEmpty(value))
         {
             value = value.Replace(".", "");
             value = value.Replace("-", "");

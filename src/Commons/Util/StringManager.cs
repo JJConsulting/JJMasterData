@@ -489,7 +489,7 @@ public static class StringManager
 
     public static string Soma1(string baseVal)
     {
-        if (String.IsNullOrEmpty(baseVal))
+        if (string.IsNullOrEmpty(baseVal))
         {
             return "0";
         }

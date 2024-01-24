@@ -621,7 +621,7 @@ internal static class ValidateBrazil
                     intValor = (intValor * intNumero);
                     if ((intValor > 9))
                     {
-                        strDigito1 = String.Format("{0:00}", intValor);
+                        strDigito1 = $"{intValor:00}";
                         intValor = (int.Parse(strDigito1.Substring(0, 1)) + int.Parse(strDigito1.Substring((strDigito1.Length - 1))));
 
                     }
@@ -629,12 +629,12 @@ internal static class ValidateBrazil
                 }
 
                 intValor = intSoma;
-                while ((String.Format("{0:000}", intValor).Substring((String.Format("{0:000}", intValor).Length - 1)) != "0"))
+                while (($"{intValor:000}".Substring(($"{intValor:000}".Length - 1)) != "0"))
                 {
                     intValor = (intValor + 1);
                 }
-                strDigito1 = String.Format("{0:00}", (intValor - intSoma)).
-                    Substring((String.Format("{0:00}", (intValor - intSoma)).Length - 1));
+                strDigito1 = $"{intValor - intSoma:00}".
+                    Substring(($"{intValor - intSoma:00}".Length - 1));
 
                 strBase2 = (strBase.Substring(0, 11) + strDigito1);
                 intSoma = 0;

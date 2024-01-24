@@ -102,10 +102,10 @@ public static class Format
     /// </remarks>
     public static string FormatFileSize(long value)
     {
-        const Decimal oneKiloByte = 1024M;
-        const Decimal oneMegaByte = oneKiloByte * 1024M;
-        const Decimal oneGigaByte = oneMegaByte * 1024M;
-        Decimal size = Convert.ToDecimal(value);
+        const decimal oneKiloByte = 1024M;
+        const decimal oneMegaByte = oneKiloByte * 1024M;
+        const decimal oneGigaByte = oneMegaByte * 1024M;
+        decimal size = Convert.ToDecimal(value);
         string suffix = "";
         if (size > oneGigaByte)
         {
@@ -138,7 +138,7 @@ public static class Format
     {
         string sRet = "";
         double nCnpj;
-        if (Double.TryParse(cnpj, out nCnpj))
+        if (double.TryParse(cnpj, out nCnpj))
         {
             sRet = nCnpj.ToString(@"#00\.000\.000\/0000\-00");
         }
@@ -153,7 +153,7 @@ public static class Format
     {
         string sRet = "";
         double nCpf;
-        if (Double.TryParse(cpf, out nCpf))
+        if (double.TryParse(cpf, out nCpf))
         {
             sRet = nCpf.ToString(@"#000\.000\.000\-00");
         }
@@ -239,7 +239,7 @@ public static class Format
 
     public static string FormatDecBr2Usa(string text)
     {
-        String result = text.Replace(".", "");
+        string result = text.Replace(".", "");
         result = result.Replace(",", ".");
         return result;
     }
