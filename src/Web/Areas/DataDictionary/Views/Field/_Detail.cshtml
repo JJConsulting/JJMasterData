@@ -168,6 +168,12 @@
 
                     @Html.TextBoxFor(model => model.LineGroup, new { type = "number", @class = "form-control" })
                 </div>
+                
+                <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+                    <label class="@BootstrapHelper.Label " asp-for="GridAlignment"></label>
+                    <select asp-for="GridAlignment"  class="form-control form-select" asp-items="Html.GetEnumSelectList<GridAlignment>()"></select>
+                </div>
+                
                 <div class="@BootstrapHelper.FormGroup col-sm-3 required">
                     <label class="@BootstrapHelper.Label " asp-for="Export"></label>
                     <checkbox for="Export" switch="true"/>

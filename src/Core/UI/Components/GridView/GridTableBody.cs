@@ -303,6 +303,15 @@ internal class GridTableBody(JJGridView gridView)
 
     private static string GetTdStyle(FormElementField field)
     {
+        switch (field.GridAlignment)
+        {
+            case GridAlignment.Left:
+                return "text-align:left";
+            case GridAlignment.Center:
+                return "text-align:center";
+            case GridAlignment.Right:
+                return "text-align:right";
+        }
         switch (field.Component)
         {
             case FormComponent.ComboBox or FormComponent.RadioButtonGroup:
