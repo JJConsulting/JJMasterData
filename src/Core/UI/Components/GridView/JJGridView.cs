@@ -716,10 +716,8 @@ public class JJGridView : AsyncComponent
         html.WithAttribute("id", $"grid-view-table-{Name}");
 
         if (SortAction.IsVisible)
-            html.Append(await GetSortingConfigAsync());
+            await html.AppendAsync(GetSortingConfigAsync);
         
-        await html.AppendIfAsync(SortAction.IsVisible, GetSortingConfigAsync);
-
         html.AppendText(GetScriptHtml());
         html.AppendRange(GetHiddenInputs(currentAction));
 

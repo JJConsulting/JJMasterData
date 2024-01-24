@@ -103,10 +103,17 @@ public partial class HtmlBuilder
         return this;
     }
     
-    public async Task<HtmlBuilder> AppendAsync(HtmlTag tag, Func<HtmlBuilder,Task> builderAction)
+    public async Task<HtmlBuilder> AppendAsync(Func<Task<HtmlBuilder>> builderFunc)
+    {
+        var html = await builderFunc(); 
+        Append(html);
+        return this;
+    }
+    
+    public async Task<HtmlBuilder> AppendAsync(HtmlTag tag, Func<HtmlBuilder,Task> builderFunc)
     {
         var child = new HtmlBuilder(tag);
-        await builderAction.Invoke(child);
+        await builderFunc.Invoke(child);
         Append(child);
         return this;
     }
