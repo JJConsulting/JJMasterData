@@ -79,7 +79,7 @@ public class SqlServerWriteProcedureScripts(
         return sql.ToString();
     }
 
-    internal string GetWriteScript(Element element, IReadOnlyCollection<ElementField> fields)
+    internal static string GetWriteScript(Element element, IReadOnlyCollection<ElementField> fields)
     {
         var sql = new StringBuilder();
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);
@@ -157,7 +157,7 @@ public class SqlServerWriteProcedureScripts(
 
         isFirst = true;
 
-        foreach (var f in fields.Where(f => !f.AutoNum))
+        foreach (var field in fields.Where(f => !f.AutoNum))
         {
             if (isFirst)
                 isFirst = false;
@@ -165,7 +165,7 @@ public class SqlServerWriteProcedureScripts(
                 sql.AppendLine(",");
 
             sql.Append("			");
-            sql.Append(f.Name);
+            sql.Append($"[{field.Name}]");
         }
 
         sql.AppendLine(")");
@@ -228,7 +228,7 @@ public class SqlServerWriteProcedureScripts(
             sql.AppendLine("] SET ");
 
             isFirst = true;
-            foreach (var f in fields.Where(f => !f.IsPk))
+            foreach (var field in fields.Where(f => !f.IsPk))
             {
                 if (isFirst)
                     isFirst = false;
@@ -236,9 +236,9 @@ public class SqlServerWriteProcedureScripts(
                     sql.AppendLine(", ");
 
                 sql.Append(Tab).Append(Tab).Append(Tab);
-                sql.Append(f.Name);
+                sql.Append($"[{field.Name}]");
                 sql.Append(" = @");
-                sql.Append(f.Name);
+                sql.Append(field.Name);
             }
 
             sql.AppendLine("");
@@ -293,7 +293,7 @@ public class SqlServerWriteProcedureScripts(
         sql.AppendLine("] ");
 
         isFirst = true;
-        foreach (var f in fields.Where(f => f.IsPk && f.EnableOnDelete))
+        foreach (var field in fields.Where(f => f.IsPk && f.EnableOnDelete))
         {
             if (isFirst)
             {
@@ -307,9 +307,9 @@ public class SqlServerWriteProcedureScripts(
                 sql.Append("AND ");
             }
 
-            sql.Append(f.Name);
+            sql.Append($"[{field.Name}]");
             sql.Append(" = @");
-            sql.AppendLine(f.Name);
+            sql.AppendLine(field.Name);
         }
 
         sql.Append(Tab).Append(Tab);

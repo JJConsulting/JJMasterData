@@ -27,7 +27,7 @@ public class SqlServerScripts(
         var fields = element.Fields
             .ToList()
             .FindAll(x => x.DataBehavior is FieldBehavior.Real);
-        return WriteProcedureScripts.GetWriteScript(element, fields);
+        return SqlServerWriteProcedureScripts.GetWriteScript(element, fields);
     }
 
     public string GetReadScript(Element element)

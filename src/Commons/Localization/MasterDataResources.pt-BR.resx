@@ -3816,4 +3816,10 @@
   <data name="Right" xml:space="preserve">
     <value>Direita</value>
   </data>
+  <data name="This field uses a reserved keyword of the database in its name." xml:space="preserve">
+    <value>Este campo usa uma palavra reservada do banco de dados no seu nome.</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Aviso</value>
+  </data>
 </root>

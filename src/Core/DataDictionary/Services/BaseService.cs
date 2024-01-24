@@ -68,11 +68,7 @@ public abstract class BaseService(IValidationDictionary validationDictionary,
         string nameNoAccents = StringManager.GetStringWithoutAccents(name);
         if (!nameNoAccents.Equals(name))
             AddError(nameof(name), StringLocalizer["The [Name] field cannot contain accents."]);
-
-        if (Validate.IsDatabaseKeyword(name))
-            AddError(nameof(name), StringLocalizer["The [Name] field contains a reserved word used in the database."]);
-
-
+        
         return validationDictionary.IsValid;
     }
 

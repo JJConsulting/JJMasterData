@@ -92,7 +92,7 @@ public class SqlServerReadProcedureScripts(
             if (field.DataBehavior == FieldBehavior.ViewOnly)
             {
                 sql.Append("NULL AS ");
-                sql.Append(field.Name);
+                sql.Append($"[{field.Name}]");
                 if (index != fields.Count)
                     sql.Append(", ");
 
@@ -100,7 +100,7 @@ public class SqlServerReadProcedureScripts(
             }
             else
             {
-                sql.Append(field.Name);
+                sql.Append($"[{field.Name}]");
 
                 sql.AppendLine(index != fields.Count ? ", " : "");
             }
@@ -134,7 +134,7 @@ public class SqlServerReadProcedureScripts(
                     sql.Append(Tab);
                     sql.AppendLine("/*");
                     sql.Append("TODO: FILTER ");
-                    sql.AppendLine(field.Name);
+                    sql.AppendLine($"[{field.Name}]");
                 }
             }
 
@@ -152,7 +152,7 @@ public class SqlServerReadProcedureScripts(
                         sql.AppendLine("_from IS NOT NULL");
                         sql.Append(Tab, 2);
                         sql.Append("SET @sqlWhere = @sqlWhere + ' AND CONVERT(DATE, ");
-                        sql.Append(field.Name);
+                        sql.Append($"[{field.Name}]");
                         sql.Append(") BETWEEN CONVERT(VARCHAR(10), @");
                         sql.Append(field.Name);
                         sql.Append("_from, 112) AND CONVERT(VARCHAR(10), @");
@@ -167,7 +167,7 @@ public class SqlServerReadProcedureScripts(
                         sql.AppendLine("_from IS NOT NULL");
                         sql.Append(Tab, 2);
                         sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
-                        sql.Append(field.Name);
+                        sql.Append($"[{field.Name}]");
                         sql.Append(" BETWEEN @");
                         sql.Append(field.Name);
                         sql.Append("_from AND  @");
@@ -186,7 +186,7 @@ public class SqlServerReadProcedureScripts(
                     sql.AppendLine(" IS NOT NULL");
                     sql.Append(Tab, 2);
                     sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
-                    sql.Append(field.Name);
+                    sql.Append($"[{field.Name}]");
                     sql.Append($" LIKE  ''%'' + @{field.Name} + ''%'' '");
                     break;
                 case FilterMode.MultValuesContain:
@@ -200,7 +200,7 @@ public class SqlServerReadProcedureScripts(
                     sql.AppendLine(" IS NOT NULL");
                     sql.Append(Tab,2);
                     sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
-                    sql.Append($"CHARINDEX({field.Name}, @{field.Name}) > 0'");
+                    sql.Append($"CHARINDEX([{field.Name}], @{field.Name}) > 0'");
                     break;
                 default:
                 {
@@ -213,7 +213,7 @@ public class SqlServerReadProcedureScripts(
                         sql.AppendLine(" IS NOT NULL");
                         sql.Append(Tab,2);
                         sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
-                        sql.Append($"{field.Name} = @{field.Name}'");
+                        sql.Append($"[{field.Name}] = @{field.Name}'");
                     }
 
                     break;
@@ -237,13 +237,13 @@ public class SqlServerReadProcedureScripts(
         if (listPk.Count == 0)
         {
             sql.Append("SET @sqlOrderBy  = ' ORDER BY ");
-            sql.Append(fields[0].Name);
+            sql.Append($"[{fields[0].Name}]");
             sql.AppendLine("'");
         }
         else
         {
             sql.Append("SET @sqlOrderBy  = ' ORDER BY ");
-            sql.Append(listPk[0].Name);
+            sql.Append($"[{listPk[0].Name}]");
             sql.AppendLine("'");
         }
 
@@ -469,7 +469,7 @@ public class SqlServerReadProcedureScripts(
                                        EXISTS (
                                            SELECT 1
                                            FROM STRING_SPLIT(@{fieldName}, '','') AS s
-                                           WHERE {fieldName} LIKE ''%'' + s.value + ''%''
+                                           WHERE [{fieldName}] LIKE ''%'' + s.value + ''%''
                                         )'
                                """);
         }

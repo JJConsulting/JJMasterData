@@ -1,4 +1,5 @@
 ﻿@using JJMasterData.Commons.Data.Entity.Models
+@using JJMasterData.Commons.Validations
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Core.Events.Abstractions
@@ -82,6 +83,13 @@
         <div id="div-general" class="tab-pane fade @Active("#div-general")">
             <div class="row">
 
+                @if (Validate.IsDatabaseKeyword(Model.Name))
+                {
+                    <alert title="@StringLocalizer["Warning"]" 
+                           color="Warning" 
+                           icon="IconType.Warning"
+                           message="@StringLocalizer["This field uses a reserved keyword of the database in its name."]"/>
+                }
                 <div class="@BootstrapHelper.FormGroup col-sm-5 required">
                     <label class="@BootstrapHelper.Label " asp-for="Name"></label>
                     <tooltip title="@StringLocalizer["Name of the field at the database."]"/>
