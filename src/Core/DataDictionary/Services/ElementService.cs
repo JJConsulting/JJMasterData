@@ -149,7 +149,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
 
         if (!formView.GridView.CurrentOrder.Any())
         {
-            formView.GridView.CurrentOrder.AddOrReplace(DataDictionaryStructure.LastModified, OrderByDirection.Desc);
+            formView.GridView.CurrentOrder.AddOrReplace(DataDictionaryStructure.Name, OrderByDirection.Asc);
         }
         
         formView.GridView.EnableMultiSelect = true;
