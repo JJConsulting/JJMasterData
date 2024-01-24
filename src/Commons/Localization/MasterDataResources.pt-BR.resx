@@ -3822,4 +3822,10 @@
   <data name="Warning" xml:space="preserve">
     <value>Aviso</value>
   </data>
+  <data name="Show Icon At Collapse" xml:space="preserve">
+    <value>Mostrar Ícone no Collapse</value>
+  </data>
+  <data name="Show as Switch" xml:space="preserve">
+    <value>Mostrar como Switch</value>
+  </data>
 </root>
