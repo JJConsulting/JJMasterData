@@ -587,7 +587,7 @@ public class JJFormView : AsyncComponent
     {
         html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
         
-        if(PageState is not PageState.List && PanelState is not PageState.List && IsChildFormView)
+        if(PageState is not PageState.List && PanelState is not PageState.List)
             html.AppendHiddenInput($"form-view-panel-state-{Name}", ((int)PanelState).ToString());
 
         html.AppendHiddenInput($"current-action-map-{Name}",
@@ -1147,7 +1147,8 @@ public class JJFormView : AsyncComponent
                 break;
             case PageState.Update when PanelState is PageState.View:
                 formToolbarActions.FormEditAction.SetVisible(true);
-                formToolbarActions.RemoveAll(a => a is SaveAction or CancelAction);
+                formToolbarActions.SaveAction.SetVisible(false);
+                formToolbarActions.CancelAction.SetVisible(false);
                 break;
             case PageState.Update:
                 formToolbarActions.FormEditAction.SetVisible(false);
@@ -1221,15 +1222,19 @@ public class JJFormView : AsyncComponent
         return formHtml;
     }
 
-    internal async Task<HtmlBuilder> GetParentPanelHtmlAtRelationship(JJDataPanel panel)
+    internal async Task<HtmlBuilder> GetParentPanelHtmlAtRelationship()
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
+        
+        PanelState = ContainsPanelState() ? PanelState : PageState.View;
 
-        panel.PageState = PanelState;
+        DataPanel.PageState = PanelState;
+        
+        var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
 
-        var parentPanelHtml = await panel.GetPanelHtmlBuilderAsync();
-
-        var panelToolbarActions = GetPanelToolbarActions(panel.FormElement).ToList();
+        await ConfigureFormToolbar();
+        
+        var panelToolbarActions = GetPanelToolbarActions(FormElement).ToList();
 
         var toolbar = await GetFormToolbarAsync(panelToolbarActions);
 
@@ -1237,8 +1242,8 @@ public class JJFormView : AsyncComponent
 
         formHtml.AppendComponent(toolbar);
 
-        if (panel.Errors.Any())
-            formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(panel.Errors));
+        if (DataPanel.Errors.Any())
+            formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(DataPanel.Errors));
         
         return formHtml;
     }
