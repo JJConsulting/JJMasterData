@@ -60,22 +60,23 @@
 
 .table .table-action {
     text-align: center;
-    width: 45px;
+    vertical-align: middle;
+    width: 3.575rem;
 }
 
 .table .jj-checkbox {
     vertical-align: middle;
     text-align: center;
-    width: 5%;
+    width: 3.575rem;
 }
 
     .table .jj-checkbox i {
-        padding-top: 3px;
+        padding-top: 0.1875rem;
         float: right;
     }
 
     .table .jj-checkbox .dropdown-toggle {
-        margin-left: 3px;
+        margin-left: 0.1875rem;
     }
 
 .table .tr-hover-action {
@@ -270,7 +271,7 @@ a.disabled {
         font-family: "FontAwesome";
         content: "\f0da";
         display: inline-block;
-        padding-right: 0px;
+        padding-right: 0;
         vertical-align: middle;
     }
 
@@ -278,7 +279,7 @@ a.disabled {
         font-family: "FontAwesome";
         content: "\f07d";
         display: inline-block;
-        padding-right: 0px;
+        padding-right: 0;
         vertical-align: middle;
     }
 
@@ -293,7 +294,7 @@ a.disabled {
 
 .help-description {
     cursor: pointer;
-    padding-left: 4px;
+    padding-left: 0.25rem;
     color: #005a86;
 }
 
