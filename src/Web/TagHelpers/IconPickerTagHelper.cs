@@ -11,7 +11,7 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class IconPickerTagHelper(IControlFactory<JJComboBox> comboBoxFactory, IMasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer) : TagHelper
+public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory, IMasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer) : TagHelper
 {
     
     [HtmlAttributeName("for")] 
@@ -24,64 +24,29 @@ public class IconPickerTagHelper(IControlFactory<JJComboBox> comboBoxFactory, IM
     public IconType? Value { get; set; }
 
     private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
-    private IControlFactory<JJComboBox> ComboBoxFactory { get; } = comboBoxFactory;
+    private IControlFactory<JJIconPicker> IconPickerFactory { get; } = iconPickerFactory;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var name = For?.Name ?? Name ?? throw new ArgumentException("For or Name properties are required.");
 
-        int? modelValue = null;
+        IconType? modelValue = null;
 
         if (For is { Model: not null })
         {
-            modelValue = (int)For.Model;
+            modelValue = (IconType)For.Model;
         }
         else if (Value is not null)
         {
-            modelValue = (int)Value;
+            modelValue = Value;
         }
-        var comboBox = ComboBoxFactory.Create();
-        comboBox.Name = name;
-        comboBox.SelectedValue = modelValue.ToString();
-        comboBox.DataItem = new FormElementDataItem
-        {
-            DataItemType = DataItemType.Manual,
-            Items = new List<DataItemValue>(),
-            FirstOption = FirstOptionMode.Choose,
-            ShowIcon = true
-        };
-
-        foreach (var icon in Enum.GetValues<IconType>())
-        {
-            comboBox.DataItem.Items.Add(new DataItemValue
-            {
-                Id = ((int)icon).ToString(),
-                Description = icon.ToString(),
-                Icon = icon
-            });
-        }
-
-        comboBox.Attributes["data-live-search"] = "true";
-        comboBox.Attributes["data-virtual-scroll"] = "true";
-        comboBox.Attributes["data-size"] = "false";
-        comboBox.Attributes["data-sanitize"] = "false";
-
-        var div = new HtmlBuilder(HtmlTag.Div);
-        div.WithCssClass("input-group");
-        await div.AppendControlAsync(comboBox);
-        div.AppendDiv(div =>
-        {
-            var tooltip = StringLocalizer["Search Icon"];
-            div.WithCssClass("btn btn-default");
-            div.WithToolTip(tooltip);
-            div.AppendComponent(new JJIcon(IconType.Search));
-            var url = UrlHelper.Action("Index", "Icons", new { inputId = name });
-            div.WithAttribute("onclick", $"iconsModal.showUrl('{url}', '{tooltip}', '{(int)ModalSize.ExtraLarge}')");
-        });
+        var iconPicker = IconPickerFactory.Create();
+        iconPicker.Name = name;
+        iconPicker.SelectedIcon = modelValue!.Value;
         
         output.TagMode = TagMode.StartTagAndEndTag;
         
-        output.Content.SetHtmlContent(div.ToString());
+        output.Content.SetHtmlContent((await iconPicker.GetHtmlBuilderAsync()).ToString());
     }
 }

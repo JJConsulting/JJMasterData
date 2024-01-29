@@ -43,17 +43,15 @@ public enum FormComponent
     Tel = 17,
     [Display(Name = "CEP", GroupName = "6. Mask")]
     Cep = 18,
-    [Display(Name = "QRCode",GroupName = "8. Especial")]
-    QrCode = 19,
-    [Display(GroupName = "8. Especial")]
-    Location = 20,
     [Display(GroupName = "5. Data Item")]
     Lookup = 21,
     [Display(GroupName = "7. File")]
     File = 22,
     [Display(GroupName = "2. Numeric")]
     Slider = 23,
-    [Display(Name = "ColorPicker",GroupName = "8. Especial")]
-    ColorPicker = 24
+    [Display(Name = "Color",GroupName = "8. Especial")]
+    ColorPicker = 24,
+    [Display(Name = "Icon",GroupName = "8. Especial")]
+    IconPicker = 25
 }
 

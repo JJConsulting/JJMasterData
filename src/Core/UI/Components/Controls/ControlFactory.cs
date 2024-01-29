@@ -115,6 +115,9 @@ public class ControlFactory(IServiceProvider serviceProvider,
             case FormComponent.ColorPicker:
                 control = Create<JJColorPicker>(formElement, field, context);
                 break;
+            case FormComponent.IconPicker:
+                control = Create<JJIconPicker>(formElement,field,context);
+                break;
             case FormComponent.File:
                 if (formStateData.PageState == PageState.Filter)
                 {

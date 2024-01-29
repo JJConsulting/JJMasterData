@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Web;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
-using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http.Abstractions;
@@ -20,8 +19,7 @@ namespace JJMasterData.Core.UI.Components;
 public class JJComboBox : ControlBase
 {
     private string? _selectedValue;
-
-    private ExpressionsService ExpressionsService { get; }
+    
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private DataItemService DataItemService { get; }
     internal ILogger<JJComboBox> Logger { get; }
@@ -51,13 +49,11 @@ public class JJComboBox : ControlBase
     public JJComboBox(
         IFormValues formValues,
         DataItemService dataItemService,
-        ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<JJComboBox> logger) : base(formValues)
     {
         DataItemService = dataItemService;
         Logger = logger;
-        ExpressionsService = expressionsService;
         StringLocalizer = stringLocalizer;
         Enabled = true;
         MultiSelect = false;

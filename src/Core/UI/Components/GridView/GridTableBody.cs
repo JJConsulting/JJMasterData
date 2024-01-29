@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -129,17 +130,11 @@ internal class GridTableBody(JJGridView gridView)
                         null,
                         value.ToString());
                     var dataItemValue = dataItemValues.FirstOrDefault(d => d.Id == value.ToString());
-                    cell = new HtmlBuilder(HtmlTag.Div);
-                    var icon = new JJIcon(dataItemValue!.Icon, dataItemValue.IconColor ?? string.Empty);
 
-                    if (field.DataItem.GridBehavior is DataItemGridBehavior.Icon &&
-                        dataItemValue.Description is not null)
-                    {
-                        icon.Tooltip = dataItemValue.Description;
-                        icon.CssClass += "fa-lg";
-                    }
 
-                    cell.AppendComponent(icon);
+                    var tooltip = field.DataItem.GridBehavior is DataItemGridBehavior.Icon ? dataItemValue?.Description : null;
+                        
+                    cell = GetIconCell(dataItemValue!.Icon, dataItemValue.IconColor ?? string.Empty, tooltip);
 
                     cell.AppendIf(field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription, HtmlTag.Span,
                         span =>
@@ -156,13 +151,14 @@ internal class GridTableBody(JJGridView gridView)
                 }
                 else if (field.Component is FormComponent.ColorPicker && !string.IsNullOrEmpty(value.ToString()))
                 {
-                    cell = new HtmlBuilder(HtmlTag.Div);
-                    var icon = new JJIcon(IconType.Circle, value.ToString())
-                    {
-                        Tooltip = value.ToString()
-                    };
-                    icon.CssClass += "fa-lg";
-                    cell.AppendComponent(icon);
+                    var stringValue = value.ToString()!;
+                    cell = GetIconCell(IconType.Circle, stringValue, stringValue);
+                }
+                else if (field.Component is FormComponent.IconPicker && !string.IsNullOrEmpty(value.ToString()))
+                {
+                    var iconType = IconHelper.GetIconTypeFromField(field,value);
+
+                    cell = GetIconCell(iconType, iconType.ToString());
                 }
                 else
                 {
@@ -192,6 +188,19 @@ internal class GridTableBody(JJGridView gridView)
 
             yield return td;
         }
+    }
+
+    private static HtmlBuilder GetIconCell(IconType iconType, string? color = null, string? tooltip = null)
+    {
+        var cell = new HtmlBuilder(HtmlTag.Div);
+        var icon = new JJIcon(iconType, color);
+        if (tooltip is not null)
+        {
+            icon.Tooltip = tooltip;
+        }
+        icon.CssClass += "fa-lg";
+        cell.AppendComponent(icon);
+        return cell;
     }
 
     private async Task<HtmlBuilder> GetEditModeFieldHtml(FormElementField field, IDictionary<string, object?> row,

@@ -1,7 +1,8 @@
+using JJMasterData.Web.Areas.DataDictionary.Controllers;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
+namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class IconsController : DataDictionaryController
 {
