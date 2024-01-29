@@ -1216,13 +1216,12 @@ public class JJGridView : AsyncComponent
 
     private async Task<DictionaryListResult> GetDataSourceAsync(EntityParameters parameters)
     {
-        DataTable dataTable;
         if (IsUserSetDataSource && DataSource != null)
         {
 
             using var dataView = new DataView(EnumerableHelper.ConvertToDataTable( ObjectCloner.DeepCopy(DataSource)));
             dataView.Sort = parameters.OrderBy.ToQueryParameter();
-            dataTable = dataView.ToTable();
+            var dataTable = dataView.ToTable();
             
             return DictionaryListResult.FromDataTable(dataTable);
         }

@@ -21,9 +21,7 @@ public static class DataHelper
             return value.ToString();
         }
 
-        var userId = context.Session["USERID"];
-
-        return userId ?? context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+        return context.User.Identity?.Name;
     }
 
     public static IDictionary<string, object?> GetElementValues(Element element, IDictionary<string, object?> values)

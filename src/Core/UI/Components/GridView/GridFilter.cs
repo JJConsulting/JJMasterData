@@ -94,12 +94,6 @@ internal class GridFilter(JJGridView gridView)
             return _currentFilter;
         }
         
-        if (sessionFilter != null && (CurrentContext.Request.Form.ContainsFormValues() || IsDynamicPost()))
-        {
-            DataHelper.CopyIntoDictionary(_currentFilter, sessionFilter);
-            return _currentFilter;
-        }
-
         await ApplyCurrentFilter(null);
         
         return _currentFilter ?? new Dictionary<string, object>();
@@ -152,7 +146,8 @@ internal class GridFilter(JJGridView gridView)
         DataHelper.CopyIntoDictionary(values, defaultValues);
         DataHelper.CopyIntoDictionary(_currentFilter, values);
 
-        CurrentContext.Session.SetSessionValue($"jjcurrentfilter_{GridView.Name}", _currentFilter);
+        if(GridView.MaintainValuesOnLoad)
+            CurrentContext.Session.SetSessionValue($"jjcurrentfilter_{GridView.Name}", _currentFilter);
     }
 
     private async Task<HtmlBuilder> GetDefaultFilter()
