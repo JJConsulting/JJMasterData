@@ -44,7 +44,7 @@ public class EntityController(EntityService entityService, IFormEventHandlerReso
         {
             FormElement = await entityService.GetFormElementAsync(elementName),
             FormEvent = formEventHandlerFactory?.GetFormEventHandler(elementName) as IEventHandler ?? gridEventHandlerResolver?.GetGridEventHandler(elementName),
-            ReadOnly = readOnly
+            Disabled = readOnly
         };
 
         return viewModel;

@@ -463,7 +463,7 @@ public class JJGridView : AsyncComponent
     /// </remarks>
     public IDictionary<string, object> RelationValues { get; set; }
 
-    public HeadingSize TitleSize { get; set; }
+    public HeadingSize TitleSize { get; set; } 
 
     public int TotalOfRecords { get; set; }
 
@@ -583,7 +583,7 @@ public class JJGridView : AsyncComponent
         EmptyDataText = formElement.Options.Grid.EmptyDataText;
         AutoReloadFormFields = true;
         RelationValues = new Dictionary<string, object>();
-        TitleSize = HeadingSize.H1;
+        TitleSize = formElement.TitleSize;
 
         FieldsService = fieldsService;
         ExpressionsService = expressionsService;
