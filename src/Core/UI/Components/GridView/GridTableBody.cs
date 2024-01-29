@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Tasks;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
@@ -152,6 +153,16 @@ internal class GridTableBody(JJGridView gridView)
                     var textFile = GridView.ComponentFactory.Controls.Create<JJTextFile>(GridView.FormElement, field,
                         new(formStateData, Name, value));
                     cell = textFile.GetButtonGroupHtml();
+                }
+                else if (field.Component is FormComponent.ColorPicker && !string.IsNullOrEmpty(value.ToString()))
+                {
+                    cell = new HtmlBuilder(HtmlTag.Div);
+                    var icon = new JJIcon(IconType.Circle, value.ToString())
+                    {
+                        Tooltip = value.ToString()
+                    };
+                    icon.CssClass += "fa-lg";
+                    cell.AppendComponent(icon);
                 }
                 else
                 {
