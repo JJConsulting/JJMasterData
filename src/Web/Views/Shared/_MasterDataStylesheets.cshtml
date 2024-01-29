@@ -1,5 +1,6 @@
 ﻿@using JJMasterData.Core.UI
 @inject IOptions<MasterDataWebOptions> Options
+@addTagHelper *, WebOptimizer.Core
 
 @{
     var areaName = ViewContext.RouteData.Values["area"] as string;
@@ -52,11 +53,11 @@ else
     }
     @if (Options.Value is { UseCustomBootstrap: true, CustomBootstrapPath: not null })
     {
-        <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath" asp-append-version="true"/>
-        <link rel="stylesheet" href="~/css/jjmasterdata-bundle.min.css" asp-append-version="true"/>
+        <link rel="stylesheet" href="@Options.Value.CustomBootstrapPath"/>
+        <link rel="stylesheet" href="~/css/jjmasterdata-bundle.min.css"/>
     }
     else
     {
-        <link rel="stylesheet" href="~/css/jjmasterdata-bundle-with-bootstrap.min.css" asp-append-version="true"/>
+        <link rel="stylesheet" href="~/css/jjmasterdata-bundle-with-bootstrap.min.css"/>
     }
 }

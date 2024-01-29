@@ -1,5 +1,7 @@
 ﻿@using JJMasterData.Core.UI
 @inject IOptions<MasterDataWebOptions> Options
+@addTagHelper *, WebOptimizer.Core
+
 @{
     var areaName = ViewContext.RouteData.Values["area"] as string;
     var pathBase = Context.Request.PathBase;
@@ -57,26 +59,26 @@
         <script type="text/javascript" src="~/_content/JJMasterData.Web/js/codemirror/addon/hint/sql-hint.js"></script>
     }
 
-    <script asp-append-version="true" type="text/javascript" src="~/_content/JJMasterData.Web/js/jjmasterdata/jjmasterdata.js"></script>
+    <script  type="text/javascript" src="~/_content/JJMasterData.Web/js/jjmasterdata/jjmasterdata.js"></script>
 }
 else
 {
     @switch (BootstrapHelper.Version)
     {
         case 3:
-            <script type="text/javascript" src="~/js/jjmasterdata-bundle-bootstrap-3.min.js" asp-append-version="true"></script>
+            <script type="text/javascript" src="~/js/jjmasterdata-bundle-bootstrap-3.min.js"></script>
             break;
         case 5:
             @if (areaName is "DataDictionary")
             {
-                <script type="text/javascript" src="~/js/code-mirror-bundle-min.js" asp-append-version="true"></script>
+                <script type="text/javascript" src="~/js/code-mirror-bundle-min.js"></script>
             }
-            <script type="text/javascript" src="~/js/jjmasterdata-bundle-bootstrap-5.min.js" asp-append-version="true"></script>
+            <script type="text/javascript" src="~/js/jjmasterdata-bundle-bootstrap-5.min.js"></script>
             break;
     }
 }
 
 @foreach (var customScriptPath in Options.Value.CustomScriptsPaths)
 {
-    <script type="text/javascript" src="@(pathBase + customScriptPath)" asp-append-version="true"></script>
+    <script type="text/javascript" src="@(pathBase + customScriptPath)"></script>
 }
