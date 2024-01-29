@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Core.UI.Components;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models;
@@ -20,6 +21,10 @@ public class FormElement : Element
     [Display(Name = "Title")]
     public string? Title { get; set; }
 
+    [JsonProperty]
+    [Display(Name = "Title Size")]
+    public HeadingSize TitleSize { get; set; } = HeadingSize.H3;
+    
     [JsonProperty]
     [Display(Name = "SubTitle")]
     public string? SubTitle { get; set; }

@@ -9,9 +9,7 @@ public class EntityViewModel : DataDictionaryViewModel
     public IEventHandler? FormEvent { get; set; }
     public string FormEventType => IsPythonFormEvent ? "Python" : ".NET";
     public bool IsPythonFormEvent => FormEvent != null && FormEvent.GetType().ToString().Contains('$');
-    public bool ReadOnly { get; set; }
-    public object HtmlAttributes =>
-        ReadOnly ? new { @class = "form-control", disabled="disabled"} : new { @class = "form-control" };
+    public bool Disabled { get; init; }
 
     // ReSharper disable once UnusedMember.Global
     // Reason: Used for model binding.

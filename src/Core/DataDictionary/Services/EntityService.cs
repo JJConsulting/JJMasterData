@@ -55,6 +55,7 @@ public class EntityService(IValidationDictionary validationDictionary,
             formElement.WriteProcedureName = entity.WriteProcedureName;
             formElement.Info = entity.Info;
             formElement.Title = entity.Title;
+            formElement.TitleSize = entity.TitleSize;
             formElement.SubTitle = entity.SubTitle;
             formElement.UseReadProcedure = entity.UseReadProcedure;
             formElement.UseWriteProcedure = entity.UseWriteProcedure;

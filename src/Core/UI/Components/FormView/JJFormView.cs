@@ -1080,8 +1080,6 @@ public class JJFormView : AsyncComponent
         
         if (!visibleRelationships.Any() || visibleRelationships.All(r=>r.IsParent))
         {
-            if (!IsChildFormView)
-                PanelState = PageState;
             return GetDataPanelResult(values);
         }
 

@@ -3837,4 +3837,7 @@
   <data name="When opening the picker, fill the input with today's date." xml:space="preserve">
     <value>Quando abrir o calendário, o input é preenchido com a data de hoje.</value>
   </data>
+  <data name="Title Size" xml:space="preserve">
+    <value>Tamanho do Título</value>
+  </data>
 </root>

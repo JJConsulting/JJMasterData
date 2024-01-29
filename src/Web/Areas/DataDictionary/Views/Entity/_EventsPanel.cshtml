@@ -7,7 +7,7 @@
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         @Html.LabelFor(model => model.FormEventType, StringLocalizer["Type"],
             new {@class="form-label"})
-        @Html.TextBoxFor(model => model.FormEventType,Model.HtmlAttributes)
+        <input asp-for="FormEventType" class="form-control" disabled="disabled"/>
     </div>
     <div class="@BootstrapHelper.FormGroup col-sm-6">
         <label class="form-label" for="formEventFields">@StringLocalizer["Customized Fields"]</label>
