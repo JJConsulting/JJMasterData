@@ -3848,7 +3848,7 @@
   <data name="Show Header When Empty" xml:space="preserve">
     <value>Mostrar Cabeçalho Sem Dados</value>
   </data>
-  <data name="Filters, sorting, and grid settings are saved." xml:space="preserve">
+  <data name="Filters, sorting and grid settings are saved." xml:space="preserve">
     <value>Filtros, ordenação e configurações da grid são salvos.</value>
   </data>
 </root>
