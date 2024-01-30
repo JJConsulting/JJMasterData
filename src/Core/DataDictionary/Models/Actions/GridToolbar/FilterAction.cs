@@ -49,6 +49,7 @@ public class FilterAction : GridToolbarAction
     /// na Toolbar junto com os botões de acão respeitando a ordem configurada.
     /// </remarks>
     [JsonProperty("enableScreenSearch")]
+    [Display(Name = "Enable Client-Side Search")]
     public bool EnableScreenSearch { get; set; }
 
     public FilterAction()

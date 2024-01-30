@@ -293,10 +293,6 @@
     <value>Permite upload de multiplos arquivos</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="and a panel with filters will be displayed above the grid." xml:space="preserve">
-    <value>e um painel com os filtros será exibido acima da grid.</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="and all users will be able to view the latest log and execution of an ongoing process." xml:space="preserve">
     <value>e todos os usuários poderão visualizar o registro e a execução mais recentes de um processo em andamento. </value>
     <comment>JJMasterDataWeb</comment>
@@ -841,10 +837,6 @@
     <value>Ativar ou desativar operações Http</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Enable quick on-screen search." xml:space="preserve">
-    <value>Habilitar pesquisa rápida na tela.</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Enable quick screen search" xml:space="preserve">
     <value>Habilitar pesquisa rápida na tela</value>
     <comment>JJMasterDataWeb</comment>
@@ -1183,10 +1175,6 @@
   </data>
   <data name="Filter Action" xml:space="preserve">
     <value>Ação de Filtro</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="Filter behavior remains the same." xml:space="preserve">
-    <value>O comportamento do filtro permanece o mesmo.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Filter by any field visible in the list" xml:space="preserve">
@@ -2745,10 +2733,6 @@
     <value>Este Mês</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="This search does not query the database, it only looks for records displayed in the grid." xml:space="preserve">
-    <value>Essa pesquisa não consulta o banco de dados, apenas procura os registros exibidos na grid.</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="This task has expired and can no longer run" xml:space="preserve">
     <value>Essa tarefa expirou e não pode mais ser executada</value>
     <comment>JJMasterDataWeb</comment>
@@ -2835,10 +2819,6 @@
   </data>
   <data name="Types of historical files" xml:space="preserve">
     <value>Tipos de arquivos permitidos</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="Typically used when grid paging is disabled." xml:space="preserve">
-    <value>Normalmente utilizada quando a paginação da grid está desabilitada.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Unable to identify the format of the list." xml:space="preserve">
@@ -2977,10 +2957,6 @@
     <value>Exibir Agrupado</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="View in a collapsed dashboard." xml:space="preserve">
-    <value>Exibir em um collapse painel.</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="View in a collapsed panel" xml:space="preserve">
     <value>Exibir em um painel recolhido</value>
     <comment>JJMasterDataWeb</comment>
@@ -3055,10 +3031,6 @@
   </data>
   <data name="When the panel is not in preview mode" xml:space="preserve">
     <value>Quando o painel estiver no modo de visualização</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="When this property is set to yes the filter icon will be removed from the grid" xml:space="preserve">
-    <value>Quando essa propriedade é configurada como sim o icone de filtro será removido da grid</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="When this property is set, the system will display a list of records for selection." xml:space="preserve">
@@ -3874,5 +3846,17 @@
   </data>
   <data name="Location" xml:space="preserve">
     <value>Localização</value>
+  </data>
+  <data name="Show as Collapse" xml:space="preserve">
+    <value>Mostrar como Collapse</value>
+  </data>
+  <data name="Enable Client-Side Search" xml:space="preserve">
+    <value>Habilitar Busca Client-Side</value>
+  </data>
+  <data name="Show the filter in a Collapse Panel above the Grid. Filter behavior remains the same." xml:space="preserve">
+    <value>Mostra o filtro em um Collapse Panel acima da Grid. O comportamento do Filtro permanece o mesmo.</value>
+  </data>
+  <data name="Only data shown in the browser will be filtered." xml:space="preserve">
+    <value>Apenas os dados mostrados no navegador serão filtrados.</value>
   </data>
 </root>
