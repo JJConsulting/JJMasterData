@@ -54,46 +54,31 @@
         </div>
 
         <div id="divInsertAction" class="tab-pane fade">
+            
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-6">
-                    <label>@StringLocalizer["Element Name To Select"]</label>
-                    <tooltip title="@StringLocalizer["Only relationships will be shown here, because you need to map the foreign keys to be used at your SET procedure."]"/>
+                <div class="@BootstrapHelper.FormGroup col-sm-3">
+                    <label asp-for="ElementNameToSelect" class="col-form-label"></label>
                     @Html.Raw(await GetInsertSelectionComboBoxHtml())
                 </div>
-
-                <div class="col-sm-6">
-                    <span class="text-info fa fa-info-circle"></span>
-                    <span class="small">
-                        <b>@StringLocalizer["Element name used to display the preselection of a record."]</b><br/>
-                        @StringLocalizer["When this property is set, the system will display a list of records for selection."]<br/>
-                        @StringLocalizer["When selecting a record, the insert method is triggered sending the values of the current selection."]<br/>
-                        @StringLocalizer["If the insert method is executed successfully the user will be redirected to editing the parent element."]<br/>
-                        <br/>
-                    </span>
+                <div class="@BootstrapHelper.FormGroup col-sm-3">
+                    <label asp-for="ReopenForm" class="@BootstrapHelper.Label"></label>
+                    <tooltip title="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]"/>
+                    <checkbox for="ReopenForm" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-3">
+                    <label asp-for="ShowAsModal" class="@BootstrapHelper.Label"></label>
+                    <checkbox for="ShowAsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
             </div>
-
+            
             <div class="row">
-                <div class="col-sm-3">
-                    <div class="@BootstrapHelper.FormGroup col-sm-2">
-                        <label class="@BootstrapHelper.Label">@StringLocalizer["Reopen Form"]</label>
-                        <checkbox for="ReopenForm" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="@BootstrapHelper.FormGroup col-sm-2">
-                        <label class="@BootstrapHelper.Label">@StringLocalizer["Show as Modal"]</label>
-                        <checkbox for="ShowAsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <span class="text-info fa fa-info-circle"></span>
-                    <span class="small">
-                        <b>@StringLocalizer["Reopen Form."]</b><br/>
-                        @StringLocalizer["No = Close the form and return to the list."]<br/>
-                        @StringLocalizer["Yes = Reopen the form to enter a new record."]<br/>
-                        <br/>
-                    </span>
+                <div class="col-sm-12">
+                    <collapse-panel icon="InfoCircle" color="Info" title="@Html.DisplayNameFor(m => m.ElementNameToSelect)">
+                            @StringLocalizer["When this property is set, the system will display a list of records for selection."]<br/>
+                            @StringLocalizer["When selecting a record, the insert method is triggered sending the values of the current selection."]<br/>
+                            @StringLocalizer["If the insert method is executed successfully, the parent element is opened again at editing mode."]<br/>
+                            @StringLocalizer["Only relationships are allowed, because you need to map the foreign keys to be used at saving."]
+                    </collapse-panel>
                 </div>
             </div>
         </div>

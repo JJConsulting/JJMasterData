@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 
 public class EditAction : GridTableAction
@@ -7,6 +9,8 @@ public class EditAction : GridTableAction
     /// Default action name
     /// </summary>
     public const string ActionName = "edit";
+    
+    [Display(Name = "Show as Modal")]
     public bool ShowAsModal { get; set; }
     public EditAction()
     {

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -17,6 +18,7 @@ public class InsertAction : GridToolbarAction
     /// <para/>Importante! Ao executar o insert o id gerado automaticamente deverá ser retornado na procedure de set.
     /// </remarks>
     [JsonProperty("elementNameToSelect")]
+    [Display(Name = "Element Name To Select")]
     public string ElementNameToSelect { get; set; }
 
     /// <summary>
@@ -27,9 +29,11 @@ public class InsertAction : GridToolbarAction
     /// True = Reabre o formulário para inserir um novo registro
     /// </remarks>
     [JsonProperty("reopenForm")]
+    [Display(Name = "Reopen Form")]
     public bool ReopenForm { get; set; }
 
     [JsonProperty("showAsModal")]
+    [Display(Name = "Show as Modal")]
     public bool ShowAsModal { get; set; }
     
     public InsertAction()

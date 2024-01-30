@@ -1401,8 +1401,8 @@
     <value>Se o form possuir chavé primária composta elas serão separadas por underline seguindo a ordem de cadastro.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="If the insert method is executed successfully the user will be redirected to editing the context dictionary." xml:space="preserve">
-    <value>Se o metodo de insert for executado com sucesso o usuário será redirecionado para edição do dicionário do contexto.</value>
+  <data name="If the insert method is executed successfully, the parent element is opened again at editing mode." xml:space="preserve">
+    <value>Se o metodo de insert for executado com sucesso, o elemento pai é aberto novamente no modo edição</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="If you are sure the file is safe you can specify file types separated by comma or" xml:space="preserve">
@@ -1482,7 +1482,7 @@
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="Insert Action" xml:space="preserve">
-    <value>Inserir ação</value>
+    <value>Ação de Insert</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Insert action not enabled" xml:space="preserve">
@@ -3041,7 +3041,7 @@
     <value>Ao exportar o campo para excel não é permitido colocar mais de um link na mesma célula, </value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="When selecting a record, the insert method is triggered sending the values ??of the current selection." xml:space="preserve">
+  <data name="When selecting a record, the insert method is triggered sending the values of the current selection." xml:space="preserve">
     <value>Ao selecionar um registro o metodo de insert é disparado enviando os valores da seleção atual.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -3545,8 +3545,8 @@
   <data name="Supports runtime values. Example: {CustomerName}" xml:space="preserve">
     <value>Suporta valores do runtime. Exemplo: {ClienteNome}</value>
   </data>
-  <data name="Only relationships will be shown here, because you need to map the foreign keys to be used at your SET procedure." xml:space="preserve">
-    <value>Apenas relacionamentos são mostrados aqui, pois você deve mapear suas chaves estrangeiras na sua procedure de SET.</value>
+  <data name="Only relationships are allowed, because you need to map the foreign keys to be used at saving." xml:space="preserve">
+    <value>Apenas relacionamentos são mostrados aqui, pois você deve mapear suas chaves estrangeiras que serão usadas ao salvar o formulário.</value>
   </data>
   <data name="Trigger the action when the value of the field is changed." xml:space="preserve">
     <value>Gatilha a ação quando o valor do campo é alterado.</value>
@@ -3856,5 +3856,11 @@
   </data>
   <data name="Edit Mode Open By Default" xml:space="preserve">
     <value>Modo Edição Aberto Por Padrão</value>
+  </data>
+  <data name="Show as Modal" xml:space="preserve">
+    <value>Mostrar como Modal</value>
+  </data>
+  <data name="When set to true, you can insert new records after saving instead of going back to the grid." xml:space="preserve">
+    <value>Quando setado como true, você pode inserir novos registros após salvar em vez de voltar para a grid.</value>
   </data>
 </root>

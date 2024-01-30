@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Core.DataDictionary.Models.Actions;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 
 public class ViewAction : GridTableAction
@@ -7,7 +9,10 @@ public class ViewAction : GridTableAction
     /// Nome padrão da ação
     /// </summary>
     public const string ActionName = "view";
+    
+    [Display(Name = "Show as Modal")]
     public bool ShowAsModal { get; set; }
+    
     public ViewAction()
     {
         Name = ActionName;
