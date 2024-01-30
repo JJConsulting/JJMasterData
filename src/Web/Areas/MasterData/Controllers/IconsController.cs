@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-public class IconsController : DataDictionaryController
+public class IconsController : MasterDataController
 {
     public IActionResult Index(string inputId)
     {

@@ -1,12 +1,11 @@
 ﻿#nullable enable
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
-
 using Microsoft.Extensions.Localization;
 
 
@@ -32,21 +31,16 @@ public class JJIconPicker(
         comboBox.DataItem = new FormElementDataItem
         {
             DataItemType = DataItemType.Manual,
-            Items = new List<DataItemValue>(),
-            FirstOption = FirstOptionMode.Choose,
-            ShowIcon = true
-        };
-
-        foreach (var icon in IconHelper.GetIconList())
-        {
-            comboBox.DataItem.Items.Add(new DataItemValue
+            Items = IconHelper.GetIconList().Select(icon => new DataItemValue
             {
                 Id = ((int)icon).ToString(),
                 Description = icon.ToString(),
                 Icon = icon
-            });
-        }
-
+            }).ToList(),
+            FirstOption = FirstOptionMode.Choose,
+            ShowIcon = true,
+        };
+        
         comboBox.Attributes["data-live-search"] = "true";
         comboBox.Attributes["data-virtual-scroll"] = "true";
         comboBox.Attributes["data-size"] = "false";

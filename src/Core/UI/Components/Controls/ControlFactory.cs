@@ -112,10 +112,10 @@ public class ControlFactory(IServiceProvider serviceProvider,
             case FormComponent.Slider:
                 control = Create<JJSlider>(formElement, field, context);
                 break;
-            case FormComponent.ColorPicker:
+            case FormComponent.Color:
                 control = Create<JJColorPicker>(formElement, field, context);
                 break;
-            case FormComponent.IconPicker:
+            case FormComponent.Icon:
                 control = Create<JJIconPicker>(formElement,field,context);
                 break;
             case FormComponent.File:

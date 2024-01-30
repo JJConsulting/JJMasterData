@@ -50,8 +50,8 @@ public enum FormComponent
     [Display(GroupName = "2. Numeric")]
     Slider = 23,
     [Display(Name = "Color",GroupName = "8. Especial")]
-    ColorPicker = 24,
+    Color = 24,
     [Display(Name = "Icon",GroupName = "8. Especial")]
-    IconPicker = 25
+    Icon = 25
 }
 

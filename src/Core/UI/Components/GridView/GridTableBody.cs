@@ -149,12 +149,12 @@ internal class GridTableBody(JJGridView gridView)
                         new(formStateData, Name, value));
                     cell = textFile.GetButtonGroupHtml();
                 }
-                else if (field.Component is FormComponent.ColorPicker && !string.IsNullOrEmpty(value.ToString()))
+                else if (field.Component is FormComponent.Color && !string.IsNullOrEmpty(value.ToString()))
                 {
                     var stringValue = value.ToString()!;
                     cell = GetIconCell(IconType.Circle, stringValue, stringValue);
                 }
-                else if (field.Component is FormComponent.IconPicker && !string.IsNullOrEmpty(value.ToString()))
+                else if (field.Component is FormComponent.Icon && !string.IsNullOrEmpty(value.ToString()))
                 {
                     var iconType = IconHelper.GetIconTypeFromField(field,value);
 

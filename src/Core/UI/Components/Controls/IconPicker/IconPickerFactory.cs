@@ -15,7 +15,7 @@ public class IconPickerFactory(IStringLocalizer<MasterDataResources> stringLocal
     public JJIconPicker Create(FormElement formElement, FormElementField field, ControlContext context)
     {
         var picker = Create();
-        picker.Name = context.ParentComponentName;
+        picker.Name = field.Name;
         picker.Visible = true;
         if (context.Value is not null)
         {

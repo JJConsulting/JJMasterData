@@ -84,7 +84,7 @@ public class JJComboBox : ControlBase
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass(CssClass)
             .WithCssClass("form-control ")
-            .WithCssClass((MultiSelect || DataItem.ShowIcon) ? "selectpicker" : "form-select")
+            .WithCssClass(MultiSelect || DataItem.ShowIcon ? "selectpicker" : "form-select")
             .WithNameAndId(Name)
             .WithAttributeIf(MultiSelect, "multiple")
             .WithAttributeIf(MultiSelect, "title", StringLocalizer["All"])
