@@ -3859,4 +3859,13 @@
   <data name="Only data shown in the browser will be filtered." xml:space="preserve">
     <value>Apenas os dados mostrados no navegador serão filtrados.</value>
   </data>
+  <data name="View Action" xml:space="preserve">
+    <value>Ação de Visualizar</value>
+  </data>
+  <data name="Import Action" xml:space="preserve">
+    <value>Ação de Importação</value>
+  </data>
+  <data name="Export Action" xml:space="preserve">
+    <value>Ação de Exportação</value>
+  </data>
 </root>
