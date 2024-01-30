@@ -3840,4 +3840,7 @@
   <data name="Title Size" xml:space="preserve">
     <value>Tamanho do Título</value>
   </data>
+  <data name="No icons found." xml:space="preserve">
+    <value>Nenhum ícone encontrado.</value>
+  </data>
 </root>

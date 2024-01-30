@@ -1,9 +1,47 @@
+#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Core.DataDictionary.Models;
 
-public static class IconTypeExtensions
+public static class IconHelper
 {
+    private static ReadOnlyCollection<IconType>? _icons;
+    public static ReadOnlyCollection<IconType> GetIconList()
+    {
+        if (_icons != null)
+            return _icons;
+
+        _icons = new List<IconType>((IconType[])Enum.GetValues(typeof(IconType))).AsReadOnly();
+
+        return _icons;
+    }
+    
+    internal static IconType GetIconTypeFromField( ElementField field,object value)
+    {
+        IconType iconType;
+        if (value is int intValue)
+        {
+            iconType = (IconType)intValue;
+        }
+        else
+        {
+            if (int.TryParse(value?.ToString(), out var parsedInt))
+            {
+                iconType = (IconType)parsedInt;
+            }
+            else
+            {
+                throw new JJMasterDataException($"Invalid IconType id at {field.LabelOrName}.");
+            }
+        }
+
+        return iconType;
+    }
+    
     public static string GetCssClass(this IconType icon)
     {
         if ((int)icon <= 692)

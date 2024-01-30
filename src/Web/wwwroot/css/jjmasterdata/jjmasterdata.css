@@ -437,16 +437,12 @@ button.list-group-item {
     height: auto;
 }
 
-/*Dropdown button*/
+/*Bootstrap select custom style*/
 button.dropdown-toggle.form-control {
     border-bottom-color: rgb(206, 212, 218) !important;
-    border-bottom-left-radius: 4px !important;
-    border-bottom-right-radius: 4px !important;
     border-bottom-style: solid !important;
     border-bottom-width: 1px !important;
-    border-image-outset: 0 !important;
     border-image-repeat: stretch !important;
-    border-image-slice: 100% !important;
     border-image-source: none !important;
     border-image-width: 1 !important;
     border-left-color: rgb(206, 212, 218) !important;
@@ -456,8 +452,7 @@ button.dropdown-toggle.form-control {
     border-right-style: solid !important;
     border-right-width: 1px !important;
     border-top-color: rgb(206, 212, 218) !important;
-    border-top-left-radius: 4px !important;
-    border-top-right-radius: 4px !important;
+    border-radius: 4px;
     border-top-style: solid !important;
     border-top-width: 1px !important;
     box-sizing: border-box !important;

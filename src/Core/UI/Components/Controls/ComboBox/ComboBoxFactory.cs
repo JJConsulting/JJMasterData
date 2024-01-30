@@ -11,15 +11,13 @@ namespace JJMasterData.Core.UI.Components;
 
 internal class ComboBoxFactory(IFormValues formValues,
         DataItemService dataItemService,
-        ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILoggerFactory loggerFactory)
     : IControlFactory<JJComboBox>
 {
     private IFormValues FormValues { get; } = formValues;
     private DataItemService DataItemService { get; } = dataItemService;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
-    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
     public JJComboBox Create()
@@ -27,7 +25,6 @@ internal class ComboBoxFactory(IFormValues formValues,
         return new JJComboBox(
             FormValues,
             DataItemService,
-            ExpressionsService,
             StringLocalizer,
             LoggerFactory.CreateLogger<JJComboBox>());
     }
