@@ -45,7 +45,7 @@ public class JJIconPicker(
         comboBox.Attributes["data-virtual-scroll"] = "true";
         comboBox.Attributes["data-size"] = "false";
         comboBox.Attributes["data-sanitize"] = "false";
-
+        comboBox.Attributes["data-none-results-text"] = stringLocalizer["No icons found."];
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("input-group");
         await div.AppendControlAsync(comboBox);
