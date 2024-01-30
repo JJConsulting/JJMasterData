@@ -3843,4 +3843,13 @@
   <data name="No icons found." xml:space="preserve">
     <value>Nenhum ícone encontrado.</value>
   </data>
+  <data name="Save User Preferences on Session" xml:space="preserve">
+    <value>Salvar Preferências do Usuário na Sessão</value>
+  </data>
+  <data name="Show Toolbar" xml:space="preserve">
+    <value>Mostrar Toolbar</value>
+  </data>
+  <data name="Show Header When Empty" xml:space="preserve">
+    <value>Mostrar Cabeçalho Sem Dados</value>
+  </data>
 </root>

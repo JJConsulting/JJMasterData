@@ -93,15 +93,15 @@ public class GridUI
     public bool EnableMultiSelect { get; set; }
 
     /// <summary>
-    /// Mantem os filtros, ordem e paginação da grid na sessão, 
-    /// e recupera na primeira carga da pagina. (Default = false)
+    /// Maintains filters, order and grid pagination in the session,
+    /// and recovers on the first page load. (Default = false)
     /// </summary>
     /// <remarks>
-    /// Ao utilizar esta propriedade, recomendamos alterar o parametro [Name] do objeto.
-    /// A propriedade [Name] é utilizada para compor o nome da variável de sessão.
+    /// When using this property, we recommend changing the object's [Name] parameter.
+    /// The [Name] property is used to compose the name of the session variable.
     /// </remarks>
     [JsonProperty("maintainValuesOnLoad")]
-    [Display(Name = "Maintain Values On Load")]
+    [Display(Name = "Save User Preferences on Session")]
     public bool MaintainValuesOnLoad { get; set; }
 
     /// <summary>
