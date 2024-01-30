@@ -1,5 +1,6 @@
 ﻿@using JJMasterData.Core.UI.Components
 @using JJMasterData.Core.DataDictionary.Models
+@using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Core.UI
 @inject IOptions<MasterDataWebOptions> Options
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
@@ -17,14 +18,14 @@
         comboBox.Name = "ElementNameToSelect";
         comboBox.DataItem.FirstOption = FirstOptionMode.Choose;
         comboBox.DataItem.Items = new List<DataItemValue>();
-        
+
         FormElement formElement = ViewBag.FormElement;
-        
+
         foreach (var relationship in formElement.Relationships.GetElementRelationships())
         {
-            comboBox.DataItem.Items.Add(new DataItemValue(relationship.ChildElement,relationship.ChildElement));
+            comboBox.DataItem.Items.Add(new DataItemValue(relationship.ChildElement, relationship.ChildElement));
         }
-        
+
         comboBox.SelectedValue = formElement.Options.GridToolbarActions.InsertAction.ElementNameToSelect;
 
         var result = await comboBox.GetHtmlBuilderAsync();
@@ -33,14 +34,14 @@
 }
 
 @using (Html.BeginForm("InsertAction", "Actions",
-    new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
+            new { elementName = ViewBag.ElementName, context = ViewBag.ContextAction }, FormMethod.Post))
 {
     <ul class="nav nav-tabs">
         <li id="nav-general" class="nav-item active">
             <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
         </li>
         <li class="nav-item" id="navInsertAction">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divInsertAction">@StringLocalizer["Insert Action"]</a>
+            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-insert-action">@StringLocalizer["Insert Action"]</a>
         </li>
         <li class="nav-item" id="nav-advanced">
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
@@ -53,34 +54,40 @@
             @await Html.PartialAsync("_NavGeneral", Model)
         </div>
 
-        <div id="divInsertAction" class="tab-pane fade">
-            
+        <div id="div-insert-action" class="tab-pane fade">
+
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-3">
+                    <label asp-for="InsertActionLocation" class="col-form-label"></label>
+                    <select asp-for="InsertActionLocation" class="form-select" asp-items="Html.GetEnumSelectList<InsertActionLocation>()"></select>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
                     <label asp-for="ElementNameToSelect" class="col-form-label"></label>
                     @Html.Raw(await GetInsertSelectionComboBoxHtml())
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-3">
+                <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
                     <label asp-for="ReopenForm" class="@BootstrapHelper.Label"></label>
                     <tooltip title="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]"/>
                     <checkbox for="ReopenForm" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-3">
+                <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
                     <label asp-for="ShowAsModal" class="@BootstrapHelper.Label"></label>
                     <checkbox for="ShowAsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
             </div>
-            
-            <div class="row">
+            <div class="row not-shown-at-list">
                 <div class="col-sm-12">
                     <collapse-panel icon="InfoCircle" color="Info" title="@Html.DisplayNameFor(m => m.ElementNameToSelect)">
-                            @StringLocalizer["When this property is set, the system will display a list of records for selection."]<br/>
-                            @StringLocalizer["When selecting a record, the insert method is triggered sending the values of the current selection."]<br/>
-                            @StringLocalizer["If the insert method is executed successfully, the parent element is opened again at editing mode."]<br/>
-                            @StringLocalizer["Only relationships are allowed, because you need to map the foreign keys to be used at saving."]
+                        <ul>
+                            <li>@StringLocalizer["When this property is set, the system will display a list of records for selection."]</li>
+                            <li>@StringLocalizer["When selecting a record, the insert method is triggered sending the values of the current selection."]</li>
+                            <li>@StringLocalizer["If the insert method is executed successfully, the parent element is opened again at editing mode."]</li>
+                            <li>@StringLocalizer["Only relationships are allowed, because you need to map the foreign keys to be used at saving."]</li>
+                        </ul>
                     </collapse-panel>
                 </div>
             </div>
+
         </div>
 
         <div id="div-advanced" class="tab-pane fade">
@@ -89,4 +96,22 @@
     </div>
 
     @await Html.PartialAsync("_Toolbar")
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const showOpenedAtListSelect = document.getElementById('@Html.IdFor(m => m.InsertActionLocation)');
+        
+            const notShownAtList = document.getElementsByClassName('not-shown-at-list');
+        
+            function toggleShowOpenedAtList() {       
+                 for (const element of notShownAtList) {
+                     element.style.display = showOpenedAtListSelect.value === "0" ? "block" : "none";
+                 }
+            }
+        
+            toggleShowOpenedAtList();
+        
+            showOpenedAtListSelect.addEventListener("change", toggleShowOpenedAtList);
+        });
+    </script>
 }

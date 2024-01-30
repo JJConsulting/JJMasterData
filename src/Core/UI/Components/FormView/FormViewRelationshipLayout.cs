@@ -176,7 +176,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
     {
         var childFormView = parentFormView.ComponentFactory.FormView.Create(childElement);
         childFormView.ShowTitle = false;
-        childFormView.DataPanel.FieldNamePrefix = $"{childFormView.DataPanel.Name}_";
+        childFormView.DataPanel.FieldNamePrefix = $"{childFormView.Name}_";
         childFormView.UserValues = parentFormView.UserValues;
         childFormView.PageState = PageState.List;
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);

@@ -1182,7 +1182,7 @@
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="Filter Action" xml:space="preserve">
-    <value>Ação do Filtro</value>
+    <value>Ação de Filtro</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Filter behavior remains the same." xml:space="preserve">
@@ -1402,7 +1402,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="If the insert method is executed successfully, the parent element is opened again at editing mode." xml:space="preserve">
-    <value>Se o metodo de insert for executado com sucesso, o elemento pai é aberto novamente no modo edição</value>
+    <value>Se o metodo de insert for executado com sucesso, o elemento pai é aberto novamente no modo edição.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="If you are sure the file is safe you can specify file types separated by comma or" xml:space="preserve">
@@ -3862,5 +3862,17 @@
   </data>
   <data name="When set to true, you can insert new records after saving instead of going back to the grid." xml:space="preserve">
     <value>Quando setado como true, você pode inserir novos registros após salvar em vez de voltar para a grid.</value>
+  </data>
+  <data name="Button At Grid" xml:space="preserve">
+    <value>Botão na Grid</value>
+  </data>
+  <data name="Above Grid" xml:space="preserve">
+    <value>Acima da Grid</value>
+  </data>
+  <data name="Below Grid" xml:space="preserve">
+    <value>Embaixo da Grid</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Localização</value>
   </data>
 </root>

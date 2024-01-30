@@ -17,7 +17,7 @@ public class IconPickerFactory(IStringLocalizer<MasterDataResources> stringLocal
         var picker = Create();
         picker.Name = field.Name;
         picker.Visible = true;
-        if (context.Value is not null)
+        if (!string.IsNullOrEmpty(context.Value?.ToString()))
         {
             picker.SelectedIcon = IconHelper.GetIconTypeFromField(field, context.Value);
         }

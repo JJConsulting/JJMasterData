@@ -29,7 +29,7 @@ public static class IconHelper
         }
         else
         {
-            if (int.TryParse(value?.ToString(), out var parsedInt))
+            if (int.TryParse(value.ToString(), out var parsedInt))
             {
                 iconType = (IconType)parsedInt;
             }

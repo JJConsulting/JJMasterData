@@ -70,6 +70,7 @@ public class JJGridView : AsyncComponent
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
     public event AsyncEventHandler<GridFilterLoadEventArgs>? OnFilterLoadAsync;
     public event AsyncEventHandler<GridToolbarActionEventArgs>? OnRenderToolbarActionAsync;
+    public event AsyncEventHandler<GridInsertActionEventArgs>? OnRenderInsertAction;
     #endregion
 
     #region Properties
@@ -668,10 +669,16 @@ public class JJGridView : AsyncComponent
             if (FilterAction.IsVisible)
                 div.Append(await Filter.GetFilterHtml());
 
+            if (InsertAction.InsertActionLocation is InsertActionLocation.AboveGrid && OnRenderInsertAction is not null)
+                await OnRenderInsertAction(this, new(div));
+            
             if (ShowToolbar)
                 div.Append(await GetToolbarHtmlBuilder());
 
             div.Append(await GetTableHtmlBuilder());
+            
+            if (InsertAction.InsertActionLocation is InsertActionLocation.BelowGrid && OnRenderInsertAction is not null)
+                await OnRenderInsertAction(this, new(div));
             
         });
 

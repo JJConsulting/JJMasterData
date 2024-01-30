@@ -193,10 +193,26 @@ public class JJFormView : AsyncComponent
             _gridView.FormElement = FormElement;
             _gridView.UserValues = UserValues;
             _gridView.ShowTitle = ShowTitle;
-
             _gridView.ToolbarActions.Add(new DeleteSelectedRowsAction());
 
+            if (_gridView.InsertAction.ShowOpenedAtGrid)
+            {
+                _gridView.OnRenderInsertAction += OnRenderInsertActionAtGrid;
+            }
+
             return _gridView;
+        }
+    }
+
+    private async Task OnRenderInsertActionAtGrid(object _, GridInsertActionEventArgs args)
+    {
+        PageState = PageState.Insert;
+        var formStateData = await GridView.GetFormStateDataAsync();
+        var result = await GetFormResult(new FormContext(formStateData.Values, DataPanel.Errors, PageState), true);
+
+        if (result is HtmlComponentResult htmlComponentResult)
+        {
+            args.HtmlBuilder.Append(htmlComponentResult.HtmlBuilder);
         }
     }
 
@@ -282,6 +298,9 @@ public class JJFormView : AsyncComponent
     public bool ShowTitle { get; set; }
     
     internal bool IsChildFormView { get; set; }
+
+    internal bool IsInsertAtGridView => PageState is PageState.Insert &&
+                                        FormElement.Options.GridToolbarActions.InsertAction.ShowOpenedAtGrid;
     
     internal IHttpContext CurrentContext { get; }
     internal IFormValues FormValues => CurrentContext.Request.Form;
@@ -457,19 +476,22 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetSaveActionResult()
     {
+        var insertAction = GridView.ToolbarActions.InsertAction;
         var values = await GetFormValuesAsync();
         
         var errors = PageState is PageState.Insert
             ? await InsertFormValuesAsync(values)
             : await UpdateFormValuesAsync(values);
-
-        if (errors.Count != 0)
+        
+        DataPanel.Errors = errors;
+        
+        if (errors.Count != 0 && !insertAction.ShowOpenedAtGrid)
             return await GetFormResult(new FormContext(values, errors, PageState), true);
 
         if (!string.IsNullOrEmpty(UrlRedirect))
             return new RedirectComponentResult(UrlRedirect!);
         
-        if (PageState is PageState.Insert && GridView.ToolbarActions.InsertAction.ReopenForm)
+        if (PageState is PageState.Insert && insertAction.ReopenForm)
         {
             var formResult = await GetFormResult(new FormContext(ObjectCloner.DeepCopy(RelationValues)!, PageState.Insert), false);
 
@@ -1068,7 +1090,7 @@ public class JJFormView : AsyncComponent
 
         var visibleRelationships = GetVisibleRelationships(values, pageState);
         
-        DataPanel.PageState = CurrentAction is null ? PanelState ?? PageState.View : pageState;
+        DataPanel.PageState = PanelState ?? pageState;
         DataPanel.Errors = errors;
         DataPanel.Values = values;
         DataPanel.AutoReloadFormFields = autoReloadFormFields;
@@ -1126,16 +1148,19 @@ public class JJFormView : AsyncComponent
     private async Task ConfigureFormToolbar()
     {
         var formToolbarActions = FormElement.Options.FormToolbarActions;
-
         if (PanelState is PageState.View)
         {
             formToolbarActions.CancelAction.SetVisible(false);
             formToolbarActions.SaveAction.SetVisible(false);
         }
         
+        
         switch (PageState)
         {
             case PageState.Insert when PanelState is PageState.Insert && IsChildFormView:
+                formToolbarActions.CancelAction.SetVisible(false);
+                break;
+            case PageState.Insert when IsInsertAtGridView:
                 formToolbarActions.CancelAction.SetVisible(false);
                 break;
             case PageState.Update when PanelState is PageState.View:
@@ -1167,7 +1192,7 @@ public class JJFormView : AsyncComponent
         if (ComponentContext is ComponentContext.Modal)
             return new ContentComponentResult(panelHtml);
 
-        if (ShowTitle)
+        if (ShowTitle && !IsInsertAtGridView)
             panelHtml.PrependComponent(await GetTitleAsync());
 
         return new RenderedComponentResult(panelHtml);
@@ -1195,9 +1220,10 @@ public class JJFormView : AsyncComponent
         var topToolbarActions = GetTopToolbarActions(FormElement).ToList();
 
         formHtml.AppendComponent(await GetFormToolbarAsync(topToolbarActions));
-
-        DataPanel.Values = await DataPanel.GetFormValuesAsync();
         
+        if(!IsInsertAtGridView || IsInsertAtGridView && DataPanel.Errors.Count != 0)
+            DataPanel.Values = await DataPanel.GetFormValuesAsync();
+            
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
 
         var panelAndBottomToolbarActions = GetPanelToolbarActions(FormElement).ToList();

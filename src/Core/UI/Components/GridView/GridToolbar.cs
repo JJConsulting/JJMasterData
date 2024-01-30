@@ -38,12 +38,15 @@ internal class GridToolbar(JJGridView gridView)
             if (!linkButton.Visible)
                 continue;
 
-            if (action is FilterAction { EnableScreenSearch: true })
+            switch (action)
             {
-                yield return await GridView.Filter.GetHtmlToolBarSearch();
-                continue;
+                case InsertAction { ShowOpenedAtGrid: true }:
+                    continue;
+                case FilterAction { EnableScreenSearch: true }:
+                    yield return await GridView.Filter.GetHtmlToolBarSearch();
+                    continue;
             }
-            
+
             switch (action)
             {
                 case ExportAction when GridView.DataExportation.IsRunning():
