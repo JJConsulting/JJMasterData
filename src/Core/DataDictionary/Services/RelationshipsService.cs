@@ -58,7 +58,7 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
         var relationship = formElement.Relationships.First(r=>r.Id == id);
         relationship.ViewType = viewType;
         relationship.Panel = panel;
-        relationship.EditModeOpenByDefault = true;
+        relationship.EditModeOpenByDefault = editModeOpenedByDefault;
         
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }

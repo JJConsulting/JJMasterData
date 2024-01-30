@@ -43,11 +43,8 @@ public class DefaultExpressionProvider : IBooleanExpressionProvider, IAsyncExpre
             error.AppendLine(expression);
             error.AppendLine("Replaced Expression:");
             error.AppendLine(replacedExpression);
-            
-            throw new ExpressionException(error.ToString(), ex)
-            {
-                Expression = expression
-            };
+
+            throw new ExpressionException(error.ToString(), ex);
         }
 
     }

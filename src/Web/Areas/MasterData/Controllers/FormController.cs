@@ -28,7 +28,7 @@ public class FormController(IFormElementComponentFactory<JJFormView> formViewFac
 
         if (userId == null) 
             return;
-        
+       
         formView.GridView.SetCurrentFilter("USERID", userId);
         formView.SetUserValues("USERID", userId);
     }

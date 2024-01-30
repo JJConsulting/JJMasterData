@@ -9,7 +9,9 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Expressions;
@@ -19,6 +21,13 @@ public class ExpressionsService(
     ExpressionParser expressionParser,
     ILogger<ExpressionsService> logger)
 {
+    private record Expression(string Prefix, string Content);
+
+    private string? _valueExpressionPrefix;
+
+    private string ValueExpressionPrefix => _valueExpressionPrefix ??= 
+        ExpressionProviders.First(p => p is ValueExpressionProvider).Prefix;
+
     private IEnumerable<IExpressionProvider> ExpressionProviders { get; } = expressionProviders;
     private ExpressionParser ExpressionParser { get; } = expressionParser;
     private ILogger<ExpressionsService> Logger { get; } = logger;
@@ -40,14 +49,13 @@ public class ExpressionsService(
         return null;
     }
 
-    public bool GetBoolValue(string expression, FormStateData formStateData)
+    public bool GetBoolValue(string? expression, FormStateData formStateData)
     {
-        if (string.IsNullOrEmpty(expression))
-            throw new ArgumentNullException(nameof(expression));
+        var extractedExpression = GetExpressionFromString(expression);
+        var (expressionType, expressionValue) = extractedExpression;
 
-        var splittedExpression = expression.Split([':'], 2);
-        var expressionType = splittedExpression[0];
-        if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IBooleanExpressionProvider) is not IBooleanExpressionProvider provider)
+        if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IBooleanExpressionProvider) is
+            not IBooleanExpressionProvider provider)
             throw new JJMasterDataException($"Expression type not supported: {expressionType}.");
 
         object? result;
@@ -57,18 +65,15 @@ public class ExpressionsService(
             Logger.LogDebug("Executing expression: {Expression}", expression);
 
             var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
-            var parsedExpression = splittedExpression[1];
 
-            result = provider.Evaluate(parsedExpression, parsedValues);
+            result = provider.Evaluate(expressionValue, parsedValues);
         }
         catch (Exception ex)
         {
-            var exception = new ExpressionException("Unhandled exception at a expression provider.", ex)
-            {
-                Expression = expression
-            };
+            var exception = new ExpressionException("Unhandled exception at a expression provider.", ex);
 
-            Logger.LogError(exception, "Error retrieving expression at {Provider} provider. Expression: {Expression}", provider.Prefix, expression);
+            Logger.LogError(exception, "Error retrieving expression at {Provider} provider. Expression: {Expression}",
+                provider.Prefix, expression);
 
             throw exception;
         }
@@ -83,52 +88,85 @@ public class ExpressionsService(
 
     internal async Task<object?> GetExpressionValueAsync(
         string? expression,
+        FormStateData formStateData)
+    {
+        return await GetExpressionValueAsyncInternal(expression, null, formStateData);
+    }
+
+    internal async Task<object?> GetExpressionValueAsync(
+        string? expression,
         ElementField field,
         FormStateData formStateData)
     {
-        if (expression is null || string.IsNullOrEmpty(expression))
-            return null;
-
         if (field == null)
             throw new ArgumentNullException(nameof(field));
 
-        var splittedExpression = expression.Split([':'], 2);
-        var expressionType = splittedExpression[0];
-        if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IAsyncExpressionProvider) is not IAsyncExpressionProvider provider)
+        return await GetExpressionValueAsyncInternal(expression, field, formStateData);
+    }
+
+    private async Task<object?> GetExpressionValueAsyncInternal(
+        string? expression,
+        ElementField? field,
+        FormStateData formStateData)
+    {
+        var extractedExpression = GetExpressionFromString(expression);
+        var (expressionType, expressionValue) = extractedExpression;
+
+        if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IAsyncExpressionProvider) is not
+            IAsyncExpressionProvider provider)
         {
             throw new JJMasterDataException($"Expression type not supported: {expressionType}");
         }
+
         try
         {
             var parsedValues = ExpressionParser.ParseExpression(expression, formStateData);
-            var parsedExpression = splittedExpression[1];
-            var result = await provider.EvaluateAsync(parsedExpression, parsedValues);
+            var result = await provider.EvaluateAsync(expressionValue, parsedValues);
 
-            if (result is not string stringResult)
-                return result;
-
-            return field.DataType switch
+            if (field != null && result is string stringResult)
             {
-                FieldType.Int when int.TryParse(stringResult.Trim(), NumberStyles.Any, CultureInfo.CurrentCulture,
-                    out var intResult) => intResult,
-                FieldType.Float when float.TryParse(stringResult.Trim(), NumberStyles.Any, CultureInfo.CurrentCulture,
-                    out var floatResult) => floatResult,
-                _ => result
-            };
-        }
+                return field.DataType switch
+                {
+                    FieldType.Int when int.TryParse(stringResult.Trim(), NumberStyles.Any, CultureInfo.CurrentCulture,
+                        out var intResult) => intResult,
+                    FieldType.Float when float.TryParse(stringResult.Trim(), NumberStyles.Any,
+                        CultureInfo.CurrentCulture,
+                        out var floatResult) => floatResult,
+                    _ => result
+                };
+            }
 
+            return result;
+        }
         catch (Exception ex)
         {
-            var exception = new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex)
-            {
-                Expression = expression
-            };
+            var exception = field != null
+                ? new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex)
+                : new ExpressionException($"Unhandled exception at a expression provider.", ex);
 
-            Logger.LogError(exception, "Error retrieving expression at {Provider} provider\nExpression: {Expression}\nField: {FieldName}", provider, expression, field.Name);
+            Logger.LogError(exception,
+                "Error retrieving expression at {Provider} provider\nExpression: {Expression}\nField: {FieldName}",
+                provider, expression, field?.Name);
 
             throw exception;
         }
     }
+
+    private Expression GetExpressionFromString(string? expression)
+    {
+        var splittedExpression = expression?.Split([':'], 2) ;
+
+        if (splittedExpression?.Length < 2)
+            return new Expression(ValueExpressionPrefix, expression ?? string.Empty);
+        
+        var prefix = splittedExpression?[0];
+
+        if (!ExpressionProviders.GetProvidersPrefixes().Contains(prefix) || splittedExpression is null)
+            return new Expression(ValueExpressionPrefix, expression ?? string.Empty);
+        
+        return new Expression(splittedExpression[0], splittedExpression[1]);
+    }
+
 
     private static bool ParseBool(object? value) => StringManager.ParseBool(value);
 }

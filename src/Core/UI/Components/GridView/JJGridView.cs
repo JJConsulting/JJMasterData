@@ -25,6 +25,7 @@ using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
+using JJMasterData.Core.Tasks;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
@@ -661,12 +662,11 @@ public class JJGridView : AsyncComponent
         {
             div.WithAttribute("id", $"grid-view-{Name}");
 
-            div.AppendIf(ShowTitle, GetTitle(await GetDefaultValuesAsync()).GetHtmlBuilder);
-
+            if (ShowTitle)
+                div.AppendComponent(await GetTitleAsync());
+            
             if (FilterAction.IsVisible)
-            {
                 div.Append(await Filter.GetFilterHtml());
-            }
 
             if (ShowToolbar)
                 div.Append(await GetToolbarHtmlBuilder());
@@ -795,34 +795,20 @@ public class JJGridView : AsyncComponent
         return result;
     }
     
-
+    [Obsolete("Please use GetTitleHtmlAsync")]
     public string GetTitleHtml()
     {
-        var title = FormElement.Title;
-        var subTitle = FormElement.SubTitle;
-
-        var titleComponent = ComponentFactory.Html.Title.Create(title, subTitle);
-        titleComponent.Size = TitleSize;
-
-        return titleComponent.GetHtml();
+        return AsyncHelper.RunSync(GetTitleAsync).GetHtml();
     }
     
-    internal JJTitle GetTitle(IDictionary<string, object?> values)
+    public async Task<string> GetTitleHtmlAsync()
     {
-        var title = FormElement.Title;
-        var subTitle = FormElement.SubTitle;
-        
-        foreach (var field in FormElement.Fields)
-        {
-            values.TryGetValue(field.Name, out var fieldValue);
-            title = title?.Replace($"{{{field.Name}}}", fieldValue?.ToString());
-            subTitle = subTitle?.Replace($"{{{field.Name}}}", fieldValue?.ToString());
-        }
-
-        var titleComponent = ComponentFactory.Html.Title.Create(title, subTitle);
-        titleComponent.Size = TitleSize;
-
-        return titleComponent;
+        return (await GetTitleAsync()).GetHtml();
+    }
+    
+    internal async Task<JJTitle> GetTitleAsync()
+    {
+        return await ComponentFactory.Html.Title.CreateAsync(FormElement, await GetFormStateDataAsync());
     }
 
     internal Task<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();

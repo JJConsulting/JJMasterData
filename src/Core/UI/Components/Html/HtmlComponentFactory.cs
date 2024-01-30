@@ -2,6 +2,7 @@
 
 using System;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Localization;
 namespace JJMasterData.Core.UI.Components;
 
 public class HtmlComponentFactory(
+    ExpressionsService expressionsService,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IHttpContext currentContext,
     IServiceProvider serviceProvider)
@@ -37,7 +39,7 @@ public class HtmlComponentFactory(
     
     public NavFactory TabNav => new(currentContext.Request.Form);
     
-    public TitleFactory Title => new();
+    public TitleFactory Title => new(expressionsService);
     
     public ToolbarFactory Toolbar => new();
     

@@ -1,24 +1,18 @@
-﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-
-@using JJMasterData.Core.UI
-@using JJMasterData.Core.UI.Components
+﻿@using JJMasterData.Core.UI.Components
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel;
 
 
-<div class="row">
-<div class="col-sm-4">
-    <label asp-for="FormElement.Title" class="form-label"></label>
-    <tooltip title="@StringLocalizer["Supports runtime values. Example: Order {OrderId}"]"/>
-    <input asp-for="FormElement.Title" disabled="@Model.Disabled"  class="form-control" />
+<div class="row mb-3">
+    <div class="col-sm-10">
+        <expression for="FormElement.Title" disabled="@Model.Disabled"/>
+    </div>
+    <div class="col-sm-2">
+        <label asp-for="FormElement.TitleSize" class="form-label"></label>
+        <select asp-for="FormElement.TitleSize" disabled="@Model.Disabled" asp-items="Html.GetEnumSelectList<HeadingSize>()" class="form-select"></select>
+    </div>
 </div>
-<div class="col-sm-4">
-    <label asp-for="FormElement.SubTitle" class="form-label"></label>
-    <tooltip title="@StringLocalizer["Supports runtime values. Example: {CustomerName}"]"/>
-    <input asp-for="FormElement.SubTitle" class="form-control" disabled="@Model.Disabled" />
-</div>
-<div class="col-sm-4">
-    <label asp-for="FormElement.TitleSize" class="form-label"></label>
-    <select asp-for="FormElement.TitleSize" disabled="@Model.Disabled"   asp-items="Html.GetEnumSelectList<HeadingSize>()" class="form-select"></select>
-</div>
-
+<div class="row mb-3">
+    <div class="col-sm-10">
+        <expression for="FormElement.SubTitle" disabled="@Model.Disabled"/>
+    </div>
 </div>

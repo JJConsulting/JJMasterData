@@ -1,9 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.UI.Components;
 
-public class TitleFactory : IComponentFactory<JJTitle>
+public class TitleFactory(ExpressionsService expressionsService) : IComponentFactory<JJTitle>
 {
     public JJTitle Create()
     {
@@ -18,14 +21,16 @@ public class TitleFactory : IComponentFactory<JJTitle>
         return htmlTitle;
     }
 
-    public JJTitle Create(FormElement form)
+    public async Task<JJTitle> CreateAsync(FormElement formElement, FormStateData formStateData)
     {
-        if (form == null)
-            throw new ArgumentNullException(nameof(form));
-
+        if (formElement == null)
+            throw new ArgumentNullException(nameof(formElement));
+    
         var htmlTitle = Create();
-        htmlTitle.Title = form.Title;
-        htmlTitle.SubTitle = form.SubTitle;
+        htmlTitle.Title = await expressionsService.GetExpressionValueAsync(formElement.Title, formStateData) as string;
+        htmlTitle.Size = formElement.TitleSize;
+        htmlTitle.SubTitle = await expressionsService.GetExpressionValueAsync(formElement.SubTitle, formStateData) as string;
+
         return htmlTitle;
     }
 }

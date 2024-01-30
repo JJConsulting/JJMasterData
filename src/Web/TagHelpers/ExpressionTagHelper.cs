@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;
 using System.ComponentModel;
+using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.UI;
 
 namespace JJMasterData.Web.TagHelpers;
@@ -34,6 +35,9 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
     [HtmlAttributeName("tooltip")]
     [Localizable(false)]
     public string? Tooltip { get; set; }
+    
+    [HtmlAttributeName("disabled")]
+    public bool Disabled { get; set; }
 
     private bool IsBooleanExpression
     {
@@ -65,14 +69,21 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         {
             modelValue = Value;
         }
-
+    
         var splittedExpression = modelValue?.Split(':', 2);
-        var selectedExpressionType = splittedExpression?[0];
-        var selectedExpressionValue = splittedExpression?[1] ?? string.Empty;
 
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var selectedExpressionType =expressionProviders.First(p=> p is ValueExpressionProvider).Prefix;
+        var selectedExpressionValue = modelValue ?? string.Empty;
+        if (splittedExpression?.Length == 2)
+        {
+            selectedExpressionType = splittedExpression[0];
+            selectedExpressionValue = splittedExpression[1];
+        }
+        
+        var fieldSet = new HtmlBuilder(HtmlTag.FieldSet);
+        fieldSet.WithAttributeIf(Disabled, "disabled");
         var displayName = For?.ModelExplorer.Metadata.GetDisplayName() ?? Label;
-        html.AppendIf(displayName is not null, HtmlTag.Label, label =>
+        fieldSet.AppendIf(displayName is not null, HtmlTag.Label, label =>
         {
             label.WithCssClass(BootstrapHelper.Label);
             label.WithAttribute("for", name + "-ExpressionValue");
@@ -87,7 +98,7 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
             }
         });
 
-        html.AppendDiv(div =>
+        fieldSet.AppendDiv(div =>
         {
             div.WithCssClass("input-group");
             div.Append(GetTypeSelect(name, selectedExpressionType));
@@ -96,7 +107,7 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
 
         output.TagMode = TagMode.StartTagAndEndTag;
 
-        output.Content.SetHtmlContent(html.ToString());
+        output.Content.SetHtmlContent(fieldSet.ToString());
     }
 
     private HtmlBuilder GetTypeSelect(string? name, string? selectedExpressionType)
@@ -131,7 +142,7 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         var input = new HtmlBuilder(HtmlTag.Input);
         input.WithCssClass("font-monospace");
         input.WithCssClass("form-control");
-        input.WithAttribute("style", "width:70%");
+        input.WithAttribute("style", "width:75%");
         input.WithNameAndId(name + "-ExpressionValue");
         input.WithValue(selectedExpressionValue);
         return input;

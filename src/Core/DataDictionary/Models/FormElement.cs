@@ -19,6 +19,7 @@ public class FormElement : Element
     
     [JsonProperty]
     [Display(Name = "Title")]
+    [AsyncExpression]
     public string? Title { get; set; }
 
     [JsonProperty]
@@ -27,6 +28,7 @@ public class FormElement : Element
     
     [JsonProperty]
     [Display(Name = "SubTitle")]
+    [AsyncExpression]
     public string? SubTitle { get; set; }
     
     [Required]

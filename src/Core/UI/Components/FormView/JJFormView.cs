@@ -1038,7 +1038,7 @@ public class JJFormView : AsyncComponent
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (ShowTitle)
-            html.AppendComponent(GridView.GetTitle(UserValues));
+            html.AppendComponent(await GetTitleAsync(new FormStateData(UserValues, PageState.Import)));
 
         PageState = PageState.Import;
 
@@ -1088,7 +1088,7 @@ public class JJFormView : AsyncComponent
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         if (ShowTitle)
-            html.AppendComponent(GridView.GetTitle(values));
+            html.AppendComponent(await GetTitleAsync());
 
         var layout = new FormViewRelationshipLayout(this, visibleRelationships);
 
@@ -1168,7 +1168,7 @@ public class JJFormView : AsyncComponent
             return new ContentComponentResult(panelHtml);
 
         if (ShowTitle)
-            panelHtml.Prepend(GridView.GetTitle(values).GetHtmlBuilder());
+            panelHtml.PrependComponent(await GetTitleAsync());
 
         return new RenderedComponentResult(panelHtml);
     }
@@ -1503,6 +1503,16 @@ public class JJFormView : AsyncComponent
         OnAfterDeleteAsync += eventHandler.OnAfterDeleteAsync;
         OnAfterInsertAsync += eventHandler.OnAfterInsertAsync;
         OnAfterUpdateAsync += eventHandler.OnAfterUpdateAsync;
+    }
+    
+    private async Task<JJTitle> GetTitleAsync(FormStateData formStateData)
+    {
+        return await ComponentFactory.Html.Title.CreateAsync(FormElement,formStateData);
+    }
+
+    private async Task<JJTitle> GetTitleAsync()
+    {
+        return await ComponentFactory.Html.Title.CreateAsync(FormElement, await GetFormStateDataAsync());
     }
     
     #region "Legacy inherited GridView compatibility"

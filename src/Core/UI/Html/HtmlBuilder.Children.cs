@@ -18,6 +18,16 @@ public partial class HtmlBuilder
         return this;
     }
     
+        
+    public HtmlBuilder PrependComponent(HtmlComponent? component)
+    {
+        if (component != null)
+            _children.Insert(0,component.GetHtmlBuilder());
+
+        return this;
+    }
+
+    
     /// <summary>
     /// Insert a HTML builder as a child of caller builder.
     /// </summary>
@@ -136,7 +146,6 @@ public partial class HtmlBuilder
             Append(await func.Invoke());
         }
     }
-
     
     /// <summary>
     /// Conditional insert HTML builder as a child of caller builder.
