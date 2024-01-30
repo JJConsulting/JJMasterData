@@ -138,7 +138,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         
         if (relationship.IsParent)
         {
-            return new RenderedComponentResult(await parentFormView.GetParentPanelHtmlAtRelationship());
+            return new RenderedComponentResult(await parentFormView.GetParentPanelHtmlAtRelationship(relationship));
         }
 
         var childElement =
