@@ -43,8 +43,9 @@ public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory
         }
         var iconPicker = IconPickerFactory.Create();
         iconPicker.Name = name;
-        iconPicker.SelectedIcon = modelValue!.Value;
-        
+        if (modelValue != null) 
+            iconPicker.SelectedIcon = modelValue.Value;
+
         output.TagMode = TagMode.StartTagAndEndTag;
         
         output.Content.SetHtmlContent((await iconPicker.GetHtmlBuilderAsync()).ToString());
