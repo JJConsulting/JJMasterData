@@ -42,12 +42,11 @@
     <li id="nav-general" class="nav-item active">
         <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
     </li>
-    @if (!Model.IsParent)
-    {
-        <li id="navBehavior" class="nav-item">
-            <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divBehavior">@StringLocalizer["Behavior"]</a>
-        </li>
-    }
+ 
+    <li id="navBehavior" class="nav-item">
+        <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divBehavior">@StringLocalizer["Behavior"]</a>
+    </li>
+    
     <li id="nav-advanced" class="nav-item">
         <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
     </li>
@@ -65,27 +64,37 @@
             <partial name="../Panel/_DetailData" model="Model.Panel"/>
         </div>
         
-        @if (!Model.IsParent)
-        {
-            <div id="divBehavior" class="tab-pane fade">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <label asp-for="ViewType">@StringLocalizer["View Type"]</label>
-                        <select class="form-control form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
+     
+        <div id="divBehavior" class="tab-pane fade">
+            <div class="row mb-3">
+                   @if (!Model.IsParent)
+                     {
+                         <div class="col-sm-6">
+                             <label asp-for="ViewType"></label>
+                             <select class="form-control form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
+                         </div>
+                     }
+                    <div class="col-sm-6" id="editModeDiv">
+                          <label asp-for="EditModeOpenByDefault"></label>
+                          <checkbox for="EditModeOpenByDefault" switch="true"/>
                     </div>
-                    <div style="margin-top: 5px"  class="col-sm-12">
-                        <alert color="Info" title="@StringLocalizer["Help"]" icon="IconType.InfoCircle">
-                            <ul>
-                                <li>@StringLocalizer["None - The relationship is hidden and not rendered in any component."]</li>
-                                <li>@StringLocalizer["List - The relationship is shown in a list with the actions controlled by the respective Data Dictionary (1xn)."]</li>
-                                <li>@StringLocalizer["View - The relationship is shown in a read-only form (1x1)."]</li>
-                                <li>@StringLocalizer["Update - The relationship is shown in an updatable form (1x1)."]</li>
-                            </ul>
-                        </alert>
-                    </div>
-                </div>
+                      @if (!Model.IsParent)
+                      {
+                          <div style="margin-top: 5px" class="col-sm-12">
+                              <alert color="Info" title="@StringLocalizer["Help"]" icon="IconType.InfoCircle">
+                                  <ul>
+                                      <li>@StringLocalizer["None - The relationship is hidden and not rendered in any component."]</li>
+                                      <li>@StringLocalizer["List - The relationship is shown in a list with the actions controlled by the respective Data Dictionary (1xn)."]</li>
+                                      <li>@StringLocalizer["View - The relationship is shown in a read-only form (1x1)."]</li>
+                                      <li>@StringLocalizer["Update - The relationship is shown in an updatable form (1x1)."]</li>
+                                  </ul>
+                              </alert>
+                          </div>
+                      }
+
             </div>
-        }
+        </div>
+        
 
 
         <div id="div-advanced" class="tab-pane fade">
@@ -113,4 +122,22 @@
 
         </div>
     </div>
+    
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            const relationshipViewTypeSelect = document.getElementById('@Html.IdFor(m=>m.ViewType)');
+        
+            const editModeDiv = document.getElementById('editModeDiv');
+        
+            function toggleEditModeCheckbox() {
+                const isRelationshipViewType2 = relationshipViewTypeSelect.value === "4";
+        
+                editModeDiv.style.display = isRelationshipViewType2 ? "block" : "none";
+            }
+        
+            toggleEditModeCheckbox();
+        
+            relationshipViewTypeSelect.addEventListener("change", toggleEditModeCheckbox);
+        });
+    </script>
 }

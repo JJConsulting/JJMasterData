@@ -46,7 +46,11 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }
 
-    public async Task SaveFormElementRelationship(FormElementPanel panel, RelationshipViewType viewType, int id,
+    public async Task SaveFormElementRelationship(
+        FormElementPanel panel,
+        RelationshipViewType viewType, 
+        bool editModeOpenedByDefault,
+        int id,
         string elementName)
     {
         var formElement = await DataDictionaryRepository.GetFormElementAsync(elementName);
@@ -54,7 +58,8 @@ public class RelationshipsService(IValidationDictionary validationDictionary,
         var relationship = formElement.Relationships.First(r=>r.Id == id);
         relationship.ViewType = viewType;
         relationship.Panel = panel;
-
+        relationship.EditModeOpenByDefault = true;
+        
         await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
     }
 

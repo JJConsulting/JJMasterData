@@ -6,6 +6,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -141,7 +142,7 @@ public class JJFormView : AsyncComponent
             if (_dataPanel == null)
             {
                 _dataPanel = ComponentFactory.DataPanel.Create(FormElement);
-                _dataPanel.PageState = ContainsPanelState() || IsChildFormView ? PanelState : PageState;
+                _dataPanel.PageState = PanelState is not null || IsChildFormView ? PanelState!.Value : PageState;
             }
             _dataPanel.ParentComponentName = Name;
             _dataPanel.FormUI = FormElement.Options.Form;
@@ -214,14 +215,14 @@ public class JJFormView : AsyncComponent
     /// <summary>
     /// If inside a relationship, PageState of the parent DataPanel.
     /// </summary>
-    internal PageState PanelState
+    internal PageState? PanelState
     {
         get
         {
             if (CurrentContext.Request.Form[$"form-view-panel-state-{Name}"] != null && _panelState is null)
                 _panelState = (PageState)int.Parse(CurrentContext.Request.Form[$"form-view-panel-state-{Name}"]);
 
-            return _panelState ?? PageState.List;
+            return _panelState;
         }
         set => _panelState = value;
     }
@@ -482,10 +483,10 @@ public class JJFormView : AsyncComponent
             return formResult;
         }
 
-        if (ContainsPanelState())
+        if (PanelState is not null)
         {
             PanelState = PageState.View;
-            return await GetFormResult(new FormContext(values, PanelState), false);
+            return await GetFormResult(new FormContext(values, PanelState.Value), false);
         }
 
         PageState = PageState.List;
@@ -497,12 +498,6 @@ public class JJFormView : AsyncComponent
 
         return await GridView.GetResultAsync();
     }
-    
-    internal bool ContainsPanelState()
-    {
-        return CurrentContext.Request.Form[$"form-view-panel-state-{Name}"] != null;
-    }
-
 
     private void AppendInsertSuccessAlert(HtmlBuilder htmlBuilder)
     {
@@ -587,7 +582,7 @@ public class JJFormView : AsyncComponent
     {
         html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
         
-        if(PageState is not PageState.List && PanelState is not PageState.List)
+        if(PageState is not PageState.List && PanelState is not null)
             html.AppendHiddenInput($"form-view-panel-state-{Name}", ((int)PanelState).ToString());
 
         html.AppendHiddenInput($"current-action-map-{Name}",
@@ -1073,7 +1068,7 @@ public class JJFormView : AsyncComponent
 
         var visibleRelationships = GetVisibleRelationships(values, pageState);
         
-        DataPanel.PageState = CurrentAction is null ? PanelState : pageState;
+        DataPanel.PageState = CurrentAction is null ? PanelState ?? PageState.View : pageState;
         DataPanel.Errors = errors;
         DataPanel.Values = values;
         DataPanel.AutoReloadFormFields = autoReloadFormFields;
@@ -1224,9 +1219,9 @@ public class JJFormView : AsyncComponent
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
         
-        PanelState = ContainsPanelState() ? PanelState : PageState.View;
+        PanelState ??= PageState.View;
 
-        DataPanel.PageState = PanelState;
+        DataPanel.PageState = PanelState.Value;
         
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
 

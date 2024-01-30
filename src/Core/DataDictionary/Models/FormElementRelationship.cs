@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System.ComponentModel.DataAnnotations;
 using JJMasterData.Commons.Data.Entity.Models;
 using Newtonsoft.Json;
 
@@ -12,16 +13,21 @@ public class FormElementRelationship
     
     [JsonProperty("isParent")]
     public bool IsParent { get; set; }
+    
+    [JsonProperty("editModeOpenByDefault")]
+    [Display(Name = "Edit Mode Open By Default")]
+    public bool EditModeOpenByDefault { get; set; }
 
     [JsonProperty("elementRelationship")]
     public ElementRelationship? ElementRelationship { get; set; }
     
     [JsonProperty("viewType")]
+    [Display(Name = "View Type")]
     public RelationshipViewType ViewType { get; set; }
 
     [JsonProperty("panel")]
     public FormElementPanel Panel { get; set; } = null!;
-
+    
     [JsonConstructor]
     private FormElementRelationship()
     {

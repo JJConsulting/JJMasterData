@@ -190,7 +190,6 @@ public class RelationshipsController(RelationshipsService relationshipsService,
     [HttpPost]
     public IActionResult LayoutDetails(RelationshipsLayoutDetailsViewModel model)
     {
-
         return View("DetailLayout", model);
     }
     
@@ -198,7 +197,7 @@ public class RelationshipsController(RelationshipsService relationshipsService,
     {
         if (relationshipsService.ValidatePanel(panel))
         {
-            await relationshipsService.SaveFormElementRelationship(panel,model.ViewType, model.Id, model.ElementName);
+            await relationshipsService.SaveFormElementRelationship(panel,model.ViewType,model.EditModeOpenByDefault, model.Id, model.ElementName);
             return Json(new { success = true });
         }
 
@@ -220,6 +219,7 @@ public class RelationshipsController(RelationshipsService relationshipsService,
         {
             Id = id,
             IsParent = relationship.IsParent,
+            EditModeOpenByDefault = relationship.EditModeOpenByDefault,
             Panel = relationship.Panel,
             ViewType = relationship.ViewType
         };

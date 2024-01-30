@@ -213,7 +213,11 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         else
         {
             childFormView.PageState = childValues is not null ? PageState.Update : PageState.Insert;
-            childFormView.PanelState = childValues is not null ? PageState.View : PageState.Insert;
+            
+            if (childValues is not null)
+                childFormView.PanelState = relationship.EditModeOpenByDefault ? PageState.Update: PageState.View;
+            else
+                childFormView.PanelState = PageState.Insert;
         }
         
         childFormView.IsChildFormView = true;

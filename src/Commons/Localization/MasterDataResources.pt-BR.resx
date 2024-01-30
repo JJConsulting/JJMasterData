@@ -3851,4 +3851,10 @@
   <data name="Filters, sorting and grid settings are saved." xml:space="preserve">
     <value>Filtros, ordenação e configurações da grid são salvos.</value>
   </data>
+  <data name="View Type" xml:space="preserve">
+    <value>Modo de Visualização</value>
+  </data>
+  <data name="Edit Mode Open By Default" xml:space="preserve">
+    <value>Modo Edição Aberto Por Padrão</value>
+  </data>
 </root>
