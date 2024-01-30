@@ -1761,10 +1761,6 @@
     <value>Log</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Maintains grid filters, order and pagination." xml:space="preserve">
-    <value>Mantém os filtros, ordem e paginação da grid.</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="MaintainValuesOnLoad" xml:space="preserve">
     <value>Manter valores na carga</value>
     <comment>JJMasterDataWeb</comment>
@@ -3851,5 +3847,8 @@
   </data>
   <data name="Show Header When Empty" xml:space="preserve">
     <value>Mostrar Cabeçalho Sem Dados</value>
+  </data>
+  <data name="Filters, sorting, and grid settings are saved." xml:space="preserve">
+    <value>Filtros, ordenação e configurações da grid são salvos.</value>
   </data>
 </root>
