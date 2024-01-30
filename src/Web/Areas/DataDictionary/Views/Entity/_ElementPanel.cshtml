@@ -14,9 +14,11 @@
         <tooltip title="@StringLocalizer["Table where the element data is stored."]"/>
         <input asp-for="FormElement.TableName" class="form-control"  disabled="@Model.Disabled"/>
     </div>
+</div>
+<div class="row mb-3">
     <div class="col-sm-6">
         <label asp-for="FormElement.ReadProcedureName" class="form-label"></label>
-        <div class="input-group mb-3">
+        <div class="input-group">
             <div class="input-group-text">
                 <input asp-for="FormElement.UseReadProcedure" data-bs-placement="right" 
                        data-bs-toggle="tooltip" 
@@ -30,7 +32,7 @@
     </div>
     <div class="col-sm-6">
         <label asp-for="FormElement.WriteProcedureName" class="form-label"></label>
-        <div class="input-group mb-3">
+        <div class="input-group">
             <div class="input-group-text">
                 <input asp-for="FormElement.UseWriteProcedure" 
                        data-bs-placement="right" 
@@ -44,11 +46,13 @@
             <input asp-for="FormElement.WriteProcedureName" class="form-control"  disabled="@Model.Disabled" />
         </div>
     </div>
-    <div class="col-sm-5 flex-grow-1">
-        <label asp-for="FormElement.Info" class="form-label"></label>
-        <tooltip title="@StringLocalizer["Developer only information about the element."]"/>
-        <input asp-for="FormElement.Info" class="form-control"  disabled="@Model.Disabled"/>
-    </div>
+</div>
+<div class="row mb-3 ">
+        <div class="col-sm-6 flex-grow-1">
+            <label asp-for="FormElement.Info" class="form-label"></label>
+            <tooltip title="@StringLocalizer["Developer only information about the element."]"/>
+            <input asp-for="FormElement.Info" class="form-control"  disabled="@Model.Disabled"/>
+        </div>
 </div>
 
 
