@@ -1215,11 +1215,11 @@ public class JJFormView : AsyncComponent
         return formHtml;
     }
 
-    internal async Task<HtmlBuilder> GetParentPanelHtmlAtRelationship()
+    internal async Task<HtmlBuilder> GetParentPanelHtmlAtRelationship(FormElementRelationship relationship)
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
         
-        PanelState ??= PageState.View;
+        PanelState ??= relationship.EditModeOpenByDefault ? PageState.Update : PageState.View;
 
         DataPanel.PageState = PanelState.Value;
         
