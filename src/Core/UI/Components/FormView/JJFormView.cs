@@ -130,7 +130,8 @@ public class JJFormView : AsyncComponent
             _dataImportation.OnAfterDeleteAsync += OnAfterDeleteAsync;
             _dataImportation.OnAfterInsertAsync += OnAfterInsertAsync;
             _dataImportation.OnAfterUpdateAsync += OnAfterUpdateAsync;
-
+            _dataImportation.RelationValues = RelationValues;
+            
             return _dataImportation;
         }
     }

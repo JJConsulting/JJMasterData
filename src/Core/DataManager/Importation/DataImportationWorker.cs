@@ -42,23 +42,25 @@ public class DataImportationWorker(
 
     public ProcessOptions ProcessOptions { get; set; }
 
-    public CultureInfo Culture { get; set; } = Thread.CurrentThread.CurrentUICulture;
+    private CultureInfo Culture { get; set; } = Thread.CurrentThread.CurrentUICulture;
 
     public FormElement FormElement { get; } = context.FormElement;
-    internal DataContext DataContext { get; } = context.DataContext;
+    private DataContext DataContext { get; } = context.DataContext;
 
-    public string RawData { get; } = context.RawData;
-    public char Separator { get; } = context.Separator;
+    private string RawData { get; } = context.RawData;
+    private char Separator { get; } = context.Separator;
+    
+    private IDictionary<string, object> RelationValues { get; } = context.RelationValues;
 
-    internal ExpressionsService ExpressionsService { get; } = expressionsService;
+    private ExpressionsService ExpressionsService { get; } = expressionsService;
 
-    internal IEntityRepository EntityRepository { get; } = entityRepository;
+    private IEntityRepository EntityRepository { get; } = entityRepository;
 
-    internal FieldValuesService FieldValuesService { get; } = fieldValuesService;
+    private FieldValuesService FieldValuesService { get; } = fieldValuesService;
 
-    internal IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
-    internal ILogger<DataImportationWorker> Logger { get; } = logger;
+    private ILogger<DataImportationWorker> Logger { get; } = logger;
 
     internal FormService FormService { get; } = formService;
 
@@ -222,10 +224,8 @@ public class DataImportationWorker(
     }
 
     internal IDictionary<string, object> UserValues { get; set; } = new Dictionary<string, object>();
-
-    /// <summary>
-    /// Preenche um hashtable com o nome do campor e o valor
-    /// </summary>
+    
+    
     private static Dictionary<string, object> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField,
         string[] cols)
     {
@@ -270,13 +270,15 @@ public class DataImportationWorker(
     {
         try
         {
+            DataHelper.CopyIntoDictionary(fileValues, RelationValues);
             var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,
                 new FormStateData(fileValues, UserValues, PageState.Import));
-            var ret = await FormService.InsertOrReplaceAsync(FormElement, values, DataContext);
+            
+            var formLetter = await FormService.InsertOrReplaceAsync(FormElement, values, DataContext);
 
-            if (ret.IsValid)
+            if (formLetter.IsValid)
             {
-                switch (ret.Result)
+                switch (formLetter.Result)
                 {
                     case CommandOperation.Insert:
                         currentProcess.Insert++;
@@ -296,7 +298,7 @@ public class DataImportationWorker(
             {
                 currentProcess.Error++;
                 var sErr = new StringBuilder();
-                foreach (var err in ret.Errors)
+                foreach (var err in formLetter.Errors)
                 {
                     if (sErr.Length > 0)
                         sErr.AppendLine("");
