@@ -1,4 +1,6 @@
-﻿namespace JJMasterData.Commons.Data.Entity.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JJMasterData.Commons.Data.Entity.Models;
 
 /// <summary>
 /// Specifies the behavior of the field.
@@ -6,21 +8,23 @@
 public enum FieldBehavior
 {
     /// <summary>
-    /// Default behavior of the field. 
-    /// Used for Get e Set
+    /// Field used only in GET db calls.
     /// </summary>
     Real = 1,
 
     /// <summary>
-    /// Field does not exist in procedures return.
-    /// It is not used for Get e Set.
-    /// Used to customize a field content at runtime
+    /// Field NOT used in any db calls. Use to customize things at runtime.
     /// </summary>
     Virtual = 2,
 
     /// <summary>
-    /// Field using read-only
-    /// Only used for Get
+    /// Field used only in GET db calls.
     /// </summary>
-    ViewOnly = 3
+    [Display(Name = "ReadOnly")]
+    ViewOnly = 3,
+    
+    /// <summary>
+    /// Field used only in SET db calls.
+    /// </summary>
+    WriteOnly = 4
 }

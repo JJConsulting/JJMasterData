@@ -3867,4 +3867,7 @@
   <data name="Show as Upload Outside Modal" xml:space="preserve">
     <value>Mostrar Upload Fora do Modal</value>
   </data>
+  <data name="Real - Used for both GET and SET.&lt;/br&gt;Virtual - NOT used in any operation.&lt;br&gt;ReadOnly - Used only in GET.&lt;br&gt;WriteOnly - Used only in SET." xml:space="preserve">
+    <value>Real - Usado em ambas operações de GET e SET&lt;/br&gt;Virtual - NÃO usado em nenhuma operação.&lt;br&gt;ReadOnly - Usado apenas para GET&lt;br&gt;WriteOnly - Usado apenas para SET.</value>
+  </data>
 </root>

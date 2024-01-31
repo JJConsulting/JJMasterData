@@ -254,7 +254,7 @@ public class DataImportationWorker(
         foreach (var field in FormElement.Fields)
         {
             bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
-            if (visible && field.DataBehavior == FieldBehavior.Real)
+            if (visible && field.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly)
                 list.Add(field);
         }
 

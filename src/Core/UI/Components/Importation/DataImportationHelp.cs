@@ -323,7 +323,7 @@ internal class DataImportationHelp
         foreach (var field in DataImportation.FormElement.Fields)
         {
             bool visible = DataImportation.ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
-            if (visible && field.DataBehavior == FieldBehavior.Real)
+            if (visible && field.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly)
                 list.Add(field);
         }
         return list;

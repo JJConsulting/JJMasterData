@@ -118,6 +118,7 @@
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">
                     <label class="@BootstrapHelper.Label " asp-for="DataBehavior"></label>
+                    <tooltip title=@StringLocalizer["Real - Used for both GET and SET.</br>Virtual - NOT used in any operation.<br>ReadOnly - Used only in GET.<br>WriteOnly - Used only in SET."]/>
                     <select asp-for="DataBehavior" class="form-control form-select" asp-items="Html.GetEnumSelectList<FieldBehavior>()"></select>
                 </div>
                 <div class="@BootstrapHelper.FormGroup col-sm-2 required">

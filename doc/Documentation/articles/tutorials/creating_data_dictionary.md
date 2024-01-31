@@ -65,7 +65,8 @@ FieldName, Filter, DataBehavior, Data Type, Size, Required, Pk, Identify.
 - **Filter**: Field that indicates a type of filter that will be executed in the get procedure
 - **DataBehavior**: Data behavior
   - Real: Will be used in Get and Set;
-  - Virtual: It will be used only in Set;
+  - Virtual: Not used in any db operation;
+  - WriteOnly: Will be used only in Set;
   - ViewOnly: Will be used only in Get.
 - **DataType**: Type of data that will be received from the table.
 - **Size**: Number of characters and when used as Varchar it will be the size to be reserved within the database and the max length in the form. 

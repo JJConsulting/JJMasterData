@@ -197,7 +197,7 @@ public class SqlServerProvider(
 
         var fields = element.Fields
             .ToList()
-            .FindAll(x => x.DataBehavior == FieldBehavior.Real);
+            .FindAll(x => x.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly);
 
         foreach (var field in fields)
         {

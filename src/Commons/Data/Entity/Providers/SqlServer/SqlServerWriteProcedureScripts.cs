@@ -45,7 +45,7 @@ public class SqlServerWriteProcedureScripts(
         sql.AppendLine("@action varchar(1), ");
 
         var fields = element.Fields
-            .Where(f => f.DataBehavior is FieldBehavior.Real)
+            .Where(f => f.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly)
             .ToList();
 
         foreach (var field in fields)
@@ -323,7 +323,7 @@ public class SqlServerWriteProcedureScripts(
 
     private static bool HasUpdateFields(Element element)
     {
-        return element.Fields.Any(f => !f.IsPk && f.DataBehavior == FieldBehavior.Real);
+        return element.Fields.Any(f => !f.IsPk && f.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly);
     }
 
 }

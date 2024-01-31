@@ -98,12 +98,13 @@ public class ElementField
 
     /// <summary>
     /// Field behavior in relation to the database
-    /// Default (Real)
+    /// Default value: Real
     /// </summary>
     /// <remarks>
-    /// <para/>Real     = Used to Get and Set operations
-    /// <para/>VIEWONLY = Used to only Get operation
-    /// <para/>VIRTUAL  = Ignored in database operations
+    /// <para/>Real = Used in both Get and Set operations
+    /// <para/>ViewOnly = Used to only in theGet operation
+    /// <para/>WriteOnly = Used to only in the Set operation
+    /// <para/>Virtual = Ignored in database operations
     /// </remarks>
     [JsonProperty("databehavior")]
     [Display(Name = "Behavior")]

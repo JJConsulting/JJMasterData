@@ -26,7 +26,7 @@ public class SqlServerReadProcedureScripts(
 
         var fields = element.Fields
             .ToList()
-            .FindAll(f => f.DataBehavior is not FieldBehavior.Virtual);
+            .FindAll(f => f.DataBehavior is FieldBehavior.Real or FieldBehavior.ViewOnly);
 
         var sql = new StringBuilder();
         string procedureFinalName = Options.GetReadProcedureName(element);

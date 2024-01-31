@@ -14,6 +14,7 @@ public class TooltipTagHelper : TagHelper
     {
         output.Attributes.SetAttribute("class","fa fa-question-circle help-description");
         output.Attributes.SetAttribute("data-bs-toggle", "tooltip");
+        output.Attributes.SetAttribute("data-bs-html","true");
         output.Attributes.SetAttribute("title", Title);
         output.TagName = "span";
         output.TagMode = TagMode.StartTagAndEndTag;
