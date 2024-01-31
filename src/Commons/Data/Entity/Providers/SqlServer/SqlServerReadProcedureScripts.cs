@@ -406,7 +406,7 @@ public class SqlServerReadProcedureScripts(
                     sql.Append("@");
                     sql.Append(field.Name);
                     sql.Append(" ");
-                    sql.Append(field.DataType.ToString());
+                    sql.Append("VARCHAR");
                     sql.AppendLine("(MAX),");
                     sql.Append(Tab, tabLevel);
                     break;
