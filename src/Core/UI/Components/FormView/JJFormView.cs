@@ -195,16 +195,17 @@ public class JJFormView : AsyncComponent
             _gridView.ShowTitle = ShowTitle;
             _gridView.ToolbarActions.Add(new DeleteSelectedRowsAction());
 
-            if (_gridView.InsertAction.ShowOpenedAtGrid)
-            {
-                _gridView.OnRenderInsertAction += OnRenderInsertActionAtGrid;
-            }
+            if (_gridView.InsertAction.InsertActionLocation is InsertActionLocation.AboveGrid)
+                _gridView.OnBeforeTableRenderAsync += RenderInsertActionAtGrid;
+            
+            if (_gridView.InsertAction.InsertActionLocation is InsertActionLocation.BelowGrid)
+                _gridView.OnAfterTableRenderAsync += RenderInsertActionAtGrid;
 
             return _gridView;
         }
     }
 
-    private async Task OnRenderInsertActionAtGrid(object _, GridInsertActionEventArgs args)
+    private async Task RenderInsertActionAtGrid(object _, GridRenderEventArgs args)
     {
         PageState = PageState.Insert;
         var formStateData = await GridView.GetFormStateDataAsync();
