@@ -24,7 +24,8 @@ public class ErrorController : Controller
             Exception = exceptionHandler?.Error.Message ?? stringLocalizer["Page not found"]
         };
         
-        logger?.LogCritical(exceptionHandler?.Error, "Unhandled exception captured by ErrorController");
+        if(exceptionHandler?.Error is not null)
+            logger?.LogCritical(exceptionHandler.Error, "Unhandled exception captured by ErrorController");
 
         return View(model);
     }

@@ -2080,8 +2080,12 @@ class SearchBoxListener {
                     preDispatch: function () {
                         $(jjSearchBoxHiddenSelector).val("");
                         FeedbackIcon.removeAllIcons(jjSearchBoxSelector);
+                        SpinnerOverlay.visible = false;
                         return form.serializeArray();
                     },
+                    ajaxComplete: function () {
+                        SpinnerOverlay.visible = true;
+                    }
                 },
                 onSelect: function (item) {
                     const hiddenSearchBox = document.querySelector(jjSearchBoxHiddenSelector);
@@ -2217,17 +2221,22 @@ class SpinnerOverlay {
         }
     }
     static show() {
-        this.loadHtml();
-        document.querySelector("#" + this.spinnerOverlayId).style.display = "";
+        if (this.visible) {
+            this.loadHtml();
+            document.querySelector("#" + this.spinnerOverlayId).style.display = "";
+        }
     }
     static hide() {
-        const overlay = document.querySelector("#" + this.spinnerOverlayId);
-        if (overlay) {
-            overlay.style.display = "none";
+        if (this.visible) {
+            const overlay = document.querySelector("#" + this.spinnerOverlayId);
+            if (overlay) {
+                overlay.style.display = "none";
+            }
         }
     }
 }
 SpinnerOverlay.spinnerOverlayId = "spinner-overlay";
+SpinnerOverlay.visible = true;
 class TabNavListener {
     static listenTabNavs(selectorPrefix = String()) {
         $(selectorPrefix + "a.jj-tab-link").on("shown.bs.tab", function (e) {

@@ -54,8 +54,12 @@
                     preDispatch: function () {
                         $(jjSearchBoxHiddenSelector).val("");
                         FeedbackIcon.removeAllIcons(jjSearchBoxSelector)
+                        SpinnerOverlay.visible = false;
                         return form.serializeArray();
                     },
+                    ajaxComplete: function (){
+                        SpinnerOverlay.visible = true;
+                    }
                 },
                 onSelect: function (item) {
                     const hiddenSearchBox = document.querySelector<HTMLInputElement>(jjSearchBoxHiddenSelector);

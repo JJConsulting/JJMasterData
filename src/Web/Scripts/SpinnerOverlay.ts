@@ -1,7 +1,7 @@
 ﻿class SpinnerOverlay {
     private static spinnerOverlayId = "spinner-overlay";
     private static spinner;
-
+    public static visible = true;
     private static loadHtml(): void {
         if (!document.querySelector("#"+this.spinnerOverlayId)) {
 
@@ -61,15 +61,19 @@
     }
 
     public static show(): void {
-        this.loadHtml();
-        document.querySelector<HTMLElement>("#" + this.spinnerOverlayId).style.display = "";
+        if(this.visible){
+            this.loadHtml();
+            document.querySelector<HTMLElement>("#" + this.spinnerOverlayId).style.display = "";
+        }
     }
 
     public static hide(): void {
-        const overlay = document.querySelector<HTMLElement>("#" + this.spinnerOverlayId);
+        if(this.visible){
+            const overlay = document.querySelector<HTMLElement>("#" + this.spinnerOverlayId);
 
-        if (overlay) {
-            overlay.style.display = "none";
+            if (overlay) {
+                overlay.style.display = "none";
+            }
         }
     }
 }
