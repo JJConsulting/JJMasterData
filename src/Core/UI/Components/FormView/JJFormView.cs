@@ -1019,7 +1019,7 @@ public class JJFormView : AsyncComponent
     {
         var actionMap = _currentActionMap;
         var script = new StringBuilder();
-        script.Append($"document.getElementById('form-view-page-state-{Name}').value = '{(int)PageState.List}'; ");
+        script.Append($"setPageState('{Name}',{(int)PageState.List})");
         script.Append($"document.getElementById('current-action-map-{Name}').value = null; ");
         script.AppendLine("document.forms[0].submit(); ");
 
@@ -1138,7 +1138,7 @@ public class JJFormView : AsyncComponent
         
         if (ComponentContext is ComponentContext.Modal)
         {
-            html.AppendScript($"document.getElementById('form-view-page-state-{Name}').value={(int)PageState}");
+            html.AppendScript($"setPageState('{Name}',{(int)PageState})");
             return new ContentComponentResult(html);
         }
 
@@ -1187,7 +1187,7 @@ public class JJFormView : AsyncComponent
     private async Task<ComponentResult> GetDataPanelResult(IDictionary<string, object?> values)
     {
         var panelHtml = await GetDataPanelHtml();
-        panelHtml.AppendScript($"document.getElementById('form-view-page-state-{Name}').value={(int)PageState}");
+        panelHtml.AppendScript($"setPageState('{Name}',{(int)PageState})");
         
         if (ComponentContext is ComponentContext.Modal)
             return new ContentComponentResult(panelHtml);

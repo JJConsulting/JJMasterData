@@ -8,3 +8,9 @@ enum PageState {
     Delete = 7,
     AuditLog = 8
 }
+
+const setPageState = (componentName: string, pageState: PageState) =>{
+    onDOMReady(function(){
+        document.querySelector<HTMLInputElement>(`#form-view-page-state-${componentName}`).value = pageState.toString()
+    });
+}
