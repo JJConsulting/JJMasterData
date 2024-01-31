@@ -158,7 +158,7 @@ internal class GridTableBody(JJGridView gridView)
                 {
                     var iconType = IconHelper.GetIconTypeFromField(field,value);
 
-                    cell = GetIconCell(iconType, iconType.ToString());
+                    cell = GetIconCell(iconType, null, iconType.ToString());
                 }
                 else
                 {
