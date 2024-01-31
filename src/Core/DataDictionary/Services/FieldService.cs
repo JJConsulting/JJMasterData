@@ -118,13 +118,6 @@ public class FieldService(IValidationDictionary validationDictionary,
             if (field.Size is < -1 or 0)
                 AddError(nameof(field.Size), StringLocalizer["Field size must be equal to -1 or larger than 0"]);
         }
-        else
-        {
-            if (field.Filter.Type is FilterMode.MultValuesContain or FilterMode.MultValuesEqual)
-            {
-                AddError(nameof(field.Filter.Type),StringLocalizer["MULTVALUES filters are only allowed for text type fields"]);
-            }
-        }
 
 
         var isNotIdentity = field.AutoNum && field.DataType is not FieldType.Int &&

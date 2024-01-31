@@ -1837,10 +1837,6 @@
     <value>Arquivo Múltiplo</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="MULTVALUES filters are only allowed for text type fields" xml:space="preserve">
-    <value>Filtros MULTVALUES são permitidos apenas para campos de tipo de texto</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Name" xml:space="preserve">
     <value>Nome</value>
     <comment>JJMasterDataWeb</comment>

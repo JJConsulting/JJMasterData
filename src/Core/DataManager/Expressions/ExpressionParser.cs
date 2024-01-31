@@ -55,6 +55,18 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
             {
                 parsedValue = state == PageState.Insert ? "1" : "0";
             }
+            else if ("isfilter".Equals(field.ToLower()))
+            {
+                parsedValue = state == PageState.Filter ? "1" : "0";
+            }
+            else if ("isimport".Equals(field.ToLower()))
+            {
+                parsedValue = state == PageState.Import ? "1" : "0";
+            }
+            else if ("isdelete".Equals(field.ToLower()))
+            {
+                parsedValue = state == PageState.Delete ? "1" : "0";
+            }
             else if (values != null && values.TryGetValue(field, out var objVal) && !string.IsNullOrEmpty(objVal?.ToString()))
             {
                 if(objVal is bool boolValue)
