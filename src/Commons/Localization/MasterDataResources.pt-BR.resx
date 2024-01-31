@@ -3868,4 +3868,7 @@
   <data name="Export Action" xml:space="preserve">
     <value>Ação de Exportação</value>
   </data>
+  <data name="Show as Upload Outside Modal" xml:space="preserve">
+    <value>Mostrar Upload Fora do Modal</value>
+  </data>
 </root>

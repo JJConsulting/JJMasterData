@@ -79,7 +79,7 @@ public class JJTextFile(IHttpRequest request,
             
             _uploadView = ComponentFactory.UploadView.Create();
             _uploadView.Name = $"{FormElementField.Name}-upload-view";
-            _uploadView.ParentName = ParentName;
+            _uploadView.ParentName = FormElement.ParentName ?? ParentName;
             _uploadView.Title = string.Empty;
             _uploadView.AutoSave = false;
             _uploadView.JsCallback = Scripts.GetRefreshScript();
@@ -94,6 +94,8 @@ public class JJTextFile(IHttpRequest request,
             _uploadView.UploadArea.ShowFileSize = dataFile.ExportAsLink;
             _uploadView.UploadArea.AllowedTypes = dataFile.AllowedTypes;
             _uploadView.UploadArea.EnableCopyPaste = dataFile.AllowPasting;
+            _uploadView.UploadArea.RouteContext.ElementName = FormElement.Name;
+            _uploadView.UploadArea.RouteContext.ParentElementName = FormElement.ParentName;
             _uploadView.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
             _uploadView.UploadArea.QueryStringParams["fieldName"] = FieldName;
             

@@ -62,6 +62,6 @@ public class FormElementDataFile
     public bool AllowPasting { get; set; } = true;
     
     [JsonProperty("showAsUploadView")]
-    [Display(Name = "Show as Upload View")]
+    [Display(Name = "Show as Upload Outside Modal")]
     public bool ShowAsUploadView { get; set; }
 }

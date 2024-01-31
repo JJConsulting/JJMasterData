@@ -172,7 +172,7 @@ public class JJUploadArea : AsyncComponent
         div.WithAttributes(Attributes);
         div.WithAttributeIf(Url is not null,"upload-url", Url!);
         div.WithAttribute("js-callback",JsCallback);
-        div.WithAttribute((string)"route-context", (string)EncryptionService.EncryptRouteContext(RouteContext));
+        div.WithAttribute((string)"route-context", EncryptionService.EncryptRouteContext(RouteContext));
         div.WithAttribute("allow-multiple-files", Multiple.ToString().ToLower());
         div.WithAttribute("query-string-params", GetQueryStringParams());
         div.WithAttribute("max-file-size", MaxFileSize.ToString());
@@ -217,6 +217,8 @@ public class JJUploadArea : AsyncComponent
     /// URL where the files are uploaded. If none is provided, they will be sended to the same page with a RouteContext.
     /// </summary>
     public string? Url { get; set; }
+
+    public string? ParentName { get; set; }
 
     /// <remarks>
     /// To change this in .NET Framework, change web.config in system.web/httpRuntime
