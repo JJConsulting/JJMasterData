@@ -42,6 +42,9 @@ Building an expression<br>
 
 **System keywords**<br>
 - {PageState} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
+- {IsList} = 1 | 0
+- {IsInsert} = 1 | 0
+- {IsUpdate} = 1 | 0
 - {ComponentName} = Name of the component that triggered the AutoPostBack event
 - {UserId} = Identifier of the authenticated user, can be recovered from UserValues, Session or Claims
 
