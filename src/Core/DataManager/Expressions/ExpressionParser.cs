@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -41,6 +42,18 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
             else if ("pagestate".Equals(field.ToLower()))
             {
                 parsedValue = $"{state}";
+            }
+            else if ("islist".Equals(field.ToLower()))
+            {
+                parsedValue = state == PageState.List ? "1" : "0";
+            }
+            else if ("isupdate".Equals(field.ToLower()))
+            {
+                parsedValue = state == PageState.Update ? "1" : "0";
+            }
+            else if ("isinsert".Equals(field.ToLower()))
+            {
+                parsedValue = state == PageState.Insert ? "1" : "0";
             }
             else if (values != null && values.TryGetValue(field, out var objVal) && !string.IsNullOrEmpty(objVal?.ToString()))
             {

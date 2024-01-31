@@ -55,7 +55,7 @@
                         $(jjSearchBoxHiddenSelector).val("");
                         FeedbackIcon.removeAllIcons(jjSearchBoxSelector)
                         return form.serializeArray();
-                    },
+                    }
                 },
                 onSelect: function (item) {
                     const hiddenSearchBox = document.querySelector<HTMLInputElement>(jjSearchBoxHiddenSelector);

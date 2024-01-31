@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -83,6 +84,8 @@ public class JJDataImportation : ProcessComponent
     internal DataImportationScripts DataImportationScripts =>
         _dataImportationScripts ??= new DataImportationScripts(this);
 
+    public IDictionary<string, object> RelationValues { get; set; }
+    
     #endregion
     
     #region "Constructors"
@@ -309,10 +312,8 @@ public class JJDataImportation : ProcessComponent
     private DataImportationWorker CreateImportationTextWorker(string postedText, char separator)
     {
         var dataContext = new DataContext(CurrentContext.Request, DataContextSource.Upload, UserId);
-
-        var worker =
-            DataImportationWorkerFactory.Create(new DataImportationContext(FormElement, dataContext, postedText,
-                separator));
+        var dataImportationContext = new DataImportationContext(FormElement, dataContext, RelationValues, postedText, separator);
+        var worker = DataImportationWorkerFactory.Create(dataImportationContext);
         worker.UserId = UserId;
         worker.ProcessOptions = ProcessOptions;
         worker.UserValues = UserValues;

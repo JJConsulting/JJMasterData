@@ -1,4 +1,5 @@
 using JJMasterData.Commons.Util;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.NCalc.Configuration;
@@ -22,7 +23,7 @@ public class NCalcExpressionProvider(IOptions<NCalcExpressionProviderOptions> op
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
         var ncalcExpression = new Expression(replacedExpression, Options.EvaluateOptions);
-
+    
         foreach (var function in Options.AdditionalFunctions)
             ncalcExpression.EvaluateFunction += function;
         

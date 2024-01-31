@@ -201,9 +201,10 @@ textarea {
                                   supported by Chrome and Opera */
 }
 
+/*noinspection CssReplaceWithShorthandSafely*/
 
 input.loading-circle {
-    background: url('../_content/JJMasterData.Web/images/input-ajax-loader.gif') no-repeat right 10px center;
+    background: url('../../images/LoadingIndicator.gif') no-repeat right 0.625rem center;
 }
 
 a.disabled {
@@ -536,8 +537,7 @@ button.dropdown-toggle.form-control {
     margin-bottom: 1vh;
 }
 
-/*Inline icons*/
-
+/*Spinner overlay*/
 .spinner-overlay {
     position: fixed;
     top: 0;
