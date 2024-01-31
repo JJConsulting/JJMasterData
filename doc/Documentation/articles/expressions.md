@@ -14,7 +14,7 @@ Example: <br>
 <br>
 "exp:1=1" Return true.
 <br>
-"exp:'{pagestate}' = 'LIST'" If a list return true<br>
+"exp: {IsList}" If at the list state return true<br>
 "exp:'{pagestate}' = 'UPDATE' AND '{ID}' = '1'" If update and a field value ID equals 1 return true<br>
 
 **Don't forget to add single quotes, if your value is a string or can be null, because it will be replaced at runtime** 
@@ -29,29 +29,33 @@ In the Data Dictionary UI, the expression editor is simplified like this:
 - Type [sql:] returns the result of a sql command;
 
 > [!TIP] 
-> Check if your field supports all expressions checking the attributes
+> Check if your field supports all expressions checking the attributes of the desired property at the docs.
 
 > [!TIP]
-> SQL Expression values will be replaced with a SQL variable to prevent SQL injection atacks
+> SQL Expression values will be replaced with a SQL variable to prevent SQL injection attacks.
 
 ## How to do it?
 Building an expression<br>
 > [!WARNING] 
-> Contents enclosed in {} (braces) will be replaced by current values ​​at runtime. Following the order:
+> Contents enclosed in {} (braces) will be replaced by current values at runtime. Following the order:
 
 
-**System keywords**<br>
+**MasterData keywords**<br>
 - {PageState} = "INSERT" | "UPDATE" | "VIEW" | "LIST" | "FILTER" | "IMPORT"
 - {IsList} = 1 | 0
+- {IsFilter} = 1 | 0
+- {IsView} = 1 | 0
 - {IsInsert} = 1 | 0
 - {IsUpdate} = 1 | 0
+- {IsDelete} = 1 | 0
+- {IsImportation} = 1 | 0
 - {ComponentName} = Name of the component that triggered the AutoPostBack event
 - {UserId} = Identifier of the authenticated user, can be recovered from UserValues, Session or Claims
 
 Dynamic values will be recovered in the following order:
-1. UserValues
-2. FormValues
-3. System keywords
+1. MasterData keywords
+2. UserValues
+3. FormValues
 4. UserSession
 5. Claims
 
@@ -93,6 +97,5 @@ At your `Program.cs` simply:
 ```cs
 builder.Services.AddJJMasterDataWeb().WithExpressionProvider<TMyCustomProvider>();
 ```
-
 
 [!include[Readme](../../../src/Plugins/NCalc/README.MD)]

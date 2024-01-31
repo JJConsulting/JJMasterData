@@ -10,10 +10,8 @@ namespace JJMasterData.Core.DataManager.Models;
 
 public class FormStateData
 {
-    public required IDictionary<string, object?>? UserValues { get; init; }
-
     public required IDictionary<string, object?> Values { get; init; }
-    
+    public required IDictionary<string, object?>? UserValues { get; init; }
     public required PageState PageState { get; init; }
 
     public FormStateData()
@@ -40,5 +38,14 @@ public class FormStateData
         Values = values;
         PageState = pageState;
     }
-
+    
+    public void Deconstruct(
+        out IDictionary<string, object?> values,
+        out IDictionary<string, object?>? userValues,
+        out PageState pageState)
+    {
+        values = Values;
+        userValues = UserValues;
+        pageState = PageState;
+    }
 }
