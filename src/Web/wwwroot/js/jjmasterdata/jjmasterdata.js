@@ -1398,18 +1398,6 @@ const listenAllEvents = (selectorPrefix = String()) => {
         $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
     }
     document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces);
-    $(document).on({
-        ajaxSend: function (event, jqXHR, settings) {
-            if (settings.url != null &&
-                settings.url.indexOf("context=searchBox") !== -1) {
-                return null;
-            }
-            if (showSpinnerOnPost) {
-                SpinnerOverlay.show();
-            }
-        },
-        ajaxStop: function () { SpinnerOverlay.hide(); }
-    });
     document.querySelector("form").addEventListener("submit", function (event) {
         let isValid;
         if (typeof this.reportValidity === "function") {
@@ -1994,6 +1982,11 @@ var PageState;
     PageState[PageState["Delete"] = 7] = "Delete";
     PageState[PageState["AuditLog"] = 8] = "AuditLog";
 })(PageState || (PageState = {}));
+const setPageState = (componentName, pageState) => {
+    onDOMReady(function () {
+        document.querySelector(`#form-view-page-state-${componentName}`).value = pageState.toString();
+    });
+};
 class PostFormValuesOptions {
 }
 function getRequestOptions() {
@@ -2080,8 +2073,12 @@ class SearchBoxListener {
                     preDispatch: function () {
                         $(jjSearchBoxHiddenSelector).val("");
                         FeedbackIcon.removeAllIcons(jjSearchBoxSelector);
+                        SpinnerOverlay.visible = false;
                         return form.serializeArray();
                     },
+                    ajaxComplete: function () {
+                        SpinnerOverlay.visible = true;
+                    }
                 },
                 onSelect: function (item) {
                     const hiddenSearchBox = document.querySelector(jjSearchBoxHiddenSelector);
@@ -2217,17 +2214,22 @@ class SpinnerOverlay {
         }
     }
     static show() {
-        this.loadHtml();
-        document.querySelector("#" + this.spinnerOverlayId).style.display = "";
+        if (this.visible) {
+            this.loadHtml();
+            document.querySelector("#" + this.spinnerOverlayId).style.display = "";
+        }
     }
     static hide() {
-        const overlay = document.querySelector("#" + this.spinnerOverlayId);
-        if (overlay) {
-            overlay.style.display = "none";
+        if (this.visible) {
+            const overlay = document.querySelector("#" + this.spinnerOverlayId);
+            if (overlay) {
+                overlay.style.display = "none";
+            }
         }
     }
 }
 SpinnerOverlay.spinnerOverlayId = "spinner-overlay";
+SpinnerOverlay.visible = true;
 class TabNavListener {
     static listenTabNavs(selectorPrefix = String()) {
         $(selectorPrefix + "a.jj-tab-link").on("shown.bs.tab", function (e) {

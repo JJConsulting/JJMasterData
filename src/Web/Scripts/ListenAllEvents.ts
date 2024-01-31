@@ -30,20 +30,6 @@
     
     document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces)
     
-    $(document).on({
-        ajaxSend: function (event, jqXHR, settings) {
-            if (settings.url != null &&
-                settings.url.indexOf("context=searchBox") !== -1) {
-                return null;
-            }
-
-            if (showSpinnerOnPost) {
-                SpinnerOverlay.show();
-            }
-        },
-        ajaxStop: function () { SpinnerOverlay.hide(); }
-    });
-    
     document.querySelector("form").addEventListener("submit", function (event) {
         let isValid: boolean;
 
