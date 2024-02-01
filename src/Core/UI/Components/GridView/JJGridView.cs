@@ -72,6 +72,7 @@ public class JJGridView : AsyncComponent
     public event AsyncEventHandler<GridToolbarActionEventArgs>? OnRenderToolbarActionAsync;
     public event AsyncEventHandler<GridRenderEventArgs>? OnBeforeTableRenderAsync;
     public event AsyncEventHandler<GridRenderEventArgs>? OnAfterTableRenderAsync;
+    public event AsyncEventHandler<GridRowEventArgs>? OnRenderRowAsync;
     #endregion
 
     #region Properties
@@ -368,7 +369,7 @@ public class JJGridView : AsyncComponent
             _table.Body.OnRenderActionAsync += OnRenderActionAsync;
             _table.Body.OnRenderCellAsync += OnRenderCellAsync;
             _table.Body.OnRenderSelectedCellAsync += OnRenderSelectedCellAsync;
-
+            _table.Body.OnRenderRowAsync += OnRenderRowAsync;
 
             return _table;
         }

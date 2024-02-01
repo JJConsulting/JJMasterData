@@ -22,9 +22,11 @@ internal class GridTableBody(JJGridView gridView)
     private string Name => $"{GridView.Name}-table";
     private JJGridView GridView { get; } = gridView;
 
+
     public event AsyncEventHandler<ActionEventArgs>? OnRenderActionAsync;
     public event AsyncEventHandler<GridCellEventArgs>? OnRenderCellAsync;
     public event AsyncEventHandler<GridSelectedCellEventArgs>? OnRenderSelectedCellAsync;
+    public event AsyncEventHandler<GridRowEventArgs>? OnRenderRowAsync;
 
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
@@ -58,6 +60,13 @@ internal class GridTableBody(JJGridView gridView)
 
         await tr.AppendRangeAsync(GetTdHtmlList(row, index));
 
+        if (OnRenderRowAsync is not null)
+            await OnRenderRowAsync(GridView, new()
+            {
+                HtmlBuilder = tr,
+                RowValues = row
+            });
+        
         return tr;
     }
 

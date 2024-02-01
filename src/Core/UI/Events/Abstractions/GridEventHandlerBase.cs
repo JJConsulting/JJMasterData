@@ -13,4 +13,5 @@ public abstract class GridEventHandlerBase : IGridEventHandler
     public virtual Task OnDataLoadAsync(object sender, GridDataLoadEventArgs eventArgs) => Task.CompletedTask;
     public virtual Task OnRenderActionAsync(object sender, ActionEventArgs eventArgs) => Task.CompletedTask;
     public virtual Task OnRenderToolbarActionAsync(object sender, GridToolbarActionEventArgs eventArgs) => Task.CompletedTask;
+    public virtual Task OnRenderRowAsync(object sender, GridRowEventArgs eventArgs) => Task.CompletedTask;
 }
