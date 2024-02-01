@@ -42,5 +42,6 @@ public enum HtmlTag
     Video,
     Form,
     FieldSet,
-    Legend
+    Legend,
+    U
 }
