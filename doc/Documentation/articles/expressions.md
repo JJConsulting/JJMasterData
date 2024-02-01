@@ -48,7 +48,7 @@ Building an expression<br>
 - {IsInsert} = 1 | 0
 - {IsUpdate} = 1 | 0
 - {IsDelete} = 1 | 0
-- {IsImportation} = 1 | 0
+- {IsImport} = 1 | 0
 - {ComponentName} = Name of the component that triggered the AutoPostBack event
 - {UserId} = Identifier of the authenticated user, can be recovered from UserValues, Session or Claims
 

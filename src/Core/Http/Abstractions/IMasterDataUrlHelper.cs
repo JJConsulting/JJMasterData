@@ -7,7 +7,8 @@ public interface IMasterDataUrlHelper
 #if NET
     string Action([AspMvcAction] string action = null, 
                   [AspMvcController] string controller = null, 
-                  object values = null);
+                   [AspMvcArea("Area"),
+                   AspMvcModelType] object values = null);
 #else
     string Action(string action = null, 
                   string controller = null, 
