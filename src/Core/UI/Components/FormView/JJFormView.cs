@@ -1295,9 +1295,10 @@ public class JJFormView : AsyncComponent
 
     private async Task<JJToolbar> GetAuditLogBottomBar()
     {
+        var formStateData = await GetFormStateDataAsync();
         var hideAuditLogButton =
-            await ComponentFactory.ActionButton.CreateFormToolbarButton(
-                FormElement.Options.FormToolbarActions.BackAction, this);
+             ComponentFactory.ActionButton.CreateFormToolbarButton(
+                FormElement.Options.FormToolbarActions.BackAction,formStateData, this);
 
         var toolbar = new JJToolbar
         {
@@ -1314,6 +1315,9 @@ public class JJFormView : AsyncComponent
             CssClass = "mb-3"
         };
 
+        
+        var formStateData = await GetFormStateDataAsync();
+        
         foreach (var action in actions.Where(a => !a.IsGroup))
         {
             if (action is SaveAction saveAction)
@@ -1323,8 +1327,7 @@ public class JJFormView : AsyncComponent
 
             var factory = ComponentFactory.ActionButton;
 
-
-            var linkButton = await factory.CreateFormToolbarButton(action, this);
+            var linkButton = factory.CreateFormToolbarButton(action, formStateData, this);
             toolbar.Items.Add(linkButton.GetHtmlBuilder());
         }
 
@@ -1337,7 +1340,7 @@ public class JJFormView : AsyncComponent
             {
                 btnGroup.ShowAsButton = groupedAction.ShowAsButton;
                 var factory = ComponentFactory.ActionButton;
-                var linkButton = await factory.CreateFormToolbarButton(groupedAction, this);
+                var linkButton = factory.CreateFormToolbarButton(groupedAction,formStateData, this);
                 btnGroup.Actions.Add(linkButton);
             }
 
@@ -1495,18 +1498,6 @@ public class JJFormView : AsyncComponent
             FormElement = FormElement,
             FormStateData = formStateData,
             FieldName = fieldName,
-            IsModal = ComponentContext is ComponentContext.Modal,
-            ParentComponentName = Name
-        };
-    }
-    
-    public async Task<ActionContext> GetActionContextAsync(BasicAction action)
-    {
-        return new ActionContext
-        {
-            Action = action,
-            FormElement = FormElement,
-            FormStateData = await GetFormStateDataAsync(),
             IsModal = ComponentContext is ComponentContext.Modal,
             ParentComponentName = Name
         };

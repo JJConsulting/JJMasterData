@@ -151,9 +151,12 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
         return button;
     }
 
-    public async Task<JJLinkButton> CreateFormToolbarButton(BasicAction action, JJFormView formView)
+    public JJLinkButton CreateFormToolbarButton(
+        BasicAction action, 
+        FormStateData formStateData,
+        JJFormView formView)
     {
-        var actionContext = await formView.GetActionContextAsync(action);
+        var actionContext = formView.GetActionContext(action,formStateData);
         var button = Create(action, actionContext.FormStateData);
 
         if (action is UserCreatedAction)
