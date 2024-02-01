@@ -57,6 +57,7 @@ public class FieldValuesService(ExpressionsService expressionsService)
             if (defaultValue is not null && !string.IsNullOrEmpty(defaultValue.ToString()))
             {
                 defaultValues.Add(field.Name, defaultValue);
+                DataHelper.CopyIntoDictionary(formStateData.Values, defaultValues);
             }
         }
 

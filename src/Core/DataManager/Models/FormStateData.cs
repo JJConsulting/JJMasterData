@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
 
@@ -38,7 +37,7 @@ public class FormStateData
         Values = values;
         PageState = pageState;
     }
-    
+
     public void Deconstruct(
         out IDictionary<string, object?> values,
         out IDictionary<string, object?>? userValues,
