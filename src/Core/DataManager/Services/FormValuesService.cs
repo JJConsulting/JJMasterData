@@ -39,11 +39,11 @@ public class FormValuesService(
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
 
 #if NET48
-            object? value = field.ValidateRequest
+            var value = field.ValidateRequest
                 ? FormValues[fieldName]
                 : FormValues.GetUnvalidated(fieldName);
 #else
-            object? value = FormValues[fieldName];
+            var value = FormValues[fieldName];
 #endif
             HandleFieldValue(field, values, value);
         }
@@ -51,45 +51,48 @@ public class FormValuesService(
         return values;
     }
 
-    internal static void HandleFieldValue(FormElementField field, IDictionary<string, object?> values, object? value)
+    internal static void HandleFieldValue(FormElementField field, IDictionary<string, object?> values, string? value)
     {
+        object? parsedValue = null;
         switch (field.Component)
         {
             case FormComponent.Date:
             case FormComponent.DateTime:
-                if (value is null)
+                if (string.IsNullOrWhiteSpace(value))
                     break;
                 
-                if (!string.IsNullOrEmpty(value.ToString()))
-                    value = DateTime.Parse(value.ToString()!);
+                parsedValue = DateTime.Parse(value);
                 
                 break;
             case FormComponent.Currency:
-                if (value is null)
+                if (string.IsNullOrWhiteSpace(value))
                     break;
 
-                value = HandleCurrencyComponent(field, value);
+                parsedValue = HandleCurrencyComponent(field, value);
 
                 break;
             case FormComponent.Slider:
             case FormComponent.Number:
-                if (value is null)
+                if (string.IsNullOrWhiteSpace(value))
                     break;
 
-                value = HandleNumericComponent(field.DataType, value);
+                parsedValue = HandleNumericComponent(field.DataType, value);
 
                 break;
             case FormComponent.CheckBox:
-                if(value is not null)
-                    value = StringManager.ParseBool(value);
+                if (string.IsNullOrWhiteSpace(value))
+                    parsedValue = StringManager.ParseBool(value);
+                break;
+            default:
+                parsedValue = value;
                 break;
         }
 
-        if (value is not null)
-            values.Add(field.Name, value);
+        if (parsedValue is not null)
+            values.Add(field.Name, parsedValue);
     }
 
-    internal static object? HandleCurrencyComponent(FormElementField field, object? value)
+    internal static object? HandleCurrencyComponent(FormElementField field, string? value)
     {
         if (value is null)
             return value;
@@ -106,12 +109,12 @@ public class FormValuesService(
         switch (field.DataType)
         {
             case FieldType.Float:
-                if (float.TryParse(value.ToString(), NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
+                if (float.TryParse(value, NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
                         cultureInfo, out var floatValue))
                     parsedValue = floatValue;
                 break;
             case FieldType.Int:
-                if (int.TryParse(value.ToString(), NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
+                if (int.TryParse(value, NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
                         cultureInfo, out var numericValue))
                     parsedValue = numericValue;
                 break;
@@ -120,7 +123,7 @@ public class FormValuesService(
         return parsedValue;
     }
 
-    internal static object? HandleNumericComponent(FieldType dataType, object? value)
+    internal static object? HandleNumericComponent(FieldType dataType, string? value)
     {
         if (value is null)
             return value;
@@ -131,11 +134,11 @@ public class FormValuesService(
         switch (dataType)
         {
             case FieldType.Float:
-                if (float.TryParse(value.ToString(), NumberStyles.Any, culture, out var floatValue))
+                if (float.TryParse(value, NumberStyles.Any, culture, out var floatValue))
                     parsedValue = floatValue;
                 break;
             case FieldType.Int:
-                if (int.TryParse(value.ToString(), NumberStyles.Any, culture, out var numericValue))
+                if (int.TryParse(value, NumberStyles.Any, culture, out var numericValue))
                     parsedValue = numericValue;
                 break;
         }
