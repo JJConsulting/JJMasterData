@@ -3,6 +3,7 @@
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.UI.Components
 @using JJMasterData.Commons.Data.Entity.Providers
+@using JJMasterData.Commons.Data.Entity.Models
 
 @inject IComponentFactory ComponentFactory 
 
@@ -279,6 +280,10 @@
                                             @if (field.Component is not FormComponent.Text)
                                             {
                                                 <span class="@GetFontAwesomeIconClass(field.Component).GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Component.ToString()"></span>
+                                            }
+                                            @if (field.Filter.Type is not FilterMode.None)
+                                            {
+                                                <span class="@IconType.Filter.GetCssClass() ms-1" data-bs-toggle="tooltip" data-bs-original-title="@field.Filter.Type.ToString()"></span>
                                             }
                                             <br>
                                             @if (field.Label != null)
