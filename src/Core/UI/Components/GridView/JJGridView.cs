@@ -1070,7 +1070,7 @@ public class JJGridView : AsyncComponent
         if (!isVisible)
             return new HtmlBuilder(string.Empty);
 
-        var legend = new GridLegendView(ComponentFactory.Controls.ComboBox, StringLocalizer)
+        var legend = new GridCaptionView(action.Tooltip,ComponentFactory.Controls.ComboBox, StringLocalizer)
         {
             Name = Name,
             ShowAsModal = true,

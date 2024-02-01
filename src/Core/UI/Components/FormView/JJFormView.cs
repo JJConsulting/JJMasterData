@@ -1112,7 +1112,7 @@ public class JJFormView : AsyncComponent
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         if (ShowTitle)
-            html.AppendComponent(await GetTitleAsync());
+            html.AppendComponent(await GetTitleAsync(new FormStateData(values, UserValues, PageState)));
 
         var layout = new FormViewRelationshipLayout(this, visibleRelationships);
 
@@ -1442,9 +1442,7 @@ public class JJFormView : AsyncComponent
         var values = await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, tempFormData, autoReloadFormFields);
 
         if (!values.Any())
-        {
             values = DataPanel.Values as Dictionary<string,object?>;
-        }
 
         _formStateData = new FormStateData(values ?? new Dictionary<string, object?>(), UserValues, PageState);
         return _formStateData;

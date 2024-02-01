@@ -7,11 +7,14 @@ using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
-internal class GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStringLocalizer<MasterDataResources> stringLocalizer)
+internal class GridCaptionView(
+    string title,
+    IControlFactory<JJComboBox> comboBoxFactory,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     private IControlFactory<JJComboBox> ComboBoxFactory { get; } = comboBoxFactory;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    public bool ShowAsModal { get; set; } = false;
+    public bool ShowAsModal { get; init; } = false;
 
     public required string Name { get; init; }
     public required FormElement FormElement { get; init; }
@@ -23,12 +26,12 @@ internal class GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStri
             return GetModalHtmlBuilder();
         }
 
-        var field = GetLegendField();
+        var field = GetCaptionField();
 
-        return  GetLegendHtmlBuilder(field);
+        return GetCaptionHtmlBuilder(field);
     }
 
-    private async Task<HtmlBuilder> GetLegendHtmlBuilder(FormElementField field)
+    private async Task<HtmlBuilder> GetCaptionHtmlBuilder(FormElementField field)
     {
         var div = new HtmlBuilder(HtmlTag.Div);
 
@@ -48,9 +51,9 @@ internal class GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStri
                 {
                     div.Append(HtmlTag.Div, div =>
                     {
-                        div.WithAttribute("style", "height:40px");
+                        div.WithAttribute("style", "height:2.5rem");
 
-                        div.AppendComponent(new JJIcon(item.Icon, item.IconColor, item.Description)
+                        div.AppendComponent(new JJIcon(item.Icon, item.IconColor)
                         {
                             CssClass = "fa-fw fa-2x"
                         });
@@ -72,24 +75,24 @@ internal class GridLegendView(IControlFactory<JJComboBox> comboBoxFactory, IStri
 
     private async Task<HtmlBuilder> GetModalHtmlBuilder()
     {
-        var field = GetLegendField();
+        var field = GetCaptionField();
 
         var form = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("form-horizontal")
             .WithAttribute("role", "form")
-            .Append(await GetLegendHtmlBuilder(field));
+            .Append(await GetCaptionHtmlBuilder(field));
         
         var dialog = new JJModalDialog
         {
             Name = $"{Name}-legend-modal",
-            Title = StringLocalizer["Information"],
+            Title = StringLocalizer[title],
             HtmlBuilderContent = form
         };
         
         return dialog.BuildHtml();
     }
     
-    private FormElementField GetLegendField()
+    private FormElementField GetCaptionField()
     {
         return FormElement.Fields.FirstOrDefault(f 
             => f.Component is FormComponent.ComboBox or FormComponent.RadioButtonGroup && (f.DataItem?.ShowIcon ?? false));
