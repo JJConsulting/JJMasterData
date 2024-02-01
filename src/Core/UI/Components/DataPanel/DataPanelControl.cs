@@ -127,21 +127,12 @@ internal class DataPanelControl
             var htmlField = new HtmlBuilder(HtmlTag.Div)
                 .WithCssClass(BootstrapHelper.FormGroup);
 
-            bool isRange = IsRange(field, PageState);
-            if (isRange)
-            {
-                htmlField.WithCssClass("row");
-                htmlField.WithCssClass("col-sm-5");
-            }
             
             row?.Append(htmlField);
 
             string fieldClass;
-            if (isRange)
-            {
-                fieldClass = string.Empty;
-            }
-            else if (field.CssClass != null && !string.IsNullOrEmpty(field.CssClass))
+            
+            if (field.CssClass != null && !string.IsNullOrEmpty(field.CssClass))
             {
                 fieldClass = field.CssClass;
             }
@@ -162,7 +153,7 @@ internal class DataPanelControl
 
             if (field.Component is not FormComponent.CheckBox)
             {
-                var label = CreateLabel(field, isRange);
+                var label = CreateLabel(field, IsRange(field, PageState));
                 htmlField.AppendComponent(label);
             }
                 
@@ -237,9 +228,8 @@ internal class DataPanelControl
             object? value = null;
             if (Values != null && Values.TryGetValue(f.Name, out var nonFormattedValue))
                 value = FieldsService.FormatValue(f, nonFormattedValue);
-
-            var isRange = IsRange(f, PageState);
-            var label = CreateLabel(f, isRange);
+            
+            var label = CreateLabel(f, IsRange(f, PageState));
             label.CssClass = labelClass;
             
             var cssClass = string.Empty;
@@ -276,18 +266,13 @@ internal class DataPanelControl
             row?.WithCssClass(cssClass)
              .AppendComponent(label);
 
-            if (isRange)
+   
+            await row?.AppendAsync(HtmlTag.Div, async col =>
             {
-                row?.Append(await GetControlFieldHtml(f, value));
-            }
-            else
-            {
-                await row?.AppendAsync(HtmlTag.Div, async col =>
-                {
-                    col.WithCssClass(colClass);
-                    col.Append(_isViewModeAsStatic ? await GetStaticField(f) : await GetControlFieldHtml(f, value));
-                })!;
-            }
+                col.WithCssClass(colClass);
+                col.Append(_isViewModeAsStatic ? await GetStaticField(f) : await GetControlFieldHtml(f, value));
+            })!;
+            
         }
 
         return html;

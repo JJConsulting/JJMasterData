@@ -25,7 +25,8 @@ public class JJTextRange(IFormValues formValues,
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
-        var div = new HtmlBuilder(string.Empty);
+        var div = new HtmlBuilder(HtmlTag.Div);
+        div.WithCssClass("row");
         div.WithCssClass(CssClass);
         div.WithAttributes(Attributes);
         await div.AppendAsync(HtmlTag.Div, async div =>
