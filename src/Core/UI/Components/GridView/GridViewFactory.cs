@@ -76,6 +76,7 @@ internal class GridViewFactory(IHttpContext currentContext,
         gridView.OnRenderCellAsync += eventHandler.OnRenderCellAsync;
         gridView.OnFilterLoadAsync += eventHandler.OnFilterLoadAsync;
         gridView.OnRenderSelectedCellAsync += eventHandler.OnRenderSelectedCellAsync;
+        gridView.OnRenderRowAsync += eventHandler.OnRenderRowAsync;
     }
 
     public JJGridView Create(DataTable dataTable)

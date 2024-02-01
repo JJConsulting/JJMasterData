@@ -57,4 +57,12 @@ public interface IGridEventHandler : IEventHandler
 #else
         ;
 #endif
+    Task OnRenderRowAsync(object sender, GridRowEventArgs e)
+#if NET
+    {
+        return Task.CompletedTask;
+    }
+#else
+        ;
+#endif
 }
