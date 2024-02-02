@@ -23,8 +23,8 @@ public class ActionScripts(ExpressionsService expressionsService,
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IEncryptionService EncryptionService { get; } = encryptionService;
-    
-    public string GetInternalUrlScript(InternalAction action, ActionContext actionContext)
+
+    private string GetInternalUrlScript(InternalAction action, ActionContext actionContext)
     {
         var elementRedirect = action.ElementRedirect;
         string confirmationMessage = GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
@@ -60,7 +60,7 @@ public class ActionScripts(ExpressionsService expressionsService,
     }
 
 
-    public string GetUrlRedirectScript(
+    private string GetUrlRedirectScript(
         UrlRedirectAction action,
         ActionContext actionContext,
         ActionSource actionSource
@@ -162,8 +162,7 @@ public class ActionScripts(ExpressionsService expressionsService,
     }
 
 
-
-    public string GetSqlCommandScript(ActionContext actionContext, ActionSource actionSource)
+    private string GetSqlCommandScript(ActionContext actionContext, ActionSource actionSource)
     {
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);

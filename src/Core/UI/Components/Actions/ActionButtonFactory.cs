@@ -37,6 +37,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
         var button = LinkButtonFactory.Create();
         button.Tooltip = action.Tooltip;
         button.Text = action.Text;
+        button.Color = action.Color;
         button.IsGroup = action.IsGroup;
         button.IsDefaultOption = action.IsDefaultOption;
         button.DividerLine = action.DividerLine;

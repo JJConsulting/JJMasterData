@@ -79,6 +79,8 @@ public class JJLinkButton : HtmlComponent
     
     public string UrlAction { get; set; }
 
+    public PanelColor Color { get; set; } = PanelColor.Default;
+
     internal JJLinkButton(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
         _stringLocalizer = stringLocalizer;
@@ -107,6 +109,9 @@ public class JJLinkButton : HtmlComponent
                 html.WithAttribute("href", UrlAction);
             else
                 html.WithAttribute("href", "javascript: void(0);");
+            
+            if(!ShowAsButton)
+                html.WithCssClass($"text-{Color.ToString().ToLower()}");
         }
 
         html.WithNameAndId(Name);
@@ -130,7 +135,7 @@ public class JJLinkButton : HtmlComponent
         
         if (_spinner != null)
             html.AppendComponent(Spinner);
-
+        
         return html;
     }
 
@@ -155,7 +160,7 @@ public class JJLinkButton : HtmlComponent
                 !cssClass.Contains(" btn") &&
                 !cssClass.Equals("btn"))
             {
-                cssClass += " btn btn-default"; 
+                cssClass += $" btn btn-{Color.ToString().ToLower()}"; 
             }
         }
 

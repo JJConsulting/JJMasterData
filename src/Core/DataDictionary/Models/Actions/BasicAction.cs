@@ -119,8 +119,13 @@ public abstract class BasicAction
     [JsonProperty("order")]
     public int Order { get; set; }
 
-    [JsonProperty("showAsButton")] public bool ShowAsButton { get; set; }
+    [JsonProperty("showAsButton")] 
+    public bool ShowAsButton { get; set; }
 
+    [JsonProperty("color")]
+    [Display(Name ="Color" )]
+    public PanelColor Color { get; set; }
+    
     /// <summary>
     /// CSS3 Stylesheet Class
     /// </summary>

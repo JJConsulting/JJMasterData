@@ -1,6 +1,7 @@
 ﻿@using JJMasterData.Core.DataDictionary.Models.Actions
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.UI.Components
+@using JJMasterData.Core.DataDictionary.Models
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @model JJMasterData.Core.DataDictionary.Models.Actions.BasicAction
@@ -22,9 +23,13 @@
         <tooltip title="@StringLocalizer["If not null or empty, show a confirmation message before executing the action. Support runtime values, for example: {OrderId}"]"/>
         @Html.TextBoxFor(model => model.ConfirmationMessage, new { @class = "form-control", placeholder = StringLocalizer["Are you sure you want to execute this action?"] })
     </div>
-    <div class="@BootstrapHelper.FormGroup col-sm-6">
+    <div class="@BootstrapHelper.FormGroup col-sm-3">
         <label asp-for="CssClass" class="@BootstrapHelper.Label">@StringLocalizer["CSS Class"]</label>
         @Html.TextBoxFor(model => model.CssClass, new { @class = "form-control" })
+    </div>
+    <div class="@BootstrapHelper.FormGroup col-sm-3">
+        <label class="@BootstrapHelper.Label" asp-for="Color"></label>
+        <select asp-for="Color" class="form-select" asp-items="Html.GetEnumSelectList<PanelColor>()"></select>
     </div>
 </div>
 <div class="row">
@@ -42,7 +47,7 @@
         <label class="@BootstrapHelper.Label" asp-for="ShowAsButton" >@StringLocalizer["Show As Button"]</label>
         <checkbox for="ShowAsButton" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
     </div>
-
+    
     <div class="@BootstrapHelper.FormGroup col-sm-2">
         <label asp-for="IsDefaultOption" class="@BootstrapHelper.Label">@StringLocalizer["Default"]</label>
         <checkbox for="IsDefaultOption" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
