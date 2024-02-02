@@ -680,6 +680,33 @@ input.form-control:read-only {
     --bs-accordion-active-color: var(--bs-info-text-emphasis);
 }
 
+.accordion-dark {
+    --bs-accordion-active-bg: var(--bs-dark-bg-subtle);
+    --bs-accordion-active: var(--bs-dark-text-emphasis);
+    --bs-accordion-btn-color: var(--bs-dark-text-emphasis);
+    --bs-accordion-btn-active: var(--bs-dark-bg-subtle);
+    --bs-accordion-active-color: var(--bs-dark-text-emphasis);
+    --bs-accordion-btn-bg: var(--bs-dark-bg-subtle);
+}
+
+.accordion-light {
+    --bs-accordion-active-bg: var(--bs-light-bg-subtle);
+    --bs-accordion-active: var(--bs-light-text-emphasis);
+    --bs-accordion-btn-color: var(--bs-light-text-emphasis);
+    --bs-accordion-btn-active: var(--bs-light-bg-subtle);
+    --bs-accordion-active-color: var(--bs-light-text-emphasis);
+    --bs-accordion-btn-bg: var(--bs-light-bg-subtle);
+}
+
+.accordion-secondary {
+    --bs-accordion-active-bg: var(--bs-secondary-bg-subtle);
+    --bs-accordion-active: var(--bs-secondary-text-emphasis);
+    --bs-accordion-btn-color: var(--bs-secondary-text-emphasis);
+    --bs-accordion-btn-active: var(--bs-secondary-bg-subtle);
+    --bs-accordion-active-color: var(--bs-secondary-text-emphasis);
+    --bs-accordion-btn-bg: var(--bs-secondary-bg-subtle);
+}
+
 .form-control-static {
     min-height: 30px;
     padding-top: 7px;
