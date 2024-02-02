@@ -10,6 +10,7 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Commons.Tasks.Progress;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Importation;
 using JJMasterData.Core.DataManager.Models;
@@ -54,6 +55,8 @@ public class JJDataImportation : ProcessComponent
 
     public JJUploadArea UploadArea => _uploadArea ??= GetUploadArea();
 
+    internal ImportAction ImportAction { get; }
+    
     public bool EnableAuditLog { get; set; }
 
     /// <summary>
@@ -65,7 +68,7 @@ public class JJDataImportation : ProcessComponent
     internal IComponentFactory ComponentFactory { get; }
     private DataImportationWorkerFactory DataImportationWorkerFactory { get; }
 
-    internal RouteContext RouteContext
+    private RouteContext RouteContext
     {
         get
         {
@@ -79,7 +82,7 @@ public class JJDataImportation : ProcessComponent
         }
     }
 
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+    private ComponentContext ComponentContext => RouteContext.ComponentContext;
 
     internal DataImportationScripts DataImportationScripts =>
         _dataImportationScripts ??= new DataImportationScripts(this);
@@ -110,10 +113,10 @@ public class JJDataImportation : ProcessComponent
         FormService = formService;
         ComponentFactory = componentFactory;
         FormElement = formElement;
-        var importAction = formElement.Options.GridToolbarActions.ImportAction;
-        if (importAction is not null)
+        ImportAction = formElement.Options.GridToolbarActions.ImportAction;
+        if (ImportAction is not null)
         {
-            ProcessOptions = importAction.ProcessOptions;
+            ProcessOptions = ImportAction.ProcessOptions;
         }
     }
 

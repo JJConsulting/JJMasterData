@@ -37,6 +37,13 @@ internal class DataImportationHelp
 
         var html = panel.BuildHtml()
            .AppendHiddenInput("filename", "")
+           .AppendComponentIf(!string.IsNullOrWhiteSpace(DataImportation.ImportAction.HelpText),new JJAlert
+           {
+               Title = StringLocalizer["Information"],
+               Icon = IconType.InfoCircle,
+               Color = PanelColor.Info,
+               InnerHtml = new (DataImportation.ImportAction.HelpText!.Replace(Environment.NewLine,"<br>"))
+           })
            .AppendComponent(GetBackButton());
 
         return html;

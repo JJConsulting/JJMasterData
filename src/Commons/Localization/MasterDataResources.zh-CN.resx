@@ -1993,7 +1993,7 @@
     <value>确认</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="Only one process from this dictionary can be run at a time." xml:space="preserve">
+  <data name="Only one process from this element can be run at a time." xml:space="preserve">
     <value>一次只能运行此字典中的一个进程。</value>
     <comment>JJMasterDataWeb</comment>
   </data>

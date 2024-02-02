@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿#nullable enable
+using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -8,6 +10,10 @@ public class ImportAction : GridToolbarAction
     
     [JsonProperty("processOptions")]
     public ProcessOptions ProcessOptions { get; set; }
+    
+    [Display(Name="Help Text")]
+    public string? HelpText { get; set; }
+    
     public ImportAction()
     {
         Name = ActionName;

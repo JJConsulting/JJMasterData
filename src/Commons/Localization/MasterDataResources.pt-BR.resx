@@ -1949,7 +1949,7 @@
     <value>Ok</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="Only one process from this dictionary can be run at a time." xml:space="preserve">
+  <data name="Only one process from this element can be run at a time." xml:space="preserve">
     <value> Somente um processo desse dicionário poderá ser excutada por vez </value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -2450,7 +2450,7 @@
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="Several users can run this process simultaneously, but only see the log and one run of your process." xml:space="preserve">
-    <value>Varios usuários podem executar esse processo simultaneamente, porém visualiza apenas o log e uma execução do seu processo. </value>
+    <value>Vaáios usuários podem executar esse processo simultaneamente, porém visualiza apenas o log e uma execução do seu processo. </value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Show As Button" xml:space="preserve">
@@ -3872,5 +3872,11 @@
   </data>
   <data name="Caption" xml:space="preserve">
     <value>Legenda</value>
+  </data>
+  <data name="Help Text" xml:space="preserve">
+    <value>Texto de Ajuda</value>
+  </data>
+  <data name="Help text that will be shown to the user." xml:space="preserve">
+    <value>Text de ajuda que será mostrado para o usuário.</value>
   </data>
 </root>
