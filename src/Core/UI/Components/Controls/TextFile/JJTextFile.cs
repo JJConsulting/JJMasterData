@@ -252,10 +252,10 @@ public class JJTextFile(IHttpRequest request,
         }
 
         var btnGroup = ComponentFactory.Html.LinkButtonGroup.Create();
-        btnGroup.CaretText = $"{files.Length}&nbsp;{StringLocalizer["Files"]}";
+        btnGroup.CaretText = $"{new JJIcon(IconType.CloudDownload).GetHtml()} {files.Length}&nbsp;{StringLocalizer["Files"]}";
 
         btnGroup.Attributes.Add("onclick","event.stopPropagation()");
-        
+   
         foreach (var filename in files)
         {
             btnGroup.Actions.Add(GetLinkButton(filename));
@@ -275,7 +275,8 @@ public class JJTextFile(IHttpRequest request,
 
         return btn;
     }
-    public string GetDownloadLink(string fileName, bool isExternalLink = false)
+
+    private string GetDownloadLink(string fileName)
     {
         var filePath = GetFolderPath() + fileName;
         var fileDownloader = ComponentFactory.Downloader.Create();
