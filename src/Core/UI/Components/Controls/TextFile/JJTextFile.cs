@@ -98,9 +98,11 @@ public class JJTextFile(IHttpRequest request,
             _uploadView.UploadArea.RouteContext.ParentElementName = FormElement.ParentName;
             _uploadView.UploadArea.RouteContext.ComponentContext = ComponentContext.TextFileFileUpload;
             _uploadView.UploadArea.QueryStringParams["fieldName"] = FieldName;
-            
             _uploadView.ViewGallery = dataFile.ViewGallery;
 
+            if (dataFile.ShowAsUploadView)
+                _uploadView.GridView.EmptyDataText = null;
+            
             if (!Enabled || PageState is PageState.View)
                 _uploadView.Disable();
 

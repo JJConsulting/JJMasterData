@@ -426,7 +426,7 @@ public class JJGridView : AsyncComponent
     /// To hide the columns when displaying the message see the method
     /// <seealso cref="ShowHeaderWhenEmpty"/>.
     /// </remarks>
-    public string EmptyDataText { get; set; }
+    public string? EmptyDataText { get; set; }
 
     /// <summary>
     /// Display pagination controls (Default = true)
@@ -868,7 +868,7 @@ public class JJGridView : AsyncComponent
         {
             ShowCloseButton = true,
             Color = PanelColor.Default,
-            Title = StringLocalizer[EmptyDataText],
+            Title = StringLocalizer[EmptyDataText!],
             Icon = IconType.InfoCircle
         };
 
