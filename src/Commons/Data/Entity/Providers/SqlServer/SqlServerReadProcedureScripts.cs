@@ -193,14 +193,7 @@ public class SqlServerReadProcedureScripts(
                     sql.Append(GetFilterMultValuesContains(field.Name));
                     break;
                 case FilterMode.MultValuesEqual:
-                    sql.AppendLine();
-                    sql.Append(Tab);
-                    sql.Append("IF @");
-                    sql.Append(field.Name);
-                    sql.AppendLine(" IS NOT NULL");
-                    sql.Append(Tab,2);
-                    sql.Append("SET @sqlWhere = @sqlWhere + ' AND ");
-                    sql.Append($"CHARINDEX([{field.Name}], @{field.Name}) > 0'");
+                    sql.Append(GetMultValuesEquals(field));
                     break;
                 default:
                 {
@@ -334,6 +327,63 @@ public class SqlServerReadProcedureScripts(
         sql.AppendLine("@qtdtotal");
         sql.Append(Tab);
         sql.AppendLine();
+
+        return sql.ToString();
+    }
+
+    private string GetMultValuesEquals(ElementField field)
+    {
+        var sql = new StringBuilder();
+        if (SqlServerInfo.GetCompatibilityLevel() < 130)
+        {
+            sql.AppendLine("");
+            sql.Append(Tab);
+            sql.Append("IF @");
+            sql.Append(field.Name);
+            sql.AppendLine(" IS NOT NULL");
+            sql.Append(Tab);
+            sql.AppendLine("BEGIN");
+            sql.Append(Tab, 2);
+            sql.AppendFormat("SET @likein = ' AND {0} IN ('", field.Name);
+            sql.AppendLine("");
+            sql.Append(Tab, 2);
+            sql.AppendFormat("WHILE CHARINDEX(',', @{0}) <> 0", field.Name);
+            sql.AppendLine("");
+            sql.Append(Tab, 2);
+            sql.AppendLine("BEGIN");
+            sql.Append(Tab, 3);
+            sql.AppendFormat("SET @likein = @likein + CHAR(39) + SUBSTRING(@{0},1,CHARINDEX(',',@{0}) -1) + CHAR(39);", field.Name);
+            sql.AppendLine("");
+            sql.Append(Tab, 3);
+            sql.AppendFormat("SET @{0} = RIGHT(@{0} , LEN(@{0}) - CHARINDEX(',', @{0}));", field.Name);
+            sql.AppendLine("");
+            sql.Append(Tab, 3);
+            sql.AppendLine("SET @likein = @likein + ', ';");
+            sql.Append(Tab, 2);
+            sql.AppendLine("END");
+            sql.Append(Tab, 2);
+            sql.AppendFormat("SET @likein = @likein + CHAR(39) + @{0} + CHAR(39) + ') '", field.Name);
+            sql.AppendLine("");
+            sql.Append(Tab, 2);
+            sql.AppendLine("SET @sqlcond = @sqlcond + @likein");
+            sql.Append(Tab);
+            sql.AppendLine("END");
+        }
+        else
+        {
+            sql.AppendLine();
+            sql.Append(Tab);
+            sql.Append($"IF @{field.Name} IS NOT NULL");
+            sql.AppendLine();
+            sql.Append(Tab, 2);
+            sql.Append("BEGIN");
+            sql.AppendLine();
+            sql.Append(Tab, 3);
+            sql.Append($"SET @sqlWhere = @sqlWhere + ' [{field.Name}] IN (SELECT value FROM STRING_SPLIT(@{field.Name}, '',''))");
+            sql.AppendLine();
+            sql.Append(Tab, 2);
+            sql.Append("END"); 
+        }
 
         return sql.ToString();
     }
