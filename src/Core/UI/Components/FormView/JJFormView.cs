@@ -81,6 +81,7 @@ public class JJFormView : AsyncComponent
     private IDictionary<string, object> _relationValues = new Dictionary<string, object>();
     private RouteContext? _routeContext;
     private FormStateData? _formStateData;
+    private bool _isCustomCurrentActionMap;
 
     #endregion
 
@@ -220,11 +221,10 @@ public class JJFormView : AsyncComponent
         var formStateData = await GetFormStateDataAsync();
         var insertActionVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression,formStateData );
         var insertActionEnabled = ExpressionsService.GetBoolValue(insertAction.EnableExpression,formStateData );
-        if (!insertActionVisible)
+        if (!insertActionVisible || !insertActionEnabled)
             return;
         
         PageState = PageState.Insert;
-        PanelState = insertActionEnabled ? PageState.Insert : PageState.View;
 
         var result = await GetFormResult(new FormContext(formStateData.Values, DataPanel.Errors, PageState), true);
 
@@ -265,7 +265,7 @@ public class JJFormView : AsyncComponent
     {
         get
         {
-            if (_currentActionMap != null)
+            if (_currentActionMap != null || _isCustomCurrentActionMap)
                 return _currentActionMap;
 
             var encryptedActionMap = CurrentContext.Request.Form[$"current-action-map-{Name}"];
@@ -276,13 +276,18 @@ public class JJFormView : AsyncComponent
             
             return _currentActionMap;
         }
+        set
+        {
+            _isCustomCurrentActionMap = true;
+            _currentActionMap = value;
+        }
     }
 
     internal BasicAction? CurrentAction
     {
         get
         {
-            if (_currentAction != null)
+            if (_currentAction != null || _isCustomCurrentActionMap)
                 return _currentAction;
 
             if (CurrentActionMap is null)
@@ -532,7 +537,8 @@ public class JJFormView : AsyncComponent
         }
 
         PageState = PageState.List;
-
+        CurrentActionMap = null;
+        
         return await GridView.GetResultAsync();
     }
 
