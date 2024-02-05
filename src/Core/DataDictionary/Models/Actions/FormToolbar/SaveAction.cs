@@ -1,5 +1,7 @@
 #nullable enable
 
+using System.ComponentModel.DataAnnotations;
+
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
@@ -22,5 +24,6 @@ public class SaveAction : FormToolbarAction
 
     public FormEnterKey EnterKeyBehavior { get; set; }
     
+    [Display(Name = "Submit On Save")]
     public bool SubmitOnSave { get; set; }
 }

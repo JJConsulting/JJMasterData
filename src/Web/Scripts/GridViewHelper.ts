@@ -190,8 +190,6 @@ class GridViewHelper {
 
                 if (filterActionElement) {
                     filterActionElement.value = "";
-                } else {
-                    console.error("Filter action element was not found.");
                 }
             }
         });

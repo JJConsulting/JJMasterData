@@ -194,6 +194,9 @@ class ActionHelper {
                         else{
                             if(data.jsCallback){
                                 eval(data.jsCallback)
+                                if(isSubmit){
+                                    document.forms[0].requestSubmit();
+                                }
                             }
                         }
                 }});

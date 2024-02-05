@@ -178,7 +178,10 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         childFormView.ShowTitle = false;
         childFormView.DataPanel.FieldNamePrefix = $"{childFormView.Name}_";
         childFormView.UserValues = parentFormView.UserValues;
-        childFormView.PageState = PageState.List;
+        
+        if(childFormView.CurrentAction is null)
+            childFormView.PageState = PageState.List;
+        
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
         await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
         childFormView.ShowTitle = false;

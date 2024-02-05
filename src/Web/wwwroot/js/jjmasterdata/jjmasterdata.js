@@ -165,6 +165,9 @@ class ActionHelper {
                         else {
                             if (data.jsCallback) {
                                 eval(data.jsCallback);
+                                if (isSubmit) {
+                                    document.forms[0].requestSubmit();
+                                }
                             }
                         }
                     } });
@@ -1250,9 +1253,6 @@ class GridViewHelper {
                 if (filterActionElement) {
                     filterActionElement.value = "";
                 }
-                else {
-                    console.error("Filter action element was not found.");
-                }
             }
         });
     }
@@ -2318,6 +2318,8 @@ class TooltipListener {
 class UploadAreaListener {
     static configureFileUpload(options) {
         const selector = "div#" + options.componentName;
+        if (document.querySelector(selector).dropzone)
+            return;
         let dropzone = new window.Dropzone(selector, {
             paramName: "uploadAreaFile",
             maxFilesize: options.maxFileSize,

@@ -481,10 +481,12 @@ public class JJFormView : AsyncComponent
         var insertAction = GridView.ToolbarActions.InsertAction;
         var values = await GetFormValuesAsync();
         
-        var errors = PageState is PageState.Insert
-            ? await InsertFormValuesAsync(values)
-            : await UpdateFormValuesAsync(values);
-        
+        IDictionary<string, string> errors;
+        if (PageState is PageState.Insert)
+            errors = await InsertFormValuesAsync(values);
+        else
+            errors = await UpdateFormValuesAsync(values);
+
         DataPanel.Errors = errors;
         
         if (errors.Count != 0 && !insertAction.ShowOpenedAtGrid)
@@ -729,11 +731,16 @@ public class JJFormView : AsyncComponent
         return GridView.GetResultAsync();
     }
 
+    private bool ContainsHiddenPkValues()
+    {
+        return CurrentContext.Request.Form[$"data-panel-pk-values-{FormElement.Name}"] is not null;
+    }
+
     private async Task<ComponentResult> GetUpdateResult()
     {
         bool autoReloadFields;
         IDictionary<string, object?>? values;
-        if (PageState is PageState.Update && ComponentContext is not ComponentContext.Modal)
+        if (PageState is PageState.Update && ComponentContext is not ComponentContext.Modal && ContainsHiddenPkValues())
         {
             autoReloadFields = true;
             values = await GetFormValuesAsync();

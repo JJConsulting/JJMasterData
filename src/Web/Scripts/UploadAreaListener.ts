@@ -3,6 +3,9 @@
         
         const selector = "div#" + options.componentName;
         
+        if(document.querySelector<HTMLInputElement>(selector).dropzone)
+            return;
+        
         let dropzone = new window.Dropzone(selector, {
             paramName: "uploadAreaFile",
             maxFilesize: options.maxFileSize,

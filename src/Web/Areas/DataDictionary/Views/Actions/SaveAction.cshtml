@@ -24,8 +24,8 @@
         <div id="div-save-action" class="tab-pane fade">
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-                    <label asp-for="SubmitOnSave" class="@BootstrapHelper.Label">@StringLocalizer["Submit On Save"]</label>
-                    <tooltip title="@StringLocalizer["If true, the entire page will be reloaded after saving the form, else, a AJAX request is made to reload just the current form. If inside a modal, this option will be ignored."]"/>
+                    <label asp-for="SubmitOnSave" class="@BootstrapHelper.Label"></label>
+                    <tooltip title="@StringLocalizer["If true, the entire page will be reloaded after saving the form, else, a AJAX request is made to reload just the current form. If inside a modal, the submit will be executed after the modal is closed."]"/>
                     <checkbox for="SubmitOnSave" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
             </div>
