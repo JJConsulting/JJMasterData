@@ -42,7 +42,7 @@ internal class DataImportationHelp
                Title = StringLocalizer["Information"],
                Icon = IconType.InfoCircle,
                Color = PanelColor.Info,
-               InnerHtml = new (DataImportation.ImportAction.HelpText!.Replace(Environment.NewLine,"<br>"))
+               InnerHtml = new (DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine,"<br>") ?? string.Empty)
            })
            .AppendComponent(GetBackButton());
 
