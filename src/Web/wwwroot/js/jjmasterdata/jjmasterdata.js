@@ -10,6 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 class ActionData {
 }
 class ActionHelper {
+    static submitWithScrollPosition() {
+        localStorage.setItem('masterDataScrollPosition', window.scrollY.toString());
+        document.forms[0].submit();
+    }
     static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, confirmMessage) {
         if (confirmMessage) {
             const result = confirm(confirmMessage);
@@ -151,7 +155,7 @@ class ActionHelper {
                 if (typeof data === "object") {
                     if (data.closeModal) {
                         if (isSubmit) {
-                            document.forms[0].submit();
+                            ActionHelper.submitWithScrollPosition();
                         }
                         else {
                             GridViewHelper.refresh(componentName, gridViewRouteContext);
@@ -178,7 +182,7 @@ class ActionHelper {
                     } });
             }
             else {
-                document.forms[0].submit();
+                ActionHelper.submitWithScrollPosition();
             }
         }
     }
@@ -1378,6 +1382,11 @@ class HTMLHelper {
     }
 }
 document.addEventListener("DOMContentLoaded", function () {
+    const masterDataScrollPosition = localStorage.getItem("masterDataScrollPosition");
+    if (masterDataScrollPosition) {
+        window.scroll(0, Number.parseFloat(masterDataScrollPosition));
+        localStorage.removeItem("masterDataScrollPosition");
+    }
     listenAllEvents();
 });
 const listenAllEvents = (selectorPrefix = String()) => {

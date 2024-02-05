@@ -218,7 +218,7 @@ public class JJFormView : AsyncComponent
     private async Task RenderInsertActionAtGrid(object _, GridRenderEventArgs args)
     {
         var insertAction = GridView.InsertAction;
-        var formStateData = await GetFormStateDataAsync();
+        var formStateData = await GridView.GetFormStateDataAsync();
         var insertActionVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression,formStateData );
         var insertActionEnabled = ExpressionsService.GetBoolValue(insertAction.EnableExpression,formStateData );
         if (!insertActionVisible || !insertActionEnabled)
@@ -535,7 +535,7 @@ public class JJFormView : AsyncComponent
             PanelState = PageState.View;
             return await GetFormResult(new FormContext(values, PanelState.Value), false);
         }
-
+        
         PageState = PageState.List;
         CurrentActionMap = null;
         
@@ -565,7 +565,9 @@ public class JJFormView : AsyncComponent
     private Task<ComponentResult> GetCancelActionResult()
     {
         PageState = PageState.List;
+        
         ClearTempFiles();
+
         return GridView.GetResultAsync();
     }
 

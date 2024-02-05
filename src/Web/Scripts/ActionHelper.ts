@@ -1,5 +1,9 @@
 class ActionHelper {
-
+    static submitWithScrollPosition(){
+        localStorage.setItem('masterDataScrollPosition', window.scrollY.toString());
+        document.forms[0].submit();
+    }
+    
     static executeSqlCommand(
         componentName: string,
         encryptedActionMap: string, 
@@ -179,7 +183,7 @@ class ActionHelper {
                 if (typeof data === "object") {
                     if (data.closeModal) {
                         if(isSubmit){
-                            document.forms[0].submit();
+                            ActionHelper.submitWithScrollPosition();
                         }
                         else{
                             GridViewHelper.refresh(componentName,gridViewRouteContext)
@@ -206,7 +210,7 @@ class ActionHelper {
                 }});
             } 
             else {
-                document.forms[0].submit();
+                ActionHelper.submitWithScrollPosition();
             }
         }
     }
