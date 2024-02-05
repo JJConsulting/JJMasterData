@@ -149,7 +149,7 @@ public class JJFormView : AsyncComponent
             _dataPanel.FormUI = FormElement.Options.Form;
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
-
+        
             return _dataPanel;
         }
     }
@@ -381,6 +381,12 @@ public class JJFormView : AsyncComponent
         childFormView.UserValues = UserValues;
         childFormView.RelationValues = childFormView.GetRelationValuesFromForm();
         childFormView.DataPanel.FieldNamePrefix = $"{childFormView.Name}_";
+        if (childFormView is { IsInsertAtGridView: true, CurrentAction: not EditAction })
+        {
+            childFormView.DataPanel.Name += "_insert";
+            childFormView.DataPanel.FieldNamePrefix += "insert_";
+        }
+
         
         var isInsertSelection = PageState is PageState.Insert &&
                                 GridView.ToolbarActions.InsertAction.ElementNameToSelect ==
@@ -599,6 +605,11 @@ public class JJFormView : AsyncComponent
             {
                 return new ContentComponentResult(html);
             }
+        }
+        else if (result is HtmlComponentResult modalHtml && ComponentContext is ComponentContext.Modal)
+        {
+            var html = modalHtml.HtmlBuilder;
+            html.AppendScript(Scripts.GetSetPageStateScript(PageState));
         }
 
         return result;
@@ -1229,8 +1240,18 @@ public class JJFormView : AsyncComponent
         var topToolbarActions = GetTopToolbarActions(FormElement).ToList();
 
         formHtml.AppendComponent(await GetFormToolbarAsync(topToolbarActions));
+
+        if (IsInsertAtGridView && CurrentAction is not EditAction)
+        {
+            DataPanel.Name += "_insert";
+            DataPanel.FieldNamePrefix += "insert_";
+        }
+
+        if (FormElement.Options.GridToolbarActions.InsertAction.ShowOpenedAtGrid 
+            && ComponentContext is ComponentContext.Modal)
+            DataPanel.AppendPkValues = false;
         
-        if(!IsInsertAtGridView || IsInsertAtGridView && DataPanel.Errors.Count != 0)
+        if(!IsInsertAtGridView || IsInsertAtGridView && DataPanel.Errors.Count != 0){}
             DataPanel.Values = await DataPanel.GetFormValuesAsync();
             
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();

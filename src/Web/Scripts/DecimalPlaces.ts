@@ -1,4 +1,9 @@
 function applyDecimalPlaces(element: Element) {
+
+    // @ts-ignore
+    if(AutoNumeric.getAutoNumericElement(element) === null)
+        return;
+    
     if(element.getAttribute("type") == "number")
         return;
     

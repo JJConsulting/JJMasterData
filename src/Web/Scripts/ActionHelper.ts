@@ -176,8 +176,13 @@ class ActionHelper {
                 
                 if (typeof data === "object") {
                     if (data.closeModal) {
-                        GridViewHelper.refresh(componentName,gridViewRouteContext)
-                        modal.remove();
+                        if(isSubmit){
+                            document.forms[0].submit();
+                        }
+                        else{
+                            GridViewHelper.refresh(componentName,gridViewRouteContext)
+                            modal.remove();
+                        }
                     }
                 }
             })
@@ -194,9 +199,6 @@ class ActionHelper {
                         else{
                             if(data.jsCallback){
                                 eval(data.jsCallback)
-                                if(isSubmit){
-                                    document.forms[0].requestSubmit();
-                                }
                             }
                         }
                 }});

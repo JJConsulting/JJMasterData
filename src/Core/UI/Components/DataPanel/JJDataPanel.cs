@@ -78,8 +78,9 @@ public class JJDataPanel : AsyncComponent
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
 
-    public string FieldNamePrefix { get; set; }
+    internal bool AppendPkValues { get; set; } = true;
     
+    public string FieldNamePrefix { get; set; }
     
     private RouteContext _routeContext;
     protected RouteContext RouteContext
@@ -220,7 +221,7 @@ public class JJDataPanel : AsyncComponent
             .WithNameAndId(Name)
             .WithCssClass(CssClass);
 
-        if (DataHelper.ContainsPkValues(FormElement, Values))
+        if (DataHelper.ContainsPkValues(FormElement, Values) && AppendPkValues)
         {
             html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
         }
