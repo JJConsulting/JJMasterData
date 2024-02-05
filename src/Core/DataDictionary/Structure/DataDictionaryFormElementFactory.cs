@@ -99,21 +99,21 @@ public class DataDictionaryFormElementFactory(
                 EnableExpression = "exp:'T' <> '{type}'",
                 IsDefaultOption = true
             },
-            new ScriptAction
-            {
-                Icon = IconType.SolidCirclePlay,
-                Name = "render",
-                Text = StringLocalizer["Render"],
-                EnableExpression = "exp:'T' <> '{type}'",
-                IsGroup = true
-            },
             new UrlRedirectAction
             {
                 Icon = IconType.FilesO,
                 Name = "duplicate",
-                Text = StringLocalizer["Duplicate"],
+                Tooltip = StringLocalizer["Duplicate"],
                 EnableExpression = "exp:'T' <> '{type}'",
-                IsGroup = true
+                IsGroup = false,
+            },
+            new ScriptAction
+            {
+                Icon = IconType.SolidCirclePlay,
+                Name = "render",
+                Tooltip = StringLocalizer["Render"],
+                EnableExpression = "exp:'T' <> '{type}'",
+                IsGroup = false
             }
         ];
         
