@@ -3882,4 +3882,7 @@
   <data name="Submit On Save" xml:space="preserve">
     <value>Realizar Submit Ao Salvar</value>
   </data>
+  <data name="Save Action" xml:space="preserve">
+    <value>Ação de Salvar</value>
+  </data>
 </root>
