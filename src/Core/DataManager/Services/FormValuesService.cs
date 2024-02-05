@@ -81,7 +81,9 @@ public class FormValuesService(
                 break;
             case FormComponent.CheckBox:
                 if (string.IsNullOrWhiteSpace(value))
-                    parsedValue = StringManager.ParseBool(value);
+                    break;
+                
+                parsedValue = StringManager.ParseBool(value);
                 break;
             default:
                 parsedValue = value;
