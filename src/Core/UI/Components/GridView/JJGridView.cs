@@ -1544,8 +1544,7 @@ public class JJGridView : AsyncComponent
             Action = basicAction,
             FormElement = FormElement,
             FormStateData = formStateData,
-            ParentComponentName = Name,
-            IsModal = ComponentContext is ComponentContext.Modal
+            ParentComponentName = Name
         };
     }
 }

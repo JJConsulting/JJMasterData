@@ -130,7 +130,7 @@ class ActionHelper {
             componentName,
             actionMap,
             modalTitle,
-            modalRouteContext,
+            isModal,
             gridViewRouteContext,
             formViewRouteContext,
             isSubmit,
@@ -159,13 +159,15 @@ class ActionHelper {
             return;
         }
 
-        if (modalRouteContext) {
+        if (isModal) {
             const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("routeContext", modalRouteContext);
+            urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
 
             const modal = new Modal();
             modal.modalId = componentName + "-modal";
-            
+            modal.onModalHidden = function(){
+                formViewActionInput.value = "";
+            }
             SpinnerOverlay.show();
             const requestOptions = getRequestOptions();
             modal.showUrl({
@@ -204,7 +206,7 @@ class ActionHelper {
                 }});
             } 
             else {
-                document.forms[0].requestSubmit();
+                document.forms[0].submit();
             }
         }
     }

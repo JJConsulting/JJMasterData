@@ -176,7 +176,6 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
     {
         var childFormView = parentFormView.ComponentFactory.FormView.Create(childElement);
         childFormView.ShowTitle = false;
-        childFormView.DataPanel.FieldNamePrefix = $"{childFormView.Name}_";
         childFormView.UserValues = parentFormView.UserValues;
         
         if(childFormView.CurrentAction is null)
@@ -206,8 +205,9 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         }
         
         var childFormView = parentFormView.ComponentFactory.FormView.Create(childElement);
-
-        if (relationship.ViewType is RelationshipViewType.View)
+        childFormView.IsChildFormView = true;
+        
+        if (relationship.ViewType is RelationshipViewType.View || parentFormView.PageState is PageState.View)
         {
             childFormView.PageState = PageState.View;
             childFormView.PanelState = PageState.View;
@@ -222,16 +222,13 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
             else
                 childFormView.PanelState = PageState.Insert;
         }
-        
-        childFormView.IsChildFormView = true;
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
         childFormView.UserValues = parentFormView.UserValues;
         childFormView.ShowTitle = false;
 
         if (childValues is not null)
             childFormView.DataPanel.Values = childValues;
-                
-        childFormView.DataPanel.FieldNamePrefix = $"{childFormView.Name}_";
+        
         childFormView.DataPanel.RenderPanelGroup = false;
         childFormView.DataPanel.FormUI = childElement.Options.Form;
                 

@@ -115,7 +115,7 @@ class ActionHelper {
         defaultModal.showIframe(url, "", modalSize);
     }
     static executeActionData(actionData) {
-        const { componentName, actionMap, modalTitle, modalRouteContext, gridViewRouteContext, formViewRouteContext, isSubmit, confirmationMessage } = actionData;
+        const { componentName, actionMap, modalTitle, isModal, gridViewRouteContext, formViewRouteContext, isSubmit, confirmationMessage } = actionData;
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -133,11 +133,14 @@ class ActionHelper {
         if (!form) {
             return;
         }
-        if (modalRouteContext) {
+        if (isModal) {
             const urlBuilder = new UrlBuilder();
-            urlBuilder.addQueryParameter("routeContext", modalRouteContext);
+            urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
             const modal = new Modal();
             modal.modalId = componentName + "-modal";
+            modal.onModalHidden = function () {
+                formViewActionInput.value = "";
+            };
             SpinnerOverlay.show();
             const requestOptions = getRequestOptions();
             modal.showUrl({
@@ -175,7 +178,7 @@ class ActionHelper {
                     } });
             }
             else {
-                document.forms[0].requestSubmit();
+                document.forms[0].submit();
             }
         }
     }

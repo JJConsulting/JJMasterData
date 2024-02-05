@@ -112,25 +112,20 @@ public class ActionScripts(ExpressionsService expressionsService,
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage = GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
 
+        var isModal = action is IModalAction { ShowAsModal: true };
+                    
         var actionData = new ActionData
         {
             ComponentName = actionContext.ParentComponentName,
             EncryptedActionMap = encryptedActionMap,
+            IsModal = isModal,
+            ModalTitle = HttpUtility.HtmlAttributeEncode(formElement.Title),
             ConfirmationMessage = confirmationMessage.IsNullOrEmpty() ? null : confirmationMessage
         };
         
         var formViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.FormViewReload);
         actionData.EncryptedFormViewRouteContext = EncryptionService.EncryptRouteContext(formViewRouteContext);
         actionData.IsSubmit = actionContext.IsSubmit;
-        if (actionContext.IsModal)
-        {
-            var modalRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.Modal);
-            var gridViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
-            
-            actionData.ModalTitle = actionContext.FormElement.Title ?? actionContext.FormElement.Name;
-            actionData.EncryptedGridViewRouteContext = EncryptionService.EncryptRouteContext(gridViewRouteContext);
-            actionData.EncryptedModalRouteContext = EncryptionService.EncryptRouteContext(modalRouteContext);
-        }
 
         var actionDataJson = actionData.ToJson();
 

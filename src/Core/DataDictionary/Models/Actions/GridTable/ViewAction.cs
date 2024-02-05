@@ -3,7 +3,7 @@
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 
-public class ViewAction : GridTableAction
+public class ViewAction : GridTableAction, IModalAction
 {
     /// <summary>
     /// Nome padrão da ação

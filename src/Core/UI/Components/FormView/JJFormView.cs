@@ -143,13 +143,21 @@ public class JJFormView : AsyncComponent
             if (_dataPanel == null)
             {
                 _dataPanel = ComponentFactory.DataPanel.Create(FormElement);
-                _dataPanel.PageState = PanelState is not null || IsChildFormView ? PanelState!.Value : PageState;
+                _dataPanel.PageState = PanelState ?? PageState;
             }
             _dataPanel.ParentComponentName = Name;
             _dataPanel.FormUI = FormElement.Options.Form;
             _dataPanel.UserValues = UserValues;
             _dataPanel.RenderPanelGroup = true;
-        
+            if (IsInsertAtGridView && (_dataPanel.FieldNamePrefix == null || !_dataPanel.FieldNamePrefix.Contains("insert_")))
+            {
+                _dataPanel.Name += "_insert";
+                _dataPanel.FieldNamePrefix = "insert_";
+            }
+
+            if (IsChildFormView && (_dataPanel.FieldNamePrefix == null || !_dataPanel.FieldNamePrefix.Contains(Name)))
+                _dataPanel.FieldNamePrefix += $"{Name}_";
+            
             return _dataPanel;
         }
     }
@@ -208,8 +216,16 @@ public class JJFormView : AsyncComponent
 
     private async Task RenderInsertActionAtGrid(object _, GridRenderEventArgs args)
     {
+        var insertAction = GridView.InsertAction;
+        var formStateData = await GetFormStateDataAsync();
+        var insertActionVisible = ExpressionsService.GetBoolValue(insertAction.VisibleExpression,formStateData );
+        var insertActionEnabled = ExpressionsService.GetBoolValue(insertAction.EnableExpression,formStateData );
+        if (!insertActionVisible)
+            return;
+        
         PageState = PageState.Insert;
-        var formStateData = await GridView.GetFormStateDataAsync();
+        PanelState = insertActionEnabled ? PageState.Insert : PageState.View;
+
         var result = await GetFormResult(new FormContext(formStateData.Values, DataPanel.Errors, PageState), true);
 
         if (result is HtmlComponentResult htmlComponentResult)
@@ -301,7 +317,7 @@ public class JJFormView : AsyncComponent
     
     internal bool IsChildFormView { get; set; }
 
-    internal bool IsInsertAtGridView => PageState is PageState.Insert &&
+    internal bool IsInsertAtGridView => PageState is PageState.Insert && CurrentAction is not EditAction &&
                                         FormElement.Options.GridToolbarActions.InsertAction.ShowOpenedAtGrid;
     
     internal IHttpContext CurrentContext { get; }
@@ -377,16 +393,11 @@ public class JJFormView : AsyncComponent
     private async Task<JJFormView> GetChildFormView()
     {
         var childFormView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
+        childFormView.IsChildFormView = true;
+        
         childFormView.FormElement.ParentName = RouteContext.ParentElementName;
         childFormView.UserValues = UserValues;
         childFormView.RelationValues = childFormView.GetRelationValuesFromForm();
-        childFormView.DataPanel.FieldNamePrefix = $"{childFormView.Name}_";
-        if (childFormView is { IsInsertAtGridView: true, CurrentAction: not EditAction })
-        {
-            childFormView.DataPanel.Name += "_insert";
-            childFormView.DataPanel.FieldNamePrefix += "insert_";
-        }
-
         
         var isInsertSelection = PageState is PageState.Insert &&
                                 GridView.ToolbarActions.InsertAction.ElementNameToSelect ==
@@ -397,7 +408,6 @@ public class JJFormView : AsyncComponent
         if (PageState is PageState.View)
             childFormView.DisableActionsAtViewMode();
         
-        childFormView.IsChildFormView = true;
         
         if (!isInsertSelection)
             return childFormView;
@@ -523,11 +533,6 @@ public class JJFormView : AsyncComponent
 
         PageState = PageState.List;
 
-        if (ComponentContext is ComponentContext.Modal)
-        {
-            return new JsonComponentResult(new { closeModal = true });
-        }
-
         return await GridView.GetResultAsync();
     }
 
@@ -594,7 +599,7 @@ public class JJFormView : AsyncComponent
         else
             result = await GetDefaultResult();
 
-        if (result is HtmlComponentResult htmlComponent && ComponentContext is not ComponentContext.Modal)
+        if (result is HtmlComponentResult htmlComponent)
         {
             var html = htmlComponent.HtmlBuilder;
 
@@ -606,26 +611,25 @@ public class JJFormView : AsyncComponent
                 return new ContentComponentResult(html);
             }
         }
-        else if (result is HtmlComponentResult modalHtml && ComponentContext is ComponentContext.Modal)
-        {
-            var html = modalHtml.HtmlBuilder;
-            html.AppendScript(Scripts.GetSetPageStateScript(PageState));
-        }
 
         return result;
     }
 
     private void AppendFormViewHiddenInputs(HtmlBuilder html)
     {
-        html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
+        if (CurrentAction is not IModalAction { ShowAsModal: true })
+        {
+            html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
         
-        if(PageState is not PageState.List && PanelState is not null)
-            html.AppendHiddenInput($"form-view-panel-state-{Name}", ((int)PanelState).ToString());
+            if(PageState is not PageState.List && PanelState is not null)
+                html.AppendHiddenInput($"form-view-panel-state-{Name}", ((int)PanelState).ToString());
 
-        html.AppendHiddenInput($"current-action-map-{Name}",
-            EncryptionService.EncryptActionMap(CurrentActionMap));
-        html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
-            EncryptionService.EncryptDictionary(RelationValues));
+            html.AppendHiddenInput($"current-action-map-{Name}",
+                EncryptionService.EncryptActionMap(CurrentActionMap));
+            html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
+                EncryptionService.EncryptDictionary(RelationValues));
+        }
+
     }
 
     private async Task<ComponentResult> GetSqlCommandActionResult()
@@ -751,7 +755,7 @@ public class JJFormView : AsyncComponent
     {
         bool autoReloadFields;
         IDictionary<string, object?>? values;
-        if (PageState is PageState.Update && ComponentContext is not ComponentContext.Modal && ContainsHiddenPkValues())
+        if (PageState is PageState.Update && ContainsHiddenPkValues())
         {
             autoReloadFields = true;
             values = await GetFormValuesAsync();
@@ -1117,7 +1121,7 @@ public class JJFormView : AsyncComponent
         
         if (!visibleRelationships.Any() || visibleRelationships.All(r=>r.IsParent))
         {
-            return GetDataPanelResult(values);
+            return GetDataPanelResult();
         }
 
         return GetRelationshipLayoutResult(visibleRelationships,values);
@@ -1155,12 +1159,6 @@ public class JJFormView : AsyncComponent
         toolbarActions.BackAction.SetVisible(true);
         
         html.AppendComponent(await GetFormToolbarAsync(bottomActions));
-        
-        if (ComponentContext is ComponentContext.Modal)
-        {
-            html.AppendScript($"setPageState('{Name}',{(int)PageState})");
-            return new ContentComponentResult(html);
-        }
 
         return new RenderedComponentResult(html);
     }
@@ -1204,13 +1202,11 @@ public class JJFormView : AsyncComponent
         }
     }
 
-    private async Task<ComponentResult> GetDataPanelResult(IDictionary<string, object?> values)
+    private async Task<ComponentResult> GetDataPanelResult()
     {
         var panelHtml = await GetDataPanelHtml();
         panelHtml.AppendScript($"setPageState('{Name}',{(int)PageState})");
         
-        if (ComponentContext is ComponentContext.Modal)
-            return new ContentComponentResult(panelHtml);
 
         if (ShowTitle && !IsInsertAtGridView)
             panelHtml.PrependComponent(await GetTitleAsync());
@@ -1240,18 +1236,8 @@ public class JJFormView : AsyncComponent
         var topToolbarActions = GetTopToolbarActions(FormElement).ToList();
 
         formHtml.AppendComponent(await GetFormToolbarAsync(topToolbarActions));
-
-        if (IsInsertAtGridView && CurrentAction is not EditAction)
-        {
-            DataPanel.Name += "_insert";
-            DataPanel.FieldNamePrefix += "insert_";
-        }
-
-        if (FormElement.Options.GridToolbarActions.InsertAction.ShowOpenedAtGrid 
-            && ComponentContext is ComponentContext.Modal)
-            DataPanel.AppendPkValues = false;
         
-        if(!IsInsertAtGridView || IsInsertAtGridView && DataPanel.Errors.Count != 0){}
+        if(!IsInsertAtGridView || IsInsertAtGridView && DataPanel.Errors.Count != 0)
             DataPanel.Values = await DataPanel.GetFormValuesAsync();
             
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
@@ -1267,17 +1253,25 @@ public class JJFormView : AsyncComponent
 
         if (DataPanel.Errors.Any())
             formHtml.AppendComponent(ComponentFactory.Html.ValidationSummary.Create(DataPanel.Errors));
-
+        
         return formHtml;
     }
 
     internal async Task<HtmlBuilder> GetParentPanelHtmlAtRelationship(FormElementRelationship relationship)
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
-        
-        PanelState ??= relationship.EditModeOpenByDefault ? PageState.Update : PageState.View;
 
-        DataPanel.PageState = PanelState.Value;
+        if (PageState is not PageState.View)
+        {
+            PanelState ??= relationship.EditModeOpenByDefault ? PageState.Update : PageState.View;
+            DataPanel.PageState = PanelState.Value;
+        }
+        else
+        {
+            PanelState = PageState.View;
+            DataPanel.PageState = PanelState.Value;
+        }
+
         
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
 
@@ -1432,8 +1426,7 @@ public class JJFormView : AsyncComponent
 
     public async Task<IDictionary<string, object?>> GetFormValuesAsync()
     {
-        var panel = DataPanel;
-        var values = await panel.GetFormValuesAsync();
+        var values = await DataPanel.GetFormValuesAsync();
 
         if (!RelationValues.Any())
             return values;
@@ -1526,7 +1519,6 @@ public class JJFormView : AsyncComponent
             FormElement = FormElement,
             FormStateData = formStateData,
             FieldName = fieldName,
-            IsModal = ComponentContext is ComponentContext.Modal,
             ParentComponentName = Name
         };
     }

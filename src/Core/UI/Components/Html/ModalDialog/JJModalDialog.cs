@@ -18,7 +18,7 @@ public class JJModalDialog : HtmlComponent
     public ModalSize Size { get; set; }
 
     public bool IsCentered { get; set; }
-    
+    public bool ShowAsOpened { get; set; }
     public JJModalDialog()
     {
         Name = "jjmodal";
@@ -30,7 +30,7 @@ public class JJModalDialog : HtmlComponent
     {
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
-            .WithAttribute("id", Name)
+            .WithId(Name)
             .WithCssClass("modal")
             .WithCssClass(CssClass)
             .WithAttribute("role", "dialog")
@@ -63,6 +63,10 @@ public class JJModalDialog : HtmlComponent
                 });
             });
 
+        if (ShowAsOpened)
+            html.AppendScript(BootstrapHelper.GetModalScript(Name));
+       
+        
         return html;
     }
 

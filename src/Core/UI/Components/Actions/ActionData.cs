@@ -15,9 +15,6 @@ internal record ActionData
     [JsonProperty("modalTitle")]
     public string? ModalTitle { get; set; }
     
-    [JsonProperty("modalRouteContext")]
-    public string? EncryptedModalRouteContext { get; set; }
-    
     [JsonProperty("formViewRouteContext")]
     public string? EncryptedFormViewRouteContext { get; set; }
     
@@ -29,6 +26,9 @@ internal record ActionData
 
     [JsonProperty("isSubmit")]
     public bool IsSubmit { get; set; }
+
+    [JsonProperty("isModal")]
+    public bool IsModal { get; set; }
 
     public string ToJson()
     {

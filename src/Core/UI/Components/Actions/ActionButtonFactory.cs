@@ -68,15 +68,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
             case UserCreatedAction:
                 button.OnClientClick = ActionScripts.GetUserActionScript(actionContext, ActionSource.GridTable);
                 break;
-            case GridTableAction gridTableAction:
-
-                actionContext.IsModal = gridTableAction switch
-                {
-                    EditAction editAction => editAction.ShowAsModal,
-                    ViewAction viewAction => viewAction.ShowAsModal,
-                    _ => actionContext.IsModal
-                };
-
+            case GridTableAction:
                 button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.GridTable);
                 break;
             default:
@@ -127,10 +119,6 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                     BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-filter-modal");
                 break;
             case InsertAction insertAction:
-                if (insertAction.ShowAsModal)
-                {
-                    actionContext.IsModal = true;
-                }
                 button.OnClientClick = ActionScripts.GetFormActionScript(actionContext,
                     ActionSource.GridToolbar);
                 break;
@@ -159,18 +147,32 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
     {
         var actionContext = formView.GetActionContext(action,formStateData);
         var button = Create(action, actionContext.FormStateData);
-
+    
         if (action is UserCreatedAction)
         {
             button.OnClientClick =  ActionScripts.GetUserActionScript(actionContext, ActionSource.FormToolbar);
         }
         else if (action is FormToolbarAction)
         {
+            var gridTableActions = actionContext.FormElement.Options.GridTableActions;
             switch (action)
             {
                 case CancelAction when formView.PanelState is null:
+    
+                    var isCancelModal = gridTableActions.EditAction.ShowAsModal;
+                    if (isCancelModal)
+                    {
+                        button.OnClientClick = ActionScripts.GetHideModalScript(actionContext.ParentComponentName);
+                    }
+                    else
+                    {
+                        button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
+                    }
+                    break;
                 case BackAction:
-                    if (actionContext.IsModal)
+
+                    var isBackModal = gridTableActions.ViewAction.ShowAsModal;
+                    if (isBackModal)
                     {
                         button.OnClientClick = ActionScripts.GetHideModalScript(actionContext.ParentComponentName);
                     }

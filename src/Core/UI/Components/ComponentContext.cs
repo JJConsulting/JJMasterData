@@ -24,11 +24,6 @@ public enum ComponentContext
     /// Reloads the current JJDataPanel
     /// </summary>
     DataPanelReload,
-    
-    /// <summary>
-    /// The component is inside a modal
-    /// </summary>
-    Modal,
         
     DataExportation,
     
