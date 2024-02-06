@@ -1307,13 +1307,13 @@ class GridViewSelectionHelper {
             selectedText.textContent = textInfo;
         }
     }
-    static selectAllAtSamePage(componentName) {
-        const checkboxes = document.querySelectorAll(`#${componentName} td.jj-checkbox input`);
-        const selectAllCheckbox = document.querySelector(`#${componentName}-checkbox-select-all-rows`);
-        const isSelectAllChecked = selectAllCheckbox.checked;
+    static selectAllAtSamePage(parentCheckbox) {
+        const checkboxes = parentCheckbox
+            .closest('table')
+            .querySelectorAll('tr td input[type="checkbox"]');
         checkboxes.forEach(function (checkbox) {
             if (!checkbox.disabled) {
-                checkbox.checked = isSelectAllChecked;
+                checkbox.checked = parentCheckbox.checked;
                 const event = new Event('change');
                 checkbox.dispatchEvent(event);
             }

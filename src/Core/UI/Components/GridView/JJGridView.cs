@@ -576,7 +576,7 @@ public class JJGridView : AsyncComponent
         UrlRedirectService urlRedirectService,
         IComponentFactory componentFactory)
     {
-        Name = $"{ComponentNameGenerator.Create(formElement.Name)}-grid-view";
+        Name = $"{ComponentNameGenerator.Create(formElement.Name)}";
         FormElement = formElement;
         ShowTitle =  formElement.Options.Grid.ShowTitle;
         EnableFilter = true;
@@ -663,7 +663,7 @@ public class JJGridView : AsyncComponent
         
         await html.AppendAsync(HtmlTag.Div, async div =>
         {
-            div.WithAttribute("id", $"grid-view-{Name}");
+            div.WithAttribute("id", $"{Name}-grid-view");
 
             if (ShowTitle)
                 div.AppendComponent(await GetTitleAsync());

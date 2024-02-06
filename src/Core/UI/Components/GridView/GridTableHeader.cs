@@ -206,7 +206,7 @@ internal class GridTableHeader
                     .WithCssClass("form-check-input")
                     .WithToolTip(StringLocalizer["Mark|Unmark all from page"])
                     .WithAttribute("onclick",
-                        $"GridViewSelectionHelper.selectAllAtSamePage('{GridView.Name}')");
+                        $"GridViewSelectionHelper.selectAllAtSamePage(this)");
             });
 
         th.AppendIf(hasPages, HtmlTag.Span, span =>
