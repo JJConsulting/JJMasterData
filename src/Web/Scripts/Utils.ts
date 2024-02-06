@@ -82,6 +82,9 @@
                 const nextIndex = (currentIndex + 1) % focusableElements.length;
                 const nextElement = focusableElements[nextIndex];
                 nextElement.focus();
+                if (nextElement instanceof HTMLInputElement || nextElement instanceof HTMLTextAreaElement) {
+                    nextElement.select();
+                }
             }
         },
 
