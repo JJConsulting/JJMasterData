@@ -28,10 +28,15 @@ class GridViewFilterHelper {
 
         $(selector).each(function () {
             let currentObj = $(this);
-
+            
             if (currentObj.hasClass("flatpickr-input")) {
                 currentObj.val("")
             }
+
+            if(currentObj.selectpicker){
+                currentObj.selectpicker("val","");
+            }
+            
             let inputType: string = (this as any).type;
 
             if (inputType == "checkbox") {

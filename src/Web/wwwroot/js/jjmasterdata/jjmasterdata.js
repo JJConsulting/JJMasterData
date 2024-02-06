@@ -1053,6 +1053,9 @@ class GridViewFilterHelper {
             if (currentObj.hasClass("flatpickr-input")) {
                 currentObj.val("");
             }
+            if (currentObj.selectpicker) {
+                currentObj.selectpicker("val", "");
+            }
             let inputType = this.type;
             if (inputType == "checkbox") {
                 currentObj.prop("checked", false);
