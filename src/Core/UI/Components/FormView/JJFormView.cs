@@ -514,7 +514,11 @@ public class JJFormView : AsyncComponent
             return await GetFormResult(new FormContext(values, errors, PageState), true);
 
         if (!string.IsNullOrEmpty(UrlRedirect))
+        {
+            CurrentActionMap = null;
             return new RedirectComponentResult(UrlRedirect!);
+        }
+
         
         if (PageState is PageState.Insert && insertAction.ReopenForm)
         {
@@ -825,10 +829,10 @@ public class JJFormView : AsyncComponent
         var insertAction = GridView.ToolbarActions.InsertAction;
         var html = new HtmlBuilder(HtmlTag.Div);
         html.AppendHiddenInput($"form-view-insert-selection-values-{Name}");
-        var formElement = await DataDictionaryRepository.GetFormElementAsync(insertAction.ElementNameToSelect);
-        formElement.ParentName = FormElement.Name;
 
-        var formView = ComponentFactory.FormView.Create(formElement);
+
+        var formView = await ComponentFactory.FormView.CreateAsync(insertAction.ElementNameToSelect);
+        formView.FormElement.ParentName = FormElement.Name;
         formView.UserValues = UserValues;
         formView.GridView.OnRenderActionAsync += InsertSelectionOnRenderAction;
         
@@ -1154,21 +1158,22 @@ public class JJFormView : AsyncComponent
 
         var relationshipsResult = await layout.GetRelationshipsResult();
 
-        if (relationshipsResult is RenderedComponentResult renderedComponentResult)
+        if (relationshipsResult is HtmlComponentResult htmlResult)
         {
-            html.Append((HtmlBuilder?)renderedComponentResult.HtmlBuilder);
+            html.Append((HtmlBuilder?)htmlResult.HtmlBuilder);
+            var toolbarActions = FormElement.Options.FormToolbarActions;
+
+            var bottomActions = 
+                toolbarActions.Where(a => a.Location is FormToolbarActionLocation.Bottom).ToList();
+        
+            toolbarActions.BackAction.SetVisible(true);
+        
+            html.AppendComponent(await GetFormToolbarAsync(bottomActions));
+
+            return new RenderedComponentResult(html);
         }
 
-        var toolbarActions = FormElement.Options.FormToolbarActions;
-
-        var bottomActions = 
-            toolbarActions.Where(a => a.Location is FormToolbarActionLocation.Bottom).ToList();
-        
-        toolbarActions.BackAction.SetVisible(true);
-        
-        html.AppendComponent(await GetFormToolbarAsync(bottomActions));
-
-        return new RenderedComponentResult(html);
+        return relationshipsResult;
     }
 
     private async Task ConfigureFormToolbar()
