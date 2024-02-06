@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -118,7 +117,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                 button.OnClientClick =
                     BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-filter-modal");
                 break;
-            case InsertAction insertAction:
+            case InsertAction:
                 button.OnClientClick = ActionScripts.GetFormActionScript(actionContext,
                     ActionSource.GridToolbar);
                 break;
@@ -171,7 +170,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                     break;
                 case BackAction:
 
-                    var isBackModal = gridTableActions.ViewAction.ShowAsModal;
+                    var isBackModal = gridTableActions.ViewAction.ShowAsModal && formStateData.PageState is PageState.View;
                     if (isBackModal)
                     {
                         button.OnClientClick = ActionScripts.GetHideModalScript(actionContext.ParentComponentName);

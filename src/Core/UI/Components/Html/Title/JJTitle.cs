@@ -34,6 +34,9 @@ public class JJTitle : HtmlComponent
 
     internal override HtmlBuilder BuildHtml()
     {
+        if (string.IsNullOrWhiteSpace(Title) && string.IsNullOrWhiteSpace(SubTitle))
+            return new HtmlBuilder();
+        
         return new HtmlBuilder(HtmlTag.Div)
             .WithNameAndId(Name)
             .WithAttributes(Attributes)

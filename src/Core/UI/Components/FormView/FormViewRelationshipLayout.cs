@@ -152,7 +152,6 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         {
             var value = formContext.Values[col.PkColumn];
             filter[col.FkColumn] = value;
-            parentFormView.UserValues[col.FkColumn] = value;
         }
 
 
@@ -176,7 +175,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
     {
         var childFormView = parentFormView.ComponentFactory.FormView.Create(childElement);
         childFormView.ShowTitle = false;
-        childFormView.UserValues = parentFormView.UserValues;
+        childFormView.UserValues = new Dictionary<string, object>(parentFormView.UserValues);
         
         if(childFormView.CurrentAction is null)
             childFormView.PageState = PageState.List;
@@ -223,7 +222,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
                 childFormView.PanelState = PageState.Insert;
         }
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
-        childFormView.UserValues = parentFormView.UserValues;
+        childFormView.UserValues = new Dictionary<string, object>(parentFormView.UserValues);
         childFormView.ShowTitle = false;
 
         if (childValues is not null)
