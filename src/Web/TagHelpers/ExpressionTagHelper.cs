@@ -47,7 +47,7 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
                 ?.Metadata
                 ?.ContainerType
                 ?.GetProperty(For.Metadata.PropertyName!)
-                ?.IsDefined(typeof(BooleanExpressionAttribute), inherit: true) is true;
+                ?.IsDefined(typeof(SyncExpressionAttribute), inherit: true) is true;
 
             return _isBooleanExpression.Value;
         }
@@ -118,7 +118,7 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
 
         foreach (var provider in expressionProviders)
         {
-            if (IsBooleanExpression && provider is not IBooleanExpressionProvider)
+            if (IsBooleanExpression && provider is not ISyncExpressionProvider)
                 continue;
 
             select.Append(HtmlTag.Option, option =>

@@ -36,7 +36,7 @@ public class FormElementField : ElementField
     /// </remarks>
     [JsonProperty("visibleExpression")]
     [Display(Name = "Visible Expression")]
-    [BooleanExpression]
+    [SyncExpression]
     public string VisibleExpression { get; set; }
 
     /// <remarks>
@@ -44,7 +44,7 @@ public class FormElementField : ElementField
     /// </remarks>
     [JsonProperty("enableExpression")]
     [Display(Name = "Enable Expression")]
-    [BooleanExpression]
+    [SyncExpression]
     public string EnableExpression { get; set; }
     
     /// <summary>

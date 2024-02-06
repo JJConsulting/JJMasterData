@@ -9,7 +9,7 @@ public static class ExpressionHelper
     public const char Begin = '{';
     public const char End = '}';
 
-    public static string ReplaceExpression(string expression, IDictionary<string,object?> values)
+    public static string ReplaceExpression(string expression, Dictionary<string,object?> values)
     {
         foreach (var kvp in values)
         {

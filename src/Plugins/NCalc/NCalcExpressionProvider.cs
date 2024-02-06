@@ -8,18 +8,16 @@ using NCalc;
 
 namespace JJMasterData.NCalc;
 
-public class NCalcExpressionProvider(IOptions<NCalcExpressionProviderOptions> options) : IAsyncExpressionProvider, IBooleanExpressionProvider
+public class NCalcExpressionProvider(IOptions<NCalcExpressionProviderOptions> options) :
+    IAsyncExpressionProvider,
+    ISyncExpressionProvider
 {
     public string Prefix => Options.ReplaceDefaultExpressionProvider ? "exp" : "ncalc";
     public string Title => Options.ReplaceDefaultExpressionProvider ? "Expression" : "NCalc";
     private NCalcExpressionProviderOptions Options { get; } = options.Value;
     
-    public bool Evaluate(string expression, IDictionary<string, object?> parsedValues)
-    {
-        return StringManager.ParseBool(ExecuteNCalcExpression(expression, parsedValues));
-    }
 
-    private object? ExecuteNCalcExpression(string expression, IDictionary<string, object?> parsedValues)
+    public object? Evaluate(string expression, Dictionary<string, object?> parsedValues)
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
         var ncalcExpression = new Expression(replacedExpression, Options.EvaluateOptions);
@@ -30,8 +28,6 @@ public class NCalcExpressionProvider(IOptions<NCalcExpressionProviderOptions> op
         return ncalcExpression.Evaluate();
     }
 
-    public Task<object?> EvaluateAsync(string expression, IDictionary<string, object?> parsedValues)
-    {
-        return Task.FromResult(ExecuteNCalcExpression(expression,parsedValues));
-    }
+    public Task<object?> EvaluateAsync(string expression, Dictionary<string, object?> parsedValues) 
+        => Task.FromResult(Evaluate(expression,parsedValues));
 }

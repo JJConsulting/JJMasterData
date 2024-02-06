@@ -51,11 +51,16 @@ public class ExpressionsService(
 
     public bool GetBoolValue(string? expression, FormStateData formStateData)
     {
+        return ParseBool(GetExpressionValue(expression, formStateData));
+    }
+
+    public object? GetExpressionValue(string? expression, FormStateData formStateData)
+    {
         var extractedExpression = GetExpressionFromString(expression);
         var (expressionType, expressionValue) = extractedExpression;
 
-        if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is IBooleanExpressionProvider) is
-            not IBooleanExpressionProvider provider)
+        if (ExpressionProviders.FirstOrDefault(p => p.Prefix == expressionType && p is ISyncExpressionProvider) is
+            not ISyncExpressionProvider provider)
             throw new JJMasterDataException($"Expression type not supported: {expressionType}.");
 
         object? result;
@@ -78,7 +83,7 @@ public class ExpressionsService(
             throw exception;
         }
 
-        return ParseBool(result);
+        return result;
     }
 
     public Task<object?> GetTriggerValueAsync(FormElementField field, FormStateData formStateData)

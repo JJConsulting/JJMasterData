@@ -15,7 +15,7 @@ public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncE
     public string Prefix => "sql";
     public string Title => "SQL";
     
-    public async Task<object?> EvaluateAsync(string expression, IDictionary<string,object?> parsedValues)
+    public async Task<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues)
     {
         var command = GetParsedDataAccessCommand(expression, parsedValues);
 

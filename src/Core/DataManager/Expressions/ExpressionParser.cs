@@ -17,7 +17,7 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
     private IHttpRequest Request => HttpContext.Request;
     private IHttpSession Session => HttpContext.Session;
 
-    public IDictionary<string, object?> ParseExpression(
+    public Dictionary<string, object?> ParseExpression(
         string? expression,
         FormStateData formStateData)
     {

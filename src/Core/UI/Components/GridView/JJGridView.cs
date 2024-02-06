@@ -823,7 +823,7 @@ public class JJGridView : AsyncComponent
     
     internal async Task<JJTitle> GetTitleAsync()
     {
-        return await ComponentFactory.Html.Title.CreateAsync(FormElement, await GetFormStateDataAsync());
+        return ComponentFactory.Html.Title.Create(FormElement, await GetFormStateDataAsync());
     }
 
     internal Task<HtmlBuilder> GetToolbarHtmlBuilder() => Toolbar.GetHtmlBuilderAsync();

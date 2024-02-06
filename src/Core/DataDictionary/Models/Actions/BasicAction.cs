@@ -96,7 +96,7 @@ public abstract class BasicAction
     /// </remarks>
     [JsonProperty("enableExpression")]
     [Display(Name = "Enable Expression")]
-    [BooleanExpression]
+    [SyncExpression]
     public string EnableExpression { get; set; }
 
     /// <summary>
@@ -110,7 +110,7 @@ public abstract class BasicAction
     /// </remarks>
     [JsonProperty("visibleExpression")]
     [Display(Name = "Visible Expression")]
-    [BooleanExpression]
+    [SyncExpression]
     public string VisibleExpression { get; set; }
 
     /// <summary>

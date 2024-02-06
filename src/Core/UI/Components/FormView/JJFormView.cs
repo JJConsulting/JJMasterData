@@ -1096,7 +1096,7 @@ public class JJFormView : AsyncComponent
         var html = new HtmlBuilder(HtmlTag.Div);
 
         if (ShowTitle)
-            html.AppendComponent(await GetTitleAsync(new FormStateData(UserValues, PageState.Import)));
+            html.AppendComponent(GetTitle(new FormStateData(UserValues, PageState.Import)));
 
         PageState = PageState.Import;
 
@@ -1146,7 +1146,7 @@ public class JJFormView : AsyncComponent
     {
         var html = new HtmlBuilder(HtmlTag.Div);
         if (ShowTitle)
-            html.AppendComponent(await GetTitleAsync(new FormStateData(values, UserValues, PageState)));
+            html.AppendComponent(GetTitle(new FormStateData(values, UserValues, PageState)));
 
         var layout = new FormViewRelationshipLayout(this, visibleRelationships);
 
@@ -1555,14 +1555,14 @@ public class JJFormView : AsyncComponent
         OnAfterUpdateAsync += eventHandler.OnAfterUpdateAsync;
     }
     
-    private async Task<JJTitle> GetTitleAsync(FormStateData formStateData)
+    private JJTitle GetTitle(FormStateData formStateData)
     {
-        return await ComponentFactory.Html.Title.CreateAsync(FormElement,formStateData);
+        return ComponentFactory.Html.Title.Create(FormElement,formStateData);
     }
 
     private async Task<JJTitle> GetTitleAsync()
     {
-        return await ComponentFactory.Html.Title.CreateAsync(FormElement, await GetFormStateDataAsync());
+        return ComponentFactory.Html.Title.Create(FormElement, await GetFormStateDataAsync());
     }
     
     #region "Legacy inherited GridView compatibility"

@@ -21,15 +21,15 @@ public class TitleFactory(ExpressionsService expressionsService) : IComponentFac
         return htmlTitle;
     }
 
-    public async Task<JJTitle> CreateAsync(FormElement formElement, FormStateData formStateData)
+    public JJTitle Create(FormElement formElement, FormStateData formStateData)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
     
         var htmlTitle = Create();
-        htmlTitle.Title = await expressionsService.GetExpressionValueAsync(formElement.Title, formStateData) as string;
+        htmlTitle.Title = expressionsService.GetExpressionValue(formElement.Title, formStateData) as string;
         htmlTitle.Size = formElement.TitleSize;
-        htmlTitle.SubTitle = await expressionsService.GetExpressionValueAsync(formElement.SubTitle, formStateData) as string;
+        htmlTitle.SubTitle = expressionsService.GetExpressionValue(formElement.SubTitle, formStateData) as string;
 
         return htmlTitle;
     }
