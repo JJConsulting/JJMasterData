@@ -63,7 +63,7 @@ public class DataDictionaryFormElementFactory(
         formElement.Fields[DataDictionaryStructure.Info].VisibleExpression = "val:0";
         formElement.Fields[DataDictionaryStructure.Json].Component = FormComponent.Text;
         formElement.Fields[DataDictionaryStructure.Json].CssClass = "col-sm-4";
-        formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "exp: '{PageState}' = 'Filter'";
+        formElement.Fields[DataDictionaryStructure.Json].VisibleExpression = "val:{IsFilter}";
         formElement.Fields[DataDictionaryStructure.Json].HelpDescription =
             StringLocalizer["Filter by any data within the data dictionary structure."];
         formElement.Fields[DataDictionaryStructure.LastModified].Component = FormComponent.DateTime;

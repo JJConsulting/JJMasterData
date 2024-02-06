@@ -138,7 +138,7 @@ public partial class HtmlBuilder
         var attributes = new StringBuilder();
         foreach (var item in _attributes)
         {
-            attributes.Append($" {item.Key}=\"{item.Value}\"");
+            attributes.AppendFormat(" {0}=\"{1}\"", item.Key, item.Value);
         }
         return attributes.ToString();
     }

@@ -228,7 +228,7 @@ public class FormElementField : ElementField
         {
             if (elementField.AutoNum)
             {
-                EnableExpression = "exp:'{PageState}' = 'Filter'";
+                EnableExpression = "val:{IsFilter}";
                 VisibleExpression = "exp:'{PageState}' <> 'Insert'";
             }
             else
