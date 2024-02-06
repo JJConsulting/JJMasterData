@@ -122,7 +122,7 @@ public class JJComboBox : ControlBase
                 isSelected = SelectedValue.Split(',').Contains(value.Id);
             }
             
-            var content = new HtmlBuilder(HtmlTag.Div);
+            var content = new HtmlBuilder();
             content.AppendComponentIf(DataItem.ShowIcon,new JJIcon(value.Icon,value.IconColor));
             content.Append(HtmlTag.Span, span =>
             {
