@@ -180,8 +180,10 @@ public class JJLookup : ControlBase
         var routeContext = new RouteContext(ElementName, ParentElementName,
             ComponentContext.LookupDescription);
         
-        Attributes["route-context"] = EncryptionService.EncryptRouteContext(routeContext); 
+        Attributes["route-context"] = EncryptionService.EncryptRouteContext(routeContext);
 
+        var flexLayout = GetFlexLayout();
+        
         var idTextBox = ComponentFactory.Controls.TextBox.Create();
         idTextBox.Name = Name;
         idTextBox.CssClass = $"form-control jj-lookup {GetFeedbackIcon(inputValue?.ToString(), description)} {CssClass}";
@@ -192,6 +194,8 @@ public class JJLookup : ControlBase
         idTextBox.Tooltip = Tooltip;
         idTextBox.ReadOnly = ReadOnly;
         idTextBox.Enabled = Enabled;
+
+        idTextBox.Attributes["style"] = $"flex:{flexLayout.Item1}";
         
         await div.AppendControlAsync(idTextBox);
         
@@ -205,7 +209,6 @@ public class JJLookup : ControlBase
                     span.WithAttribute("style", "width:0px;");
                 });
             }
-            idTextBox.Attributes["style"] = "flex:2";
 
             var descriptionTextBox = ComponentFactory.Controls.TextBox.Create();
             descriptionTextBox.Name = $"{Name}-description";
@@ -217,7 +220,7 @@ public class JJLookup : ControlBase
             descriptionTextBox.Tooltip = Tooltip;
             descriptionTextBox.Enabled = false;
 
-            descriptionTextBox.Attributes["style"] = "flex:10";
+            descriptionTextBox.Attributes["style"] = $"flex:{flexLayout.Item2}";
             
             await div.AppendControlAsync(descriptionTextBox);
         }
@@ -248,6 +251,18 @@ public class JJLookup : ControlBase
         return div;
     }
 
+    private (int,int) GetFlexLayout()
+    {
+        return MaxLength switch
+        {
+            <= 4 => (2, 10),
+            <= 8 => (3, 9),
+            <= 12 => (4, 8),
+            <= 16  => (5, 7),
+            _  => (6, 6)
+        };
+    }
+    
     private static string? GetFeedbackIcon(string? value, string? description)
     {
         if (!string.IsNullOrEmpty(value) & !string.IsNullOrEmpty(description))
