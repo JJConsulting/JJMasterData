@@ -19,7 +19,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
 
         if (relationships.Any(r => r.Panel.Layout is PanelLayout.Tab))
         {
-            var tabNavResult = await GetTabRelationshipsResult(relationships);
+            var tabNavResult = await GetTabRelationshipsResult();
 
             if (tabNavResult is RenderedComponentResult renderedComponentResult)
             {
@@ -50,7 +50,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
     }
 
 
-    private async Task<ComponentResult> GetTabRelationshipsResult(List<FormElementRelationship> relationships)
+    private async Task<ComponentResult> GetTabRelationshipsResult()
     {
         var tabNav = new JJTabNav(parentFormView.CurrentContext.Request.Form)
         {
@@ -211,11 +211,14 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         else
         {
             childFormView.PageState = childValues is not null ? PageState.Update : PageState.Insert;
-            
-            if (childValues is not null)
-                childFormView.PanelState = relationship.EditModeOpenByDefault ? PageState.Update: PageState.View;
-            else
-                childFormView.PanelState = PageState.Insert;
+
+            if (childFormView.PanelState is null)
+            {
+                if (childValues is not null)
+                    childFormView.PanelState = relationship.EditModeOpenByDefault ? PageState.Update: PageState.View;
+                else
+                    childFormView.PanelState = PageState.Insert;
+            }
         }
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
         childFormView.UserValues = new Dictionary<string, object>(parentFormView.UserValues);
