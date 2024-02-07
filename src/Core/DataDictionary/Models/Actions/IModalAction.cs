@@ -3,4 +3,5 @@
 public interface IModalAction
 {
     public bool ShowAsModal { get; set; }    
+    public string ModalTitle { get; set; }    
 }

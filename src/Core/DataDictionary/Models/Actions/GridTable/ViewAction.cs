@@ -13,6 +13,9 @@ public class ViewAction : GridTableAction, IModalAction
     [Display(Name = "Show as Modal")]
     public bool ShowAsModal { get; set; }
     
+    [Display(Name = "Modal Title")]
+    public string ModalTitle { get; set; }
+    
     public ViewAction()
     {
         Name = ActionName;
