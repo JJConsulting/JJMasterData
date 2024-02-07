@@ -389,7 +389,7 @@ ul.dropdown-menu.inner {
 }
 
 .search-box-menu{
-    position: relative !important;
+    width: 100%;
 }
 /* _Menu Navbar */
 .navbar .nav-pills .nav-link.active {
