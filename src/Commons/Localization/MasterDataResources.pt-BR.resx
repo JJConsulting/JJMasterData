@@ -3891,4 +3891,7 @@
   <data name="View Audit Log" xml:space="preserve">
     <value>Visualizar Log De Auditoria</value>
   </data>
+  <data name="Edit Action" xml:space="preserve">
+    <value>Ação de Edição</value>
+  </data>
 </root>
