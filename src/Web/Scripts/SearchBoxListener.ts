@@ -99,6 +99,7 @@
             });
             $(jjSearchBoxSelector).prev().attr("style","display:none")
             $(jjSearchBoxSelector).css("background-color", '');
+            $(jjSearchBoxSelector).closest('.twitter-typeahead').css('display', '');
         });
     }
 }
