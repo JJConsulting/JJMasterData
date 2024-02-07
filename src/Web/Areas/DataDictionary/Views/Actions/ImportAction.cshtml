@@ -24,7 +24,7 @@
         <div id="divImportAction" class="tab-pane fade">
             @await Html.PartialAsync("_ProcessOptions", Model.ProcessOptions)
             
-            <label asp-for="HelpText" class="col-form-label"></label>
+            <label asp-for="HelpText" class="form-label"></label>
             <tooltip title="@StringLocalizer["Help text that will be shown to the user."]"/>
             <textarea asp-for="HelpText" class="form-control" rows="5"></textarea>
         </div>

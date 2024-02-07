@@ -34,6 +34,9 @@ public class InsertAction : GridToolbarAction, IModalAction
     [Display(Name = "Show as Modal")]
     public bool ShowAsModal { get; set; }
     
+    [Display(Name = "Modal Title")]
+    public string ModalTitle { get; set; }
+    
     public InsertAction()
     {
         Name = ActionName;

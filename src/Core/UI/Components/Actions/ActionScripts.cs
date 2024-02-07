@@ -116,19 +116,19 @@ public class ActionScripts(
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
         string confirmationMessage =
             GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
-
-        var isModal = action is IModalAction { ShowAsModal: true };
-
+        
         var actionData = new ActionData
         {
             ComponentName = actionContext.ParentComponentName,
             EncryptedActionMap = encryptedActionMap,
-            IsModal = isModal,
             ConfirmationMessage = confirmationMessage.IsNullOrEmpty() ? null : confirmationMessage
         };
 
-        if (isModal)
-            actionData.ModalTitle = GetModalTitle(actionContext);
+        if (action is IModalAction { ShowAsModal: true } modalAction)
+        {
+            actionData.ModalTitle = modalAction.ModalTitle ?? string.Empty;
+            actionData.IsModal = true;
+        }
         
         var formViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.FormViewReload);
         actionData.EncryptedFormViewRouteContext = EncryptionService.EncryptRouteContext(formViewRouteContext);
@@ -143,32 +143,7 @@ public class ActionScripts(
 
         return functionSignature;
     }
-
-    private string GetModalTitle(ActionContext actionContext)
-    {
-        var formElement = actionContext.FormElement;
-        var title = ExpressionsService.GetExpressionValue(formElement.Title, actionContext.FormStateData)?.ToString();
-        var subTitle = ExpressionsService.GetExpressionValue(formElement.SubTitle, actionContext.FormStateData)?.ToString();
-
-        var modalTitle = "";
-
-        if (!string.IsNullOrWhiteSpace(title))
-        {
-            modalTitle += title;
-        }
-
-        if (!string.IsNullOrWhiteSpace(subTitle))
-        {
-            if (!string.IsNullOrWhiteSpace(modalTitle))
-            {
-                modalTitle += " - ";
-            }
-            modalTitle += subTitle;
-        }
-
-        return modalTitle;
-    }
-
+    
 
     internal string GetUserActionScript(
         ActionContext actionContext,

@@ -24,9 +24,13 @@
         
         <div id="divViewAction" class="tab-pane fade">
             <div class="row">
-                <div class="@BootstrapHelper.FormGroup col-sm-12">
-                    <label asp-for="ShowAsModal" class="@BootstrapHelper.Label"></label>
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                    <label asp-for="ShowAsModal" class="form-label"></label>
                     <checkbox for="ShowAsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
+                </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                    <label asp-for="ModalTitle" class="form-label"></label>
+                    <input asp-for="ModalTitle" class="form-control"/>
                 </div>
             </div>
         </div>
