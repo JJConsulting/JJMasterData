@@ -539,6 +539,18 @@ public class JJFormView : AsyncComponent
             PanelState = PageState.View;
             return await GetFormResult(new FormContext(values, PanelState.Value), false);
         }
+
+        if (PageState is PageState.Insert)
+        {
+            var visibleRelationships = GetVisibleRelationships(values, PageState.Update);
+            
+            if(visibleRelationships.Any())
+            {
+                PageState = PageState.Update;
+                PanelState = PageState.View;
+                return await GetFormResult(new FormContext(values, PanelState.Value), false);
+            }
+        }
         
         PageState = PageState.List;
         CurrentActionMap = null;
