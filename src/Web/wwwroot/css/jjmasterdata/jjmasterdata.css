@@ -388,6 +388,9 @@ ul.dropdown-menu.inner {
     overflow-y: auto;
 }
 
+.search-box-menu{
+    position: relative !important;
+}
 /* _Menu Navbar */
 .navbar .nav-pills .nav-link.active {
     color: #fff !important
