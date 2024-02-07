@@ -14,7 +14,7 @@ public class ExpressionsServiceTests
     private readonly ExpressionsService _expressionsService;
     private readonly Mock<ILogger<ExpressionsService>> _loggerMock = new();
     private readonly Mock<IAsyncExpressionProvider> _expressionAsyncProviderMock = new();
-    private readonly Mock<IBooleanExpressionProvider> _expressionBooleanProviderMock = new();
+    private readonly Mock<ISyncExpressionProvider> _expressionBooleanProviderMock = new();
     
     private IHttpContext MockHttpContext()
     {
