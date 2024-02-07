@@ -383,14 +383,9 @@ ul.dropdown-menu.inner {
     pointer-events: none !important;
 }
 
-/* Navbar */
-
-.jj-nav-item {
-    font-size: 1.2em;
-}
-
-.nav-link.jj-nav-item.active {
-    background-color: #e7e7e7 !important
+/* _Menu Navbar */
+.navbar .nav-pills .nav-link.active {
+    color: #fff !important
 }
 
 /* Legacy bootstrap-theme.css implementation */
@@ -531,11 +526,6 @@ button.dropdown-toggle.form-control {
     .bs-clipboard button.btn-default {
         background-color: inherit;
     }
-
-#jjmenu nav {
-    border-radius: 8px;
-    margin-bottom: 1vh;
-}
 
 /*Spinner overlay*/
 .spinner-overlay {

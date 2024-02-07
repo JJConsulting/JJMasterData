@@ -110,7 +110,7 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
         if (TempData.ContainsKey("error"))
             ViewBag.Error = TempData["error"]!;
 
-        ViewBag.MenuId = "Panel";
+        ViewBag.MenuId = "Panels";
         ViewBag.ElementName = formElement.Name;
         ViewBag.PanelId = panel.PanelId;
         ViewBag.Panels = formElement.Panels;

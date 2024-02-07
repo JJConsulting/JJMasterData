@@ -40,9 +40,9 @@ public class ApiController(ApiService apiService) : DataDictionaryController
         return View(model);
 
     }
-    private ApiViewModel PopulateViewModel(FormElement metadata)
+    private static ApiViewModel PopulateViewModel(FormElement metadata)
     {
-        var model = new ApiViewModel(elementName:metadata.Name, menuId:"Api")
+        var model = new ApiViewModel(elementName:metadata.Name, menuId:"WebApi")
         {
             ApiOptions = metadata.ApiOptions,
             SynchronismMode = metadata.SynchronismMode,

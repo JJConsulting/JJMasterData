@@ -104,8 +104,17 @@
                     <div style="height: 33px;">
                         <div style="float: left; margin-top: 10px;">
                             <span class="@action.Icon.GetCssClass() fa-fw"></span>&nbsp;
-                            @action.Name
-                            &nbsp;
+                            @{
+                                var actionName = StringLocalizer[action.Text ?? action.Tooltip ?? action.Name];
+                                if (action.IsUserCreated)
+                                {
+                                    <span title="@action.GetType().Name" data-bs-toggle="tooltip">@actionName</span>
+                                }
+                                else
+                                {
+                                    <span>@actionName</span>
+                                }
+                            }
                         </div>
                         <div class="@BootstrapHelper.PullRight d-flex align-content-center">
                             <button class="btn btn-default btn-small" type="button" onclick="@GetEditScript(action)">

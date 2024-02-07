@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Html
+﻿
 @using JJMasterData.Core.UI.Components
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.DataDictionary.Models
@@ -7,44 +7,6 @@
 @inject IComponentFactory ComponentFactory
 
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.DataDictionaryViewModel;
-
-@{
-    IHtmlContent NavItem(string menuId)
-    {
-        string cssClass = "nav-item jj-nav-item";
-
-        if (Model.MenuId!.Equals(menuId) && BootstrapHelper.Version < 5)
-        {
-            cssClass += " active";
-        }
-
-        return Html.Raw(cssClass);
-    }
-
-    IHtmlContent ActiveBs5(string menuId)
-    {
-        string cssClass = string.Empty;
-
-        if (Model.MenuId!.Equals(menuId) && BootstrapHelper.Version == 5)
-        {
-            cssClass += " active";
-        }
-
-        return Html.Raw(cssClass);
-    }
-
-    IHtmlContent AriaSelected(string menuId)
-    {
-        string ariaSelected = "false";
-
-        if (Model.MenuId!.Equals(menuId))
-        {
-            ariaSelected = "true";
-        }
-
-        return Html.Raw(ariaSelected);
-    }
-}
 
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/highlight.min.js"></script>
 <script type="text/javascript" src="~/_content/JJMasterData.Web/js/highlightjs/languages/tsql.min.js"></script>
@@ -56,124 +18,80 @@
     </h1>
 </div>
 
-<div id="jjmenu">
-    <div class="@(BootstrapHelper.Version > 3 ? "container-fluid p-0" : "")">
-        <nav class="@BootstrapHelper.NavBar">
-            <div class="navbar-header">
-                @if (BootstrapHelper.Version == 3)
-                {
-                    <button type="button" class="navbar-toggle collapsed" data-bs-toggle="collapse" data-target="#jj-navbar" aria-expanded="false">
-                        <span class="sr-only">@StringLocalizer["Toggle navigation"]</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                }
-                else
-                {
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-bs-target="#jj-navbar" data-target="#jj-navbar" aria-controls="jj-navbar" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                }
-            </div>
-            <div class="collapse navbar-collapse row justify-content-between" id="jj-navbar">
-                <ul class="@(BootstrapHelper.Version == 5 ? "nav nav-pills" : "navbar-nav nav")">
-                    <li class="@NavItem("Exit") @BootstrapHelper.MarginLeft-1">
-                        <a class="nav-link" href="@Url.Action("Index", "Element")">
-                            <span class="fa fa-mail-reply" aria-selected="@AriaSelected("Exit")"></span> @StringLocalizer["Exit"]
-                        </a>
-                    </li>
-                    <li class="@NavItem("Entity")">
-                        <a class="nav-link @ActiveBs5("Entity")" href="@Url.Action("Index", "Entity", new { elementName = Model.ElementName })">
-                            <span class="fa fa-database" aria-selected="@AriaSelected("Entity")"></span>&nbsp;@StringLocalizer["Entity"]
-                        </a>
-                    </li>
-                    <li class="@NavItem("Field")">
-                        <a class="nav-link @ActiveBs5("Field")" href="@Url.Action("Index", "Field", new { elementName = Model.ElementName })">
-                            <span class="fa fa-th-list" aria-selected="@AriaSelected("Field")"></span>&nbsp;@StringLocalizer["Fields"]
-                        </a>
-                    </li>
-                    <li class="@NavItem("Panel")">
-                        <a class="nav-link @ActiveBs5("Panel")" href="@Url.Action("Index", "Panel", new { elementName = Model.ElementName })">
-                            <span class="fa-solid fa-layer-group" aria-selected="@AriaSelected("Panel")"></span>&nbsp;@StringLocalizer["Panels"]
-                        </a>
-                    </li>
-                    <li class="@NavItem("Relationships")">
-                        <a class="nav-link @ActiveBs5("Relationships")" href="@Url.Action("Index", "Relationships", new { elementName = Model.ElementName })">
-                            <span class="fas fa-code-branch" aria-selected="@AriaSelected("Relationships")"></span>&nbsp;@StringLocalizer["Relationships"]
-                        </a>
-                    </li>
-                    <li class="@NavItem("Indexes")">
-                        <a class="nav-link @ActiveBs5("Indexes")" href="@Url.Action("Index", "Indexes", new { elementName = Model.ElementName })">
-                            <span class="fa fa-indent" aria-selected="@AriaSelected("Indexes")"></span>&nbsp;@StringLocalizer["Indexes"]
-                        </a>
-                    </li>
+<nav class="navbar rounded navbar-expand-lg fs-5 bg-body-tertiary mb-3">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-                    <li class="@NavItem("Options")">
-                        <a class="nav-link @ActiveBs5("Options")" href="@Url.Action("Index", "UIOptions", new { elementName = Model.ElementName })">
-                            <span class="fa fa-gear" aria-selected="@AriaSelected("Options")"></span>&nbsp;@StringLocalizer["Options"]
-                        </a>
-                    </li>
-                    <li class="@NavItem("Actions")">
-                        <a class="nav-link @ActiveBs5("Actions")" href="@Url.Action("Index", "Actions", new { elementName = Model.ElementName })">
-                            <span class="fa fa-flash" aria-selected="@AriaSelected("Actions")"></span>&nbsp;@StringLocalizer["Actions"]
-                        </a>
-                    </li>
-                    <li class="@NavItem("Api") @(BootstrapHelper.Version >= 5 ? "me-auto" : string.Empty)">
-                        <a class="nav-link @ActiveBs5("Api")" href="@Url.Action("Index", "Api", new { elementName = Model.ElementName })">
-                            <span class="fa fa-globe" aria-selected="@AriaSelected("WebApi")"></span>&nbsp;@StringLocalizer["WebApi"]
-                        </a>
-                    </li>
-                    @if (BootstrapHelper.Version >= 5)
-                    {
-                        <li class="@NavItem("More") dropdown dropstart me-3">
-                            <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                @StringLocalizer["More"]
+        <div class="collapse navbar-collapse row" id="navbarText">
+            <ul class="navbar-nav nav-pills me-auto mb-2 mb-lg-0">
+                @{
+
+                    NavItem("Back", IconType.Backward.GetCssClass(), Url.Action("Index", "Element", new { elementName = Model.ElementName }));
+                    NavItem("Entity", IconType.Database.GetCssClass(), Url.Action("Index", "Entity", new { elementName = Model.ElementName }));
+                    NavItem("Fields", IconType.RegularRectangleList.GetCssClass(), Url.Action("Index", "Field", new { elementName = Model.ElementName }));
+                    NavItem("Panels", "fa-solid fa-layer-group", Url.Action("Index", "Panel", new { elementName = Model.ElementName }));
+                    NavItem("Relationships", "fa-solid fa-code-branch", Url.Action("Index", "Relationships", new { elementName = Model.ElementName }));
+                    NavItem("Indexes", IconType.Indent.GetCssClass(), Url.Action("Index", "Indexes", new { elementName = Model.ElementName }));
+                    NavItem("Options", IconType.Gears.GetCssClass(), Url.Action("Index", "UIOptions", new { elementName = Model.ElementName }));
+                    NavItem("Actions", "fa-solid fa-bolt", Url.Action("Index", "Actions", new { elementName = Model.ElementName }));
+                    NavItem("WebApi", "fa-solid fa-globe", Url.Action("Index", "Api", new { elementName = Model.ElementName }));
+                    
+                }
+                <li class="nav-item dropdown ms-auto">
+                    <a class="nav-link m-1 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        @StringLocalizer["More"]
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start">
+                        <li onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
+                            <a class="dropdown-item" href="#">
+                                <span class="@IconType.SolidScroll.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["Database Scripts"]
                             </a>
-                            @{
-                                MoreItems();
-                            }
                         </li>
-                    }
-                </ul>
-                @if (BootstrapHelper.Version < 5)
-                {
-                    <ul class="nav navbar-nav navbar-right mr-3" style="@(BootstrapHelper.Version == 3 ? "padding-right: 15px;" : string.Empty)">
-                        <li class="dropdown dropleft">
-                            @{
-                                <a href="#" class="dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") role="button" aria-haspopup="true" aria-expanded="false">
-                                    @StringLocalizer["More"] <span class="caret"></span>
-                                </a>
-                                MoreItems();
-                            }
+                        <li onclick="defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { elementName = Model.ElementName })','@StringLocalizer["C# Class"]',1);">
+                            <a class="dropdown-item" href="#">
+                                <span class="@IconType.SolidFileCode.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["C# Class"]
+                            </a>
+                        </li>
+                        <li onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })', '_blank').focus();">
+                            <a class="dropdown-item" href="#">
+                                <span class="@IconType.SolidCirclePlay.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["Render"]
+                            </a>
                         </li>
                     </ul>
-                }
-            </div>
-        </nav>
+                </li>
+          
+            </ul>
+    
+        </div>
+
     </div>
-</div>
+</nav>
 
 @functions
 {
-    private void MoreItems()
+    private string IsActive(string menuId)
     {
-        <ul class="dropdown-menu">
-            <li onclick="defaultModal.showIframe('@Url.Action("Scripts", "Element", new { elementName = Model.ElementName })','@StringLocalizer["Database Scripts"]',1);">
-                <a class="dropdown-item" href="#">
-                    <span class="@IconType.SolidScroll.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["Database Scripts"]
-                </a>
-            </li>
-            <li onclick="defaultModal.showUrl('@Url.Action("ClassSourceCode", "Element", new { elementName = Model.ElementName })','@StringLocalizer["C# Class"]',1);">
-                <a class="dropdown-item" href="#">
-                    <span class="@IconType.SolidFileCode.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["C# Class"]
-                </a>
-            </li>
-            <li onclick="window.open('@Url.Action("Render", "Form", new { area = "MasterData", elementName = Model.ElementName })', '_blank').focus();">
-                <a class="dropdown-item" href="#">
-                    <span class="@IconType.SolidCirclePlay.GetCssClass() fa-fw fa-lg"></span> @StringLocalizer["Render"]
-                </a>
-            </li>
-        </ul>
+        string cssClass = string.Empty;
+    
+        if (Model.MenuId!.Equals(menuId))
+        {
+            cssClass += " active";
+        }
+    
+        return cssClass;
     }
+    private void NavItem(
+        string label,
+        string iconCssClass,
+        string? url)
+    {
+        <li class="nav-item">
+            <a class="nav-link m-1 @IsActive(label)" href="@url">
+                <span class="@iconCssClass"></span>&nbsp;@StringLocalizer[label]
+            </a>
+        </li>
+    }
+
 }

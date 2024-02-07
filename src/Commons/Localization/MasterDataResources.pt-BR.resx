@@ -3885,4 +3885,10 @@
   <data name="Save Action" xml:space="preserve">
     <value>Ação de Salvar</value>
   </data>
+  <data name="Audit Log" xml:space="preserve">
+    <value>Log de Auditoria</value>
+  </data>
+  <data name="View Audit Log" xml:space="preserve">
+    <value>Visualizar Log De Auditoria</value>
+  </data>
 </root>

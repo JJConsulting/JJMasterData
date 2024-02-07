@@ -201,7 +201,7 @@ public class FieldController(FieldService fieldService)
         else
             ViewBag.OriginalName = field.Name;
 
-        ViewBag.MenuId = "Field";
+        ViewBag.MenuId = "Fields";
         ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;
         ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(fieldService.GetAutocompleteHintsList(formElement));
