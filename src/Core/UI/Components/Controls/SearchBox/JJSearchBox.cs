@@ -276,7 +276,6 @@ public class JJSearchBox : ControlBase
             input.WithAttribute("query-string", GetQueryString());
             input.WithAttribute("autocomplete", "off");
             input.WithAttributeIf(MaxLength > 0, "maxlength", MaxLength.ToString());
-            input.WithAttributeIf(DataItem.ShowIcon, "show-image-legend", "true");
             input.WithAttributeIf(ReadOnly, "readonly", "readonly");
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
             input.WithAttributes(Attributes);
@@ -300,6 +299,9 @@ public class JJSearchBox : ControlBase
             input.WithAttributeIfNotEmpty("value", selectedValue);
         });
 
+        if (ScrollBar)
+            div.WithCssClass("scrollable-dropdown-menu");
+        
         return div;
     }
 
@@ -375,10 +377,13 @@ public class JJSearchBox : ControlBase
     private async Task<List<DataItemResult>> GetSearchBoxItemsAsync()
     {
         var searchText = Request.Form[Name + "_text"];
-
         var values = await GetValuesAsync(searchText);
-        var items = DataItemService.GetItems(DataItem, values);
-
-        return items.ToList();
+        return values.Select(v=>new DataItemResult()
+        {
+            Id = v.Id,
+            Description = v.Description,
+            IconCssClass = DataItem.ShowIcon ? v.Icon.GetCssClass() : null,
+            IconColor =  DataItem.ShowIcon ? v.IconColor : null
+        }).ToList();
     }
 }

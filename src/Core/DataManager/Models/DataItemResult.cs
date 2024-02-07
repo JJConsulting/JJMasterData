@@ -1,18 +1,23 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿#nullable enable
+
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager.Models;
 
 /// <summary>
-/// Record used to send data to the client.
+/// Class used to send DataItem values to the client.
 /// </summary>
-[Serializable]
-[DataContract]
-public record DataItemResult(string Id, string Name)
+public class DataItemResult
 {
-    [DataMember(Name = "id")]
-    public string Id { get; set; } = Id;
+    [JsonProperty("id")]
+    public required string Id { get; init; } 
 
-    [DataMember(Name = "name")]
-    public string Name { get; set; } = Name;
+    [JsonProperty("description")]
+    public required string? Description { get; init; } 
+    
+    [JsonProperty("icon")] 
+    public required string? IconCssClass { get; init; } 
+    
+    [JsonProperty("iconColor")] 
+    public required string? IconColor { get; init; } 
 }

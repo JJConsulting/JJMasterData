@@ -20,30 +20,13 @@ namespace JJMasterData.Core.DataManager.Services;
 
 public class DataItemService(IEntityRepository entityRepository,
     ExpressionParser expressionParser,
-    IFormValues formValues,
     ElementMapService elementMapService,
     ILogger<DataItemService> logger)
 {
     private IEntityRepository EntityRepository { get; } = entityRepository;
     private ExpressionParser ExpressionParser { get; } = expressionParser;
-    private IFormValues FormValues { get; } = formValues;
     private ElementMapService ElementMapService { get; } = elementMapService;
     private ILogger<DataItemService> Logger { get; } = logger;
-
-    public static IEnumerable<DataItemResult> GetItems(FormElementDataItem dataItem, IEnumerable<DataItemValue> values)
-    {
-        foreach (var i in values.ToArray())
-        {
-            string? description;
-            
-            if (dataItem.ShowIcon)
-                description = $"{i.Description}|{i.Icon.GetCssClass()}|{i.IconColor}";
-            else
-                description = i.Description;
-
-            yield return new DataItemResult(i.Id, description);
-        }
-    }
 
     public async Task<List<DataItemValue>> GetValuesAsync(
         FormElementDataItem dataItem,
@@ -113,11 +96,11 @@ public class DataItemService(IEntityRepository entityRepository,
         {
             var item = new DataItemValue
             {
-                Id = value[elementMap!.IdFieldName]?.ToString()
+                Id = value[elementMap!.IdFieldName]!.ToString()!
             };
 
             if (elementMap.DescriptionFieldName != null) 
-                item.Description = value[elementMap.DescriptionFieldName]?.ToString();
+                item.Description = value[elementMap.DescriptionFieldName]?.ToString()!;
             
             if (dataItem.ShowIcon)
             {
@@ -157,7 +140,7 @@ public class DataItemService(IEntityRepository entityRepository,
         foreach (DataRow row in result.Rows)
         {
             var item = new DataItemValue();
-            item.Id = row[0].ToString();
+            item.Id = row[0].ToString()!;
 
             if (row.Table.Columns.Count == 1)
             {
@@ -165,7 +148,7 @@ public class DataItemService(IEntityRepository entityRepository,
             }
             else
             {
-                item.Description = row[1].ToString();
+                item.Description = row[1].ToString()!;
             }
             
             if (dataItem.ShowIcon)

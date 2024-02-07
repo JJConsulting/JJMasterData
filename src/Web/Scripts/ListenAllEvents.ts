@@ -11,7 +11,7 @@
     
     CalendarListener.listen(selectorPrefix);
     TextAreaListener.listenKeydown(selectorPrefix);
-    SearchBoxListener.listenTypeahed(selectorPrefix);
+    SearchBoxListener.listenTypeahead(selectorPrefix);
     LookupListener.listenChanges(selectorPrefix);
     SortableListener.listenSorting(selectorPrefix);
     UploadAreaListener.listenFileUpload(selectorPrefix);

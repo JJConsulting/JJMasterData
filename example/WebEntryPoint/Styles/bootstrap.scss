@@ -1,4 +1,7 @@
-﻿$primary: #f07d00;
+﻿$primary: rgb(245, 128, 15);
+$min-contrast-ratio: 1;
+$font-family-sans-serif: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family-serif: "Helvetica Neue", Helvetica, Arial, sans-serif;
 $font-size-root: 13px;
 
 @import "../node_modules/bootstrap/scss/bootstrap.scss";

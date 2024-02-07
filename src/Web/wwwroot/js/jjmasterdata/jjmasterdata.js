@@ -1056,6 +1056,10 @@ class GridViewFilterHelper {
             if (currentObj.selectpicker) {
                 currentObj.selectpicker("val", "");
             }
+            if (currentObj.typeahead) {
+                currentObj.typeahead("val", "");
+                currentObj.typeahead("destroy");
+            }
             let inputType = this.type;
             if (inputType == "checkbox") {
                 currentObj.prop("checked", false);
@@ -1405,7 +1409,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     }
     CalendarListener.listen(selectorPrefix);
     TextAreaListener.listenKeydown(selectorPrefix);
-    SearchBoxListener.listenTypeahed(selectorPrefix);
+    SearchBoxListener.listenTypeahead(selectorPrefix);
     LookupListener.listenChanges(selectorPrefix);
     SortableListener.listenSorting(selectorPrefix);
     UploadAreaListener.listenFileUpload(selectorPrefix);
@@ -2050,23 +2054,16 @@ function postFormValues(options) {
     });
 }
 class SearchBoxListener {
-    static listenTypeahed(selectorPrefix = String()) {
+    static listenTypeahead(selectorPrefix = String()) {
         $(selectorPrefix + "input.jj-search-box").each(function () {
             const hiddenInputId = $(this).attr("hidden-input-id");
             let queryString = $(this).attr("query-string");
             let triggerLength = $(this).attr("trigger-length");
             let numberOfItems = $(this).attr("number-of-items");
-            let scrollbar = Boolean($(this).attr("scrollbar"));
-            let showImageLegend = Boolean($(this).attr("show-image-legend"));
             if (triggerLength == null)
-                triggerLength = "1";
+                triggerLength = "3";
             if (numberOfItems == null)
                 numberOfItems = "10";
-            if (scrollbar == null)
-                scrollbar = false;
-            if (showImageLegend == null)
-                showImageLegend = false;
-            const form = $("form");
             const urlBuilder = new UrlBuilder();
             for (const pair of queryString.split("&")) {
                 const [key, value] = pair.split("=");
@@ -2077,7 +2074,7 @@ class SearchBoxListener {
             const url = urlBuilder.build();
             const jjSearchBoxSelector = "#" + hiddenInputId + "_text";
             const jjSearchBoxHiddenSelector = "#" + hiddenInputId;
-            $(this).blur(function () {
+            $(this).on("blur", function () {
                 if ($(this).val() == "") {
                     FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.searchClass);
                     $(jjSearchBoxHiddenSelector).val("");
@@ -2085,51 +2082,65 @@ class SearchBoxListener {
                 else if ($(jjSearchBoxHiddenSelector).val() == "") {
                     FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.warningClass);
                 }
+                else {
+                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.successClass);
+                }
+                $(jjSearchBoxSelector).prev().attr("style", "display:none");
+                $(jjSearchBoxSelector).css("background-color", '');
             });
             $(this).typeahead({
-                ajax: {
-                    url: url,
-                    method: "POST",
-                    loadingClass: "loading-circle",
-                    triggerLength: triggerLength,
-                    preDispatch: function () {
-                        $(jjSearchBoxHiddenSelector).val("");
-                        FeedbackIcon.removeAllIcons(jjSearchBoxSelector);
-                        return form.serializeArray();
-                    }
+                hint: true,
+                highlight: true,
+                autoselect: true,
+                minLength: triggerLength,
+                limit: numberOfItems,
+                classNames: {
+                    dataset: "list-group",
+                    cursor: "active"
+                }
+            }, {
+                displayKey: "description",
+                source: function (query, syncResults, asyncResults) {
+                    if (query.length == 0)
+                        return;
+                    FeedbackIcon.removeAllIcons(jjSearchBoxSelector);
+                    $(jjSearchBoxSelector).addClass("loading-circle");
+                    fetch(url, getRequestOptions())
+                        .then(response => response.json())
+                        .then(data => {
+                        $(jjSearchBoxSelector).removeClass("loading-circle");
+                        asyncResults(data);
+                    })
+                        .catch(error => {
+                        console.error(error);
+                        $(jjSearchBoxSelector).removeClass("loading-circle");
+                        FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.errorClass);
+                    });
                 },
-                onSelect: function (item) {
-                    const hiddenSearchBox = document.querySelector(jjSearchBoxHiddenSelector);
-                    if (hiddenSearchBox)
-                        hiddenSearchBox.value = item.value;
-                    if (item.value != "") {
-                        FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.successClass);
+                templates: {
+                    suggestion: function (value) {
+                        if (value.icon) {
+                            return `<div class="list-group-item"><span class="fa ${value.icon}" style="color:${value.iconColor}"></span>&nbsp;${value.description}</div>`;
+                        }
+                        return `<div class="list-group-item">${value.description}</div>`;
                     }
-                },
-                displayField: "name",
-                valueField: "id",
-                triggerLength: triggerLength,
-                items: numberOfItems,
-                scrollBar: scrollbar,
-                item: '<li><a class="dropdown-item" href="#"></a></li>',
-                highlighter: function (item) {
-                    const query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&");
-                    let textSel;
-                    if (showImageLegend) {
-                        const parts = item.split("|");
-                        textSel = parts[0].replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
-                            return "<strong>" + match + "</strong>";
-                        });
-                        textSel = "<i class='fa fa-lg fa-fw " + parts[1] + "' style='color:" + parts[2] + ";margin-right:6px;'></i>" + textSel;
-                    }
-                    else {
-                        textSel = item.replace(new RegExp("(" + query + ")", "ig"), function ($1, match) {
-                            return "<strong>" + match + "</strong>";
-                        });
-                    }
-                    return textSel;
                 }
             });
+            $(this).bind('typeahead:select', function (ev, selectedValue) {
+                const hiddenSearchBox = document.querySelector(jjSearchBoxHiddenSelector);
+                if (hiddenSearchBox)
+                    hiddenSearchBox.value = selectedValue.id;
+                if (selectedValue.id != "") {
+                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.successClass);
+                }
+            });
+            $('.typeahead').bind('typeahead:change', function (ev, suggestion) {
+                if ($(jjSearchBoxHiddenSelector).val() == "") {
+                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.warningClass);
+                }
+            });
+            $(jjSearchBoxSelector).prev().attr("style", "display:none");
+            $(jjSearchBoxSelector).css("background-color", '');
         });
     }
 }

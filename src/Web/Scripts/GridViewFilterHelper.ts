@@ -36,6 +36,11 @@ class GridViewFilterHelper {
             if(currentObj.selectpicker){
                 currentObj.selectpicker("val","");
             }
+
+            if(currentObj.typeahead){
+                currentObj.typeahead("val","");
+                currentObj.typeahead("destroy");
+            }
             
             let inputType: string = (this as any).type;
 

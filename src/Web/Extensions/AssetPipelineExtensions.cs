@@ -37,7 +37,7 @@ public static class AssetPipelineExtensions
             "_content/JJMasterData.Web/js/inputmask/dist/inputmask.min.js",
             "_content/JJMasterData.Web/js/inputmask/dist/bindings/inputmask.binding.js",
             "_content/JJMasterData.Web/js/bootstrap/bootstrap-select/bootstrap-select.min.js",
-            "_content/JJMasterData.Web/js/bootstrap/bootstrap-typeahead/bootstrap-typeahead.min.js",
+            "_content/JJMasterData.Web/js/typeahead/typeahead.min.js",
             "_content/JJMasterData.Web/js/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.min.js",
             "_content/JJMasterData.Web/js/dropzone/dropzone.min.js",
             "_content/JJMasterData.Web/js/jjmasterdata/jjmasterdata.js"
