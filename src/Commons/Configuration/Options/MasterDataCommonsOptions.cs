@@ -27,9 +27,9 @@ public class MasterDataCommonsOptions
     public DataAccessProvider ConnectionProvider { get; set; }
     
     /// <summary>
-    /// Default value: JJMasterDataResources <br></br>
+    /// Default value: tb_masterdata_resources <br></br>
     /// </summary>
-    public string LocalizationTableName { get; set; } = "MasterDataResources";
+    public string LocalizationTableName { get; set; } = "tb_masterdata_resources";
 
     /// <summary>
     /// Default value: {tablename}Get <br></br>

@@ -2,7 +2,7 @@
 
 public class DbLoggerOptions
 {
-    public string TableName { get; set; } = "tb_log";
+    public string TableName { get; set; } = "tb_masterdata_log";
     
     public string ConnectionStringName { get; set; } = "ConnectionString";
     public string CreatedColumnName { get; set; } = "log_dat_evento";
