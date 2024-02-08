@@ -145,6 +145,7 @@ public class JJFormView : AsyncComponent
             {
                 _dataPanel = ComponentFactory.DataPanel.Create(FormElement);
                 _dataPanel.PageState = PanelState ?? PageState;
+                _dataPanel.AutoReloadFormFields = PanelState is not PageState.View;
             }
             _dataPanel.ParentComponentName = Name;
             _dataPanel.FormUI = FormElement.Options.Form;
@@ -806,8 +807,10 @@ public class JJFormView : AsyncComponent
                     new FormContext((IDictionary<string, object?>)ObjectCloner.DeepCopy(RelationValues), PageState),
                     false);
             case PageState.Update or PageState.View:
+            {
                 formValues ??= await GetFormValuesAsync();
-                return await GetFormResult(new FormContext(formValues, PageState), true);
+                return await GetFormResult(new FormContext(formValues, PageState), PanelState is not PageState.View);
+            }
             default:
                 return await GetGridViewResult();
         }
