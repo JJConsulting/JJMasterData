@@ -114,7 +114,7 @@ public class MasterDataStringLocalizer(
         var tableExists = EntityRepository.TableExists(element.TableName);
         
         if (!tableExists)
-             EntityRepository.CreateDataModel(element);
+             EntityRepository.CreateDataModel(element,[]);
 
         var stringLocalizerValues = GetStringLocalizerValues();
         var databaseValues = GetDatabaseValues(element, culture);

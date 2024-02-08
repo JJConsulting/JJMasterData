@@ -23,7 +23,9 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
         return Provider.Update(element, values);
     }
 
-    public Task<int> DeleteAsync(Element element, Dictionary<string,object> filters) => Provider.DeleteAsync(element, filters);
+    public Task<int> DeleteAsync(Element element, Dictionary<string, object> filters) =>
+        Provider.DeleteAsync(element, filters);
+
     public int Delete(Element element, Dictionary<string, object> primaryKeys)
     {
         return Provider.Delete(element, primaryKeys);
@@ -34,11 +36,14 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
         Provider.Insert(element, values);
     }
 
-    public Task InsertAsync(Element element, Dictionary<string,object?> values) => Provider.InsertAsync(element, values);
+    public Task InsertAsync(Element element, Dictionary<string, object?> values) =>
+        Provider.InsertAsync(element, values);
 
-    public Task<int> UpdateAsync(Element element, Dictionary<string,object?> values) => Provider.UpdateAsync(element, values);
+    public Task<int> UpdateAsync(Element element, Dictionary<string, object?> values) =>
+        Provider.UpdateAsync(element, values);
 
-    public Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string,object?> values, bool ignoreResults = false) =>
+    public Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string, object?> values,
+        bool ignoreResults = false) =>
         Provider.SetValuesAsync(element, values, ignoreResults);
 
     public CommandOperation SetValues(Element element, Dictionary<string, object?> values, bool ignoreResults = false)
@@ -46,7 +51,8 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
         return Provider.SetValues(element, values, ignoreResults);
     }
 
-    public Task<Element> GetElementFromTableAsync(string tableName) =>Provider.GetElementFromTableAsync(tableName);
+    public Task<Element> GetElementFromTableAsync(string tableName) => Provider.GetElementFromTableAsync(tableName);
+
     public Task<object?> GetResultAsync(DataAccessCommand command)
     {
         return DataAccess.GetResultAsync(command);
@@ -55,15 +61,17 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
     public Task<bool> TableExistsAsync(string tableName) => DataAccess.TableExistsAsync(tableName);
 
     public bool TableExists(string tableName) => DataAccess.TableExists(tableName);
-    
+
     public async Task SetCommandAsync(DataAccessCommand command)
     {
         await DataAccess.SetCommandAsync(command);
     }
-    
-    public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList) => DataAccess.SetCommandListAsync(commandList);
-    
-    public Task<bool> ColumnExistsAsync(string tableName, string columnName) => DataAccess.ColumnExistsAsync(tableName,columnName);
+
+    public Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commandList) =>
+        DataAccess.SetCommandListAsync(commandList);
+
+    public Task<bool> ColumnExistsAsync(string tableName, string columnName) =>
+        DataAccess.ColumnExistsAsync(tableName, columnName);
 
 
     public Task<bool> ExecuteBatchAsync(string script) => DataAccess.ExecuteBatchAsync(script);
@@ -72,51 +80,54 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
     {
         if (!primaryKeys.Any())
             throw new ArgumentException("Your need at least one value at your primary keys.", nameof(primaryKeys));
-        
+
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = Provider.GetReadCommand(element,new EntityParameters
+        var cmd = Provider.GetReadCommand(element, new EntityParameters
         {
             Filters = primaryKeys!
-        },totalOfRecords);
+        }, totalOfRecords);
 
-        return DataAccess.GetDictionary(cmd) ?? new Dictionary<string,object?>();
+        return DataAccess.GetDictionary(cmd) ?? new Dictionary<string, object?>();
     }
 
     public Dictionary<string, object?> GetFields(DataAccessCommand command)
     {
         return DataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
     }
-    
+
     public async Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command)
     {
         return await DataAccess.GetDictionaryAsync(command);
     }
 
-    public async Task<Dictionary<string, object?>> GetFieldsAsync(Element element, Dictionary<string, object> primaryKeys)
+    public async Task<Dictionary<string, object?>> GetFieldsAsync(Element element,
+        Dictionary<string, object> primaryKeys)
     {
         if (!primaryKeys.Any())
             throw new ArgumentException("Your need at least one value at your primary keys.", nameof(primaryKeys));
-        
+
         var totalOfRecords =
             new DataAccessParameter("@qtdtotal", 1, DbType.Int32, 0, ParameterDirection.InputOutput);
-        var cmd = Provider.GetReadCommand(element,new EntityParameters
+        var cmd = Provider.GetReadCommand(element, new EntityParameters
         {
             Filters = primaryKeys!
-        },totalOfRecords);
+        }, totalOfRecords);
 
         return await DataAccess.GetDictionaryAsync(cmd);
     }
 
-    public Task CreateDataModelAsync(Element element) => Provider.CreateDataModelAsync(element);
+    public Task CreateDataModelAsync(Element element, Dictionary<string, ElementRelationship> relationships) =>
+        Provider.CreateDataModelAsync(element, relationships);
 
-    public void CreateDataModel(Element element)
+    public void CreateDataModel(Element element, Dictionary<string, ElementRelationship> relationships)
     {
-        Provider.CreateDataModel(element);
+        Provider.CreateDataModel(element, relationships);
     }
 
     ///<inheritdoc cref="IEntityRepository.GetCreateTableScript"/>
-    public string GetCreateTableScript(Element element) => Provider.GetCreateTableScript(element);
+    public string GetCreateTableScript(Element element, Dictionary<string, ElementRelationship> relationships) =>
+        Provider.GetCreateTableScript(element, relationships);
 
     ///<inheritdoc cref="IEntityRepository.GetWriteProcedureScript"/>
     public string? GetWriteProcedureScript(Element element) => Provider.GetWriteProcedureScript(element);
@@ -126,12 +137,12 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
         var addedFields = await GetAddedFieldsAsync(element).ToListAsync();
         return Provider.GetAlterTableScript(element, addedFields);
     }
-    
+
     private async IAsyncEnumerable<ElementField> GetAddedFieldsAsync(Element element)
     {
         if (!await TableExistsAsync(element.TableName))
             yield break;
-        
+
         foreach (var field in element.Fields.Where(f => f.DataBehavior == FieldBehavior.Real))
         {
             if (!await ColumnExistsAsync(element.TableName, field.Name))
@@ -140,11 +151,12 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
             }
         }
     }
-    
-    public string? GetReadProcedureScript(Element element) => Provider.GetReadProcedureScript(element);
-    
 
-    public Task<string> GetListFieldsAsTextAsync(Element element, EntityParameters? parameters = null, bool showLogInfo = false,
+    public string? GetReadProcedureScript(Element element) => Provider.GetReadProcedureScript(element);
+
+
+    public Task<string> GetListFieldsAsTextAsync(Element element, EntityParameters? parameters = null,
+        bool showLogInfo = false,
         string delimiter = "|")
     {
         return Provider.GetFieldsListAsTextAsync(element, parameters ?? new EntityParameters(), showLogInfo, delimiter);
@@ -153,17 +165,17 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
     public List<Dictionary<string, object?>> GetDictionaryList(Element element, EntityParameters? parameters = null)
     {
         var result = Provider.GetDictionaryList(element, parameters ?? new EntityParameters(), false);
-        
+
         return result.Data;
     }
 
-    public async Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(
+    public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(
         Element element,
         EntityParameters? parameters = null
     )
     {
         var result = await Provider.GetDictionaryListAsync(element, parameters ?? new EntityParameters(), false);
-        
+
         return result.Data;
     }
 
@@ -186,7 +198,7 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
         return DataAccess.GetDataTableAsync(command);
     }
 
-    public int GetCount(Element element, Dictionary<string,object?> values)
+    public int GetCount(Element element, Dictionary<string, object?> values)
     {
         var result = GetDictionaryListResult(element, new EntityParameters
         {
@@ -206,22 +218,23 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
         return result.Count;
     }
 
-    public Task<List<Dictionary<string,object?>>> GetDictionaryListAsync(DataAccessCommand command)
+    public Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command)
     {
         return DataAccess.GetDictionaryListAsync(command);
     }
-    
+
     public async Task<DictionaryListResult> GetDictionaryListResultAsync(
         Element element,
         EntityParameters? parameters = null,
         bool recoverTotalOfRecords = true
     )
     {
-        var result = await Provider.GetDictionaryListAsync(element, parameters ?? new EntityParameters(), recoverTotalOfRecords);
-        
-        return new DictionaryListResult(result.Data,result.TotalOfRecords);
+        var result =
+            await Provider.GetDictionaryListAsync(element, parameters ?? new EntityParameters(), recoverTotalOfRecords);
+
+        return new DictionaryListResult(result.Data, result.TotalOfRecords);
     }
-    
+
     public DictionaryListResult GetDictionaryListResult(
         Element element,
         EntityParameters? parameters = null,
@@ -229,10 +242,7 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
     )
     {
         var result = Provider.GetDictionaryList(element, parameters ?? new EntityParameters(), recoverTotalOfRecords);
-        
-        return new DictionaryListResult(result.Data,result.TotalOfRecords);
-    }
-    
 
-   
+        return new DictionaryListResult(result.Data, result.TotalOfRecords);
+    }
 }

@@ -25,7 +25,7 @@ public abstract class EntityProviderBase(
     private ILoggerFactory LoggerFactory { get; } = loggerFactory;
 
     public abstract string VariablePrefix { get; }
-    public abstract string GetCreateTableScript(Element element);
+    public abstract string GetCreateTableScript(Element element, Dictionary<string,ElementRelationship> relationships);
     public abstract string? GetWriteProcedureScript(Element element);
     public abstract string? GetReadProcedureScript(Element element);
     public abstract string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
@@ -169,22 +169,22 @@ public abstract class EntityProviderBase(
         return new DictionaryListResult(list, totalRecords);
     }
     
-    public void CreateDataModel(Element element)
+    public void CreateDataModel(Element element, Dictionary<string,ElementRelationship> relationships)
     {
-        var sqlScripts = GetDataModelScripts(element);
+        var sqlScripts = GetDataModelScripts(element, relationships);
         DataAccess.ExecuteBatch(sqlScripts);
     }
     
-    public async Task CreateDataModelAsync(Element element)
+    public async Task CreateDataModelAsync(Element element, Dictionary<string,ElementRelationship> relationships)
     {
-        var sqlScripts = GetDataModelScripts(element);
+        var sqlScripts = GetDataModelScripts(element, relationships);
         await DataAccess.ExecuteBatchAsync(sqlScripts);
     }
 
-    private string GetDataModelScripts(Element element)
+    private string GetDataModelScripts(Element element, Dictionary<string,ElementRelationship> relationships)
     {
         var sqlScripts = new StringBuilder();
-        sqlScripts.AppendLine(GetCreateTableScript(element));
+        sqlScripts.AppendLine(GetCreateTableScript(element, relationships));
         sqlScripts.AppendLine("GO");
         
         if (element.UseReadProcedure)

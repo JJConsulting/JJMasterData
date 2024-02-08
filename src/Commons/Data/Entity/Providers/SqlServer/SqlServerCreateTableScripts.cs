@@ -8,7 +8,7 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerCreateTableScripts : SqlServerScriptsBase
 {
-    public static string GetCreateTableScript(Element element)
+    public static string GetCreateTableScript(Element element, Dictionary<string,ElementRelationship> relationships )
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -63,7 +63,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
 
         sql.AppendLine("");
 
-        sql.AppendLine(GetRelationshipsScript(element));
+        sql.AppendLine(GetRelationshipsScript(element, relationships));
         sql.AppendLine("");
 
         int counter = 1;
@@ -103,7 +103,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
         return sql.ToString();
     }
 
-    private static string GetRelationshipsScript(Element element)
+    private static string GetRelationshipsScript(Element element, Dictionary<string, ElementRelationship> relationships)
     {
         var sql = new StringBuilder();
 
@@ -111,8 +111,9 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
         {
             sql.AppendLine("-- RELATIONSHIPS");
             var listContraint = new List<string>();
-            foreach (var r in element.Relationships)
+            foreach (var relationship in relationships)
             {
+                var r = relationship.Value;
                 string contraintName = $"FK_{r.ChildElement}_{element.TableName}";
 
                 //Prevents repeated name.
@@ -139,7 +140,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                 }
 
                 sql.Append("ALTER TABLE ");
-                sql.AppendLine(r.ChildElement);
+                sql.AppendLine(relationship.Key);
                 sql.Append("ADD CONSTRAINT [");
                 sql.Append(contraintName);
                 sql.AppendLine("] ");
