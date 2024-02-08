@@ -297,7 +297,7 @@ public class PdfWriter(
         }
     }
 
-    private async Task<(string, Text)> GetComboBoxValueAsync(FormElementField field, IDictionary<string, object> values)
+    private async Task<(string, Text)> GetComboBoxValueAsync(FormElementField field, Dictionary<string, object> values)
     {
         if (values == null || !values.ContainsKey(field.Name) || values[field.Name] == null)
             return (string.Empty, null);

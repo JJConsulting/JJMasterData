@@ -37,7 +37,7 @@ public class FormServiceTests
         Assert.Empty(result.Errors);
     }
 
-    private static FormService GetFormService(FormElement formElement, IDictionary<string,object> values)
+    private static FormService GetFormService(FormElement formElement, Dictionary<string,object> values)
     {
         var entityRepositoryMock = new Mock<IEntityRepository>();
         var expressionsServiceMock = new Mock<ExpressionsService>();

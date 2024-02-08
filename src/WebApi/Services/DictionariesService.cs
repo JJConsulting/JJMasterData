@@ -98,7 +98,7 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         return syncInfo;
     }
 
-    private async Task<int> GetCountAsync(Element element, IDictionary<string,object?> filters)
+    private async Task<int> GetCountAsync(Element element, Dictionary<string,object?> filters)
     {
         var parameters = new EntityParameters
         {

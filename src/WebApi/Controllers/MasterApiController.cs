@@ -65,7 +65,7 @@ public class MasterApiController(MasterApiService service) : ControllerBase
     [HttpPost]
     [Produces(typeof(FormValues[]))]
     [Route("trigger/{pageState?}/{objname?}")]
-    public async Task<ActionResult<ResponseLetter>> PostTrigger(string elementName, [FromBody] IDictionary<string, object>? paramValues,
+    public async Task<ActionResult<ResponseLetter>> PostTrigger(string elementName, [FromBody] Dictionary<string, object>? paramValues,
         PageState pageState, string objname = "")
     {
         return Ok(await service.PostTriggerAsync(elementName, paramValues, pageState, objname));

@@ -71,7 +71,7 @@ public abstract class BrasilPluginActionHandler(ExpressionsService expressionsSe
             context.Values[parameter.Value] = null;
     }
 
-    private PluginActionResult OnResultFound(PluginFieldActionContext context, IDictionary<string,object?> result)
+    private PluginActionResult OnResultFound(PluginFieldActionContext context, Dictionary<string,object?> result)
     {
         foreach (var parameter in context.FieldMap)
         {

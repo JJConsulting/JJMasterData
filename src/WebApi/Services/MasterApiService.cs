@@ -116,7 +116,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return listRet;
     }
 
-    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<IDictionary<string, object?>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
         string elementName, bool replace = false)
     {
         if (paramsList == null)
@@ -134,7 +134,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<IDictionary<string, object?>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -150,7 +150,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<IDictionary<string, object?>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<Dictionary<string, object?>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -170,7 +170,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         }
     }
 
-    private async Task<ResponseLetter> Insert(FormElement formElement, IDictionary<string, object?> apiValues,
+    private async Task<ResponseLetter> Insert(FormElement formElement, Dictionary<string, object?> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -200,7 +200,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return ret;
     }
 
-    private async Task<ResponseLetter> Update(FormElement formElement, IDictionary<string, object?> apiValues)
+    private async Task<ResponseLetter> Update(FormElement formElement, Dictionary<string, object?> apiValues)
     {
         ResponseLetter ret;
         try
@@ -232,7 +232,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return ret;
     }
 
-    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, IDictionary<string, object?> apiValues,
+    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, Dictionary<string, object?> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -269,7 +269,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return ret;
     }
 
-    private async Task<ResponseLetter> Patch(FormElement formElement, IDictionary<string, object?> values)
+    private async Task<ResponseLetter> Patch(FormElement formElement, Dictionary<string, object?> values)
     {
         ResponseLetter ret;
         try
@@ -327,7 +327,7 @@ public class MasterApiService(ExpressionsService expressionsService,
     /// Fired when triggering the form
     /// </summary>
     public async Task<Dictionary<string, FormValues>> PostTriggerAsync(
-        string elementName, IDictionary<string, object>? paramValues, 
+        string elementName, Dictionary<string, object>? paramValues, 
         PageState pageState, 
         string objname = "")
     {
@@ -377,7 +377,7 @@ public class MasterApiService(ExpressionsService expressionsService,
     /// <summary>
     /// Preserves the original field name and validates if the field exists
     /// </summary>
-    private Dictionary<string, object> ParseFilter(FormElement metadata, IDictionary<string, object>? paramValues)
+    private Dictionary<string, object> ParseFilter(FormElement metadata, Dictionary<string, object>? paramValues)
     {
         var filters = GetDefaultFilter(metadata);
         if (paramValues == null)
@@ -459,8 +459,8 @@ public class MasterApiService(ExpressionsService expressionsService,
     /// returned in set methods (id autoNum) for example
     /// </remarks>
     private static Dictionary<string, object?>? GetDiff(
-        IDictionary<string, object?> original,
-        IDictionary<string, object?> result, 
+        Dictionary<string, object?> original,
+        Dictionary<string, object?> result, 
         FormElementApiOptions apiOptions)
     {
         var newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
@@ -495,7 +495,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return newValues.Count > 0 ? newValues : null;
     }
 
-    private ResponseLetter CreateErrorResponseLetter(IDictionary<string, string>? errors,
+    private ResponseLetter CreateErrorResponseLetter(Dictionary<string, string>? errors,
         FormElementApiOptions apiOptions)
     {
         var letter = new ResponseLetter
