@@ -22,7 +22,7 @@ public class SqlServerScripts(
         return WriteProcedureScripts.GetWriteProcedureScript(element);
     }
     
-    public string GetWriteScript(Element element)
+    public static string GetWriteScript(Element element)
     {
         var fields = element.Fields
             .ToList()
@@ -39,9 +39,9 @@ public class SqlServerScripts(
         return ReadProcedureScripts.GetReadScript(element, fields);
     }
     
-    public static string GetCreateTableScript(Element element)
+    public static string GetCreateTableScript(Element element, List<RelationshipReference> relationships)
     {
-        return SqlServerCreateTableScripts.GetCreateTableScript(element);
+        return SqlServerCreateTableScripts.GetCreateTableScript(element, relationships);
     }
 
     public static string GetAlterTableScript(Element element, IEnumerable<ElementField> fields)

@@ -78,15 +78,17 @@ public interface IEntityRepository
     public Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string,object?> values, bool ignoreResults = false);
     CommandOperation SetValues(Element element, Dictionary<string, object?> values, bool ignoreResults = false);
     
+    void CreateDataModel(Element element,List<RelationshipReference>? relationships = null);
+    
     /// <summary>
     /// Create an element's tables and procedures
     /// </summary>
-    public Task CreateDataModelAsync(Element element);
+    public Task CreateDataModelAsync(Element element,List<RelationshipReference>? relationships = null);
     
     /// <summary>
     /// Build a structure script to create table
     /// </summary>
-    public string GetCreateTableScript(Element element);
+    public string GetCreateTableScript(Element element,List<RelationshipReference>? relationships = null);
 
     /// <summary>
     /// Build a structure script to procedure of get
@@ -179,5 +181,4 @@ public interface IEntityRepository
     int GetCount(Element element, Dictionary<string, object?> filters);
     Task<int> GetCountAsync(Element element, Dictionary<string, object?> filters);
     bool TableExists(string tableName);
-    void CreateDataModel(Element element);
 }

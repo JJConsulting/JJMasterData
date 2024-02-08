@@ -61,7 +61,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptions<Master
         {
             var logElement = GetElement();
             if (!await EntityRepository.TableExistsAsync(logElement.TableName))
-                await EntityRepository.CreateDataModelAsync(logElement);
+                await EntityRepository.CreateDataModelAsync(logElement,[]);
 
             _hasAuditLogTable = true;
         }

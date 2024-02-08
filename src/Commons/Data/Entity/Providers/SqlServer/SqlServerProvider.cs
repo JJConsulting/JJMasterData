@@ -32,9 +32,9 @@ public class SqlServerProvider(
     private const string DeleteInitial = "E";
     public override string VariablePrefix => "@";
 
-    public override string GetCreateTableScript(Element element)
+    public override string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null)
     {
-        return SqlServerScripts.GetCreateTableScript(element);
+        return SqlServerScripts.GetCreateTableScript(element,relationships ?? []);
     }
     
     public override string GetWriteProcedureScript(Element element)

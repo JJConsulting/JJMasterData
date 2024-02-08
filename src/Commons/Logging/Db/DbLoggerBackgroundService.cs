@@ -28,7 +28,7 @@ internal class DbLoggerBackgroundService(
         {
             if (!await entityRepository.TableExistsAsync(options.TableName))
             {
-                await entityRepository.CreateDataModelAsync(element);
+                await entityRepository.CreateDataModelAsync(element,[]);
             }
 
             TableExists = true;

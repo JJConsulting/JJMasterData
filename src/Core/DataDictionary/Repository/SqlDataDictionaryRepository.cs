@@ -149,7 +149,8 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
     public async Task CreateStructureIfNotExistsAsync()
     {
         if (!await entityRepository.TableExistsAsync(MasterDataElement.Name))
-            await entityRepository.CreateDataModelAsync(MasterDataElement);
+            await entityRepository.CreateDataModelAsync(MasterDataElement,[]);
+            
     }
 
     public async Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filter,

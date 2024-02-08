@@ -30,7 +30,7 @@ public class LogController(IFormElementComponentFactory<JJFormView> formViewFact
 
         if (!await EntityRepository.TableExistsAsync(Options.TableName))
         {
-            await EntityRepository.CreateDataModelAsync(formElement);
+            await EntityRepository.CreateDataModelAsync(formElement,[]);
         }
 
         var formView = FormViewFactory.Create(formElement);
