@@ -78,7 +78,7 @@ public class JJFormView : AsyncComponent
     private string? _userId;
     private PageState? _pageState;
     private PageState? _panelState;
-    private Dictionary<string, object> _relationValues = new Dictionary<string, object>();
+    private Dictionary<string, object> _relationValues = new();
     private RouteContext? _routeContext;
     private FormStateData? _formStateData;
     private bool _isCustomCurrentActionMap;
@@ -283,7 +283,7 @@ public class JJFormView : AsyncComponent
             _currentActionMap = value;
         }
     }
-
+    
     internal BasicAction? CurrentAction
     {
         get
@@ -797,7 +797,7 @@ public class JJFormView : AsyncComponent
 
     private async Task<ComponentResult> GetDefaultResult(Dictionary<string, object?>? formValues = null)
     {
-        if (PageState is PageState.List || PanelState is PageState.List)
+        if (PageState is PageState.List || PanelState is PageState.List || ContainsGridAction())
             return await GetGridViewResult();
         
         switch (PageState)
@@ -1516,7 +1516,9 @@ public class JJFormView : AsyncComponent
         var formStateData = await GetFormStateDataAsync();
         return ExpressionsService.GetBoolValue(auditLogAction.VisibleExpression, formStateData);
     }
-
+    
+    private bool ContainsGridAction() => !string.IsNullOrEmpty(CurrentContext.Request.Form[$"grid-view-action-map-{Name}"]);
+    
     internal void DisableActionsAtViewMode()
     {
         foreach (var action in FormElement.Options.GridTableActions)
