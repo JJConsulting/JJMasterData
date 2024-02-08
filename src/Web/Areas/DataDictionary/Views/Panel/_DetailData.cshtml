@@ -24,18 +24,18 @@
     </div>
 </div>
 <div class="row">
-    <div class="@BootstrapHelper.FormGroup col-sm-4">
-        <label asp-for="Title" class="@BootstrapHelper.Label"></label>
-        @Html.TextBoxFor(model => model.Title, new { maxlength = "64", @class = "form-control" })
+    <div class="@BootstrapHelper.FormGroup col-sm-8">
+        <expression for="Title"/>
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-4">
-        <label asp-for="SubTitle" class="@BootstrapHelper.Label"></label>
-        @Html.TextBoxFor(model => model.SubTitle, new { @class = "form-control" })
-    </div>
-    
     <div class="@BootstrapHelper.FormGroup col-sm-4">
         <label asp-for="Icon" class="@BootstrapHelper.Label"></label>
         <icon-picker for="Icon"/>
     </div>
+    
+    <div class="@BootstrapHelper.FormGroup col-sm-8">
+        <expression for="SubTitle"/>
+    </div>
+    
+
 </div>

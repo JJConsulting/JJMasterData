@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Azure;
 using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
 
@@ -94,7 +96,7 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
             {
                 var tabContent = new NavContent
                 {
-                    Title = panel.Title,
+                    Title = GetPanelExpression(panel.Title),
                     Icon = panel.Icon,
                     HtmlContent = htmlPanel
                 };
@@ -103,6 +105,14 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
         }
 
         return navTab;
+    }
+    
+    private string GetPanelExpression(string expression)
+    {
+        return dataPanel
+            .ExpressionsService
+            .GetExpressionValue(expression, new FormStateData(dataPanel.Values, dataPanel.UserValues, PageState))
+            ?.ToString() ?? string.Empty;
     }
 
     private async Task<HtmlBuilder> GetHtmlPanelGroup(FormElementPanel panel)
@@ -115,8 +125,8 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
         {
             var collapse = new JJCollapsePanel(FormValues)
             {
-                Title = panel.Title,
-                SubTitle = panel.SubTitle,
+                Title = GetPanelExpression(panel.Title),
+                SubTitle =GetPanelExpression(panel.SubTitle),
                 TitleIcon = panel.Icon.HasValue ? new JJIcon(panel.Icon.Value) : null,
                 Name = $"{Name}-panel-{GuidGenerator.FromValue(panel.PanelId.ToString())}",
                 CssClass = panel.CssClass,
@@ -129,8 +139,8 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
 
         var card = new JJCard
         {
-            Title = panel.Title,
-            SubTitle = panel.SubTitle,
+            Title = GetPanelExpression(panel.Title),
+            SubTitle = GetPanelExpression(panel.SubTitle),
             Icon = panel.Icon,
             Layout = panel.Layout,
             HtmlBuilderContent = await GetHtmlForm(panel)

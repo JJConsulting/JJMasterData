@@ -66,7 +66,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
             {
                 tabNav.ListTab.Add(new NavContent
                 {
-                    Title = relationship.Panel.Title,
+                    Title = GetExpressionValue(relationship.Panel.Title),
                     Icon = relationship.Panel.Icon,
                     HtmlContent = renderedComponentResult.HtmlBuilder
                 });
@@ -80,6 +80,14 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         return new RenderedComponentResult(tabNav.GetHtmlBuilder());
     }
 
+    private string GetExpressionValue(string? expression)
+    {
+        return parentFormView
+            .ExpressionsService.GetExpressionValue(expression,
+            new FormStateData(parentFormView.DataPanel.Values, parentFormView.UserValues, parentFormView.PageState)
+            )?.ToString() ?? string.Empty;
+    }
+
     private HtmlBuilder? GetNonTabRelationshipPanelHtml(FormElementRelationship relationship, HtmlBuilder? content)
     {
         switch (relationship.Panel.Layout)
@@ -88,7 +96,8 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
                 var collapse = new JJCollapsePanel(parentFormView.FormValues)
                 {
                     Name = $"{relationship.ElementRelationship?.ChildElement ?? parentFormView.Name}-collapse-panel",
-                    Title = relationship.Panel.Title,
+                    Title = GetExpressionValue(relationship.Panel.Title),
+                    SubTitle = GetExpressionValue(relationship.Panel.SubTitle),
                     HtmlBuilderContent = content,
                     Color = relationship.Panel.Color,
                     TitleIcon = relationship.Panel.Icon.HasValue ? new JJIcon(relationship.Panel.Icon.Value) : null,
@@ -101,7 +110,8 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
                 var panel = new JJCard
                 {
                     Name = $"{relationship.Id}-card",
-                    Title = relationship.Panel.Title,
+                    Title = GetExpressionValue(relationship.Panel.Title),
+                    SubTitle = GetExpressionValue(relationship.Panel.SubTitle),
                     Color = relationship.Panel.Color,
                     Layout = relationship.Panel.Layout,
                     Icon = relationship.Panel.Icon,
@@ -111,7 +121,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
 
                 return panel.GetHtmlBuilder();
             case PanelLayout.NoDecoration:
-                var title = relationship.Panel.Title;
+                var title = GetExpressionValue(relationship.Panel.Title);
                 var div = new HtmlBuilder(HtmlTag.Div);
                 div.WithCssClass(relationship.Panel.CssClass);
                 if (title is not null)

@@ -14,10 +14,12 @@ public class FormElementPanel
 
     [JsonProperty("title")]
     [Display(Name = "Title")]
+    [SyncExpression]
     public string? Title { get; set; }
 
     [JsonProperty("subtitle")]
     [Display(Name = "SubTitle")]
+    [SyncExpression]
     public string? SubTitle { get; set; }
 
     [JsonProperty("layout")]
