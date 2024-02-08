@@ -147,7 +147,7 @@ public class ExpressionsService(
         {
             var exception = field != null
                 ? new ExpressionException($"Unhandled exception at a expression provider.\nField: {field.Name}", ex)
-                : new ExpressionException($"Unhandled exception at a expression provider.", ex);
+                : new ExpressionException("Unhandled exception at a expression provider.", ex);
 
             Logger.LogError(exception,
                 "Error retrieving expression at {Provider} provider\nExpression: {Expression}\nField: {FieldName}",

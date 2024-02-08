@@ -11,7 +11,7 @@ public class DataElementMapFilter
     public string FieldName { get; set; }
 
     [JsonProperty("expressionValue")]
-    [AsyncExpression]
+    [SyncExpression]
     [Display(Name = "Expression")]
     public string ExpressionValue { get; set; }
 
