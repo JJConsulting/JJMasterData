@@ -3,6 +3,8 @@ using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Expressions;
+using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;
@@ -12,11 +14,14 @@ using Microsoft.Data.SqlClient;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
-public class InternalRedirectController(IComponentFactory componentFactory, IEncryptionService encryptionService) : MasterDataController
+public class InternalRedirectController(
+    ExpressionsService expressionsService,
+    IComponentFactory componentFactory, 
+    IEncryptionService encryptionService) : MasterDataController
 {
     private string? _elementName;
     private RelationshipViewType _relationshipType;
-    private Dictionary<string, object> RelationValues { get; } = new Dictionary<string, object>();
+    private Dictionary<string, object> RelationValues { get; } = new();
 
     public async Task<IActionResult> Index(string parameters)
     {
@@ -44,7 +49,8 @@ public class InternalRedirectController(IComponentFactory componentFactory, IEnc
                 if (result is IActionResult actionResult)
                     return actionResult;
 
-                model = new(formView.FormElement.Title ?? formView.Name,result.Content!, false);
+                var title = expressionsService.GetExpressionValue(formView.FormElement.Title, new FormStateData(RelationValues!, PageState.List))?.ToString();
+                model = new(title ?? formView.Name,result.Content!, false);
                 break;
             }
             case RelationshipViewType.View:
@@ -61,7 +67,9 @@ public class InternalRedirectController(IComponentFactory componentFactory, IEnc
                 if (result is IActionResult actionResult)
                     return actionResult;
                 
-                model = new(panel.FormElement.Title ?? panel.Name,result.Content!, false);
+                var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(RelationValues!, PageState.View))?.ToString();
+
+                model = new(title ?? panel.Name,result.Content!, false);
                 
                 break;
             }
@@ -80,7 +88,9 @@ public class InternalRedirectController(IComponentFactory componentFactory, IEnc
                 if (result is IActionResult actionResult)
                     return actionResult;
                 
-                model = new(panel.FormElement.Title ?? panel.Name,result.Content, true);
+                var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(RelationValues!, PageState.Update))?.ToString();
+
+                model = new(title ?? panel.Name,result.Content, true);
                 break;
             }
             default:
