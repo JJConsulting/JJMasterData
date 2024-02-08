@@ -11,15 +11,15 @@ class DataPanelHelper {
             url: urlBuilder.build(),
             success: data => {
                 if(typeof data === "string"){
-                    HTMLHelper.setOuterHTML(componentName, data)
+                    HTMLHelper.setOuterHTML(componentName, data);
                     listenAllEvents("#" + componentName);
-                    jjutil.gotoNextFocus(fieldName);
                 }
                 else{
                     if(data.jsCallback){
                         eval(data.jsCallback)
                     }
                 }
+                jjutil.gotoNextFocus(fieldName);
             }
         })
     }

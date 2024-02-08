@@ -68,30 +68,29 @@
         },
 
         /**
-         * Posiciona o foco no proximo elemento
-         *
-         * @param {string} currentId id do campo atual
+         * Focus to the next element, like the tab key
          */
         gotoNextFocus: function (currentId) {
-            const element = document.getElementById(currentId);
-            if (element) {
-                const focusableElements = document.querySelectorAll<HTMLElement>(
-                    'input:not([disabled]):not([type="hidden"]), select:not([disabled]), button:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]):not([hidden])'
-                );
-                const currentIndex = Array.from(focusableElements).indexOf(element);
-                const nextIndex = (currentIndex + 1) % focusableElements.length;
-                const nextElement = focusableElements[nextIndex];
-                nextElement.focus();
-                if (nextElement instanceof HTMLInputElement || nextElement instanceof HTMLTextAreaElement) {
-                    nextElement.select();
+            const self = $("#" + currentId);
+            const form = self.parents("form:eq(0)");
+            const focusable = form.find("input,a.btn,textarea,select,button").filter(":visible");
+            let next = focusable.eq(focusable.index(self) + 1);
+            if (next.length) {
+                if (next.is(":disabled")) {
+                    for (let i = 2; i < 1000; i++) {
+                        next = focusable.eq(focusable.index(self) + i);
+                        if (!next.is(":disabled") && next.is(":visible"))
+                            break;
+                    }
                 }
+                next.trigger("focus");
+                next.trigger("select");
             }
         },
 
         replaceEntertoTab: function (objid) {
-            $("#" + objid + " input").on("keypress", function (e) {
-                //enter pressed
-                if (e.keyCode == 13) {
+            $("#" + objid + " input, #" + objid + " select").on("keypress change", function (e) {
+                if (e.type === "keypress" && e.keyCode === 13) {
                     jjutil.gotoNextFocus($(this).attr("id"));
                     return false;
                 }
