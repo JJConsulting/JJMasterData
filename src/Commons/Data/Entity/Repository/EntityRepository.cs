@@ -117,16 +117,16 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
         return await DataAccess.GetDictionaryAsync(cmd);
     }
 
-    public Task CreateDataModelAsync(Element element, Dictionary<string, string>? relationships = null) =>
+    public Task CreateDataModelAsync(Element element, List<RelationshipReference>? relationships = null) =>
         Provider.CreateDataModelAsync(element, relationships);
 
-    public void CreateDataModel(Element element, Dictionary<string, string>? relationships = null)
+    public void CreateDataModel(Element element, List<RelationshipReference>? relationships = null)
     {
         Provider.CreateDataModel(element, relationships);
     }
 
     ///<inheritdoc cref="IEntityRepository.GetCreateTableScript"/>
-    public string GetCreateTableScript(Element element, Dictionary<string, string>? relationships = null) =>
+    public string GetCreateTableScript(Element element, List<RelationshipReference>? relationships = null) =>
         Provider.GetCreateTableScript(element, relationships);
 
     ///<inheritdoc cref="IEntityRepository.GetWriteProcedureScript"/>

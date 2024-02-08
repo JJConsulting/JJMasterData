@@ -9,7 +9,7 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerCreateTableScripts : SqlServerScriptsBase
 {
-    public static string GetCreateTableScript(Element element, Dictionary<string,string> relationships)
+    public static string GetCreateTableScript(Element element,  List<RelationshipReference> relationships)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -104,7 +104,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
         return sql.ToString();
     }
 
-    private static string GetRelationshipsScript(Element element, Dictionary<string, string> relationships)
+    private static string GetRelationshipsScript(Element element, List<RelationshipReference> relationships)
     {
         var sql = new StringBuilder();
 
@@ -112,9 +112,9 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
         {
             sql.AppendLine("-- RELATIONSHIPS");
             var listContraint = new List<string>();
-            foreach (var r in element.Relationships)
+            foreach (var relationship in element.Relationships)
             {
-                string contraintName = $"FK_{r.ChildElement}_{element.TableName}";
+                string contraintName = $"FK_{relationship.ChildElement}_{element.TableName}";
 
                 //Prevents repeated name.
                 if (!listContraint.Contains(contraintName))
@@ -139,24 +139,24 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                     }
                 }
 
-                if (!relationships.ContainsKey(r.ChildElement))
-                    throw new JJMasterDataException($"Relationship not found: {r.ChildElement}");
+                if (relationships.All(r => r.ElementName != relationship.ChildElement))
+                    throw new JJMasterDataException($"Relationship not found: {relationship.ChildElement}");
                 
                 sql.Append("ALTER TABLE ");
-                sql.AppendLine(relationships[r.ChildElement]);
+                sql.AppendLine(relationships.First(r=>r.ElementName == relationship.ChildElement).TableName);
                 sql.Append("ADD CONSTRAINT [");
                 sql.Append(contraintName);
                 sql.AppendLine("] ");
                 sql.Append(Tab);
                 sql.Append("FOREIGN KEY (");
 
-                for (int rc = 0; rc < r.Columns.Count; rc++)
+                for (int rc = 0; rc < relationship.Columns.Count; rc++)
                 {
                     if (rc > 0)
                         sql.Append(", ");
 
                     sql.Append("[");
-                    sql.Append(r.Columns[rc].FkColumn);
+                    sql.Append(relationship.Columns[rc].FkColumn);
                     sql.Append("]");
                 }
 
@@ -165,26 +165,26 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                 sql.Append("REFERENCES ");
                 sql.Append(element.TableName);
                 sql.Append(" (");
-                for (int rc = 0; rc < r.Columns.Count; rc++)
+                for (int rc = 0; rc < relationship.Columns.Count; rc++)
                 {
                     if (rc > 0)
                         sql.Append(", ");
 
                     sql.Append("[");
-                    sql.Append(r.Columns[rc].PkColumn);
+                    sql.Append(relationship.Columns[rc].PkColumn);
                     sql.Append("]");
                 }
 
                 sql.Append(")");
 
-                if (r.UpdateOnCascade)
+                if (relationship.UpdateOnCascade)
                 {
                     sql.AppendLine("");
                     sql.Append(Tab).Append(Tab);
                     sql.Append("ON UPDATE CASCADE ");
                 }
 
-                if (r.DeleteOnCascade)
+                if (relationship.DeleteOnCascade)
                 {
                     sql.AppendLine("");
                     sql.Append(Tab).Append(Tab);
