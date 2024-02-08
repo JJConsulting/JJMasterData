@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JJMasterData.Commons.Data.Entity.Models;
+using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerCreateTableScripts : SqlServerScriptsBase
 {
-    public static string GetCreateTableScript(Element element, Dictionary<string,ElementRelationship> relationships )
+    public static string GetCreateTableScript(Element element, Dictionary<string,string> relationships)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -103,7 +104,7 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
         return sql.ToString();
     }
 
-    private static string GetRelationshipsScript(Element element, Dictionary<string, ElementRelationship> relationships)
+    private static string GetRelationshipsScript(Element element, Dictionary<string, string> relationships)
     {
         var sql = new StringBuilder();
 
@@ -111,9 +112,8 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
         {
             sql.AppendLine("-- RELATIONSHIPS");
             var listContraint = new List<string>();
-            foreach (var relationship in relationships)
+            foreach (var r in element.Relationships)
             {
-                var r = relationship.Value;
                 string contraintName = $"FK_{r.ChildElement}_{element.TableName}";
 
                 //Prevents repeated name.
@@ -139,8 +139,11 @@ public class SqlServerCreateTableScripts : SqlServerScriptsBase
                     }
                 }
 
+                if (!relationships.ContainsKey(r.ChildElement))
+                    throw new JJMasterDataException($"Relationship not found: {r.ChildElement}");
+                
                 sql.Append("ALTER TABLE ");
-                sql.AppendLine(relationship.Key);
+                sql.AppendLine(relationships[r.ChildElement]);
                 sql.Append("ADD CONSTRAINT [");
                 sql.Append(contraintName);
                 sql.AppendLine("] ");

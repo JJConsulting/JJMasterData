@@ -25,7 +25,7 @@ public class OracleProvider(
     private const string Tab = "\t";
     public override string VariablePrefix => "p_";
 
-    public override string GetCreateTableScript(Element element, Dictionary<string,ElementRelationship> relationships)
+    public override string GetCreateTableScript(Element element, Dictionary<string, string>? relationships = null)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));

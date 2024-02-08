@@ -78,17 +78,17 @@ public interface IEntityRepository
     public Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string,object?> values, bool ignoreResults = false);
     CommandOperation SetValues(Element element, Dictionary<string, object?> values, bool ignoreResults = false);
     
-    void CreateDataModel(Element element,Dictionary<string,ElementRelationship> relationships);
+    void CreateDataModel(Element element,Dictionary<string, string>? relationships = null);
     
     /// <summary>
     /// Create an element's tables and procedures
     /// </summary>
-    public Task CreateDataModelAsync(Element element,Dictionary<string,ElementRelationship> relationships);
+    public Task CreateDataModelAsync(Element element,Dictionary<string, string>? relationships = null);
     
     /// <summary>
     /// Build a structure script to create table
     /// </summary>
-    public string GetCreateTableScript(Element element,Dictionary<string,ElementRelationship> relationships);
+    public string GetCreateTableScript(Element element,Dictionary<string, string>? relationships = null);
 
     /// <summary>
     /// Build a structure script to procedure of get

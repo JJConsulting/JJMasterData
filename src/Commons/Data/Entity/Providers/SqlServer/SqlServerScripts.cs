@@ -39,7 +39,7 @@ public class SqlServerScripts(
         return ReadProcedureScripts.GetReadScript(element, fields);
     }
     
-    public static string GetCreateTableScript(Element element, Dictionary<string, ElementRelationship> relationships)
+    public static string GetCreateTableScript(Element element, Dictionary<string, string> relationships)
     {
         return SqlServerCreateTableScripts.GetCreateTableScript(element, relationships);
     }

@@ -29,14 +29,14 @@ public class ScriptsService(IEntityRepository entityRepository,
         };
     }
 
-    private async Task<Dictionary<string, ElementRelationship>> GetFormElementRelationships(FormElement formElement)
+    private async Task<Dictionary<string, string>> GetFormElementRelationships(FormElement formElement)
     {
-        Dictionary<string, ElementRelationship> relationships = [];
+        Dictionary<string, string> relationships = [];
         foreach (var r in formElement.Relationships.GetElementRelationships())
         {
             var tableName = (await dataDictionaryRepository.GetFormElementAsync(r.ChildElement)).TableName;
 
-            relationships[tableName] = r;
+            relationships[r.ChildElement] = tableName;
         }
 
         return relationships;
