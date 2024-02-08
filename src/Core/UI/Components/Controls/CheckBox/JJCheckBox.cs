@@ -70,7 +70,7 @@ public class JJCheckBox : ControlBase
         div.WithCssClassIf(IsSwitch, "form-switch");
         div.WithCssClassIf(IsSwitch && SwitchSize is not null, SwitchSize?.GetDescription());
         div.WithCssClassIf(!string.IsNullOrEmpty(Text), "form-check");
-        
+        var checkBoxName = Name + "-checkbox";
         div.Append(HtmlTag.Input, input =>
         {
             var checkboxHelperScript = $"CheckboxHelper.check('{Name.Replace(".", "_")}');";
@@ -87,7 +87,7 @@ public class JJCheckBox : ControlBase
             if (ReadOnly)
                 Attributes["onclick"] = "return false";
 
-            var checkBoxName = Name + "-checkbox";
+
             
             input.WithAttributes(Attributes)
                 .WithAttribute("type", "checkbox")
@@ -116,7 +116,7 @@ public class JJCheckBox : ControlBase
 
         div.AppendIf(!string.IsNullOrEmpty(Text), HtmlTag.Label, label =>
         {
-            label.WithAttribute("for", Name);
+            label.WithAttribute("for", checkBoxName);
             label.WithCssClass("form-check-label");
             label.AppendText(Text);
         });

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.UI.Html;
@@ -182,7 +183,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         childFormView.ShowTitle = false;
         childFormView.IsChildFormView = true;
         
-        if (parentFormView.PageState is PageState.View)
+        if (parentFormView.PageState is PageState.View || parentFormView.PanelState is PageState.Update)
             childFormView.DisableActionsAtViewMode();
                 
         var result = await childFormView.GetFormResultAsync();
@@ -202,12 +203,13 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         
         childFormView.IsChildFormView = true;
         
-        if (relationship.ViewType is RelationshipViewType.View || parentFormView.PageState is PageState.View)
+        if (relationship.ViewType is RelationshipViewType.View ||
+            parentFormView.PageState is PageState.View || 
+            parentFormView.PanelState is PageState.Update)
         {
             childFormView.PageState = PageState.View;
             childFormView.PanelState = PageState.View;
         }
-
         else
         {
             childFormView.PageState = childValues is not null ? PageState.Update : PageState.Insert;

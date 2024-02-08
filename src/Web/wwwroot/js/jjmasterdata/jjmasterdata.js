@@ -2096,7 +2096,8 @@ class SearchBoxListener {
                 limit: numberOfItems,
                 classNames: {
                     dataset: "list-group",
-                    cursor: "active"
+                    cursor: "active",
+                    menu: "search-box-menu"
                 }
             }, {
                 displayKey: "description",

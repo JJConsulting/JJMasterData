@@ -70,11 +70,13 @@
                     <tooltip title="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]"/>
                     <checkbox for="ReopenForm" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-6 not-shown-at-list">
+            </div>
+            <div class="row">
+                <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
                     <label asp-for="ShowAsModal" class="@BootstrapHelper.Label"></label>
                     <checkbox for="ShowAsModal" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
-                <div class="@BootstrapHelper.FormGroup col-sm-6">
+                <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
                     <label asp-for="ModalTitle" class="form-label"></label>
                     <input asp-for="ModalTitle" class="form-control"/>
                 </div>

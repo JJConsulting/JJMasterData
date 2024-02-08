@@ -1521,7 +1521,7 @@ public class JJFormView : AsyncComponent
     {
         foreach (var action in FormElement.Options.GridTableActions)
         {
-            if (action.GetType() != typeof(ViewAction))
+            if (action is not ViewAction)
             {
                 action.SetVisible(false);
             }
