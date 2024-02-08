@@ -229,7 +229,7 @@ public class JJDataExportation : ProcessComponent
         BackgroundTaskManager.Run(ProcessKey, exporter);
     }
 
-    internal void ExportFileInBackground(IDictionary<string, object> filter, OrderByData orderByData)
+    internal void ExportFileInBackground(Dictionary<string, object> filter, OrderByData orderByData)
     {
         var exporter = CreateWriter();
 

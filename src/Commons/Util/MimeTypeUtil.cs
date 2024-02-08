@@ -577,7 +577,7 @@ public static class MimeTypeUtil
 
         };
 
-    public static IDictionary<string, string> GetMappings()
+    public static Dictionary<string, string> GetMappings()
     {
         return _mappings;
     }

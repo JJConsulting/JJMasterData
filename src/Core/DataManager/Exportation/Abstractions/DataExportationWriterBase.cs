@@ -54,7 +54,7 @@ public abstract class DataExportationWriterBase(
 
     public string AbsoluteUri { get; internal set; }
     
-    private string GetFolderPath(FormElementField field, IDictionary<string,object> values)
+    private string GetFolderPath(FormElementField field, Dictionary<string,object> values)
     {
         return PathBuilder.GetFolderPath(field, values);
     }
@@ -99,7 +99,7 @@ public abstract class DataExportationWriterBase(
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
     /// </summary>
-    public IDictionary<string, object> CurrentFilter { get; set; } = new Dictionary<string, object>();
+    public Dictionary<string, object> CurrentFilter { get; set; } = new Dictionary<string, object>();
 
     /// <summary>
     /// Recupera a ordenação da tabela, 

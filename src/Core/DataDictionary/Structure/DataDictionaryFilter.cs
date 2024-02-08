@@ -19,7 +19,7 @@ public class DataDictionaryFilter
         
     }
     
-    public static DataDictionaryFilter FromDictionary(IDictionary<string, object?>filter)
+    public static DataDictionaryFilter FromDictionary(Dictionary<string, object?>filter)
     {
         var result = new DataDictionaryFilter();
 
@@ -51,7 +51,7 @@ public class DataDictionaryFilter
 
         return result;
     }
-    public IDictionary<string, object> ToDictionary()
+    public Dictionary<string, object> ToDictionary()
     {
         var result = new Dictionary<string, object>();
         

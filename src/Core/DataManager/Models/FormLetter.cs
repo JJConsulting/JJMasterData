@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace JJMasterData.Core.DataManager.Models;
 
-public class FormLetter(IDictionary<string, string>errors)
+public class FormLetter(Dictionary<string, string>errors)
 {
-    private IDictionary<string, string>? _errors = errors;
+    private Dictionary<string, string>? _errors = errors;
 
-    public IDictionary<string, string> Errors 
+    public Dictionary<string, string> Errors 
     {
         get => _errors ??= new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         set => _errors = value;
@@ -22,7 +22,7 @@ public class FormLetter(IDictionary<string, string>errors)
     public string? UrlRedirect { get; set; }
 }
 
-public class FormLetter<T>(IDictionary<string, string> errors) : FormLetter(errors)
+public class FormLetter<T>(Dictionary<string, string> errors) : FormLetter(errors)
 {
     public T? Result { get; set; }
 }

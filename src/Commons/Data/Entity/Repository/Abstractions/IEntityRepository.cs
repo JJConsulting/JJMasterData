@@ -37,17 +37,17 @@ public interface IEntityRepository
     /// <summary>
     /// Update a record in the database
     /// </summary>
-    public Task<int> UpdateAsync(Element element, IDictionary<string,object?> values);
-    int Update(Element element, IDictionary<string, object?> values);
+    public Task<int> UpdateAsync(Element element, Dictionary<string,object?> values);
+    int Update(Element element, Dictionary<string, object?> values);
 
 
     /// <summary>
     /// Delete records based on filter.
     /// </summary>
-    public Task<int> DeleteAsync(Element element, IDictionary<string,object> primaryKeys);
-    int Delete(Element element, IDictionary<string, object> primaryKeys);
+    public Task<int> DeleteAsync(Element element, Dictionary<string,object> primaryKeys);
+    int Delete(Element element, Dictionary<string, object> primaryKeys);
     
-    void Insert(Element element, IDictionary<string, object?> values);
+    void Insert(Element element, Dictionary<string, object?> values);
     
     /// <summary>
     /// Add a record to the database.
@@ -59,7 +59,7 @@ public interface IEntityRepository
     /// How to do:
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
-    public Task InsertAsync(Element element, IDictionary<string,object?> values);
+    public Task InsertAsync(Element element, Dictionary<string,object?> values);
     
     /// <summary>
     /// Set a record in the database.
@@ -75,8 +75,8 @@ public interface IEntityRepository
     /// How to do:
     /// [key(database field name), value(value to be stored in the database)].
     /// </remarks>
-    public Task<CommandOperation> SetValuesAsync(Element element, IDictionary<string,object?> values, bool ignoreResults = false);
-    CommandOperation SetValues(Element element, IDictionary<string, object?> values, bool ignoreResults = false);
+    public Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string,object?> values, bool ignoreResults = false);
+    CommandOperation SetValues(Element element, Dictionary<string, object?> values, bool ignoreResults = false);
     
     /// <summary>
     /// Create an element's tables and procedures
@@ -134,12 +134,12 @@ public interface IEntityRepository
     
     public Task<bool> ExecuteBatchAsync(string script);
     
-    IDictionary<string, object?> GetFields(Element element, Dictionary<string, object> primaryKeys);
-    IDictionary<string, object?> GetFields(DataAccessCommand command);
+    Dictionary<string, object?> GetFields(Element element, Dictionary<string, object> primaryKeys);
+    Dictionary<string, object?> GetFields(DataAccessCommand command);
     
-    Task<IDictionary<string, object?>> GetFieldsAsync(DataAccessCommand command);
+    Task<Dictionary<string, object?>> GetFieldsAsync(DataAccessCommand command);
     
-    Task<IDictionary<string, object?>> GetFieldsAsync(Element element, IDictionary<string, object> primaryKeys);
+    Task<Dictionary<string, object?>> GetFieldsAsync(Element element, Dictionary<string, object> primaryKeys);
     
     Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand command);
     
@@ -176,8 +176,8 @@ public interface IEntityRepository
 
     
     Task<DataTable> GetDataTableAsync(Element element, EntityParameters? entityParameters = null);
-    int GetCount(Element element, IDictionary<string, object?> filters);
-    Task<int> GetCountAsync(Element element, IDictionary<string, object?> filters);
+    int GetCount(Element element, Dictionary<string, object?> filters);
+    Task<int> GetCountAsync(Element element, Dictionary<string, object?> filters);
     bool TableExists(string tableName);
     void CreateDataModel(Element element);
 }

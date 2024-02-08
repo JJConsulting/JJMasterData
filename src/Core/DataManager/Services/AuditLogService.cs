@@ -35,7 +35,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptions<Master
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
     private MasterDataCoreOptions Options { get; } = options.Value;
 
-    public async Task LogAsync(Element element,DataContext dataContext, IDictionary<string, object> formValues, CommandOperation action)
+    public async Task LogAsync(Element element,DataContext dataContext, Dictionary<string, object> formValues, CommandOperation action)
     {
         var values = new Dictionary<string, object>
         {
@@ -67,7 +67,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptions<Master
         }
     }
 
-    private static string GetJsonFields(IDictionary<string, object>formValues)
+    private static string GetJsonFields(Dictionary<string, object>formValues)
     {
         var valuesAux = formValues
             .Where(item => item.Value is not DBNull)
@@ -76,7 +76,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptions<Master
         return JsonConvert.SerializeObject(valuesAux);
     }
 
-    public string GetKey(Element element, IDictionary<string, object>values)
+    public string GetKey(Element element, Dictionary<string, object>values)
     {
         var key = new StringBuilder();
         var pks = element.Fields.ToList().FindAll(x => x.IsPk);

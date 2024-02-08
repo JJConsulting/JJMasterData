@@ -51,7 +51,7 @@ public class FormValuesService(
         return values;
     }
 
-    internal static void HandleFieldValue(FormElementField field, IDictionary<string, object?> values, string? value)
+    internal static void HandleFieldValue(FormElementField field, Dictionary<string, object?> values, string? value)
     {
         object? parsedValue = null;
         switch (field.Component)
@@ -174,7 +174,7 @@ public class FormValuesService(
     }
 
 
-    private async Task<IDictionary<string, object?>> GetDbValues(Element element)
+    private async Task<Dictionary<string, object?>> GetDbValues(Element element)
     {
         string encryptedPkValues = FormValues[
             $"data-panel-pk-values-{element.Name}"];

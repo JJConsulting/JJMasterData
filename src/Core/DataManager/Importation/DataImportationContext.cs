@@ -7,6 +7,6 @@ namespace JJMasterData.Core.DataManager.Importation;
 public record DataImportationContext(
     FormElement FormElement,
     DataContext DataContext,
-    IDictionary<string,object> RelationValues,
+    Dictionary<string,object> RelationValues,
     string RawData,
     char Separator);

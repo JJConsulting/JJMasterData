@@ -104,7 +104,7 @@ public class FormElementField : ElementField
     /// Collection of arbitrary (rendering-only) attributes that do not match control properties
     /// </summary>
     [JsonProperty("attributes")]
-    public IDictionary<string, object> Attributes { get; set; } =
+    public Dictionary<string, object> Attributes { get; set; } =
         new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
 
     /// <summary>

@@ -121,7 +121,7 @@ internal class GridFilter(JJGridView gridView)
         return !string.IsNullOrEmpty(CurrentContext.Request.QueryString["routeContext"]);
     }
     
-    public async Task ApplyCurrentFilter(IDictionary<string, object> values)
+    public async Task ApplyCurrentFilter(Dictionary<string, object> values)
     {
         _currentFilter ??= new Dictionary<string, object>();
 
@@ -325,7 +325,7 @@ internal class GridFilter(JJGridView gridView)
         return value;
     }
     
-    private async Task<IDictionary<string, object>> GetFilterFormValues()
+    private async Task<Dictionary<string, object>> GetFilterFormValues()
     {
         if (GridView.FormElement == null)
             throw new NullReferenceException(nameof(GridView.FormElement));

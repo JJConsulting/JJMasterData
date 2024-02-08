@@ -13,7 +13,7 @@ public class LookupParameters
     public string FieldKeyName { get; set; }
     public string FieldValueName { get; set; }
     public bool EnableElementActions { get; set; }
-    public IDictionary<string, object> Filters { get; set; }
+    public Dictionary<string, object> Filters { get; set; }
 
     public LookupParameters(
         string elementName, 
@@ -21,7 +21,7 @@ public class LookupParameters
         string fieldKeyName,
         string fieldValueName,
         bool enableElementActions,
-        IDictionary<string, object> filters)
+        Dictionary<string, object> filters)
     {
         ElementName = elementName;
         ComponentName = componentName;

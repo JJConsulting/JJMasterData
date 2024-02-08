@@ -58,7 +58,7 @@ public class LookupService(IFormValues formValues,
                 return null;
         }
 
-        IDictionary<string, object?> values;
+        Dictionary<string, object?> values;
         
         try
         {

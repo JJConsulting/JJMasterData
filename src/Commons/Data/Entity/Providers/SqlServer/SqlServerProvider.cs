@@ -47,22 +47,22 @@ public class SqlServerProvider(
         return SqlServerScripts.GetReadProcedureScript(element);
     }
     
-    public override DataAccessCommand GetInsertCommand(Element element, IDictionary<string,object?> values)
+    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values)
     {
         return GetWriteCommand(InsertInitial, element, values);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, IDictionary<string,object?> values)
+    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values)
     {
         return GetWriteCommand(UpdateInitial, element, values);
     }
 
-    public override DataAccessCommand GetDeleteCommand(Element element, IDictionary<string,object> filters)
+    public override DataAccessCommand GetDeleteCommand(Element element, Dictionary<string,object> filters)
     {
         return GetWriteCommand(DeleteInitial, element, filters!);
     }
 
-    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, IDictionary<string,object?> values)
+    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values)
     {
         return GetWriteCommand(string.Empty, element, values);
     }
@@ -167,7 +167,7 @@ public class SqlServerProvider(
     }
 
 
-    private DataAccessCommand GetWriteCommand(string action, Element element, IDictionary<string,object?> values)
+    private DataAccessCommand GetWriteCommand(string action, Element element, Dictionary<string,object?> values)
     {
         string sql;
 
@@ -224,7 +224,7 @@ public class SqlServerProvider(
         return writeCommand;
     }
     
-    private static object GetElementValue(ElementField field, IDictionary<string,object?> values)
+    private static object GetElementValue(ElementField field, Dictionary<string,object?> values)
     {
         if (!values.ContainsKey(field.Name)) 
             return DBNull.Value;

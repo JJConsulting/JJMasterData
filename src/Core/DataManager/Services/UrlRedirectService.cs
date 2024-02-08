@@ -23,7 +23,7 @@ public class UrlRedirectService(IEntityRepository entityRepository, FormValuesSe
     {
         var urlRedirectAction = actionMap.GetAction<UrlRedirectAction>(dataPanel.FormElement);
 
-        IDictionary<string,object> dbValues;
+        Dictionary<string,object> dbValues;
 
         if (actionMap.PkFieldValues.Any())
         {

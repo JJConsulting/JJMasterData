@@ -56,13 +56,13 @@ public class JJDataPanel : AsyncComponent
     /// Fields with error.
     /// Key=Field Name, Value=Error Description
     /// </summary>
-    public IDictionary<string, string> Errors { get; set; }
+    public Dictionary<string, string> Errors { get; set; }
 
     /// <summary>
     /// Field Values.
     /// Key=Field Name, Value=Field Value
     /// </summary>
-    public IDictionary<string, object> Values { get; set; }
+    public Dictionary<string, object> Values { get; set; }
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form
@@ -261,7 +261,7 @@ public class JJDataPanel : AsyncComponent
     }
 
     [Obsolete("Please use GetFormValuesAsync")]
-    public IDictionary<string,object> GetFormValues()
+    public Dictionary<string,object> GetFormValues()
     {
         return AsyncHelper.RunSync(GetFormValuesAsync);
     }
@@ -280,12 +280,12 @@ public class JJDataPanel : AsyncComponent
     }
 #if NETFRAMEWORK
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]
-    public void LoadValuesFromPK(IDictionary<string, object> pks)
+    public void LoadValuesFromPK(Dictionary<string, object> pks)
     {
         Values = AsyncHelper.RunSync(()=>EntityRepository.GetFieldsAsync(FormElement, pks));
     }
 #endif
-    public async Task LoadValuesFromPkAsync(IDictionary<string, object> pks)
+    public async Task LoadValuesFromPkAsync(Dictionary<string, object> pks)
     {
         Values = await EntityRepository.GetFieldsAsync(FormElement, pks);
     }
@@ -297,7 +297,7 @@ public class JJDataPanel : AsyncComponent
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public IDictionary<string, string> ValidateFields(IDictionary<string, object> values, PageState pageState)
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState)
     {
         return ValidateFields(values, pageState, true);
     }
@@ -309,7 +309,7 @@ public class JJDataPanel : AsyncComponent
     /// Key = Field Name
     /// Valor = Error message
     /// </returns>
-    public IDictionary<string, string> ValidateFields(IDictionary<string, object> values, PageState pageState, bool enableErrorLink)
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState, bool enableErrorLink)
     {
         return FieldsService.ValidateFields(FormElement, values, pageState, enableErrorLink);
     }

@@ -10,7 +10,7 @@ public class FormFilePathBuilder(FormElement formElement)
 {
     private FormElement FormElement { get; } = formElement;
 
-    public string GetFolderPath(FormElementField field, IDictionary<string, object> formValues)
+    public string GetFolderPath(FormElementField field, Dictionary<string, object> formValues)
     {
         if (field.DataFile == null)
             throw new ArgumentException($"{nameof(FormElementField.DataFile)} not defined.", field.Name);

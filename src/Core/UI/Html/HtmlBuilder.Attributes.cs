@@ -123,7 +123,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Set range of attrs
     /// </summary>
-    internal HtmlBuilder WithAttributes(IDictionary<string, string> attributes)
+    internal HtmlBuilder WithAttributes(Dictionary<string, string> attributes)
     {
         foreach (var v in attributes)
         {

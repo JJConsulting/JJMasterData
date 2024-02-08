@@ -50,7 +50,7 @@ public class DataImportationWorker(
     private string RawData { get; } = context.RawData;
     private char Separator { get; } = context.Separator;
     
-    private IDictionary<string, object> RelationValues { get; } = context.RelationValues;
+    private Dictionary<string, object> RelationValues { get; } = context.RelationValues;
 
     private ExpressionsService ExpressionsService { get; } = expressionsService;
 
@@ -223,7 +223,7 @@ public class DataImportationWorker(
             await OnAfterProcessAsync(this, new FormAfterActionEventArgs());
     }
 
-    internal IDictionary<string, object> UserValues { get; set; } = new Dictionary<string, object>();
+    internal Dictionary<string, object> UserValues { get; set; } = new Dictionary<string, object>();
     
     
     private static Dictionary<string, object> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField,
@@ -266,7 +266,7 @@ public class DataImportationWorker(
     /// Retorna lista de erros
     /// </summary>
     /// <returns>Retorna lista de erros</returns>
-    private async Task SetFormValues(IDictionary<string, object> fileValues, DataImportationReporter currentProcess)
+    private async Task SetFormValues(Dictionary<string, object> fileValues, DataImportationReporter currentProcess)
     {
         try
         {

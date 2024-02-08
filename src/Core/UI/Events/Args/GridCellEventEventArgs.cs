@@ -19,7 +19,7 @@ public class GridCellEventArgs : EventArgs
     /// <summary>
     /// Linha atual com o valor de todos os campos
     /// </summary>
-    public IDictionary<string,object> DataRow { get; set; }
+    public Dictionary<string,object> DataRow { get; set; }
 
     /// <summary>
     /// Objeto renderizado

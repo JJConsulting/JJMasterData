@@ -56,7 +56,7 @@ public class FormService(IEntityRepository entityRepository,
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter> UpdateAsync(FormElement formElement, IDictionary<string, object> values, DataContext dataContext)
+    public async Task<FormLetter> UpdateAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext)
     {
         var errors =  FieldValidationService.ValidateFields(formElement, values, PageState.Update, EnableErrorLinks);
         var result = new FormLetter(errors);
@@ -103,9 +103,9 @@ public class FormService(IEntityRepository entityRepository,
         return result;
     }
 
-    public async Task<FormLetter> InsertAsync(FormElement formElement, IDictionary<string, object> values, DataContext dataContext, bool validateFields = true)
+    public async Task<FormLetter> InsertAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext, bool validateFields = true)
     {
-        IDictionary<string, string> errors;
+        Dictionary<string, string> errors;
         if (validateFields)
             errors = FieldValidationService.ValidateFields(formElement, values, PageState.Insert, EnableErrorLinks);
         else
@@ -157,7 +157,7 @@ public class FormService(IEntityRepository entityRepository,
     /// <param name="formElement"></param>
     /// <param name="values">Values to be inserted.</param>
     /// <param name="dataContext"></param>
-    public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement, IDictionary<string, object> values, DataContext dataContext)
+    public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext)
     {
         var errors = FieldValidationService.ValidateFields(formElement, values, PageState.Import, EnableErrorLinks);
         var result = new FormLetter<CommandOperation>(errors);
@@ -221,7 +221,7 @@ public class FormService(IEntityRepository entityRepository,
     /// <param name="primaryKeys">Primary keys to delete records on the database.</param>
     /// <param name="dataContext"></param>
     /// >
-    public async Task<FormLetter> DeleteAsync(FormElement formElement, IDictionary<string, object> primaryKeys, DataContext dataContext)
+    public async Task<FormLetter> DeleteAsync(FormElement formElement, Dictionary<string, object> primaryKeys, DataContext dataContext)
     {
         var errors = new Dictionary<string, string>();
         var result = new FormLetter(errors);
@@ -265,7 +265,7 @@ public class FormService(IEntityRepository entityRepository,
         return result;
     }
 
-    private bool IsAuditLogEnabled(FormElement formElement, PageState pageState, IDictionary<string, object> formValues)
+    private bool IsAuditLogEnabled(FormElement formElement, PageState pageState, Dictionary<string, object> formValues)
     {
         var formState = new FormStateData(formValues, pageState);
         var auditLogExpression = formElement.Options.GridToolbarActions.AuditLogGridToolbarAction.VisibleExpression;

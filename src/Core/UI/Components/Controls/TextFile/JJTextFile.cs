@@ -20,7 +20,7 @@ public class JJTextFile(IHttpRequest request,
         IEncryptionService encryptionService)
     : ControlBase(request.Form)
 {
-    private IDictionary<string, object> _formValues;
+    private Dictionary<string, object> _formValues;
     private FormFilePathBuilder _pathBuilder;
     private RouteContext _routeContext;
     private TextFileScripts _scripts;
@@ -33,7 +33,7 @@ public class JJTextFile(IHttpRequest request,
     internal string ParentName { get; set; }
     public string FieldName { get; set; }
     
-    public IDictionary<string, object> FormStateValues
+    public Dictionary<string, object> FormStateValues
     {
         get => _formValues ??= new Dictionary<string, object>();
         set => _formValues = value;

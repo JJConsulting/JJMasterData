@@ -335,7 +335,7 @@ public class ActionsController(ActionsService actionsService,
         return EditActionResult(elementName, pluginFieldAction, context, isActionSave, originalName, fieldName);
     }
 
-    private void SetPluginConfigurationMap(IDictionary<string, object?> configurationMap,
+    private void SetPluginConfigurationMap(Dictionary<string, object?> configurationMap,
         Guid pluginId)
     {
         var pluginHandler = pluginHandlers.First(p => p.Id == pluginId);
@@ -359,7 +359,7 @@ public class ActionsController(ActionsService actionsService,
         }
     }
     
-    private void SetPluginFieldMap(IDictionary<string, string> fieldMap, Guid pluginId)
+    private void SetPluginFieldMap(Dictionary<string, string> fieldMap, Guid pluginId)
     {
         var pluginHandler = (IPluginFieldActionHandler)pluginHandlers.First(p => p.Id == pluginId);
         

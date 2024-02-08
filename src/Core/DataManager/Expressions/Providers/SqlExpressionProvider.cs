@@ -24,7 +24,7 @@ public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncE
         return result;
     }
 
-    internal static DataAccessCommand GetParsedDataAccessCommand(string expression, IDictionary<string, object?> parsedValues)
+    internal static DataAccessCommand GetParsedDataAccessCommand(string expression, Dictionary<string, object?> parsedValues)
     {
         var command = new DataAccessCommand();
 

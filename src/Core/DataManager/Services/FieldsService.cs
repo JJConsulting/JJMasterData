@@ -15,7 +15,7 @@ public class FieldsService(
     private FieldValidationService FieldValidationService { get; } = fieldValidationService;
     private FieldValuesService FieldValuesService { get; } = fieldValuesService;
 
-    public IDictionary<string, string> ValidateFields(FormElement formElement, IDictionary<string, object> formValues, PageState pageState, bool enableErrorLink)
+    public Dictionary<string, string> ValidateFields(FormElement formElement, Dictionary<string, object> formValues, PageState pageState, bool enableErrorLink)
     {
        return FieldValidationService.ValidateFields(formElement, formValues, pageState, enableErrorLink);
     }
@@ -25,7 +25,7 @@ public class FieldsService(
         return FieldValidationService.ValidateField(field, fieldId, value, enableErrorLink);
     }
 
-    public Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
+    public Task<string> FormatGridValueAsync(FormElementField field, Dictionary<string, object> values, Dictionary<string, object> userValues)
     {
         return FieldFormattingService.FormatGridValueAsync(field, values, userValues);
     }

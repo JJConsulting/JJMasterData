@@ -122,7 +122,7 @@ internal class GridTableHeader
         }
     }
 
-    private bool IsAppliedFilter(ElementField field, IDictionary<string, object> currentFilter)
+    private bool IsAppliedFilter(ElementField field, Dictionary<string, object> currentFilter)
     {
         var hasFilterType = field.Filter.Type is not FilterMode.None;
         var hasFieldOrFromKey = currentFilter.ContainsKey(field.Name) || currentFilter.ContainsKey($"{field.Name}_from");

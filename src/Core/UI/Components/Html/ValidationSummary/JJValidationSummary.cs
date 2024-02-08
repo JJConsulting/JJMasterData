@@ -35,7 +35,7 @@ public class JJValidationSummary : HtmlComponent
         ShowCloseButton = true;
     }
 
-    public void SetErrors(IDictionary<string, string>errors)
+    public void SetErrors(Dictionary<string, string>errors)
     {
         if (errors == null) 
             return;

@@ -137,7 +137,7 @@ public class JJAuditLogView : AsyncComponent
         return new RenderedComponentResult(html);
     }
 
-    private async Task<string> GetEntryKey(IDictionary<string, object> values)
+    private async Task<string> GetEntryKey(Dictionary<string, object> values)
     {
         var filter = new Dictionary<string, object>
         {
@@ -165,7 +165,7 @@ public class JJAuditLogView : AsyncComponent
         return entryId;
     }
 
-    public async Task<HtmlBuilder> GetLogDetailsHtmlAsync(IDictionary<string, object> values)
+    public async Task<HtmlBuilder> GetLogDetailsHtmlAsync(Dictionary<string, object> values)
     {
         string entryId = await GetEntryKey(values);
         var html = await GetLogDetailsHtmlAsync(entryId);
@@ -262,7 +262,7 @@ public class JJAuditLogView : AsyncComponent
         var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
         string json = values[AuditLogService.DicJson].ToString();
 
-        IDictionary<string, object> fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        Dictionary<string, object> fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
         var panel = DataPanel;
         panel.PageState = PageState.View;

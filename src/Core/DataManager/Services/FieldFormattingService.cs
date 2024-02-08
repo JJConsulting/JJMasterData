@@ -17,7 +17,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
     private DataItemService DataItemService { get; } = dataItemService;
     private LookupService LookupService { get; } = lookupService;
 
-    public async Task<string> FormatGridValueAsync(FormElementField field, IDictionary<string, object> values, IDictionary<string, object> userValues)
+    public async Task<string> FormatGridValueAsync(FormElementField field, Dictionary<string, object> values, Dictionary<string, object> userValues)
     {
         object fieldValue = null;
         if (values.TryGetValue(field.Name, out var value))

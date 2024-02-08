@@ -31,7 +31,7 @@ public class MessageBoxFactory(IStringLocalizer<MasterDataResources> stringLocal
         return messageBox;
     }
 
-    public JJMessageBox Create(IDictionary<string, string> errors, MessageIcon icon)
+    public JJMessageBox Create(Dictionary<string, string> errors, MessageIcon icon)
     {
         var errorMessage = new StringBuilder();
         foreach (var err in errors.Values)

@@ -17,9 +17,9 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
     private ExpressionsService ExpressionsService { get; } = expressionsService;
     private IStringLocalizer<MasterDataResources> Localizer { get; } = localizer;
 
-    public IDictionary<string, string> ValidateFields(
+    public Dictionary<string, string> ValidateFields(
         FormElement formElement, 
-        IDictionary<string, object> formValues, 
+        Dictionary<string, object> formValues, 
         PageState pageState, 
         bool enableErrorLink)
     {

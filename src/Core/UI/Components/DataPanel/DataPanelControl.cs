@@ -34,13 +34,13 @@ internal class DataPanelControl
 
     public IComponentFactory ComponentFactory { get; }
     
-    public IDictionary<string, string> Errors { get; }
+    public Dictionary<string, string> Errors { get; }
 
     public PageState PageState => FormState.PageState;
 
-    public IDictionary<string, object?>? UserValues => FormState.UserValues;
+    public Dictionary<string, object?>? UserValues => FormState.UserValues;
 
-    public IDictionary<string, object?> Values => FormState.Values;
+    public Dictionary<string, object?> Values => FormState.Values;
 
     public FormStateData FormState { get; }
 
@@ -67,7 +67,7 @@ internal class DataPanelControl
         FormState = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
     }
 
-    public DataPanelControl(JJGridView gridView, IDictionary<string, object?> values)
+    public DataPanelControl(JJGridView gridView, Dictionary<string, object?> values)
     {
         ParentComponentName = gridView.ParentComponentName ?? gridView.Name;
         FormElement = gridView.FormElement;

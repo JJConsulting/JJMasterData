@@ -14,7 +14,7 @@ namespace JJMasterData.Core.DataManager;
 
 public static class DataHelper
 {
-    public static string? GetCurrentUserId(IHttpContext context, IDictionary<string, object>? userValues)
+    public static string? GetCurrentUserId(IHttpContext context, Dictionary<string, object>? userValues)
     {
         if (userValues != null && userValues.TryGetValue("USERID", out var value))
         {
@@ -24,7 +24,7 @@ public static class DataHelper
         return context.User.Identity?.Name;
     }
 
-    public static IDictionary<string, object?> GetElementValues(Element element, IDictionary<string, object?> values)
+    public static Dictionary<string, object?> GetElementValues(Element element, Dictionary<string, object?> values)
     {
         var elementValues = new Dictionary<string, object?>();
 
@@ -39,14 +39,14 @@ public static class DataHelper
         return elementValues;
     }
     
-    public static bool ContainsPkValues(Element element, IDictionary<string, object?> values)
+    public static bool ContainsPkValues(Element element, Dictionary<string, object?> values)
     {
         var elementPks = GetElementPrimaryKeys(element);
 
         return elementPks.Count != 0 && elementPks.All(field => values.ContainsKey(field.Name));
     }
 
-    public static IDictionary<string, object> GetPkValues(Element element, IDictionary<string, object?> values)
+    public static Dictionary<string, object> GetPkValues(Element element, Dictionary<string, object?> values)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -107,7 +107,7 @@ public static class DataHelper
     }
     
     
-    public static IDictionary<string, object> GetRelationValues(Element element, IDictionary<string, object?> values, bool usePkColumnName = false)
+    public static Dictionary<string, object> GetRelationValues(Element element, Dictionary<string, object?> values, bool usePkColumnName = false)
     {
         var foreignKeys = new Dictionary<string, object>();
         var relationships = element.Relationships;
@@ -133,7 +133,7 @@ public static class DataHelper
     /// <summary>
     /// Concat primary keys with separator characters
     /// </summary>
-    public static string ParsePkValues(FormElement formElement, IDictionary<string, object?> formValues, char separator)
+    public static string ParsePkValues(FormElement formElement, Dictionary<string, object?> formValues, char separator)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -190,7 +190,7 @@ public static class DataHelper
     /// Preserves the original name of the field as registered in the dictionary
     /// and validates if the field exists
     /// </summary>
-    public static IDictionary<string, object?>? ParseOriginalName(FormElement formElement, IDictionary<string, object?>? paramValues)
+    public static Dictionary<string, object?>? ParseOriginalName(FormElement formElement, Dictionary<string, object?>? paramValues)
     {
         if (paramValues == null)
             return null;
@@ -206,7 +206,7 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoDictionary(IDictionary<string, object?> valuesToBeReceived, IDictionary<string, object?>? valuesToBeCopied, bool replaceIfKeyExists = false)
+    public static void CopyIntoDictionary(Dictionary<string, object?> valuesToBeReceived, Dictionary<string, object?>? valuesToBeCopied, bool replaceIfKeyExists = false)
     {
         if (valuesToBeCopied == null || !valuesToBeCopied.Any())
             return;

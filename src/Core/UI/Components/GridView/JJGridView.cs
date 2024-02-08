@@ -87,7 +87,7 @@ public class JJGridView : AsyncComponent
     private GridTable? _table;
     private IList<Dictionary<string,object?>>? _dataSource;
     private List<FormElementField>? _pkFields;
-    private IDictionary<string, object?>? _defaultValues;
+    private Dictionary<string, object?>? _defaultValues;
     private FormStateData? _formStateData;
     private ActionMap? _currentActionMap;
     private JJDataImportation? _dataImportation;
@@ -449,7 +449,7 @@ public class JJGridView : AsyncComponent
     /// Key-Value pairs with the errors.
     /// </summary>
     // ReSharper disable once CollectionNeverUpdated.Global
-    public IDictionary<string, string> Errors { get; } = new Dictionary<string, string>();
+    public Dictionary<string, string> Errors { get; } = new Dictionary<string, string>();
 
     /// <summary>
     /// When reloading the panel, keep the values entered in the form.
@@ -465,7 +465,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Key = Field name, Value=Field value
     /// </remarks>
-    public IDictionary<string, object> RelationValues { get; set; }
+    public Dictionary<string, object> RelationValues { get; set; }
 
     public HeadingSize TitleSize { get; set; } 
 
@@ -993,7 +993,7 @@ public class JJGridView : AsyncComponent
         return script.ToString();
     }
 
-    internal async Task<IDictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
+    internal async Task<Dictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
         await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues, PageState.List));
 
     internal async Task<FormStateData> GetFormStateDataAsync()
@@ -1080,7 +1080,7 @@ public class JJGridView : AsyncComponent
         return await legend.GetHtmlBuilderAsync();
     }
 
-    internal string GetFieldName(string fieldName, IDictionary<string, object?> row)
+    internal string GetFieldName(string fieldName, Dictionary<string, object?> row)
     {
         string name = "";
         foreach (var fpk in PrimaryKeyFields)
@@ -1103,7 +1103,7 @@ public class JJGridView : AsyncComponent
     }
 
 
-    public IDictionary<string, object> GetSelectedRowId()
+    public Dictionary<string, object> GetSelectedRowId()
     {
         var values = new Dictionary<string, object>();
         string currentRow = CurrentContext.Request[$"grid-view-row-{Name}"];
@@ -1361,7 +1361,7 @@ public class JJGridView : AsyncComponent
     /// Key = Field name
     /// Value = Message
     /// </returns>
-    public IDictionary<string, string> ValidateGridFields(List<Dictionary<string, object?>> values)
+    public Dictionary<string, string> ValidateGridFields(List<Dictionary<string, object?>> values)
     {
         if (values == null)
             throw new ArgumentNullException(nameof(values));

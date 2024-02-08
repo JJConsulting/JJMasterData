@@ -170,7 +170,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         }
     }
 
-    private async Task<ComponentResult> ConfigureOneToManyFormView(JJFormView childFormView, IDictionary<string, object?> filter)
+    private async Task<ComponentResult> ConfigureOneToManyFormView(JJFormView childFormView, Dictionary<string, object?> filter)
     {
         childFormView.ShowTitle = false;
         childFormView.UserValues = new Dictionary<string, object>(parentFormView.UserValues);
@@ -192,9 +192,9 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
     }
 
     private async Task<ComponentResult> ConfigureOneToOneFormView(JJFormView childFormView,
-        FormElementRelationship relationship, IDictionary<string, object?> filter)
+        FormElementRelationship relationship, Dictionary<string, object?> filter)
     {
-        IDictionary<string, object?>? childValues = null;
+        Dictionary<string, object?>? childValues = null;
         if (filter.Any())
         {
             childValues =

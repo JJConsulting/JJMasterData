@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace JJMasterData.Core.Events.Args;
 
-public class FormAfterActionEventArgs(IDictionary<string, object> values) : EventArgs
+public class FormAfterActionEventArgs(Dictionary<string, object> values) : EventArgs
 {
-    public IDictionary<string, object> Values { get; set; } = values;
+    public Dictionary<string, object> Values { get; set; } = values;
 
     public string UrlRedirect { get; set; }
 

@@ -218,7 +218,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
 
     #endregion
 
-    public async Task<byte[]> ExportSingleRowAsync(IDictionary<string, object> row)
+    public async Task<byte[]> ExportSingleRowAsync(Dictionary<string, object> row)
     {
         var elementName = row["name"].ToString();
         var metadata = await DataDictionaryRepository.GetFormElementAsync(elementName);

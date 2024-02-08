@@ -66,7 +66,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
     private async Task ExecuteOnRecord(ActionMap map, SqlCommandAction sqlCommandAction)
     {
         var formElement = gridView.FormElement;
-        IDictionary<string, object> formValues;
+        Dictionary<string, object> formValues;
         if (map.PkFieldValues.Any())
         {
             formValues = await gridView.EntityRepository.GetFieldsAsync(formElement, map.PkFieldValues);

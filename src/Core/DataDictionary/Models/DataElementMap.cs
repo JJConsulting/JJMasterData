@@ -27,7 +27,7 @@ public class DataElementMap
     [JsonProperty("popUpSize")]
     public ModalSize ModalSize { get; set; }
 
-    public IDictionary<string, object> Filters 
+    public Dictionary<string, object> Filters 
     {
         get
         {

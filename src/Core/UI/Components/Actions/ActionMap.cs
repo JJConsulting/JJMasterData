@@ -22,7 +22,7 @@ public class ActionMap
     public string? FieldName { get; set; }
 
     [JsonProperty("pkFieldValues")] 
-    public IDictionary<string, object> PkFieldValues { get; set; }
+    public Dictionary<string, object> PkFieldValues { get; set; }
     
     [JsonProperty("contextAction")] 
     public required ActionSource ActionSource { get; set; }
@@ -36,7 +36,7 @@ public class ActionMap
     public ActionMap(
         ActionSource actionSource,
         FormElement formElement,
-        IDictionary<string, object> row,
+        Dictionary<string, object> row,
         string actionName)
     {
         ElementName = formElement.Name;

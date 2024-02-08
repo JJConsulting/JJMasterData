@@ -59,7 +59,7 @@ public class GridScripts(JJGridView gridView)
         return $"GridViewSelectionHelper.selectAll('{gridView.Name}','{encryptedRouteContext}')";
     }
     
-    public string GetGridSettingsScript(ConfigAction action, IDictionary<string, object> formValues)
+    public string GetGridSettingsScript(ConfigAction action, Dictionary<string, object> formValues)
     {
         var actionMap = new ActionMap(ActionSource.GridToolbar, gridView.FormElement, formValues, action.Name);
         string encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);

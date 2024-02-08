@@ -87,7 +87,7 @@ public class JJDataImportation : ProcessComponent
     internal DataImportationScripts DataImportationScripts =>
         _dataImportationScripts ??= new DataImportationScripts(this);
 
-    public IDictionary<string, object> RelationValues { get; set; }
+    public Dictionary<string, object> RelationValues { get; set; }
     
     #endregion
     

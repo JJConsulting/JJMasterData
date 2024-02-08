@@ -14,7 +14,7 @@ public class ValidationSummaryFactory(IStringLocalizer<MasterDataResources> stri
         };
     }
     
-    public JJValidationSummary Create(IDictionary<string, string>errors)
+    public JJValidationSummary Create(Dictionary<string, string>errors)
     {
         var validation = Create();
         validation.SetErrors(errors);

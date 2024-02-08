@@ -7,5 +7,5 @@ public class PluginFieldActionContext : PluginActionContext
 {
     public string? FieldName => ActionContext.FieldName;
     
-    public required IDictionary<string,string> FieldMap { get; init; }
+    public required Dictionary<string,string> FieldMap { get; init; }
 }

@@ -11,15 +11,15 @@ public abstract class ComponentBase
 {
     #region "Properties"
 
-    private IDictionary<string, object>_userValues;
-    private IDictionary<string, string> _attributes;
+    private Dictionary<string, object>_userValues;
+    private Dictionary<string, string> _attributes;
 
     
     /// <summary>
     /// Values specified by the user.
     /// Used to replace values who support expression during runtime .
     /// </summary>
-    public IDictionary<string, object>UserValues
+    public Dictionary<string, object>UserValues
     {
         get => _userValues ??= new Dictionary<string, object>();
         set => _userValues = value;
@@ -36,7 +36,7 @@ public abstract class ComponentBase
     /// <summary>
     /// HTML attributes represented by key/value pairs
     /// </summary>
-    public IDictionary<string, string> Attributes
+    public Dictionary<string, string> Attributes
     {
         get => _attributes ??= new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
         set => _attributes = value;
@@ -64,7 +64,7 @@ public abstract class ComponentBase
         }
     }
 
-    public void SetAttr(IDictionary<string, object> values)
+    public void SetAttr(Dictionary<string, object> values)
     {
         if (values == null)
             return;
