@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -93,7 +94,7 @@ public class MasterDataStringLocalizer(
         var culture = Thread.CurrentThread.CurrentCulture.Name;
         var cacheKey = $"{ResourceName}_localization_strings_{culture}";
 
-        if (Cache.TryGetValue<Dictionary<string, string>>(cacheKey, out var cachedDictionary))
+        if (Cache.TryGetValue<FrozenDictionary<string, string>>(cacheKey, out var cachedDictionary))
         {
             return cachedDictionary.GetValueOrDefault(key, key);
         }
@@ -105,7 +106,7 @@ public class MasterDataStringLocalizer(
         return localizedStrings.GetValueOrDefault(key, key);
     }
 
-    private Dictionary<string, string> GetAllStringsAsDictionary()
+    private FrozenDictionary<string, string> GetAllStringsAsDictionary()
     {
         string culture = Thread.CurrentThread.CurrentCulture.Name;
 
@@ -125,12 +126,10 @@ public class MasterDataStringLocalizer(
             {
                 stringLocalizerValues[dbValue.Key] = dbValue.Value?.ToString() ?? string.Empty;
             }
-
-            return stringLocalizerValues;
         }
         
 
-        return stringLocalizerValues;
+        return stringLocalizerValues.ToFrozenDictionary();
     }
     
 
