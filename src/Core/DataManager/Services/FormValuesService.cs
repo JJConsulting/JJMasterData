@@ -56,6 +56,12 @@ public class FormValuesService(
         object? parsedValue = null;
         switch (field.Component)
         {
+            case FormComponent.Hour:
+                if (string.IsNullOrWhiteSpace(value))
+                    break;
+                
+                parsedValue = TimeSpan.Parse(value);
+                break;
             case FormComponent.Date:
             case FormComponent.DateTime:
                 if (string.IsNullOrWhiteSpace(value))
