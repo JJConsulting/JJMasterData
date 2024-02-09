@@ -10,9 +10,9 @@
 
 <div id="divSqlCommand" >
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
-        <label class="@BootstrapHelper.Label" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["PL-SQL Command"]">@StringLocalizer["Command.Sql"]</label>
+        <label asp-for="DataItem!.Command!.Sql" class="form-label"></label>
         <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
-        <div class="well" style="margin-bottom: 0px">
+        <div class="well" style="margin-bottom: 0">
             @Html.TextAreaFor(model => model.DataItem!.Command!.Sql, new { @class = "form-control", rows = "10" })
         </div>
     </div>

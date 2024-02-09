@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Azure;
 using JJMasterData.Commons.Security.Hashing;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
@@ -15,17 +16,19 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 internal class DataPanelLayout(JJDataPanel dataPanel)
 {
-    public string Name { get; set; } = dataPanel.Name;
+    private string Name { get; } = dataPanel.Name;
 
-    public bool RenderPanelGroup { get; set; } = dataPanel.RenderPanelGroup;
+    private bool RenderPanelGroup { get; } = dataPanel.RenderPanelGroup;
 
-    public FormElement FormElement { private get; set; } = dataPanel.FormElement;
+    private FormElement FormElement {  get; } = dataPanel.FormElement;
 
-    public DataPanelControl DataPanelControl { get; set; } = new(dataPanel);
-    public IFormValues FormValues { get; set; } = dataPanel.CurrentContext.Request.Form;
+    private DataPanelControl DataPanelControl { get; } = new(dataPanel);
+    private IFormValues FormValues { get;  } = dataPanel.CurrentContext.Request.Form;
 
-    public PageState PageState { get; set; } = dataPanel.PageState;
+    private PageState PageState { get; } = dataPanel.PageState;
 
+    private ExpressionsService ExpressionsService { get; } = dataPanel.ExpressionsService;
+    
     public async IAsyncEnumerable<HtmlBuilder> GetHtmlPanelList()
     {
         await foreach (var panel in GetTabPanels())
@@ -63,15 +66,14 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
     private async IAsyncEnumerable<HtmlBuilder> GetFieldsWithoutPanel()
     {
         bool dontContainsVisibleFields = !FormElement.Fields.ToList()
-            .Exists(x => x.PanelId == 0 & !x.VisibleExpression.Equals("val:0"));
+            .Exists(x => x.PanelId == 0 && ExpressionsService.GetBoolValue(x.VisibleExpression,DataPanelControl.FormStateData));
         
         if (dontContainsVisibleFields)
             yield break;
         
         if (!RenderPanelGroup)
-        {
             yield return await GetHtmlForm(null);
-        }
+        
         else
         {
             var card = new JJCard
@@ -111,7 +113,7 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
     {
         return dataPanel
             .ExpressionsService
-            .GetExpressionValue(expression, new FormStateData(dataPanel.Values, dataPanel.UserValues, PageState))
+            .GetExpressionValue(expression, DataPanelControl.FormStateData)
             ?.ToString() ?? string.Empty;
     }
 
@@ -177,18 +179,14 @@ internal class DataPanelLayout(JJDataPanel dataPanel)
 
     private bool IsEnabled(FormElementPanel panel)
     {
-        bool panelEnable = DataPanelControl.ExpressionsService.GetBoolValue(
-            panel.EnableExpression, DataPanelControl.FormState);
-
-        return panelEnable;
+        return DataPanelControl.ExpressionsService.GetBoolValue(
+            panel.EnableExpression, DataPanelControl.FormStateData);
     }
 
     private bool IsVisible(FormElementPanel panel)
     {
-        bool panelEnable = DataPanelControl.ExpressionsService.GetBoolValue(
-            panel.VisibleExpression, DataPanelControl.FormState);
-
-        return panelEnable;
+        return DataPanelControl.ExpressionsService.GetBoolValue(
+            panel.VisibleExpression, DataPanelControl.FormStateData);
     }
 
 }

@@ -276,7 +276,7 @@ public class JJDataPanel : AsyncComponent
         
         DataHelper.CopyIntoDictionary(Values, mergedValues, true);
 
-        return Values as Dictionary<string,object>;
+        return Values;
     }
 #if NETFRAMEWORK
     [Obsolete($"{SynchronousMethodObsolete.Message}Please use LoadValuesFromPkAsync")]

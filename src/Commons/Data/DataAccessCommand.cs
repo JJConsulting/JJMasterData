@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -24,6 +25,7 @@ public class DataAccessCommand
     public CommandType Type { get; set; }
 
     [JsonProperty("sql")]
+    [Display(Name = "Sql Command")]
     public string Sql { get; set; }
 
     [JsonProperty("parameters")]

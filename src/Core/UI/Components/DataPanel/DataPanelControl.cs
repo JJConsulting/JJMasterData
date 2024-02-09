@@ -36,13 +36,13 @@ internal class DataPanelControl
     
     public Dictionary<string, string> Errors { get; }
 
-    public PageState PageState => FormState.PageState;
+    public PageState PageState => FormStateData.PageState;
 
-    public Dictionary<string, object?>? UserValues => FormState.UserValues;
+    public Dictionary<string, object?>? UserValues => FormStateData.UserValues;
 
-    public Dictionary<string, object?> Values => FormState.Values;
+    public Dictionary<string, object?> Values => FormStateData.Values;
 
-    public FormStateData FormState { get; }
+    public FormStateData FormStateData { get; }
 
     public string? FieldNamePrefix { get; init; }
 
@@ -64,7 +64,7 @@ internal class DataPanelControl
         Name = dataPanel.Name;
         ExpressionsService = dataPanel.ExpressionsService;
         FieldNamePrefix = dataPanel.FieldNamePrefix;
-        FormState = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
+        FormStateData = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
     }
 
     public DataPanelControl(JJGridView gridView, Dictionary<string, object?> values)
@@ -81,7 +81,7 @@ internal class DataPanelControl
         ComponentFactory = gridView.ComponentFactory;
         ExpressionsService = gridView.ExpressionsService;
         FieldsService = gridView.FieldsService;
-        FormState = new FormStateData(values, gridView.UserValues, PageState.Filter);
+        FormStateData = new FormStateData(values, gridView.UserValues, PageState.Filter);
     }
 
     public Task<HtmlBuilder> GetHtmlForm(List<FormElementField> fields)

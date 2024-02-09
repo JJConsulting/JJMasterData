@@ -485,8 +485,8 @@
     <value>Comando</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Command.Sql" xml:space="preserve">
-    <value>Comando.Sql</value>
+  <data name="Sql Command" xml:space="preserve">
+    <value>Commando Sql</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Component" xml:space="preserve">

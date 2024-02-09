@@ -11,7 +11,7 @@ public abstract class ComponentBase
 {
     #region "Properties"
 
-    private Dictionary<string, object>_userValues;
+    private Dictionary<string, object> _userValues;
     private Dictionary<string, string> _attributes;
 
     
