@@ -384,7 +384,7 @@ ul.dropdown-menu.inner {
 }
 
 .scrollable-dropdown-menu .search-box-menu {
-    max-height: .15.625rem;
+    max-height: 15.625rem;
     overflow-y: auto;
 }
 
