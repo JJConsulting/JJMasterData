@@ -33,3 +33,37 @@ Check [NCalc wiki](https://github.com/ncalc/ncalc/wiki) for more information.
 ## Differences from DataTable.Compute
 - NCalc is a mathematical expressions evaluator not a SQL-like syntax parser
 - Better performance is expected
+
+## Executing C# code at your expressions
+You can execute C# code using the following example;
+
+Program.cs:
+
+```
+builder.Services.AddJJMasterDataWeb()
+.WithNCalcExpressionProvider(
+    new NCalcExpressionProviderOptions
+    {
+        ReplaceDefaultExpressionProvider = true,
+        AdditionalFunctions = [
+            (name, args) =>
+            {
+                args.Result = name switch
+                {
+                    "now" => DateTime.Now,
+                    "myawesomefunction" => MyCustomClass.Execute(args.Parameters[0], args.Parameters[1]),
+                     _ => args.Result
+                };
+            }
+        ]
+    }
+);
+
+
+> [!WARNING] 
+> NCalc send functions names in lower ase.
+```
+At your expression:
+```
+exp: myAwesomeFunction('{StringValue}',{IntValue})
+```
