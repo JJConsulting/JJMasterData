@@ -3894,4 +3894,19 @@
   <data name="Edit Action" xml:space="preserve">
     <value>Ação de Edição</value>
   </data>
+  <data name="Category" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Criado</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Nível</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>Vazio</value>
+  </data>
+  <data name="Critical" xml:space="preserve">
+    <value>Crítico</value>
+  </data>
 </root>
