@@ -1117,7 +1117,7 @@
     <value>Arquivo já está sendo usado por outro processo. Tente realizar o download na aba de "Arquivos gerados recentemente".</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="File name" xml:space="preserve">
+  <data name="File Name" xml:space="preserve">
     <value>Nome do Arquivo</value>
     <comment>JJMasterDataApi</comment>
   </data>
@@ -2450,7 +2450,7 @@
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="Several users can run this process simultaneously, but only see the log and one run of your process." xml:space="preserve">
-    <value>Vaáios usuários podem executar esse processo simultaneamente, porém visualiza apenas o log e uma execução do seu processo. </value>
+    <value>Vários usuários podem executar esse processo simultaneamente, porém visualiza apenas o log e uma execução do seu processo. </value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Show As Button" xml:space="preserve">
@@ -3908,5 +3908,11 @@
   </data>
   <data name="Critical" xml:space="preserve">
     <value>Crítico</value>
+  </data>
+  <data name="{0} Selected Files" xml:space="preserve">
+    <value>{0} Arquivos Selecionados</value>
+  </data>
+  <data name="Name of the file that will be downloaded by the user." xml:space="preserve">
+    <value>Nome do arquivo que será baixado pelo usuário.</value>
   </data>
 </root>

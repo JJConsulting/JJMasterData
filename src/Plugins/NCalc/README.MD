@@ -60,6 +60,7 @@ builder.Services.AddJJMasterDataWeb()
 );
 
 ```
+
 > [!WARNING] 
 > NCalc sends function names in lowercase.
 

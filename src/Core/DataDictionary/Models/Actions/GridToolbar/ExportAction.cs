@@ -1,4 +1,6 @@
 ﻿
+#nullable enable
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
@@ -13,7 +15,10 @@ public class ExportAction : GridToolbarAction
     [JsonProperty("processOptions")] 
     public ProcessOptions ProcessOptions { get; set; }
 
-
+    [JsonProperty("fileName")]
+    [Display(Name="File Name")]
+    public string? FileName { get; set; }
+    
     public ExportAction()
     {
         Name = ActionName;

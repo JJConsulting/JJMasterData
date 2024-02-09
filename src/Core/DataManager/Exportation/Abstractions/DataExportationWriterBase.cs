@@ -99,7 +99,7 @@ public abstract class DataExportationWriterBase(
     /// <summary>
     /// Get = Recupera o filtro atual<para/>
     /// </summary>
-    public Dictionary<string, object> CurrentFilter { get; set; } = new Dictionary<string, object>();
+    public Dictionary<string, object> CurrentFilter { get; set; } = new();
 
     /// <summary>
     /// Recupera a ordenação da tabela, 
@@ -244,14 +244,14 @@ public abstract class DataExportationWriterBase(
         }, token);
     }
 
-    public void Reporter(DataExportationReporter processReporter)
+    protected void Reporter(DataExportationReporter processReporter)
     {
         OnProgressChanged?.Invoke(this, processReporter);
     }
 
     public abstract Task GenerateDocument(Stream ms, CancellationToken token);
 
-    public string GetFileLink(FormElementField field, Dictionary<string, object> row, string value)
+    protected string GetFileLink(FormElementField field, Dictionary<string, object> row, string value)
     {
         if (!field.DataFile!.ExportAsLink)
             return null;
@@ -270,26 +270,35 @@ public abstract class DataExportationWriterBase(
 
     private string GetFilePath()
     {
-        string title;
-        if (!string.IsNullOrEmpty(FormElement.Title))
-            title = StringLocalizer[FormElement.Title].Value.Trim().ToLower();
+        string fileName;
+        var exportActionFileName = FormElement.Options.GridToolbarActions.ExportAction.FileName;
+        
+        if (!string.IsNullOrEmpty(exportActionFileName))
+            fileName = exportActionFileName;
+        
+        else if (!string.IsNullOrEmpty(FormElement.Title))
+            fileName = ExpressionsService.GetExpressionValue(FormElement.Title, new FormStateData()
+            {
+                Values = new Dictionary<string, object>(),
+                UserValues = new Dictionary<string, object>(),
+                PageState = PageState.List
+            })?.ToString() ?? string.Empty;
+        
         else if (!string.IsNullOrEmpty(FormElement.Name))
-            title = FormElement.Name.Trim().ToLower();
+            fileName = FormElement.Name.Trim().ToLower();
         else
-            title = "file";
+            fileName = "file";
 
-        title = StringManager.GetStringWithoutAccents(title);
+        fileName = StringManager.GetStringWithoutAccents(fileName);
 
         string[] escapeChars = ["/", "\\", "|", ":", "*", ">", "<", "+", "=", "&", "%", "$", "#", "@", " "];
 
         foreach (var @char in escapeChars)
-        {
-            title = title.Replace(@char, string.Empty);
-        }
+            fileName = fileName.Replace(@char, string.Empty);
 
-        title = HttpUtility.UrlEncode(title, Encoding.UTF8);
-        string ext = Configuration.FileExtension.ToString().ToLower();
+        fileName = HttpUtility.UrlEncode(fileName, Encoding.UTF8);
+        var extension = Configuration.FileExtension.ToString().ToLower();
 
-        return $"{title}_{DateTime.Now:yyyMMdd_HHmmss}.{ext}";
+        return $"{fileName}_{DateTime.Now:yyyMMdd_HHmmss}.{extension}";
     }
 }

@@ -1056,7 +1056,7 @@ public class JJGridView : AsyncComponent
         var modal = new JJModalDialog
         {
             Name = $"data-exportation-modal-{Name}",
-            Title = "Export"
+            Title = StringLocalizer["Export"]
         };
 
         return modal.GetHtmlBuilder();

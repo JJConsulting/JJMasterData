@@ -22,6 +22,13 @@
         </div>
         <div id="divExportAction" class="tab-pane fade">
             @await Html.PartialAsync("_ProcessOptions", Model.ProcessOptions)
+            <div class="row">
+                <div class=" col-sm-3">
+                    <label asp-for="FileName" class="form-label"></label>
+                    <tooltip title="@StringLocalizer["Name of the file that will be downloaded by the user."]"/>
+                    <input asp-for="FileName" class="form-control"/>
+                </div>
+            </div>
         </div>
         <div id="div-advanced" class="tab-pane fade">
             @await Html.PartialAsync("_NavAdvanced", Model)
