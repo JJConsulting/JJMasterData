@@ -59,10 +59,10 @@ builder.Services.AddJJMasterDataWeb()
     }
 );
 
-
-> [!WARNING] 
-> NCalc send functions names in lower ase.
 ```
+> [!WARNING] 
+> NCalc sends function names in lowercase.
+
 At your expression:
 ```
 exp: myAwesomeFunction('{StringValue}',{IntValue})
