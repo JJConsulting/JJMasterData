@@ -390,7 +390,9 @@ ul.dropdown-menu.inner {
 
 .search-box-menu{
     width: 100%;
+    min-width: 18.75rem !important;
 }
+
 /* _Menu Navbar */
 .navbar .nav-pills .nav-link.active {
     color: #fff !important
