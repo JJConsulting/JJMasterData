@@ -383,8 +383,8 @@ ul.dropdown-menu.inner {
     pointer-events: none !important;
 }
 
-#scrollable-dropdown-menu .tt-dropdown-menu {
-    max-height: 150px;
+.scrollable-dropdown-menu .search-box-menu {
+    max-height: .15.625rem;
     overflow-y: auto;
 }
 

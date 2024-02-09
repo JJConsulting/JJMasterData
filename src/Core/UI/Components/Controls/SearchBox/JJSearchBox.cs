@@ -93,7 +93,7 @@ public class JJSearchBox : ControlBase
         {
             if (Attributes.TryGetValue(TriggerLengthAttribute, out var attribute))
                 return int.Parse(attribute);
-            return 0;
+            return 1;
         }
         set => Attributes[TriggerLengthAttribute] = value.ToString();
     }
@@ -108,7 +108,7 @@ public class JJSearchBox : ControlBase
         {
             if (Attributes.TryGetValue(NumberOfItemsAttribute, out var attribute))
                 return int.Parse(attribute);
-            return 0;
+            return 10;
         }
         set => Attributes[NumberOfItemsAttribute] = value.ToString();
     }
@@ -119,16 +119,20 @@ public class JJSearchBox : ControlBase
     /// </summary>
     /// <remarks>
     /// Used to show scrollBar when there are too many match records and it's set to True.
-    /// If this option is set to true, the NumberOfItems value will be 100 and the HTML render menu will be set to:
+    /// If this option is set to true,the HTML menu will be set to:
     /// <code lang="html">
     /// <ul class="typeahead dropdown-menu" style="max-height:220px;overflow:auto;"></ul>
     /// </code>
     /// </remarks>
     public bool ScrollBar
     {
-        get =>
-            Attributes.ContainsKey(ScrollbarAttribute) &&
-            Attributes[ScrollbarAttribute].Equals("true");
+        get
+        {
+            if (!Attributes.ContainsKey(ScrollbarAttribute))
+                return true;
+            
+            return Attributes[ScrollbarAttribute].Equals("true");
+        }
         set
         {
             string booleanString = value ? "true" : "false";
@@ -225,7 +229,7 @@ public class JJSearchBox : ControlBase
         TriggerLength = 1;
         PlaceHolder = "Search...";
         NumberOfItems = 10;
-        ScrollBar = false;
+        ScrollBar = true;
         AutoReloadFormFields = true;
         Name = "jjsearchbox1";
         DataItem = new FormElementDataItem();
@@ -279,6 +283,8 @@ public class JJSearchBox : ControlBase
             input.WithAttributeIf(ReadOnly, "readonly", "readonly");
             input.WithAttributeIf(!Enabled, "disabled", "disabled");
             input.WithAttributes(Attributes);
+            input.WithAttribute(TriggerLengthAttribute, TriggerLength);
+            input.WithAttribute(NumberOfItemsAttribute, NumberOfItems);
             input.WithToolTip(Tooltip);
             input.WithCssClass("form-control jj-search-box");
             input.WithCssClassIf(string.IsNullOrEmpty(selectedValue), "jj-icon-search");

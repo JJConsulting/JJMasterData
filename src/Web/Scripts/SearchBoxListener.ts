@@ -7,7 +7,7 @@
             let numberOfItems = $(this).attr("number-of-items");
 
             if (triggerLength == null)
-                triggerLength = "3";
+                triggerLength = "1";
 
             if (numberOfItems == null)
                 numberOfItems = "10";
@@ -39,13 +39,13 @@
                 $(jjSearchBoxSelector).prev().attr("style","display:none")
                 $(jjSearchBoxSelector).css("background-color", '');
             });
+            let debounceTimer;
             
             $(this).typeahead({
                     hint: true,
                     highlight: true,
                     autoselect: true,
                     minLength: triggerLength,
-                    limit: numberOfItems,
                     classNames: {
                         dataset: "list-group",
                         cursor: "active",
@@ -54,24 +54,28 @@
                 },
                 {
                     displayKey: "description",
+                    limit: numberOfItems,
                     source: function (query, syncResults, asyncResults) {
-                        if(query.length == 0)
-                            return;
-                        
-                        FeedbackIcon.removeAllIcons(jjSearchBoxSelector);
-                        $(jjSearchBoxSelector).addClass("loading-circle");
-                        fetch(url, getRequestOptions())
-                            .then(response => response.json())
-                            .then(data => {
-                                $(jjSearchBoxSelector).removeClass("loading-circle");
-                                asyncResults(data);
-                            })
-                            .catch(error => {
-                                console.error(error);
-                                $(jjSearchBoxSelector).removeClass("loading-circle");
-                                FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.errorClass)
-                            })
+                        clearTimeout(debounceTimer);
+                        debounceTimer = setTimeout(function() {
+                            if (query.length == triggerLength)
+                                return;
+                            FeedbackIcon.removeAllIcons(jjSearchBoxSelector);
+                            $(jjSearchBoxSelector).addClass("loading-circle");
+                            fetch(url, getRequestOptions())
+                                .then(response => response.json())
+                                .then(data => {
+                                    $(jjSearchBoxSelector).removeClass("loading-circle");
+                                    asyncResults(data);
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                    $(jjSearchBoxSelector).removeClass("loading-circle");
+                                    FeedbackIcon.setIcon(jjSearchBoxSelector, FeedbackIcon.errorClass);
+                                });
+                        }, 250);
                     },
+
                     templates: {
                         suggestion: function (value) {
                             if(value.icon){
