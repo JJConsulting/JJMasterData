@@ -32,7 +32,8 @@ class ActionHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
         postFormValues({ url: urlBuilder.build(), success: data => {
-                document.getElementById(componentName).innerHTML = data;
+                HTMLHelper.setOuterHTML(componentName, data);
+                listenAllEvents("#" + componentName);
             } });
     }
     static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
