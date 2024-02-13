@@ -1425,12 +1425,14 @@ const listenAllEvents = (selectorPrefix = String()) => {
         $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
     }
     const responsiveTables = document.querySelector(selectorPrefix + '.table-responsive');
-    responsiveTables.addEventListener('show.bs.dropdown', () => {
-        responsiveTables.style.overflow = 'inherit';
-    });
-    responsiveTables.addEventListener('hide.bs.dropdown', () => {
-        responsiveTables.style.overflow = 'auto';
-    });
+    if (responsiveTables) {
+        responsiveTables.addEventListener('show.bs.dropdown', () => {
+            responsiveTables.style.overflow = 'inherit';
+        });
+        responsiveTables.addEventListener('hide.bs.dropdown', () => {
+            responsiveTables.style.overflow = 'auto';
+        });
+    }
     document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces);
     document.querySelector("form").addEventListener("submit", function (event) {
         let isValid;

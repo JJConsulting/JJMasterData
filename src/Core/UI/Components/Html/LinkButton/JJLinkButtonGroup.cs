@@ -28,22 +28,18 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
 
     internal override HtmlBuilder BuildHtml()
     {
-        var inputGroup = new HtmlBuilder(HtmlTag.Div)
+        var parentElement = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
-            .WithCssClass(BootstrapHelper.InputGroupBtn)
+            .WithCssClassIf(ShowAsButton,BootstrapHelper.InputGroupBtn)
             .WithCssClass(CssClass);
 
-        AddActionsAt(inputGroup);
+        AddActionsAt(parentElement);
 
         if (BootstrapHelper.Version is 5)
-        {
-            inputGroup.WithToolTip(MoreActionsText ?? StringLocalizer["More"]);
-            inputGroup.WithAttribute("data-bs-placement", "left");
-        }
-
+            parentElement.WithToolTip(MoreActionsText ?? StringLocalizer["More"]);
         
-        return inputGroup;
+        return parentElement;
     }
 
     internal void AddActionsAt(HtmlBuilder inputGroup)

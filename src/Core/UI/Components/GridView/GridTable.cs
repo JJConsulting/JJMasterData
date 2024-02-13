@@ -16,6 +16,7 @@ internal class GridTable(JJGridView gridView)
     public async Task<HtmlBuilder> GetHtmlBuilder()
     {
         var div = new HtmlBuilder(HtmlTag.Div);
+        div.WithCssClass("pt-1");
         div.WithCssClassIf(Settings.IsResponsive,  "table-responsive");
         
         var table = new HtmlBuilder(HtmlTag.Table);
