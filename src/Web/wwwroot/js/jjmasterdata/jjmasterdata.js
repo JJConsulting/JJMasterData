@@ -2358,7 +2358,7 @@ class TextFileHelper {
 }
 class TooltipListener {
     static listen(selectorPrefix) {
-        const tooltipTriggerList = document.querySelectorAll(selectorPrefix + '[data-bs-toggle="tooltip"], ' + selectorPrefix + '[data-bs-toggle-2="tooltip"]');
+        const tooltipTriggerList = document.querySelectorAll(selectorPrefix + '[data-bs-toggle="tooltip"]');
         tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }));
     }
 }
