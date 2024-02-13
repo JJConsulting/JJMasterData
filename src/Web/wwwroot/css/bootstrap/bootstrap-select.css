@@ -144,7 +144,11 @@
     margin-left: 0
 }
 
-    .bootstrap-select.dropdown-menu-right, .bootstrap-select[class*=col-].dropdown-menu-right, .row .bootstrap-select[class*=col-].dropdown-menu-right {
+    .bootstrap-select.dropdown-menu-right, .bootstrap-select[class*=col-].dropdown-menu-right, .row .bootstrap-select[class*=col-].dropdown-menu-end {
+        float: right
+    }
+
+    .bootstrap-select.dropdown-menu-end, .bootstrap-select[class*=col-].dropdown-menu-end, .row .bootstrap-select[class*=col-].dropdown-menu-end {
         float: right
     }
 

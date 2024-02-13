@@ -1424,6 +1424,13 @@ const listenAllEvents = (selectorPrefix = String()) => {
     else {
         $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
     }
+    const responsiveTables = document.querySelector(selectorPrefix + '.table-responsive');
+    responsiveTables.addEventListener('show.bs.dropdown', () => {
+        responsiveTables.style.overflow = 'inherit';
+    });
+    responsiveTables.addEventListener('hide.bs.dropdown', () => {
+        responsiveTables.style.overflow = 'auto';
+    });
     document.querySelectorAll(selectorPrefix + ".jj-numeric").forEach(applyDecimalPlaces);
     document.querySelector("form").addEventListener("submit", function (event) {
         let isValid;
@@ -2351,7 +2358,7 @@ class TextFileHelper {
 }
 class TooltipListener {
     static listen(selectorPrefix) {
-        const tooltipTriggerList = document.querySelectorAll(selectorPrefix + '[data-bs-toggle="tooltip"]');
+        const tooltipTriggerList = document.querySelectorAll(selectorPrefix + '[data-bs-toggle="tooltip"], ' + selectorPrefix + '[data-bs-toggle-2="tooltip"]');
         tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }));
     }
 }
