@@ -1239,7 +1239,7 @@ public class JJFormView : AsyncComponent
         
 
         if (ShowTitle && !IsInsertAtGridView)
-            panelHtml.PrependComponent(await GetTitleAsync());
+            panelHtml.PrependComponent(GetTitle(new FormStateData(DataPanel.Values, UserValues, PageState)));
 
         return new RenderedComponentResult(panelHtml);
     }
