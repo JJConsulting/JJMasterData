@@ -9,7 +9,6 @@ namespace JJMasterData.Core.UI.Html;
 
 public partial class HtmlBuilder
 {
-    
     public HtmlBuilder Prepend(HtmlBuilder? builder)
     {
         if (builder != null)
@@ -17,7 +16,6 @@ public partial class HtmlBuilder
 
         return this;
     }
-    
         
     public HtmlBuilder PrependComponent(HtmlComponent? component)
     {
@@ -26,7 +24,6 @@ public partial class HtmlBuilder
 
         return this;
     }
-
     
     /// <summary>
     /// Insert a HTML builder as a child of caller builder.
@@ -44,7 +41,6 @@ public partial class HtmlBuilder
     /// </summary>
     public HtmlBuilder AppendRange(IEnumerable<HtmlBuilder> htmlEnumerable)
     {
-        
         foreach (var item in htmlEnumerable)
             Append(item);
 
@@ -53,7 +49,6 @@ public partial class HtmlBuilder
     
     public async Task<HtmlBuilder> AppendRangeAsync(IAsyncEnumerable<HtmlBuilder> htmlAsyncEnumerable)
     {
-        
         await foreach (var item in htmlAsyncEnumerable)
             Append(item);
 

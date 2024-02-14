@@ -89,18 +89,16 @@ public class JJLinkButton : HtmlComponent
     internal override HtmlBuilder BuildHtml()
     {
         var icon = GetIcon();
-        var html = new HtmlBuilder(HtmlTag.A);
+        var html = new HtmlBuilder(Type is LinkButtonType.Submit or LinkButtonType.Button ? HtmlTag.Button : HtmlTag.A);
 
         if (Type == LinkButtonType.Submit)
         {
-            html.Tag!.TagName = HtmlTag.Button;
             html.WithAttribute("type", "submit");
             html.WithAttribute("formaction", UrlAction);
             html.WithAttributeIf(ShowAsButton, "role", "button");
         }
         else if (Type == LinkButtonType.Button)
         {
-            html.Tag!.TagName = HtmlTag.Button;
             html.WithAttribute("type", "button");
         }
         else

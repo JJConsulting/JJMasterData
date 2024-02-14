@@ -84,7 +84,7 @@ public partial class HtmlBuilder
     {
         return WithAttributeIf(condition, nameAndValue, nameAndValue);
     }
-
+    
     /// <summary>
     /// Set CSS classes attributes, if already exists it will be ignored.
     /// </summary>
@@ -98,7 +98,8 @@ public partial class HtmlBuilder
 
         var classList = new List<string>();
         classList.AddRange(_attributes["class"].Split(' '));
-        foreach (string cssClass in classes.Split(' '))
+        
+        foreach (var cssClass in classes.Split(' '))
         {
             if (!classList.Contains(cssClass))
                 classList.Add(cssClass);

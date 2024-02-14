@@ -2,8 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+
 
 namespace JJMasterData.Core.UI.Html;
 
@@ -23,7 +23,7 @@ public partial class HtmlBuilder
     /// <summary>
     /// Tag of the current builder.
     /// </summary>
-    public HtmlBuilderTag? Tag { get; }
+    private HtmlBuilderTag? Tag { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HtmlBuilder"/> class.
@@ -51,7 +51,6 @@ public partial class HtmlBuilder
     {
         Tag = new HtmlBuilderTag(tag);
     }
-
     
     /// <summary>
     /// Renders the instance to a String
@@ -60,7 +59,6 @@ public partial class HtmlBuilder
     {
         return ParseHtmlAsString(0);
     }
-
     
     /// <summary>
     /// Gets current builder HTML.
@@ -68,14 +66,14 @@ public partial class HtmlBuilder
     /// <param name="indentHtml">Generate html with indentation?</param>
     public string ToString(bool indentHtml)
     {
-        int tabCount = indentHtml ? 1 : 0;
+        var tabCount = indentHtml ? 1 : 0;
         return ParseHtmlAsString(tabCount);
     }
 
     private string ParseHtmlAsString(int tabCount)
     {
         var html = new StringBuilder();
-
+        
         if (tabCount > 0)
         {
             html.AppendLine().Append(' ', tabCount * 2);
@@ -140,22 +138,12 @@ public partial class HtmlBuilder
         {
             attributes.AppendFormat(" {0}=\"{1}\"", item.Key, item.Value);
         }
+        
         return attributes.ToString();
     }
+    
     public string GetAttribute(string key)
     {
         return _attributes[key];
-    }
-    public IEnumerable<HtmlBuilder> GetChildren()
-    {
-        return _children.ToList();
-    } 
-    public IEnumerable<HtmlBuilder> GetChildren(HtmlTag tagName)
-    {
-        return _children.Where(x => x.Tag?.TagName == tagName);
-    }
-    public string? GetRawText()
-    {
-        return _rawText;
     }
 }
