@@ -1849,7 +1849,7 @@
     <value>Adicionar</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="New action" xml:space="preserve">
+  <data name="New Action" xml:space="preserve">
     <value>Nova Ação</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -3916,5 +3916,14 @@
   </data>
   <data name="Choose" xml:space="preserve">
     <value>Escolha</value>
+  </data>
+  <data name="[{0}]: Valued boolean expression cannot contain boolean operators." xml:space="preserve">
+    <value>[{0}]: Expressão booleana de valor não pode conter operadores booleanos.</value>
+  </data>
+  <data name="Field Map" xml:space="preserve">
+    <value>Mapa dos Campos</value>
+  </data>
+  <data name="Plugin Configuration" xml:space="preserve">
+    <value>Configuração do Plugin</value>
   </data>
 </root>

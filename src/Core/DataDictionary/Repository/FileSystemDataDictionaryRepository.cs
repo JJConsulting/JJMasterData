@@ -22,7 +22,7 @@ public class FileSystemDataDictionaryRepository
     public string FolderPath { get; } = options.Value.FolderPath;
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadataList"/>
-    public IEnumerable<FormElement> GetMetadataList(bool? sync = null)
+    public List<FormElement> GetMetadataList(bool? sync = null)
     {
         var list = new List<FormElement>();
         var dir = new DirectoryInfo(FolderPath);
@@ -52,14 +52,14 @@ public class FileSystemDataDictionaryRepository
         return list;
     }
 
-    public Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiSync = null)
+    public Task<List<FormElement>> GetFormElementListAsync(bool? apiSync = null)
     {
         var result = GetMetadataList();
         return Task.FromResult(result);
     }
 
     ///<inheritdoc cref="IDataDictionaryRepository.GetNameList"/>
-    public IEnumerable<string> GetNameList()
+    public List<string> GetNameList()
     {
         var list = new List<string>();
         var dir = new DirectoryInfo(FolderPath);
@@ -80,14 +80,11 @@ public class FileSystemDataDictionaryRepository
         return list;
     }
 
-    public async IAsyncEnumerable<string> GetNameListAsync()
+    public Task<List<string>> GetNameListAsync()
     {
         var names = GetNameList();
 
-        foreach (var name in names)
-        {
-            yield return await Task.FromResult(name);
-        }
+        return Task.FromResult(names);
     }
     
 

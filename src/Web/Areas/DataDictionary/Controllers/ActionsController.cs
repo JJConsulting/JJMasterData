@@ -403,11 +403,11 @@ public class ActionsController(ActionsService actionsService,
         ViewBag.FieldName = fieldName!;
         var formElement = await actionsService.GetFormElementAsync(elementName);
         ViewBag.FormElement = formElement;
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(actionsService.GetAutocompleteHintsList(formElement, includeAdditionalHints:false));
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement, includeAdditionalHints:false));
 
         if (basicAction is InternalAction internalAction)
         {
-            ViewBag.ElementNameList = await actionsService.GetElementListAsync();
+            ViewBag.ElementNameList = (await actionsService.GetElementsDictionaryAsync()).OrderBy(n=>n.Key).ToList();
             ViewBag.InternalFieldList = await actionsService.GetFieldList(elementName);
             var elementNameRedirect = internalAction.ElementRedirect.ElementNameRedirect;
             ViewBag.RedirectFieldList = await actionsService.GetFieldList(elementNameRedirect);

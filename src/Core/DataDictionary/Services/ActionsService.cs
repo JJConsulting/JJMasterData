@@ -154,12 +154,12 @@ public class ActionsService(IValidationDictionary validationDictionary,
     {
         if (string.IsNullOrWhiteSpace(action.VisibleExpression))
             AddError(nameof(action.VisibleExpression), StringLocalizer["Required [VisibleExpression] field"]);
-        else if (!ValidateExpression(action.VisibleExpression, expressionProviders.GetBooleanProvidersPrefixes()))
+        else if (!ValidateExpression(action.VisibleExpression, expressionProviders.GetSyncProvidersPrefixes()))
             AddError(nameof(action.VisibleExpression), StringLocalizer["Invalid [VisibleExpression] field"]);
 
         if (string.IsNullOrWhiteSpace(action.EnableExpression))
             AddError(nameof(action.EnableExpression), "Required [EnableExpression] field");
-        else if (!ValidateExpression(action.EnableExpression, expressionProviders.GetBooleanProvidersPrefixes()))
+        else if (!ValidateExpression(action.EnableExpression, expressionProviders.GetSyncProvidersPrefixes()))
             AddError(nameof(action.EnableExpression), "Invalid [EnableExpression] field");
 
         switch (action)

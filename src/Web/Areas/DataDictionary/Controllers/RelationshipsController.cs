@@ -164,9 +164,9 @@ public class RelationshipsController(RelationshipsService relationshipsService,
 
     private async Task<List<SelectListItem>> GetElementsSelectList(string childElementName)
     {
-        IEnumerable<string> list = await relationshipsService.DataDictionaryRepository.GetNameListAsync().ToListAsync();
+        var list = await relationshipsService.DataDictionaryRepository.GetNameListAsync();
 
-        var selectList = list.Select(name => new SelectListItem(name, name)).ToList();
+        var selectList = list.Select(name => new SelectListItem(name, name)).OrderBy(n=>n.Text).ToList();
 
         if (string.IsNullOrEmpty(childElementName))
         {
@@ -213,7 +213,7 @@ public class RelationshipsController(RelationshipsService relationshipsService,
 
         var relationship = formElement.Relationships.GetById(id);
         
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(relationshipsService.GetAutocompleteHintsList(formElement));
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement));
         
         return new RelationshipsLayoutDetailsViewModel(elementName, "Relationships")
         {

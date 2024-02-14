@@ -156,12 +156,13 @@
 
     private string GetEditScript(BasicAction action)
     {
+        var actionName = StringLocalizer[action.Text ?? action.Tooltip ?? action.Name];
         var script = new StringBuilder();
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Edit", "Actions",
             new { elementName = Model.ElementName, actionName = action.Name, context = Model.Source, fieldName = Model.FieldName }));
-        script.Append($"','{Model.Source.ToString().FirstCharToUpper()}");
-        script.Append($" Action', {(int)ModalSize.ExtraLarge}");
+        script.Append("','");
+        script.Append($" {StringLocalizer[actionName]}', {(int)ModalSize.ExtraLarge}");
         script.Append(");");
 
         return script.ToString();
@@ -173,8 +174,8 @@
         script.Append("defaultModal.showIframe('");
         script.Append(Url.Action("Add", "Actions",
             new { elementName = Model.ElementName, actionType = actionType.Name, context = Model.Source, fieldName = Model.FieldName, pluginId }));
-        script.Append($"','{Model.Source.ToString().FirstCharToUpper()}");
-        script.Append($" Action',{(int)ModalSize.ExtraLarge}");
+        script.Append("','");
+        script.Append($"{StringLocalizer["New Action"]}',{(int)ModalSize.ExtraLarge}");
         script.Append(");");
 
         return script.ToString();
