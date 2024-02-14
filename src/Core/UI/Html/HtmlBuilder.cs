@@ -74,7 +74,7 @@ public partial class HtmlBuilder
     {
         var html = new StringBuilder();
         
-        if (tabCount > 0)
+        if (tabCount > 0 && !_hasRawText)
         {
             html.AppendLine().Append(' ', tabCount * 2);
         }
