@@ -19,7 +19,7 @@
 
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divReplaceTextOnGrid">
+    <div class="@BootstrapHelper.FormGroup col-sm-4 required" id="divReplaceTextOnGrid">
         <label class="@BootstrapHelper.Label " asp-for="DataItem!.GridBehavior"></label>
         <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
               <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
@@ -36,7 +36,7 @@
     @if (Model.Component is FormComponent.ComboBox)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divFirstOption">
-            <label class="@BootstrapHelper.Label">@StringLocalizer["First Option Mode"]</label>
+            <label class="@BootstrapHelper.Label" asp-for="DataItem!.FirstOption"></label>
             <select asp-for="DataItem!.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
         </div>
     }

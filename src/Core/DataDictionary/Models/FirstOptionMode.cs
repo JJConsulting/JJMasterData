@@ -1,22 +1,27 @@
-﻿namespace JJMasterData.Core.DataDictionary.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JJMasterData.Core.DataDictionary.Models;
 
 /// <summary>
-/// Primeira opção na JJComboBox
+/// First option at a ComboBox
 /// </summary>
 public enum FirstOptionMode
 {
     /// <summary>
-    /// Somente os registros da lista
+    /// No first option.
     /// </summary>
+    [Display(Name="None")]
     None = 1,
 
-    /// <summary>
-    /// Incluir como primeira opção valor: (Todos)
+    /// <summary>f
+    /// Show (All) at the first option
     /// </summary>
+    [Display(Name="All")]
     All = 2,
 
     /// <summary>
-    /// Incluir como primeira opçãoo valor: (Selecione)
+    /// Show (Choose) at the first option
     /// </summary>
+    [Display(Name="Choose")]
     Choose = 3
 }
