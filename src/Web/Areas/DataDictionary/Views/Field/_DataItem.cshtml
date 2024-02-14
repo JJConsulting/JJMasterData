@@ -19,7 +19,7 @@
 
     </div>
 
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required" id="divReplaceTextOnGrid">
+    <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divReplaceTextOnGrid">
         <label class="@BootstrapHelper.Label " asp-for="DataItem!.GridBehavior"></label>
         <tooltip title="@StringLocalizer["In any option except Id, every row will be evaluated at runtime."]"/>
               <select asp-for="DataItem!.GridBehavior" class="form-control form-select">
@@ -35,7 +35,7 @@
 
     @if (Model.Component is FormComponent.ComboBox)
     {
-        <div class="@BootstrapHelper.FormGroup col-sm-2 required" id="divFirstOption">
+        <div class="@BootstrapHelper.FormGroup col-sm-3 required" id="divFirstOption">
             <label class="@BootstrapHelper.Label" asp-for="DataItem!.FirstOption"></label>
             <select asp-for="DataItem!.FirstOption" class="form-control form-select" asp-items="Html.GetEnumSelectList<FirstOptionMode>()"></select>
         </div>
@@ -47,7 +47,7 @@
 
     @if (Model.Component is FormComponent.RadioButtonGroup)
     {
-        <div class="@BootstrapHelper.FormGroup col-sm-2 required">
+        <div class="@BootstrapHelper.FormGroup col-sm-3 required">
             <label class="@BootstrapHelper.Label " asp-for="DataItem!.RadioLayout"></label>
             <select asp-for="DataItem!.RadioLayout" class="form-control form-select" asp-items="Html.GetEnumSelectList<DataItemRadioLayout>()"></select>
         </div>
