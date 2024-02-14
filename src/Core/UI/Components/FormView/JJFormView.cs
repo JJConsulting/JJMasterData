@@ -805,9 +805,14 @@ public class JJFormView : AsyncComponent
         switch (PageState)
         {
             case PageState.Insert:
+            {
+                formValues ??= new Dictionary<string, object?>();
+                DataHelper.CopyIntoDictionary(formValues,RelationValues!);
                 return await GetFormResult(
-                    new FormContext(new Dictionary<string,object?>(RelationValues!), PageState),
+                    new FormContext(formValues, PageState),
                     false);
+            }
+
             case PageState.Update or PageState.View:
             {
                 formValues ??= await GetFormValuesAsync();
@@ -1267,7 +1272,7 @@ public class JJFormView : AsyncComponent
 
         formHtml.AppendComponent(await GetFormToolbarAsync(topToolbarActions));
         
-        if(!IsInsertAtGridView || IsInsertAtGridView && DataPanel.Errors.Count != 0)
+        if(IsInsertAtGridView && DataPanel.Errors.Count != 0)
             DataPanel.Values = await DataPanel.GetFormValuesAsync();
             
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
