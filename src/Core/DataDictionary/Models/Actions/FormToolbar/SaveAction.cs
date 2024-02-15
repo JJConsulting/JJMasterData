@@ -11,6 +11,11 @@ public class SaveAction : FormToolbarAction
 {
     public const string ActionName = "save";
 
+    public FormEnterKey EnterKeyBehavior { get; set; }
+    
+    [Display(Name = "Submit On Save")]
+    public bool SubmitOnSave { get; set; }
+    
     public SaveAction()
     {
         Order = 1;
@@ -18,12 +23,8 @@ public class SaveAction : FormToolbarAction
         Icon = IconType.Check;
         Text = "Save";
         Location = FormToolbarActionLocation.Panel;
+        Color = PanelColor.Primary;
         ShowAsButton = true;
         VisibleExpression = "exp: '{PageState}' <> 'View'";
     }
-
-    public FormEnterKey EnterKeyBehavior { get; set; }
-    
-    [Display(Name = "Submit On Save")]
-    public bool SubmitOnSave { get; set; }
 }

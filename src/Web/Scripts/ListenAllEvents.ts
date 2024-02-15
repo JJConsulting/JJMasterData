@@ -23,7 +23,7 @@
     Inputmask().mask(document.querySelectorAll("input"));
     
     if(bootstrapVersion === 5){
-        TooltipListener.listen(selectorPrefix)
+        TooltipHelper.listen(selectorPrefix)
     }else{
         $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
     }

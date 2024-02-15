@@ -13,7 +13,7 @@ public class CancelAction : FormToolbarAction
     public CancelAction()
     {
         Name = ActionName;
-        Icon = IconType.Times;
+        Icon = IconType.SolidXmark;
         VisibleExpression = "exp: '{PageState}' = 'Insert' OR '{PageState}' = 'Update'";
         Order = 0;
         Location = FormToolbarActionLocation.Panel;

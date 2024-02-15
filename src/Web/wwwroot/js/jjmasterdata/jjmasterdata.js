@@ -32,6 +32,7 @@ class ActionHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
         postFormValues({ url: urlBuilder.build(), success: data => {
+                TooltipHelper.dispose("#" + componentName);
                 HTMLHelper.setOuterHTML(componentName, data);
                 listenAllEvents("#" + componentName);
             } });
@@ -172,6 +173,7 @@ class ActionHelper {
                 urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
                 postFormValues({ url: urlBuilder.build(), success: (data) => {
                         if (typeof data === "string") {
+                            TooltipHelper.dispose("#" + componentName);
                             HTMLHelper.setOuterHTML(componentName, data);
                             listenAllEvents("#" + componentName);
                         }
@@ -995,6 +997,7 @@ class FormViewHelper {
         postFormValues({
             url: url,
             success: (data) => {
+                TooltipHelper.dispose("#" + componentName);
                 HTMLHelper.setInnerHTML(componentName, data);
                 listenAllEvents("#" + componentName);
             }
@@ -1256,6 +1259,7 @@ class GridViewHelper {
                 const gridViewTableElement = document.querySelector("#grid-view-table-" + componentName);
                 const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
                 if (gridViewTableElement) {
+                    TooltipHelper.dispose("#" + componentName);
                     gridViewTableElement.outerHTML = data;
                     listenAllEvents("#" + componentName);
                     if (filterActionElement) {
@@ -1419,7 +1423,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     SliderListener.listenInputs(selectorPrefix);
     Inputmask().mask(document.querySelectorAll("input"));
     if (bootstrapVersion === 5) {
-        TooltipListener.listen(selectorPrefix);
+        TooltipHelper.listen(selectorPrefix);
     }
     else {
         $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
@@ -2358,9 +2362,16 @@ class TextFileHelper {
         }
     }
 }
-class TooltipListener {
+class TooltipHelper {
+    static dispose(selectorPrefix) {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll(selectorPrefix + ' [data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            const bootstrapTooltip = bootstrap.Tooltip.getOrCreateInstance(tooltipTriggerEl);
+            bootstrapTooltip.dispose();
+        });
+    }
     static listen(selectorPrefix) {
-        const tooltipTriggerList = document.querySelectorAll(selectorPrefix + '[data-bs-toggle="tooltip"]');
+        const tooltipTriggerList = document.querySelectorAll(selectorPrefix + ' [data-bs-toggle="tooltip"]');
         tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }));
     }
 }

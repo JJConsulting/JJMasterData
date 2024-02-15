@@ -319,60 +319,13 @@
             }
         </div>
         <div class="col-sm-12 jjtoolbar">
-
-            @{
-                Save();
+            <link-button text="Save" color="Primary" icon="Check" on-client-click="save()"/>
+            <link-button text="Refresh" icon="Refresh"  url-action="@Url.Action("Index", new { elementName = ViewBag.ElementName, fieldName = Model.Name })"/>
+            @if (!isCustomizedField)
+            {
+                <link-button text="Delete" icon="SolidTrashCan" url-action="@Url.Action("Delete", new { elementName = ViewBag.ElementName, fieldName = Model.Name })"/>
             }
-            @{
-                Refresh();
-            }
-            @{
-                @if (!isCustomizedField)
-                {
-                    Delete();
-                }
-            }
-            @{
-                Copy();
-            }
+            <link-button text="Copy"  icon="FilesO" on-client-click="copy()"/>
         </div>
     </div>
 </div>
-
-
-
-@functions{
-
-    void Save()
-    {
-        <button type="button" class="btn btn-primary btn-small" onclick="save();">
-            <span class="fa fa-check"></span>
-            <span>&nbsp;@StringLocalizer["Save"]</span>
-        </button>
-    }
-
-    void Refresh()
-    {
-        <a class="btn btn-default btn-small" href="@Url.Action("Index", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
-            <span class="fa fa-refresh fa-fw fa-fw"></span>
-            <span>@StringLocalizer["Refresh"]</span>
-        </a>
-    }
-
-    void Delete()
-    {
-        <a class="btn btn-default btn-small" href="@Url.Action("Delete", new { elementName = ViewBag.ElementName, fieldName = Model.Name })">
-            <span class="fa fa-trash"></span>
-            <span>@StringLocalizer["Delete"]</span>
-        </a>
-    }
-
-    void Copy()
-    {
-        <button type="button" class="btn btn-default btn-small" onclick="copy();">
-            <span class="fa fa-files-o fa-fw fa-fw"></span>
-            <span>&nbsp;@StringLocalizer["Copy"]</span>
-        </button>
-    }
-
-}

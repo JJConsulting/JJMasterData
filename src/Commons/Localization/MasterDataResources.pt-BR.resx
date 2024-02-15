@@ -3926,4 +3926,10 @@
   <data name="Plugin Configuration" xml:space="preserve">
     <value>Configuração do Plugin</value>
   </data>
+  <data name="Edit Relation" xml:space="preserve">
+    <value>Editar Relação</value>
+  </data>
+  <data name="Add Relationship" xml:space="preserve">
+    <value>Adicionar Relacionamento</value>
+  </data>
 </root>

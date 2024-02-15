@@ -200,7 +200,7 @@ internal class GridFilter(JJGridView gridView)
         btnDoFilter.Enabled = GridView.EnableFilter;
         btnDoFilter.Text = GridView.StringLocalizer["Filter"];
         btnDoFilter.IconClass = "fa fa-search";
-        btnDoFilter.Type = LinkButtonType.Submit;
+        btnDoFilter.ShowAsButton = true;
         btnDoFilter.OnClientClick = $"{GridView.Scripts.GetFilterScript()};return false;";
 
         var btnCancel = GridView.ComponentFactory.Html.LinkButton.Create();

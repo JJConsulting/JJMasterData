@@ -1,8 +1,10 @@
+using System.ComponentModel;
 using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Components;
 using Microsoft.AspNetCore.Razor.TagHelpers;
+
 
 namespace JJMasterData.Web.TagHelpers;
 
@@ -20,8 +22,11 @@ public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory) : Ta
     [HtmlAttributeName("enabled")]
     public bool? Enabled { get; set; }
     
+    [HtmlAttributeName("color")]
+    public PanelColor Color { get; set; }
+    
     [HtmlAttributeName("text")]
-    [LocalizationRequired]
+    [Localizable(false)]
     public string? Text { get; set; }
     
     [HtmlAttributeName("tooltip")]
@@ -34,18 +39,23 @@ public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory) : Ta
     [HtmlAttributeName("css-class")]
     public string? CssClass { get; set; }
 
+    [HtmlAttributeName("show-as-button")] 
+    public bool ShowAsButton { get; set; } = true;
+
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var link = htmlComponentFactory.LinkButton.Create();
         link.Text = Text;
+        link.Color = Color;
         link.IconClass = Icon.GetCssClass();
         link.UrlAction = UrlAction;
         link.OnClientClick = OnClientClick;
+        link.ShowAsButton = ShowAsButton;
         link.Enabled = Enabled ?? true;
         link.Type = Type ?? LinkButtonType.Button;
         link.Tooltip = Tooltip;
         link.CssClass = CssClass;
-
+        
         output.TagMode = TagMode.StartTagAndEndTag;
         output.Content.SetHtmlContent(link.GetHtml());
 

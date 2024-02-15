@@ -15,7 +15,7 @@ public class DeleteAction : GridTableAction
         Name = ActionName;
         Tooltip = "Delete";
         ConfirmationMessage = "Would you like to delete this record?";
-        Icon = IconType.Trash;
+        Icon = IconType.SolidTrashCan;
         Order = 3;
     }
 }

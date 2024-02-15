@@ -42,11 +42,11 @@
     <li id="nav-general" class="nav-item active">
         <a class="nav-link active" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
     </li>
- 
+
     <li id="navBehavior" class="nav-item">
         <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#divBehavior">@StringLocalizer["Behavior"]</a>
     </li>
-    
+
     <li id="nav-advanced" class="nav-item">
         <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
     </li>
@@ -63,38 +63,37 @@
         <div id="div-general" class="tab-pane fade in active @(BootstrapHelper.Version > 3 ? "show" : string.Empty)">
             <partial name="../Panel/_DetailData" model="Model.Panel"/>
         </div>
-        
-     
+
+
         <div id="divBehavior" class="tab-pane fade">
             <div class="row mb-3">
-                   @if (!Model.IsParent)
-                     {
-                         <div class="col-sm-6">
-                             <label asp-for="ViewType"></label>
-                             <select class="form-control form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
-                         </div>
-                     }
-                    <div class="col-sm-6" id="editModeDiv">
-                          <label asp-for="EditModeOpenByDefault"></label>
-                          <checkbox for="EditModeOpenByDefault" switch="true"/>
+                @if (!Model.IsParent)
+                {
+                    <div class="col-sm-6">
+                        <label asp-for="ViewType"></label>
+                        <select class="form-control form-select" asp-for="ViewType" asp-items="Html.GetEnumSelectList<RelationshipViewType>()"></select>
                     </div>
-                      @if (!Model.IsParent)
-                      {
-                          <div style="margin-top: 5px" class="col-sm-12">
-                              <alert color="Info" title="@StringLocalizer["Help"]" icon="IconType.InfoCircle">
-                                  <ul>
-                                      <li>@StringLocalizer["None - The relationship is hidden and not rendered in any component."]</li>
-                                      <li>@StringLocalizer["List - The relationship is shown in a list with the actions controlled by the respective Data Dictionary (1xn)."]</li>
-                                      <li>@StringLocalizer["View - The relationship is shown in a read-only form (1x1)."]</li>
-                                      <li>@StringLocalizer["Update - The relationship is shown in an updatable form (1x1)."]</li>
-                                  </ul>
-                              </alert>
-                          </div>
-                      }
+                }
+                <div class="col-sm-6" id="editModeDiv">
+                    <label asp-for="EditModeOpenByDefault"></label>
+                    <checkbox for="EditModeOpenByDefault" switch="true"/>
+                </div>
+                @if (!Model.IsParent)
+                {
+                    <div style="margin-top: 5px" class="col-sm-12">
+                        <alert color="Info" title="@StringLocalizer["Help"]" icon="IconType.InfoCircle">
+                            <ul>
+                                <li>@StringLocalizer["None - The relationship is hidden and not rendered in any component."]</li>
+                                <li>@StringLocalizer["List - The relationship is shown in a list with the actions controlled by the respective Data Dictionary (1xn)."]</li>
+                                <li>@StringLocalizer["View - The relationship is shown in a read-only form (1x1)."]</li>
+                                <li>@StringLocalizer["Update - The relationship is shown in an updatable form (1x1)."]</li>
+                            </ul>
+                        </alert>
+                    </div>
+                }
 
             </div>
         </div>
-        
 
 
         <div id="div-advanced" class="tab-pane fade">
@@ -103,29 +102,22 @@
 
         <div class="row">
             <div class="col-sm-12">
-                <button class="btn btn-default btn-small" type="button" onclick="saveForm()">
-                    <span class="fa fa-check"></span>
-                    <span>&nbsp;@StringLocalizer["Save"]</span>
-                </button>
-
-                <button type="button" class="btn btn-default btn-small" onclick="window.parent.defaultModal.hide();">
-                    <span class="fa fa-times"></span>
-                    <span>&nbsp;@StringLocalizer["Cancel"]</span>
-                </button>
+                <link-button color="Primary" text="Save" icon="Check" on-client-click="saveForm();"/>
+                <link-button icon="SolidXmark" text="Cancel" on-client-click="window.parent.defaultModal.hide();;"/>
             </div>
         </div>
     </div>
-    
+
     <br/>
     <div class="row">
         <div id="divError" class="col-sm-12">
 
         </div>
     </div>
-    
+
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
-            const relationshipViewTypeSelect = document.getElementById('@Html.IdFor(m=>m.ViewType)');
+            const relationshipViewTypeSelect = document.getElementById('@Html.IdFor(m => m.ViewType)');
         
             const editModeDiv = document.getElementById('editModeDiv');
         

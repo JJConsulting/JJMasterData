@@ -173,6 +173,7 @@ class GridViewHelper {
                 const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
 
                 if (gridViewTableElement) {
+                    TooltipHelper.dispose("#" + componentName)
                     gridViewTableElement.outerHTML = data;
                     
                     listenAllEvents("#" + componentName);

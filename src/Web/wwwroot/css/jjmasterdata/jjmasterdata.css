@@ -800,3 +800,7 @@ input.form-control:read-only {
     background-position: right calc(.375em + .1875rem) center;
     background-size: calc(.75em + .375rem) calc(.75em + .375rem);
 }
+
+.icon-link-hover{
+    --bs-icon-link-transform: translate3d(0, -.125rem, 0);
+}
