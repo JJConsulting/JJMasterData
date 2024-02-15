@@ -25,7 +25,6 @@ public class FormController(IFormElementComponentFactory<JJFormView> formViewFac
     private void ConfigureFormView(JJFormView formView)
     {
         var userId = HttpContext.GetUserId();
-        formView.GridView.EnableEditMode = true;
 
         if (userId == null) 
             return;
