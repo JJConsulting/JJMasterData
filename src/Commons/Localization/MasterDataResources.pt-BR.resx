@@ -2141,8 +2141,8 @@
     <value>Arquivos gerados recentemente</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Record added successfully" xml:space="preserve">
-    <value>Registro incluído com sucesso</value>
+  <data name="Record added successfully." xml:space="preserve">
+    <value>Registro incluído com sucesso.</value>
     <comment>JJMasterDataApi</comment>
   </data>
   <data name="Record already registered." xml:space="preserve">
@@ -3925,5 +3925,11 @@
   </data>
   <data name="Plugin Configuration" xml:space="preserve">
     <value>Configuração do Plugin</value>
+  </data>
+  <data name="Success Message" xml:space="preserve">
+    <value>Mensagem de Sucesso</value>
+  </data>
+  <data name="It will be shown when the form is reopened or the form is next to the grid." xml:space="preserve">
+    <value>Será mostrada quando o form for reaberto ou o formulário estar com a grid.</value>
   </data>
 </root>

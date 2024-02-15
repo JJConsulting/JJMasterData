@@ -37,10 +37,14 @@ public class InsertAction : GridToolbarAction, IModalAction
     [Display(Name = "Modal Title")]
     public string ModalTitle { get; set; }
     
+    [Display(Name = "Success Message")]
+    public string SuccessMessage { get; set; }
+
     public InsertAction()
     {
         Name = ActionName;
         Text = "New";
+        SuccessMessage = "Record added successfully.";
         Icon = IconType.PlusCircle;
         ShowAsButton = true;
         Order = 1;
