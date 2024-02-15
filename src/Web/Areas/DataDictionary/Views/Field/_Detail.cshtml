@@ -134,7 +134,7 @@
                 <div class="@BootstrapHelper.FormGroup col-sm-2">
                     <label class="@BootstrapHelper.Label " asp-for="Size"></label>
                     <tooltip title="@StringLocalizer["Field size. Use -1 to use the MAX keyword."]"/>
-                    @Html.TextBoxFor(model => model.Size, new { @class = "form-control" })
+                    <input asp-for="Size" class="form-control"/>
                 </div>
                 <div class="col-sm-3">
                     <div class="row">

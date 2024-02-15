@@ -5,6 +5,7 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Extensions;
+using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -13,6 +14,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class FieldController(FieldService fieldService)
     : DataDictionaryController
 {
+    [ImportModelState]
     public async Task<IActionResult> Index(string elementName, string? fieldName)
     {
         var formElement = await fieldService.GetFormElementAsync(elementName);
@@ -68,6 +70,7 @@ public class FieldController(FieldService fieldService)
     }
 
     [HttpPost]
+    [ExportModelState]
     public async Task<IActionResult> Save(string elementName, FormElementField field, string? originalName)
     {
         RecoverCustomAttibutes(ref field);
@@ -204,7 +207,7 @@ public class FieldController(FieldService fieldService)
         ViewBag.MenuId = "Fields";
         ViewBag.FormElement = formElement;
         ViewBag.ElementName = formElement.Name;
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(fieldService.GetAutocompleteHintsList(formElement));
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement));
         ViewBag.MaxRequestLength = GetMaxRequestLength();
         ViewBag.FieldName = field.Name;
         ViewBag.Fields = formElement.Fields;
@@ -217,7 +220,7 @@ public class FieldController(FieldService fieldService)
         
         field.DataItem.ElementMap ??= new DataElementMap();
         
-        ViewBag.ElementNameList = (await fieldService.GetElementListAsync()).OrderBy(e=>e.Key);
+        ViewBag.ElementNameList = (await fieldService.GetElementsDictionaryAsync()).OrderBy(e=>e.Key);
         ViewBag.ElementFieldList = (await fieldService.GetElementFieldListAsync(field.DataItem.ElementMap)).OrderBy(e=>e.Key);
     }
     private void RecoverCustomAttibutes(ref FormElementField field)

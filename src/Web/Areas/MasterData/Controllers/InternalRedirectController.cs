@@ -101,7 +101,7 @@ public class InternalRedirectController(
     }
 
     [HttpPost]
-    public async Task<ActionResult> Save(string parameters)
+    public async Task<IActionResult> Save(string parameters)
     {
         LoadParameters(parameters);
 
@@ -120,9 +120,7 @@ public class InternalRedirectController(
         try
         {
             if (errors.Count == 0)
-            {
                 await panel.EntityRepository.SetValuesAsync(formElement, values);
-            }
         }
         catch (SqlException ex)
         {
@@ -139,7 +137,16 @@ public class InternalRedirectController(
             ViewBag.Success = true;
         }
 
-        return View("Index");
+        var result = await panel.GetResultAsync();
+                        
+        if (result is IActionResult actionResult)
+            return actionResult;
+                
+        var title = expressionsService.GetExpressionValue(panel.FormElement.Title, new FormStateData(RelationValues!, PageState.Update))?.ToString();
+
+        var model = new InternalRedirectViewModel(title ?? panel.Name,result.Content, true);
+
+        return View("Index", model);
     }
 
     private void LoadParameters(string parameters)

@@ -13,6 +13,7 @@ using Microsoft.Extensions.Localization;
 using System.ComponentModel;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.UI;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.TagHelpers;
 
@@ -35,6 +36,10 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
     [HtmlAttributeName("tooltip")]
     [Localizable(false)]
     public string? Tooltip { get; set; }
+
+    [ViewContext] 
+    [HtmlAttributeNotBound] 
+    public ViewContext ViewContext { get; set; } = null!;
     
     [HtmlAttributeName("disabled")]
     public bool Disabled { get; set; }
@@ -69,7 +74,9 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         {
             modelValue = Value;
         }
-    
+        
+        var isInvalid = ViewContext.ModelState[name]?.Errors.Any() ?? false;
+        
         var splittedExpression = modelValue?.Split(':', 2);
 
         var selectedExpressionType =expressionProviders.First(p=> p is ValueExpressionProvider).Prefix;
@@ -101,8 +108,10 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         fieldSet.AppendDiv(div =>
         {
             div.WithCssClass("input-group");
-            div.Append(GetTypeSelect(name, selectedExpressionType));
-            div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue));
+            div.Append(GetTypeSelect(name, selectedExpressionType)
+                .WithCssClassIf(isInvalid,"is-invalid"));
+            div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue)
+                .WithCssClassIf(isInvalid,"is-invalid"));
         });
 
         output.TagMode = TagMode.StartTagAndEndTag;
@@ -110,12 +119,12 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         output.Content.SetHtmlContent(fieldSet.ToString());
     }
 
-    private HtmlBuilder GetTypeSelect(string? name, string? selectedExpressionType)
+    private HtmlBuilder GetTypeSelect(string name, string? selectedExpressionType)
     {
         var select = new HtmlBuilder(HtmlTag.Select);
         select.WithNameAndId(name + "-ExpressionType");
         select.WithCssClass("form-select");
-
+        
         foreach (var provider in expressionProviders)
         {
             if (IsBooleanExpression && provider is not ISyncExpressionProvider)

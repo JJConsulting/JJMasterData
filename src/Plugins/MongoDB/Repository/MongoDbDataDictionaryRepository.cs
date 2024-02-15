@@ -40,22 +40,24 @@ public class MongoDBDataDictionaryRepository : IDataDictionaryRepository
 
         return (await formElementQuery.FirstAsync()).FormElement;
     }
-    public async Task<IEnumerable<FormElement>> GetFormElementListAsync(bool? apiSync = null)
+    public async Task<List<FormElement>> GetFormElementListAsync(bool? apiSync = null)
     {
         var formElements = await _formElementCollection.FindAsync(_ => true);
-
-        return (await formElements.ToListAsync()).Select(f=>f.FormElement);
+        var formElementEntities = await formElements.ToListAsync();
+        return formElementEntities.Select(f => f.FormElement).ToList();
     }
-    
 
-    public async IAsyncEnumerable<string> GetNameListAsync()
+    public async Task<List<string>> GetNameListAsync()
     {
         var formElements = await _formElementCollection.FindAsync(_ => true);
-        
+        var names = new List<string>();
+
         foreach (var formElement in await formElements.ToListAsync())
         {
-            yield return formElement.FormElement.Name;
+            names.Add(formElement.FormElement.Name);
         }
+
+        return names;
     }
     
     public async Task<ListResult<FormElementInfo>> GetFormElementInfoListAsync(DataDictionaryFilter filters, OrderByData orderBy, int recordsPerPage, int currentPage)

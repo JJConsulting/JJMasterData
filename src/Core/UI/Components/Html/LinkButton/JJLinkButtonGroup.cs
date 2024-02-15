@@ -28,18 +28,18 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
 
     internal override HtmlBuilder BuildHtml()
     {
-        var inputGroup = new HtmlBuilder(HtmlTag.Div)
+        var parentElement = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
-            .WithCssClass(BootstrapHelper.InputGroupBtn)
+            .WithCssClassIf(ShowAsButton,BootstrapHelper.InputGroupBtn)
             .WithCssClass(CssClass);
 
-        AddActionsAt(inputGroup);
+        AddActionsAt(parentElement);
+
+        if (BootstrapHelper.Version is 5)
+            parentElement.WithToolTip(MoreActionsText ?? StringLocalizer["More"]);
         
-        if (BootstrapHelper.Version == 5)
-            inputGroup.WithToolTip(MoreActionsText ?? StringLocalizer["More"]);
-        
-        return inputGroup;
+        return parentElement;
     }
 
     internal void AddActionsAt(HtmlBuilder inputGroup)
@@ -61,7 +61,7 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
             inputGroup.Append(GetHtmlCaretButton());
             inputGroup.Append(HtmlTag.Ul, ul =>
             {
-                ul.WithCssClass("dropdown-menu dropdown-menu-right");
+                ul.WithCssClass("dropdown-menu dropdown-menu-right dropdown-menu-end");
                 AddGroupActions(ul, listActionGroup);
             });
         }
@@ -98,8 +98,8 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
             .WithAttribute("aria-expanded", "false")
             .WithCssClass("dropdown-toggle")
             .WithCssClassIf(ShowAsButton, "btn btn-default")
-            .AppendTextIf(!string.IsNullOrEmpty(CaretText), CaretText)
-            .AppendIf(BootstrapHelper.Version == 3, HtmlTag.Span, s =>
+            .AppendTextIf(!string.IsNullOrEmpty(CaretText), CaretText!)
+            .AppendIf( BootstrapHelper.Version is 3,HtmlTag.Span, s =>
             {
                 s.WithCssClass("caret")
                     .WithToolTip(MoreActionsText ?? StringLocalizer["More"]);

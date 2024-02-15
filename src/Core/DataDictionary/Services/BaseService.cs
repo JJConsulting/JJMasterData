@@ -76,8 +76,19 @@ public abstract class BaseService(IValidationDictionary validationDictionary,
     {
         return args.Any(value.StartsWith);
     }
+    
+    protected static bool ValidateBooleanExpression(string value)
+    {
+        if (value.StartsWith("val"))
+        {
+            string[] booleanOperators = ["!", "NOT", "&&", "AND", "OR", "||"];
+            return !booleanOperators.Any(value.Contains);
+        }
 
-    public IEnumerable<string> GetAutocompleteHintsList(FormElement formElement, bool includeAdditionalHints = true)
+        return true;
+    }
+
+    public static IEnumerable<string> GetAutocompleteHintsList(FormElement formElement, bool includeAdditionalHints = true)
     {
         if (includeAdditionalHints)
         {
@@ -92,17 +103,17 @@ public abstract class BaseService(IValidationDictionary validationDictionary,
             yield return field.Name;
     }
 
-    public async Task<Dictionary<string, string>> GetElementListAsync()
+    public async Task<Dictionary<string, string>> GetElementsDictionaryAsync()
     {
-        var dicElement = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
+        var elementList = new Dictionary<string, string> { { string.Empty, StringLocalizer["--Select--"] } };
 
-        var list = DataDictionaryRepository.GetNameListAsync();
+        var list = await DataDictionaryRepository.GetNameListAsync();
         
-        await foreach (string name in list)
+        foreach (var name in list)
         {
-            dicElement.Add(name, name);
+            elementList.Add(name, name);
         }
 
-        return dicElement;
+        return elementList;
     }
 }

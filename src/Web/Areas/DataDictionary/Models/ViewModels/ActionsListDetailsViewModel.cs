@@ -4,9 +4,9 @@ namespace JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 
 public class ActionsListDetailsViewModel : DataDictionaryViewModel
 {
-    public required ActionSource Source { get; set; }
+    public required ActionSource Source { get; init; }
     public required List<BasicAction> Actions { get; init; }
-    public string? FieldName { get; set; }
+    public string? FieldName { get; init; }
     
 #pragma warning disable CS8618
     // ReSharper disable once UnusedMember.Global

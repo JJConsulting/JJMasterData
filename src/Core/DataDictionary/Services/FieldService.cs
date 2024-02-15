@@ -180,26 +180,34 @@ public class FieldService(IValidationDictionary validationDictionary,
 
     private void ValidateExpressions(FormElementField field)
     {
+        var syncProviders = expressionProviders.GetSyncProvidersPrefixes();
+        var asyncProviders = expressionProviders.GetAsyncProvidersPrefixes();
+        
         if (string.IsNullOrWhiteSpace(field.VisibleExpression))
             AddError(nameof(field.VisibleExpression), StringLocalizer["Required [VisibleExpression] field"]);
+        if (!ValidateBooleanExpression(field.VisibleExpression))
+            AddError(nameof(field.VisibleExpression), StringLocalizer["[{0}]: Valued boolean expression cannot contain boolean operators.", nameof(field.VisibleExpression)]);
         
-        else if (!ValidateExpression(field.VisibleExpression, expressionProviders.GetBooleanProvidersPrefixes()))
+        if (!ValidateBooleanExpression(field.EnableExpression))
+            AddError(nameof(field.EnableExpression), StringLocalizer["[{0}]: Valued boolean expression cannot contain boolean operators.", nameof(field.EnableExpression)]);
+        
+        if (!ValidateExpression(field.VisibleExpression, syncProviders))
             AddError(nameof(field.VisibleExpression), StringLocalizer["Invalid [VisibleExpression] field"]);
 
         if (string.IsNullOrWhiteSpace(field.EnableExpression))
             AddError(nameof(field.EnableExpression), StringLocalizer["Required [EnableExpression] field"]);
-        else if (!ValidateExpression(field.EnableExpression, expressionProviders.GetBooleanProvidersPrefixes()))
+        if (!ValidateExpression(field.EnableExpression, syncProviders))
             AddError(nameof(field.EnableExpression), StringLocalizer["Invalid [EnableExpression] field"]);
-
+        
         if (!string.IsNullOrEmpty(field.DefaultValue))
         {
-            if (!ValidateExpression(field.DefaultValue, expressionProviders.GetAsyncProvidersPrefixes()))
+            if (!ValidateExpression(field.DefaultValue, asyncProviders))
                 AddError(nameof(field.DefaultValue), StringLocalizer["Invalid [DefaultValue] field"]);
         }
 
         if (!string.IsNullOrEmpty(field.TriggerExpression))
         {
-            if (!ValidateExpression(field.TriggerExpression, expressionProviders.GetAsyncProvidersPrefixes()))
+            if (!ValidateExpression(field.TriggerExpression, asyncProviders))
                 AddError(nameof(field.TriggerExpression), StringLocalizer["Invalid [TriggerExpression] field"]);
         }
     }

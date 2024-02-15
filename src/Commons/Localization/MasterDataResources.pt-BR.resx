@@ -542,7 +542,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Copy to Clipboard" xml:space="preserve">
-    <value>Copiar para area de transferência</value>
+    <value>Copiar para Área de transferência</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Culture Code" xml:space="preserve">
@@ -1182,7 +1182,7 @@
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Filter Expression" xml:space="preserve">
-    <value>Expressão de filtro</value>
+    <value>Expressão de Filtro</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Filter Type" xml:space="preserve">
@@ -1200,10 +1200,6 @@
   <data name="First page" xml:space="preserve">
     <value>Primeira página</value>
     <comment>JJMasterDataCore</comment>
-  </data>
-  <data name="FirstOption" xml:space="preserve">
-    <value>Primeira Opção</value>
-    <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Fix the grid header when scrolling" xml:space="preserve">
     <value>Congelar o cabeçalho da grid ao realizar Scroll</value>
@@ -1853,7 +1849,7 @@
     <value>Adicionar</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="New action" xml:space="preserve">
+  <data name="New Action" xml:space="preserve">
     <value>Nova Ação</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -3655,7 +3651,7 @@
     <value>Mostrar Ícone</value>
   </data>
   <data name="Enable Multi Select" xml:space="preserve">
-    <value>Habilitar multiseleção</value>
+    <value>Habilitar Multiseleção</value>
   </data>
   <data name="Be careful when using this option. You should probably use this option only for write-only fields or store the values in another table." xml:space="preserve">
     <value>Cuidado ao utilizar essa opção! Você provavelmente deve utilizar ela para campos de apenas escrita ou guardar os valores em outra tabela.</value>
@@ -3868,7 +3864,7 @@
     <value>Mostrar Upload Fora do Modal</value>
   </data>
   <data name="Real - Used for both GET and SET.&lt;/br&gt;Virtual - NOT used in any operation.&lt;br&gt;ReadOnly - Used only in GET.&lt;br&gt;WriteOnly - Used only in SET." xml:space="preserve">
-    <value>Real - Usado em ambas operações de GET e SET&lt;/br&gt;Virtual - NÃO usado em nenhuma operação.&lt;br&gt;ReadOnly - Usado apenas para GET&lt;br&gt;WriteOnly - Usado apenas para SET.</value>
+    <value>Real - Usado em ambas operações de GET e SET.&lt;/br&gt;Virtual - NÃO usado em nenhuma operação.&lt;br&gt;ReadOnly - Usado apenas para GET.&lt;br&gt;WriteOnly - Usado apenas para SET.</value>
   </data>
   <data name="Caption" xml:space="preserve">
     <value>Legenda</value>
@@ -3904,7 +3900,7 @@
     <value>Nível</value>
   </data>
   <data name="None" xml:space="preserve">
-    <value>Vazio</value>
+    <value>Nenhum</value>
   </data>
   <data name="Critical" xml:space="preserve">
     <value>Crítico</value>
@@ -3914,5 +3910,20 @@
   </data>
   <data name="Name of the file that will be downloaded by the user." xml:space="preserve">
     <value>Nome do arquivo que será baixado pelo usuário.</value>
+  </data>
+  <data name="First Option" xml:space="preserve">
+    <value>Primeira Opção</value>
+  </data>
+  <data name="Choose" xml:space="preserve">
+    <value>Escolha</value>
+  </data>
+  <data name="[{0}]: Valued boolean expression cannot contain boolean operators." xml:space="preserve">
+    <value>[{0}]: Expressão booleana de valor não pode conter operadores booleanos.</value>
+  </data>
+  <data name="Field Map" xml:space="preserve">
+    <value>Mapa dos Campos</value>
+  </data>
+  <data name="Plugin Configuration" xml:space="preserve">
+    <value>Configuração do Plugin</value>
   </data>
 </root>

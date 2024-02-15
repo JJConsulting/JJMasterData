@@ -115,7 +115,7 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
         ViewBag.PanelId = panel.PanelId;
         ViewBag.Panels = formElement.Panels;
         ViewBag.AvailableFields = GetAvailableFields(formElement, panel);
-        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(panelService.GetAutocompleteHintsList(formElement));
+        ViewBag.CodeMirrorHintList = JsonConvert.SerializeObject(BaseService.GetAutocompleteHintsList(formElement));
         ViewBag.SelectedFields = (panel.PanelId > 0) ?
             formElement.Fields.ToList().FindAll(x => x.PanelId == panel.PanelId) : [];
     }

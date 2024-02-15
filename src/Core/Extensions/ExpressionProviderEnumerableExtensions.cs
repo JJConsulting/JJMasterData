@@ -15,7 +15,7 @@ public static class ExpressionProviderEnumerableExtensions
         return expressionProviders.Where(p => p is IAsyncExpressionProvider).Select(p => p.Prefix).ToArray();
     }
     
-    public static string[] GetBooleanProvidersPrefixes(this IEnumerable<IExpressionProvider> expressionProviders)
+    public static string[] GetSyncProvidersPrefixes(this IEnumerable<IExpressionProvider> expressionProviders)
     {
         return expressionProviders.Where(p => p is ISyncExpressionProvider).Select(p => p.Prefix).ToArray();
     }

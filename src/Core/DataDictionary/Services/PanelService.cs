@@ -74,11 +74,11 @@ public class PanelService(IValidationDictionary validationDictionary,
     {
         if (string.IsNullOrWhiteSpace(panel.VisibleExpression))
             AddError(nameof(panel.VisibleExpression), "Required [VisibleExpression] panel");
-        else if (!ValidateExpression(panel.VisibleExpression, ExpressionProviders.GetBooleanProvidersPrefixes()))
+        else if (!ValidateExpression(panel.VisibleExpression, ExpressionProviders.GetSyncProvidersPrefixes()))
             AddError(nameof(panel.VisibleExpression), "Invalid [VisibleExpression] panel");
         if (string.IsNullOrWhiteSpace(panel.EnableExpression))
             AddError(nameof(panel.EnableExpression), "Required [VisibleExpression] panel");
-        else if (!ValidateExpression(panel.EnableExpression, ExpressionProviders.GetBooleanProvidersPrefixes()))
+        else if (!ValidateExpression(panel.EnableExpression, ExpressionProviders.GetSyncProvidersPrefixes()))
             AddError(nameof(panel.EnableExpression), "Invalid [VisibleExpression] panel");
 
         return IsValid;
