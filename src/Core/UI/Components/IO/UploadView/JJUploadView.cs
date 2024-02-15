@@ -49,6 +49,7 @@ public class JJUploadView : AsyncComponent
     private JJUploadArea _uploadArea;
     private FormFileManager _formFileManager;
     private UploadViewScripts _scripts;
+    private RouteContext _routeContext;
     
     public event EventHandler<FormUploadFileEventArgs> OnBeforeCreateFile;
     public event EventHandler<FormDeleteFileEventArgs> OnBeforeDeleteFile;
@@ -252,6 +253,20 @@ public class JJUploadView : AsyncComponent
     private IComponentFactory ComponentFactory { get; }
     private IEncryptionService EncryptionService { get; }
 
+    protected RouteContext RouteContext
+    {
+        get
+        {
+            if (_routeContext != null)
+                return _routeContext;
+
+            var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
+            _routeContext = factory.Create();
+            
+            return _routeContext;
+        }
+    }
+
     internal IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private ILoggerFactory LoggerFactory { get; }
     private ILogger<JJUploadView> Logger { get; }
@@ -276,6 +291,11 @@ public class JJUploadView : AsyncComponent
 
     protected override async Task<ComponentResult> BuildResultAsync()
     {
+        if (RouteContext.ComponentContext is ComponentContext.DownloadFile)
+        {
+            var downloader = ComponentFactory.Downloader.Create();
+            return downloader.GetDownloadResult();
+        }
         
         var uploadAreaResult = await UploadArea.GetResultAsync();
 
