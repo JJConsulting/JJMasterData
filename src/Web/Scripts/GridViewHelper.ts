@@ -173,6 +173,7 @@ class GridViewHelper {
                 const filterActionElement = document.querySelector<HTMLInputElement>("#grid-view-filter-action-" + componentName);
 
                 if (gridViewTableElement) {
+                    TooltipHelper.dispose("#" + componentName)
                     gridViewTableElement.outerHTML = data;
                     
                     listenAllEvents("#" + componentName);
@@ -193,5 +194,21 @@ class GridViewHelper {
                 }
             }
         });
+    }
+    
+    static reloadGridRow(componentName, fieldName ,gridViewRowIndex, routeContext){
+        const urlBuilder = new UrlBuilder()
+        urlBuilder.addQueryParameter("gridViewName",componentName)
+        urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex)
+        urlBuilder.addQueryParameter("routeContext",routeContext)
+
+        postFormValues({
+            url: urlBuilder.build(),
+            success: data => {
+                $("#" + componentName + " #row" + gridViewRowIndex).html(data);
+                listenAllEvents("#" + componentName);
+                jjutil.gotoNextFocus(fieldName);
+            }
+        })
     }
 }

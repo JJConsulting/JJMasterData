@@ -30,6 +30,7 @@ public class FormController(IFormElementComponentFactory<JJFormView> formViewFac
             return;
        
         formView.GridView.SetCurrentFilter("USERID", userId);
+
         formView.SetUserValues("USERID", userId);
     }
 }

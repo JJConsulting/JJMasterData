@@ -73,15 +73,14 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <button type="button" class="btn btn-default btn-small" onclick="saveIndexes()">
-                <span class="fa fa-check"></span>
-                <span>&nbsp;@StringLocalizer["Save"]</span>
-            </button>
+            <link-button text="Save" 
+                         color="Primary" 
+                         icon="Check" 
+                         on-client-click="saveIndexes()"/>
 
-            <button type="button" class="btn btn-default btn-small" onclick="window.parent.defaultModal.hide();">
-                <span class="fa fa-times"></span>
-                <span>&nbsp;@StringLocalizer["Cancel"]</span>
-            </button>
+            <link-button text="Cancel"
+                         icon="SolidXmark"
+                         on-client-click="window.parent.defaultModal.hide();"/>
         </div>
     </div>
 

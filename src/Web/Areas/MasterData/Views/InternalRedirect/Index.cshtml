@@ -24,17 +24,10 @@
     if (Model.ShowToolBar)
     {
         <div id="divToolbar">
-            <button type="submit" class="btn btn-primary"
-                    formaction="@Url.Action("Save", new { parameters = Context.Request.Query["parameters"] })">
-                <span class="fa fa-check"></span>
-                <span>&nbsp;@StringLocalizer["Save"]</span>
-            </button>
-    
-            <button type="button" class="btn btn-default" onclick="window.parent.defaultModal.hide();">
-                <span class="fa fa-times"></span>
-                <span>&nbsp;@StringLocalizer["Cancel"]</span>
-            </button>
+            <link-button text="Save" icon="Check" color="Primary" url-action="@Url.Action("Save", new { parameters = Context.Request.Query["parameters"] })"/>
+            <link-button text="Cancel" icon="SolidXmark" on-client-click="window.parent.defaultModal.hide();"/>
         </div>
+        
         <br/>
     
         @Html.Raw(ViewBag.Error)

@@ -3932,4 +3932,10 @@
   <data name="It will be shown when the form is reopened or the form is next to the grid." xml:space="preserve">
     <value>Será mostrada quando o form for reaberto ou o formulário estar com a grid.</value>
   </data>
+  <data name="Edit Relation" xml:space="preserve">
+    <value>Editar Relação</value>
+  </data>
+  <data name="Add Relationship" xml:space="preserve">
+    <value>Adicionar Relacionamento</value>
+  </data>
 </root>

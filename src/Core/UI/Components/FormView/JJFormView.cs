@@ -417,7 +417,6 @@ public class JJFormView : AsyncComponent
         if (PageState is PageState.View)
             childFormView.DisableActionsAtViewMode();
         
-        
         if (!isInsertSelection)
             return childFormView;
 
@@ -817,7 +816,7 @@ public class JJFormView : AsyncComponent
             case PageState.Update or PageState.View:
             {
                 formValues ??= await GetFormValuesAsync();
-                return await GetFormResult(new FormContext(formValues, PageState), PanelState is not PageState.View);
+                return await GetFormResult(new FormContext(formValues, PageState), PanelState is not PageState.View && CurrentAction is not PluginAction);
             }
             default:
                 return await GetGridViewResult();
@@ -1273,7 +1272,7 @@ public class JJFormView : AsyncComponent
 
         formHtml.AppendComponent(await GetFormToolbarAsync(topToolbarActions));
         
-        if(IsInsertAtGridView && DataPanel.Errors.Count != 0)
+        if(!IsInsertAtGridView || (IsInsertAtGridView && DataPanel.Errors.Count != 0))
             DataPanel.Values = await DataPanel.GetFormValuesAsync();
             
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();

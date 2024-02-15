@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using JetBrains.Annotations;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -94,7 +95,7 @@ public class JJLinkButton : HtmlComponent
         if (Type == LinkButtonType.Submit)
         {
             html.WithAttribute("type", "submit");
-            html.WithAttribute("formaction", UrlAction);
+            html.WithAttributeIfNotEmpty("formaction", UrlAction);
             html.WithAttributeIf(ShowAsButton, "role", "button");
         }
         else if (Type == LinkButtonType.Button)
@@ -109,7 +110,7 @@ public class JJLinkButton : HtmlComponent
                 html.WithAttribute("href", "javascript: void(0);");
             
             if(!ShowAsButton)
-                html.WithCssClass($"text-{Color.ToString().ToLower()}");
+                html.WithCssClass($"link-{Color.ToString().ToLower()}");
         }
 
         html.WithNameAndId(Name);
@@ -120,14 +121,25 @@ public class JJLinkButton : HtmlComponent
         html.WithAttributeIf(isOnClickEnabled, "onclick", OnClientClick);
         html.WithCssClassIf(!Enabled, "disabled");
 
-        if (icon != null)
+        if (icon is not null)
+        {
             html.AppendComponent(icon);
-
-        if (!string.IsNullOrEmpty(Text))
-            html.Append(HtmlTag.Span, s =>
+            html.WithCssClass("icon-link-hover");
+        }
+        
+        switch (!string.IsNullOrEmpty(Text))
+        {
+            case true when ShowAsButton || Type is LinkButtonType.Button or LinkButtonType.Submit:
+                html.Append(HtmlTag.Span, s =>
                 {
-                    s.AppendText($"&nbsp;{_stringLocalizer[Text]}");
+                    s.AppendText("&nbsp;" +_stringLocalizer[Text]);
                 });
+                break;
+            case true:
+                html.AppendText(_stringLocalizer[Text]);
+                break;
+        }
+
         
         html.Append(InnerHtml);
         
@@ -152,7 +164,7 @@ public class JJLinkButton : HtmlComponent
             cssClass = cssClass.Replace("float-end", "pull-right");
         }
 
-        if (Type != LinkButtonType.Link || ShowAsButton)
+        if (ShowAsButton)
         {
             if (!cssClass.Contains("btn ") &&
                 !cssClass.Contains(" btn") &&
@@ -161,21 +173,27 @@ public class JJLinkButton : HtmlComponent
                 cssClass += $" btn btn-{Color.ToString().ToLower()}"; 
             }
         }
+        else if (!ShowAsButton && Type is LinkButtonType.Submit)
+        {
+            cssClass += " btn btn-link";
+        }
 
         return cssClass;
     }
 
+    [CanBeNull]
     private JJIcon GetIcon()
     {
-        JJIcon icon = null;
-        if (!string.IsNullOrEmpty(IconClass))
+        if (string.IsNullOrEmpty(IconClass)) 
+            return null;
+        
+        var icon = new JJIcon(IconClass);
+        if (!string.IsNullOrEmpty(IconClass) && IconClass.Contains("fa-") && IsGroup)
         {
-            icon = new JJIcon(IconClass);
-            if (!string.IsNullOrEmpty(IconClass) && IconClass.Contains("fa-") && IsGroup)
-            {
-                icon.CssClass = "fa-fw";
-            }
+            icon.CssClass = "fa-fw";
         }
+
+        icon.CssClass += " bi";
 
         return icon;
     }

@@ -31,6 +31,7 @@ class ActionHelper {
         urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
         
         postFormValues({url:urlBuilder.build(), success: data => {
+            TooltipHelper.dispose("#" + componentName)
             HTMLHelper.setOuterHTML(componentName,data);
             listenAllEvents("#" + componentName);
         }})
@@ -200,6 +201,7 @@ class ActionHelper {
 
                 postFormValues({url:urlBuilder.build(), success:(data)=>{
                         if (typeof data === "string") {
+                            TooltipHelper.dispose("#" + componentName)
                             HTMLHelper.setOuterHTML(componentName,data);
                             listenAllEvents("#" + componentName);
                         }

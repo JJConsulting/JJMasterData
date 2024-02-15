@@ -1,12 +1,12 @@
 ﻿class CheckboxHelper{
     static check(name:string){
-        const checkbox = document.querySelector<HTMLInputElement>(`#${name}-checkbox`);
+        const checkbox = <HTMLInputElement>document.getElementById(`${name}-checkbox`);
 
         if(checkbox?.checked){
-            document.querySelector<HTMLInputElement>(`#${name}`).value = "true";
+            (<HTMLInputElement>document.getElementById(name)).value = "true";
         }
         else{
-            document.querySelector<HTMLInputElement>(`#${name}`).value = "false";
+            (<HTMLInputElement>document.getElementById(name)).value = "false";
         }
     }
 }

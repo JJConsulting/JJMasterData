@@ -66,20 +66,19 @@
                     @relationship.ElementRelationship!.DeleteOnCascade
                 </td>
                 <td style="text-align: center;width: 120px">
-                    <button type="button" @BootstrapHelper.GetDataToggle("tooltip") title="" class="btn btn-link"
-                            onclick="defaultModal.showIframe('@Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName, id = relationship.Id })','@StringLocalizer["Edit Relation"]');"
-                            data-original-title="@StringLocalizer["Edit"]">
-                        <span class="fa fa-pencil"></span>
-                    </button>
-                    <button type="submit" title="" class="btn btn-link" 
-                            onclick="return deleteRelationship();"
-                            asp-controller="Relationships"
-                            asp-action="Delete"
-                            asp-route-elementName="@Model.ElementName"
-                            asp-route-id="@relationship.Id"
-                            data-original-title="@StringLocalizer["Delete"]">
-                        <span class="fa fa-trash"></span>
-                    </button>
+                    <link-button
+                        icon="Pencil"
+                        css-class="btn btn-link"
+                        on-client-click="defaultModal.showIframe('@Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName, id = relationship.Id })','@StringLocalizer["Edit Relation"]');"
+                        tooltip="Edit" 
+                        show-as-button="false"/>
+                    <link-button type="LinkButtonType.Submit"
+                                 show-as-button="false"
+                                 on-client-click="return deleteRelationship();"
+                                 tooltip="Delete"
+                                 icon="SolidTrashCan"
+                                 url-action="@Url.Action("Delete","Relationships", new {elementName = Model.ElementName, id=relationship.Id})"/>
+     
                 </td>
             </tr>
         }

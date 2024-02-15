@@ -104,10 +104,7 @@
         <tr>
             <td colspan="@(showImage ? 5 : 3)">
                 <div class="btn-group dropup">
-                    <button type="button" class="btn btn-default btn-small" onclick="addDataItem(1);">
-                        <span class="fa fa-plus-circle"></span>
-                        <span>&nbsp;@StringLocalizer["Add"]</span>
-                    </button>
+                    <link-button text="Add" icon="PlusCircle" on-client-click="addDataItem(1)"/>
                     <button type="button" class="btn btn-default btn-small dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">
                         <span class="caret"></span>
                         <span class="sr-only">@StringLocalizer["Toggle Dropdown"]</span>

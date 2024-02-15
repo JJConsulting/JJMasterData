@@ -733,7 +733,6 @@ public class JJGridView : AsyncComponent
         if (SortAction.IsVisible)
             await html.AppendAsync(GetSortingConfigAsync);
         
-        html.AppendText(GetScriptHtml());
         html.AppendRange(GetHiddenInputs(currentAction));
 
         if (CurrentPage <= 0)
@@ -880,117 +879,6 @@ public class JJGridView : AsyncComponent
         alert.Icon = IconType.Filter;
 
         return alert.GetHtmlBuilder();
-    }
-
-    private string GetScriptHtml()
-    {
-        var script = new StringBuilder();
-
-        //Scripts
-        script.AppendLine("\t<script type=\"text/javascript\"> ");
-
-        if (EnableEditMode)
-        {
-            var listFieldsPost = FormElement.Fields.ToList().FindAll(x => x.AutoPostBack);
-            string functionname = $"do_rowreload_{Name}";
-            var routeContext = HttpUtility.JavaScriptStringEncode(EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(FormElement, ComponentContext.GridViewRow)));
-            if (listFieldsPost.Count > 0)
-            {
-                script.AppendLine("");
-                script.Append("\tfunction ");
-                script.Append(functionname);
-                script.AppendLine("(nRow, objname, objid) { ");
-                script.AppendLine("\t\tvar frm = $('form'); ");
-                script.AppendLine("\t\tvar surl = frm.attr('action'); ");
-                script.AppendLine("\t\tif (surl.includes('?'))");
-                script.AppendLine($"\t\t\tsurl += '&routeContext={routeContext}&gridViewRowIndex=' + nRow;");
-                script.AppendLine("\t\telse");
-                script.AppendLine($"\t\t\tsurl += '?routeContext={routeContext}&gridViewRowIndex=' + nRow;");
-                script.AppendLine("");
-                script.AppendLine("\t\tsurl += '&componentName=' + objname;");
-                script.AppendLine($"\t\tsurl += '&gridViewName={Name}';");
-                script.AppendLine("\t\t$.ajax({ ");
-                script.AppendLine("\t\tasync: false,");
-                script.AppendLine("\t\t\ttype: frm.attr('method'), ");
-                script.AppendLine("\t\t\turl: surl, ");
-                script.AppendLine("\t\t\tdata: frm.serialize(), ");
-                script.AppendLine("\t\t\tsuccess: function (data) { ");
-                script.AppendLine($"\t\t\t\t$(\"#grid-view-{Name} #row\" + nRow).html(data); ");
-                script.AppendLine($"\t\t\t\tdo_change_{Name}(nRow);");
-                script.AppendLine("\t\t\t\tlistenAllEvents(\"#row\" + nRow + \" \"); ");
-                script.AppendLine("\t\t\t\tjjutil.gotoNextFocus(objid); ");
-                script.AppendLine("\t\t\t}, ");
-                script.AppendLine("\t\t\terror: function (jqXHR, textStatus, errorThrown) { ");
-                script.AppendLine("\t\t\t\tconsole.log(errorThrown); ");
-                script.AppendLine("\t\t\t\tconsole.log(textStatus); ");
-                script.AppendLine("\t\t\t\tconsole.log(jqXHR); ");
-                script.AppendLine("\t\t\t} ");
-                script.AppendLine("\t\t}); ");
-                script.AppendLine("\t} ");
-
-                script.AppendLine("");
-                script.Append("\tfunction ");
-                script.AppendFormat("do_change_{0}", Name);
-                script.AppendLine("(nRow) { ");
-                script.AppendLine("\t\tvar prefixSelector = \"\";");
-                script.AppendLine("\t\tif(nRow != null) {");
-                script.AppendLine("\t\t\tprefixSelector = \"tr#row\" + nRow + \" \";");
-                script.AppendLine("\t\t}");
-
-
-                foreach (var f in listFieldsPost)
-                {
-                    //Workaround to JJSearch
-                    if (f.Component == FormComponent.Search)
-                    {
-                        script.Append("\t\t$(prefixSelector + \"");
-                        script.Append(".");
-                        script.Append((string?)f.Name);
-                        script.AppendLine("\").change(function () {");
-                        script.AppendLine("\t\tvar obj = $(this);");
-                        script.AppendLine("\t\tsetTimeout(function() {");
-                        script.AppendLine("\t\t\tvar nRowId = obj.attr(\"gridViewRowIndex\");");
-                        script.AppendLine("\t\t\tvar objid = obj.attr(\"id\");");
-                        script.Append("\t\t\t");
-                        script.Append(functionname);
-                        script.Append("(nRowId, \"");
-                        script.Append((string?)f.Name);
-                        script.AppendLine("\", objid);");
-                        script.AppendLine("\t\t\t},200);");
-                        script.AppendLine("\t\t});");
-                        script.AppendLine("");
-                    }
-                    else
-                    {
-                        script.Append("\t\t$(prefixSelector + \"");
-                        script.Append(".");
-                        script.Append((string?)f.Name);
-                        script.AppendLine("\").change(function () {");
-                        script.AppendLine("\t\t\tvar obj = $(this);");
-                        script.AppendLine("\t\t\tvar nRowId = obj.attr(\"gridViewRowIndex\");");
-                        script.AppendLine("\t\t\tvar objid = obj.attr(\"id\");");
-                        script.Append("\t\t\t");
-                        script.Append(functionname);
-                        script.Append("(nRowId, \"");
-                        script.Append((string?)f.Name);
-                        script.AppendLine("\", objid);");
-                        script.AppendLine("\t\t});");
-                        script.AppendLine("");
-                    }
-                }
-
-                script.AppendLine("\t}");
-
-                script.AppendLine("");
-                script.AppendLine("\t$(document).ready(function () {");
-                script.AppendLine($"\t\tdo_change_{Name}(null);");
-                script.AppendLine("\t});");
-            }
-        }
-
-        script.AppendLine("\t</script> ");
-
-        return script.ToString();
     }
 
     internal async Task<Dictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=

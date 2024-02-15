@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Routing;
@@ -81,5 +83,31 @@ public class GridScripts(JJGridView gridView)
     public object GetReloadFilterScript()
     {
         return $"setTimeout(()=>GridViewFilterHelper.reload('{gridView.Name}','{gridView.Filter.Name}','{GetEncryptedRouteContext(ComponentContext.GridViewFilterReload)}'),200)";
+    }
+
+    
+    public string GetReloadRowScript(FormElementField field, int gridViewRowIndex)
+    {
+        var reloadPanelScript = GetReloadRowScript(field.Name,gridViewRowIndex);
+        
+        //Workaround to trigger event on search component
+        if (field.Component is not FormComponent.Search) 
+            return reloadPanelScript;
+        
+        var script = new StringBuilder();
+        script.Append("setTimeout(function() { ");
+        script.Append(reloadPanelScript);
+        script.Append("}, 200);");
+        return script.ToString();
+
+    }
+    
+    private string GetReloadRowScript(string fieldName, int gridViewRowIndex)
+    {
+        var componentName = gridView.Name;
+        
+        var routeContext = EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(gridView.FormElement,ComponentContext.GridViewRow));
+        
+        return $"GridViewHelper.reloadGridRow('{componentName}','{fieldName}',{gridViewRowIndex},'{routeContext}');";
     }
 }

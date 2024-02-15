@@ -111,10 +111,7 @@
 
     <div class="row">
         <div class="col-sm-4">
-            <button id="btnAddRelation" type="submit" class="btn btn-default" formaction="@Url.Action("CreateRelationship", "Relationships")">
-                <span class="fa fa-plus-square-o"></span>
-                &nbsp;@StringLocalizer["Add Relationship"]
-            </button>
+            <link-button icon="PlusCircle" text="Add Relationship" type="LinkButtonType.Submit" url-action="@Url.Action("CreateRelationship", "Relationships")"/>
         </div>
     </div>
     <br/>
@@ -146,12 +143,9 @@
                                 @item.FkColumn
                                 @Html.HiddenFor(model => model.Relationship.Columns[index].FkColumn)
                             </td>
-                            <td align="center" style="width:60px;" valign="middle">
-                                <button type="submit" @BootstrapHelper.GetDataToggle("tooltip") title=""
-                                        formaction="@Url.Action("DeleteRelationshipColumn", "Relationships", new { columnIndex = index })"
-                                        class="btn btn-link" data-original-title="@StringLocalizer["Delete"]">
-                                    <span class="fa fa-trash"></span>
-                                </button>
+                            <td align="center" style="width:3.75rem;" valign="middle">
+                                <link-button icon="RegularTrashCan" tooltip="Delete" show-as-button="false"
+                                             url-action="@Url.Action("DeleteRelationshipColumn", "Relationships", new { columnIndex = index })"  type="LinkButtonType.Submit"/>
                             </td>
                         </tr>
                         index++;
@@ -181,15 +175,8 @@
     <br/>
     <div class="row">
         <div class="col-sm-12">
-            <button class="btn btn-default btn-small" type="button" onclick="saveForm()">
-                <span class="fa fa-check"></span>
-                <span>&nbsp;@StringLocalizer["Save"]</span>
-            </button>
-
-            <button type="button" class="btn btn-default btn-small" onclick="window.parent.defaultModal.hide();">
-                <span class="fa fa-times"></span>
-                <span>&nbsp;@StringLocalizer["Cancel"]</span>
-            </button>
+            <link-button icon="Check" color="Primary"  text="Save" on-client-click="saveForm()"/>
+            <link-button icon="SolidXmark" text="Cancel" on-client-click="window.parent.defaultModal.hide();"/>
         </div>
     </div>
 

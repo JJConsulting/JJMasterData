@@ -19,6 +19,7 @@ class FormViewHelper {
         postFormValues({
             url: url,
             success: (data) => {
+                TooltipHelper.dispose("#" + componentName)
                 HTMLHelper.setInnerHTML(componentName, data);
                 listenAllEvents("#" + componentName);
             }

@@ -107,7 +107,7 @@ public partial class HtmlBuilder
         {
             html.Append(GetHtmlContent(tabCount));
             
-            if (tabCount > 0)
+            if (tabCount > 0 && !_hasRawText)
                 html.AppendLine().Append(' ', tabCount * 2);
         }
        

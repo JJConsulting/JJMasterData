@@ -32,6 +32,7 @@ class ActionHelper {
         const urlBuilder = new UrlBuilder();
         urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
         postFormValues({ url: urlBuilder.build(), success: data => {
+                TooltipHelper.dispose("#" + componentName);
                 HTMLHelper.setOuterHTML(componentName, data);
                 listenAllEvents("#" + componentName);
             } });
@@ -172,6 +173,7 @@ class ActionHelper {
                 urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
                 postFormValues({ url: urlBuilder.build(), success: (data) => {
                         if (typeof data === "string") {
+                            TooltipHelper.dispose("#" + componentName);
                             HTMLHelper.setOuterHTML(componentName, data);
                             listenAllEvents("#" + componentName);
                         }
@@ -297,12 +299,12 @@ class CalendarListener {
 }
 class CheckboxHelper {
     static check(name) {
-        const checkbox = document.querySelector(`#${name}-checkbox`);
+        const checkbox = document.getElementById(`${name}-checkbox`);
         if (checkbox === null || checkbox === void 0 ? void 0 : checkbox.checked) {
-            document.querySelector(`#${name}`).value = "true";
+            document.getElementById(name).value = "true";
         }
         else {
-            document.querySelector(`#${name}`).value = "false";
+            document.getElementById(name).value = "false";
         }
     }
 }
@@ -995,6 +997,7 @@ class FormViewHelper {
         postFormValues({
             url: url,
             success: (data) => {
+                TooltipHelper.dispose("#" + componentName);
                 HTMLHelper.setInnerHTML(componentName, data);
                 listenAllEvents("#" + componentName);
             }
@@ -1256,6 +1259,7 @@ class GridViewHelper {
                 const gridViewTableElement = document.querySelector("#grid-view-table-" + componentName);
                 const filterActionElement = document.querySelector("#grid-view-filter-action-" + componentName);
                 if (gridViewTableElement) {
+                    TooltipHelper.dispose("#" + componentName);
                     gridViewTableElement.outerHTML = data;
                     listenAllEvents("#" + componentName);
                     if (filterActionElement) {
@@ -1272,6 +1276,20 @@ class GridViewHelper {
                 if (filterActionElement) {
                     filterActionElement.value = "";
                 }
+            }
+        });
+    }
+    static reloadGridRow(componentName, fieldName, gridViewRowIndex, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("gridViewName", componentName);
+        urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex);
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        postFormValues({
+            url: urlBuilder.build(),
+            success: data => {
+                $("#" + componentName + " #row" + gridViewRowIndex).html(data);
+                listenAllEvents("#" + componentName);
+                jjutil.gotoNextFocus(fieldName);
             }
         });
     }
@@ -1419,7 +1437,7 @@ const listenAllEvents = (selectorPrefix = String()) => {
     SliderListener.listenInputs(selectorPrefix);
     Inputmask().mask(document.querySelectorAll("input"));
     if (bootstrapVersion === 5) {
-        TooltipListener.listen(selectorPrefix);
+        TooltipHelper.listen(selectorPrefix);
     }
     else {
         $(selectorPrefix + '[data-toggle="tooltip"]').tooltip();
@@ -2358,9 +2376,16 @@ class TextFileHelper {
         }
     }
 }
-class TooltipListener {
+class TooltipHelper {
+    static dispose(selectorPrefix) {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll(selectorPrefix + ' [data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            const bootstrapTooltip = bootstrap.Tooltip.getOrCreateInstance(tooltipTriggerEl);
+            bootstrapTooltip.dispose();
+        });
+    }
     static listen(selectorPrefix) {
-        const tooltipTriggerList = document.querySelectorAll(selectorPrefix + '[data-bs-toggle="tooltip"]');
+        const tooltipTriggerList = document.querySelectorAll(selectorPrefix + ' [data-bs-toggle="tooltip"]');
         tooltipTriggerList.forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl, { trigger: 'hover' }));
     }
 }
