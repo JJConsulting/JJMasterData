@@ -3161,12 +3161,12 @@
     <value>Campo {0} valor inválido</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="{0} field invalid email" xml:space="preserve">
-    <value>Campo {0} e-mail inválido</value>
+  <data name="{0} field has an invalid email" xml:space="preserve">
+    <value>Campo {0} possui  e-mail inválido</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="{0} field invalid phone" xml:space="preserve">
-    <value>Campo {0} telefone inválido</value>
+  <data name="{0} field has an invalid phone" xml:space="preserve">
+    <value>Campo {0} possui telefone inválido</value>
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="{0} field is a invalid date" xml:space="preserve">
