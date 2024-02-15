@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +16,6 @@ using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Tasks;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
@@ -235,6 +233,9 @@ public class JJFormView : AsyncComponent
         {
             args.HtmlBuilder.Append(htmlComponentResult.HtmlBuilder);
         }
+
+        if (CurrentAction is SaveAction && DataPanel.Errors.Count is 0)
+           AppendInsertSuccessAlert(args.HtmlBuilder);
     }
 
     public PageState PageState
@@ -566,11 +567,11 @@ public class JJFormView : AsyncComponent
         {
             Name = $"insert-alert-{Name}",
             Color = PanelColor.Success,
-            Title = StringLocalizer["Success"],
+            Title = StringLocalizer[GridView.InsertAction.SuccessMessage],
             ShowIcon = true,
             Icon = IconType.CheckCircleO
         };
-        alert.Messages.Add(StringLocalizer["Record added successfully"]);
+
         htmlBuilder.Append(HtmlTag.Div, div =>
         {
             div.WithAttribute("id", $"insert-alert-div-{Name}")

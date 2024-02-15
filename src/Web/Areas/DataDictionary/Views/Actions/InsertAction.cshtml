@@ -70,6 +70,11 @@
                     <tooltip title="@StringLocalizer["When set to true, you can insert new records after saving instead of going back to the grid."]"/>
                     <checkbox for="ReopenForm" switch="true" switch-size="CheckBoxSwitchSize.Medium"/>
                 </div>
+                <div class="@BootstrapHelper.FormGroup col-sm-3">
+                    <label asp-for="SuccessMessage" class="@BootstrapHelper.Label"></label>
+                    <tooltip title="@StringLocalizer["It will be shown when the form is reopened or the form is next to the grid."]"/>
+                    <input asp-for="SuccessMessage" class="form-control"/>                
+                </div>
             </div>
             <div class="row">
                 <div class="@BootstrapHelper.FormGroup col-sm-3 not-shown-at-list">
