@@ -226,12 +226,10 @@ public class SqlServerProvider(
     
     private static object GetElementValue(ElementField field, Dictionary<string,object?> values)
     {
-        if (!values.ContainsKey(field.Name)) 
+        if (!values.TryGetValue(field.Name, out var value)) 
             return DBNull.Value;
-        
-        var value = values[field.Name];
-        
-        if (value == null)
+
+        if (value is null)
             return DBNull.Value;
 
         return field.DataType switch
@@ -240,6 +238,7 @@ public class SqlServerProvider(
                 string.IsNullOrEmpty(value.ToString()) => DBNull.Value,
             FieldType.UniqueIdentifier => Guid.Parse(value.ToString()!),
             FieldType.Bit => StringManager.ParseBool(values[field.Name]),
+            FieldType.Varchar or FieldType.NVarchar => value.ToString(),
             _ => value
         };
     }
@@ -270,7 +269,7 @@ public class SqlServerProvider(
         if (databaseType.Equals("varchar") ||
             databaseType.Equals("char"))
             return FieldType.Varchar;
-
+        
         if (databaseType.Equals("bit"))
             return FieldType.Bit;
         
@@ -305,6 +304,9 @@ public class SqlServerProvider(
 
         if (databaseType.Equals("text"))
             return FieldType.Text;
+        
+        if (databaseType.Equals("uniqueidentifier"))
+            return FieldType.UniqueIdentifier;
 
         return databaseType.Equals("ntext") ? FieldType.NText : FieldType.NVarchar;
     }

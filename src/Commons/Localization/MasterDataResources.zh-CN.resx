@@ -3237,11 +3237,11 @@
     <value>{0} 字段的值无效</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="{0} field invalid email" xml:space="preserve">
+  <data name="{0} field has an invalid email" xml:space="preserve">
     <value>{0} 字段是无效的email</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="{0} field invalid phone" xml:space="preserve">
+  <data name="{0} field has an invalid phone" xml:space="preserve">
     <value>{0} 字段是无效的电话</value>
     <comment>JJMasterData.Commons</comment>
   </data>

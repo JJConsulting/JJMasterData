@@ -87,13 +87,9 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
         {
             case FormComponent.Email:
                 if (!Validate.ValidEmail(valueString))
-                {
-                    return Localizer["{0} field invalid email", fieldName];
-                }
-
+                    return Localizer["{0} field has an invalid email", fieldName];
                 break;
             case FormComponent.Hour:
-
                 var hourFormat = valueString.Length == 5 ? "HH:mm" : "HH:mm:ss";
 
                 var valid = DateTime.TryParseExact(valueString,
@@ -131,7 +127,7 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
             case FormComponent.Tel:
                 if (!Validate.ValidTel(valueString))
                 {
-                    return Localizer["{0} field invalid phone", fieldName];
+                    return Localizer["{0} field has an invalid phone", fieldName];
                 }
 
                 break;
@@ -175,7 +171,13 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
                     return Localizer["{0} field is an invalid date",
                         fieldName];
                 }
-
+                break;
+            case FieldType.Time:
+                if (!TimeSpan.TryParse(value?.ToString(), out _))
+                {
+                    return Localizer["{0} field is an invalid time",
+                        fieldName];
+                }
                 break;
             case FieldType.Int:
                 if (value is not bool && !int.TryParse(value?.ToString(), NumberStyles.Number, CultureInfo.CurrentCulture, out _))
@@ -194,12 +196,15 @@ public class FieldValidationService(ExpressionsService expressionsService, IStri
 
                 break;
             default:
-                if (value is not bool && value?.ToString()?.Length > field.Size && field.Size > 0)
+                if (field.Size > 0 && 
+                    value?.ToString()?.Length > field.Size && 
+                    value is not bool &&
+                    value is not TimeSpan && 
+                    value is not DateTime)
                 {
                     return Localizer["{0} field cannot contain more than {1} characters",
                         fieldName, field.Size];
                 }
-
                 break;
         }
 
