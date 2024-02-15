@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -142,7 +143,7 @@ public class ExcelWriter(
                 }
 
                 await sw.WriteAsync($"\t\t\t\t<td{tdStyle}>");
-                await sw.WriteAsync(value);
+                await sw.WriteAsync(HttpUtility.HtmlEncode(value).Replace("\n","<br>"));
                 await sw.WriteLineAsync("</td>");
             }
 

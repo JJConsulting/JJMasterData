@@ -14,6 +14,7 @@ public class MasterDataStringLocalizerFactory : IStringLocalizerFactory, IDispos
     private IEntityRepository EntityRepository { get; }
     private IMemoryCache Cache { get; }
     private IOptions<MasterDataCommonsOptions> Options { get; }
+    
     public MasterDataStringLocalizerFactory(
         ResourceManagerStringLocalizerFactory resourceManagerStringLocalizerFactory,
         IMemoryCache cache,
@@ -29,18 +30,15 @@ public class MasterDataStringLocalizerFactory : IStringLocalizerFactory, IDispos
 
     public IStringLocalizer Create(Type resourceSource)
     {
-        var resourceLocalizer = ResourceManagerStringLocalizerFactory.Create(resourceSource) as ResourceManagerStringLocalizer;
+        var resourceLocalizer = (ResourceManagerStringLocalizer)ResourceManagerStringLocalizerFactory.Create(resourceSource);
         return new MasterDataStringLocalizer(resourceSource.ToString(), resourceLocalizer, EntityRepository, Cache, Options);
     }
 
     public IStringLocalizer Create(string baseName, string location)
     {
-        var resourceLocalizer = ResourceManagerStringLocalizerFactory.Create(baseName,location) as ResourceManagerStringLocalizer;
+        var resourceLocalizer = (ResourceManagerStringLocalizer)ResourceManagerStringLocalizerFactory.Create(baseName,location);
         return new MasterDataStringLocalizer($"{baseName}_{location}", resourceLocalizer, EntityRepository, Cache, Options);
     }
 
-    public void Dispose()
-    {
-        Cache?.Dispose();
-    }
+    public void Dispose() => Cache?.Dispose();
 }
