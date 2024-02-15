@@ -1279,6 +1279,20 @@ class GridViewHelper {
             }
         });
     }
+    static reloadGridRow(componentName, fieldName, gridViewRowIndex, routeContext) {
+        const urlBuilder = new UrlBuilder();
+        urlBuilder.addQueryParameter("gridViewName", componentName);
+        urlBuilder.addQueryParameter("gridViewRowIndex", gridViewRowIndex);
+        urlBuilder.addQueryParameter("routeContext", routeContext);
+        postFormValues({
+            url: urlBuilder.build(),
+            success: data => {
+                $("#" + componentName + " #row" + gridViewRowIndex).html(data);
+                listenAllEvents("#" + componentName);
+                jjutil.gotoNextFocus(fieldName);
+            }
+        });
+    }
 }
 class GridViewSelectionHelper {
     static selectItem(componentName, inputElement) {

@@ -43,14 +43,14 @@ internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
             script.Append('\t', 2);
             script.AppendLine($"let exp = \"{exp}\";");
 
-            for (int i = 0; i < list.Count; i++)
+            foreach (var t in list)
             {
                 script.Append('\t', 2);
                 script.Append("exp = exp.replace(\"");
                 script.Append("{");
-                script.Append(list[i]);
+                script.Append(t);
                 script.Append("}\", \"'\" + $(\"#");
-                script.Append(list[i]);
+                script.Append(t);
                 script.AppendLine("\").val() + \"'\"); ");
             }
 
@@ -60,15 +60,15 @@ internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
             script.AppendLine("if (enable)");
             script.Append('\t', 3);
             script.Append("$(\"#");
-            script.Append((string)f.Name);
+            script.Append(f.Name);
             script.AppendLine("\").removeAttr(\"readonly\").removeAttr(\"disabled\");");
             script.Append('\t', 2);
             script.AppendLine("else");
             script.Append('\t', 3);
             script.Append("$(\"#");
-            script.Append((string)f.Name);
+            script.Append(f.Name);
 
-            //Se alterar para disabled o valor não voltará no post e vai zuar a rotina GetFormValues() qd exisir exp EnabledExpression
+            //If disabled, will break GetFormValuesAsync at POST and not receive the values when the expression is exp:.
             script.AppendLine("\").attr(\"readonly\",\"readonly\").val(\"\");");
             script.Append('\t');
             script.AppendLine("});");
@@ -84,7 +84,7 @@ internal class DataPanelExpressionScripts(JJDataPanel dataPanel)
         {
             string val = null;
             var field = FormElement.Fields.ToList().Find(x => x.Name.Equals(fieldName));
-            if (field != null && field.AutoPostBack)
+            if (field is { AutoPostBack: true })
                 continue;
 
             if (DataPanel.UserValues.TryGetValue(fieldName, out var value))

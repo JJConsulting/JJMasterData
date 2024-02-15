@@ -226,7 +226,12 @@ internal class GridTableBody(JJGridView gridView)
         var control = GridView.ComponentFactory.Controls.Create(GridView.FormElement, field,
             new(values, GridView.UserValues, PageState.List), name, value);
         control.Name = name;
+        
         control.Attributes.Add("gridViewRowIndex", index.ToString());
+        
+        if(field.AutoPostBack)
+            control.Attributes.Add("onchange",GridView.Scripts.GetReloadRowScript(field,index));
+        
         control.CssClass = field.Name;
 
         if (OnRenderCellAsync != null)

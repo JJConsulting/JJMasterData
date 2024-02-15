@@ -25,11 +25,13 @@ public class FormController(IFormElementComponentFactory<JJFormView> formViewFac
     private void ConfigureFormView(JJFormView formView)
     {
         var userId = HttpContext.GetUserId();
+        formView.GridView.EnableEditMode = true;
 
         if (userId == null) 
             return;
        
         formView.GridView.SetCurrentFilter("USERID", userId);
+
         formView.SetUserValues("USERID", userId);
     }
 }
