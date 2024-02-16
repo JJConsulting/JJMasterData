@@ -53,7 +53,7 @@ public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory) : Ta
         link.OnClientClick = OnClientClick;
         link.ShowAsButton = ShowAsButton;
         link.Enabled = Enabled ?? true;
-        link.Type = Type ?? LinkButtonType.Button;
+        link.Type = Type ?? LinkButtonType.Link;
         link.Tooltip = Tooltip;
         link.CssClass = CssClass;
         
