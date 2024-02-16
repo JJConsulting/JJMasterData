@@ -19,11 +19,15 @@ public class JJIconPicker(
 {
     
     public IconType? SelectedIcon { get; set; }
-    
+    public string? Id { get; set; }
+
     protected override async Task<ComponentResult> BuildResultAsync()
     {
+        var id = Id ?? Name;
         var comboBox = comboBoxFactory.Create();
         comboBox.Name = Name;
+        comboBox.Id =  id;
+        
         if(SelectedIcon is not null)
         {
             comboBox.SelectedValue = ((int)SelectedIcon).ToString();
@@ -40,6 +44,8 @@ public class JJIconPicker(
             FirstOption = FirstOptionMode.Choose,
             ShowIcon = true,
         };
+
+        comboBox.EnableLocalization = false;
         
         comboBox.Attributes["data-live-search"] = "true";
         comboBox.Attributes["data-virtual-scroll"] = "true";
@@ -55,7 +61,7 @@ public class JJIconPicker(
             div.WithCssClass("btn btn-default");
             div.WithToolTip(tooltip);
             div.AppendComponent(new JJIcon(IconType.Search));
-            var url = urlHelper.Action("Index", "Icons", new { inputId = Name, Area="MasterData" });
+            var url = urlHelper.Action("Index", "Icons", new { inputId = id, Area="MasterData" });
             div.WithAttribute("onclick", $"iconsModal.showUrl('{url}', '{tooltip}', '{(int)ModalSize.ExtraLarge}')");
         });
 

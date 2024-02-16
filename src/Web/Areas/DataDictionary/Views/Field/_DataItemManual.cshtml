@@ -3,9 +3,6 @@
 @using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 
-
-@inject IControlFactory<JJSearchBox> SearchBoxFactory
-
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @{
     bool showImage = Model.DataItem!.ShowIcon;
@@ -48,8 +45,8 @@
 </script>
 
 
-<div id="divManualValues" class="col-sm-12">
-    <table class="table table-striped table-bordered table-hover">
+<div id="divManualValues" class="table-responsive">
+    <table class="table table-striped table-hover">
         <thead>
         <tr>
             <th style="width:120px;">@StringLocalizer["Id"]</th>
@@ -57,9 +54,9 @@
             @if (showImage)
             {
                 <th>@StringLocalizer["IconId"]</th>
-                <th>@StringLocalizer["Color"]</th>
+                <th style="width:3.75rem">@StringLocalizer["Color"]</th>
             }
-            <th style="width:60px;">@StringLocalizer["Remove"]</th>
+            <th style="width:3.75rem"></th>
         </tr>
         </thead>
         <tbody>
@@ -78,24 +75,21 @@
                 @if (showImage)
                 {
                     <td>
-                        
                         <div class="row" style="position:relative">
                             @{
                                 var value = Model.DataItem.Items[i].Icon;
                             }
-                            <icon-picker name="@Html.NameFor(m => m.DataItem!.Items![i].Icon)" value="value"/>
+                            <icon-picker id="@Html.IdFor(m => m.DataItem!.Items![i].Icon)" name="@Html.NameFor(m => m.DataItem!.Items![i].Icon)" value="value"/>
                         </div>
                     </td>
-                    <td>
-                        @Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Icon),
-                            Model.DataItem.Items[i].IconColor, new { @class = "form-control", type = "color" })
+                    <td align="center" valign="middle">
+                        @Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].IconColor),
+                            Model.DataItem.Items[i].IconColor, new { @class = "form-control form-control-color", type = "color" })
                     </td>
                 }
 
                 <td align="center" valign="middle">
-                    <a href="#" @BootstrapHelper.GetDataToggle("tooltip") title="@StringLocalizer["Remove"]" onclick="removeDataItem(@i);">
-                        <span class="fa fa-trash"></span>
-                    </a>
+                    <link-button icon="RegularTrashCan" type="LinkButtonType.Link" show-as-button="false" tooltip="Remove" on-client-click="removeDataItem(@i);"/>
                 </td>
             </tr>
         }

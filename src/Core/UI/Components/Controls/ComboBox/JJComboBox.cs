@@ -24,7 +24,9 @@ public class JJComboBox : ControlBase
     private DataItemService DataItemService { get; }
     internal ILogger<JJComboBox> Logger { get; }
     internal FormStateData FormStateData { get; set; }
-
+    
+    public string? Id { get; set; }
+    
     /// <summary>
     /// If the filter is MULTVALUES_EQUALS, enable multiselect.
     /// </summary>
@@ -46,6 +48,8 @@ public class JJComboBox : ControlBase
         set => _selectedValue = value;
     }
 
+    public bool EnableLocalization { get; set; } = true;
+    
     public JJComboBox(
         IFormValues formValues,
         DataItemService dataItemService,
@@ -85,7 +89,8 @@ public class JJComboBox : ControlBase
             .WithCssClass(CssClass)
             .WithCssClass("form-control ")
             .WithCssClass(MultiSelect || DataItem.ShowIcon ? "selectpicker" : "form-select")
-            .WithNameAndId(Name)
+            .WithName(Name)
+            .WithId(Id ?? Name)
             .WithAttributeIf(MultiSelect, "multiple")
             .WithAttributeIf(MultiSelect, "title", StringLocalizer["All"])
             .WithAttributeIf(MultiSelect && FormStateData.PageState == PageState.Filter, "data-live-search", "true")
@@ -113,7 +118,7 @@ public class JJComboBox : ControlBase
 
         foreach (var value in values)
         {
-            var label = IsManualValues() ? StringLocalizer[value.Description] : value.Description;
+            var label = IsManualValues() && EnableLocalization ? StringLocalizer[value.Description!] : value.Description;
 
             var isSelected = !MultiSelect && SelectedValue != null && SelectedValue.Equals(value.Id);
 
