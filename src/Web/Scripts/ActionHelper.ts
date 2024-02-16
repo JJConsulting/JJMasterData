@@ -28,13 +28,14 @@ class ActionHelper {
             formViewActionInput.value = encryptedActionMap;
         }
         
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+
         
         if(isSubmit){
             ActionHelper.submitWithScrollPosition();
         }
         else{
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
             postFormValues({url:urlBuilder.build(), success: data => {
                     TooltipHelper.dispose("#" + componentName)
                     HTMLHelper.setOuterHTML(componentName,data);
