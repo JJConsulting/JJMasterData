@@ -109,7 +109,7 @@ internal class GridTableBody(JJGridView gridView)
     private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsHtmlList(Dictionary<string, object?> row, int index,
         Dictionary<string, object?> values, string onClickScript)
     {
-        await foreach (var field in GridView.GetVisibleFieldsAsync())
+        foreach (var field in await GridView.GetVisibleFieldsAsync())
         {
             if (values.TryGetValue(field.Name, out var value))
             {
