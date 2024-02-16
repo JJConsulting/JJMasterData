@@ -30,19 +30,28 @@ public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncE
 
         foreach (var keyValuePair in parsedValues)
         {
+            DbType dbType;
             var parameterName = $"@{keyValuePair.Key}";
-
+            var oldExpression = expression;
+            
             expression = expression.Replace($"'{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}'", $" {parameterName} ");
-            expression = expression.Replace($"{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}", $" {parameterName} ");
-
+            
+            if (oldExpression != expression)
+            {
+                dbType = DbType.String;
+            }
+            else
+            {
+                expression = expression.Replace($"{ExpressionHelper.Begin}{keyValuePair.Key}{ExpressionHelper.End}", $" {parameterName} ");
+                
+                dbType = GetDbTypeFromObject(keyValuePair.Value);
+            }
             var value = keyValuePair.Value;
 
             if (value is string stringValue)
-            {
                 value = stringValue.Trim(); //this prevents erros when coalescing string to numeric values.
-            }
             
-            command.AddParameter(parameterName, value, GetDbTypeFromObject(keyValuePair.Value));
+            command.AddParameter(parameterName, value, dbType);
         }
 
         command.Sql = expression;
