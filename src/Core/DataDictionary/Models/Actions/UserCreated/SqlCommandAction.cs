@@ -1,9 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
-public class SqlCommandAction : UserCreatedAction
+public class SqlCommandAction : UserCreatedAction, ISubmittableAction
 {
+    [JsonProperty("isSubmit")]
+    public bool IsSubmit { get; set; }
+    
     /// <summary>
     /// Comando SQL a ser executado, aceita expression
     /// </summary>

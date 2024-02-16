@@ -5,6 +5,7 @@ using System.Linq;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 
@@ -76,6 +77,7 @@ public class TextGroupFactory(
                 FormElement = formElement,
                 FormStateData = controlContext.FormStateData,
                 FieldName = field.Name,
+                IsSubmit = action is ISubmittableAction { IsSubmit: true },
                 ParentComponentName = controlContext.ParentComponentName
             };
 

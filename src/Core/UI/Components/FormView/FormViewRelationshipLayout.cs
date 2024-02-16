@@ -255,5 +255,5 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         return await childFormView.GetFormResultAsync();
     }
 
-    private bool IsRelationshipDisabled(FormElementRelationship relationship) => parentFormView.ExpressionsService.GetBoolValue(relationship.Panel.EnableExpression, GetFormStateData());
+    private bool IsRelationshipDisabled(FormElementRelationship relationship) => !parentFormView.ExpressionsService.GetBoolValue(relationship.Panel.EnableExpression, GetFormStateData());
 }
