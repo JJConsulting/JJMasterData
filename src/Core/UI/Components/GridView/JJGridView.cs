@@ -147,19 +147,28 @@ public class JJGridView : AsyncComponent
         }
     }
 
-    internal async IAsyncEnumerable<FormElementField> GetVisibleFieldsAsync()
+    internal async Task<List<FormElementField>> GetVisibleFieldsAsync()
     {
         if (FormElement == null)
             throw new ArgumentNullException(nameof(FormElement));
 
         var defaultValues = await GetDefaultValuesAsync();
-        var formData = new FormStateData(defaultValues, UserValues, PageState.List);
-        foreach (var f in FormElement.Fields.Where(f=>f.DataBehavior is not FieldBehavior.Virtual))
+        var formStateData = new FormStateData(defaultValues, UserValues, PageState.List);
+        List<FormElementField> fields = [];
+        
+        foreach (var field in FormElement.Fields.Where(VisibleAtGrid))
         {
-            bool isVisible =  ExpressionsService.GetBoolValue(f.VisibleExpression, formData);
+            var isVisible =  ExpressionsService.GetBoolValue(field.VisibleExpression, formStateData);
             if (isVisible)
-                yield return f;
+                fields.Add(field);
         }
+
+        return fields;
+    }
+
+    private static bool VisibleAtGrid(FormElementField field)
+    {
+        return field.DataBehavior is not FieldBehavior.WriteOnly && field.DataBehavior is not FieldBehavior.Virtual;
     }
 
     internal FormValuesService FormValuesService { get; }
