@@ -3941,4 +3941,7 @@
   <data name="Is Submit" xml:space="preserve">
     <value>É Submit</value>
   </data>
+  <data name="The script will be executed when the user clicks out of the component." xml:space="preserve">
+    <value>O script será executado quando o usuário clicar fora do componente.</value>
+  </data>
 </root>
