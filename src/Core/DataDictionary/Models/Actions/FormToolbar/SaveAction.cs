@@ -1,20 +1,20 @@
 #nullable enable
 
-using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
 /// <summary>
 /// Action to save a DataPanel at a FormView.
 /// </summary>
-public class SaveAction : FormToolbarAction
+public class SaveAction : FormToolbarAction, ISubmittableAction
 {
     public const string ActionName = "save";
 
     public FormEnterKey EnterKeyBehavior { get; set; }
     
-    [Display(Name = "Submit On Save")]
-    public bool SubmitOnSave { get; set; }
+    [JsonProperty("isSubmit")]
+    public bool IsSubmit { get; set; }
     
     public SaveAction()
     {

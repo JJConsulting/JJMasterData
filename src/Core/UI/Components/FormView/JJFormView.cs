@@ -333,6 +333,7 @@ public class JJFormView : AsyncComponent
     internal IFormValues FormValues => CurrentContext.Request.Form;
     internal IQueryString QueryString => CurrentContext.Request.QueryString;
     internal IEntityRepository EntityRepository { get; }
+    internal FormValuesService FormValuesService { get; }
     internal FieldValuesService FieldValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
     private IEnumerable<IPluginHandler> PluginHandlers { get; }
@@ -355,6 +356,7 @@ public class JJFormView : AsyncComponent
         IDataDictionaryRepository dataDictionaryRepository,
         FormService formService,
         IEncryptionService encryptionService,
+        FormValuesService formValuesService,
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
         IEnumerable<IPluginHandler> pluginHandlers,
@@ -370,6 +372,7 @@ public class JJFormView : AsyncComponent
         ShowTitle = formElement.Options.Grid.ShowTitle;
         FormService = formService;
         EncryptionService = encryptionService;
+        FormValuesService = formValuesService;
         FieldValuesService = fieldValuesService;
         ExpressionsService = expressionsService;
         PluginHandlers = pluginHandlers;
@@ -1466,7 +1469,7 @@ public class JJFormView : AsyncComponent
         if (!RelationValues.Any())
             return values;
 
-        DataHelper.CopyIntoDictionary(values, RelationValues!, true);
+        DataHelper.CopyIntoDictionary(values, RelationValues!);
 
         return values;
     }
@@ -1496,14 +1499,16 @@ public class JJFormView : AsyncComponent
         if (_formStateData != null)
             return _formStateData;
 
-        var tempFormData = new FormStateData(new Dictionary<string, object?>(), UserValues, PageState);
+        var initalValues = new Dictionary<string, object?>();
+        
+        if(_dataPanel is not null)
+            DataHelper.CopyIntoDictionary(initalValues, DataPanel.Values);
+        
+        var initialFormStateData = new FormStateData(initalValues, UserValues, PageState);
         var autoReloadFormFields = CurrentContext.Request.Form.ContainsFormValues();
-        var values = await GridView.FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, tempFormData, autoReloadFormFields);
-
-        if (!values.Any())
-            values = DataPanel.Values as Dictionary<string,object?>;
-
-        _formStateData = new FormStateData(values ?? new Dictionary<string, object?>(), UserValues, PageState);
+        var values = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, initialFormStateData, autoReloadFormFields);
+        
+        _formStateData = new FormStateData(values, UserValues, PageState);
         return _formStateData;
     }
 
@@ -1556,6 +1561,7 @@ public class JJFormView : AsyncComponent
             FormElement = FormElement,
             FormStateData = formStateData,
             FieldName = fieldName,
+            IsSubmit = action is ISubmittableAction { IsSubmit: true },
             ParentComponentName = Name
         };
     }

@@ -17,6 +17,9 @@ public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory
     [HtmlAttributeName("for")] 
     public ModelExpression? For { get; set; }
 
+    [HtmlAttributeName("id")] 
+    public string? Id { get; set; }
+    
     [HtmlAttributeName("name")] 
     public string? Name { get; set; }
 
@@ -31,6 +34,8 @@ public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory
     {
         var name = For?.Name ?? Name ?? throw new ArgumentException("For or Name properties are required.");
 
+        var id = Id ?? name;
+        
         IconType? modelValue = null;
 
         if (For is { Model: not null })
@@ -42,6 +47,7 @@ public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory
             modelValue = Value;
         }
         var iconPicker = IconPickerFactory.Create();
+        iconPicker.Id = id;
         iconPicker.Name = name;
         if (modelValue != null) 
             iconPicker.SelectedIcon = modelValue.Value;

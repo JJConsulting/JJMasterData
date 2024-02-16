@@ -71,5 +71,8 @@
             </div>
         </div>
     }
-
+    @if (Model is ISubmittableAction submitAction)
+    {
+        <partial name="_SubmittableAction" model="@submitAction"/>
+    }
 </div>

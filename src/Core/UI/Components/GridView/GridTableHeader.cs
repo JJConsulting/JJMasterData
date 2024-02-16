@@ -57,7 +57,7 @@ internal class GridTableHeader
 
     private async IAsyncEnumerable<HtmlBuilder> GetVisibleFieldsThList()
     {
-        await foreach (var field in GridView.GetVisibleFieldsAsync())
+        foreach (var field in await GridView.GetVisibleFieldsAsync())
         {
             var th = new HtmlBuilder(HtmlTag.Th);
             string style = GetThStyle(field);

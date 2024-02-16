@@ -3515,8 +3515,8 @@
   <data name="Trigger the action when the value of the field is changed." xml:space="preserve">
     <value>Gatilha a ação quando o valor do campo é alterado.</value>
   </data>
-  <data name="If true, the entire page will be reloaded after saving the form, else, a AJAX request is made to reload just the current form. If inside a modal, the submit will be executed after the modal is closed." xml:space="preserve">
-    <value>Se verdadeiro, a página inteira será recarregada após salvar o form, senão, uma requisição AJAX será feita para recarregar apenas o formulário. Se dentro de um modal, o submit será executado após o modal ser fechado.</value>
+  <data name="If true, the entire page will be reloaded after executing the action, else, a AJAX request is made to reload just the current form. If inside a modal, the submit will be executed after the modal is closed." xml:space="preserve">
+    <value>Se verdadeiro, a página inteira será recarregada após executar a ação, senão, uma requisição AJAX será feita para recarregar apenas o formulário. Se dentro de um modal, o submit será executado após o modal ser fechado.</value>
   </data>
   <data name="If not in a relationship, Panel is considered the same as Bottom." xml:space="preserve">
     <value>Se não estiver em um relacionamento, Panel é considerado o mesmo que Bottom.</value>
@@ -3937,5 +3937,11 @@
   </data>
   <data name="Add Relationship" xml:space="preserve">
     <value>Adicionar Relacionamento</value>
+  </data>
+  <data name="Is Submit" xml:space="preserve">
+    <value>É Submit</value>
+  </data>
+  <data name="The script will be executed when the user clicks out of the component." xml:space="preserve">
+    <value>O script será executado quando o usuário clicar fora do componente.</value>
   </data>
 </root>

@@ -109,7 +109,7 @@ public class TextWriter(
                     await sw.WriteAsync(Delimiter);
 
                 string value = string.Empty;
-                if (field.DataBehavior != FieldBehavior.Virtual)
+                if (field.DataBehavior is not FieldBehavior.Virtual && field.DataBehavior is not FieldBehavior.WriteOnly)
                 {
                     if (row.Keys.Contains(field.Name))
                         value = row[field.Name]?.ToString();

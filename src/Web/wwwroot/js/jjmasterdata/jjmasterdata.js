@@ -14,7 +14,7 @@ class ActionHelper {
         localStorage.setItem('masterDataScrollPosition', window.scrollY.toString());
         document.forms[0].submit();
     }
-    static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, confirmMessage) {
+    static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, isSubmit, confirmMessage) {
         if (confirmMessage) {
             const result = confirm(confirmMessage);
             if (!result) {
@@ -29,13 +29,18 @@ class ActionHelper {
         else if (formViewActionInput) {
             formViewActionInput.value = encryptedActionMap;
         }
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
-        postFormValues({ url: urlBuilder.build(), success: data => {
-                TooltipHelper.dispose("#" + componentName);
-                HTMLHelper.setOuterHTML(componentName, data);
-                listenAllEvents("#" + componentName);
-            } });
+        if (isSubmit) {
+            ActionHelper.submitWithScrollPosition();
+        }
+        else {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+            postFormValues({ url: urlBuilder.build(), success: data => {
+                    TooltipHelper.dispose("#" + componentName);
+                    HTMLHelper.setOuterHTML(componentName, data);
+                    listenAllEvents("#" + componentName);
+                } });
+        }
     }
     static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {
@@ -1577,7 +1582,7 @@ class MessageBox {
             $(MessageBox.jQueryModalId).remove();
         }
         let html = "";
-        html += "<div id=\"site-modal\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n";
+        html += "<div id=\"site-modal\" tabindex=\"-1\" data-bs-backdrop='static' data-bs-keyboard='false' class=\"modal fade\" role=\"dialog\">\r\n";
         html += "  <div class=\"modal-dialog";
         if (sizetype == TMessageSize.LARGE)
             html += " modal-lg";

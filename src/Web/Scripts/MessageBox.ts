@@ -74,8 +74,9 @@ class MessageBox {
         if ($(MessageBox.jQueryModalId).length) {
             $(MessageBox.jQueryModalId).remove();
         }
+
         let html = "";
-        html += "<div id=\"site-modal\" tabindex=\"-1\" class=\"modal fade\" role=\"dialog\">\r\n";
+        html += "<div id=\"site-modal\" tabindex=\"-1\" data-bs-backdrop='static' data-bs-keyboard='false' class=\"modal fade\" role=\"dialog\">\r\n";
         html += "  <div class=\"modal-dialog";
         if (sizetype == TMessageSize.LARGE) html += " modal-lg";
         else if (sizetype == TMessageSize.SMALL) html += " modal-sm";

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
@@ -142,7 +143,7 @@ public class ExcelWriter(
                 }
 
                 await sw.WriteAsync($"\t\t\t\t<td{tdStyle}>");
-                await sw.WriteAsync(value);
+                await sw.WriteAsync(HttpUtility.HtmlEncode(value).Replace("\n","<br>"));
                 await sw.WriteLineAsync("</td>");
             }
 
@@ -158,7 +159,7 @@ public class ExcelWriter(
     private async Task<string> CreateCell(Dictionary<string, object> row, FormElementField field)
     {
         string value = string.Empty;
-        if (field.DataBehavior != FieldBehavior.Virtual)
+        if (field.DataBehavior is not FieldBehavior.Virtual && field.DataBehavior is not FieldBehavior.WriteOnly)
         {
             if (row.Keys.Contains(field.Name))
             {

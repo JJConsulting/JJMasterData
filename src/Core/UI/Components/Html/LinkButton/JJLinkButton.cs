@@ -124,7 +124,7 @@ public class JJLinkButton : HtmlComponent
         if (icon is not null)
         {
             html.AppendComponent(icon);
-            html.WithCssClass("icon-link-hover");
+            html.WithCssClassIf(Enabled,"icon-link-hover");
         }
         
         switch (!string.IsNullOrEmpty(Text))

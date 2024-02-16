@@ -176,11 +176,11 @@ public class ActionScripts(
             EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(actionContext.FormElement,
                 ComponentContext.FormViewReload));
 
-        string confirmationMessage =
+        var confirmationMessage =
             GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
 
         return
-            $"ActionHelper.executeSqlCommand('{actionContext.ParentComponentName}','{encryptedActionMap}','{encryptedRouteContext}'{(string.IsNullOrEmpty(confirmationMessage) ? "" : $",'{confirmationMessage}'")});";
+            $"ActionHelper.executeSqlCommand('{actionContext.ParentComponentName}','{encryptedActionMap}','{encryptedRouteContext}', {(actionContext.IsSubmit ? "true" : "false")},{(string.IsNullOrEmpty(confirmationMessage) ? "''" : $",'{confirmationMessage}'")});";
     }
 
     public static string GetHideModalScript(string componentName) => $"ActionHelper.hideActionModal('{componentName}')";
