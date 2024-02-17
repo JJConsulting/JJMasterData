@@ -142,8 +142,14 @@ public class FieldService(IValidationDictionary validationDictionary,
 
         if (field.DataType is FieldType.Bit && field.Component != FormComponent.CheckBox)
         {
-            AddError(nameof(field.Filter.Type),
+            AddError(nameof(field.DataType),
                 StringLocalizer["Bit fields can only be a checkbox (true or false.)"]);
+        }
+        
+        if (field.Component is FormComponent.CheckBox && field.DataType is not FieldType.Bit && field.DataType is not FieldType.Int)
+        {
+            AddError(nameof(field.DataType),
+                StringLocalizer["Checkbox components can only be of type Int or Boolean"]);
         }
 
         if (field.Component is FormComponent.Number or FormComponent.Currency)

@@ -57,6 +57,7 @@ public class JJRadioButtonGroup(
     {
         var radio = new JJRadioButton(FormValues)
         {
+            Id = item.Id,
             Name = Name,
             IsChecked = item.Id == SelectedValue,
             Enabled = Enabled,

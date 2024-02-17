@@ -26,6 +26,7 @@ internal class JJRadioButton(IFormValues formValues) : ControlBase(formValues)
         div.AppendInput(input =>
         {
             input.WithName(Name);
+            input.WithId(Id);
             input.WithAttributeIf(!Enabled || ReadOnly, "disabled");
             input.WithCssClass("form-check-input");
             input.WithValue(Text);
