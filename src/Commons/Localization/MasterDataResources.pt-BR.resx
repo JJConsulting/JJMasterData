@@ -3950,4 +3950,7 @@
   <data name="Error while ordering fields." xml:space="preserve">
     <value>Erro ao ordenar campos.</value>
   </data>
+  <data name="Plugin Key" xml:space="preserve">
+    <value>Chave do Plugin</value>
+  </data>
 </root>
