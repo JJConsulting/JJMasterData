@@ -77,9 +77,9 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
     }
 
     [HttpPost]
-    public async Task<IActionResult> Sort(string elementName, string[] orderFields)
+    public async Task<IActionResult> Sort(string elementName, string fieldsOrder)
     {
-        await panelService.SortPanelsAsync(elementName, orderFields);
+        await panelService.SortPanelsAsync(elementName, fieldsOrder.Split(','));
         return Json(new { success = true });
     }
 
@@ -94,7 +94,7 @@ public class PanelController(PanelService panelService) : DataDictionaryControll
     {
         TempData.Put("panel",panel);
         TempData["error"] = ViewBag.Error;
-        TempData["selected-tab"] = Request.Form["selected-tab"];
+        TempData["selected-tab"] = Request.Form["selected-tab"].ToString();
 
         return RedirectToAction("Index", new { elementName });
     }

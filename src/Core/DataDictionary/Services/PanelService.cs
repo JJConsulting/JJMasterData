@@ -27,7 +27,7 @@ public class PanelService(IValidationDictionary validationDictionary,
 
         if (selectedFields is null || !selectedFields.Any())
         {
-            AddError(nameof(selectedFields), "No fields selected for this panel.");
+            AddError(nameof(selectedFields), StringLocalizer["No fields selected for this panel."]);
         }
 
         if (!ValidatePanel(panel))

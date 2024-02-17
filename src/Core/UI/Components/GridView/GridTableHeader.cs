@@ -83,9 +83,9 @@ internal class GridTableHeader
             var orderByString = GridView.CurrentOrder.ToQueryParameter();
             if (!string.IsNullOrEmpty(orderByString))
             {
-                foreach (string orderField in orderByString.Split(','))
+                foreach (var orderField in orderByString.Split(','))
                 {
-                    string order = orderField.Trim();
+                    var order = orderField.Trim();
                     if (string.IsNullOrWhiteSpace(order))
                         break;
 

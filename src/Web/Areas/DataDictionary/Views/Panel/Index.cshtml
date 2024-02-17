@@ -11,82 +11,73 @@
 <script type="text/javascript">
     $(document).ready(function () {
         sortableGrid();
-        savePanelState();
-
-        resizeContainer();
-        window.onresize = resizeContainer;
+        saveTabState();
     });
 
-    function resizeContainer() {
-
-        var buttonBar = document.getElementsByClassName("jjtoolbar");
-        let container = document.getElementsByClassName("jjcontainer");
-        let containerHeight = 0;
-        let windowHeight = 0;
-
-        if (buttonBar[0] && container[0]) {
-            containerHeight = container[0].offsetHeight + 250;
-            windowHeight = window.innerHeight;
-
-            if (windowHeight < containerHeight) {
-                buttonBar[0].style.position = "relative";
-            } else {
-                buttonBar[0].style.position = "absolute";
-            }
-        }
-    }
-
-    function savePanelState() {
-        var currentTab = $("#selected-tab").val();
+    function saveTabState() {
+        let currentTab = document.querySelector("#selected-tab").value;
         if (!currentTab) {
             currentTab = "#div-general";
         }
-        $(".nav a[href='" + currentTab + "']").tab("show");
 
-        $("a[@BootstrapHelper.DataToggle='tab']").on("shown.bs.tab", function (e) {
-            var target = $(e.target).attr("href");
-            $("#selected-tab").val(target);
-            resizeContainer();
+        let tabLinks = document.querySelectorAll("[@BootstrapHelper.DataToggle='tab']");
+        tabLinks.forEach(function(link) {
+            if (link.getAttribute('href') === currentTab) {
+                link.classList.add('active');
+                link.classList.add('show');
+            } else {
+                link.classList.remove('active');
+                link.classList.remove('remove');
+            }
+        });
+
+        document.querySelectorAll(".tab-pane").forEach(function (tabPane){
+            if (tabPane.id === currentTab.replace("#","")) {
+                tabPane.classList.add('active');
+                tabPane.classList.add('show');
+            } else {
+                tabPane.classList.remove('active');
+                tabPane.classList.remove('remove');
+            }
+        })
+
+        document.querySelector(currentTab).classList.add('active');
+        document.querySelector(currentTab).classList.add('show');
+
+        tabLinks.forEach(function(tabLink) {
+            tabLink.addEventListener("click", function(e) {
+
+                document.querySelector("#selected-tab").value = e.target.getAttribute("href");
+
+                resizeContainer();
+            });
         });
     }
 
     function sortableGrid() {
         $("#sortable-grid").sortable({
             update: function () {
-                var order = $(this).sortable('toArray');
-                cmdMoveAction(order);
+                const order = $(this).sortable('toArray');
+                moveFields(order);
             }
         }).disableSelection();
     }
 
-    function cmdMoveAction(order) {
-        var url = "@Url.Action("Sort", new { elementName = ViewBag.ElementName })";
-        $.ajax({
-            type: "POST",
-            url: url,
-            data: { orderFields: order },
-            success: function (response) {
-                if (!response.success) {
-                    messageBox.show("Erro", "Ocorreu um erro inesperado ao ordenar os campos", 4);
+    function moveFields(order) {
+        const formData = new FormData();
+        formData.append('fieldsOrder', order);
+        fetch('@Url.Action("Sort", new { elementName = ViewBag.ElementName })', {
+            method: "POST",
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('@StringLocalizer["Error while ordering fields."]');
                 }
-            },
-            error: function (xhr, status, error) {
-                SpinnerOverlay.hide();
-                if (xhr.responseText != "") {
-                    var err = JSON.parse(xhr.responseText);
-                    //Session expired
-                    if (err.status == 401) {
-                        document.forms[0].submit();
-                    }
-                    else {
-                        messageBox.show("Atenção", err.message, 4);
-                    }
-                }
-                else {
-                    messageBox.show("Erro", "Ocorreu um erro inesperado ao ordenar os campos", 4);
-                }
-            }
-        });
+            })
+            .catch(error => {
+                messageBox.show('@StringLocalizer["Error"]', error.message, 4);
+            });
     }
 
     function loadDetails(url, panelId) {
@@ -111,18 +102,25 @@
             .then(data => {
                 HTMLHelper.setInnerHTML("field-details", data);
                 listenAllEvents("#field-details ");
-                savePanelState();
+                saveTabState();
                 document.getElementById("selectedFields").value = "";
-                resizeContainer();
+                let listSelected = "";
+                $('#listSelected option').each(function () {
+                    if (listSelected.length > 0)
+                        listSelected = listSelected.concat(",");
+
+                    listSelected = listSelected.concat($(this).val());
+                });
+                $("#selectedFields").val(listSelected);
             })
     }
 
     function searchFields(oDom) {
-        var value = $(oDom).val().toLowerCase();
+        const value = $(oDom).val().toLowerCase();
         $("#sortable-grid a").filter(function () {
             //procura por textos
-            var textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
-            var isSearch = textValues.toLowerCase().indexOf(value) > -1;
+            const textValues = $(this).clone().find('.bootstrap-select, .selectpicker, select').remove().end().text();
+            const isSearch = textValues.toLowerCase().indexOf(value) > -1;
 
             $(this).toggle(isSearch);
         });
@@ -139,21 +137,13 @@
 
     <div class="row">
         <div class="col-sm-3">
-            <div class="input-group jjsearch" style="margin-bottom: 15px;margin-top: 1px;">
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default" onclick="loadDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
-                        <span class="fa fa-plus"></span>
-                    </button>
-                </span>
-                <input class="form-control"
-                       type="search"
-                       @BootstrapHelper.GetDataToggle("tooltip")
-                       title="@StringLocalizer["Filter by any field visible in the list"]"
-                       placeholder="@StringLocalizer["Search..."]"
-                       id="txtFilter"
-                       name="txtFilter"
-                       onkeyup="searchFields(this);"/>
+            <div class="input-group jjform-action ">
+                <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);" placeholder="Pesquisar..." type="text" class="form-control" data-bs-toggle="tooltip" aria-label="Filtre por qualquer campo visível na lista" data-bs-original-title="Filtre por qualquer campo visível na lista">
+                <a href="javascript: void(0);" class=" btn btn-default icon-link-hover" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
+                    <span class="fa fa-plus  bi"></span>
+                </a>
             </div>
+            <br/>
             <div class="jjrelative">
                 <div id="listField">
                     <div class="list-group jjsortable" id="sortable-grid">

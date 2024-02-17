@@ -3,8 +3,16 @@
 @using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.FormElementPanel
 
-<script lang="javascript" type="text/javascript">
+@{
+    string currentTab = ViewBag.Tab ?? "#div-general";
 
+    string Active(string tab)
+    {
+        return currentTab == tab ? "active show" : string.Empty;
+    }
+}
+
+<script lang="javascript" type="text/javascript">
     document.addEventListener("DOMContentLoaded", function () {
         saveOptions();
     });
@@ -38,7 +46,7 @@
     }
 
     function saveOptions() {
-        var listEnabled = "";
+        let listEnabled = "";
         $('#listEnabled option').each(function () {
             if (listEnabled.length > 0)
                 listEnabled = listEnabled.concat(",");
@@ -48,7 +56,7 @@
         $("#enabled_fields").val(listEnabled);
 
 
-        var listSelected = "";
+        let listSelected = "";
         $('#listSelected option').each(function () {
             if (listSelected.length > 0)
                 listSelected = listSelected.concat(",");
@@ -82,10 +90,10 @@
 <div class="container-fluid">
 
     <ul class="nav nav-tabs">
-        <li id="nav-general" class="nav-item">
+        <li id="nav-general" class="nav-item" @Active("#div-general")>
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-general">@StringLocalizer["General"]</a>
         </li>
-        <li id="nav-advanced" class="nav-item">
+        <li id="nav-advanced" class="nav-item" @Active("#div-advanced")>
             <a class="nav-link" @BootstrapHelper.GetDataToggle("tab") href="#div-advanced">@StringLocalizer["Advanced"]</a>
         </li>
     </ul>
@@ -118,13 +126,13 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-sm-12 jjtoolbar">
-            <link-button text="Save" color="Primary" icon="Check" on-client-click="save()"/>
-            <link-button text="Refresh" icon="Refresh"  url-action="@Url.Action("Index", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })"/>
-            <link-button text="Delete" icon="SolidTrashCan" url-action="@Url.Action("Delete", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })"/>
-            <link-button text="Copy"  icon="FilesO" on-client-click="copy()"/>
-        </div>
+
+    <div class="col-sm-12 jjtoolbar">
+        <hr/>
+        <link-button text="Save" color="Primary" icon="Check" on-client-click="save()"/>
+        <link-button text="Refresh" icon="Refresh" url-action="@Url.Action("Index", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })"/>
+        <link-button text="Delete" icon="SolidTrashCan" url-action="@Url.Action("Delete", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })"/>
+        <link-button text="Copy" icon="FilesO" on-client-click="copy()"/>
     </div>
 
 

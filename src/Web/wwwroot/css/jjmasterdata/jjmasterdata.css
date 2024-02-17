@@ -339,17 +339,6 @@ a.disabled {
     position: relative;
 }
 
-
-.jjtoolbar {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    font-size: 12px;
-    text-align: center;
-    color: #808080;
-}
-
-
 #field-details {
     border-width: 0px;
     width: 100%;
@@ -428,15 +417,9 @@ button.list-group-item {
     text-decoration: none
 }
 
-.jjtoolbar-bs5 {
+.jjtoolbar{
     text-align: center;
-    color: #808080;
-    border-top: solid 1px #eeee;
-    padding-top: 15px;
-}
-
-.jjtoolbar-item-bs5 {
-    width: 7.5% !important
+    padding-top: 0.938rem;
 }
 
 .accordion-button {

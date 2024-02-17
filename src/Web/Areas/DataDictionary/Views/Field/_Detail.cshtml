@@ -61,7 +61,7 @@
 </script>
 
 @Html.HiddenFor(model => Model.PanelId)
-<div class="container-fluid jjcontainer">
+<div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">
             @Html.Raw(ViewBag.Error)
@@ -318,14 +318,15 @@
                        color="Info"/>
             }
         </div>
-        <div class="col-sm-12 jjtoolbar">
-            <link-button text="Save" color="Primary" icon="Check" on-client-click="save()"/>
-            <link-button text="Refresh" icon="Refresh"  url-action="@Url.Action("Index", new { elementName = ViewBag.ElementName, fieldName = Model.Name })"/>
-            @if (!isCustomizedField)
-            {
-                <link-button text="Delete" icon="SolidTrashCan" url-action="@Url.Action("Delete", new { elementName = ViewBag.ElementName, fieldName = Model.Name })"/>
-            }
-            <link-button text="Copy"  icon="FilesO" on-client-click="copy()"/>
-        </div>
     </div>
+</div>
+<div class="jjtoolbar mb-1 col-sm-12">
+    <hr/>
+    <link-button text="Save" color="Primary" icon="Check" on-client-click="save()"/>
+    <link-button text="Refresh" icon="Refresh"  url-action="@Url.Action("Index", new { elementName = ViewBag.ElementName, fieldName = Model.Name })"/>
+    @if (!isCustomizedField)
+    {
+    <link-button text="Delete" icon="SolidTrashCan" url-action="@Url.Action("Delete", new { elementName = ViewBag.ElementName, fieldName = Model.Name })"/>
+    }
+    <link-button text="Copy"  icon="FilesO" on-client-click="copy()"/>
 </div>

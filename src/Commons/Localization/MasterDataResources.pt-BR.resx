@@ -3938,4 +3938,10 @@
   <data name="Add Relationship" xml:space="preserve">
     <value>Adicionar Relacionamento</value>
   </data>
+  <data name="No fields selected for this panel." xml:space="preserve">
+    <value>Nenhum campo selecionado para este painel.</value>
+  </data>
+  <data name="Error while ordering fields." xml:space="preserve">
+    <value>Erro ao ordenar campos.</value>
+  </data>
 </root>

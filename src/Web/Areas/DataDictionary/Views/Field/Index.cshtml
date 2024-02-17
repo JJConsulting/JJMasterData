@@ -5,25 +5,10 @@
 @using JJMasterData.Commons.Data.Entity.Providers
 @using JJMasterData.Commons.Data.Entity.Models
 
-@inject IComponentFactory ComponentFactory 
 
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 
-@functions {
-    private void ConfigureFieldSearchBox(JJTextGroup fieldSearchBox)
-    {
-        fieldSearchBox.Name = "txtFilter";
-        fieldSearchBox.PlaceHolder = StringLocalizer["Search..."];
-        fieldSearchBox.Tooltip = StringLocalizer["Filter by any field visible in the list"];
 
-        fieldSearchBox.Attributes.Add("onkeyup", "searchFields(this);");
-        
-        var item = ComponentFactory.Html.LinkButton.Create();
-        item.IconClass = "fa fa-plus";
-        item.OnClientClick = $"loadFieldDetails('{Url.Action("Add", new { elementName = ViewBag.ElementName })}', '');";
-        fieldSearchBox.Actions.Add(item);
-    }
-}
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @{
@@ -41,27 +26,26 @@
             FormComponent.Date => IconType.Calendar,
             FormComponent.DateTime => IconType.Calendar,
             FormComponent.Password => IconType.Lock,
-            FormComponent.Email => IconType.Envelope, 
-            FormComponent.Number => IconType.Calculator, 
-            FormComponent.ComboBox => IconType.CaretDown, 
-            FormComponent.Search => IconType.Search, 
-            FormComponent.RadioButtonGroup => IconType.RegularCircleDot, 
-            FormComponent.CheckBox => IconType.CheckSquare, 
-            FormComponent.Cnpj => IconType.SolidBuildingColumns, 
-            FormComponent.Cpf => IconType.RegularIdCard, 
-            FormComponent.CnpjCpf => IconType.RegularIdBadge, 
-            FormComponent.Currency => IconType.Dollar, 
-            FormComponent.Tel => IconType.Phone, 
-            FormComponent.Cep => IconType.MapMarker, 
-            FormComponent.Lookup => IconType.Binoculars, 
-            FormComponent.File => IconType.File, 
-            FormComponent.Slider => IconType.Sliders, 
+            FormComponent.Email => IconType.Envelope,
+            FormComponent.Number => IconType.Calculator,
+            FormComponent.ComboBox => IconType.CaretDown,
+            FormComponent.Search => IconType.Search,
+            FormComponent.RadioButtonGroup => IconType.RegularCircleDot,
+            FormComponent.CheckBox => IconType.CheckSquare,
+            FormComponent.Cnpj => IconType.SolidBuildingColumns,
+            FormComponent.Cpf => IconType.RegularIdCard,
+            FormComponent.CnpjCpf => IconType.RegularIdBadge,
+            FormComponent.Currency => IconType.Dollar,
+            FormComponent.Tel => IconType.Phone,
+            FormComponent.Cep => IconType.MapMarker,
+            FormComponent.Lookup => IconType.Binoculars,
+            FormComponent.File => IconType.File,
+            FormComponent.Slider => IconType.Sliders,
             FormComponent.Color => IconType.SolidPaintbrush,
             FormComponent.Icon => IconType.SolidIcons,
-            _ => IconType.Question 
-            };
+            _ => IconType.Question
+        };
     }
-
 }
 
 @section Scripts{
@@ -85,7 +69,7 @@
         document.addEventListener("DOMContentLoaded", restoreScrollPosition)
         window.addEventListener('beforeunload', saveScrollPosition);
     </script>
-    
+
     <script type="text/javascript">
          function setupCodeMirror(){
             CodeMirrorWrapper.setupCodeMirror("DataItem_Command_Sql",{
@@ -126,28 +110,8 @@
         document.addEventListener("DOMContentLoaded",function (){
             sortableGrid();
             saveTabState();
-    
-            resizeContainer();
-            window.onresize = resizeContainer;
         })
-    
-        function resizeContainer() {
-            const buttonBar = document.getElementsByClassName("jjtoolbar");
-            let container = document.getElementsByClassName("jjcontainer");
-            let containerHeight = 0;
-            let windowHeight = 0;
-    
-            if (buttonBar[0] && container[0]) {
-                containerHeight = container[0].offsetHeight + 250;
-                windowHeight = window.innerHeight;
-                
-                if (windowHeight < containerHeight) {
-                    buttonBar[0].style.position = "relative";
-                } else {
-                    buttonBar[0].style.position = "absolute";
-                }
-            }
-        }
+        
     
         function saveTabState() {
             let currentTab = document.querySelector("#selected-tab").value;
@@ -183,8 +147,6 @@
                 tabLink.addEventListener("click", function(e) {
                    
                     document.querySelector("#selected-tab").value = e.target.getAttribute("href");
-        
-                    resizeContainer();
                 });
             });
         }
@@ -229,7 +191,6 @@
                 listenAllEvents("#field-details");
                 listenTabs();
                 saveTabState();
-                resizeContainer();
                 SpinnerOverlay.hide()
             })
         }
@@ -244,7 +205,7 @@
             });
         }
     </script>
-}
+    }
 
     <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
@@ -253,7 +214,12 @@
         <input type="hidden" name="selected-tab" id="selected-tab" value="@ViewBag.Tab"/>
         <div class="row">
             <div class="col-sm-3">
-                <text-group configure="ConfigureFieldSearchBox"/>
+                <div class="input-group jjform-action ">
+                    <input id="txtFilter" name="txtFilter" onkeyup="searchFields(this);" placeholder="Pesquisar..." type="text" class="form-control" data-bs-toggle="tooltip" aria-label="Filtre por qualquer campo visível na lista" data-bs-original-title="Filtre por qualquer campo visível na lista">
+                    <a href="javascript: void(0);" class=" btn btn-default icon-link-hover" data-bs-toggle="tooltip" title="@StringLocalizer["Add"]" onclick="loadFieldDetails('@Url.Action("Add", new { elementName = ViewBag.ElementName })', '');">
+                        <span class="fa fa-plus  bi"></span>
+                    </a>
+                </div>
                 <br/>
                 <div class="jjrelative">
                     <div id="listField">
@@ -293,6 +259,7 @@
                                                 {
                                                     label = $"{label[..30]}...";
                                                 }
+
                                                 <span>@label</span>
                                                 <span> - </span>
                                             }
