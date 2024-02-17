@@ -159,7 +159,7 @@ public class ExcelWriter(
     private async Task<string> CreateCell(Dictionary<string, object> row, FormElementField field)
     {
         string value = string.Empty;
-        if (field.DataBehavior != FieldBehavior.Virtual)
+        if (field.DataBehavior is not FieldBehavior.Virtual && field.DataBehavior is not FieldBehavior.WriteOnly)
         {
             if (row.Keys.Contains(field.Name))
             {

@@ -8,6 +8,7 @@ class ActionHelper {
         componentName: string,
         encryptedActionMap: string, 
         encryptedRouteContext: string,
+        isSubmit: boolean,
         confirmMessage: string) {
         
         if (confirmMessage) {
@@ -27,14 +28,20 @@ class ActionHelper {
             formViewActionInput.value = encryptedActionMap;
         }
         
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+
         
-        postFormValues({url:urlBuilder.build(), success: data => {
-            TooltipHelper.dispose("#" + componentName)
-            HTMLHelper.setOuterHTML(componentName,data);
-            listenAllEvents("#" + componentName);
-        }})
+        if(isSubmit){
+            ActionHelper.submitWithScrollPosition();
+        }
+        else{
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+            postFormValues({url:urlBuilder.build(), success: data => {
+                    TooltipHelper.dispose("#" + componentName)
+                    HTMLHelper.setOuterHTML(componentName,data);
+                    listenAllEvents("#" + componentName);
+                }})
+        }
     }
 
     static executeRedirectAction(componentName: string, routeContext: string, encryptedActionMap: string, confirmationMessage?: string) {

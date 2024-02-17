@@ -14,8 +14,9 @@ public record ActionContext
     public required FormElement FormElement { get; init; }
     public required FormStateData FormStateData { get; init; }
     public required string ParentComponentName { get; init; }
+    public required bool IsSubmit { get; init; }
+
     public string? FieldName { get; init; }
-    public bool IsSubmit { get; internal set; }
     
     internal ActionMap ToActionMap(ActionSource actionSource)
     {

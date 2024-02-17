@@ -14,7 +14,7 @@ class ActionHelper {
         localStorage.setItem('masterDataScrollPosition', window.scrollY.toString());
         document.forms[0].submit();
     }
-    static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, confirmMessage) {
+    static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, isSubmit, confirmMessage) {
         if (confirmMessage) {
             const result = confirm(confirmMessage);
             if (!result) {
@@ -29,13 +29,18 @@ class ActionHelper {
         else if (formViewActionInput) {
             formViewActionInput.value = encryptedActionMap;
         }
-        const urlBuilder = new UrlBuilder();
-        urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
-        postFormValues({ url: urlBuilder.build(), success: data => {
-                TooltipHelper.dispose("#" + componentName);
-                HTMLHelper.setOuterHTML(componentName, data);
-                listenAllEvents("#" + componentName);
-            } });
+        if (isSubmit) {
+            ActionHelper.submitWithScrollPosition();
+        }
+        else {
+            const urlBuilder = new UrlBuilder();
+            urlBuilder.addQueryParameter("routeContext", encryptedRouteContext);
+            postFormValues({ url: urlBuilder.build(), success: data => {
+                    TooltipHelper.dispose("#" + componentName);
+                    HTMLHelper.setOuterHTML(componentName, data);
+                    listenAllEvents("#" + componentName);
+                } });
+        }
     }
     static executeRedirectAction(componentName, routeContext, encryptedActionMap, confirmationMessage) {
         if (confirmationMessage) {

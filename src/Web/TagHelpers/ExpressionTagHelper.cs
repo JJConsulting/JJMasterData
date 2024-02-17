@@ -17,9 +17,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProviders, IStringLocalizer<MasterDataResources> stringLocalizer) : TagHelper
+public class ExpressionTagHelper(
+    IEnumerable<IExpressionProvider> expressionProviders, 
+    IStringLocalizer<MasterDataResources> stringLocalizer) : TagHelper
 {
-    private bool? _isBooleanExpression;
+    private bool? _isSyncExpression;
 
     [HtmlAttributeName("for")] 
     public ModelExpression? For { get; set; }
@@ -44,17 +46,17 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
     [HtmlAttributeName("disabled")]
     public bool Disabled { get; set; }
 
-    private bool IsBooleanExpression
+    private bool IsSqlExpression
     {
         get
         {
-            _isBooleanExpression ??= For
+            _isSyncExpression ??= For
                 ?.Metadata
                 ?.ContainerType
                 ?.GetProperty(For.Metadata.PropertyName!)
                 ?.IsDefined(typeof(SyncExpressionAttribute), inherit: true) is true;
 
-            return _isBooleanExpression.Value;
+            return _isSyncExpression.Value;
         }
     }
 
@@ -127,7 +129,7 @@ public class ExpressionTagHelper(IEnumerable<IExpressionProvider> expressionProv
         
         foreach (var provider in expressionProviders)
         {
-            if (IsBooleanExpression && provider is not ISyncExpressionProvider)
+            if (IsSqlExpression && provider is not ISyncExpressionProvider)
                 continue;
 
             select.Append(HtmlTag.Option, option =>
