@@ -230,7 +230,7 @@ public class JJDataExportation : ProcessComponent
         await exporter.RunWorkerAsync(CancellationToken.None);
 
         var downloader = ComponentFactory.Downloader.Create();
-        downloader.FilePath = exporter.FolderPath;
+        downloader.FilePath = exporter.ProcessReporter.FilePath;
 
         return downloader.GetDirectDownloadResult();
     }
