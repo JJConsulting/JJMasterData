@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Repository;
-using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -217,7 +217,7 @@ public class JJDataExportation : ProcessComponent
         return DataExportationWriterFactory.GetInstance(this);
     }
 
-    public void StartExportation(DictionaryListResult result)
+    public async Task<ComponentResult> ExecuteExportationAsync(DictionaryListResult result)
     {
         var exporter = CreateWriter();
 
@@ -226,7 +226,13 @@ public class JJDataExportation : ProcessComponent
 #endif
         exporter.DataSource = result.Data;
         exporter.TotalOfRecords = result.TotalOfRecords;
-        BackgroundTaskManager.Run(ProcessKey, exporter);
+        
+        await exporter.RunWorkerAsync(CancellationToken.None);
+
+        var downloader = ComponentFactory.Downloader.Create();
+        downloader.FilePath = exporter.FolderPath;
+
+        return downloader.GetDirectDownloadResult();
     }
 
     internal void ExportFileInBackground(Dictionary<string, object> filter, OrderByData orderByData)
