@@ -110,7 +110,7 @@ public class JJAuditLogView : AsyncComponent
             var gridResult = await GridView.GetResultAsync();
             if (gridResult is RenderedComponentResult renderedComponentResult)
             {
-                html.Append((HtmlBuilder)renderedComponentResult.HtmlBuilder);
+                html.Append(renderedComponentResult.HtmlBuilder);
             }
             else
             {
@@ -160,7 +160,7 @@ public class JJAuditLogView : AsyncComponent
         });
 
         if (result.Data.Count > 0)
-            entryId = Enumerable.ElementAt<Dictionary<string, object>>(result.Data, 0).ElementAt(0).Value.ToString();
+            entryId = result.Data.ElementAt(0).ElementAt(0).Value.ToString();
 
         return entryId;
     }
@@ -196,8 +196,8 @@ public class JJAuditLogView : AsyncComponent
         var filter = new Dictionary<string, object> { { AuditLogService.DicId, logId } };
 
         var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
-        string json = values[AuditLogService.DicJson]?.ToString();
-        string recordsKey = values[AuditLogService.DicKey]?.ToString();
+        var json = values[AuditLogService.DicJson]?.ToString();
+        var recordsKey = values[AuditLogService.DicKey]?.ToString();
         var fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json ?? string.Empty);
 
         var panel = DataPanel;
@@ -291,11 +291,11 @@ public class JJAuditLogView : AsyncComponent
         {
             var f = FormElement.Fields.First(x => x.IsPk);
             fieldKey.Label = f.Label;
-            fieldKey.HelpDescription = "Primary key record";
+            fieldKey.HelpDescription = StringLocalizer["Primary key record"];
         }
         else
         {
-            fieldKey.HelpDescription = "Primary key separated by semicolons";
+            fieldKey.HelpDescription = StringLocalizer["Primary key separated by semicolons"];
         }
 
         return grid;
