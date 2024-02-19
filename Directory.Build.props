@@ -3,7 +3,7 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>4.0.19</Version>
+		<Version>4.0.20</Version>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<IncludeSymbols>true</IncludeSymbols>
