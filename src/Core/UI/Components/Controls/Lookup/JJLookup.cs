@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Azure.Core;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Extensions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
@@ -13,6 +14,7 @@ using JJMasterData.Core.Extensions;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Html;
 using JJMasterData.Core.UI.Routing;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -24,6 +26,7 @@ public class JJLookup : ControlBase
     private FormValuesService FormValuesService { get; }
     private IEncryptionService EncryptionService { get; }
     private LookupService LookupService { get; }
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private IComponentFactory ComponentFactory { get; }
 
     #region "Properties"
@@ -106,6 +109,7 @@ public class JJLookup : ControlBase
         FormValuesService formValuesService,
         IEncryptionService encryptionService,
         LookupService lookupService,
+        IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory) : base(httpRequest.Form)
     {
         RouteContext = routeContextFactory.Create();
@@ -116,6 +120,7 @@ public class JJLookup : ControlBase
         FormValuesService = formValuesService;
         EncryptionService = encryptionService;
         LookupService = lookupService;
+        StringLocalizer = stringLocalizer;
         ComponentFactory = componentFactory;
         Enabled = true;
         AutoReloadFormFields = true;
@@ -231,7 +236,7 @@ public class JJLookup : ControlBase
         button.Name = $"btn_{Name}";
         button.Enabled = Enabled;
         button.ShowAsButton = true;
-        button.OnClientClick = $"""defaultModal.showIframe('{formViewUrl}', '{ModalTitle}', '{(int)ModalSize}')""";
+        button.OnClientClick = $"""defaultModal.showIframe('{formViewUrl}', '{StringLocalizer[ModalTitle]}', '{(int)ModalSize}')""";
         button.IconClass = "fa fa-search";
 
         if (BootstrapHelper.Version == 3)

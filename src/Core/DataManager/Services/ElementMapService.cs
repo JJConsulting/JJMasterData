@@ -40,8 +40,10 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
         object? value, 
         FormStateData? formStateData)
     {
-        var filters = new Dictionary<string, object>();
-
+        var filters = new Dictionary<string, object>
+        {
+            [elementMap.IdFieldName] = value?.ToString()!
+        };
         if (elementMap.Filters.Count > 0)
         {
             foreach (var filter in elementMap.Filters)
@@ -54,10 +56,6 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
                     filters[filter.Key] = filterParsed;
                 }
             }
-        }
-        else
-        {
-            filters[elementMap.IdFieldName] = value?.ToString()!;
         }
        
         return filters;

@@ -1,9 +1,11 @@
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Routing;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.UI.Components;
@@ -14,8 +16,8 @@ internal class LookupFactory(
         LookupService lookupService,
         IComponentFactory componentFactory,
         IEncryptionService encryptionService,
-        RouteContextFactory routeContextFactory
-        )
+        RouteContextFactory routeContextFactory,
+        IStringLocalizer<MasterDataResources> stringLocalizer)
     : IControlFactory<JJLookup>
 {
     private IHttpRequest HttpRequest { get; } = httpRequest;
@@ -24,6 +26,7 @@ internal class LookupFactory(
     private IComponentFactory ComponentFactory { get; } = componentFactory;
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private RouteContextFactory RouteContextFactory { get; } = routeContextFactory;
+    private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
 
 
     public JJLookup Create()
@@ -36,6 +39,7 @@ internal class LookupFactory(
             FormValuesService,
             EncryptionService,
             LookupService,
+            StringLocalizer,
             ComponentFactory);
     }
 
@@ -49,6 +53,7 @@ internal class LookupFactory(
             FormValuesService,
             EncryptionService,
             LookupService,
+            StringLocalizer,
             ComponentFactory);
 
         lookup.ElementName = formElement.Name;
