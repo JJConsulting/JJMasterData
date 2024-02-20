@@ -2454,7 +2454,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Show rows striped" xml:space="preserve">
-    <value>Exibir Linhas Zebradas</value>
+    <value>Exibir linhas zebradas</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Show table border" xml:space="preserve">

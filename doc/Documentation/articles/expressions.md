@@ -86,7 +86,7 @@ var field = new ElementField();
 field.DefaultValue = "sql:select field2 from table1 where field1 = '{field1}'";
 ```
 
-## Types Expressions
+## Types of Expressions
 - Default Value: When the value is null or empty, this expression will execute before the trigger to populate the value
 - Trigger Expression: This is always executed after an AJAX request to reload the form or when the form is first opened.
 - Visible Expression: Controls the field visibility, and must return a bool value.
