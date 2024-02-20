@@ -79,7 +79,7 @@
                 if (next.is(":disabled")) {
                     for (let i = 2; i < 1000; i++) {
                         next = focusable.eq(focusable.index(self) + i);
-                        if (!next.is(":disabled") && next.is(":visible"))
+                        if (!next.is(":disabled") && !next.hasClass("disabled") && next.is(":visible"))
                             break;
                     }
                 }

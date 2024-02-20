@@ -286,7 +286,7 @@ internal class DataPanelControl
     private JJLabel CreateLabel(FormElementField field, bool isRange)
     {
         var label = ComponentFactory.Html.Label.Create(field);
-        label.LabelFor = FieldNamePrefix + field.Name;
+        label.LabelFor =GetFieldNameWithPrefix(field);
 
         if (_isViewModeAsStatic)
             label.LabelFor = null;
@@ -311,7 +311,7 @@ internal class DataPanelControl
         var control = ComponentFactory.Controls.Create(FormElement, field, formStateData, ParentComponentName, value);
 
         if (!string.IsNullOrEmpty(FieldNamePrefix))
-            control.Name = FieldNamePrefix + field.Name;
+            control.Name = GetFieldNameWithPrefix(field);
 
         control.Enabled = ExpressionsService.GetBoolValue(field.EnableExpression, formStateData);
 
@@ -360,11 +360,14 @@ internal class DataPanelControl
 
     private string GetScriptReload(FormElementField field)
     {
-        var reloadPanelScript = Scripts.GetReloadPanelScript(field.Name);
+        var nameWithPrefix = GetFieldNameWithPrefix(field);
         
         //Workaround to trigger event on search component
         if (field.Component is not FormComponent.Search) 
-            return reloadPanelScript;
+            return Scripts.GetReloadPanelScript(field.Name,nameWithPrefix);
+        
+        var reloadPanelScript 
+            = Scripts.GetReloadPanelScript(field.Name, nameWithPrefix + "_text");
         
         var script = new StringBuilder();
         script.Append("setTimeout(function() { ");
@@ -374,4 +377,5 @@ internal class DataPanelControl
 
     }
 
+    private string GetFieldNameWithPrefix(FormElementField field) => FieldNamePrefix + field.Name;
 }
