@@ -11,8 +11,8 @@ public static class MasterDataStringLocalizerElement
         {
             Name = options.LocalizationTableName,
             TableName = options.LocalizationTableName,
-            ReadProcedureName = options.GetReadProcedureName(options.LocalizationTableName),
-            WriteProcedureName = options.GetWriteProcedureName(options.LocalizationTableName),
+            UseReadProcedure = false,
+            UseWriteProcedure = false,
             Info = "Resources"
         };
 
