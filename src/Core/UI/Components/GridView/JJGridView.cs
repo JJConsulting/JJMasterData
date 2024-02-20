@@ -936,10 +936,12 @@ public class JJGridView : AsyncComponent
         btnCancel.ShowAsButton = true;
         btnCancel.OnClientClick = Scripts.GetCloseConfigUIScript();
         modal.Buttons.Add(btnCancel);
-        modal.HtmlBuilderContent = GridSettingsForm.GetHtmlBuilder(IsPagingEnabled(), CurrentSettings);
+        modal.HtmlBuilderContent = GridSettingsForm.GetHtmlBuilder(CanCustomPaging(), CurrentSettings);
 
         return modal.GetHtmlBuilder();
     }
+
+    private bool CanCustomPaging() => IsPagingEnabled() && CurrentSettings.RecordsPerPage % 5 == 0 && CurrentSettings.RecordsPerPage <= 50;
 
     private async Task<HtmlBuilder> GetExportHtml()
     {
@@ -1296,7 +1298,11 @@ public class JJGridView : AsyncComponent
 
     internal bool IsPagingEnabled()
     {
-        return !(!ShowPagging || CurrentPage == 0 || CurrentSettings.RecordsPerPage == 0 || TotalOfRecords == 0);
+        return !(
+            !ShowPagging 
+            || CurrentPage == 0 
+            || CurrentSettings.RecordsPerPage == 0 
+            || TotalOfRecords == 0);
     }
 
     public void AddToolbarAction(SqlCommandAction action)

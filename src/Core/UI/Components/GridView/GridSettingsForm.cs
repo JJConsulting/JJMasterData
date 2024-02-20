@@ -9,7 +9,10 @@ namespace JJMasterData.Core.UI.Components;
 /// <summary>
 /// Class responsible to render the UI on JJGridView
 /// </summary>
-internal class GridSettingsForm(string name, IHttpContext currentContext, IStringLocalizer<MasterDataResources> stringLocalizer)
+internal class GridSettingsForm(
+    string name,
+    IHttpContext currentContext,
+    IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     private readonly string _tableTotalPerPage = $"{name}-table-regperpage";
     private readonly string _tableTotalPaginationButtons = $"{name}-table-totalpagebuttons";
@@ -174,7 +177,7 @@ internal class GridSettingsForm(string name, IHttpContext currentContext, IStrin
             .WithCssClass("form-control form-select")
             .WithNameAndId(_tableTotalPerPage);
 
-        for (var i = 1; i < 7; i++)
+        for (var i = 1; i < 11; i++)
         {
             var page = i * 5;
             select.Append(HtmlTag.Option, option =>

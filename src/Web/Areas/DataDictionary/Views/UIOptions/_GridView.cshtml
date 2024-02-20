@@ -1,86 +1,101 @@
 @using JJMasterData.Core.UI
-@model JJMasterData.Core.DataDictionary.Models.FormElementOptions
+@model JJMasterData.Core.DataDictionary.Models.GridUI
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+
 <div class="container-fluid">
+
     <div class="row">
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowTitle"></label>
-            <checkbox for="Grid.ShowTitle" switch="true"/>
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="ShowTitle"></label>
+            <checkbox for="ShowTitle" switch="true"/>
         </div>
 
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.EnableSorting"></label>
-            <checkbox for="Grid.EnableSorting" switch="true"/>
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="EnableSorting"></label>
+            <checkbox for="EnableSorting" switch="true"/>
         </div>
 
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.EnableMultiSelect"></label>
-            <tooltip title="@StringLocalizer["Allows you to select multiple lines in the grid."]"/>
-            <checkbox for="Grid.EnableMultiSelect" switch="true"/>
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="EnableMultiSelect"></label>
+            <tooltip title="@StringLocalizer["Allows you to select multiple lines in the "]"/>
+            <checkbox for="EnableMultiSelect" switch="true"/>
         </div>
 
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.MaintainValuesOnLoad"></label>
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="MaintainValuesOnLoad"></label>
             <tooltip title="@StringLocalizer["Filters, sorting and grid settings are saved."]"/>
-            <checkbox for="Grid.MaintainValuesOnLoad" switch="true"/>
+            <checkbox for="MaintainValuesOnLoad" switch="true"/>
         </div>
 
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowRowHover"></label>
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="ShowRowHover"></label>
             <tooltip title="@StringLocalizer["Change the line color on mouseover."]"/>
-            <checkbox for="Grid.ShowRowHover" switch="true"/>
+            <checkbox for="ShowRowHover" switch="true"/>
         </div>
 
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowRowStriped"></label>
-            <checkbox for="Grid.ShowRowStriped" switch="true"/>
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="ShowRowStriped"></label>
+            <checkbox for="ShowRowStriped" switch="true"/>
         </div>
 
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowBorder"></label>
-            <checkbox for="Grid.ShowBorder" switch="true"/>
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="ShowBorder"></label>
+            <checkbox for="ShowBorder" switch="true"/>
         </div>
 
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowToolBar"></label>
-            <checkbox for="Grid.ShowToolBar" switch="true"/>
-        </div>
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.UseVerticalLayoutAtFilter"></label>
-            <checkbox for="Grid.UseVerticalLayoutAtFilter" switch="true"/>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.HeaderFixed"></label>
-            <checkbox for="Grid.HeaderFixed" switch="true"/>
-        </div>
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.ShowHeaderWhenEmpty"></label>
-            <checkbox for="Grid.ShowHeaderWhenEmpty" switch="true"/>
-        </div>
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.IsCompact"></label>
-            <checkbox for="Grid.IsCompact" switch="true"/>
-        </div>
-    </div>
-    
-    <div class="row">
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.RecordsPerPage"></label>
-            <input asp-for="Grid.RecordsPerPage" class="form-control"/>
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="ShowToolBar"></label>
+            <checkbox for="ShowToolBar" switch="true"/>
         </div>
 
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.TotalPaggingButton"></label>
-            <input asp-for="Grid.TotalPaggingButton" class="form-control">
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="UseVerticalLayoutAtFilter"></label>
+            <checkbox for="UseVerticalLayoutAtFilter" switch="true"/>
         </div>
 
-        <div class="col-sm-4">
-            <label class="@BootstrapHelper.Label" asp-for="Grid.EmptyDataText"></label>
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="HeaderFixed"></label>
+            <checkbox for="HeaderFixed" switch="true"/>
+        </div>
+
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="ShowHeaderWhenEmpty"></label>
+            <checkbox for="ShowHeaderWhenEmpty" switch="true"/>
+        </div>
+
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="IsCompact"></label>
+            <checkbox for="IsCompact" switch="true"/>
+        </div>
+
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="ShowPagging"></label>
+            <checkbox for="ShowPagging" switch="true" />
+        </div>
+        
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="RecordsPerPage"></label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" asp-for="RecordsPerPage">
+                <link-button icon="SolidGaugeHigh" tooltip="@StringLocalizer["Maximum possible records"]" color="Default" on-client-click="setMaxRecordsPerPage()"/>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="TotalPaggingButton"></label>
+            <input asp-for="TotalPaggingButton" class="form-control">
+        </div>
+
+        <div class="col-sm-3">
+            <label class="@BootstrapHelper.Label" asp-for="EmptyDataText"></label>
             <tooltip title="@StringLocalizer["Text shown when there are no records."]"/>
-            <input asp-for="Grid.EmptyDataText" class="form-control"/>
+            <input asp-for="EmptyDataText" class="form-control"/>
         </div>
     </div>
 </div>
+
+<script>
+    function setMaxRecordsPerPage(){
+        document.getElementById('@Html.IdFor(m=>m.RecordsPerPage)').value = '@int.MaxValue';
+    }
+</script>

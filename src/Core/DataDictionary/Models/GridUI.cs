@@ -117,10 +117,10 @@ public class GridUI
     public bool ShowHeaderWhenEmpty { get; set; } = true;
 
     /// <summary>
-    /// Obtém ou define o texto a ser exibido na linha de dados vazia quando um controle JJGridView não contém registros.
+    /// Gets or sets the text to be displayed in the empty data row when a JJGridView control contains no records.
     /// </summary>
     /// <remarks>
-    /// Valor padrão = (Não existe registro para ser exibido).
+    /// Default value = (There is no record to be displayed).
     /// <para/>
     /// </remarks>
     [JsonProperty("emptyDataText")]
@@ -128,27 +128,23 @@ public class GridUI
     public string EmptyDataText { get; set; } = "There is no record to display.";
 
     /// <summary>
-    /// Exibe os controles de paginação (Default = true) 
+    /// Displays pagination controls (Default = true)
     /// </summary>
     /// <remarks>
-    /// Oculta todos os botões da paginação 
-    /// porem mantem os controles de paginação pré-definidos.
+    /// Hides all pagination buttons, however, it maintains the pre-defined pagination controls.
     /// <para/>
-    /// A Paginãção será exibida se o numero de registros da grid ultrapassar a quantidade minima de registros em uma pagina.
+    /// Pagination will be displayed if the number of records in the grid exceeds the minimum number of records on a page.
     /// <para/>
-    /// Se a propriedade CurrentPage for igual zero  a paginação não será exibida.
+    /// If the CurrentPage property is equal to zero, pagination will not be displayed.
     /// <para/>
-    /// Se a propriedade CurrentUI.RecordsPerPage for igual zero a paginação não será exibida.
+    /// If the CurrentUI.RecordsPerPage property is equal to zero, pagination will not be displayed.
     /// <para/>
-    /// Se a propriedade TotalRecords for igual zero a paginação não será exibida.
+    /// If the TotalRecords property is equal to zero, pagination will not be displayed.
     /// </remarks>
     [JsonProperty("showPagging")]
-    [Display(Name = "Show Pagging Buttons")]
+    [Display(Name = "Enable Pagination")]
     public bool ShowPagging { get; set; } = true;
-
-    /// <summary>
-    /// Fixar o cabeçalho da grid ao realizar Scroll (Default = false)
-    /// </summary>
+    
     [JsonProperty("headerFixed")]
     [Display(Name = "Header Fixed At Scroll")]
     public bool HeaderFixed { get; set; }

@@ -2,7 +2,6 @@
 @using JJMasterData.Core.UI
 @using JJMasterData.Core.UI.Components
 @model JJMasterData.Core.DataDictionary.Models.FormElementOptions
-@inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 <style>
     input[type=checkbox] {
@@ -29,6 +28,10 @@
         </div>
     </div>
 
-    <collapse-panel model="Model" icon="Table" title="Grid View" partial="_GridView" expanded-by-default="true"/>
-    <collapse-panel model="Model" icon="Columns" title="Data Panel" partial="_DataPanel" expanded-by-default="true"/>
+    <collapse-panel icon="Table" title="Grid View" expanded-by-default="true">
+        <partial for="Grid" name="_GridView"/>
+    </collapse-panel>
+    <collapse-panel icon="Columns" title="Data Panel" expanded-by-default="true">
+        <partial for="Form" name="_DataPanel"/>
+    </collapse-panel>
 }

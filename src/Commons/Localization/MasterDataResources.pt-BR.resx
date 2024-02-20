@@ -3950,4 +3950,10 @@
   <data name="Checkbox components can only be of type Int or Boolean" xml:space="preserve">
     <value>Componentes do tipo Checkbox só podem ser do tipo Int ou Booleano</value>
   </data>
+  <data name="Enable Pagination" xml:space="preserve">
+    <value>Habilitar Paginação</value>
+  </data>
+  <data name="Maximum possible records" xml:space="preserve">
+    <value>Máximo de registros possíveis</value>
+  </data>
 </root>

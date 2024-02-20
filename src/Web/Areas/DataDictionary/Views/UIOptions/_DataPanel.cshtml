@@ -2,14 +2,14 @@
 
 @using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.UI
-@model JJMasterData.Core.DataDictionary.Models.FormElementOptions
+@model JJMasterData.Core.DataDictionary.Models.FormUI
 
 <div class="row">
-    <div class="col-sm-4">
-        <label class="@BootstrapHelper.Label"  asp-for="Form.FormCols"></label>
+    <div class="col-sm-3">
+        <label class="@BootstrapHelper.Label"  asp-for="FormCols"></label>
         <tooltip title="@StringLocalizer["Number of columns where fields will be rendered by default."]"/>
         
-        @Html.DropDownListFor(model => Model.Form.FormCols, new[]
+        @Html.DropDownListFor(model => Model.FormCols, new[]
         {
             new SelectListItem { Text = StringLocalizer["1 (one column)"], Value = "1" },
             new SelectListItem { Text = StringLocalizer["2 (two columns)"], Value = "2" },
@@ -20,19 +20,19 @@
         }, new { @class = "form-control" })
     </div>
     
-    <div class="col-sm-4">
-       <label class="@BootstrapHelper.Label" asp-for="Form.IsVerticalLayout"></label>
-       <checkbox for="Form.IsVerticalLayout" switch="true"/>
+    <div class="col-sm-3">
+       <label class="@BootstrapHelper.Label" asp-for="IsVerticalLayout"></label>
+       <checkbox for="IsVerticalLayout" switch="true"/>
     </div>
     
-    <div class="col-sm-4">
-        <label class="@BootstrapHelper.Label" asp-for="Form.ShowViewModeAsStatic"></label>
+    <div class="col-sm-3">
+        <label class="@BootstrapHelper.Label" asp-for="ShowViewModeAsStatic"></label>
         <tooltip title="@StringLocalizer["When the panel is in PageState.View show only the values without the components."]"/>
-        <checkbox for="Form.ShowViewModeAsStatic" switch="true"/>
+        <checkbox for="ShowViewModeAsStatic" switch="true"/>
     </div>
     
-    <div class="@BootstrapHelper.FormGroup col-sm-4 required">
-        <label class="@BootstrapHelper.Label " asp-for="Form.EnterKey"></label>
-        <select asp-for="Form.EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
+    <div class="@BootstrapHelper.FormGroup col-sm-3 required">
+        <label class="@BootstrapHelper.Label " asp-for="EnterKey"></label>
+        <select asp-for="EnterKey" class="form-control form-select" asp-items="Html.GetEnumSelectList<FormEnterKey>()"></select>
     </div>
 </div>

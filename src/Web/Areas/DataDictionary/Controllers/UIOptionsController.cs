@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 
-public class UIOptionsController(UIOptionsService? optionsService) : DataDictionaryController
+public class UIOptionsController(UIOptionsService optionsService) : DataDictionaryController
 {
     public async Task<ActionResult> Index(string elementName)
     {
@@ -19,7 +19,7 @@ public class UIOptionsController(UIOptionsService? optionsService) : DataDiction
     [HttpPost]
     public async Task<ActionResult> Edit(FormElementOptions uIMetadataOptions, string elementName)
     {
-        if (await optionsService!.EditOptionsAsync(uIMetadataOptions, elementName))
+        if (await optionsService.EditOptionsAsync(uIMetadataOptions, elementName))
             return RedirectToAction("Index", new { elementName });
 
         var jjValidationSummary = optionsService.GetValidationSummary();
