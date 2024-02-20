@@ -17,7 +17,7 @@ public class GridUI
     /// Se o RecordsPerPage for zero a paginação não será exibida
     /// </remarks>
     [JsonProperty("totalPerPage")]
-    [Display(Name = "Total Of Records per Page")]
+    [Display(Name = "Total Of Records per page")]
     public int RecordsPerPage { get; set; } = 5;
 
     /// <summary>
@@ -41,7 +41,7 @@ public class GridUI
     /// (Default = true)
     /// </summary>*
     [JsonProperty("showRowStriped")]
-    [Display(Name = "Show Rows Striped")]
+    [Display(Name = "Show Rows striped")]
     public bool ShowRowStriped { get; set; } = true;
 
     /// <summary>
@@ -158,6 +158,6 @@ public class GridUI
     public bool UseVerticalLayoutAtFilter { get; set; } 
     
     [JsonProperty("isCompact")]
-    [Display(Name = "Compact Mode")]
+    [Display(Name = "Compact mode")]
     public bool IsCompact { get; set; }
 }

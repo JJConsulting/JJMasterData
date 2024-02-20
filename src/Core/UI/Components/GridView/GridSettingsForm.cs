@@ -98,7 +98,7 @@ internal class GridSettingsForm(string name, IHttpContext currentContext, IStrin
             {
                 label.WithAttribute("for", _tableIsCompact);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(stringLocalizer["Compact Mode"]);
+                label.AppendText(stringLocalizer["Compact mode"]);
             });
         div.Append(HtmlTag.Div, div =>
         {
@@ -156,7 +156,7 @@ internal class GridSettingsForm(string name, IHttpContext currentContext, IStrin
             {
                 label.WithAttribute("for", _tableTotalPerPage);
                 label.WithCssClass("col-sm-4");
-                label.AppendText(stringLocalizer["Records per Page"]);
+                label.AppendText(stringLocalizer["Records per page"]);
             });
         div.Append(HtmlTag.Div, div =>
         {
