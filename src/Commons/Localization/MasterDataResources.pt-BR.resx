@@ -3743,12 +3743,6 @@
   <data name="Save your form to download this file." xml:space="preserve">
     <value>Salve seu formulário para baixar esse arquivo</value>
   </data>
-  <data name="It's possible to create conditionals using for example '{PageState}' = 'Variable' where 'Variable' can be:" xml:space="preserve">
-    <value>É possível criar condicionais usando por exemplo '{PageState}' = 'Variável' onde 'Variável' pode ser: </value>
-  </data>
-  <data name="You can also use any field from your element between {}." xml:space="preserve">
-    <value>Você também pode usar qualquer campo do seu elemento entre {}.</value>
-  </data>
   <data name="Expressions" xml:space="preserve">
     <value>Expressões</value>
   </data>

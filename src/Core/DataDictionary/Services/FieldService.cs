@@ -374,6 +374,14 @@ public class FieldService(IValidationDictionary validationDictionary,
             AddError(nameof(elementMapFilter.ExpressionValue), StringLocalizer["Invalid filter field"]);
         }
 
+        if (elementMap is null || field.DataItem.ElementMap is null)
+        {
+            AddError(nameof(elementMap.IdFieldName),
+                StringLocalizer["Required [{0}] field", StringLocalizer["Element Map"]]);
+            return IsValid;
+        }
+
+        
         if (string.IsNullOrEmpty(elementMap.IdFieldName))
             AddError(nameof(elementMap.IdFieldName),
                 StringLocalizer["Required [{0}] field", StringLocalizer["Field Key"]]);

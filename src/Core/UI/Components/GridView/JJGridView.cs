@@ -897,12 +897,11 @@ public class JJGridView : AsyncComponent
     {
         if (_formStateData == null)
         {
-            var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(RelationValues!,UserValues, PageState.List));
+            var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(RelationValues!),UserValues, PageState.List));
             var userValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
 
             DataHelper.CopyIntoDictionary(userValues, RelationValues!, true);
-            DataHelper.CopyIntoDictionary(userValues, UserValues, false);
-            DataHelper.CopyIntoDictionary(userValues, defaultValues, true);
+            DataHelper.CopyIntoDictionary(userValues, UserValues);
 
             _formStateData = new FormStateData(defaultValues, userValues, PageState.List);
         }
