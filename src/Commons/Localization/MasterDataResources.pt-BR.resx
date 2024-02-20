@@ -2169,8 +2169,8 @@
     <value>registros</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="Records per Page" xml:space="preserve">
-    <value>Registros por Página</value>
+  <data name="Records per page" xml:space="preserve">
+    <value>Registros por página</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="records." xml:space="preserve">
@@ -2453,7 +2453,7 @@
     <value>Mostrar como botão</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Show Rows Striped" xml:space="preserve">
+  <data name="Show rows striped" xml:space="preserve">
     <value>Exibir Linhas Zebradas</value>
     <comment>JJMasterDataCore</comment>
   </data>
@@ -2781,7 +2781,7 @@
     <value>Total de botões na paginação</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Total Of Records per Page" xml:space="preserve">
+  <data name="Total Of Records per page" xml:space="preserve">
     <value>Total de Registros por Página</value>
     <comment>JJMasterDataWeb</comment>
   </data>
@@ -3737,8 +3737,8 @@
   <data name="C# Class" xml:space="preserve">
     <value>Classe C#</value>
   </data>
-  <data name="Compact Mode" xml:space="preserve">
-    <value>Modo Compacto</value>
+  <data name="Compact mode" xml:space="preserve">
+    <value>Modo compacto</value>
   </data>
   <data name="Save your form to download this file." xml:space="preserve">
     <value>Salve seu formulário para baixar esse arquivo</value>

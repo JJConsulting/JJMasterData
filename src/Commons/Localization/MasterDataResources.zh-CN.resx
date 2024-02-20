@@ -2209,7 +2209,7 @@
     <value>记录</value>
     <comment>JJMasterDataApi</comment>
   </data>
-  <data name="Records per Page" xml:space="preserve">
+  <data name="Records per page" xml:space="preserve">
     <value>每页记录</value>
     <comment>JJMasterDataCore</comment>
   </data>
@@ -2837,7 +2837,7 @@
     <value>分页按钮总数</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Total Of Records per Page" xml:space="preserve">
+  <data name="Total Of Records per page" xml:space="preserve">
     <value>每页总记录</value>
     <comment>JJMasterDataWeb</comment>
   </data>
