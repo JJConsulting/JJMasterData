@@ -24,8 +24,7 @@ class GridViewFilterHelper {
     static clearFilterInputs(componentName) {
         const divId = "#current-grid-filter-" + componentName;
         const selector = divId + " input:enabled, " + divId + " select:enabled";
-
-
+        
         $(selector).each(function () {
             let currentObj = $(this);
             
@@ -40,6 +39,12 @@ class GridViewFilterHelper {
             if(currentObj.typeahead){
                 currentObj.typeahead("val","");
                 currentObj.typeahead("destroy");
+            }
+
+            if(currentObj.hasClass("jj-numeric")){
+                //@ts-ignore
+                const autoNumeric = AutoNumeric.getAutoNumericElement(currentObj[0])
+                autoNumeric.clear();
             }
             
             let inputType: string = (this as any).type;

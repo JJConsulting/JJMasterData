@@ -1037,7 +1037,8 @@ public class JJGridView : AsyncComponent
                             RecordsPerPage = int.MaxValue,
                             CurrentPage = 1
                         });
-                        DataExportation.StartExportation(result);
+                        var exportationResult = await DataExportation.ExecuteExportationAsync(result);
+                        return exportationResult;
                     }
                     else
                     {

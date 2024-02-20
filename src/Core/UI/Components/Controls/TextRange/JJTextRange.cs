@@ -31,7 +31,7 @@ public class JJTextRange(IFormValues formValues,
         div.WithAttributes(Attributes);
         await div.AppendAsync(HtmlTag.Div, async div =>
         {
-            div.WithCssClass(IsVerticalLayout ? "col-sm-5" : "col-sm-3");
+            div.WithCssClass("col-sm-5");
 
             FromField.Name = $"{Name}_from";
             FromField.Enabled = Enabled;
@@ -40,7 +40,7 @@ public class JJTextRange(IFormValues formValues,
         });
         await div.AppendAsync(HtmlTag.Div, async div =>
         {
-            div.WithCssClass(IsVerticalLayout ? "col-sm-5" : "col-sm-3");
+            div.WithCssClass("col-sm-5");
 
             ToField.Name = $"{Name}_to";
             ToField.Enabled = Enabled;
@@ -49,7 +49,7 @@ public class JJTextRange(IFormValues formValues,
         });
         div.Append(HtmlTag.Div, div =>
         {
-            div.WithCssClass(IsVerticalLayout ? "col-sm-2" : "col-sm-4");
+            div.WithCssClass("col-sm-2");
             div.AppendIf(EnableDatePeriods, GetDatePeriodsHtmlElement);
         });
 

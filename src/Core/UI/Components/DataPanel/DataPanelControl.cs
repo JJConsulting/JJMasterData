@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -130,9 +131,9 @@ internal class DataPanelControl
             
             row?.Append(htmlField);
 
-            string fieldClass;
+            string? fieldClass;
             
-            if (field.CssClass != null && !string.IsNullOrEmpty(field.CssClass))
+            if (!string.IsNullOrEmpty(field.CssClass))
             {
                 fieldClass = field.CssClass;
             }
@@ -165,53 +166,27 @@ internal class DataPanelControl
 
         return html;
     }
-
-   
-
+    
     private async Task<HtmlBuilder> GetHtmlFormHorizontal(List<FormElementField> fields)
     {
-        string labelClass = "";
-        string? fieldClass = "";
-        string fullClass = "";
-
-        int cols = FormUI.FormCols;
-        if (cols == 1)
-        {
-            labelClass = "col-sm-2";
-            fieldClass = "col-sm-9";
-            fullClass = "col-sm-9";
-        }
-        else if (cols == 2)
-        {
-            labelClass = "col-sm-2";
-            fieldClass = "col-sm-4";
-            fullClass = "col-sm-9";
-        }
-        else if (cols == 3)
-        {
-            labelClass = "col-sm-2";
-            fieldClass = "col-sm-2";
-            fullClass = "col-sm-9";
-        }
-        else if (cols >= 4)
-        {
+        var cols = FormUI.FormCols;
+        if (cols >= 4)
             cols = 4;
-            labelClass = "col-sm-1";
-            fieldClass = "col-sm-2";
-            fullClass = "col-sm-8";
-        }
-
-
+        
         var html = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass(BootstrapHelper.FormHorizontal);
 
         int colCount = 1;
         HtmlBuilder? row = null;
         var formData = new FormStateData(Values, UserValues, PageState);
-        foreach (var f in fields)
+        foreach (var field in fields)
         {
-            if (!string.IsNullOrEmpty(f.CssClass))
-                fieldClass = f.CssClass;
+            var fieldClass = GetHorizontalFieldClass(colCount);
+            var labelClass = GetHorizontalLabelClass(colCount);
+            
+            var hasCssClass = !string.IsNullOrEmpty(field.CssClass);
+            if (hasCssClass)
+                fieldClass = field.CssClass;
 
             if (BootstrapHelper.Version > 3)
             {
@@ -220,20 +195,20 @@ internal class DataPanelControl
             }
 
             //Visible expression
-            bool visible = ExpressionsService.GetBoolValue(f.VisibleExpression, formData);
+            bool visible = ExpressionsService.GetBoolValue(field.VisibleExpression, formData);
             if (!visible)
                 continue;
 
             //Value
             object? value = null;
-            if (Values != null && Values.TryGetValue(f.Name, out var nonFormattedValue))
-                value = FieldsService.FormatValue(f, nonFormattedValue);
+            if (Values != null && Values.TryGetValue(field.Name, out var nonFormattedValue))
+                value = FieldsService.FormatValue(field, nonFormattedValue);
             
-            var label = CreateLabel(f, IsRange(f, PageState));
+            var label = CreateLabel(field, IsRange(field, PageState));
             label.CssClass = labelClass;
             
             var cssClass = string.Empty;
-            if (BootstrapHelper.Version == 3 && Errors != null && Errors.ContainsKey(f.Name))
+            if (BootstrapHelper.Version == 3 && Errors != null && Errors.ContainsKey(field.Name))
                 cssClass += " has-error";
 
             if (colCount == 1 || colCount >= cols)
@@ -247,12 +222,12 @@ internal class DataPanelControl
             }
 
             string? colClass = fieldClass;
-            if (f.Component == FormComponent.TextArea)
+            if (field.Component is FormComponent.TextArea)
             {
                 colCount = 1;
-                colClass = fullClass;
+                colClass = GetHorizontalTextAreaClass(cols);
             }
-            else if (f.Component == FormComponent.CheckBox)
+            else if (field.Component is FormComponent.CheckBox)
             {
                 colCount = 1;
                 if (!_isViewModeAsStatic)
@@ -270,17 +245,45 @@ internal class DataPanelControl
             await row?.AppendAsync(HtmlTag.Div, async col =>
             {
                 col.WithCssClass(colClass);
-                col.Append(_isViewModeAsStatic ? await GetStaticField(f) : await GetControlFieldHtml(f, value));
+                col.Append(_isViewModeAsStatic ? await GetStaticField(field) : await GetControlFieldHtml(field, value));
             })!;
             
         }
 
         return html;
     }
+    
+    private static string GetHorizontalLabelClass(int cols) => cols switch
+    {
+        1 => "col-sm-2",
+        2 => "col-sm-2",
+        3 => "col-sm-2",
+        4 => "col-sm-1",
+        _ => throw new ArgumentException("Invalid number of columns", nameof(cols))
+    };
+
+    private static string GetHorizontalFieldClass(int cols) => cols switch
+    {
+        //With spaces of 12 subtracting from the label, we consider:
+        1 => "col-sm-10",// 10 * 1 = 10
+        2 => "col-sm-5", // 5 * 2 = 10
+        3 => "col-sm-3", // 3 * 3 = 9 
+        4 => "col-sm-2", // 2 * 4 = 8 
+        _ => throw new ArgumentException("Invalid number of columns", nameof(cols))
+    };
+
+    private static string GetHorizontalTextAreaClass(int cols) => cols switch
+    {
+        1 => "col-sm-9",
+        2 => "col-sm-9",
+        3 => "col-sm-9",
+        4 => "col-sm-8",
+        _ => throw new ArgumentException("Invalid number of columns", nameof(cols))
+    };
 
     private static bool IsRange(ElementField field, PageState pageState)
     {
-        return pageState == PageState.Filter && field.Filter.Type == FilterMode.Range;
+        return pageState is PageState.Filter && field.Filter.Type == FilterMode.Range;
     }
 
     private JJLabel CreateLabel(FormElementField field, bool isRange)

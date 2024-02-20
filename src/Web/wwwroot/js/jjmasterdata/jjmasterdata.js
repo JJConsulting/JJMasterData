@@ -1069,6 +1069,10 @@ class GridViewFilterHelper {
                 currentObj.typeahead("val", "");
                 currentObj.typeahead("destroy");
             }
+            if (currentObj.hasClass("jj-numeric")) {
+                const autoNumeric = AutoNumeric.getAutoNumericElement(currentObj[0]);
+                autoNumeric.clear();
+            }
             let inputType = this.type;
             if (inputType == "checkbox") {
                 currentObj.prop("checked", false);
