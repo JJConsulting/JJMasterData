@@ -159,6 +159,9 @@ public class JJUploadArea : AsyncComponent
 
     internal HtmlBuilder GetUploadAreaHtmlBuilder()
     {
+        if (!Visible)
+            return new HtmlBuilder();
+        
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", $"{Name}-upload-area-div")
             .WithCssClass("upload-area-div")
