@@ -22,7 +22,7 @@ public class StringLocalizerTest
         var resourceManagerStringLocalizerFactory = new ResourceManagerStringLocalizerFactory(localizationOptions.Object,logger.Object);
         var entityRepository = new Mock<IServiceProvider>();
         var cache = new Mock<IMemoryCache>();
-        var options = new Mock<IOptions<MasterDataCommonsOptions>>();
+        var options = new Mock<IOptionsMonitor<MasterDataCommonsOptions>>();
         
         // Act
         var stringLocalizerFactory = new MasterDataStringLocalizerFactory(

@@ -41,7 +41,7 @@ public class PdfWriter(
         IEncryptionService encryptionService,
         ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
-        IOptions<MasterDataCoreOptions> options,
+        IOptionsSnapshot<MasterDataCoreOptions> options,
         DataItemService dataItemService,
         ILogger<PdfWriter> logger,
         IEntityRepository entityRepository,
@@ -313,7 +313,7 @@ public class PdfWriter(
         {
             if (field.DataItem!.GridBehavior is DataItemGridBehavior.Description)
             {
-                value = $" {item.Description.Trim()}";
+                value = $" {item.Description?.Trim()}";
             }
             if (field.DataItem!.GridBehavior is DataItemGridBehavior.Icon || field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription)  
             {
