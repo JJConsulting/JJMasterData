@@ -41,7 +41,7 @@ public class PdfWriter(
         IEncryptionService encryptionService,
         ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
-        IOptions<MasterDataCoreOptions> options,
+        IOptionsSnapshot<MasterDataCoreOptions> options,
         DataItemService dataItemService,
         ILogger<PdfWriter> logger,
         IEntityRepository entityRepository,
