@@ -305,16 +305,8 @@
     <value>Filtro Aplicado</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Apply On Selected" xml:space="preserve">
-    <value>Aplicar na seleção</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="Apply only selected lines" xml:space="preserve">
+  <data name="Apply only on selected lines" xml:space="preserve">
     <value>Aplicar somenter as linhas selecionadas</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="Apply only selected lines." xml:space="preserve">
-    <value>Aplicar somenter as linhas selecionadas.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="ApplyUserIdOn" xml:space="preserve">
@@ -2374,7 +2366,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Scope of execution of the process." xml:space="preserve">
-    <value>Escopo de execução do pocesso.</value>
+    <value>Escopo de execução do processo.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Script Action" xml:space="preserve">
@@ -3018,7 +3010,7 @@
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="When the command is triggered only the selected lines are affected." xml:space="preserve">
-    <value>Quando o comando é disparado somente as linhas selecionados são afetadas.</value>
+    <value>Quando o comando é disparado somente as linhas selecionadas são afetadas.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="When the panel is not in preview mode" xml:space="preserve">

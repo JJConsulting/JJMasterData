@@ -18,19 +18,18 @@
 
     <div class="tab-content" style="margin-top: 20px;">
         <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            @await Html.PartialAsync("_NavGeneral", Model)
+            <partial name="_NavGeneral" model="Model"/>
         </div>
 
         <div id="divImportAction" class="tab-pane fade">
-            @await Html.PartialAsync("_ProcessOptions", Model.ProcessOptions)
-            
+            <partial name="_ProcessOptions" model="Model.ProcessOptions"/>
             <label asp-for="HelpText" class="form-label"></label>
             <tooltip title="@StringLocalizer["Help text that will be shown to the user."]"/>
             <textarea asp-for="HelpText" class="form-control" rows="5"></textarea>
         </div>
 
         <div id="div-advanced" class="tab-pane fade">
-            @await Html.PartialAsync("_NavAdvanced", Model)
+            <partial name="_NavAdvanced" model="Model"/>
         </div>
     </div>
 

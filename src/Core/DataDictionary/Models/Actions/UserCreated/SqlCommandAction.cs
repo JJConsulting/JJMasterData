@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataDictionary.Models.Actions;
 
@@ -21,6 +22,7 @@ public class SqlCommandAction : UserCreatedAction, ISubmittableAction
     /// onde o comando é aplicado para cada linha selecionada
     /// </remarks>
     [JsonProperty("applyOnSelected")]
+    [Display(Name = "Apply only on selected lines")]
     public bool ApplyOnSelected { get; set; }
 
     public SqlCommandAction()
