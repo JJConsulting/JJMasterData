@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -8,6 +9,7 @@ namespace JJMasterData.LegacyMetadataMigrator;
 
 public class FormElementMigrationService(IDataDictionaryRepository dataDictionaryRepository, 
     MetadataRepository metadataRepository,
+    IOptions<MasterDataCommonsOptions> commonsOptions,
     IOptions<MasterDataCoreOptions> options,
     ExpressionsMigrationService expressionsMigrationService,
     ILogger<FormElementMigrationService> logger)
@@ -16,7 +18,7 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
     private MetadataRepository MetadataRepository { get; } = metadataRepository;
     private ExpressionsMigrationService ExpressionsMigrationService { get; } = expressionsMigrationService;
     private ILogger<FormElementMigrationService> Logger { get; } = logger;
-    private DataAccess DataAccess { get; } = new(options.Value.ConnectionString, DataAccessProvider.SqlServer);
+    private DataAccess DataAccess { get; } = new(commonsOptions.Value.ConnectionString, DataAccessProvider.SqlServer);
     private string TableName => Options.DataDictionaryTableName;
     private MasterDataCoreOptions Options { get; } = options.Value;
 
