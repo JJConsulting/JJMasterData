@@ -11,7 +11,6 @@ using JJMasterData.Core.DataManager.Models;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-
 public class FieldFormattingService(DataItemService dataItemService, LookupService lookupService)
 {
     private DataItemService DataItemService { get; } = dataItemService;
@@ -34,18 +33,18 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         {
             case FormComponent.Number:
             case FormComponent.Slider:
-                stringValue = GetCurrencyValueAsString(field, value);
+                stringValue = GetNumericValueAsString(field, value);
                 break;
             case FormComponent.Currency:
                 CultureInfo cultureInfo;
-                if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
+                if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) 
+                    && !string.IsNullOrEmpty(cultureInfoName?.ToString()))
                     cultureInfo = CultureInfo.GetCultureInfo(cultureInfoName.ToString());
                 else
                     cultureInfo = CultureInfo.CurrentUICulture;
+                
                 if (float.TryParse(value?.ToString(),NumberStyles.Currency,cultureInfo, out var currencyValue))
-                {
                     stringValue = currencyValue.ToString($"C{field.NumberOfDecimalPlaces}", cultureInfo);
-                }
                 else
                     stringValue = null;
                 break;
@@ -53,7 +52,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                  when field.DataItem is { GridBehavior: not DataItemGridBehavior.Id}:
                 var allowOnlyNumerics = field.DataType is FieldType.Int or FieldType.Float;
                 var formData = new FormStateData(values, PageState.List);
-                stringValue = await LookupService.GetDescriptionAsync(field.DataItem.ElementMap, formData, value.ToString(), allowOnlyNumerics);
+                stringValue = await LookupService.GetDescriptionAsync(field.DataItem.ElementMap!, formData, value.ToString(), allowOnlyNumerics);
                 break;
             case FormComponent.CheckBox:
                 stringValue = StringManager.ParseBool(value) ? "Sim" : "Não";
@@ -63,9 +62,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 var searchFormData = new FormStateData(values, userValues, PageState.List);
 
                 values.TryGetValue(field.Name, out var searchId);
-                
                 var searchBoxValues = await DataItemService.GetValuesAsync(field.DataItem, searchFormData, null, searchId?.ToString());
-
                 var rowValue = searchBoxValues.FirstOrDefault(v => v.Id == fieldValue?.ToString());
                 
                 return rowValue?.Description ?? rowValue?.Id ?? string.Empty;
@@ -88,11 +85,9 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         string stringValue = null;
         if (field.DataType == FieldType.Float)
         {
-            if (float.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo,
-                    out var floatValue))
+            if (float.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out var floatValue))
                 stringValue = floatValue.ToString($"N{field.NumberOfDecimalPlaces}", cultureInfo);
         }
-        
         else if (field.DataType == FieldType.Int)
         {
             if (int.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo,out var intVal))
@@ -100,12 +95,34 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         }
         else
         {
-            throw new JJMasterDataException("Invalid FieldType for numeric component");
+            throw new JJMasterDataException($"Invalid FieldType for currency component [{field.Name}]");
         }
 
         return stringValue;
     }
 
+    private static string GetNumericValueAsString(FormElementField field, object value)
+    {
+        var cultureInfo = CultureInfo.CurrentUICulture;
+        string stringValue = null;
+        if (field.DataType == FieldType.Float)
+        {
+            if (float.TryParse(value.ToString(), NumberStyles.Float, cultureInfo, out var floatValue))
+                stringValue = floatValue.ToString($"N{field.NumberOfDecimalPlaces}", cultureInfo);
+        }
+        else if (field.DataType == FieldType.Int)
+        {
+            if (int.TryParse(value.ToString(), NumberStyles.Integer, cultureInfo,out var intVal))
+                stringValue = intVal.ToString("0", cultureInfo);
+        }
+        else
+        {
+            throw new JJMasterDataException($"Invalid FieldType for numeric component [{field.Name}]");
+        }
+
+        return stringValue;
+    }
+    
     public static string FormatValue(FormElementField field, object value)
     {
         if (value == null)
@@ -140,7 +157,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                     case FieldType.Int when !field.IsPk:
                     case FieldType.Float:
                     {
-                        return GetCurrencyValueAsString(field, value);
+                        return GetNumericValueAsString(field, value);
                     }
                 }
                 break;
