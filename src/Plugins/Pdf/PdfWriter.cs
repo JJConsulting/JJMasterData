@@ -313,7 +313,7 @@ public class PdfWriter(
         {
             if (field.DataItem!.GridBehavior is DataItemGridBehavior.Description)
             {
-                value = $" {item.Description.Trim()}";
+                value = $" {item.Description?.Trim()}";
             }
             if (field.DataItem!.GridBehavior is DataItemGridBehavior.Icon || field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription)  
             {
