@@ -12,9 +12,8 @@ namespace JJMasterData.Commons.Configuration.Options;
 public static class WritableOptionsExtensions
 {
     public static void ConfigureWritableOptions<T>(
-        this IServiceCollection services, IConfigurationSection section) where T : class, new()
+        this IServiceCollection services, string sectionName) where T : class, new()
     {
-        services.Configure<T>(section);
         services.AddTransient<IWritableOptions<T>>(provider =>
         {
             var options = provider.GetService<IOptionsMonitor<T>>()!;
@@ -28,7 +27,7 @@ public static class WritableOptionsExtensions
                 {
                     var path = Path.Combine(physicalFileProvider.Root,source.Path);
                 
-                    return new WritableJsonOptions<T>(options, section.Key, path);
+                    return new WritableJsonOptions<T>(options,sectionName , path);
                 }
                 
             }

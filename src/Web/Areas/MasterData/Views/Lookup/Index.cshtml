@@ -1,6 +1,6 @@
 @model JJMasterData.Web.Areas.MasterData.Models.LookupViewModel
 
-@inject IOptions<MasterDataWebOptions> Options
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @{
     Layout = Options.Value.ModalLayoutPath;

@@ -17,7 +17,7 @@ namespace JJMasterData.Core.DataDictionary.Repository;
 /// The Data Dictionaries (metadata) are stored in files in a custom folder
 /// </summary>
 public class FileSystemDataDictionaryRepository
-    (IOptions<FileSystemDataDictionaryOptions> options) : IDataDictionaryRepository
+    (IOptionsSnapshot<FileSystemDataDictionaryOptions> options) : IDataDictionaryRepository
 {
     public string FolderPath { get; } = options.Value.FolderPath;
 

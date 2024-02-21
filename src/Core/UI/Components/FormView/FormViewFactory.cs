@@ -29,7 +29,7 @@ internal class FormViewFactory(
     ExpressionsService expressionsService,
     IEnumerable<IPluginHandler> pluginHandlers,
     IStringLocalizer<MasterDataResources> stringLocalizer,
-    IOptions<MasterDataCoreOptions> options,
+    IOptionsSnapshot<MasterDataCoreOptions> options,
     ILoggerFactory loggerFactory,
     IComponentFactory factory,
     IFormEventHandlerResolver formEventHandlerResolver

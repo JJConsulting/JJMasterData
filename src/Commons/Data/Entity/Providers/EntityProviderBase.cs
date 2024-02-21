@@ -17,7 +17,7 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public abstract class EntityProviderBase(
     DataAccess dataAccess,
-    IOptions<MasterDataCommonsOptions> options,
+    IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
 {
     internal DataAccess DataAccess { get; set; } = dataAccess;

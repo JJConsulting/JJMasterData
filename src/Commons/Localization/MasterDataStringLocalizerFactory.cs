@@ -13,13 +13,13 @@ public class MasterDataStringLocalizerFactory : IStringLocalizerFactory, IDispos
     private ResourceManagerStringLocalizerFactory ResourceManagerStringLocalizerFactory { get; }
     private IEntityRepository EntityRepository { get; }
     private IMemoryCache Cache { get; }
-    private IOptions<MasterDataCommonsOptions> Options { get; }
+    private IOptionsMonitor<MasterDataCommonsOptions> Options { get; }
     
     public MasterDataStringLocalizerFactory(
         ResourceManagerStringLocalizerFactory resourceManagerStringLocalizerFactory,
         IMemoryCache cache,
         IServiceProvider serviceProvider,
-        IOptions<MasterDataCommonsOptions> options)
+        IOptionsMonitor<MasterDataCommonsOptions> options)
     {
         using var scope = serviceProvider.CreateScope();
         ResourceManagerStringLocalizerFactory = resourceManagerStringLocalizerFactory;

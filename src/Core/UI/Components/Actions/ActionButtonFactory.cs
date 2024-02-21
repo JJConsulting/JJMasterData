@@ -42,11 +42,12 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
         button.DividerLine = action.DividerLine;
         button.ShowAsButton = !action.IsGroup && action.ShowAsButton;
         button.Type = action is SubmitAction ? LinkButtonType.Submit : default;
-        button.CssClass = action.CssClass;
         button.UrlAction = action is SubmitAction submitAction ? submitAction.FormAction : null;
+        button.CssClass = action.CssClass;
         button.IconClass = $"{action.Icon.GetCssClass()} fa-fw";
         button.Enabled = enabled;
         button.Visible = visible;
+        
         return button;
     }
 

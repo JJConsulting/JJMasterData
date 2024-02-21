@@ -80,7 +80,7 @@ class ActionHelper {
         this.executeUrlRedirect(url);
         return true;
     }
-    static doUrlRedirect(url, isModal, modalTitle, modalSize, isIframe, confirmationMessage) {
+    static executeClientSideRedirect(url, isModal, modalTitle, modalSize, isIframe, confirmationMessage) {
         if (confirmationMessage) {
             const result = confirm(confirmationMessage);
             if (!result) {

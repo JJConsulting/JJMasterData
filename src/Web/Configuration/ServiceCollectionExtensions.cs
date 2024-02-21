@@ -18,7 +18,7 @@ using WebOptimizer;
 
 namespace JJMasterData.Web.Configuration;
 
-public static partial class ServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     public static MasterDataServiceBuilder AddJJMasterDataWeb(this IServiceCollection services)
     {
@@ -37,56 +37,24 @@ public static partial class ServiceCollectionExtensions
     {
         AddMasterDataWebServices(services);
 
-        services.ConfigureWritableOptions<MasterDataCommonsOptions>(
-            configuration.GetJJMasterData());
-        services.ConfigureWritableOptions<MasterDataCoreOptions>(
-            configuration.GetJJMasterData());
-        services.ConfigureWritableOptions<MasterDataWebOptions>(
-            configuration.GetJJMasterData());
-
         return services.AddJJMasterDataCore(configuration);
     }
     
     public static MasterDataServiceBuilder AddJJMasterDataWeb(
         this IServiceCollection services,
-        Action<MasterDataWebOptions> configureOptions
+        MasterDataWebOptionsConfiguration webOptionsConfiguration
     )
     {
-        var webOptions = new MasterDataWebOptions();
+        if (webOptionsConfiguration.ConfigureWeb != null) 
+            services.PostConfigure(webOptionsConfiguration.ConfigureWeb);
 
-        configureOptions(webOptions);
-        services.PostConfigure(configureOptions);
-        
         AddMasterDataWebServices(services);
 
-        return services.AddJJMasterDataCore(ConfigureJJMasterDataCoreOptions);
-
-        [SuppressMessage("ReSharper", "ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract")]
-        void ConfigureJJMasterDataCoreOptions(MasterDataCoreOptions options)
+        return services.AddJJMasterDataCore(new MasterDataCoreOptionsConfiguration
         {
-            if (webOptions.ExportationFolderPath != null)
-                options.ExportationFolderPath = webOptions.ExportationFolderPath;
-            if (webOptions.AuditLogTableName != null) 
-                options.AuditLogTableName = webOptions.AuditLogTableName;
-
-            if (webOptions.DataDictionaryTableName != null)
-                options.DataDictionaryTableName = webOptions.DataDictionaryTableName;
-            
-            if (webOptions.ConnectionString != null) 
-                options.ConnectionString = webOptions.ConnectionString;
-            
-            if(webOptions.ConnectionProvider != default)
-                options.ConnectionProvider = webOptions.ConnectionProvider;
-            
-            if (webOptions.LocalizationTableName != null)
-                options.LocalizationTableName = webOptions.LocalizationTableName;
-            if (webOptions.ReadProcedurePattern != null) 
-                options.ReadProcedurePattern = webOptions.ReadProcedurePattern;
-            if (webOptions.WriteProcedurePattern != null)
-                options.WriteProcedurePattern = webOptions.WriteProcedurePattern;
-            if (webOptions.SecretKey != null) 
-                options.SecretKey = webOptions.SecretKey;
-        }
+            ConfigureCommons = webOptionsConfiguration.ConfigureCommons,
+            ConfigureCore = webOptionsConfiguration.ConfigureCore
+        });
     }
 
     private static void AddMasterDataWebServices(IServiceCollection services)
@@ -95,9 +63,13 @@ public static partial class ServiceCollectionExtensions
         services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         services.AddTransient<IValidationDictionary, ModelStateWrapper>();
         services.AddTransient<RazorPartialRendererService>();
-        services.AddTransient<OptionsService>();
         services.AddTransient<LocalizationService>();
+        services.AddScoped<SettingsService>();
 
+        services.ConfigureWritableOptions<MasterDataCommonsOptions>("JJMasterData");
+        services.ConfigureWritableOptions<MasterDataCoreOptions>("JJMasterData");
+        services.ConfigureWritableOptions<MasterDataWebOptions>("JJMasterData");
+        
         services.AddJJMasterDataWebOptimizer();
 
         services.AddControllersWithViews(options =>

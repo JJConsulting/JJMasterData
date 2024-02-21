@@ -15,7 +15,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class LogController(IFormElementComponentFactory<JJFormView> formViewFactory,
         LoggerFormElementFactory loggerFormElementFactory,
         IEntityRepository entityRepository,
-        IOptions<DbLoggerOptions> options)
+        IOptionsSnapshot<DbLoggerOptions> options)
     : DataDictionaryController
 {
     private DbLoggerOptions Options { get; } = options.Value;

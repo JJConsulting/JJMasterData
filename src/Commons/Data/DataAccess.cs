@@ -107,7 +107,7 @@ public partial class DataAccess
     }
     
     [ActivatorUtilitiesConstructor]
-    public DataAccess(IOptions<MasterDataCommonsOptions> options)
+    public DataAccess(IOptionsSnapshot<MasterDataCommonsOptions> options)
     {
         var optionsValue = options.Value;
         ConnectionString = optionsValue.ConnectionString;

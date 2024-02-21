@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class DataDictionaryFormElementFactory(
-    IOptions<MasterDataCoreOptions> options,
+    IOptionsSnapshot<MasterDataCoreOptions> options,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IHttpContext httpContext,
     IMasterDataUrlHelper urlHelper)
@@ -214,13 +214,10 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnAppSettings",
-                Tooltip = StringLocalizer["Application Options"],
+                Tooltip = StringLocalizer["Application Settings"],
                 Icon = IconType.Code,
                 ShowAsButton = true,
-                IsModal = true,
-                ModalSize = ModalSize.ExtraLarge,
-                ModalTitle = StringLocalizer["Application Options"],
-                UrlRedirect = UrlHelper.Action("Index", "Options", new {Area="DataDictionary"}),
+                UrlRedirect = UrlHelper.Action("Index", "Settings", new {Area="DataDictionary"}),
                 Order = 12,
                 CssClass = BootstrapHelper.PullRight
             },

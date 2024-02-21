@@ -47,13 +47,13 @@ public class MasterDataStringLocalizer(
     ResourceManagerStringLocalizer resourcesStringLocalizer,
     IEntityRepository entityRepository,
     IMemoryCache cache,
-    IOptions<MasterDataCommonsOptions> options)
+    IOptionsMonitor<MasterDataCommonsOptions> options)
     : IStringLocalizer
 {
     private ResourceManagerStringLocalizer ResourceManagerStringLocalizer { get; } = resourcesStringLocalizer;
     private IEntityRepository EntityRepository { get; } = entityRepository;
     private IMemoryCache Cache { get; } = cache;
-    private MasterDataCommonsOptions Options { get; } = options.Value;
+    private IOptionsMonitor<MasterDataCommonsOptions> Options { get; } = options;
 
     private string ResourceName { get; } = resourceName;
 
@@ -110,15 +110,17 @@ public class MasterDataStringLocalizer(
     {
         string culture = Thread.CurrentThread.CurrentCulture.Name;
 
-        var element = MasterDataStringLocalizerElement.GetElement(Options);
+        var element = MasterDataStringLocalizerElement.GetElement(Options.CurrentValue);
 
-        var tableExists = EntityRepository.TableExists(element.TableName);
+        var hasConnectionString = !string.IsNullOrEmpty(Options.CurrentValue.ConnectionString);
         
-        if (!tableExists)
+        var tableExists = hasConnectionString && EntityRepository.TableExists(element.TableName);
+        
+        if (!tableExists && hasConnectionString)
              EntityRepository.CreateDataModel(element,[]);
 
         var stringLocalizerValues = GetStringLocalizerValues();
-        var databaseValues = GetDatabaseValues(element, culture);
+        var databaseValues = hasConnectionString ? GetDatabaseValues(element, culture) : new Dictionary<string, object?>();
 
         if (databaseValues.Count > 0)
         {

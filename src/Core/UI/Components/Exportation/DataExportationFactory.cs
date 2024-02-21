@@ -20,7 +20,7 @@ internal class DataExportationFactory(
     IDataDictionaryRepository dataDictionaryRepository,
     ExpressionsService expressionsService,
     FieldsService fieldsService,
-    IOptions<MasterDataCoreOptions> options,
+    IOptionsSnapshot<MasterDataCoreOptions> options,
     IBackgroundTaskManager backgroundTaskManager,
     IHttpContext httpContext,
     IStringLocalizer<MasterDataResources> stringLocalizer,

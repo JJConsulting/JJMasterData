@@ -26,7 +26,7 @@ namespace JJMasterData.Core.DataDictionary.Services;
 
 public class ElementService(IFormElementComponentFactory<JJFormView> formViewFactory,
         IValidationDictionary validationDictionary,
-        IOptions<MasterDataCoreOptions> options,
+        IOptionsSnapshot<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IEntityRepository entityRepository,
         IDataDictionaryRepository dataDictionaryRepository,
@@ -59,9 +59,7 @@ public class ElementService(IFormElementComponentFactory<JJFormView> formViewFac
             element = new FormElement
             {
                 TableName = tableName,
-                Name = GetElementName(tableName),
-                ReadProcedureName = _options.GetReadProcedureName(tableName),
-                WriteProcedureName = _options.GetWriteProcedureName(tableName)
+                Name = GetElementName(tableName)
             };
         }
 

@@ -1,5 +1,5 @@
 ﻿@model string
-@inject IOptions<MasterDataWebOptions> Options
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @{
     ViewData["Title"] = StringLocalizer["Localization"];

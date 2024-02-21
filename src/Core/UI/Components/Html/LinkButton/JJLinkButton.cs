@@ -81,6 +81,8 @@ public class JJLinkButton : HtmlComponent
     public string UrlAction { get; set; }
 
     public PanelColor Color { get; set; } = PanelColor.Default;
+    
+    public bool OpenInNewTab { get; set; }
 
     internal JJLinkButton(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
@@ -113,6 +115,8 @@ public class JJLinkButton : HtmlComponent
                 html.WithCssClass($"link-{Color.ToString().ToLower()}");
         }
 
+
+        html.WithAttributeIf(OpenInNewTab, "target", "_blank");
         html.WithNameAndId(Name);
         html.WithCssClass(GetCssClassWithCompatibility());
         html.WithAttributes(Attributes);

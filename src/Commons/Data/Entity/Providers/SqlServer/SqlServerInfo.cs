@@ -13,7 +13,7 @@ public class SqlServerInfo(DataAccess dataAccess)
         try
         {
             var ret = dataAccess.GetResult("SELECT SERVERPROPERTY('productversion')");
-            var version = ret.ToString().Split('.')[0];
+            var version = ret!.ToString().Split('.')[0];
             _majorVersion = int.Parse(version);
         }
         catch
@@ -32,7 +32,7 @@ public class SqlServerInfo(DataAccess dataAccess)
         try
         {
             var ret = dataAccess.GetResult("select compatibility_level from sys.databases where name = DB_NAME()");
-            _compatibilityLevel = int.Parse(ret.ToString());
+            _compatibilityLevel = int.Parse(ret!.ToString());
         }
         catch
         {

@@ -11,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace JJMasterData.Core.Http.SystemWeb;
 
-public class SystemWebUrlHelperWrapper(IHttpRequest httpRequest, IOptions<MasterDataCoreOptions> options)
+public class SystemWebUrlHelperWrapper(IHttpRequest httpRequest, IOptionsSnapshot<MasterDataCoreOptions> options)
     : IMasterDataUrlHelper
 {
     private IHttpRequest HttpRequest { get; } = httpRequest;

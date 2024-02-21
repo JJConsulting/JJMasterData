@@ -1,0 +1,68 @@
+@using JJMasterData.Core.DataDictionary.Models
+
+@using JJMasterData.Core.UI.Components
+@model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.SettingsViewModel
+
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
+@{
+    ViewData["Title"] = StringLocalizer["Options"];
+}
+
+<form asp-action="Save">
+    <input asp-for="FilePath" hidden="hidden"/>
+    
+    <jj-title title="@StringLocalizer["Application Settings"]"/>
+    
+    @if (Model.PathExists)
+    {
+        <alert icon="IconType.InfoCircle"
+                  color="Info"
+                  message="@(Model.FilePath!)"
+                  title="@StringLocalizer["All changes will be saved in the file located at the path:"]"/>
+    }
+    
+    
+    <div id="connection-result">
+        
+    </div>
+
+    @if (!ViewData.ModelState.IsValid && Model.ValidationSummary != null)
+    {
+        @Html.Raw(Model.ValidationSummary.GetHtml())
+    }
+
+    <collapse-panel
+        title="Connection String"
+        partial="_ConnectionString"
+        model="Model"
+        expanded-by-default="true"
+        icon="@IconType.Connectdevelop"/>
+
+    <collapse-panel icon="Gears" title="JJMasterData" expanded-by-default="true" >
+        <div class="row">
+            <div class="col-sm-3">
+                <label asp-for="DataDictionaryTableName" class="form-label"></label>
+                <input asp-for="DataDictionaryTableName" class="form-control"/>
+            </div>
+            <div class="col-sm-3">
+                <label asp-for="CustomBootstrapPath" class="form-label"></label>
+                <input asp-for="CustomBootstrapPath" class="form-control"/>
+            </div>
+        </div>
+    </collapse-panel>
+    
+    <div class="row">
+        <div class="col-sm-12">
+            <link-button 
+                url-action="@Url.Action("Index", "Element")" 
+                icon="Home" 
+                text="Home"/>
+            <link-button type="LinkButtonType.Submit" 
+                         color="Primary"
+                            icon="Save" 
+                            text="Save"/>
+        </div>
+    </div>
+
+
+</form>

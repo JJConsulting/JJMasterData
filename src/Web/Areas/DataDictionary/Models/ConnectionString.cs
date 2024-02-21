@@ -49,6 +49,11 @@ public class ConnectionString
             Username = userId.ToString();
         }
 
+        if (builder.TryGetValue("user id", out userId))
+        {
+            Username = userId.ToString();
+        }
+        
         if (builder.TryGetValue("password", out var password))
         {
             Password = password.ToString();

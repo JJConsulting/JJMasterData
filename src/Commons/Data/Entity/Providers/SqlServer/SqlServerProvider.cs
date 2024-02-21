@@ -20,7 +20,7 @@ public class SqlServerProvider(
     DataAccess dataAccess,
     SqlServerScripts sqlServerScripts,
     IMemoryCache memoryCache,
-    IOptions<MasterDataCommonsOptions> options,
+    IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
     : EntityProviderBase(dataAccess, options, loggerFactory)
 {

@@ -68,7 +68,7 @@ public class JJDataExportation : ProcessComponent
         FormElement formElement,
         ExpressionsService expressionsService,
         FieldsService fieldsService,
-        IOptions<MasterDataCoreOptions> masterDataOptions,
+        IOptionsSnapshot<MasterDataCoreOptions> masterDataOptions,
         IBackgroundTaskManager backgroundTaskManager, 
         IStringLocalizer<MasterDataResources> stringLocalizer,
         IComponentFactory componentFactory,
