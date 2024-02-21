@@ -1,4 +1,3 @@
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.DataDictionary.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;

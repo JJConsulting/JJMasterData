@@ -3,7 +3,6 @@ using System.Globalization;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;

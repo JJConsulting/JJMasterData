@@ -3797,8 +3797,8 @@
   <data name="No icons found." xml:space="preserve">
     <value>Nenhum ícone encontrado.</value>
   </data>
-  <data name="Save User Preferences on Session" xml:space="preserve">
-    <value>Salvar Preferências do Usuário na Sessão</value>
+  <data name="Save User Preferences" xml:space="preserve">
+    <value>Salvar Preferências Do Usuário</value>
   </data>
   <data name="Show Toolbar" xml:space="preserve">
     <value>Mostrar Toolbar</value>

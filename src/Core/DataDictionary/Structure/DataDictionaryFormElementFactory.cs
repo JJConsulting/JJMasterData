@@ -4,7 +4,6 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI;
 using JJMasterData.Core.UI.Components;

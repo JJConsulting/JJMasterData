@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using JJMasterData.Commons.Configuration;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Localization;

@@ -9,7 +9,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Events.Abstractions;
 using JJMasterData.Core.Events.Args;
 using Microsoft.Extensions.Logging;
 

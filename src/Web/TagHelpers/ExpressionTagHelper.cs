@@ -1,10 +1,7 @@
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Localization;
-using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
-using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
@@ -13,7 +10,6 @@ using Microsoft.Extensions.Localization;
 using System.ComponentModel;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.UI;
-using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.Web.TagHelpers;
 

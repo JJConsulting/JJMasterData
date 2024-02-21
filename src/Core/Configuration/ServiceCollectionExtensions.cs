@@ -1,6 +1,4 @@
-﻿using System;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Configuration.Options;
+﻿using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;

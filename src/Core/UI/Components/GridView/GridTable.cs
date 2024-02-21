@@ -1,5 +1,4 @@
 #nullable enable
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using JJMasterData.Core.UI.Html;
 

@@ -3,7 +3,6 @@
 using System;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataManager.Expressions;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
