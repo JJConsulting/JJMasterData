@@ -9,7 +9,7 @@ namespace JJMasterData.Commons.Security.Cryptography;
 /// </summary>
 public class EncryptionService(
     IEncryptionAlgorithm encryptionAlgorithm,
-    IOptions<MasterDataCommonsOptions> options)
+    IOptionsSnapshot<MasterDataCommonsOptions> options)
     : IEncryptionService
 {
     private readonly string _secretKey = options.Value.SecretKey;

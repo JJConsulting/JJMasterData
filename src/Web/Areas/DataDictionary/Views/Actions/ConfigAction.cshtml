@@ -1,7 +1,7 @@
 ﻿@using JJMasterData.Core.UI
 @model JJMasterData.Core.DataDictionary.Models.Actions.ConfigAction
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptions<MasterDataWebOptions> Options
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @{
     Layout = Options.Value.ModalLayoutPath;

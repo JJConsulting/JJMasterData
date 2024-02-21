@@ -101,7 +101,7 @@ public class GridUI
     /// The [Name] property is used to compose the name of the session variable.
     /// </remarks>
     [JsonProperty("maintainValuesOnLoad")]
-    [Display(Name = "Save User Preferences on Session")]
+    [Display(Name = "Save User Preferences")]
     public bool MaintainValuesOnLoad { get; set; }
 
     /// <summary>

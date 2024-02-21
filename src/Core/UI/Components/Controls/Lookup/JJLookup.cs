@@ -1,9 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Threading.Tasks;
-using Azure.Core;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Extensions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;

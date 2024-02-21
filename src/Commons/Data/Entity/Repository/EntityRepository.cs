@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Providers;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Exceptions;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 

@@ -1,6 +1,6 @@
 @using JJMasterData.Web.Configuration.Options
 @using Microsoft.Extensions.Options
-@inject IOptions<MasterDataWebOptions> Options
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
 
 @{
     Layout = Options.Value.LayoutPath;

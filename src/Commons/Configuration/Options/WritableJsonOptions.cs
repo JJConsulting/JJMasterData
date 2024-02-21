@@ -65,7 +65,14 @@ public class WritableJsonOptions<T>(
 
         if (jObject != null)
         {
-            jObject[section] = JObject.Parse(JsonConvert.SerializeObject(sectionObject));
+            foreach (var prop in sectionObject.GetType().GetProperties())
+            {
+                var propString = prop.GetValue(sectionObject)?.ToString();
+                if (!string.IsNullOrEmpty(propString))
+                {
+                    jObject[section]![prop.Name] = propString;
+                }
+            }
 
             var serializedObject = JsonConvert.SerializeObject(jObject, Formatting.Indented);
 

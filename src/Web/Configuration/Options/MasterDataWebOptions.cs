@@ -2,7 +2,7 @@ using JJMasterData.Core.Configuration.Options;
 
 namespace JJMasterData.Web.Configuration.Options;
 
-public class MasterDataWebOptions : MasterDataCoreOptions
+public class MasterDataWebOptions
 {
     /// <summary>
     /// Default value: _MasterDataLayout <br></br>
@@ -32,4 +32,6 @@ public class MasterDataWebOptions : MasterDataCoreOptions
     /// Custom scripts to be added at _MasterDataScripts. The paths are relative.
     /// </summary>
     public List<string> CustomScriptsPaths { get; } = [];
+
+    public Action<MasterDataCoreOptions>? ConfigureCoreOptions { get; set; }
 }

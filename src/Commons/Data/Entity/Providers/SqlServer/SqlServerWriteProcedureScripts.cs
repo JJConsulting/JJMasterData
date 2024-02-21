@@ -9,7 +9,7 @@ using System.Text;
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerWriteProcedureScripts(
-    IOptions<MasterDataCommonsOptions> options,
+    IOptionsSnapshot<MasterDataCommonsOptions> options,
     SqlServerInfo sqlServerInfo)
     : SqlServerScriptsBase
 {
@@ -124,7 +124,7 @@ public class SqlServerWriteProcedureScripts(
                     sql.Append("AND ");
                 }
 
-                sql.Append(f.Name);
+                sql.AppendFormat("[{0}]",f.Name);
                 sql.Append(" = @");
                 sql.AppendLine(f.Name);
             }
@@ -258,7 +258,7 @@ public class SqlServerWriteProcedureScripts(
                     sql.Append("AND ");
                 }
 
-                sql.Append(f.Name);
+                sql.AppendFormat("[{0}]",f.Name);
                 sql.Append(" = @");
                 sql.AppendLine(f.Name);
             }

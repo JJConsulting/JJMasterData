@@ -29,7 +29,7 @@ public class ExcelWriter(
         ExpressionsService expressionsService,
         IEncryptionService encryptionService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
-        IOptions<MasterDataCoreOptions> options,
+        IOptionsSnapshot<MasterDataCoreOptions> options,
         ILoggerFactory loggerFactory,
         IEntityRepository entityRepository)
     : DataExportationWriterBase(
@@ -143,7 +143,7 @@ public class ExcelWriter(
                 }
 
                 await sw.WriteAsync($"\t\t\t\t<td{tdStyle}>");
-                await sw.WriteAsync(HttpUtility.HtmlEncode(value).Replace("\n","<br>"));
+                await sw.WriteAsync(HttpUtility.HtmlEncode(value)?.Replace("\n","<br>"));
                 await sw.WriteLineAsync("</td>");
             }
 

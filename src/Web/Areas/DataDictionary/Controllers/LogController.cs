@@ -1,13 +1,11 @@
 ﻿using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Repository;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
-using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary.Structure;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Core.UI.Html;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
@@ -15,7 +13,7 @@ namespace JJMasterData.Web.Areas.DataDictionary.Controllers;
 public class LogController(IFormElementComponentFactory<JJFormView> formViewFactory,
         LoggerFormElementFactory loggerFormElementFactory,
         IEntityRepository entityRepository,
-        IOptions<DbLoggerOptions> options)
+        IOptionsSnapshot<DbLoggerOptions> options)
     : DataDictionaryController
 {
     private DbLoggerOptions Options { get; } = options.Value;

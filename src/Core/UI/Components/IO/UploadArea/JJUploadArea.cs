@@ -11,7 +11,6 @@ using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
@@ -160,6 +159,9 @@ public class JJUploadArea : AsyncComponent
 
     internal HtmlBuilder GetUploadAreaHtmlBuilder()
     {
+        if (!Visible)
+            return new HtmlBuilder();
+        
         var div = new HtmlBuilder(HtmlTag.Div)
             .WithAttribute("id", $"{Name}-upload-area-div")
             .WithCssClass("upload-area-div")

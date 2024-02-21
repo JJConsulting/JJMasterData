@@ -1,10 +1,7 @@
 ﻿using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary;
-using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.MasterData.Models;

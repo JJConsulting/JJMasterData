@@ -70,7 +70,7 @@ public static class MasterDataServiceBuilderExtensions
     {
         builder.WithEntityProvider(connectionString,provider);
         return WithDataDictionaryRepository(builder,serviceProvider => new SqlDataDictionaryRepository(serviceProvider.GetRequiredService<IEntityRepository>(),
-            serviceProvider.GetRequiredService<IOptions<MasterDataCoreOptions>>()));
+            serviceProvider.GetRequiredService<IOptionsSnapshot<MasterDataCoreOptions>>()));
     }
     
     public static MasterDataServiceBuilder WithFileSystemDataDictionary(this MasterDataServiceBuilder builder)

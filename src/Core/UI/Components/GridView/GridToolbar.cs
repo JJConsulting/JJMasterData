@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Tasks;
@@ -10,31 +9,33 @@ namespace JJMasterData.Core.UI.Components;
 
 internal class GridToolbar(JJGridView gridView)
 {
-    private JJGridView GridView { get; } = gridView;
-
     internal event AsyncEventHandler<GridToolbarActionEventArgs> OnRenderToolbarActionAsync;
     
     public async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var toolbar = new JJToolbar();
-        
-        await foreach(var action in GetActionsHtmlBuilderEnumerable())
-        {
-            toolbar.Items.Add(action);
-        }
-        
+
+        await AddActionsToToolbar(toolbar);
+            
         return toolbar.GetHtmlBuilder().WithCssClass("mb-1");
     }
 
-    private async IAsyncEnumerable<HtmlBuilder> GetActionsHtmlBuilderEnumerable()
+    private async Task AddActionsToToolbar(JJToolbar toolbar)
     {
-        var actions = GridView.ToolbarActions.OrderBy(x => x.Order).ToList();
-        var actionButtonFactory = GridView.ComponentFactory.ActionButton;
-        var formStateData = await GridView.GetFormStateDataAsync();
+        var actions = gridView.ToolbarActions
+            .OrderBy(a => a.Order);
+        
+        var actionButtonFactory = gridView.ComponentFactory.ActionButton;
+        var formStateData = await gridView.GetFormStateDataAsync();
+        
+        var groupedAction = gridView.ComponentFactory.Html.LinkButtonGroup.Create();
+        groupedAction.ShowAsButton = true;
+        groupedAction.CaretText = gridView.StringLocalizer["More"];
+        groupedAction.CssClass = BootstrapHelper.PullRight;
         
         foreach (var action in actions)
         {
-            var linkButton = actionButtonFactory.CreateGridToolbarButton(action, GridView,formStateData);
+            var linkButton = actionButtonFactory.CreateGridToolbarButton(action, gridView,formStateData);
             if (!linkButton.Visible)
                 continue;
 
@@ -43,17 +44,17 @@ internal class GridToolbar(JJGridView gridView)
                 case InsertAction { ShowOpenedAtGrid: true }:
                     continue;
                 case FilterAction { EnableScreenSearch: true }:
-                    yield return await GridView.Filter.GetHtmlToolBarSearch();
+                    toolbar.Items.Add(await gridView.Filter.GetHtmlToolBarSearch());
                     continue;
             }
 
             switch (action)
             {
-                case ExportAction when GridView.DataExportation.IsRunning():
-                    linkButton.Spinner.Name = $"data-exportation-spinner-{GridView.DataExportation.Name}";
+                case ExportAction when gridView.DataExportation.IsRunning():
+                    linkButton.Spinner.Name = $"data-exportation-spinner-{gridView.DataExportation.Name}";
                     linkButton.Spinner.Visible = true;
                     break;
-                case ImportAction when GridView.DataImportation.IsRunning():
+                case ImportAction when gridView.DataImportation.IsRunning():
                     linkButton.Spinner.Visible = true;
                     break;
                 case FilterAction fAction:
@@ -65,15 +66,24 @@ internal class GridToolbar(JJGridView gridView)
             if (OnRenderToolbarActionAsync is not null)
             {
                 var args = new GridToolbarActionEventArgs(action, linkButton);
-                await OnRenderToolbarActionAsync(GridView, args);
+                await OnRenderToolbarActionAsync(gridView, args);
 
                 if (args.HtmlResult is not null)
-                    yield return new HtmlBuilder(args.HtmlResult);
+                {
+                    toolbar.Items.Add(new HtmlBuilder(args.HtmlResult));
+                    continue;
+                }
             }
 
-            
-            yield return linkButton.GetHtmlBuilder();
+            if(!action.IsGroup)
+                toolbar.Items.Add(linkButton.GetHtmlBuilder());
+            else
+                groupedAction.Actions.Add(linkButton);
         }
+
+        if (groupedAction.Actions.Any())
+            toolbar.Items.Add(groupedAction.GetHtmlBuilder());
+        
     }
     
 }

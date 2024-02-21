@@ -4,7 +4,6 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI;
 using JJMasterData.Core.UI.Components;
@@ -14,7 +13,7 @@ using Microsoft.Extensions.Options;
 namespace JJMasterData.Core.DataDictionary.Structure;
 
 public class DataDictionaryFormElementFactory(
-    IOptions<MasterDataCoreOptions> options,
+    IOptionsSnapshot<MasterDataCoreOptions> options,
     IStringLocalizer<MasterDataResources> stringLocalizer,
     IHttpContext httpContext,
     IMasterDataUrlHelper urlHelper)
@@ -148,11 +147,12 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnAbout",
-                Tooltip = StringLocalizer["About"],
+                Text = StringLocalizer["About"],
                 Icon = IconType.InfoCircle,
-                ShowAsButton = true,
+                ShowAsButton = false,
                 IsModal = true,
                 IsIframe = false,
+                IsGroup = true,
                 ModalTitle = StringLocalizer["About"],
                 ModalSize = ModalSize.ExtraLarge,
                 UrlRedirect = UrlHelper.Action("Index", "About", new {Area="DataDictionary"}),
@@ -163,8 +163,9 @@ public class DataDictionaryFormElementFactory(
             new ScriptAction
             {
                 Name = "btnHelp",
-                Tooltip = StringLocalizer["Help"],
-                Icon = IconType.Question,
+                Text = StringLocalizer["Help"],
+                Icon = IconType.QuestionCircle,
+                IsGroup = true,
                 ShowAsButton = true,
                 OnClientClick = "window.open('https://md.jjconsulting.tech', '_blank');",
                 Order = 13,
@@ -200,10 +201,11 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnLog",
-                Tooltip = StringLocalizer["Log"],
-                Icon = IconType.FileTextO,
+                Text = StringLocalizer["Log"],
+                Icon = IconType.Film,
                 ShowAsButton = true,
                 IsModal = true,
+                IsGroup = true,
                 ModalTitle = StringLocalizer["Log"],
                 ModalSize = ModalSize.ExtraLarge,
                 UrlRedirect = UrlHelper.Action("Index", "Log", new {Area="DataDictionary"}),
@@ -214,13 +216,11 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnAppSettings",
-                Tooltip = StringLocalizer["Application Options"],
-                Icon = IconType.Code,
+                Text = StringLocalizer["Application Settings"],
+                Icon = IconType.SolidToolbox,
                 ShowAsButton = true,
-                IsModal = true,
-                ModalSize = ModalSize.ExtraLarge,
-                ModalTitle = StringLocalizer["Application Options"],
-                UrlRedirect = UrlHelper.Action("Index", "Options", new {Area="DataDictionary"}),
+                IsGroup = true,
+                UrlRedirect = UrlHelper.Action("Index", "Settings", new {Area="DataDictionary"}),
                 Order = 12,
                 CssClass = BootstrapHelper.PullRight
             },
@@ -228,10 +228,11 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnI18n",
-                Tooltip = StringLocalizer["Localization"],
+                Text = StringLocalizer["Localization"],
                 Icon = IconType.Globe,
                 ShowAsButton = true,
                 IsModal = true,
+                IsGroup = true,
                 ModalTitle = StringLocalizer["Localization"],
                 ModalSize = ModalSize.ExtraLarge,
                 UrlRedirect = UrlHelper.Action("Index", "Localization", new {Area="DataDictionary"}),

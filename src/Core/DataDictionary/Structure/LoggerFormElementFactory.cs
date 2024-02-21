@@ -3,7 +3,6 @@ using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Logging.Db;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
-using JJMasterData.Core.Http;
 using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -11,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class LoggerFormElementFactory(IOptions<DbLoggerOptions> options,IMasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer)
+public class LoggerFormElementFactory(IOptionsSnapshot<DbLoggerOptions> options,IMasterDataUrlHelper urlHelper, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
@@ -60,7 +59,8 @@ public class LoggerFormElementFactory(IOptions<DbLoggerOptions> options,IMasterD
         formElement.Options.GridTableActions.Clear();
         
         formElement.Options.GridToolbarActions.Add(btnClearAll);
-
+        formElement.Options.GridToolbarActions.FilterAction.Text = "Filters";
+        formElement.Options.GridToolbarActions.FilterAction.ShowIconAtCollapse = true;
         formElement.Options.Grid.IsCompact = true;
         
         return formElement;

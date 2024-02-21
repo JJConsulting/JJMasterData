@@ -244,6 +244,7 @@ public class JJDataImportation : ProcessComponent
 
         var btnStop = ComponentFactory.Html.LinkButton.Create();
         btnStop.Type = LinkButtonType.Button;
+        btnStop.ShowAsButton = true;
         btnStop.OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]);
         btnStop.Icon = IconType.Stop;
         btnStop.Text = StringLocalizer["Stop the importation."];

@@ -1,11 +1,9 @@
 ﻿#nullable enable
 
 using JJMasterData.Commons.Exceptions;
-using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;

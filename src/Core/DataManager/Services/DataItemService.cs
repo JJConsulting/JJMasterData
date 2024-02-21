@@ -13,7 +13,6 @@ using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.DataManager.Models;
-using JJMasterData.Core.Http.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;

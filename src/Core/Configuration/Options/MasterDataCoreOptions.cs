@@ -1,12 +1,11 @@
 #nullable enable
 
 using System.IO;
-using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Core.Configuration.Options;
 
-public class MasterDataCoreOptions : MasterDataCommonsOptions
+public class MasterDataCoreOptions
 {
     /// <summary>
     /// Default value: tb_masterdata

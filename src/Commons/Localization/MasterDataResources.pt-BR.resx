@@ -3288,7 +3288,7 @@
   <data name="Only fields of type VarChar or Text can have a filter of the type Contains." xml:space="preserve">
     <value>Somente campos do tipo VarChar ou Texto podem ter um filtro do tipo Contains.</value>
   </data>
-  <data name="Application Options" xml:space="preserve">
+  <data name="Application Settings" xml:space="preserve">
     <value>Configurações da Aplicação</value>
   </data>
   <data name="Test Connection" xml:space="preserve">
@@ -3793,8 +3793,8 @@
   <data name="No icons found." xml:space="preserve">
     <value>Nenhum ícone encontrado.</value>
   </data>
-  <data name="Save User Preferences on Session" xml:space="preserve">
-    <value>Salvar Preferências do Usuário na Sessão</value>
+  <data name="Save User Preferences" xml:space="preserve">
+    <value>Salvar Preferências Do Usuário</value>
   </data>
   <data name="Show Toolbar" xml:space="preserve">
     <value>Mostrar Toolbar</value>
@@ -3951,5 +3951,14 @@
   </data>
   <data name="Maximum possible records" xml:space="preserve">
     <value>Máximo de registros possíveis</value>
+  </data>
+  <data name="Localization" xml:space="preserve">
+    <value>Internacionalização</value>
+  </data>
+  <data name="Connection successfully estabilished." xml:space="preserve">
+    <value>Conexão estabelecida com sucesso.</value>
+  </data>
+  <data name="Error while testing the connection." xml:space="preserve">
+    <value>Erro testando a conexão.</value>
   </data>
 </root>

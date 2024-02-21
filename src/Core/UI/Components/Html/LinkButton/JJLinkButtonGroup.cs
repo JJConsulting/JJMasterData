@@ -31,21 +31,21 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
         var parentElement = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
-            .WithCssClassIf(ShowAsButton,BootstrapHelper.InputGroupBtn)
+            .WithCssClassIf(ShowAsButton && BootstrapHelper.Version is 3,BootstrapHelper.InputGroupBtn)
             .WithCssClass(CssClass);
 
         AddActionsAt(parentElement);
 
-        if (BootstrapHelper.Version is 5)
+        if (BootstrapHelper.Version is 5 && !ShowAsButton)
             parentElement.WithToolTip(MoreActionsText ?? StringLocalizer["More"]);
         
         return parentElement;
     }
 
-    internal void AddActionsAt(HtmlBuilder inputGroup)
+    internal void AddActionsAt(HtmlBuilder html)
     {
-        var listAction = Actions.ToList().FindAll(x => !x.IsGroup && x.Visible);
-        var listActionGroup = Actions.ToList().FindAll(x => x.IsGroup && x.Visible);
+        var listAction = Actions.Where(x => !x.IsGroup && x.Visible).ToList();
+        var listActionGroup = Actions.Where(x => x.IsGroup && x.Visible).ToList();
 
         if (listAction.Count == 0 && listActionGroup.Count == 0)
             return;
@@ -53,13 +53,13 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
         foreach (var action in listAction)
         {
             action.ShowAsButton = ShowAsButton;
-            inputGroup.AppendComponent(action);
+            html.AppendComponent(action);
         }
 
         if (listActionGroup.Count > 0)
         {
-            inputGroup.Append(GetHtmlCaretButton());
-            inputGroup.Append(HtmlTag.Ul, ul =>
+            html.Append(GetHtmlCaretButton());
+            html.Append(HtmlTag.Ul, ul =>
             {
                 ul.WithCssClass("dropdown-menu dropdown-menu-right dropdown-menu-end");
                 AddGroupActions(ul, listActionGroup);

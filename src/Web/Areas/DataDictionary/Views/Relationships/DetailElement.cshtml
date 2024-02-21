@@ -2,7 +2,7 @@
 @using JJMasterData.Core.UI.Components
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.RelationshipsElementDetailsViewModel
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptions<MasterDataWebOptions> Options
+@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @{
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Relationships"]}";
     Layout = Options.Value.ModalLayoutPath;

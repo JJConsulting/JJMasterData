@@ -2,7 +2,6 @@
 using System.Web;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
-using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -89,9 +88,10 @@ public class ActionScripts(
             actionContext.FormStateData);
         string isModal = action.IsModal ? "true" : "false";
         string isIframe = action.IsIframe ? "true" : "false";
+
         string modalTitle = action.ModalTitle;
 
-        script.Append("ActionHelper.doUrlRedirect('");
+        script.Append("ActionHelper.executeClientSideRedirect('");
         script.Append(url);
         script.Append("',");
         script.Append(isModal);

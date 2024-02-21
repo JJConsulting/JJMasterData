@@ -3,7 +3,6 @@
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Services;
-using JJMasterData.Core.UI.Components;
 using JJMasterData.Web.Extensions;
 using JJMasterData.Web.Filters;
 using Microsoft.AspNetCore.Mvc;

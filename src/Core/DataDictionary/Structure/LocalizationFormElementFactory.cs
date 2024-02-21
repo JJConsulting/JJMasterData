@@ -7,15 +7,13 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class LocalizationFormElementFactory(IOptions<MasterDataCommonsOptions> options)
+public class LocalizationFormElementFactory(IOptionsSnapshot<MasterDataCommonsOptions> masterDataOptions)
 {
-    private MasterDataCommonsOptions Options { get; } = options.Value;
-
     public FormElement GetFormElement()
     {
         var supportedCultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = MasterDataStringLocalizerElement.GetElement(Options);
+        var element = MasterDataStringLocalizerElement.GetElement(masterDataOptions.Value);
 
         var formElement = new FormElement(element);
         formElement.Options.Grid.ShowTitle = false;
@@ -29,9 +27,12 @@ public class LocalizationFormElementFactory(IOptions<MasterDataCommonsOptions> o
         options.GridTableActions.ViewAction.SetVisible(false);
         options.GridToolbarActions.FilterAction.ExpandedByDefault = true;
 
+        formElement.Options.GridToolbarActions.FilterAction.Text = "Filters";
+        formElement.Options.GridToolbarActions.FilterAction.ShowIconAtCollapse = true;
+        
         var cultureField = formElement.Fields["cultureCode"];
         cultureField.IsRequired = true;
-        cultureField.Component = FormComponent.ComboBox;
+        cultureField.Component = FormComponent.Search;
         cultureField.DataItem = new FormElementDataItem
         {
             Items = new List<DataItemValue>(),

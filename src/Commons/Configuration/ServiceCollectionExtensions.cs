@@ -47,7 +47,8 @@ public static class ServiceCollectionExtensions
         var builder = new MasterDataServiceBuilder(services);
 
         services.AddMasterDataCommonsServices(loggingConfiguration);
-        services.PostConfigure(configure);
+        if (configure != null) 
+            services.PostConfigure(configure);
 
         return builder;
     }

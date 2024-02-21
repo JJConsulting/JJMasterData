@@ -337,7 +337,7 @@ public class JJFormView : AsyncComponent
     internal FieldValuesService FieldValuesService { get; }
     internal ExpressionsService ExpressionsService { get; }
     private IEnumerable<IPluginHandler> PluginHandlers { get; }
-    private IOptions<MasterDataCoreOptions> Options { get; }
+    private IOptionsSnapshot<MasterDataCoreOptions> Options { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private ILogger<JJFormView> Logger { get; }
     internal IDataDictionaryRepository DataDictionaryRepository { get; }
@@ -360,7 +360,7 @@ public class JJFormView : AsyncComponent
         FieldValuesService fieldValuesService,
         ExpressionsService expressionsService,
         IEnumerable<IPluginHandler> pluginHandlers,
-        IOptions<MasterDataCoreOptions> options,
+        IOptionsSnapshot<MasterDataCoreOptions> options,
         IStringLocalizer<MasterDataResources> stringLocalizer,
         ILogger<JJFormView> logger,
         IComponentFactory componentFactory)
@@ -682,6 +682,10 @@ public class JJFormView : AsyncComponent
             var message = ExceptionManager.GetMessage(ex);
             messageBox = ComponentFactory.Html.MessageBox.Create(message, MessageIcon.Error);
         }
+        
+        //When the action is from the form toolbar
+        if (CurrentAction!.Location is not null)
+            DataPanel.Values = await EntityRepository.GetFieldsAsync(FormElement, CurrentActionMap!.PkFieldValues);
 
         var result = await GetDefaultResult();
 
@@ -1503,6 +1507,9 @@ public class JJFormView : AsyncComponent
         
         if(_dataPanel is not null)
             DataHelper.CopyIntoDictionary(initalValues, DataPanel.Values);
+        
+        if(_currentActionMap is not null)
+            DataHelper.CopyIntoDictionary(initalValues, CurrentActionMap!.PkFieldValues!);
         
         var initialFormStateData = new FormStateData(initalValues, UserValues, PageState);
         var autoReloadFormFields = CurrentContext.Request.Form.ContainsFormValues();

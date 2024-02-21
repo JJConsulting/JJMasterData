@@ -1,7 +1,8 @@
 ﻿
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
+@using JJMasterData.Commons.Configuration.Options
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.EntityViewModel
-
+@inject IOptions<MasterDataCommonsOptions> Options
 
 <div class="row mb-3">
     <div class="col-sm-6 required">
@@ -27,7 +28,7 @@
                        class="form-check-input mt-0" 
                        type="checkbox" aria-label="Enable Read Procedure">
             </div>
-            <input asp-for="FormElement.ReadProcedureName" class="form-control"  disabled="@Model.Disabled" />
+            <input asp-for="FormElement.ReadProcedureName" placeholder="@Options.Value.GetReadProcedureName(Model.FormElement)" class="form-control"  disabled="@Model.Disabled" />
         </div>
     </div>
     <div class="col-sm-6">
@@ -43,7 +44,7 @@
                        type="checkbox" 
                        aria-label="Enable Write Procedure">
             </div>
-            <input asp-for="FormElement.WriteProcedureName" class="form-control"  disabled="@Model.Disabled" />
+            <input asp-for="FormElement.WriteProcedureName" placeholder="@Options.Value.GetWriteProcedureName(Model.FormElement)"  class="form-control"  disabled="@Model.Disabled" />
         </div>
     </div>
 </div>

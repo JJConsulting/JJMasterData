@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options)
+public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptionsSnapshot<MasterDataCoreOptions> options)
     : IDataDictionaryRepository
 {
     internal Element MasterDataElement { get; } = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);

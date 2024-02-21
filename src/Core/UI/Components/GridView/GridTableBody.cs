@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
-using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;

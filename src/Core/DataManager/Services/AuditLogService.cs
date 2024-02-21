@@ -17,7 +17,7 @@ using Newtonsoft.Json;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class AuditLogService(IEntityRepository entityRepository, IOptions<MasterDataCoreOptions> options, IStringLocalizer<MasterDataResources> stringLocalizer)
+public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapshot<MasterDataCoreOptions> options, IStringLocalizer<MasterDataResources> stringLocalizer)
 {
     public const string DicId = "id";
     public const string DicName = "dictionary";
@@ -94,11 +94,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptions<Master
     public Element GetElement()
     {
         string tableName = Options.AuditLogTableName;
-        var element = new Element(tableName, StringLocalizer["Audit Log"])
-        {
-            ReadProcedureName = Options.GetReadProcedureName(tableName),
-            WriteProcedureName = Options.GetWriteProcedureName(tableName)
-        };
+        var element = new Element(tableName, StringLocalizer["Audit Log"]);
         element.Fields.AddPk(DicId, "Id", FieldType.Int, 1, true, FilterMode.Equal);
         element.Fields.Add(DicName, "Dictionary Name", FieldType.NVarchar, 64, true, FilterMode.Equal);
         element.Fields.Add(DicAction, "Action", FieldType.Int, 1, true, FilterMode.Equal);

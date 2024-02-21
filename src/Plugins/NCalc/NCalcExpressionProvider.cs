@@ -1,5 +1,3 @@
-using JJMasterData.Commons.Util;
-using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.NCalc.Configuration;
@@ -8,7 +6,7 @@ using NCalc;
 
 namespace JJMasterData.NCalc;
 
-public class NCalcExpressionProvider(IOptions<NCalcExpressionProviderOptions> options) :
+public class NCalcExpressionProvider(IOptionsSnapshot<NCalcExpressionProviderOptions> options) :
     IAsyncExpressionProvider,
     ISyncExpressionProvider
 {

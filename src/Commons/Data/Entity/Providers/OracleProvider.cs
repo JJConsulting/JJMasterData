@@ -15,7 +15,7 @@ namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class OracleProvider(
     DataAccess dataAccess,
-    IOptions<MasterDataCommonsOptions> options,
+    IOptionsSnapshot<MasterDataCommonsOptions> options,
     ILoggerFactory loggerFactory)
     : EntityProviderBase(dataAccess, options, loggerFactory)
 {

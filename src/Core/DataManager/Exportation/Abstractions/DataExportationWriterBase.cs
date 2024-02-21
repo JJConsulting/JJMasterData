@@ -30,7 +30,7 @@ public abstract class DataExportationWriterBase(
         IEncryptionService encryptionService,
         ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
-        IOptions<MasterDataCoreOptions> options,
+        IOptionsSnapshot<MasterDataCoreOptions> options,
         ILogger<DataExportationWriterBase> logger)
     : IBackgroundTaskWorker, IExportationWriter
 {
@@ -47,7 +47,7 @@ public abstract class DataExportationWriterBase(
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
     protected IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
-    private IOptions<MasterDataCoreOptions> Options { get; } = options;
+    private IOptionsSnapshot<MasterDataCoreOptions> Options { get; } = options;
 
     private ILogger<DataExportationWriterBase> Logger { get; } = logger;
     private FormFilePathBuilder PathBuilder => _pathBuilder ??= new FormFilePathBuilder(FormElement);

@@ -1,6 +1,4 @@
-﻿using System;
-using JJMasterData.Commons.Configuration;
-using JJMasterData.Commons.Configuration.Options;
+﻿using JJMasterData.Commons.Configuration;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
@@ -20,38 +18,16 @@ public static class ServiceCollectionExtensions
         return services.AddJJMasterDataCommons();
     }
 
-    public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services,
-        Action<MasterDataCoreOptions> configureCore)
+    public static MasterDataServiceBuilder AddJJMasterDataCore(
+        this IServiceCollection services,
+        MasterDataCoreOptionsConfiguration optionsConfiguration
+        )
     {
-        var coreOptions = new MasterDataCoreOptions();
-
-        configureCore(coreOptions);
-
-        services.PostConfigure(configureCore);
+        if (optionsConfiguration.ConfigureCore != null) 
+            services.PostConfigure(optionsConfiguration.ConfigureCore);
 
         services.AddMasterDataCoreServices();
-        return services.AddJJMasterDataCommons(ConfigureJJMasterDataCommonsOptions);
-
-        void ConfigureJJMasterDataCommonsOptions(MasterDataCommonsOptions options)
-        {
-            if (coreOptions.ConnectionString != null)
-                options.ConnectionString = coreOptions.ConnectionString;
-
-            if (coreOptions.ConnectionProvider != default)
-                options.ConnectionProvider = coreOptions.ConnectionProvider;
-
-            if (coreOptions.LocalizationTableName != null)
-                options.LocalizationTableName = coreOptions.LocalizationTableName;
-
-            if (coreOptions.ReadProcedurePattern != null)
-                options.ReadProcedurePattern = coreOptions.ReadProcedurePattern;
-
-            if (coreOptions.WriteProcedurePattern != null)
-                options.WriteProcedurePattern = coreOptions.WriteProcedurePattern;
-
-            if (coreOptions.SecretKey != null)
-                options.SecretKey = coreOptions.SecretKey;
-        }
+        return services.AddJJMasterDataCommons(optionsConfiguration.ConfigureCommons);
     }
 
     public static MasterDataServiceBuilder AddJJMasterDataCore(this IServiceCollection services,

@@ -25,7 +25,7 @@ public class TextWriter(
         IEncryptionService encryptionService,
         ExpressionsService expressionsService,
         IStringLocalizer<MasterDataResources> stringLocalizer,
-        IOptions<MasterDataCoreOptions> options,
+        IOptionsSnapshot<MasterDataCoreOptions> options,
         ILoggerFactory logger,
         IEntityRepository entityRepository)
     : DataExportationWriterBase(

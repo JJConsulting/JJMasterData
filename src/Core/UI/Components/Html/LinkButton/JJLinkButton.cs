@@ -81,6 +81,8 @@ public class JJLinkButton : HtmlComponent
     public string UrlAction { get; set; }
 
     public PanelColor Color { get; set; } = PanelColor.Default;
+    
+    public bool OpenInNewTab { get; set; }
 
     internal JJLinkButton(IStringLocalizer<MasterDataResources> stringLocalizer)
     {
@@ -113,6 +115,8 @@ public class JJLinkButton : HtmlComponent
                 html.WithCssClass($"link-{Color.ToString().ToLower()}");
         }
 
+
+        html.WithAttributeIf(OpenInNewTab, "target", "_blank");
         html.WithNameAndId(Name);
         html.WithCssClass(GetCssClassWithCompatibility());
         html.WithAttributes(Attributes);
@@ -126,20 +130,9 @@ public class JJLinkButton : HtmlComponent
             html.AppendComponent(icon);
             html.WithCssClassIf(Enabled,"icon-link-hover");
         }
-        
-        switch (!string.IsNullOrEmpty(Text))
-        {
-            case true when ShowAsButton || Type is LinkButtonType.Button or LinkButtonType.Submit:
-                html.Append(HtmlTag.Span, s =>
-                {
-                    s.AppendText("&nbsp;" +_stringLocalizer[Text]);
-                });
-                break;
-            case true:
-                html.AppendText(_stringLocalizer[Text]);
-                break;
-        }
 
+        if (!string.IsNullOrEmpty(Text)) 
+            html.AppendText("&nbsp;" + _stringLocalizer[Text]);
         
         html.Append(InnerHtml);
         

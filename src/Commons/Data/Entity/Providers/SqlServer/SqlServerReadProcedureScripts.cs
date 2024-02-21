@@ -9,7 +9,7 @@ using System.Text;
 namespace JJMasterData.Commons.Data.Entity.Providers;
 
 public class SqlServerReadProcedureScripts(
-    IOptions<MasterDataCommonsOptions> options,
+    IOptionsSnapshot<MasterDataCommonsOptions> options,
     SqlServerInfo sqlServerInfo)
     : SqlServerScriptsBase
 {
