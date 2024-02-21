@@ -3,19 +3,18 @@ using System.Globalization;
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Structure;
 
-public class LocalizationFormElementFactory(IOptionsSnapshot<MasterDataCommonsOptions> options)
+public class LocalizationFormElementFactory(IOptionsSnapshot<MasterDataCommonsOptions> masterDataOptions)
 {
-    private MasterDataCommonsOptions Options { get; } = options.Value;
-
     public FormElement GetFormElement()
     {
         var supportedCultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
             
-        var element = MasterDataStringLocalizerElement.GetElement(Options);
+        var element = MasterDataStringLocalizerElement.GetElement(masterDataOptions.Value);
 
         var formElement = new FormElement(element);
         formElement.Options.Grid.ShowTitle = false;
@@ -34,7 +33,7 @@ public class LocalizationFormElementFactory(IOptionsSnapshot<MasterDataCommonsOp
         
         var cultureField = formElement.Fields["cultureCode"];
         cultureField.IsRequired = true;
-        cultureField.Component = FormComponent.ComboBox;
+        cultureField.Component = FormComponent.Search;
         cultureField.DataItem = new FormElementDataItem
         {
             Items = new List<DataItemValue>(),
