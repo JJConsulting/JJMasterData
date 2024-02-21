@@ -8,9 +8,9 @@
 	  <PackageProjectUrl>https://www.github.com/jjconsulting/jjmasterdata</PackageProjectUrl>
 	  <PackageIcon>JJMasterData.png</PackageIcon>
 	  <PackageTags>pdf,jjmasterdata</PackageTags>
-      <Version>2.0.2</Version>
-    	<AssemblyVersion>2.0.2</AssemblyVersion>
-      <FileVersion>2.0.2</FileVersion>
+      <Version>2.0.3</Version>
+    	<AssemblyVersion>2.0.3</AssemblyVersion>
+      <FileVersion>2.0.3</FileVersion>
       <Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
       <RootNamespace>JJMasterData.Pdf</RootNamespace>
       <AssemblyName>JJMasterData.Pdf</AssemblyName>
@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="itext7" Version="8.0.3" />
+    <PackageReference Include="itext7.bouncy-castle-fips-adapter" Version="8.0.3" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 

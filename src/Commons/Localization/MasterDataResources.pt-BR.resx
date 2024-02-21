@@ -2537,10 +2537,6 @@
     <value>Dicionário de Origem</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Sql Command" xml:space="preserve">
-    <value>Comando Sql</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="start" xml:space="preserve">
     <value>início</value>
     <comment>JJMasterDataCore</comment>

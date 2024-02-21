@@ -57,9 +57,9 @@ public class PdfWriter(
     public bool IsLandscape { get; set; }
 
     private DataItemService DataItemService { get; } = dataItemService;
-    public IEntityRepository EntityRepository { get; } = entityRepository;
+    private IEntityRepository EntityRepository { get; } = entityRepository;
 
-    public FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
+    private FieldFormattingService FieldFormattingService { get; } = fieldFormattingService;
 
 
     public override async Task GenerateDocument(Stream ms, CancellationToken token)
