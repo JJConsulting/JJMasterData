@@ -148,11 +148,12 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnAbout",
-                Tooltip = StringLocalizer["About"],
+                Text = StringLocalizer["About"],
                 Icon = IconType.InfoCircle,
-                ShowAsButton = true,
+                ShowAsButton = false,
                 IsModal = true,
                 IsIframe = false,
+                IsGroup = true,
                 ModalTitle = StringLocalizer["About"],
                 ModalSize = ModalSize.ExtraLarge,
                 UrlRedirect = UrlHelper.Action("Index", "About", new {Area="DataDictionary"}),
@@ -163,8 +164,9 @@ public class DataDictionaryFormElementFactory(
             new ScriptAction
             {
                 Name = "btnHelp",
-                Tooltip = StringLocalizer["Help"],
-                Icon = IconType.Question,
+                Text = StringLocalizer["Help"],
+                Icon = IconType.QuestionCircle,
+                IsGroup = true,
                 ShowAsButton = true,
                 OnClientClick = "window.open('https://md.jjconsulting.tech', '_blank');",
                 Order = 13,
@@ -200,10 +202,11 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnLog",
-                Tooltip = StringLocalizer["Log"],
-                Icon = IconType.FileTextO,
+                Text = StringLocalizer["Log"],
+                Icon = IconType.Film,
                 ShowAsButton = true,
                 IsModal = true,
+                IsGroup = true,
                 ModalTitle = StringLocalizer["Log"],
                 ModalSize = ModalSize.ExtraLarge,
                 UrlRedirect = UrlHelper.Action("Index", "Log", new {Area="DataDictionary"}),
@@ -214,9 +217,10 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnAppSettings",
-                Tooltip = StringLocalizer["Application Settings"],
-                Icon = IconType.Code,
+                Text = StringLocalizer["Application Settings"],
+                Icon = IconType.SolidToolbox,
                 ShowAsButton = true,
+                IsGroup = true,
                 UrlRedirect = UrlHelper.Action("Index", "Settings", new {Area="DataDictionary"}),
                 Order = 12,
                 CssClass = BootstrapHelper.PullRight
@@ -225,10 +229,11 @@ public class DataDictionaryFormElementFactory(
             new UrlRedirectAction
             {
                 Name = "btnI18n",
-                Tooltip = StringLocalizer["Localization"],
+                Text = StringLocalizer["Localization"],
                 Icon = IconType.Globe,
                 ShowAsButton = true,
                 IsModal = true,
+                IsGroup = true,
                 ModalTitle = StringLocalizer["Localization"],
                 ModalSize = ModalSize.ExtraLarge,
                 UrlRedirect = UrlHelper.Action("Index", "Localization", new {Area="DataDictionary"}),

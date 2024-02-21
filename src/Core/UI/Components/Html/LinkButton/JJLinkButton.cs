@@ -130,20 +130,9 @@ public class JJLinkButton : HtmlComponent
             html.AppendComponent(icon);
             html.WithCssClassIf(Enabled,"icon-link-hover");
         }
-        
-        switch (!string.IsNullOrEmpty(Text))
-        {
-            case true when ShowAsButton || Type is LinkButtonType.Button or LinkButtonType.Submit:
-                html.Append(HtmlTag.Span, s =>
-                {
-                    s.AppendText("&nbsp;" +_stringLocalizer[Text]);
-                });
-                break;
-            case true:
-                html.AppendText(_stringLocalizer[Text]);
-                break;
-        }
 
+        if (!string.IsNullOrEmpty(Text)) 
+            html.AppendText("&nbsp;" + _stringLocalizer[Text]);
         
         html.Append(InnerHtml);
         
