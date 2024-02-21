@@ -10,6 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <RuntimeHostConfigurationOption Include="System.Runtime.Loader.UseRidGraph" Value="true" />
+    <ProjectReference Include="..\..\example\WebEntryPoint\WebEntryPoint.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.6" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
     <PackageReference Include="Moq" Version="4.18.4" />
@@ -23,11 +25,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\example\WebEntryPoint\WebEntryPoint.csproj" />
   </ItemGroup>
 
 </Project>

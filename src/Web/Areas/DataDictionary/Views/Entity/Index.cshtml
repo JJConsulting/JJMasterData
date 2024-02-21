@@ -1,6 +1,4 @@
 ﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
-@using JJMasterData.Core.UI
-
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 @model EntityViewModel;
@@ -8,6 +6,7 @@
 
 @{
     ViewData["Title"] = $"{Model.ElementName} - {StringLocalizer["Entity"]}";
+    string urlEdit = Url.Action("Edit", new { elementName = Model.ElementName })!;
 }
 
 
@@ -21,7 +20,7 @@
         <div class="col-sm-12">
             <link-button icon="Pencil" 
                          text="Edit"
-                         on-client-click="location.href='@Url.Action("Edit", new { elementName = Model.ElementName })'"/>
+                         on-client-click="location.href='@urlEdit'"/>
         </div>
     </div>
 
