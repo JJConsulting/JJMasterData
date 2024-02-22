@@ -88,8 +88,13 @@ public class FormValuesService(
             case FormComponent.CheckBox:
                 if (string.IsNullOrWhiteSpace(value))
                     break;
-                
-                parsedValue = StringManager.ParseBool(value);
+            
+                var boolValue = StringManager.ParseBool(value);
+                //Legacy compatibility when FieldType.Bit didn't exists.
+                if (field.DataType is FieldType.Bit)
+                    parsedValue = boolValue;
+                else
+                    parsedValue = boolValue ? "1" : "0";
                 break;
             default:
                 parsedValue = value;
