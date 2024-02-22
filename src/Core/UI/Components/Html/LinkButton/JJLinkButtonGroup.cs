@@ -31,7 +31,7 @@ public class JJLinkButtonGroup(IStringLocalizer<MasterDataResources> stringLocal
         var parentElement = new HtmlBuilder(HtmlTag.Div)
             .WithAttributes(Attributes)
             .WithNameAndId(Name)
-            .WithCssClassIf(ShowAsButton || BootstrapHelper.Version is 3,BootstrapHelper.InputGroupBtn)
+            .WithCssClassIf(BootstrapHelper.Version is 3, "input-group-btn")
             .WithCssClass(CssClass);
 
         AddActionsAt(parentElement);
