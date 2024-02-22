@@ -3257,10 +3257,6 @@
     <value>{0} 字段没有找到</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="{0} from {1} by user:{2}" xml:space="preserve">
-    <value>{0} 从 {1} 被使用:{2}</value>
-    <comment>JJMasterDataCore</comment>
-  </data>
   <data name="{0} Record(s) deleted successfully" xml:space="preserve">
     <value>{0} 记录(s) 删除成功</value>
     <comment>JJMasterDataCore</comment>

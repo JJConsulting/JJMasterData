@@ -90,10 +90,10 @@ public class FormValuesService(
                     break;
             
                 var boolValue = StringManager.ParseBool(value);
-                //Legacy compatibility when FieldType.Bit didn't exists.
+
                 if (field.DataType is FieldType.Bit)
                     parsedValue = boolValue;
-                else
+                else //Legacy compatibility when FieldType.Bit didn't exists.
                     parsedValue = boolValue ? "1" : "0";
                 break;
             default:

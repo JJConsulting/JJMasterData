@@ -634,6 +634,7 @@ public class JJFormView : AsyncComponent
             var html = htmlComponent.HtmlBuilder;
 
             html.WithNameAndId(Name);
+            
             AppendFormViewHiddenInputs(html);
 
             if (ComponentContext is ComponentContext.FormViewReload)
@@ -1109,7 +1110,7 @@ public class JJFormView : AsyncComponent
         }
 
         AuditLogView.GridView.AddToolbarAction(goBackAction);
-        AuditLogView.DataPanel = DataPanel;
+
         PageState = PageState.AuditLog;
         return await AuditLogView.GetResultAsync();
     }

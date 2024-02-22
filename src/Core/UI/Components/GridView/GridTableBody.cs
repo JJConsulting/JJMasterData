@@ -13,6 +13,7 @@ using JJMasterData.Core.DataManager.Services;
 using JJMasterData.Core.Extensions;
 using JJMasterData.Core.UI.Events.Args;
 using JJMasterData.Core.UI.Html;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Core.UI.Components;
 
@@ -140,8 +141,12 @@ internal class GridTableBody(JJGridView gridView)
                     var dataItemValue = dataItemValues.FirstOrDefault(d => d.Id == value.ToString());
 
 
-                    var tooltip = field.DataItem.GridBehavior is DataItemGridBehavior.Icon ? dataItemValue?.Description : null;
-                        
+                    string tooltip;
+                    if (field.DataItem.GridBehavior is DataItemGridBehavior.Icon)
+                        tooltip = GridView.StringLocalizer[dataItemValue?.Description ?? string.Empty];
+                    else
+                        tooltip = string.Empty;
+
                     cell = GetIconCell(dataItemValue!.Icon, dataItemValue.IconColor ?? string.Empty, tooltip);
 
                     cell.AppendIf(field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription, HtmlTag.Span,

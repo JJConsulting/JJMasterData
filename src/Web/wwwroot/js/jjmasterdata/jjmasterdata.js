@@ -1003,7 +1003,7 @@ class FormViewHelper {
             url: url,
             success: (data) => {
                 TooltipHelper.dispose("#" + componentName);
-                HTMLHelper.setInnerHTML(componentName, data);
+                HTMLHelper.setOuterHTML(componentName, data);
                 listenAllEvents("#" + componentName);
             }
         });

@@ -32,7 +32,6 @@ public class FormService(IEntityRepository entityRepository,
     private ILogger<FormService> Logger { get; } = logger;
 
     public bool EnableErrorLinks { get; set; }
-    
     #endregion
 
     #region Events

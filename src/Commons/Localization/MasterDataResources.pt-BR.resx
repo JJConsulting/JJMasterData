@@ -3173,10 +3173,6 @@
     <value>Campo {0} não localizado</value>
     <comment>JJMasterData.Commons</comment>
   </data>
-  <data name="{0} from {1} by user:{2}" xml:space="preserve">
-    <value>{0} via {1} por usuário:{2}</value>
-    <comment>JJMasterDataCore</comment>
-  </data>
   <data name="{0} Record(s) deleted successfully" xml:space="preserve">
     <value>{0} Registro(s) excluído(s) com successo</value>
     <comment>JJMasterDataCore</comment>

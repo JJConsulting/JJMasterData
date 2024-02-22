@@ -11,6 +11,7 @@ using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Models;
+using JJMasterData.Core.UI;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -125,7 +126,7 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
         origin.Component = FormComponent.ComboBox;
         origin.DataItem = new FormElementDataItem
         {
-            GridBehavior = DataItemGridBehavior.IconWithDescription,
+            GridBehavior = DataItemGridBehavior.Icon,
             Items = []
         };
         foreach (int i in Enum.GetValues(typeof(DataContextSource)))
@@ -138,13 +139,13 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
         action.Component = FormComponent.ComboBox;
         action.DataItem = new FormElementDataItem
         {
-            GridBehavior = DataItemGridBehavior.IconWithDescription,
+            GridBehavior = DataItemGridBehavior.Icon,
             Items = [],
             ShowIcon = true
         };
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", IconType.Plus, "#387c44"));
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", IconType.Pencil, "#ffbf00"));
-        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Delete).ToString(), "Deleted", IconType.Trash, "#b20000"));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Insert).ToString(), "Added", IconType.Plus, GetInsertColor()));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Update).ToString(), "Edited", IconType.Pencil, GetUpdateColor()));
+        action.DataItem.Items.Add(new DataItemValue(((int)CommandOperation.Delete).ToString(), "Deleted", IconType.Trash, GetDeleteColor()));
         var btnViewLog = new ScriptAction
         {
             Icon = IconType.Eye,
@@ -156,5 +157,21 @@ public class AuditLogService(IEntityRepository entityRepository, IOptionsSnapsho
         formElement.Options.GridTableActions.Add(btnViewLog);
         return formElement;
     }
+    
+    internal static string GetUpdateColor()
+    {
+        return BootstrapHelper.Version == 3 ? "#ffbf00" : "var(--bs-warning)";
+    }
+
+    internal static string GetInsertColor()
+    {
+        return BootstrapHelper.Version == 3 ? "#387c44" : "var(--bs-success)";
+    }
+
+    internal static string GetDeleteColor()
+    {
+        return BootstrapHelper.Version == 3 ? "#b20000" : "var(--bs-danger)";
+    }
+
 
 }

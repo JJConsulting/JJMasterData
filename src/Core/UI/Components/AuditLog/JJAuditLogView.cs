@@ -39,13 +39,13 @@ public class JJAuditLogView : AsyncComponent
 
             var factory = new RouteContextFactory(CurrentContext.Request.QueryString, EncryptionService);
             _routeContext = factory.Create();
-            
+
             return _routeContext;
         }
     }
-    
+
     internal ComponentContext ComponentContext => RouteContext.ComponentContext;
-    
+
     /// <summary>
     /// Id do usuário Atual
     /// </summary>
@@ -59,21 +59,21 @@ public class JJAuditLogView : AsyncComponent
 
     public AuditLogService AuditLogService { get; }
     private IEncryptionService EncryptionService { get; }
-    
+
     public JJGridView GridView => _gridView ??= CreateGridViewLog();
 
-    /// <summary>
-    /// Configuração do painel com os campos do formulário
-    /// </summary>
     internal JJDataPanel DataPanel
     {
         get
         {
-            var panel = _componentFactory.DataPanel.Create(FormElement);
-            panel.Name = $"auditlogview-panel-{Name}";
-            return _dataPainel ??= panel;
+            if (_dataPainel == null)
+            {
+                _dataPainel = _componentFactory.DataPanel.Create(FormElement);
+                _dataPainel.Name = $"auditlogview-panel-{FormElement.ParentName}";
+            }
+
+            return _dataPainel;
         }
-        set => _dataPainel = value;
     }
 
     public FormElement FormElement { get; private set; }
@@ -124,7 +124,7 @@ public class JJAuditLogView : AsyncComponent
                 var panel = await GetDetailsPanel(logId);
 
                 var panelHtmlBuilder = await panel.GetPanelHtmlBuilderAsync();
-                
+
                 return new ContentComponentResult(panelHtmlBuilder);
             }
 
@@ -132,7 +132,7 @@ public class JJAuditLogView : AsyncComponent
             html.AppendComponent(GetFormBottombar());
         }
 
-        html.AppendHiddenInput($"audit-log-id-{FormElement.Name}", logId);
+        html.AppendHiddenInput($"audit-log-id-{FormElement.Name}", logId!);
 
         return new RenderedComponentResult(html);
     }
@@ -148,7 +148,7 @@ public class JJAuditLogView : AsyncComponent
         };
 
         var orderBy = new OrderByData();
-        orderBy.AddOrReplace(AuditLogService.DicModified,OrderByDirection.Desc);
+        orderBy.AddOrReplace(AuditLogService.DicModified, OrderByDirection.Desc);
 
         var entryId = string.Empty;
         var result = await EntityRepository.GetDictionaryListResultAsync(GridView.FormElement, new EntityParameters()
@@ -176,7 +176,7 @@ public class JJAuditLogView : AsyncComponent
     private async Task<HtmlBuilder> GetLogDetailsHtmlAsync(string logId)
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-
+        html.WithCssClass("mb-2");
         if (GridView.ShowTitle)
             html.AppendComponent(await GridView.GetTitleAsync());
 
@@ -198,55 +198,58 @@ public class JJAuditLogView : AsyncComponent
         var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
         var json = values[AuditLogService.DicJson]?.ToString();
         var recordsKey = values[AuditLogService.DicKey]?.ToString();
-        var fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json ?? string.Empty);
-
-        var panel = DataPanel;
-        panel.PageState = PageState.View;
-        panel.Values = fields;
-        panel.Name = $"auditlogview-panel-{Name}";
+        var auditLogValues = JsonConvert.DeserializeObject<Dictionary<string, object>>(json ?? string.Empty);
+        
+        DataPanel.PageState = PageState.View;
+        DataPanel.Values = auditLogValues;
+        DataPanel.Name = $"auditlogview-panel-{FormElement.ParentName}";
 
         var row = new HtmlBuilder(HtmlTag.Div)
             .WithCssClass("row");
 
-        await row.AppendAsync(HtmlTag.Div, async d =>
+        var logListGroupHtml = await GetLogListGroupHtml(recordsKey, logId);
+
+        row.Append(HtmlTag.Div, d =>
         {
             d.WithCssClass("col-sm-3");
-            await d.AppendAsync(HtmlTag.Div, async div =>
+            d.Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass("jjrelative");
-                await div.AppendAsync(HtmlTag.Div, async divFields =>
+                div.Append(HtmlTag.Div, divFields =>
                 {
                     divFields.WithCssClass("listField")
-                        .Append(HtmlTag.P,
-                            p =>
-                            {
-                                p.Append(HtmlTag.B, b => { b.AppendText($"{StringLocalizer["Change History"]}:"); });
-                            });
-                    await divFields.AppendAsync(HtmlTag.Div, async group =>
+                        .AppendComponent(new JJTitle
+                        {
+                            Title = StringLocalizer["Change History"],
+                            Size = HeadingSize.H5,
+                        });
+                    divFields.Append(HtmlTag.Div, group =>
                     {
                         group.WithAttribute("id", "sortable-grid");
                         group.WithCssClass("list-group sortable-grid");
-                        group.Append(await GetHtmlGridInfo(recordsKey, logId));
+                        group.Append(logListGroupHtml);
                     });
                 });
             });
         });
 
-        await row.AppendAsync(HtmlTag.Div, async d =>
+        var panelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
+
+        row.Append(HtmlTag.Div, d =>
         {
             d.WithCssClass("col-sm-9");
-            await d.AppendAsync(HtmlTag.Div, async div =>
+            d.Append(HtmlTag.Div, div =>
             {
                 div.WithCssClass("jjrelative");
-                await div.AppendAsync(HtmlTag.Div, async divDetail =>
+                div.Append(HtmlTag.Div, divDetail =>
                 {
                     divDetail.WithCssClass("field-details")
-                        .Append(HtmlTag.P,
-                            p =>
-                            {
-                                p.Append(HtmlTag.B, b => { b.AppendText($"{StringLocalizer["Record Snapshot"]}:"); });
-                            });
-                    divDetail.Append( await panel.GetPanelHtmlBuilderAsync());
+                        .AppendComponent(new JJTitle
+                        {
+                            Title = StringLocalizer["Record Snapshot"],
+                            Size = HeadingSize.H5
+                        });
+                    divDetail.Append(panelHtml);
                 });
             });
         });
@@ -262,7 +265,7 @@ public class JJAuditLogView : AsyncComponent
         var values = await EntityRepository.GetFieldsAsync(AuditLogService.GetElement(), filter);
         string json = values[AuditLogService.DicJson].ToString();
 
-        Dictionary<string, object> fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+        var fields = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
         var panel = DataPanel;
         panel.PageState = PageState.View;
@@ -282,9 +285,12 @@ public class JJAuditLogView : AsyncComponent
         var grid = _componentFactory.GridView.Create(gridViewFormElement);
         grid.FormElement.Title = FormElement.Title;
         grid.SetCurrentFilter(AuditLogService.DicName, FormElement.Name);
-        grid.CurrentOrder = new OrderByData().AddOrReplace(AuditLogService.DicModified,OrderByDirection.Desc);
+        if (!grid.CurrentOrder.Any())
+        {
+            grid.CurrentOrder.AddOrReplace(AuditLogService.DicModified, OrderByDirection.Desc);
+        }
         grid.ExportAction.SetVisible(false);
-        
+
         var fieldKey = grid.FormElement.Fields[AuditLogService.DicKey];
         int qtdPk = FormElement.Fields.Count(x => x.IsPk);
         if (qtdPk == 1)
@@ -306,7 +312,7 @@ public class JJAuditLogView : AsyncComponent
         var btn = _componentFactory.Html.LinkButton.Create();
         btn.Type = LinkButtonType.Button;
         btn.CssClass = "btn btn-default btn-small";
-        btn.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{FormElement.Name}','');";
+        btn.OnClientClick = $"AuditLogViewHelper.viewAuditLog('{FormElement.ParentName}','');";
         btn.IconClass = IconType.ArrowLeft.GetCssClass();
         btn.Text = StringLocalizer["Back"];
 
@@ -315,7 +321,7 @@ public class JJAuditLogView : AsyncComponent
         return toolbar;
     }
 
-    private async Task<HtmlBuilder> GetHtmlGridInfo(string recordsKey, string viewId)
+    private async Task<HtmlBuilder> GetLogListGroupHtml(string recordsKey, string viewId)
     {
         var filter = new Dictionary<string, object>
         {
@@ -324,17 +330,16 @@ public class JJAuditLogView : AsyncComponent
         };
 
         var orderBy = new OrderByData().AddOrReplace(AuditLogService.DicModified, OrderByDirection.Desc);
-
-
-        var result = await EntityRepository.GetDictionaryListResultAsync(GridView.FormElement,new EntityParameters()
+        
+        var result = await EntityRepository.GetDictionaryListResultAsync(GridView.FormElement, new EntityParameters
         {
             Filters = filter,
             OrderBy = orderBy,
             CurrentPage = 1,
-            RecordsPerPage = 1
+            RecordsPerPage = int.MaxValue
         });
 
-        var html = new HtmlBuilder(HtmlTag.Div);
+        var html = new HtmlBuilder();
         foreach (var row in result.Data)
         {
             string icon = "";
@@ -345,19 +350,19 @@ public class JJAuditLogView : AsyncComponent
             if (row["actionType"]!.Equals((int)CommandOperation.Update))
             {
                 icon = "fa fa-pencil fa-lg fa-fw";
-                color = "#ffbf00";
+                color = AuditLogService.GetUpdateColor();
                 action = StringLocalizer["Edited"];
             }
             else if (row["actionType"].Equals((int)CommandOperation.Insert))
             {
                 icon = "fa fa-plus fa-lg fa-fw";
-                color = "#387c44;";
+                color = AuditLogService.GetInsertColor();
                 action = StringLocalizer["Added"];
             }
             else if (row["actionType"].Equals((int)CommandOperation.Delete))
             {
                 icon = "fa fa-trash fa-lg fa-fw";
-                color = "#b20000";
+                color = AuditLogService.GetDeleteColor();
                 action = StringLocalizer["Deleted"];
             }
 
@@ -369,22 +374,23 @@ public class JJAuditLogView : AsyncComponent
                 origem = DataContextSource.Upload.ToString();
 
             string logId = row["id"].ToString();
-            string message = StringLocalizer["{0} from {1} by user:{2}", action, origem, row["userId"]?.ToString() ?? string.Empty];
+            string message = $"{action} [{origem}] {row["userId"]?.ToString() ?? string.Empty}";
 
             html.Append(HtmlTag.A, a =>
             {
                 var routeContext = RouteContext.FromFormElement(FormElement, ComponentContext.AuditLogView);
 
                 var encryptedRouteContext = EncryptionService.EncryptRouteContext(routeContext);
-                
-                a.WithAttribute("href", $"javascript:AuditLogViewHelper.loadAuditLog('{Name}','{logId}', '{encryptedRouteContext}')");
+
+                a.WithAttribute("href",
+                    $"javascript:AuditLogViewHelper.loadAuditLog('{FormElement.ParentName}','{logId}', '{encryptedRouteContext}')");
                 a.WithNameAndId(logId);
                 a.WithCssClass("list-group-item ui-sortable-handle");
                 a.WithCssClassIf(logId.Equals(viewId), "active");
 
                 a.Append(HtmlTag.Div, div =>
                 {
-                    div.WithAttribute("style", "height: 60px;");
+                    div.WithAttribute("style", "height: 4.75rem;");
                     div.Append(HtmlTag.Span, span =>
                     {
                         span.WithCssClass(icon);
@@ -392,20 +398,17 @@ public class JJAuditLogView : AsyncComponent
                         span.WithToolTip(action);
                     });
                     div.Append(HtmlTag.B, b => { b.AppendText(message); });
-                    div.Append(HtmlTag.Span, span =>
-                    {
-                        span.WithAttribute("style", "float:right");
-                        span.AppendText(StringLocalizer["Browser info."]);
-                        span.WithToolTip(row["browser"]?.ToString());
-
-                        var infoIcon = _componentFactory.Html.Icon.Create(IconType.InfoCircle);
-                        infoIcon.CssClass = "help-description";
-                        span.AppendComponent(infoIcon);
-                    });
                     div.Append(HtmlTag.Br);
                     div.Append(HtmlTag.B, b => { b.AppendText((string)row["modified"]!.ToString()); });
                     div.Append(HtmlTag.Br);
-                    div.Append(HtmlTag.B, b => { b.AppendText($"IP: {row["ip"]}"); });
+                    div.Append(HtmlTag.B, b =>
+                    {
+                        b.AppendText($"IP: {row["ip"]}");
+                        var infoIcon = _componentFactory.Html.Icon.Create(IconType.InfoCircle);
+                        infoIcon.CssClass = "help-description";
+                        b.AppendComponent(infoIcon);
+                        b.WithToolTip(row["browser"]?.ToString());
+                    });
                 });
             });
         }
