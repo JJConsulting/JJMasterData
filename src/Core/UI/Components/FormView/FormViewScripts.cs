@@ -17,6 +17,7 @@ public class FormViewScripts(JJFormView formView)
     public string GetShowInsertSuccessScript()
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.GridViewReload);
+        //language=Javascript
         return $"FormViewHelper.showInsertSuccess('{formView.Name}', '{encryptedRouteContext}')";
     }
 
@@ -24,18 +25,21 @@ public class FormViewScripts(JJFormView formView)
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.InsertSelection);
         var encryptedValues = formView.EncryptionService.EncryptDictionary(values);
+        //language=Javascript
         return $"FormViewHelper.insertSelection('{formView.Name}', '{encryptedValues}', '{encryptedRouteContext}')";
     }
 
     public string GetSetPageStateScript(PageState pageState)
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.FormViewReload);
+        //language=Javascript
         return $"FormViewHelper.setPageState('{formView.Name}','{(int)pageState}', '{encryptedRouteContext}')";
     }
     
     public string GetSetPanelStateScript(PageState pageState)
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.FormViewReload);
+        //language=Javascript
         return $"FormViewHelper.setPanelState('{formView.Name}','{(int)pageState}', '{encryptedRouteContext}')";
     }
 

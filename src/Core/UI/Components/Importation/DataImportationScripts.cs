@@ -34,32 +34,38 @@ internal class DataImportationScripts(
     
     public string GetBackScript()
     {
+        //language=Javascript
         return $"DataImportationHelper.back('{Name}', '{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
     }
     
     public string GetShowScript()
     {
+        //language=Javascript
         return $"DataImportationHelper.show('{Name}','{StringLocalizer[ModalTitle]}','{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
     }
 
     
     public string GetHelpScript()
     {
+        //language=Javascript
         return $"DataImportationHelper.help('{Name}','{GetEncryptedRouteContext()}')";
     }
     
     public string GetStopScript(string stopMessage)
     {
+        //language=Javascript
         return $"DataImportationHelper.stop('{Name}','{GetEncryptedRouteContext()}','{stopMessage}')";
     }
 
     public string GetLogScript()
     {
+        //language=Javascript
         return $"DataImportationHelper.showLog('{Name}','{GetEncryptedRouteContext()}')";
     }
     
     public string GetUploadCallbackScript()
     {
+        //language=Javascript
         return $"DataImportationHelper.uploadCallback('{Name}','{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
     }
 }
