@@ -304,6 +304,20 @@ public class JJAuditLogView : AsyncComponent
             fieldKey.HelpDescription = StringLocalizer["Primary key separated by semicolons"];
         }
 
+        if (!FormElement.Options.EnableAuditLog)
+        {
+            grid.OnBeforeTableRenderAsync += (_, args) =>
+            {
+                var alert = _componentFactory.Html.Alert.Create();
+                alert.Title = StringLocalizer["Warning"];
+                alert.Color = PanelColor.Warning;
+                alert.Icon = IconType.SolidTriangleExclamation;
+                alert.Messages.Add(StringLocalizer["Audit Log is disabled. Please contact the administrator."]);
+                args.HtmlBuilder.AppendComponent(alert);
+                return Task.CompletedTask;
+            };
+        }
+        
         return grid;
     }
 

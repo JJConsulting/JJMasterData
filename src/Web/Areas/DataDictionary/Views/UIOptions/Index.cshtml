@@ -26,11 +26,19 @@
 
 <br/>
 
-<fieldset disabled="disabled">
-    <collapse-panel icon="Table" title="Grid View" expanded-by-default="true">
+
+<collapse-panel icon="Table" title="Grid View" expanded-by-default="true">
+    <fieldset disabled="disabled">
         <partial for="Grid" name="_GridView"/>
-    </collapse-panel>
-    <collapse-panel icon="Columns" title="Data Panel" expanded-by-default="true">
+    </fieldset>
+</collapse-panel>
+<collapse-panel icon="Columns" title="Data Panel" expanded-by-default="true">
+    <fieldset disabled="disabled">
         <partial for="Form" name="_DataPanel"/>
-    </collapse-panel>
-</fieldset>
+    </fieldset>
+</collapse-panel>
+<collapse-panel icon="Gear" title="@StringLocalizer["Other Options"]" expanded-by-default="true">
+    <fieldset disabled="disabled">
+        <partial model="Model" name="_Options"/>
+    </fieldset>
+</collapse-panel>

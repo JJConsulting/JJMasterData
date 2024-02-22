@@ -88,7 +88,7 @@ public class FormService(IEntityRepository entityRepository,
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
-        if (IsAuditLogEnabled(formElement, PageState.Update, values))
+        if (formElement.Options.EnableAuditLog)
             await AuditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Update);
         
         if (OnAfterUpdateAsync != null)
@@ -136,7 +136,7 @@ public class FormService(IEntityRepository entityRepository,
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.SaveFormMemoryFiles(formElement, values);
 
-        if (IsAuditLogEnabled(formElement, PageState.Insert, values))
+        if (formElement.Options.EnableAuditLog)
             await AuditLogService.LogAsync(formElement, dataContext, values, CommandOperation.Insert);
         
         if (OnAfterInsertAsync != null)
@@ -183,7 +183,7 @@ public class FormService(IEntityRepository entityRepository,
         if (errors.Count > 0)
             return result;
 
-        if (IsAuditLogEnabled(formElement, PageState.Import, values))
+        if (formElement.Options.EnableAuditLog)
             await AuditLogService.LogAsync(formElement, dataContext, values, result.Result);
 
         
@@ -250,7 +250,7 @@ public class FormService(IEntityRepository entityRepository,
         if (dataContext.Source == DataContextSource.Form)
             FormFileService.DeleteFiles(formElement, primaryKeys);
 
-        if (IsAuditLogEnabled(formElement, PageState.Delete, primaryKeys))
+        if (formElement.Options.EnableAuditLog)
             await AuditLogService.LogAsync(formElement, dataContext, primaryKeys, CommandOperation.Delete);
 
         if (OnAfterDeleteAsync != null)
@@ -261,14 +261,6 @@ public class FormService(IEntityRepository entityRepository,
         }
 
         return result;
-    }
-
-    private bool IsAuditLogEnabled(FormElement formElement, PageState pageState, Dictionary<string, object> formValues)
-    {
-        var formState = new FormStateData(formValues, pageState);
-        var auditLogExpression = formElement.Options.GridToolbarActions.AuditLogGridToolbarAction.VisibleExpression;
-        var isEnabled = ExpressionsService.GetBoolValue(auditLogExpression, formState);
-        return isEnabled;
     }
 
     #endregion

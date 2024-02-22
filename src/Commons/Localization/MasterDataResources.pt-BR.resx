@@ -3953,4 +3953,16 @@
   <data name="Error while testing the connection." xml:space="preserve">
     <value>Erro testando a conexão.</value>
   </data>
+  <data name="Other Options" xml:space="preserve">
+    <value>Outras Opções</value>
+  </data>
+  <data name="Enable Audit Log" xml:space="preserve">
+    <value>Habilitar Log De Auditoria</value>
+  </data>
+  <data name="AuditLog is disabled at Options." xml:space="preserve">
+    <value>O Log de Auditoria está desabilitado nas Opções.</value>
+  </data>
+  <data name="Audit Log is disabled. Please contact the administrator." xml:space="preserve">
+    <value>Log de Auditoria desabilitado. Por favor contate o administrador.</value>
+  </data>
 </root>

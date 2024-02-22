@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.ComponentModel.DataAnnotations;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using Newtonsoft.Json;
 
@@ -21,6 +22,10 @@ public class FormElementOptions
 
     [JsonProperty("gridActions")] 
     public GridTableActionList GridTableActions { get; }
+    
+    [JsonProperty("enableAuditLog")]
+    [Display(Name = "Enable Audit Log")]
+    public bool EnableAuditLog { get; set; }
 
     public FormElementOptions()
     {

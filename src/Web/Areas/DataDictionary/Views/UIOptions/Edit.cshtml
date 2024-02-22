@@ -1,7 +1,7 @@
 ﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using JJMasterData.Core.UI.Components
 @model JJMasterData.Core.DataDictionary.Models.FormElementOptions
-
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
 <style>
     input[type=checkbox] {
         margin: 2px 0 0;
@@ -32,5 +32,8 @@
     </collapse-panel>
     <collapse-panel icon="Columns" title="Data Panel" expanded-by-default="true">
         <partial for="Form" name="_DataPanel"/>
+    </collapse-panel>
+    <collapse-panel icon="Gear" title="@StringLocalizer["Other Options"]" expanded-by-default="true">
+        <partial model="Model" name="_Options"/>
     </collapse-panel>
 }
