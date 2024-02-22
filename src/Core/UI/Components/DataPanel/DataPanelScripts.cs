@@ -15,6 +15,7 @@ internal class DataPanelScripts(DataPanelControl dataPanelControl)
         
         var routeContext = EncryptionService.EncryptRouteContext(RouteContext.FromFormElement(dataPanelControl.FormElement,ComponentContext.DataPanelReload));
         
+        //language=Javascript
         return $"DataPanelHelper.reload('{componentName}','{elementFieldName}','{fieldNameWithPrefix}','{routeContext}');";
     }
 }

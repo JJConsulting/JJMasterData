@@ -28,16 +28,19 @@ internal class DataExportationScripts(string componentName,FormElement formEleme
 
     public string GetStartExportationScript()
     {
+        //language=Javascript
         return $"DataExportationHelper.startExportation( '{Name}','{EncryptedRouteContext}');";
     }
     
     public string GetStopExportationScript(string stopMessage)
     {
+        //language=Javascript
         return $"DataExportationHelper.stopExportation('{Name}','{EncryptedRouteContext}','{stopMessage}');";
     }
     
     public string GetExportModalScript()
     {
+        //language=Javascript
         return $"DataExportationHelper.openExportPopup('{Name}','{EncryptedRouteContext}');";
     }
 }
