@@ -16,7 +16,7 @@ public class ExportAction : GridToolbarAction
     public ProcessOptions ProcessOptions { get; set; }
 
     [JsonProperty("fileName")]
-    [Display(Name="File Name")]
+    [Display(Name="Download File Name")]
     public string? FileName { get; set; }
     
     public ExportAction()

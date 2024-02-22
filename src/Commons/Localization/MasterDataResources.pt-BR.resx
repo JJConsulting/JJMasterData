@@ -386,7 +386,7 @@
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Browser info" xml:space="preserve">
-    <value>Info. navegador</value>
+    <value>Informações do navegador</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="By default every post made on the site is limited to 4mb" xml:space="preserve">
@@ -1111,6 +1111,10 @@
   </data>
   <data name="File Name" xml:space="preserve">
     <value>Nome do Arquivo</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Download File Name" xml:space="preserve">
+    <value>Nome do Arquivo Para Download</value>
     <comment>JJMasterDataApi</comment>
   </data>
   <data name="File name cannot contain [{0}] characters" xml:space="preserve">
@@ -2518,7 +2522,7 @@
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="Record Snapshot" xml:space="preserve">
-    <value>Foto do Registro</value>
+    <value>Fotografia do Registro</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Some databases have limitation on object names," xml:space="preserve">
