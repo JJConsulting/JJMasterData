@@ -7,8 +7,7 @@
 
 <script lang="javascript" type="text/javascript">
     document.addEventListener("DOMContentLoaded",()=>{
-        CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandBeforeProcess',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'});
-        CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandAfterProcess',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'});
+        listenTabs();
 
         $("#cboSqlEvent").change(function () {
             const selectedVal = $("#cboSqlEvent").selectpicker('val');
@@ -21,6 +20,34 @@
             }
         });
     });
+
+    function setupCodeMirror(){
+        CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandBeforeProcess',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'});
+        CodeMirrorWrapper.setupCodeMirror('ProcessOptions_CommandAfterProcess',{mode: "text/x-sql", hintList: @Html.Raw(ViewBag.CodeMirrorHintList), hintKey: '{'}); 
+    }
+    
+    function listenTabs (){
+        setupCodeMirror();
+
+        const tabs = document.querySelectorAll('a[data-bs-toggle="tab"]')
+
+        if(!tabs)
+            return;
+
+        tabs.forEach((tab)=>{
+            tab.addEventListener('shown.bs.tab', () => {
+                const codeMirrorElements = document.querySelectorAll(".CodeMirror");
+                if (codeMirrorElements){
+                    codeMirrorElements.forEach(function (c){
+                        c.CodeMirror.refresh();
+                    })
+                }
+                else{
+                    setupCodeMirror();
+                }
+            })
+        })
+    }
 </script>
 
 
@@ -76,14 +103,11 @@
     </div>
 
     <div class="col-sm-9">
-        <span class="text-info fa fa-info-circle"></span>
-        <span class="small">
-            <em>@StringLocalizer["Scope of execution of the process."]</em><br />
-            <b>@StringLocalizer["Global"]</b>&nbsp;@StringLocalizer["Only one process from this element can be run at a time."]<br />
+        <alert color="Info" title="@StringLocalizer["Scope of execution of the process."]" icon="IconType.InfoCircle">
+            <b>@StringLocalizer["Global"]:</b>&nbsp;@StringLocalizer["Only one process from this element can be run at a time."]<br/>
             @StringLocalizer["and all users will be able to view the latest log and execution of an ongoing process."]
-            <br />
-            <b>@StringLocalizer["User"]</b>&nbsp;@StringLocalizer["Several users can run this process simultaneously, but only see the log and one run of your process."]
-        </span>
-
+            <br/>
+            <b>@StringLocalizer["User"]:</b>&nbsp;@StringLocalizer["Several users can run this process simultaneously, but only see the log and one run of your process."]
+        </alert>
     </div>
 </div>

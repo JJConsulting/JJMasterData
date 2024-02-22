@@ -18,10 +18,10 @@
 
     <div class="tab-content" style="margin-top: 20px;">
         <div id="div-general" class="tab-pane fade active @BootstrapHelper.Show">
-            @await Html.PartialAsync("_NavGeneral", Model)
+            <partial name="_NavGeneral" model="Model"/>
         </div>
         <div id="divExportAction" class="tab-pane fade">
-            @await Html.PartialAsync("_ProcessOptions", Model.ProcessOptions)
+            <partial name="_ProcessOptions" model="Model.ProcessOptions"/>
             <div class="row">
                 <div class=" col-sm-3">
                     <label asp-for="FileName" class="form-label"></label>
@@ -31,7 +31,7 @@
             </div>
         </div>
         <div id="div-advanced" class="tab-pane fade">
-            @await Html.PartialAsync("_NavAdvanced", Model)
+            <partial name="_NavAdvanced" model="Model"/>
         </div>
     </div>
 
