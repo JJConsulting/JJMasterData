@@ -10,27 +10,30 @@
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
-@using (Html.BeginForm("Edit", "UIOptions", FormMethod.Post))
-{
-    <div class="row">
-        <div class="col-sm-12">
-            <link-button icon="Check" type="LinkButtonType.Submit" color="Primary" text="Save"/>
-            <link-button icon="SolidXmark" on-client-click="location.href='@Url.Action("Index", new { elementName = ViewBag.ElementName })'" text="Cancel"/>
+@{
+    string urlCancel = @Url.Action("Index", new { elementName = ViewBag.ElementName })!;
+    using (Html.BeginForm("Edit", "UIOptions", FormMethod.Post))
+    {
+        <div class="row">
+            <div class="col-sm-12">
+                <link-button icon="Check" type="LinkButtonType.Submit" color="Primary" text="Save"/>
+                <link-button icon="SolidXmark" on-client-click="location.href='@urlCancel'" text="Cancel"/>
+            </div>
         </div>
-    </div>
 
-    <br/>
+        <br/>
 
-    <div class="row">
-        <div class="col-sm-12">
-            @Html.Raw(ViewBag.Error)
+        <div class="row">
+            <div class="col-sm-12">
+                @Html.Raw(ViewBag.Error)
+            </div>
         </div>
-    </div>
 
-    <collapse-panel icon="Table" title="Grid View" expanded-by-default="true">
-        <partial for="Grid" name="_GridView"/>
-    </collapse-panel>
-    <collapse-panel icon="Columns" title="Data Panel" expanded-by-default="true">
-        <partial for="Form" name="_DataPanel"/>
-    </collapse-panel>
+        <collapse-panel icon="Table" title="Grid View" expanded-by-default="true">
+            <partial for="Grid" name="_GridView"/>
+        </collapse-panel>
+        <collapse-panel icon="Columns" title="Data Panel" expanded-by-default="true">
+            <partial for="Form" name="_DataPanel"/>
+        </collapse-panel>
+    }
 }

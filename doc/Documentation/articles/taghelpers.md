@@ -50,8 +50,10 @@ In the example above the following HTML code is generated
 ### LinkButton
 ````html
 <link-button 
-        icon="@Home" 
-        url-action="http://www.jjconsulting.tech"
-        text="JJ Consulting"/>
+        text="Save" 
+        icon="Check" 
+        color="Primary" 
+        asp-action="Index" 
+        asp-route-id="foo"/>
 ````
 You can check all available TagHelpers at <a href="/api/JJMasterData.Web.TagHelpers.html">API reference</a>.

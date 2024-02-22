@@ -130,8 +130,8 @@
     <div class="col-sm-12 jjtoolbar">
         <hr/>
         <link-button text="Save" color="Primary" icon="Check" on-client-click="save()"/>
-        <link-button text="Refresh" icon="Refresh" url-action="@Url.Action("Index", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })"/>
-        <link-button text="Delete" icon="SolidTrashCan" url-action="@Url.Action("Delete", new { elementName = ViewBag.ElementName, panelId = Model.PanelId })"/>
+        <link-button text="Refresh" icon="Refresh" asp-action="Index" asp-route-elementName="@ViewBag.ElementName" asp-route-panelId="@Model.PanelId"/>
+        <link-button text="Delete" icon="SolidTrashCan" asp-action="Delete" asp-route-elementName="@ViewBag.ElementName" asp-route-panelId="@Model.PanelId"/>
         <link-button text="Copy" icon="FilesO" on-client-click="copy()"/>
     </div>
 

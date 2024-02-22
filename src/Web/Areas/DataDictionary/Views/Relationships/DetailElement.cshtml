@@ -111,7 +111,13 @@
 
     <div class="row">
         <div class="col-sm-4">
-            <link-button icon="PlusCircle" text="Add Relationship" type="LinkButtonType.Submit" url-action="@Url.Action("CreateRelationship", "Relationships")"/>
+            <link-button 
+                asp-action="CreateRelationship"
+                asp-controller="Relationships"
+                icon="PlusCircle" 
+                enabled="true"
+                text="Add Relationship" 
+                type="LinkButtonType.Submit" />
         </div>
     </div>
     <br/>
@@ -144,8 +150,14 @@
                                 @Html.HiddenFor(model => model.Relationship.Columns[index].FkColumn)
                             </td>
                             <td align="center" style="width:3.75rem;" valign="middle">
-                                <link-button icon="RegularTrashCan" tooltip="Delete" show-as-button="false"
-                                             url-action="@Url.Action("DeleteRelationshipColumn", "Relationships", new { columnIndex = index })"  type="LinkButtonType.Submit"/>
+                                <link-button 
+                                    asp-action="DeleteRelationshipColumn"
+                                    asp-controller="Relationships"
+                                    asp-route-columnIndex="@index"
+                                    type="LinkButtonType.Submit"
+                                    icon="RegularTrashCan" 
+                                    tooltip="Delete" 
+                                    show-as-button="false" />
                             </td>
                         </tr>
                         index++;
