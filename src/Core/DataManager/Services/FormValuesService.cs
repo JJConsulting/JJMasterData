@@ -117,7 +117,7 @@ public class FormValuesService(
         else
             cultureInfo = CultureInfo.CurrentUICulture;
 
-        object parsedValue = 0;
+        object parsedValue = value;
 
         switch (field.DataType)
         {
@@ -141,7 +141,7 @@ public class FormValuesService(
         if (value is null)
             return value;
         
-        object parsedValue = 0;
+        object? parsedValue = value;
 
         switch (dataType)
         {
