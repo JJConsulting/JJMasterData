@@ -79,9 +79,6 @@ public class FormValuesService(
                 break;
             case FormComponent.Slider:
             case FormComponent.Number:
-                if (string.IsNullOrWhiteSpace(value))
-                    break;
-
                 parsedValue = HandleNumericComponent(field.DataType, value);
 
                 break;
@@ -96,19 +93,18 @@ public class FormValuesService(
                 else //Legacy compatibility when FieldType.Bit didn't exists.
                     parsedValue = boolValue ? "1" : "0";
                 break;
-            default:
-                parsedValue = value;
-                break;
         }
 
         if (parsedValue is not null)
             values.Add(field.Name, parsedValue);
+        else if (value == string.Empty)
+            values.Add(field.Name, null);
     }
 
     internal static object? HandleCurrencyComponent(FormElementField field, string? value)
     {
-        if (value is null)
-            return value;
+        if (string.IsNullOrEmpty(value))
+            return null;
 
         CultureInfo cultureInfo;
         if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) &&
@@ -117,7 +113,7 @@ public class FormValuesService(
         else
             cultureInfo = CultureInfo.CurrentUICulture;
 
-        object parsedValue = value;
+        object? parsedValue = value;
 
         switch (field.DataType)
         {
@@ -138,8 +134,8 @@ public class FormValuesService(
 
     internal static object? HandleNumericComponent(FieldType dataType, string? value)
     {
-        if (value is null)
-            return value;
+        if (string.IsNullOrEmpty(value))
+            return null;
         
         object? parsedValue = value;
 
