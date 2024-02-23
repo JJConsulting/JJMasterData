@@ -25,7 +25,7 @@ public class DataDictionaryStructure
         element.Fields.AddPk(Type, "Type", FieldType.Varchar, 1, false, FilterMode.Equal);
         element.Fields[Type].EnableOnDelete = false;
         element.Fields.AddPk(Name, "Element Name", FieldType.NVarchar, 64, false, FilterMode.Equal);
-        element.Fields.Add(TableName, "Table Name", FieldType.NVarchar, 64, false, FilterMode.MultValuesContain);
+        element.Fields.Add(TableName, "Table Name", FieldType.NVarchar, -1, false, FilterMode.MultValuesContain);
         element.Fields.Add(Json, "Filter For Anything", FieldType.NVarchar, -1, false, FilterMode.Contain);
         element.Fields.Add(Info, "Info", FieldType.NVarchar, 150, false, FilterMode.None);
         element.Fields.Add(Owner, "Owner", FieldType.NVarchar, 64, false, FilterMode.None);
