@@ -1104,14 +1104,12 @@ public class JJFormView : AsyncComponent
 
             if (actionMap?.PkFieldValues != null)
                 html.AppendComponent(await GetAuditLogBottomBar());
-
-            PageState = PageState.AuditLog;
+            
             return new ContentComponentResult(html);
         }
 
         AuditLogView.GridView.AddToolbarAction(goBackAction);
-
-        PageState = PageState.AuditLog;
+        
         return await AuditLogView.GetResultAsync();
     }
 

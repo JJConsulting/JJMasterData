@@ -2050,7 +2050,6 @@ var PageState;
     PageState[PageState["Filter"] = 5] = "Filter";
     PageState[PageState["Import"] = 6] = "Import";
     PageState[PageState["Delete"] = 7] = "Delete";
-    PageState[PageState["AuditLog"] = 8] = "AuditLog";
 })(PageState || (PageState = {}));
 const setPageState = (componentName, pageState) => {
     onDOMReady(function () {

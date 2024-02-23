@@ -42,10 +42,5 @@ public enum PageState
     /// <summary>
     /// Represents the dictionary deleting a record
     /// </summary>
-    Delete = 7,
-
-    /// <summary>
-    /// Represents the dictionary audit log grid
-    /// </summary>
-    AuditLog = 8
+    Delete = 7
 }
