@@ -1100,8 +1100,12 @@ public class JJFormView : AsyncComponent
 
         if (PageState == PageState.View)
         {
-            var html = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues);
+            var html = new HtmlBuilder(HtmlTag.Div);
+            
+            var logDetailsHtml = await AuditLogView.GetLogDetailsHtmlAsync(actionMap?.PkFieldValues);
 
+            html.Append(logDetailsHtml);
+            
             if (actionMap?.PkFieldValues != null)
                 html.AppendComponent(await GetAuditLogBottomBar());
             
