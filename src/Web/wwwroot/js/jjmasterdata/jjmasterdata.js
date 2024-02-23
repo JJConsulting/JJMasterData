@@ -969,17 +969,24 @@ function applyDecimalPlaces(element) {
 }
 class FeedbackIcon {
     static removeAllIcons(selector) {
-        const elements = window.parent.document.querySelectorAll(selector);
+        const elements = this.findElements(selector);
         elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
             element.classList.remove(FeedbackIcon.successClass, FeedbackIcon.warningClass, FeedbackIcon.searchClass, FeedbackIcon.errorClass);
         });
     }
     static setIcon(selector, iconClass) {
         this.removeAllIcons(selector);
-        const elements = window.parent.document.querySelectorAll(selector);
+        const elements = this.findElements(selector);
         elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
             element.classList.add(iconClass);
         });
+    }
+    static findElements(selector) {
+        let elements = document.querySelectorAll(selector);
+        if (elements.length === 0 && window.parent !== window) {
+            elements = window.parent.document.querySelectorAll(selector);
+        }
+        return elements;
     }
 }
 FeedbackIcon.searchClass = "jj-icon-search";
