@@ -51,14 +51,16 @@
     
     <div class="row">
         <div class="col-sm-12">
-            <link-button 
-                url-action="@Url.Action("Index", "Element")" 
-                icon="Home" 
+            <link-button
+                asp-controller="Element" 
+                asp-action="Index"
+                icon="Home"
                 text="Home"/>
-            <link-button type="LinkButtonType.Submit" 
-                         color="Primary"
-                            icon="Save" 
-                            text="Save"/>
+            <link-button 
+                type="LinkButtonType.Submit"
+                color="Primary"
+                icon="Save"
+                text="Save"/>
         </div>
     </div>
 

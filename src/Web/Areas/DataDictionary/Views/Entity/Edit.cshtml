@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-sm-12">
             <link-button text="Save" color="Primary" icon="Check" type="LinkButtonType.Submit"/>
-            <link-button text="Cancel" icon="SolidXmark" on-client-click="location.href='@Url.Action("Index" ,new {elementName = Model.ElementName})'"/>
+            <link-button text="Cancel" icon="SolidXmark" asp-action="Index" asp-route-elementName="@Model.ElementName"/>
         </div>
     </div>
     <br>

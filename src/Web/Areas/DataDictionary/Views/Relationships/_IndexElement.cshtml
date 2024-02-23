@@ -6,10 +6,10 @@
 @inject IMasterDataUrlHelper UrlHelper
 
 <script type="text/javascript">
-             function deleteRelationship() {
-                     return confirm('@StringLocalizer["Are you sure you want to delete this relationship?"]');
-                 }
-    </script>
+         function deleteRelationship() {
+                 return confirm('@StringLocalizer["Are you sure you want to delete this relationship?"]');
+             }
+</script>
 
 
 
@@ -17,13 +17,12 @@
 <div class="row">
     <div class="col-sm-8">
         @{
-            var newRelationLabel = @StringLocalizer["New Relation"];
             string url = @UrlHelper.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName });
         }
         <link-button icon="PlusCircle"
-                        text="@StringLocalizer["New"]"
-                        type="LinkButtonType.Button"
-                        on-client-click="defaultModal.showIframe('@url','@newRelationLabel');"/>
+                     text="@StringLocalizer["New"]"
+                     type="LinkButtonType.Button"
+                     on-client-click="defaultModal.showIframe('@url','@StringLocalizer["New Relation"]');"/>
     </div>
 </div>
 <br/>
@@ -65,19 +64,26 @@
                     @relationship.ElementRelationship!.DeleteOnCascade
                 </td>
                 <td style="text-align: center;width: 120px">
+                    @{
+                        string urlEdit = @UrlHelper.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName, id = relationship.Id });
+                    }
                     <link-button
                         icon="Pencil"
                         css-class="btn btn-link"
-                        on-client-click="defaultModal.showIframe('@Url.Action("ElementDetails", "Relationships", new { elementName = Model.ElementName, id = relationship.Id })','@StringLocalizer["Edit Relation"]');"
-                        tooltip="Edit" 
+                        on-client-click="defaultModal.showIframe('@urlEdit','@StringLocalizer["Edit Relation"]');"
+                        tooltip="Edit"
                         show-as-button="false"/>
-                    <link-button type="LinkButtonType.Submit"
-                                 show-as-button="false"
-                                 on-client-click="return deleteRelationship();"
-                                 tooltip="Delete"
-                                 icon="SolidTrashCan"
-                                 url-action="@Url.Action("Delete","Relationships", new {elementName = Model.ElementName, id=relationship.Id})"/>
-     
+                    <link-button
+                        type="LinkButtonType.Submit"
+                        asp-controller="Relationships"
+                        asp-action="Delete"
+                        asp-route-id="@relationship.Id"
+                        asp-route-elementName="@Model.ElementName"
+                        show-as-button="false"
+                        on-client-click="return deleteRelationship();"
+                        tooltip="Delete"
+                        icon="SolidTrashCan"/>
+
                 </td>
             </tr>
         }
