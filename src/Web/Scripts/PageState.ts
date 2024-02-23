@@ -5,8 +5,7 @@ enum PageState {
     Update = 4,
     Filter = 5,
     Import = 6,
-    Delete = 7,
-    AuditLog = 8
+    Delete = 7
 }
 
 const setPageState = (componentName: string, pageState: PageState) =>{
