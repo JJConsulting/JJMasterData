@@ -400,7 +400,7 @@ button.list-group-item {
     }
 
 .page-header {
-    margin: 30px 0 15px;
+    margin: 0.063rem 0 0.938rem !important;
     border-bottom: 1px solid #eeeeee;
 }
 
