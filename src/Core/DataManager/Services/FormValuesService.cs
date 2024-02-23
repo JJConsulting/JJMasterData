@@ -93,6 +93,9 @@ public class FormValuesService(
                 else //Legacy compatibility when FieldType.Bit didn't exists.
                     parsedValue = boolValue ? "1" : "0";
                 break;
+            default:
+                parsedValue = string.IsNullOrEmpty(value) ? null : value;
+                break;
         }
 
         if (parsedValue is not null)
