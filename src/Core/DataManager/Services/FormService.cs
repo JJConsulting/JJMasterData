@@ -14,8 +14,8 @@ using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
 
-public class FormService(IEntityRepository entityRepository,
-    ExpressionsService expressionsService,
+public class FormService(
+    IEntityRepository entityRepository,
     FormFileService formFileService,
     FieldValidationService fieldValidationService,
     AuditLogService auditLogService,
@@ -23,7 +23,6 @@ public class FormService(IEntityRepository entityRepository,
 {
     #region Properties
     private IEntityRepository EntityRepository { get; } = entityRepository;
-    private ExpressionsService ExpressionsService { get; } = expressionsService;
     private FormFileService FormFileService { get; } = formFileService;
 
     private FieldValidationService FieldValidationService { get; } = fieldValidationService;

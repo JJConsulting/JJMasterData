@@ -40,7 +40,6 @@ public class FormServiceTests
     private static FormService GetFormService(FormElement formElement, Dictionary<string,object> values)
     {
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<ExpressionsService>();
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>();
         var auditLogServiceMock = new Mock<AuditLogService>();
@@ -50,7 +49,6 @@ public class FormServiceTests
         
         return new FormService(
             entityRepositoryMock.Object,
-            expressionsServiceMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
             auditLogServiceMock.Object,
@@ -147,14 +145,12 @@ public class FormServiceTests
     {
         // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<ExpressionsService>();
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>();
         var auditLogServiceMock = new Mock<AuditLogService>();
         var loggerMock = new Mock<ILogger<FormService>>();
         var formService = new FormService(
             entityRepositoryMock.Object,
-            expressionsServiceMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
             auditLogServiceMock.Object,
@@ -192,7 +188,6 @@ public class FormServiceTests
         var loggerMock = new Mock<ILogger<FormService>>();
         var formService = new FormService(
             entityRepositoryMock.Object,
-            expressionsServiceMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
             auditLogServiceMock.Object,loggerMock.Object);
