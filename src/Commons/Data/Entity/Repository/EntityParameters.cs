@@ -6,7 +6,7 @@ namespace JJMasterData.Commons.Data.Entity.Repository;
 
 public class EntityParameters
 {
-    public Dictionary<string, object?> Filters { get; init; } = new Dictionary<string, object?>();
+    public Dictionary<string, object?> Filters { get; init; } = new();
     public OrderByData OrderBy { get; init; } = new();
     public int CurrentPage { get; init; } = 1;
     public int RecordsPerPage { get; init; } = int.MaxValue;

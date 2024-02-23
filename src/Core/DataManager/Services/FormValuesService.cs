@@ -122,9 +122,9 @@ public class FormValuesService(
         switch (field.DataType)
         {
             case FieldType.Float:
-                if (float.TryParse(value, NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
-                        cultureInfo, out var floatValue))
-                    parsedValue = floatValue;
+                if (double.TryParse(value, NumberStyles.Any,
+                        cultureInfo, out var doubleValue))
+                    parsedValue = doubleValue;
                 break;
             case FieldType.Int:
                 if (int.TryParse(value, NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
@@ -146,8 +146,8 @@ public class FormValuesService(
         switch (dataType)
         {
             case FieldType.Float:
-                if (float.TryParse(value, out var floatValue))
-                    parsedValue = floatValue;
+                if (double.TryParse(value, out var doubleValue))
+                    parsedValue = doubleValue;
                 break;
             case FieldType.Int:
                 if (int.TryParse(value, out var numericValue))

@@ -134,8 +134,8 @@ public class ExpressionsService(
                 {
                     FieldType.Int when int.TryParse(stringResult.Trim(),
                         out var intResult) => intResult,
-                    FieldType.Float when float.TryParse(stringResult.Trim(),
-                        out var floatResult) => floatResult,
+                    FieldType.Float when double.TryParse(stringResult.Trim(),
+                        out var doubleResult) => doubleResult,
                     _ => result
                 };
             }
