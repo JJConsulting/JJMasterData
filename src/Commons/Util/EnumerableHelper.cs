@@ -66,7 +66,7 @@ public static class EnumerableHelper
             case FieldType.Time:
                 return typeof(DateTime);
             case FieldType.Float:
-                return typeof(float);
+                return typeof(double);
             case FieldType.Int:
                 return typeof(int);
             case FieldType.NText:

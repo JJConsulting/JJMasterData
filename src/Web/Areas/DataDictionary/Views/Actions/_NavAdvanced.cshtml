@@ -7,7 +7,7 @@
 @model JJMasterData.Core.DataDictionary.Models.Actions.BasicAction
 
 <div class="row">
-    @if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsUserCreated))
+    @if (Model is not FormToolbarAction || (Model is FormToolbarAction && Model.IsUserCreated) || Model is AuditLogFormToolbarAction)
     {
         <div class="@BootstrapHelper.FormGroup col-sm-12 required">
             <expression for="VisibleExpression" icon="IconType.Eye" tooltip="@StringLocalizer["Boolean expression to show the action. See the docs for more information."]"/>

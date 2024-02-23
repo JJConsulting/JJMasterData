@@ -49,7 +49,7 @@ internal static class DataDictionarySchema
         return field.DataType switch
         {
             FieldType.Int => new OpenApiInteger(0),
-            FieldType.Float => new OpenApiFloat(0),
+            FieldType.Float => new OpenApiDouble(0),
             FieldType.Date => new OpenApiDate(DateTime.Now),
             FieldType.DateTime => new OpenApiDateTime(DateTime.Now),
             _ => new OpenApiString("string"),
@@ -73,7 +73,7 @@ internal static class DataDictionarySchema
                 itemSchema = new OpenApiSchema
                 {
                     Type = "number",
-                    Format = "float"
+                    Format = "double"
                 };
                 break;
             case FieldType.Date:

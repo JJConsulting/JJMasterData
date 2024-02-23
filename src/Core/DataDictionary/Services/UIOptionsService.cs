@@ -41,11 +41,13 @@ public class UIOptionsService(IValidationDictionary validationDictionary,
         {
             if (await ValidateOptions(options, elementName))
             {
-                var dicParser =await DataDictionaryRepository.GetFormElementAsync(elementName);
-                dicParser.Options.Form = options.Form;
-                dicParser.Options.Grid = options.Grid;
-
-                await DataDictionaryRepository.InsertOrReplaceAsync(dicParser);
+                var formElement =await DataDictionaryRepository.GetFormElementAsync(elementName);
+                
+                formElement.Options.Form = options.Form;
+                formElement.Options.Grid = options.Grid;
+                formElement.Options.EnableAuditLog = options.EnableAuditLog;
+                
+                await DataDictionaryRepository.InsertOrReplaceAsync(formElement);
             }
         }
         catch (Exception ex)

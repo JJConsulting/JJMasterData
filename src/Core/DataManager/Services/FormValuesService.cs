@@ -88,8 +88,13 @@ public class FormValuesService(
             case FormComponent.CheckBox:
                 if (string.IsNullOrWhiteSpace(value))
                     break;
-                
-                parsedValue = StringManager.ParseBool(value);
+            
+                var boolValue = StringManager.ParseBool(value);
+
+                if (field.DataType is FieldType.Bit)
+                    parsedValue = boolValue;
+                else //Legacy compatibility when FieldType.Bit didn't exists.
+                    parsedValue = boolValue ? "1" : "0";
                 break;
             default:
                 parsedValue = value;
@@ -112,14 +117,14 @@ public class FormValuesService(
         else
             cultureInfo = CultureInfo.CurrentUICulture;
 
-        object parsedValue = 0;
+        object parsedValue = value;
 
         switch (field.DataType)
         {
             case FieldType.Float:
-                if (float.TryParse(value, NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
-                        cultureInfo, out var floatValue))
-                    parsedValue = floatValue;
+                if (double.TryParse(value, NumberStyles.Any,
+                        cultureInfo, out var doubleValue))
+                    parsedValue = doubleValue;
                 break;
             case FieldType.Int:
                 if (int.TryParse(value, NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
@@ -135,18 +140,17 @@ public class FormValuesService(
     {
         if (value is null)
             return value;
-
-        var culture = CultureInfo.CurrentCulture;
-        object parsedValue = 0;
+        
+        object? parsedValue = value;
 
         switch (dataType)
         {
             case FieldType.Float:
-                if (float.TryParse(value, NumberStyles.Any, culture, out var floatValue))
-                    parsedValue = floatValue;
+                if (double.TryParse(value, out var doubleValue))
+                    parsedValue = doubleValue;
                 break;
             case FieldType.Int:
-                if (int.TryParse(value, NumberStyles.Any, culture, out var numericValue))
+                if (int.TryParse(value, out var numericValue))
                     parsedValue = numericValue;
                 break;
         }

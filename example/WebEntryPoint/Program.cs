@@ -1,9 +1,11 @@
 // This is a debug and example purposes Program.cs
 
 using System.Globalization;
+using JJMasterData.Core.Configuration;
 using JJMasterData.NCalc.Configuration;
 using JJMasterData.Web.Configuration;
 using Microsoft.AspNetCore.ResponseCompression;
+using JJMasterData.Pdf;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +27,7 @@ builder.Services.Configure<HostOptions>(options =>
 builder.Services.AddJJMasterDataWeb(builder.Configuration).WithNCalcExpressionProvider(new()
 {
     ReplaceDefaultExpressionProvider = true
-});
+}).WithPdfExportation();
 
 var app = builder.Build();
 

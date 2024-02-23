@@ -251,7 +251,7 @@ public class SqlServerProvider(
             FieldType.Date => DbType.Date,
             FieldType.DateTime => DbType.DateTime,
             FieldType.DateTime2 => DbType.DateTime,
-            FieldType.Float => DbType.Double,
+            FieldType.Float => DbType.Double, //SQL Server Float is equivalent of the C# double.
             FieldType.Int => DbType.Int32,
             FieldType.Bit => DbType.Boolean,
             FieldType.UniqueIdentifier => DbType.Guid,

@@ -1,10 +1,13 @@
 ﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
 @inject IOptionsSnapshot<MasterDataWebOptions> Options
+@using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.UI
+@using JJMasterData.Web.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.Actions.AuditLogGridToolbarAction
 
 @{
     Layout = Options.Value.ModalLayoutPath;
+    FormElement formElement = ViewBag.FormElement;
 }
 
 @using (Html.BeginForm("AuditLogGridToolbarAction", "Actions",
@@ -23,7 +26,16 @@
             @await Html.PartialAsync("_NavAdvanced", Model)
         </div>
     </div>
-
+    @if (!formElement.Options.EnableAuditLog)
+    {
+        <alert 
+            title="@StringLocalizer["Warning"]" 
+            message="@StringLocalizer["AuditLog is disabled at Options."]"
+            color="Warning"
+            icon="IconType.SolidTriangleExclamation"
+        />
+    }
     @await Html.PartialAsync("_Toolbar")
+
 }
 

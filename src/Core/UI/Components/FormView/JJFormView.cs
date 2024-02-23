@@ -417,7 +417,7 @@ public class JJFormView : AsyncComponent
         
         childFormView.ShowTitle = isInsertSelection;
         
-        if (PageState is PageState.View)
+        if (PageState is PageState.View || PanelState is PageState.Update)
             childFormView.DisableActionsAtViewMode();
         
         if (!isInsertSelection)
@@ -634,6 +634,7 @@ public class JJFormView : AsyncComponent
             var html = htmlComponent.HtmlBuilder;
 
             html.WithNameAndId(Name);
+            
             AppendFormViewHiddenInputs(html);
 
             if (ComponentContext is ComponentContext.FormViewReload)
@@ -1109,7 +1110,7 @@ public class JJFormView : AsyncComponent
         }
 
         AuditLogView.GridView.AddToolbarAction(goBackAction);
-        AuditLogView.DataPanel = DataPanel;
+
         PageState = PageState.AuditLog;
         return await AuditLogView.GetResultAsync();
     }
@@ -1173,13 +1174,14 @@ public class JJFormView : AsyncComponent
         List<FormElementRelationship> visibleRelationships,
         Dictionary<string, object?> values)
     {
+        var formStateData = new FormStateData(values, UserValues, PageState);
         var html = new HtmlBuilder(HtmlTag.Div);
         if (ShowTitle)
-            html.AppendComponent(GetTitle(new FormStateData(values, UserValues, PageState)));
+            html.AppendComponent(GetTitle(formStateData));
 
         var layout = new FormViewRelationshipLayout(this, visibleRelationships);
 
-        await ConfigureFormToolbar();
+        ConfigureFormToolbar();
 
         var topActions = GetTopToolbarActions(FormElement).ToList();
 
@@ -1205,7 +1207,7 @@ public class JJFormView : AsyncComponent
         return relationshipsResult;
     }
 
-    private async Task ConfigureFormToolbar()
+    private void ConfigureFormToolbar()
     {
         var formToolbarActions = FormElement.Options.FormToolbarActions;
         if (PanelState is PageState.View)
@@ -1237,8 +1239,6 @@ public class JJFormView : AsyncComponent
             {
                 if (IsChildFormView)
                     formToolbarActions.BackAction.SetVisible(false);
-                
-                formToolbarActions.AuditLogFormToolbarAction.SetVisible(await IsAuditLogEnabled());
                 break;
             }
         }
@@ -1273,7 +1273,7 @@ public class JJFormView : AsyncComponent
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
         
-        await ConfigureFormToolbar();
+        ConfigureFormToolbar();
 
         var topToolbarActions = GetTopToolbarActions(FormElement).ToList();
 
@@ -1317,7 +1317,7 @@ public class JJFormView : AsyncComponent
         
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
 
-        await ConfigureFormToolbar();
+        ConfigureFormToolbar();
         
         var panelToolbarActions = GetPanelToolbarActions(FormElement).ToList();
 
@@ -1527,13 +1527,6 @@ public class JJFormView : AsyncComponent
             return new Dictionary<string, object>();
 
         return EncryptionService.DecryptDictionary(encryptedRelationValues);
-    }
-
-    private async Task<bool> IsAuditLogEnabled()
-    {
-        var auditLogAction = FormElement.Options.GridToolbarActions.AuditLogGridToolbarAction;
-        var formStateData = await GetFormStateDataAsync();
-        return ExpressionsService.GetBoolValue(auditLogAction.VisibleExpression, formStateData);
     }
     
     private bool ContainsGridAction() => !string.IsNullOrEmpty(CurrentContext.Request.Form[$"grid-view-action-map-{Name}"]);

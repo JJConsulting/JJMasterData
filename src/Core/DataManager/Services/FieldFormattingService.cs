@@ -43,7 +43,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
                 else
                     cultureInfo = CultureInfo.CurrentUICulture;
                 
-                if (float.TryParse(value?.ToString(),NumberStyles.Currency,cultureInfo, out var currencyValue))
+                if (double.TryParse(value?.ToString(),NumberStyles.Currency,cultureInfo, out var currencyValue))
                     stringValue = currencyValue.ToString($"C{field.NumberOfDecimalPlaces}", cultureInfo);
                 else
                     stringValue = null;
@@ -85,7 +85,7 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
         string stringValue = null;
         if (field.DataType == FieldType.Float)
         {
-            if (float.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out var floatValue))
+            if (double.TryParse(value.ToString(), NumberStyles.Currency, cultureInfo, out var floatValue))
                 stringValue = floatValue.ToString($"N{field.NumberOfDecimalPlaces}", cultureInfo);
         }
         else if (field.DataType == FieldType.Int)
@@ -103,17 +103,16 @@ public class FieldFormattingService(DataItemService dataItemService, LookupServi
 
     private static string GetNumericValueAsString(FormElementField field, object value)
     {
-        var cultureInfo = CultureInfo.CurrentUICulture;
         string stringValue = null;
         if (field.DataType == FieldType.Float)
         {
-            if (float.TryParse(value.ToString(), NumberStyles.Float, cultureInfo, out var floatValue))
-                stringValue = floatValue.ToString($"N{field.NumberOfDecimalPlaces}", cultureInfo);
+            if (double.TryParse(value.ToString(), out var doubleValue))
+                stringValue = doubleValue.ToString($"N{field.NumberOfDecimalPlaces}");
         }
         else if (field.DataType == FieldType.Int)
         {
-            if (int.TryParse(value.ToString(), NumberStyles.Integer, cultureInfo,out var intVal))
-                stringValue = intVal.ToString("0", cultureInfo);
+            if (int.TryParse(value.ToString(),out var intVal))
+                stringValue = intVal.ToString("0");
         }
         else
         {

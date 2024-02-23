@@ -1,7 +1,7 @@
-﻿@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
+@using JJMasterData.Web.Areas.DataDictionary.Models.ViewModels
 @using JJMasterData.Core.UI.Components
 @model JJMasterData.Core.DataDictionary.Models.FormElementOptions
-
+@inject IStringLocalizer<MasterDataResources> StringLocalizer
 <style>
     input[type=checkbox] {
         margin: 2px 0 0;
@@ -10,30 +10,30 @@
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
-@{
-    string urlCancel = @Url.Action("Index", new { elementName = ViewBag.ElementName })!;
-    using (Html.BeginForm("Edit", "UIOptions", FormMethod.Post))
-    {
-        <div class="row">
-            <div class="col-sm-12">
-                <link-button icon="Check" type="LinkButtonType.Submit" color="Primary" text="Save"/>
-                <link-button icon="SolidXmark" on-client-click="location.href='@urlCancel'" text="Cancel"/>
-            </div>
+@using (Html.BeginForm("Edit", "UIOptions", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <link-button icon="Check" type="LinkButtonType.Submit" color="Primary" text="Save"/>
+            <link-button icon="SolidXmark" asp-action="Index" asp-route-elementName="@ViewBag.ElementName" text="Cancel"/>
         </div>
+    </div>
 
-        <br/>
+    <br/>
 
-        <div class="row">
-            <div class="col-sm-12">
-                @Html.Raw(ViewBag.Error)
-            </div>
+    <div class="row">
+        <div class="col-sm-12">
+            @Html.Raw(ViewBag.Error)
         </div>
+    </div>
 
-        <collapse-panel icon="Table" title="Grid View" expanded-by-default="true">
-            <partial for="Grid" name="_GridView"/>
-        </collapse-panel>
-        <collapse-panel icon="Columns" title="Data Panel" expanded-by-default="true">
-            <partial for="Form" name="_DataPanel"/>
-        </collapse-panel>
-    }
+    <collapse-panel icon="Table" title="Grid View" expanded-by-default="true">
+        <partial for="Grid" name="_GridView"/>
+    </collapse-panel>
+    <collapse-panel icon="Columns" title="Data Panel" expanded-by-default="true">
+        <partial for="Form" name="_DataPanel"/>
+    </collapse-panel>
+    <collapse-panel icon="Gear" title="@StringLocalizer["Other Options"]" expanded-by-default="true">
+        <partial model="Model" name="_Options"/>
+    </collapse-panel>
 }
