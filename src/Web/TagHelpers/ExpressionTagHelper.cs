@@ -10,11 +10,14 @@ using Microsoft.Extensions.Localization;
 using System.ComponentModel;
 using JJMasterData.Core.DataManager.Expressions.Providers;
 using JJMasterData.Core.UI;
+using JJMasterData.Web.Configuration.Options;
+using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Web.TagHelpers;
 
 public class ExpressionTagHelper(
     IEnumerable<IExpressionProvider> expressionProviders, 
+    IOptionsSnapshot<MasterDataWebOptions> options,
     IStringLocalizer<MasterDataResources> stringLocalizer) : TagHelper
 {
     private bool? _isSyncExpression;
@@ -105,9 +108,12 @@ public class ExpressionTagHelper(
 
         fieldSet.AppendDiv(div =>
         {
-            div.WithCssClass("input-group");
-            div.Append(GetTypeSelect(name, selectedExpressionType)
-                .WithCssClassIf(isInvalid,"is-invalid"));
+            if (!options.Value.UseAdvancedModeAtExpressions)
+            {
+                div.WithCssClass("input-group");
+                div.Append(GetTypeSelect(name, selectedExpressionType)
+                    .WithCssClassIf(isInvalid,"is-invalid"));
+            }
             div.Append(GetEditorHtml(name, selectedExpressionType, selectedExpressionValue)
                 .WithCssClassIf(isInvalid,"is-invalid"));
         });
@@ -143,15 +149,17 @@ public class ExpressionTagHelper(
         return select;
     }
 
-    private static HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType,
+    private HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType,
         string selectedExpressionValue)
     {
+        var advanced = options.Value.UseAdvancedModeAtExpressions;
         var input = new HtmlBuilder(HtmlTag.Input);
         input.WithCssClass("font-monospace");
         input.WithCssClass("form-control");
-        input.WithAttribute("style", "width:75%");
+        input.WithAttributeIf(!advanced,"style", "width:75%");
         input.WithNameAndId(name + "-ExpressionValue");
-        input.WithValue(selectedExpressionValue);
+        var value = advanced ? selectedExpressionType + ":" + selectedExpressionValue : selectedExpressionValue;
+        input.WithValue(value);
         return input;
     }
 }

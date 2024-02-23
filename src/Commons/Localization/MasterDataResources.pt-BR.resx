@@ -3965,4 +3965,13 @@
   <data name="Audit Log is disabled. Please contact the administrator." xml:space="preserve">
     <value>Log de Auditoria desabilitado. Por favor contate o administrador.</value>
   </data>
+  <data name="Use Advanced Mode at Expressions" xml:space="preserve">
+    <value>Usar Modo Avançado nas Expressões</value>
+  </data>
+  <data name="Data Dictionary Table Name" xml:space="preserve">
+    <value>Nome da Tabela do Dicionário de Dados</value>
+  </data>
+  <data name="Custom Bootstrap Path" xml:space="preserve">
+    <value>Caminho do Bootstrap Customizado</value>
+  </data>
 </root>

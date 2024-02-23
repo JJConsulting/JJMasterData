@@ -37,6 +37,7 @@ public class SettingsService(IValidationDictionary validationDictionary,
             await webWritableOptions.UpdateAsync(options =>
             {
                 options.CustomBootstrapPath = model.CustomBootstrapPath;
+                options.UseAdvancedModeAtExpressions = model.UseAdvancedModeAtExpressions;
             });
         }
     }
@@ -51,6 +52,7 @@ public class SettingsService(IValidationDictionary validationDictionary,
         {
             ConnectionString = new ConnectionString(connectionString),
             ConnectionProvider = connectionProvider,
+            UseAdvancedModeAtExpressions = webWritableOptions.Value.UseAdvancedModeAtExpressions,
             DataDictionaryTableName = coreWritableOptions.Value.DataDictionaryTableName,
             CustomBootstrapPath = webWritableOptions.Value.CustomBootstrapPath,
             FilePath = coreWritableOptions.FilePath,

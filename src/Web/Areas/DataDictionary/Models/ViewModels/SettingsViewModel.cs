@@ -15,6 +15,8 @@ public class SettingsViewModel
     public required string? CustomBootstrapPath { get; set; }
     [Display(Name = "Data Dictionary Table Name")]
     public required string? DataDictionaryTableName { get; set; }
+    [Display(Name = "Use Advanced Mode at Expressions")]
+    public required bool UseAdvancedModeAtExpressions { get; set; }
     public bool PathExists => File.Exists(FilePath);
     public JJValidationSummary? ValidationSummary { get; set; }
 }
