@@ -10,24 +10,22 @@
 
 <partial name="_Menu" model="@(new DataDictionaryViewModel(ViewBag.ElementName, ViewBag.MenuId))"/>
 
-@{
-    string urlCancel = @Url.Action("Index", new { elementName = ViewBag.ElementName })!;
-    using (Html.BeginForm("Edit", "UIOptions", FormMethod.Post))
-    {
-        <div class="row">
-            <div class="col-sm-12">
-                <link-button icon="Check" type="LinkButtonType.Submit" color="Primary" text="Save"/>
-                <link-button icon="SolidXmark" on-client-click="location.href='@urlCancel'" text="Cancel"/>
-            </div>
+@using (Html.BeginForm("Edit", "UIOptions", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-sm-12">
+            <link-button icon="Check" type="LinkButtonType.Submit" color="Primary" text="Save"/>
+            <link-button icon="SolidXmark" asp-action="Index" asp-route-elementName="@ViewBag.ElementName" text="Cancel"/>
         </div>
+    </div>
 
-        <br/>
+    <br/>
 
-        <div class="row">
-            <div class="col-sm-12">
-                @Html.Raw(ViewBag.Error)
-            </div>
+    <div class="row">
+        <div class="col-sm-12">
+            @Html.Raw(ViewBag.Error)
         </div>
+    </div>
 
     <collapse-panel icon="Table" title="Grid View" expanded-by-default="true">
         <partial for="Grid" name="_GridView"/>
