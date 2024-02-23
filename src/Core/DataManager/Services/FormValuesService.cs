@@ -140,18 +140,17 @@ public class FormValuesService(
     {
         if (value is null)
             return value;
-
-        var culture = CultureInfo.CurrentCulture;
+        
         object parsedValue = 0;
 
         switch (dataType)
         {
             case FieldType.Float:
-                if (float.TryParse(value, NumberStyles.Any, culture, out var floatValue))
+                if (float.TryParse(value, out var floatValue))
                     parsedValue = floatValue;
                 break;
             case FieldType.Int:
-                if (int.TryParse(value, NumberStyles.Any, culture, out var numericValue))
+                if (int.TryParse(value, out var numericValue))
                     parsedValue = numericValue;
                 break;
         }
