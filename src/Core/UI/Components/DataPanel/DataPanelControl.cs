@@ -366,17 +366,24 @@ internal class DataPanelControl
         var nameWithPrefix = GetFieldNameWithPrefix(field);
         
         //Workaround to trigger event on search component
-        if (field.Component is not FormComponent.Search) 
-            return Scripts.GetReloadPanelScript(field.Name,nameWithPrefix);
+        if (field.Component is FormComponent.Search)
+        {
+            var reloadPanelScript
+                = Scripts.GetReloadPanelScript(field.Name, nameWithPrefix + "_text");
+
+            var script = new StringBuilder();
+            script.Append("setTimeout(function() { ");
+            script.Append(reloadPanelScript);
+            script.Append("}, 200);");
+            return script.ToString();
+        }
         
-        var reloadPanelScript 
-            = Scripts.GetReloadPanelScript(field.Name, nameWithPrefix + "_text");
-        
-        var script = new StringBuilder();
-        script.Append("setTimeout(function() { ");
-        script.Append(reloadPanelScript);
-        script.Append("}, 200);");
-        return script.ToString();
+        if (field.Component is FormComponent.CheckBox)
+        {
+            return Scripts.GetReloadPanelScript(field.Name,nameWithPrefix + "-checkbox");
+        }
+
+        return Scripts.GetReloadPanelScript(field.Name,nameWithPrefix);
 
     }
 
