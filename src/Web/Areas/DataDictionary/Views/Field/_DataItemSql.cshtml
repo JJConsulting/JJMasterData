@@ -23,28 +23,39 @@
             <li>@StringLocalizer["Description"]</li>
             @if (showIcon)
             {
-            <li>
-                <a href="https://md.jjconsulting.tech/api/JJMasterData.Core.DataDictionary.IconType.html">@StringLocalizer["Icon Id"]</a>
-            </li>
-            <li>@StringLocalizer["Icon Color in Hexadecimal"]</li>
+                <li>
+                    <a href="https://md.jjconsulting.tech/api/JJMasterData.Core.DataDictionary.IconType.html">@StringLocalizer["Icon Id"]</a>
+                </li>
+                <li>@StringLocalizer["Icon Color in Hexadecimal"]</li>
             }
             @if (Model.Component is FormComponent.ComboBox)
             {
                 <li>@StringLocalizer["Group (optional)"]</li>
             }
         </ol>
-        <span>@StringLocalizer["We recommend using the following parameters in the query:"]</span><br/>
-        <ul>
-            <li>
-                @StringLocalizer["{SearchId}: Id of the column used at the grid for recovering the description."]
-            </li>
-            @if (Model.Component is FormComponent.Search)
-            {
-            <li>
-                @StringLocalizer["{SearchText}: Typed text that can be used with the SQL query."]
-            </li>
-            }
-        </ul>
+        @{
+            var isDynamicAtGrid = Model.DataItem.GridBehavior is not DataItemGridBehavior.Id;
+            var isSearch = Model.Component is FormComponent.Search;
+        }
+        @if(isDynamicAtGrid || isSearch)
+        {
+            <span>@StringLocalizer["We recommend using the following parameters in the query:"]</span><br/>
+            <ul>
+                @if (isDynamicAtGrid)
+                {
+                <li>
+                    @StringLocalizer["{SearchId}: Id of the column used at the grid for recovering the description."]
+                </li>
+                }
+                @if (isSearch)
+                {
+                <li>
+                    @StringLocalizer["{SearchText}: Typed text that can be used with the SQL query."]
+                </li>
+                }
+            </ul>
+        }
+
     </collapse-panel>
 
 
