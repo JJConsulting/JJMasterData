@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="NCalcSync" Version="3.10.0" />
+      <PackageReference Include="NCalcSync" Version="3.11.0" />
     </ItemGroup>
 
 
