@@ -395,13 +395,12 @@ class DataDictionaryUtils {
     static deleteAction(actionName, url, confirmationMessage) {
         let confirmed = confirm(confirmationMessage);
         if (confirmed == true) {
-            fetch(url, {
-                method: "POST",
-            })
-                .then(response => response.json())
-                .then(data => {
-                if (data.success) {
-                    document.getElementById(actionName).remove();
+            postFormValues({
+                url: url,
+                success: function (data) {
+                    if (data.success) {
+                        document.getElementById(actionName).remove();
+                    }
                 }
             });
         }
