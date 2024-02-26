@@ -1048,7 +1048,8 @@ public class JJGridView : AsyncComponent
                         }
                         catch (Exception ex)
                         {
-                            var validationSummary = ComponentFactory.Html.ValidationSummary.Create(ExceptionManager.GetMessage(ex));
+                            var errorMessage = StringLocalizer[ExceptionManager.GetMessage(ex)];
+                            var validationSummary =ComponentFactory.Html.ValidationSummary.Create(errorMessage);
                             validationSummary.MessageTitle = StringLocalizer["Error"];
                             return new ContentComponentResult(validationSummary.GetHtmlBuilder());
                         }

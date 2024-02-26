@@ -1,9 +1,11 @@
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.DataManager.Services;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.Test.DataManager.Services;
@@ -42,16 +44,18 @@ public class FormServiceTests
         var entityRepositoryMock = new Mock<IEntityRepository>();
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>();
+        var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
         var auditLogServiceMock = new Mock<AuditLogService>();
         var loggerMock = new Mock<ILogger<FormService>>();
         fieldValidationServiceMock.Setup(fvs => fvs.ValidateFields(formElement, values, PageState.Update, false))
             .Returns(new Dictionary<string, string>());
-        
+
         return new FormService(
             entityRepositoryMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
             auditLogServiceMock.Object,
+            stringLocalizerMock.Object,
             loggerMock.Object);
     }
 
@@ -148,12 +152,14 @@ public class FormServiceTests
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>();
         var auditLogServiceMock = new Mock<AuditLogService>();
+        var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
         var loggerMock = new Mock<ILogger<FormService>>();
         var formService = new FormService(
             entityRepositoryMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
             auditLogServiceMock.Object,
+            stringLocalizerMock.Object,
             loggerMock.Object);
 
         var formElement = new FormElement();
@@ -181,7 +187,7 @@ public class FormServiceTests
     {
         // Arrange
         var entityRepositoryMock = new Mock<IEntityRepository>();
-        var expressionsServiceMock = new Mock<ExpressionsService>();
+        var stringLocalizerMock = new Mock<IStringLocalizer<MasterDataResources>>();
         var formFileServiceMock = new Mock<FormFileService>();
         var fieldValidationServiceMock = new Mock<FieldValidationService>();
         var auditLogServiceMock = new Mock<AuditLogService>();
@@ -190,7 +196,9 @@ public class FormServiceTests
             entityRepositoryMock.Object,
             formFileServiceMock.Object,
             fieldValidationServiceMock.Object,
-            auditLogServiceMock.Object,loggerMock.Object);
+            auditLogServiceMock.Object,
+            stringLocalizerMock.Object,
+            loggerMock.Object);
 
         var formElement = new FormElement();
         var primaryKeys = new Dictionary<string, object>();

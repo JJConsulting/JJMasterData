@@ -680,7 +680,7 @@ public class JJFormView : AsyncComponent
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error while executing SQL Command Action.");
-            var message = ExceptionManager.GetMessage(ex);
+            var message = StringLocalizer[ExceptionManager.GetMessage(ex)];
             messageBox = ComponentFactory.Html.MessageBox.Create(message, MessageIcon.Error);
         }
         

@@ -36,7 +36,7 @@ internal class GridSqlCommandAction(JJGridView gridView)
         }
         catch (Exception ex)
         {
-            string msg = ExceptionManager.GetMessage(ex);
+            string msg = gridView.StringLocalizer[ExceptionManager.GetMessage(ex)];
             return messageFactory.Create(msg, MessageIcon.Error);
         }
 

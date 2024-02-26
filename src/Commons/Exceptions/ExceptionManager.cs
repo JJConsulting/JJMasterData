@@ -72,7 +72,7 @@ public static class ExceptionManager
 
         return message;
     }
-
+    
     public static string GetMessage(Exception ex)
     {
         if (ex is SqlException exSql)
