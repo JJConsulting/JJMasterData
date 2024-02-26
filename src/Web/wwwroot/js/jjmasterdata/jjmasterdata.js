@@ -2076,6 +2076,9 @@ function postFormValues(options) {
         else if (response.redirected) {
             window.location.href = response.url;
         }
+        else if (response.status == 440 || response.status == 403 || response.status == 401) {
+            document.forms[0].submit();
+        }
         else {
             return response.text();
         }
