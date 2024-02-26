@@ -1,24 +1,21 @@
 @using JJMasterData.Core.UI.Components
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model JJMasterData.Web.Areas.DataDictionary.Models.ViewModels.SettingsViewModel
-
+@inject IComponentFactory ComponentFactory
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @{
-    ViewData["Title"] = StringLocalizer["Options"];
+    ViewData["Title"] = StringLocalizer["Application Settings"];
 }
 
 <form asp-action="Save">
     <input asp-for="FilePath" hidden="hidden"/>
-    
-    <jj-title title="@StringLocalizer["Application Settings"]"/>
-    
-    @if (Model.PathExists)
-    {
-        <alert icon="IconType.InfoCircle"
-                  color="Info"
-                  message="@(Model.FilePath!)"
-                  title="@StringLocalizer["All changes will be saved in the file located at the path:"]"/>
-    }
-    
+
+    <div class="pb-2 mt-4 mb-2 border-bottom">
+        <h1>
+            @Html.Raw(ComponentFactory.Html.Image.CreateMasterDataLogo().GetHtml())
+            <small class="sub-title">@StringLocalizer["Application Settings"]</small>
+        </h1>
+    </div>
     
     <div id="connection-result">
         
@@ -30,29 +27,33 @@
     }
 
     <collapse-panel
-        title="Connection String"
-        partial="_ConnectionString"
-        model="Model"
-        expanded-by-default="true"
-        icon="@IconType.Connectdevelop"/>
-
-    <collapse-panel icon="Gears" title="JJMasterData" expanded-by-default="true" >
-        <div class="row">
-            <div class="col-sm-3">
-                <label asp-for="DataDictionaryTableName" class="form-label"></label>
-                <input asp-for="DataDictionaryTableName" class="form-control"/>
-            </div>
-            <div class="col-sm-3">
-                <label asp-for="CustomBootstrapPath" class="form-label"></label>
-                <input asp-for="CustomBootstrapPath" class="form-control"/>
-            </div>            
-            <div class="col-sm-3">
-                <label asp-for="UseAdvancedModeAtExpressions" class="form-label"></label>
-                <checkbox for="UseAdvancedModeAtExpressions" switch="true"/>
-            </div>
-        </div>
+        title="@StringLocalizer["Connection String"]"
+        expanded-by-default="false"
+        icon="@IconType.Database">
+        <partial name="_ConnectionString" model="Model"/>
     </collapse-panel>
-    
+
+    <collapse-panel icon="Gear" title="JJMasterData.Commons" expanded-by-default="false" >
+        <partial name="_Commons" for="CommonsOptions"/>
+    </collapse-panel>
+
+    <collapse-panel icon="Gear" title="JJMasterData.Core" expanded-by-default="false" >
+        <partial name="_Core" for="CoreOptions"/>
+    </collapse-panel>
+
+    <collapse-panel icon="Gear" title="JJMasterData.Web" expanded-by-default="false" >
+        <partial name="_Web" for="WebOptions"/>
+    </collapse-panel>
+
+    @if (Model.PathExists)
+    {
+    <alert icon="IconType.InfoCircle"
+           color="Info"
+           message="@(Model.FilePath!)"
+           title="@StringLocalizer["All changes will be saved in the file located at the path:"]"/>
+    }
+
+
     <div class="row">
         <div class="col-sm-12">
             <link-button
@@ -63,7 +64,7 @@
             <link-button 
                 type="LinkButtonType.Submit"
                 color="Primary"
-                icon="Save"
+                icon="Check"
                 text="Save"/>
         </div>
     </div>

@@ -3965,13 +3965,43 @@
   <data name="Audit Log is disabled. Please contact the administrator." xml:space="preserve">
     <value>Log de Auditoria desabilitado. Por favor contate o administrador.</value>
   </data>
-  <data name="Use Advanced Mode at Expressions" xml:space="preserve">
-    <value>Usar Modo Avançado nas Expressões</value>
+  <data name="Use Advanced Mode At Expressions" xml:space="preserve">
+    <value>Usar Modo Avançado Nas Expressões</value>
   </data>
   <data name="Data Dictionary Table Name" xml:space="preserve">
     <value>Nome da Tabela do Dicionário de Dados</value>
   </data>
   <data name="Custom Bootstrap Path" xml:space="preserve">
     <value>Caminho do Bootstrap Customizado</value>
+  </data>
+  <data name="Localization Table Name" xml:space="preserve">
+    <value>Nome da Tabela de Internacionalização</value>
+  </data>
+  <data name="Read Procedure Pattern" xml:space="preserve">
+    <value>Template da Procedure de Leitura</value>
+  </data>
+  <data name="Write Procedure Pattern" xml:space="preserve">
+    <value>Template da Procedure de Escrita</value>
+  </data>
+  <data name="Cryptography Secret Key" xml:space="preserve">
+    <value>Chave Secreta da Criptografia</value>
+  </data>
+  <data name="Audit Log Table Name" xml:space="preserve">
+    <value>Nome da Tabela do Log de Auditoria</value>
+  </data>
+  <data name="Exportation Folder Path" xml:space="preserve">
+    <value>Caminho da Pasta da Exportação</value>
+  </data>
+  <data name="Razor Layout Path" xml:space="preserve">
+    <value>Caminho do Layout Razor</value>
+  </data>
+  <data name="Razor Modal Layout Path" xml:space="preserve">
+    <value>Caminho do Layout de Modais Razor</value>
+  </data>
+  <data name="Enable Bundle and Minification" xml:space="preserve">
+    <value>Habilitar Minificação de Arquivos</value>
+  </data>
+  <data name="Connection String" xml:space="preserve">
+    <value>String de Conexão</value>
   </data>
 </root>

@@ -45,7 +45,7 @@ public class ExpressionTagHelper(
     [HtmlAttributeName("disabled")]
     public bool Disabled { get; set; }
 
-    private bool IsSqlExpression
+    private bool IsSyncExpression
     {
         get
         {
@@ -80,8 +80,9 @@ public class ExpressionTagHelper(
         
         var splittedExpression = modelValue?.Split(':', 2);
 
-        var selectedExpressionType =expressionProviders.First(p=> p is ValueExpressionProvider).Prefix;
-        var selectedExpressionValue = modelValue ?? string.Empty;
+        string? selectedExpressionType =  null;
+        string? selectedExpressionValue = modelValue;
+        
         if (splittedExpression?.Length == 2)
         {
             selectedExpressionType = splittedExpression[0];
@@ -128,18 +129,16 @@ public class ExpressionTagHelper(
         var select = new HtmlBuilder(HtmlTag.Select);
         select.WithNameAndId(name + "-ExpressionType");
         select.WithCssClass("form-select");
-        
+
         foreach (var provider in expressionProviders)
         {
-            if (IsSqlExpression && provider is not ISyncExpressionProvider)
+            if (IsSyncExpression && provider is not ISyncExpressionProvider)
                 continue;
 
             select.Append(HtmlTag.Option, option =>
             {
                 if (selectedExpressionType == provider.Prefix)
-                {
                     option.WithAttribute("selected", "selected");
-                }
 
                 option.WithValue(provider.Prefix);
                 option.AppendText(stringLocalizer[provider.Title]);
@@ -149,8 +148,9 @@ public class ExpressionTagHelper(
         return select;
     }
 
-    private HtmlBuilder GetEditorHtml(string name, string? selectedExpressionType,
-        string selectedExpressionValue)
+    private HtmlBuilder GetEditorHtml(string name, 
+        string? selectedExpressionType,
+        string? selectedExpressionValue)
     {
         var advanced = options.Value.UseAdvancedModeAtExpressions;
         var input = new HtmlBuilder(HtmlTag.Input);
@@ -158,8 +158,16 @@ public class ExpressionTagHelper(
         input.WithCssClass("form-control");
         input.WithAttributeIf(!advanced,"style", "width:75%");
         input.WithNameAndId(name + "-ExpressionValue");
-        var value = advanced ? selectedExpressionType + ":" + selectedExpressionValue : selectedExpressionValue;
-        input.WithValue(value);
+
+        if (selectedExpressionType is null)
+            return input;
+        
+        var value = advanced ? 
+            selectedExpressionType + ":" + selectedExpressionValue 
+            : selectedExpressionValue;
+        
+        input.WithValue(value ?? string.Empty);
+
         return input;
     }
 }

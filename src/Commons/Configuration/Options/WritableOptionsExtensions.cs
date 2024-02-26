@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using JJMasterData.Commons.Configuration.Options.Abstractions;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,24 +15,27 @@ public static class WritableOptionsExtensions
     public static void ConfigureWritableOptions<T>(
         this IServiceCollection services, string sectionName) where T : class, new()
     {
-        services.AddTransient<IWritableOptions<T>>(provider =>
+        services.AddTransient<IWritableOptions<T>>(svp =>
         {
-            var options = provider.GetService<IOptionsMonitor<T>>()!;
-            var configuration = provider.GetService<IConfiguration>();
+            var options = svp.GetRequiredService<IOptionsMonitor<T>>()!;
+            var memoryCache = svp.GetRequiredService<IMemoryCache>()!;
+            var configuration = svp.GetService<IConfiguration>();
 
-            if (configuration is IConfigurationBuilder builder)
+            if (configuration is not IConfigurationBuilder builder)
+                return null;
+
+            foreach (var source in builder.Sources)
             {
-                var source = (JsonConfigurationSource)builder.Sources.FirstOrDefault(s=>s is JsonConfigurationSource);
-
-                if (source?.FileProvider is PhysicalFileProvider physicalFileProvider)
+                if (source is not JsonConfigurationSource jsonSource)
+                    continue;
+                
+                if (jsonSource.FileProvider is PhysicalFileProvider physicalFileProvider && jsonSource.Path != "secrets.json")
                 {
-                    var path = Path.Combine(physicalFileProvider.Root,source.Path);
-                
-                    return new WritableJsonOptions<T>(options,sectionName , path);
+                    var path = Path.Combine(physicalFileProvider.Root,jsonSource.Path);
+                    if (File.Exists(path))
+                        return new WritableJsonOptions<T>(options, memoryCache,sectionName, path);
                 }
-                
             }
-            
             return null;
         });
     }

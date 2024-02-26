@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using JJMasterData.Commons.Util;
 
@@ -10,11 +11,13 @@ public class MasterDataCoreOptions
     /// <summary>
     /// Default value: tb_masterdata
     /// </summary>
+    [Display(Name = "Data Dictionary Table Name")]
     public string DataDictionaryTableName { get; set; } = "tb_masterdata";
 
     /// <summary>
     /// Default value: tb_masterdata_auditlog
     /// </summary>
+    [Display(Name = "Audit Log Table Name")]
     public string AuditLogTableName { get; set; } = "tb_masterdata_auditlog";
     
     #if !NET
@@ -28,5 +31,6 @@ public class MasterDataCoreOptions
     /// <summary>
     /// Default value: {ApplicationPath}/JJExportationFiles
     /// </summary>
+    [Display(Name = "Exportation Folder Path")]
     public string ExportationFolderPath { get; set; } = Path.Combine(FileIO.GetApplicationPath(), "JJExportationFiles");
 }

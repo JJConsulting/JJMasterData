@@ -1,11 +1,12 @@
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
+using JJMasterData.Core.DataManager.Expressions.Providers;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace JJMasterData.Web.Binders;
 
 public class ExpressionModelBinder(IEnumerable<IExpressionProvider> providers) : IModelBinder
 {
-    private IEnumerable<string> Providers { get; } = providers.Select(p=>p.Prefix);
+    private IEnumerable<string> ProvidersPrefixes { get; } = providers.Select(p=>p.Prefix);
 
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {
@@ -18,11 +19,10 @@ public class ExpressionModelBinder(IEnumerable<IExpressionProvider> providers) :
 
         var expressionType = bindingContext.ValueProvider.GetValue($"{propertyName}-ExpressionType").FirstValue;
         var expressionValue = bindingContext.ValueProvider.GetValue($"{propertyName}-ExpressionValue").FirstValue;
-  
         
         if (!string.IsNullOrWhiteSpace(expressionValue))
         {
-            foreach (var provider in Providers)
+            foreach (var provider in ProvidersPrefixes)
             {
                 var providerPrefix = provider + ":";
                 if (expressionValue.StartsWith(providerPrefix))
@@ -31,10 +31,13 @@ public class ExpressionModelBinder(IEnumerable<IExpressionProvider> providers) :
                     expressionType = providerPrefix.Replace(":", string.Empty);
                 }
             }
-            
+
+            if (expressionType is null)
+                expressionType = "val";
+      
             var result = $"{expressionType}:{expressionValue}";
-        
             bindingContext.Result = ModelBindingResult.Success(result);
+            
         }
         else
         {

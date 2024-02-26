@@ -11,7 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
 var settingsPath = Path.Combine(root, "appsettings.json");
-builder.Configuration.AddJsonFile(settingsPath, optional: true, reloadOnChange: true);
+
+builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
 
 builder.Services.AddResponseCompression(options =>
 {
