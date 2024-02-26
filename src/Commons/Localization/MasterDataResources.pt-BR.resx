@@ -3994,7 +3994,7 @@
     <value>Caractere inválido.</value>
   </data>
   <data name="Data Item SQL Query" xml:space="preserve">
-    <value>Consulta SQL do DataItem</value>
+    <value>Consulta SQL do Data Item</value>
   </data>
   <data name="The query result must contain these columns in the following order:" xml:space="preserve">
     <value>O resultado da consulta deve conter estas colunas na seguinte ordem:</value>
