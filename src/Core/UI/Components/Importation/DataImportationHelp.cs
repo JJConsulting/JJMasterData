@@ -18,6 +18,7 @@ internal class DataImportationHelp
 {
     private JJDataImportation DataImportation { get; }
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
+
     internal DataImportationHelp(JJDataImportation dataImportation)
     {
         DataImportation = dataImportation;
@@ -35,16 +36,21 @@ internal class DataImportationHelp
         };
 
         var html = panel.BuildHtml()
-           .AppendHiddenInput("filename", "")
-           .AppendComponentIf(!string.IsNullOrWhiteSpace(DataImportation.ImportAction.HelpText),new JJAlert
-           {
-               Title = StringLocalizer["Information"],
-               Icon = IconType.InfoCircle,
-               Color = PanelColor.Info,
-               InnerHtml = new (DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine,"<br>") ?? string.Empty)
-           })
-           .AppendComponent(GetBackButton());
-
+            .AppendHiddenInput("filename", "")
+            .AppendComponentIf(!string.IsNullOrWhiteSpace(DataImportation.ImportAction.HelpText), new JJAlert
+            {
+                Title = StringLocalizer["Information"],
+                Icon = IconType.InfoCircle,
+                Color = PanelColor.Info,
+                InnerHtml = new(DataImportation.ImportAction.HelpText?.Replace(Environment.NewLine, "<br>") ??
+                                string.Empty)
+            })
+            .AppendComponent(GetBackButton())
+            .AppendDiv(div =>
+            {
+                div.WithCssClass(BootstrapHelper.PullRight);
+                div.AppendComponent(DataImportation.CloseButton);
+            });
         return html;
     }
 
@@ -63,16 +69,16 @@ internal class DataImportationHelp
                             .Append(HtmlTag.Br);
                     });
             });
-           await html.AppendAsync(HtmlTag.Div, async div =>
-             {
-                 div.WithCssClass("table-responsive");
-                     await div.AppendAsync(HtmlTag.Table, async table =>
-                    {
-                        table.WithCssClass("table table-hover")
-                             .Append(GetHeaderColumns())
-                             .Append(await GetBodyColums(list));
-                    });
-             });
+        await html.AppendAsync(HtmlTag.Div, async div =>
+        {
+            div.WithCssClass("table-responsive");
+            await div.AppendAsync(HtmlTag.Table, async table =>
+            {
+                table.WithCssClass("table table-hover")
+                    .Append(GetHeaderColumns())
+                    .Append(await GetBodyColums(list));
+            });
+        });
 
         return html;
     }
@@ -85,12 +91,9 @@ internal class DataImportationHelp
                 tr.Append(HtmlTag.Th, th =>
                 {
                     th.WithAttribute("style", "width:60px")
-                    .AppendText(StringLocalizer["Order"]);
+                        .AppendText(StringLocalizer["Order"]);
                 });
-                tr.Append(HtmlTag.Th, th =>
-                {
-                    th.AppendText(StringLocalizer["Name"]);
-                });
+                tr.Append(HtmlTag.Th, th => { th.AppendText(StringLocalizer["Name"]); });
                 tr.Append(HtmlTag.Th, th =>
                 {
                     th.WithAttribute("style", "width:120px")
@@ -101,10 +104,7 @@ internal class DataImportationHelp
                     th.WithAttribute("style", "width:90px")
                         .AppendText(StringLocalizer["Required"]);
                 });
-                tr.Append(HtmlTag.Th, th =>
-                {
-                    th.AppendText(StringLocalizer["Details"]);
-                });
+                tr.Append(HtmlTag.Th, th => { th.AppendText(StringLocalizer["Details"]); });
             });
 
         return head;
@@ -118,10 +118,7 @@ internal class DataImportationHelp
         {
             var tr = new HtmlBuilder(HtmlTag.Tr);
             var currentOrderField = orderField;
-            tr.Append(HtmlTag.Td, td =>
-            {
-                td.AppendText(currentOrderField.ToString());
-            });
+            tr.Append(HtmlTag.Td, td => { td.AppendText(currentOrderField.ToString()); });
             tr.Append(HtmlTag.Td, td =>
             {
                 td.AppendText(field.LabelOrName);
@@ -132,18 +129,10 @@ internal class DataImportationHelp
                         .WithAttribute("style", "color:#efd829;");
                 });
             });
-            tr.Append(HtmlTag.Td, td =>
-            {
-                td.AppendText(GetDataTypeDescription(field.DataType));
-            });
-            tr.Append(HtmlTag.Td, td =>
-            {
-                td.AppendText(field.IsRequired ? StringLocalizer["Yes"] : StringLocalizer["No"]);
-            });
-            await tr.AppendAsync(HtmlTag.Td, async td =>
-            {
-                td.AppendText(await GetFormatDescription(field));
-            });
+            tr.Append(HtmlTag.Td, td => { td.AppendText(GetDataTypeDescription(field.DataType)); });
+            tr.Append(HtmlTag.Td,
+                td => { td.AppendText(field.IsRequired ? StringLocalizer["Yes"] : StringLocalizer["No"]); });
+            await tr.AppendAsync(HtmlTag.Td, async td => { td.AppendText(await GetFormatDescription(field)); });
 
             body.Append(tr);
             orderField++;
@@ -167,7 +156,6 @@ internal class DataImportationHelp
                 return StringLocalizer["Decimal number"];
             default:
                 return StringLocalizer["Text"];
-
         }
     }
 
@@ -209,7 +197,8 @@ internal class DataImportationHelp
                         text.Append(DataImportation.StringLocalizer["Max. {0} characters.", field.Size]);
                     }
 
-                    text.Append(DataImportation.StringLocalizer["Use '{0}' as separator for {1} decimal places.", CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator,field.NumberOfDecimalPlaces]);
+                    text.Append(DataImportation.StringLocalizer["Use '{0}' as separator for {1} decimal places.",
+                        CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator, field.NumberOfDecimalPlaces]);
                 }
                 else
                 {
@@ -259,12 +248,15 @@ internal class DataImportationHelp
         return text.ToString();
     }
 
-    private async Task<string> GetHtmlComboHelp(FormElementField field) 
+    private async Task<string> GetHtmlComboHelp(FormElementField field)
     {
-        var defaultValues = await DataImportation.FieldsService.GetDefaultValuesAsync(DataImportation.FormElement,new FormStateData(new Dictionary<string, object>(),DataImportation.UserValues, PageState.Import));
+        var defaultValues = await DataImportation.FieldsService.GetDefaultValuesAsync(DataImportation.FormElement,
+            new FormStateData(new Dictionary<string, object>(), DataImportation.UserValues, PageState.Import));
         var expOptions = new FormStateData(defaultValues, DataImportation.UserValues, PageState.Import);
         //TODO: DataItemService is better
-        var comboBox = DataImportation.ComponentFactory.Controls.Create<JJComboBox>(null!,field, new(expOptions,DataImportation.Name));
+        var comboBox =
+            DataImportation.ComponentFactory.Controls.Create<JJComboBox>(null!, field,
+                new(expOptions, DataImportation.Name));
         var items = await comboBox.GetValuesAsync();
 
         if (items.Count == 0)
@@ -274,10 +266,10 @@ internal class DataImportationHelp
 
         var span = new HtmlBuilder(HtmlTag.Span);
         span.WithCssClass("small");
-        span.Append(HtmlTag.Span,  span =>
+        span.Append(HtmlTag.Span, span =>
         {
             span.AppendText("(");
-            
+
             foreach (var item in items)
             {
                 if (isFirst)
@@ -285,13 +277,10 @@ internal class DataImportationHelp
                 else
                     span.AppendText(", ");
 
-                span.Append(HtmlTag.B, b =>
-                {
-                    b.AppendText(item.Id);
-                });
+                span.Append(HtmlTag.B, b => { b.AppendText(item.Id); });
 
                 span.AppendText("=");
-                span.AppendText(item.Description.Trim());
+                span.AppendText(item.Description?.Trim() ?? string.Empty);
             }
 
             span.AppendText(").");
@@ -332,7 +321,7 @@ internal class DataImportationHelp
             if (visible && field.DataBehavior is FieldBehavior.Real or FieldBehavior.WriteOnly)
                 list.Add(field);
         }
+
         return list;
     }
-
 }

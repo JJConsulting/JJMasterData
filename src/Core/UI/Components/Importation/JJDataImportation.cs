@@ -44,6 +44,7 @@ public class JJDataImportation : ProcessComponent
     private JJLinkButton _backButton;
     private JJLinkButton _helpButton;
     private JJLinkButton _logButton;
+    private JJLinkButton _closeButton;
     private RouteContext _routeContext;
     private DataImportationScripts _dataImportationScripts;
 
@@ -51,6 +52,8 @@ public class JJDataImportation : ProcessComponent
 
     public JJLinkButton HelpButton => _helpButton ??= GetHelpButton();
 
+    public JJLinkButton CloseButton => _closeButton ??= GetCloseButton();
+    
     public JJLinkButton LogButton => _logButton ??= GetLogButton();
 
     public JJUploadArea UploadArea => _uploadArea ??= GetUploadArea();
@@ -155,7 +158,7 @@ public class JJDataImportation : ProcessComponent
             {
                 if (!IsRunning())
                 {
-                    string pasteValue = CurrentContext.Request.Form["pasteValue"];
+                    var pasteValue = CurrentContext.Request.Form["pasteValue"];
                     ImportInBackground(pasteValue);
                 }
 
@@ -168,13 +171,19 @@ public class JJDataImportation : ProcessComponent
             default:
             {
                 if (IsRunning())
-                    htmlBuilder = GetLoadingHtml();
+                {
+                    htmlBuilder = new HtmlBuilder(HtmlTag.Div);
+                    htmlBuilder.WithId(Name);
+                    htmlBuilder.Append(GetLoadingHtml());
+                    htmlBuilder.AppendScript(DataImportationScripts.GetStartProgressVerificationScript());
+                }
+               
                 else
                     htmlBuilder = GetUploadAreaCollapse(ProcessKey);
                 break;
             }
         }
-
+        
         if (ComponentContext is not ComponentContext.RenderComponent)
         {
             return new ContentComponentResult(htmlBuilder);
@@ -189,6 +198,12 @@ public class JJDataImportation : ProcessComponent
             .AppendHiddenInput("filename")
             .AppendComponent(BackButton);
 
+        html.AppendDiv(div =>
+        {
+            div.WithCssClass(BootstrapHelper.PullRight);
+            div.AppendComponent(CloseButton);
+        });
+        
         return html;
     }
 
@@ -247,7 +262,7 @@ public class JJDataImportation : ProcessComponent
         btnStop.ShowAsButton = true;
         btnStop.OnClientClick = DataImportationScripts.GetStopScript(StringLocalizer["Stopping Processing..."]);
         btnStop.Icon = IconType.Stop;
-        btnStop.Text = StringLocalizer["Stop the importation."];
+        btnStop.Text = StringLocalizer["Stop the importation"];
         html.AppendComponent(btnStop);
 
         return html;
@@ -256,7 +271,7 @@ public class JJDataImportation : ProcessComponent
     private HtmlBuilder GetUploadAreaCollapse(string keyprocess)
     {
         var html = new HtmlBuilder(HtmlTag.Div)
-            .WithNameAndId(Name)
+            .WithId(Name)
             .AppendHiddenInput("filename")
             .Append(HtmlTag.TextArea, area =>
             {
@@ -287,6 +302,12 @@ public class JJDataImportation : ProcessComponent
                 {
                     col.AppendComponent(LogButton);
                 }
+
+                col.AppendDiv(div =>
+                {
+                    div.WithCssClass(BootstrapHelper.PullRight);
+                    div.AppendComponent(CloseButton);
+                });
             });
         });
 
@@ -378,6 +399,16 @@ public class JJDataImportation : ProcessComponent
         button.Text = "Back";
         button.ShowAsButton = true;
         button.OnClientClick = DataImportationScripts.GetBackScript();
+        return button;
+    }
+    
+    private JJLinkButton GetCloseButton()
+    {
+        var button = ComponentFactory.Html.LinkButton.Create();
+        button.Icon = IconType.SolidXmark;
+        button.Text = "Close";
+        button.ShowAsButton = true;
+        button.OnClientClick = DataImportationScripts.GetCloseModalScript();
         return button;
     }
 

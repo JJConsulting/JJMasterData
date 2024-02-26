@@ -606,7 +606,7 @@ class DataExportationHelper {
     }
     static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
-        modalBody.innerHTML = html;
+        HTMLHelper.setInnerHTML(modalBody, html);
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
@@ -838,7 +838,7 @@ class DataImportationHelper {
             }
         });
     }
-    static start(componentName, routeContext, gridRouteContext) {
+    static startProgressVerification(componentName, routeContext, gridRouteContext) {
         DataImportationHelper.setSpinner();
         let intervalId = setInterval(function () {
             DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext, intervalId);
@@ -888,7 +888,7 @@ class DataImportationHelper {
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
                         document.querySelector("#" + componentName).innerHTML = html;
-                        DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+                        DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext);
                     }
                 });
             }
@@ -904,7 +904,7 @@ class DataImportationHelper {
             url: urlBuilder.build(),
             success: html => {
                 document.querySelector("#" + componentName).innerHTML = html;
-                DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+                DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext);
             }
         });
     }

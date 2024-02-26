@@ -51,7 +51,6 @@
     private static checkProgress(componentName, importationRouteContext, gridRouteContext, intervalId: number) {
         showSpinnerOnPost = false;
 
-
         const urlBuilder = new UrlBuilder()
         urlBuilder.addQueryParameter("routeContext", importationRouteContext)
         urlBuilder.addQueryParameter("dataImportationOperation", "checkProgress")
@@ -195,7 +194,7 @@
         })
     }
 
-    static start(componentName, routeContext, gridRouteContext) {
+    static startProgressVerification(componentName, routeContext, gridRouteContext) {
 
         DataImportationHelper.setSpinner();
 
@@ -254,7 +253,7 @@
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
                         document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
-                        DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+                        DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext);
                     }
                 })
             }
@@ -273,7 +272,7 @@
             url: urlBuilder.build(),
             success: html => {
                 document.querySelector<HTMLInputElement>("#" + componentName).innerHTML = html;
-                DataImportationHelper.start(componentName, routeContext, gridRouteContext)
+                DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext)
             }
         })
     }

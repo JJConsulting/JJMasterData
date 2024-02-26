@@ -2549,12 +2549,12 @@
     <value>Interromper</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Stop the exportation." xml:space="preserve">
-    <value>Parar a exportação.</value>
+  <data name="Stop the exportation" xml:space="preserve">
+    <value>Parar a exportação</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Stop the importation." xml:space="preserve">
-    <value>Parar a importação.</value>
+  <data name="Stop the importation" xml:space="preserve">
+    <value>Parar a importação</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Stopping Processing..." xml:space="preserve">
