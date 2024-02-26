@@ -40,6 +40,9 @@ public class CnpjPluginActionHandler(IReceitaFederalService receitaFederalServic
             yield return nameof(CnpjResult.Abertura);
             yield return nameof(CnpjResult.Telefone);
             yield return nameof(CnpjResult.QuadroSocios);
+            yield return nameof(CnpjResult.Situacao);
+            yield return "AtividadePrincipal.Codigo";
+            yield return "AtividadePrincipal.Descricao";
         }
     }
     

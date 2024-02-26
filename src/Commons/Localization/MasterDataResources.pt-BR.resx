@@ -3953,4 +3953,10 @@
   <data name="Error while testing the connection." xml:space="preserve">
     <value>Erro testando a conexão.</value>
   </data>
+  <data name="Field Name" xml:space="preserve">
+    <value>Nome do Campo</value>
+  </data>
+  <data name="Trigger On Change" xml:space="preserve">
+    <value>Gatilhar quando alterar</value>
+  </data>
 </root>
