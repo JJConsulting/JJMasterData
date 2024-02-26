@@ -156,8 +156,8 @@ class DataExportationHelper {
 
     
     private static setSettingsHTML(componentName, html) {
-        const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
-        modalBody.innerHTML = html;
+        const modalBody: HTMLElement = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
+        HTMLHelper.setInnerHTML(modalBody,html)
         
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {

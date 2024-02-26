@@ -39,11 +39,17 @@ public class ConnectionString
         {
             ConnectionString = connectionString
         };
+        
         if (builder.TryGetValue("data source", out var dataSource))
         {
             Server = dataSource.ToString();
         }
 
+        if (builder.TryGetValue("server", out var server))
+        {
+            Server = server.ToString();
+        }
+        
         if (builder.TryGetValue("user", out var userId))
         {
             Username = userId.ToString();
@@ -63,7 +69,12 @@ public class ConnectionString
         {
             Database = initialCatalog.ToString();
         }
-
+        
+        if (builder.TryGetValue("database", out var database))
+        {
+            Database = database.ToString();
+        }
+        
         if (builder.TryGetValue("application name", out var appName))
         {
             ApplicationName = appName.ToString();

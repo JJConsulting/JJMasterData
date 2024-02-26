@@ -79,31 +79,35 @@ public class FormValuesService(
                 break;
             case FormComponent.Slider:
             case FormComponent.Number:
-                if (string.IsNullOrWhiteSpace(value))
-                    break;
-
                 parsedValue = HandleNumericComponent(field.DataType, value);
 
                 break;
             case FormComponent.CheckBox:
                 if (string.IsNullOrWhiteSpace(value))
                     break;
-                
-                parsedValue = StringManager.ParseBool(value);
+            
+                var boolValue = StringManager.ParseBool(value);
+
+                if (field.DataType is FieldType.Bit)
+                    parsedValue = boolValue;
+                else //Legacy compatibility when FieldType.Bit didn't exists.
+                    parsedValue = boolValue ? "1" : "0";
                 break;
             default:
-                parsedValue = value;
+                parsedValue = string.IsNullOrEmpty(value) ? null : value;
                 break;
         }
 
         if (parsedValue is not null)
             values.Add(field.Name, parsedValue);
+        else if (value == string.Empty)
+            values.Add(field.Name, null);
     }
 
     internal static object? HandleCurrencyComponent(FormElementField field, string? value)
     {
-        if (value is null)
-            return value;
+        if (string.IsNullOrEmpty(value))
+            return null;
 
         CultureInfo cultureInfo;
         if (field.Attributes.TryGetValue(FormElementField.CultureInfoAttribute, out var cultureInfoName) &&
@@ -112,14 +116,14 @@ public class FormValuesService(
         else
             cultureInfo = CultureInfo.CurrentUICulture;
 
-        object parsedValue = 0;
+        object? parsedValue = value;
 
         switch (field.DataType)
         {
             case FieldType.Float:
-                if (float.TryParse(value, NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
-                        cultureInfo, out var floatValue))
-                    parsedValue = floatValue;
+                if (double.TryParse(value, NumberStyles.Any,
+                        cultureInfo, out var doubleValue))
+                    parsedValue = doubleValue;
                 break;
             case FieldType.Int:
                 if (int.TryParse(value, NumberStyles.Currency | NumberStyles.AllowCurrencySymbol,
@@ -133,20 +137,19 @@ public class FormValuesService(
 
     internal static object? HandleNumericComponent(FieldType dataType, string? value)
     {
-        if (value is null)
-            return value;
-
-        var culture = CultureInfo.CurrentCulture;
-        object parsedValue = 0;
+        if (string.IsNullOrEmpty(value))
+            return null;
+        
+        object? parsedValue = value;
 
         switch (dataType)
         {
             case FieldType.Float:
-                if (float.TryParse(value, NumberStyles.Any, culture, out var floatValue))
-                    parsedValue = floatValue;
+                if (double.TryParse(value, out var doubleValue))
+                    parsedValue = doubleValue;
                 break;
             case FieldType.Int:
-                if (int.TryParse(value, NumberStyles.Any, culture, out var numericValue))
+                if (int.TryParse(value, out var numericValue))
                     parsedValue = numericValue;
                 break;
         }

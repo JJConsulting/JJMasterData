@@ -30,15 +30,14 @@ internal sealed class BackgroundTaskManager : IBackgroundTaskManager
         
         worker.OnProgressChanged += (_, e) => taskWrapper.ProgressResult = e;
 
-        taskWrapper.Task = new Task(() => worker.RunWorkerAsync(cancellationSource.Token));
+        taskWrapper.Task = worker.RunWorkerAsync(cancellationSource.Token);
 
         var olderTask = GetTask(key);
         if (olderTask != null)
             _tasks.Remove(olderTask);
 
         _tasks.Add(taskWrapper);
-
-        taskWrapper.Task.Start();
+        Task.Run(()=>taskWrapper.Task, cancellationSource.Token);
     }
 
     public bool IsRunning(string key)
@@ -47,7 +46,7 @@ internal sealed class BackgroundTaskManager : IBackgroundTaskManager
         if (taskWrapper == null)
             return false;
 
-        return taskWrapper.Task.Status == TaskStatus.Running |
+        return taskWrapper.Task.Status == TaskStatus.Running ||
             taskWrapper.Task.Status == TaskStatus.WaitingForActivation;
     }
 

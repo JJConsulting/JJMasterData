@@ -132,11 +132,10 @@ public class ExpressionsService(
             {
                 return field.DataType switch
                 {
-                    FieldType.Int when int.TryParse(stringResult.Trim(), NumberStyles.Any, CultureInfo.CurrentCulture,
+                    FieldType.Int when int.TryParse(stringResult.Trim(),
                         out var intResult) => intResult,
-                    FieldType.Float when float.TryParse(stringResult.Trim(), NumberStyles.Any,
-                        CultureInfo.CurrentCulture,
-                        out var floatResult) => floatResult,
+                    FieldType.Float when double.TryParse(stringResult.Trim(),
+                        out var doubleResult) => doubleResult,
                     _ => result
                 };
             }

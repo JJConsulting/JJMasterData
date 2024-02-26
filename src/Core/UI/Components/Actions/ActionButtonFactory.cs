@@ -124,7 +124,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                 break;
             case LegendAction:
                 button.OnClientClick =
-                    BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-legend-modal");
+                    BootstrapHelper.GetModalScript($"{actionContext.ParentComponentName}-caption-modal");
                 break;
             case RefreshAction:
                 button.OnClientClick = gridView.Scripts.GetRefreshScript();

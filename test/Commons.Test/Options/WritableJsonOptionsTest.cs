@@ -1,4 +1,5 @@
 ﻿using JJMasterData.Commons.Configuration.Options;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -33,6 +34,7 @@ public class ConsoleLoggingOptions
 public class WritableJsonOptionsTests
 {
     private readonly Mock<IOptionsMonitor<LoggingOptions>> _optionsMock = new();
+    private readonly Mock<IMemoryCache> _memoryCacheMock = new();
     private const string Section = "Logging";
     private const string FilePath = "settings.json";
 
@@ -49,7 +51,7 @@ public class WritableJsonOptionsTests
     {
         Cleanup();
 
-        var writableOptions = new WritableJsonOptions<LoggingOptions>(_optionsMock.Object, Section, FilePath);
+        var writableOptions = new WritableJsonOptions<LoggingOptions>(_optionsMock.Object, _memoryCacheMock.Object,Section, FilePath);
 
         var applyChanges = new Action<LoggingOptions>(foo =>
         {
@@ -89,7 +91,7 @@ public class WritableJsonOptionsTests
         var initialContent = "{\"Logging\":{\"Console\":{\"Bar\":\"None\"}}}";
         await File.WriteAllTextAsync(FilePath, initialContent);
 
-        var writableOptions = new WritableJsonOptions<LoggingOptions>(_optionsMock.Object, Section, FilePath);
+        var writableOptions = new WritableJsonOptions<LoggingOptions>(_optionsMock.Object, _memoryCacheMock.Object,Section, FilePath);
 
         var applyChanges = new Action<LoggingOptions>(foo =>
         {

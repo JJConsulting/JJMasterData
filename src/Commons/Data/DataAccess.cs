@@ -110,7 +110,7 @@ public partial class DataAccess
     public DataAccess(IOptionsSnapshot<MasterDataCommonsOptions> options)
     {
         var optionsValue = options.Value;
-        ConnectionString = optionsValue.ConnectionString;
+        ConnectionString = optionsValue.ConnectionString ?? throw new ArgumentNullException(nameof(optionsValue.ConnectionString));
         ConnectionProvider = optionsValue.ConnectionProvider;
     }
 

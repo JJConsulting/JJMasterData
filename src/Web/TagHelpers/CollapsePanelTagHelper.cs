@@ -14,6 +14,7 @@ public class CollapsePanelTagHelper(RazorPartialRendererService rendererService,
 {
     
     [HtmlAttributeName("title")]
+    [LocalizationRequired]
     public string? Title { get; set; }
     
     [HtmlAttributeName("partial")]

@@ -669,11 +669,9 @@ public class JJGridView : AsyncComponent
     internal async Task<HtmlBuilder> GetHtmlBuilderAsync()
     {
         var html = new HtmlBuilder(HtmlTag.Div);
-        
+        html.WithAttribute("id", Name);
         await html.AppendAsync(HtmlTag.Div, async div =>
         {
-            div.WithAttribute("id", $"{Name}-grid-view");
-
             if (ShowTitle)
                 div.AppendComponent(await GetTitleAsync());
             

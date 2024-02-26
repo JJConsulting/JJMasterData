@@ -25,6 +25,14 @@ internal class DataExportationScripts(string componentName,FormElement formEleme
             return encryptedRouteContext;
         }
     }
+    
+    
+    public string GetStartProgressVerificationScript()
+    {
+        //language=Javascript
+        return $"DataExportationHelper.startProgressVerification( '{Name}','{EncryptedRouteContext}');";
+    }
+
 
     public string GetStartExportationScript()
     {

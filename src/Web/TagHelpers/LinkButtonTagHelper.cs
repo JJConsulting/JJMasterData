@@ -1,22 +1,35 @@
 using System.ComponentModel;
+using System.Security.Policy;
 using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
+using JJMasterData.Core.Http.Abstractions;
 using JJMasterData.Core.UI.Components;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-
 
 namespace JJMasterData.Web.TagHelpers;
 
-public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory) : TagHelper
+public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory, IMasterDataUrlHelper urlHelper) : TagHelper
 {
+    [AspMvcController]
+    [HtmlAttributeName("asp-controller")]
+    public string? Controller { get; set; }
+    
+    [AspMvcAction]
+    [HtmlAttributeName("asp-action")]
+    public string? Action { get; set; }
+
+    [HtmlAttributeName("asp-all-route-data", DictionaryAttributePrefix = "asp-route-")]
+    public Dictionary<string, string> RouteValues { get; set; } = new ();
+    
     [HtmlAttributeName("icon")]
     public IconType Icon { get; set; }
-    
-    [HtmlAttributeName("url-action")]
-    public string? UrlAction { get; set; }
-    
+        
+    [LanguageInjection("Javascript")]
     [HtmlAttributeName("on-client-click")]
+    // ReSharper disable once InconsistentNaming
     public string? OnClientClick { get; set; }
     
     [HtmlAttributeName("enabled")]
@@ -45,14 +58,17 @@ public class LinkButtonTagHelper(HtmlComponentFactory htmlComponentFactory) : Ta
     public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var link = htmlComponentFactory.LinkButton.Create();
+        
+        if (!string.IsNullOrEmpty(Action))
+            link.UrlAction =  urlHelper.Action(Action, Controller, RouteValues);
+        
+        link.Type = Type ?? LinkButtonType.Link;
         link.Text = Text;
         link.Color = Color;
         link.IconClass = Icon.GetCssClass();
-        link.UrlAction = UrlAction;
         link.OnClientClick = OnClientClick;
         link.ShowAsButton = ShowAsButton;
         link.Enabled = Enabled ?? true;
-        link.Type = Type ?? LinkButtonType.Link;
         link.Tooltip = Tooltip;
         link.CssClass = CssClass;
         

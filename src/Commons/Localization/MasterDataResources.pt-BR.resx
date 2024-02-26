@@ -386,7 +386,7 @@
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Browser info" xml:space="preserve">
-    <value>Info. navegador</value>
+    <value>Informações do navegador</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="By default every post made on the site is limited to 4mb" xml:space="preserve">
@@ -1111,6 +1111,10 @@
   </data>
   <data name="File Name" xml:space="preserve">
     <value>Nome do Arquivo</value>
+    <comment>JJMasterDataApi</comment>
+  </data>
+  <data name="Download File Name" xml:space="preserve">
+    <value>Nome do Arquivo Para Download</value>
     <comment>JJMasterDataApi</comment>
   </data>
   <data name="File name cannot contain [{0}] characters" xml:space="preserve">
@@ -2518,7 +2522,7 @@
     <comment>JJMasterData.Commons</comment>
   </data>
   <data name="Record Snapshot" xml:space="preserve">
-    <value>Foto do Registro</value>
+    <value>Fotografia do Registro</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Some databases have limitation on object names," xml:space="preserve">
@@ -2545,12 +2549,12 @@
     <value>Interromper</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Stop the exportation." xml:space="preserve">
-    <value>Parar a exportação.</value>
+  <data name="Stop the exportation" xml:space="preserve">
+    <value>Parar a exportação</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Stop the importation." xml:space="preserve">
-    <value>Parar a importação.</value>
+  <data name="Stop the importation" xml:space="preserve">
+    <value>Parar a importação</value>
     <comment>JJMasterDataCore</comment>
   </data>
   <data name="Stopping Processing..." xml:space="preserve">
@@ -3168,10 +3172,6 @@
   <data name="{0} field not found" xml:space="preserve">
     <value>Campo {0} não localizado</value>
     <comment>JJMasterData.Commons</comment>
-  </data>
-  <data name="{0} from {1} by user:{2}" xml:space="preserve">
-    <value>{0} via {1} por usuário:{2}</value>
-    <comment>JJMasterDataCore</comment>
   </data>
   <data name="{0} Record(s) deleted successfully" xml:space="preserve">
     <value>{0} Registro(s) excluído(s) com successo</value>
@@ -3952,6 +3952,57 @@
   </data>
   <data name="Error while testing the connection." xml:space="preserve">
     <value>Erro testando a conexão.</value>
+  </data>
+  <data name="Other Options" xml:space="preserve">
+    <value>Outras Opções</value>
+  </data>
+  <data name="Enable Audit Log" xml:space="preserve">
+    <value>Habilitar Log De Auditoria</value>
+  </data>
+  <data name="AuditLog is disabled at Options." xml:space="preserve">
+    <value>O Log de Auditoria está desabilitado nas Opções.</value>
+  </data>
+  <data name="Audit Log is disabled. Please contact the administrator." xml:space="preserve">
+    <value>Log de Auditoria desabilitado. Por favor contate o administrador.</value>
+  </data>
+  <data name="Use Advanced Mode At Expressions" xml:space="preserve">
+    <value>Usar Modo Avançado Nas Expressões</value>
+  </data>
+  <data name="Data Dictionary Table Name" xml:space="preserve">
+    <value>Nome da Tabela do Dicionário de Dados</value>
+  </data>
+  <data name="Custom Bootstrap Path" xml:space="preserve">
+    <value>Caminho do Bootstrap Customizado</value>
+  </data>
+  <data name="Localization Table Name" xml:space="preserve">
+    <value>Nome da Tabela de Internacionalização</value>
+  </data>
+  <data name="Read Procedure Pattern" xml:space="preserve">
+    <value>Template da Procedure de Leitura</value>
+  </data>
+  <data name="Write Procedure Pattern" xml:space="preserve">
+    <value>Template da Procedure de Escrita</value>
+  </data>
+  <data name="Cryptography Secret Key" xml:space="preserve">
+    <value>Chave Secreta da Criptografia</value>
+  </data>
+  <data name="Audit Log Table Name" xml:space="preserve">
+    <value>Nome da Tabela do Log de Auditoria</value>
+  </data>
+  <data name="Exportation Folder Path" xml:space="preserve">
+    <value>Caminho da Pasta da Exportação</value>
+  </data>
+  <data name="Razor Layout Path" xml:space="preserve">
+    <value>Caminho do Layout Razor</value>
+  </data>
+  <data name="Razor Modal Layout Path" xml:space="preserve">
+    <value>Caminho do Layout de Modais Razor</value>
+  </data>
+  <data name="Enable Bundle and Minification" xml:space="preserve">
+    <value>Habilitar Minificação de Arquivos</value>
+  </data>
+  <data name="Connection String" xml:space="preserve">
+    <value>String de Conexão</value>
   </data>
   <data name="Field Name" xml:space="preserve">
     <value>Nome do Campo</value>

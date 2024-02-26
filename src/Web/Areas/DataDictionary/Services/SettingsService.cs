@@ -21,39 +21,53 @@ public class SettingsService(IValidationDictionary validationDictionary,
         )
     : BaseService(validationDictionary, dataDictionaryRepository, stringLocalizer)
 {
+    private IWritableOptions<MasterDataCommonsOptions> CommonsWritableOptions { get; } = commonsWritableOptions;
+    private IWritableOptions<MasterDataCoreOptions> CoreWritableOptions { get; } = coreWritableOptions;
+    private IWritableOptions<MasterDataWebOptions> WebWritableOptions { get; } = webWritableOptions;
+
     public async Task SaveOptions(SettingsViewModel model)
     {
         if (IsValid)
         {
-            await commonsWritableOptions.UpdateAsync(options =>
+            await CommonsWritableOptions.UpdateAsync(options =>
             {
-                options.ConnectionString = model.ConnectionString.ToString();
-                options.ConnectionProvider = model.ConnectionProvider;
+                options.ConnectionString = model.CommonsOptions.ConnectionString;
+                options.ConnectionProvider = model.CommonsOptions.ConnectionProvider;
+                options.ReadProcedurePattern = model.CommonsOptions.ReadProcedurePattern;
+                options.WriteProcedurePattern = model.CommonsOptions.WriteProcedurePattern;
+                options.SecretKey = model.CommonsOptions.SecretKey;
+                options.LocalizationTableName = model.CommonsOptions.LocalizationTableName;
             });
-            await coreWritableOptions.UpdateAsync(options =>
+            await CoreWritableOptions.UpdateAsync(options =>
             {
-                options.DataDictionaryTableName = model.DataDictionaryTableName!;
+                options.DataDictionaryTableName = model.CoreOptions.DataDictionaryTableName;
+                options.ExportationFolderPath = model.CoreOptions.ExportationFolderPath;
+                options.AuditLogTableName = model.CoreOptions.AuditLogTableName;
             });
-            await webWritableOptions.UpdateAsync(options =>
+            await WebWritableOptions.UpdateAsync(options =>
             {
-                options.CustomBootstrapPath = model.CustomBootstrapPath;
+                options.CustomBootstrapPath = model.WebOptions.CustomBootstrapPath;
+                options.UseAdvancedModeAtExpressions = model.WebOptions.UseAdvancedModeAtExpressions;
+                options.LayoutPath = model.WebOptions.LayoutPath;
+                options.ModalLayoutPath = model.WebOptions.ModalLayoutPath;
+                options.EnableBundleAndMinification = model.WebOptions.EnableBundleAndMinification;
             });
         }
     }
 
     public async Task<SettingsViewModel> GetViewModel()
     {
-        var connectionString = commonsWritableOptions.Value.ConnectionString;
-        var connectionProvider = commonsWritableOptions.Value?.ConnectionProvider ?? DataAccessProvider.SqlServer;
+        var connectionString = CommonsWritableOptions.Value.ConnectionString;
+        var connectionProvider = CommonsWritableOptions.Value?.ConnectionProvider ?? DataAccessProvider.SqlServer;
         
         var connectionResult = await GetConnectionResultAsync(connectionString, connectionProvider);
         var viewModel = new SettingsViewModel
         {
             ConnectionString = new ConnectionString(connectionString),
-            ConnectionProvider = connectionProvider,
-            DataDictionaryTableName = coreWritableOptions.Value.DataDictionaryTableName,
-            CustomBootstrapPath = webWritableOptions.Value.CustomBootstrapPath,
-            FilePath = coreWritableOptions.FilePath,
+            CommonsOptions = CommonsWritableOptions.Value!,
+            CoreOptions = CoreWritableOptions.Value!,
+            WebOptions = WebWritableOptions.Value!,
+            FilePath = CoreWritableOptions.FilePath,
 
         };
 

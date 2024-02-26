@@ -5,7 +5,7 @@ class FeedbackIcon {
     public static errorClass = "jj-icon-error";
 
     public static removeAllIcons(selector: string) {
-        const elements = window.parent.document.querySelectorAll(selector);
+        const elements = this.findElements(selector);
 
         elements?.forEach(element => {
             element.classList.remove(
@@ -20,10 +20,20 @@ class FeedbackIcon {
     public static setIcon(selector: string, iconClass: string) {
         this.removeAllIcons(selector);
 
-        const elements = window.parent.document.querySelectorAll(selector);
+        const elements = this.findElements(selector);
 
         elements?.forEach(element => {
             element.classList.add(iconClass);
         });
     }
+
+    private static findElements(selector: string) {
+        let elements = document.querySelectorAll(selector);
+
+        if (elements.length === 0 && window.parent !== window) {
+            elements = window.parent.document.querySelectorAll(selector);
+        }
+        return elements;
+    }
+
 }

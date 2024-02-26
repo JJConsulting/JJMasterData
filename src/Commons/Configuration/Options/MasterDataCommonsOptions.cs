@@ -1,9 +1,11 @@
 ﻿#nullable enable
 
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.InteropServices;
 using JJMasterData.Commons.Data;
 using JJMasterData.Commons.Data.Entity.Models;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Configuration.Options;
 
@@ -21,31 +23,35 @@ namespace JJMasterData.Commons.Configuration.Options;
 /// </summary>
 public class MasterDataCommonsOptions
 {
-
-    public string ConnectionString { get; set; } = null!;
+    public string? ConnectionString { get; set; }
     
     public DataAccessProvider ConnectionProvider { get; set; }
     
     /// <summary>
     /// Default value: tb_masterdata_resources <br></br>
     /// </summary>
+    [Display(Name = "Localization Table Name")]
     public string LocalizationTableName { get; set; } = "tb_masterdata_resources";
 
     /// <summary>
     /// Default value: {tablename}Get <br></br>
     /// </summary>
+    [Display(Name = "Read Procedure Pattern")]
     public string ReadProcedurePattern { get; set; } = "{tablename}Get";
 
     /// <summary>
     /// Default value: {tablename}Set <br></br>
     /// </summary>
+    [Display(Name = "Write Procedure Pattern")]
     public string WriteProcedurePattern { get; set; } = "{tablename}Set";
 
     /// <summary>
     /// Secret key used at JJMasterDataEncryptionService
     /// </summary>
+    [Display(Name = "Cryptography Secret Key")]
     public string? SecretKey { get; set; }
 
+    [JsonIgnore]
     public static bool IsNetFramework => RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework");
 
     public string GetReadProcedureName(Element element)
@@ -53,7 +59,7 @@ public class MasterDataCommonsOptions
         if (!string.IsNullOrEmpty(element.ReadProcedureName))
             return element.ReadProcedureName;
 
-        string tableName = element.TableName;
+        var tableName = element.TableName;
 
         return ReadProcedurePattern.Replace("{tablename}", tableName);
     }
@@ -63,7 +69,7 @@ public class MasterDataCommonsOptions
         if (!string.IsNullOrEmpty(element.WriteProcedureName))
             return element.WriteProcedureName;
 
-        string tableName = element.TableName;
+        var tableName = element.TableName;
 
         return WriteProcedurePattern.Replace("{tablename}", tableName);
     }

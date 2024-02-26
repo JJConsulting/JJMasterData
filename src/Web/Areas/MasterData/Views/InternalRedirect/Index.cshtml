@@ -1,5 +1,4 @@
-﻿@inject IStringLocalizer<MasterDataResources> StringLocalizer
-@inject IOptionsSnapshot<MasterDataWebOptions> Options
+﻿@inject IOptionsSnapshot<MasterDataWebOptions> Options
 @model JJMasterData.Web.Areas.MasterData.Models.InternalRedirectViewModel
 
 @{
@@ -24,7 +23,7 @@
     if (Model.ShowToolBar)
     {
         <div id="divToolbar">
-            <link-button text="Save" icon="Check" color="Primary" url-action="@Url.Action("Save", new { parameters = Context.Request.Query["parameters"] })"/>
+            <link-button text="Save" icon="Check" color="Primary" asp-action="Save" asp-route-parameters="@Context.Request.Query["parameters"]"/>
             <link-button text="Cancel" icon="SolidXmark" on-client-click="window.parent.defaultModal.hide();"/>
         </div>
         

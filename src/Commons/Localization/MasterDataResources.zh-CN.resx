@@ -2605,7 +2605,7 @@
     <value>停止导出.</value>
     <comment>JJMasterDataCore</comment>
   </data>
-  <data name="Stop the importation." xml:space="preserve">
+  <data name="Stop the importation" xml:space="preserve">
     <value>停止导入</value>
     <comment>JJMasterDataCore</comment>
   </data>
@@ -3256,10 +3256,6 @@
   <data name="{0} field not found" xml:space="preserve">
     <value>{0} 字段没有找到</value>
     <comment>JJMasterData.Commons</comment>
-  </data>
-  <data name="{0} from {1} by user:{2}" xml:space="preserve">
-    <value>{0} 从 {1} 被使用:{2}</value>
-    <comment>JJMasterDataCore</comment>
   </data>
   <data name="{0} Record(s) deleted successfully" xml:space="preserve">
     <value>{0} 记录(s) 删除成功</value>

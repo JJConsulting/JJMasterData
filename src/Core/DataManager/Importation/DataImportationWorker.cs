@@ -49,7 +49,7 @@ public class DataImportationWorker(
 
     private string RawData { get; } = context.RawData;
     private char Separator { get; } = context.Separator;
-    
+
     private Dictionary<string, object> RelationValues { get; } = context.RelationValues;
 
     private ExpressionsService ExpressionsService { get; } = expressionsService;
@@ -67,55 +67,52 @@ public class DataImportationWorker(
 #if NETFRAMEWORK
     private System.Web.HttpContext HttpContext { get; } = System.Web.HttpContext.Current;
 #endif
-    public Task RunWorkerAsync(CancellationToken token)
+    public async Task RunWorkerAsync(CancellationToken token)
     {
-        return Task.Run(async () =>
-        {
 #if NETFRAMEWORK
             System.Web.HttpContext.Current = HttpContext;
 #endif
-            var currentProcess = new DataImportationReporter();
-            try
-            {
-                currentProcess.StartDate = DateTime.Now;
-                currentProcess.UserId = UserId;
-                Reporter(currentProcess);
-                await RunWorker(currentProcess, token);
+        var currentProcess = new DataImportationReporter();
+        try
+        {
+            currentProcess.StartDate = DateTime.Now;
+            currentProcess.UserId = UserId;
+            Reporter(currentProcess);
+            await RunWorker(currentProcess, token);
 
-                if (currentProcess.Error > 0)
-                    currentProcess.Message = StringLocalizer["File imported with errors!"];
-                else
-                    currentProcess.Message = StringLocalizer["File imported successfully!"];
-            }
-            catch (Exception ex)
+            if (currentProcess.Error > 0)
+                currentProcess.Message = StringLocalizer["File imported with errors!"];
+            else
+                currentProcess.Message = StringLocalizer["File imported successfully!"];
+        }
+        catch (Exception ex)
+        {
+            currentProcess.HasError = true;
+            if (ex is OperationCanceledException or ThreadAbortException)
             {
-                currentProcess.HasError = true;
-                if (ex is OperationCanceledException or ThreadAbortException)
-                {
-                    currentProcess.Message = StringLocalizer["Process aborted by user"];
-                    currentProcess.AddError(currentProcess.Message);
-                }
-                else if (ex is JJMasterDataException)
-                {
-                    currentProcess.Message = ex.Message;
-                    currentProcess.AddError(currentProcess.Message);
-                }
-                else
-                {
-                    currentProcess.Message = StringLocalizer["Unexpected error"];
-                    currentProcess.Message += " ";
-                    currentProcess.Message += ExceptionManager.GetMessage(ex);
-                    currentProcess.AddError(currentProcess.Message);
-                    Logger.LogError(ex, "Error while importing file");
-                    throw;
-                }
+                currentProcess.Message = StringLocalizer["Process aborted by user"];
+                currentProcess.AddError(currentProcess.Message);
             }
-            finally
+            else if (ex is JJMasterDataException)
             {
-                currentProcess.EndDate = DateTime.Now;
-                Reporter(currentProcess);
+                currentProcess.Message = ex.Message;
+                currentProcess.AddError(currentProcess.Message);
             }
-        }, token);
+            else
+            {
+                currentProcess.Message = StringLocalizer["Unexpected error"];
+                currentProcess.Message += " ";
+                currentProcess.Message += ExceptionManager.GetMessage(ex);
+                currentProcess.AddError(currentProcess.Message);
+                Logger.LogError(ex, "Error while importing file");
+                throw;
+            }
+        }
+        finally
+        {
+            currentProcess.EndDate = DateTime.Now;
+            Reporter(currentProcess);
+        }
     }
 
     private void Reporter(DataImportationReporter reporter)
@@ -130,7 +127,7 @@ public class DataImportationWorker(
 
         //recuperando campos a serem importados
         var fieldList = GetListImportedField();
-
+        
         string[] stringSeparators = ["\r\n"];
         string[] rows = RawData.Split(stringSeparators, StringSplitOptions.None);
         currentProcess.TotalRecords = rows.Length;
@@ -224,8 +221,8 @@ public class DataImportationWorker(
     }
 
     internal Dictionary<string, object> UserValues { get; set; } = new Dictionary<string, object>();
-    
-    
+
+
     private static Dictionary<string, object> GetDictionaryWithNameAndValue(IReadOnlyList<FormElementField> listField,
         string[] cols)
     {
@@ -273,7 +270,7 @@ public class DataImportationWorker(
             DataHelper.CopyIntoDictionary(fileValues, RelationValues);
             var values = await FieldValuesService.MergeWithExpressionValuesAsync(FormElement,
                 new FormStateData(fileValues, UserValues, PageState.Import));
-            
+
             var formLetter = await FormService.InsertOrReplaceAsync(FormElement, values, DataContext);
 
             if (formLetter.IsValid)

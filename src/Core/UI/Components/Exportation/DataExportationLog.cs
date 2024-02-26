@@ -38,18 +38,18 @@ internal class DataExportationLog(JJDataExportation dataExportation)
             
             div.Append(HtmlTag.Br);
             div.WithCssClass("mb-1");
-
-            div.Append(HtmlTag.A, a =>
+            var stopExportationScript = Scripts.GetStopExportationScript(StringLocalizer["Stopping Processing..."]);
+            div.AppendComponent(new JJLinkButton(StringLocalizer)
             {
-                var stopExportationScript = Scripts.GetStopExportationScript(StringLocalizer["Stopping Processing..."]);
-                a.WithAttribute("href", $"javascript:{stopExportationScript}");
-                a.Append(HtmlTag.Span, span =>
-                {
-                    span.WithCssClass("fa fa-stop");
-                });
-                a.AppendText($"&nbsp;{StringLocalizer["Stop the exportation."]}");
+                IconClass = "fa fa-stop",
+                OnClientClick = stopExportationScript,
+                Text = "Stop the exportation",
+                ShowAsButton = true
             });
         });
+
+        div.AppendScript(Scripts.GetStartProgressVerificationScript());
+        
         return div;
     }
 

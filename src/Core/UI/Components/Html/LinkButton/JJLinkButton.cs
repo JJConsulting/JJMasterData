@@ -76,6 +76,7 @@ public class JJLinkButton : HtmlComponent
 
     public LinkButtonType Type { get; set; } = LinkButtonType.Link;
 
+    [LanguageInjection("Javascript")]
     public string OnClientClick { get; set; }
     
     public string UrlAction { get; set; }

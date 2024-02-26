@@ -126,7 +126,7 @@
                                     <span class="fa fa-trash"></span>
                                 </button>
                             }
-                            else if (action is not FormToolbarAction)
+                            else if (action is not FormToolbarAction || action is AuditLogFormToolbarAction)
                             {
                                 <div class="form-check form-switch form-switch-md" style="padding-left:0px">
                                     <input type="checkbox"

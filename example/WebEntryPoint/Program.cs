@@ -1,15 +1,18 @@
 // This is a debug and example purposes Program.cs
 
 using System.Globalization;
+using JJMasterData.Core.Configuration;
 using JJMasterData.NCalc.Configuration;
 using JJMasterData.Web.Configuration;
 using Microsoft.AspNetCore.ResponseCompression;
+using JJMasterData.Pdf;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var root = Path.GetFullPath(Path.Join(builder.Environment.ContentRootPath, "..", ".."));
 var settingsPath = Path.Combine(root, "appsettings.json");
-builder.Configuration.AddJsonFile(settingsPath, optional: true, reloadOnChange: true);
+
+builder.Configuration.AddJsonFile(settingsPath, optional: false, reloadOnChange: true);
 
 builder.Services.AddResponseCompression(options =>
 {
@@ -25,7 +28,7 @@ builder.Services.Configure<HostOptions>(options =>
 builder.Services.AddJJMasterDataWeb(builder.Configuration).WithNCalcExpressionProvider(new()
 {
     ReplaceDefaultExpressionProvider = true
-});
+}).WithPdfExportation();
 
 var app = builder.Build();
 

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Html;
@@ -11,7 +12,10 @@ public class JJAlert : HtmlComponent
 {
     public PanelColor Color { get; set; }
     public IconType? Icon { get; set; }
+    
+    [LocalizationRequired]
     public string? Title { get; set; }
+    
     public List<string> Messages { get; } = [];
     public HtmlBuilder? InnerHtml { get; set; }
     

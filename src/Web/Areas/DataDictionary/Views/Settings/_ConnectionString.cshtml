@@ -4,81 +4,81 @@
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 
 <div class="row">
-        <div class="col-sm-3 mb-3">
-            <label asp-for="ConnectionProvider" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <select asp-items="@Html.GetEnumSelectList<DataAccessProvider>()" asp-for="ConnectionProvider" readonly class="form-control form-select">
-            </select>
-            <span asp-validation-for="ConnectionProvider" class="text-danger"></span>
-        </div>
-        <div class="col-sm-7 mb-3">
-            <label asp-for="ConnectionString.Server" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <input asp-for="ConnectionString.Server" class="form-control"/>
-        </div>
-        <div class="col-sm-2 mb-3">
-            <label asp-for="ConnectionString.Timeout" class="@BootstrapHelper.Label"></label>
-            <input asp-for="ConnectionString.Timeout" class="form-control"/>
-        </div>
-        <div class="col-sm-12 mb-3">
-            <label asp-for="ConnectionString.IntegratedSecurity" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <select onchange="onIntegratedSecurityChange(this.value)" asp-for="ConnectionString.IntegratedSecurity" class="form-control form-select">
-                <option value="False">False</option>
-                <option value="True">True</option>
-            </select>
-        </div>
+    <div class="col-sm-3 mb-3">
+        <label asp-for="CommonsOptions.ConnectionProvider" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+        <select asp-items="@Html.GetEnumSelectList<DataAccessProvider>()" asp-for="CommonsOptions.ConnectionProvider" readonly class="form-control form-select">
+        </select>
+        <span asp-validation-for="CommonsOptions.ConnectionProvider" class="text-danger"></span>
+    </div>
+    <div class="col-sm-7 mb-3">
+        <label asp-for="ConnectionString.Server" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+        <input asp-for="ConnectionString.Server" class="form-control"/>
+    </div>
+    <div class="col-sm-2 mb-3">
+        <label asp-for="ConnectionString.Timeout" class="@BootstrapHelper.Label"></label>
+        <input asp-for="ConnectionString.Timeout" class="form-control"/>
+    </div>
+    <div class="col-sm-12 mb-3">
+        <label asp-for="ConnectionString.IntegratedSecurity" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+        <select onchange="onIntegratedSecurityChange(this.value)" asp-for="ConnectionString.IntegratedSecurity" class="form-control form-select">
+            <option value="False">False</option>
+            <option value="True">True</option>
+        </select>
+    </div>
 
-        <div class="row mb-3" id="login-data" style="display: @(Model.ConnectionString.IntegratedSecurity ? "none" : "flex")">
-            <div class="col-sm-6 ">
-                <label asp-for="ConnectionString.Username" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-                <input asp-for="ConnectionString.Username" class="form-control"/>
-            </div>
-            <div class="col-sm-6">
-                <label asp-for="ConnectionString.Password" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-                <input asp-for="ConnectionString.Password" class="form-control"/>
-            </div>
+    <div class="row mb-3" id="login-data" style="display: @(Model.ConnectionString.IntegratedSecurity ? "none" : "flex")">
+        <div class="col-sm-6 ">
+            <label asp-for="ConnectionString.Username" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+            <input asp-for="ConnectionString.Username" class="form-control"/>
         </div>
-
-        <div class="col-sm-6 mb-3">
-            <label asp-for="ConnectionString.Database" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
-            <input asp-for="ConnectionString.Database" class="form-control"/>
-        </div>
-        <div class="col-sm-6 mb-3">
-            <label asp-for="ConnectionString.ApplicationName" class="@BootstrapHelper.Label"></label>
-            <input asp-for="ConnectionString.ApplicationName" class="form-control"/>
-        </div>
-        <div class="col-sm-6 mb-3">
-            <label asp-for="ConnectionString.TrustServerCertificate" class="@BootstrapHelper.Label"></label>
-            <select asp-for="ConnectionString.TrustServerCertificate" class="form-control form-select">
-                <option value="False">False</option>
-                <option value="True">True</option>
-            </select>
-        </div>
-        <div class="col-sm-6 mb-3">
-            <label asp-for="ConnectionString.Encrypt" class="@BootstrapHelper.Label"></label>
-            <select asp-for="ConnectionString.Encrypt" class="form-control form-select">
-                <option value="False">False</option>
-                <option value="True">True</option>
-            </select>
-        </div>
-        <div class="col-sm-4 mb-3">
-            <label asp-for="ConnectionString.Pooling" class="@BootstrapHelper.Label"></label>
-            <select asp-for="ConnectionString.Pooling" class="form-control form-select">
-                <option value="False">False</option>
-                <option value="True">True</option>
-            </select>
-        </div>
-        <div class="row mb-3" id="pooling-data">
-            <div class="col-sm-4">
-                <label asp-for="ConnectionString.MinPoolSize" class="@BootstrapHelper.Label"></label>
-                <input asp-for="ConnectionString.MinPoolSize" class="form-control"/>
-            </div>
-            <div class="col-sm-4">
-                <label asp-for="ConnectionString.MaxPoolSize" class="@BootstrapHelper.Label"></label>
-                <input asp-for="ConnectionString.MaxPoolSize" class="form-control"/>
-            </div>
+        <div class="col-sm-6">
+            <label asp-for="ConnectionString.Password" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+            <input asp-for="ConnectionString.Password" class="form-control"/>
         </div>
     </div>
 
-    <div class="row">
+    <div class="col-sm-6 mb-3">
+        <label asp-for="ConnectionString.Database" class="@BootstrapHelper.Label"></label><span class="required-symbol">*</span>
+        <input asp-for="ConnectionString.Database" class="form-control"/>
+    </div>
+    <div class="col-sm-6 mb-3">
+        <label asp-for="ConnectionString.ApplicationName" class="@BootstrapHelper.Label"></label>
+        <input asp-for="ConnectionString.ApplicationName" class="form-control"/>
+    </div>
+    <div class="col-sm-6 mb-3">
+        <label asp-for="ConnectionString.TrustServerCertificate" class="@BootstrapHelper.Label"></label>
+        <select asp-for="ConnectionString.TrustServerCertificate" class="form-control form-select">
+            <option value="False">False</option>
+            <option value="True">True</option>
+        </select>
+    </div>
+    <div class="col-sm-6 mb-3">
+        <label asp-for="ConnectionString.Encrypt" class="@BootstrapHelper.Label"></label>
+        <select asp-for="ConnectionString.Encrypt" class="form-control form-select">
+            <option value="False">False</option>
+            <option value="True">True</option>
+        </select>
+    </div>
+    <div class="col-sm-4 mb-3">
+        <label asp-for="ConnectionString.Pooling" class="@BootstrapHelper.Label"></label>
+        <select asp-for="ConnectionString.Pooling" class="form-control form-select">
+            <option value="False">False</option>
+            <option value="True">True</option>
+        </select>
+    </div>
+    <div class="row mb-3" id="pooling-data">
+        <div class="col-sm-4">
+            <label asp-for="ConnectionString.MinPoolSize" class="@BootstrapHelper.Label"></label>
+            <input asp-for="ConnectionString.MinPoolSize" class="form-control"/>
+        </div>
+        <div class="col-sm-4">
+            <label asp-for="ConnectionString.MaxPoolSize" class="@BootstrapHelper.Label"></label>
+            <input asp-for="ConnectionString.MaxPoolSize" class="form-control"/>
+        </div>
+    </div>
+</div>
+
+<div class="row">
         <div class="col-sm-12">
             <link-button on-client-click="testConnection()" icon="Chain" show-as-button="true" text="@StringLocalizer["Test Connection"]"/>
         </div>

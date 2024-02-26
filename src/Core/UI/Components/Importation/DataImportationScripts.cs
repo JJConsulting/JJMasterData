@@ -32,6 +32,12 @@ internal class DataImportationScripts(
     {
     }
     
+    public string GetStartProgressVerificationScript()
+    {
+        //language=Javascript
+        return $"DataImportationHelper.startProgressVerification('{Name}', '{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
+    }
+    
     public string GetBackScript()
     {
         //language=Javascript
@@ -67,5 +73,11 @@ internal class DataImportationScripts(
     {
         //language=Javascript
         return $"DataImportationHelper.uploadCallback('{Name}','{GetEncryptedRouteContext()}', '{GetEncryptedRouteContext(ComponentContext.GridViewReload)}')";
+    }
+
+    public static string GetCloseModalScript()
+    {
+        //language=Javascript
+        return "DataImportationModal.getInstance().hide()";
     }
 }

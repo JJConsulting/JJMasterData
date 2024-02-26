@@ -395,13 +395,12 @@ class DataDictionaryUtils {
     static deleteAction(actionName, url, confirmationMessage) {
         let confirmed = confirm(confirmationMessage);
         if (confirmed == true) {
-            fetch(url, {
-                method: "POST",
-            })
-                .then(response => response.json())
-                .then(data => {
-                if (data.success) {
-                    document.getElementById(actionName).remove();
+            postFormValues({
+                url: url,
+                success: function (data) {
+                    if (data.success) {
+                        document.getElementById(actionName).remove();
+                    }
                 }
             });
         }
@@ -607,7 +606,7 @@ class DataExportationHelper {
     }
     static setSettingsHTML(componentName, html) {
         const modalBody = document.querySelector("#data-exportation-modal-" + componentName + " .modal-body ");
-        modalBody.innerHTML = html;
+        HTMLHelper.setInnerHTML(modalBody, html);
         const qtdElement = document.querySelector("#" + componentName + "_totrows");
         if (qtdElement) {
             const totRows = +qtdElement.textContent.replace(/\./g, "");
@@ -839,7 +838,7 @@ class DataImportationHelper {
             }
         });
     }
-    static start(componentName, routeContext, gridRouteContext) {
+    static startProgressVerification(componentName, routeContext, gridRouteContext) {
         DataImportationHelper.setSpinner();
         let intervalId = setInterval(function () {
             DataImportationHelper.checkProgress(componentName, routeContext, gridRouteContext, intervalId);
@@ -889,7 +888,7 @@ class DataImportationHelper {
                 postFormValues({
                     url: urlBuilder.build(), success: html => {
                         document.querySelector("#" + componentName).innerHTML = html;
-                        DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+                        DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext);
                     }
                 });
             }
@@ -905,7 +904,7 @@ class DataImportationHelper {
             url: urlBuilder.build(),
             success: html => {
                 document.querySelector("#" + componentName).innerHTML = html;
-                DataImportationHelper.start(componentName, routeContext, gridRouteContext);
+                DataImportationHelper.startProgressVerification(componentName, routeContext, gridRouteContext);
             }
         });
     }
@@ -969,17 +968,24 @@ function applyDecimalPlaces(element) {
 }
 class FeedbackIcon {
     static removeAllIcons(selector) {
-        const elements = window.parent.document.querySelectorAll(selector);
+        const elements = this.findElements(selector);
         elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
             element.classList.remove(FeedbackIcon.successClass, FeedbackIcon.warningClass, FeedbackIcon.searchClass, FeedbackIcon.errorClass);
         });
     }
     static setIcon(selector, iconClass) {
         this.removeAllIcons(selector);
-        const elements = window.parent.document.querySelectorAll(selector);
+        const elements = this.findElements(selector);
         elements === null || elements === void 0 ? void 0 : elements.forEach(element => {
             element.classList.add(iconClass);
         });
+    }
+    static findElements(selector) {
+        let elements = document.querySelectorAll(selector);
+        if (elements.length === 0 && window.parent !== window) {
+            elements = window.parent.document.querySelectorAll(selector);
+        }
+        return elements;
     }
 }
 FeedbackIcon.searchClass = "jj-icon-search";
@@ -1003,7 +1009,7 @@ class FormViewHelper {
             url: url,
             success: (data) => {
                 TooltipHelper.dispose("#" + componentName);
-                HTMLHelper.setInnerHTML(componentName, data);
+                HTMLHelper.setOuterHTML(componentName, data);
                 listenAllEvents("#" + componentName);
             }
         });
@@ -2043,7 +2049,6 @@ var PageState;
     PageState[PageState["Filter"] = 5] = "Filter";
     PageState[PageState["Import"] = 6] = "Import";
     PageState[PageState["Delete"] = 7] = "Delete";
-    PageState[PageState["AuditLog"] = 8] = "AuditLog";
 })(PageState || (PageState = {}));
 const setPageState = (componentName, pageState) => {
     onDOMReady(function () {
@@ -2070,6 +2075,9 @@ function postFormValues(options) {
         }
         else if (response.redirected) {
             window.location.href = response.url;
+        }
+        else if (response.status == 440 || response.status == 403 || response.status == 401) {
+            document.forms[0].submit();
         }
         else {
             return response.text();

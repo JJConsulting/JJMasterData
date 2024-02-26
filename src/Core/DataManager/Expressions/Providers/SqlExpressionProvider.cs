@@ -65,7 +65,7 @@ public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncE
             int => DbType.Int32,
             double => DbType.Double,
             decimal => DbType.Decimal,
-            float => DbType.Single,
+            float => DbType.Double,
             string => DbType.String,
             DateTime => DbType.DateTime,
             bool => DbType.Boolean,

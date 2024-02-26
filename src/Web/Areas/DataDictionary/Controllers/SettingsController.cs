@@ -30,14 +30,14 @@ public class SettingsController(
     {
         await Service.SaveOptions(model);
 
-        await Task.Delay(500);
+        await Task.Delay(250);
         
         return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> TestConnection(SettingsViewModel model)
     {
-        var result = await SettingsService.GetConnectionResultAsync(model.ConnectionString.ToString(), model.ConnectionProvider);
+        var result = await SettingsService.GetConnectionResultAsync(model.ConnectionString.ToString(), model.CommonsOptions.ConnectionProvider);
         var alert = ComponentFactory.Html.Alert.Create();
         if (!result.IsConnectionSuccessful.GetValueOrDefault())
         {

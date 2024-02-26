@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using JJMasterData.Commons.Data.Entity.Models;
 using Microsoft.Data.SqlClient;
@@ -76,7 +77,8 @@ public static class ExceptionManager
     {
         if (ex is SqlException exSql)
             return GetMessage(exSql);
-        
+        if (ex is IOException)
+            return "IO Exception";
         return ex.Message;
     }
 

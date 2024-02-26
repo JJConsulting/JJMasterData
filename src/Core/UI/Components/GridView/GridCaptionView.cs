@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using JJMasterData.Commons.Localization;
+using JJMasterData.Core.DataDictionary;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.UI.Html;
 using Microsoft.Extensions.Localization;
@@ -84,9 +85,20 @@ internal class GridCaptionView(
         
         var dialog = new JJModalDialog
         {
-            Name = $"{Name}-legend-modal",
+            Name = $"{Name}-caption-modal",
             Title = StringLocalizer[title],
-            HtmlBuilderContent = form
+            HtmlBuilderContent = form,
+            Buttons = 
+            [
+                new JJLinkButton(StringLocalizer)
+                {
+                    Name = $"{Name}-caption-modal-close-btn",
+                    Icon = IconType.SolidXmark,
+                    Text = StringLocalizer["Close"],
+                    ShowAsButton = true,
+                    OnClientClick = BootstrapHelper.GetCloseModalScript($"{Name}-caption-modal")
+                }
+            ]
         };
         
         return dialog.BuildHtml();

@@ -2,15 +2,14 @@
     static deleteAction(actionName: string, url: string, confirmationMessage: string): void {
         let confirmed = confirm(confirmationMessage);
         if (confirmed == true) {
-            fetch(url, {
-                method: "POST",
-            })
-                .then(response => response.json())
-                .then(data => {
+            postFormValues({
+                url:url,
+                success:function(data){
                     if (data.success) {
                         document.getElementById(actionName).remove();
                     }
-                })
+                }
+            });
         }
     }
 
