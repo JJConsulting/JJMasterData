@@ -4,7 +4,7 @@
 /// Represents the default delete action of a data dictionary
 /// </summary>
 
-public class DeleteAction : GridTableAction
+public class DeleteAction : GridTableAction, ISubmittableAction
 {
     /// <summary>
     /// Default action name
@@ -18,4 +18,6 @@ public class DeleteAction : GridTableAction
         Icon = IconType.SolidTrashCan;
         Order = 3;
     }
+
+    public bool IsSubmit { get; set; }
 }
