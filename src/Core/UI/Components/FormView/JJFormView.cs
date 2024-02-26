@@ -481,7 +481,7 @@ public class JJFormView : AsyncComponent
         
         foreach (var action in field.Actions)
         {
-            if (action is not PluginFieldAction { AutoTriggerOnChange: true } pluginAction) 
+            if (action is not PluginFieldAction { TriggerOnChange: true } pluginAction) 
                 continue;
             
             var result = await GetPluginActionResult(pluginAction, values, fieldName);
@@ -680,7 +680,7 @@ public class JJFormView : AsyncComponent
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error while executing SQL Command Action.");
-            var message = ExceptionManager.GetMessage(ex);
+            var message = StringLocalizer[ExceptionManager.GetMessage(ex)];
             messageBox = ComponentFactory.Html.MessageBox.Create(message, MessageIcon.Error);
         }
         

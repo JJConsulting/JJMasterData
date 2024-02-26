@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Tasks;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.IO;
 using JJMasterData.Core.DataManager.Models;
 using JJMasterData.Core.Events.Args;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace JJMasterData.Core.DataManager.Services;
@@ -19,6 +21,7 @@ public class FormService(
     FormFileService formFileService,
     FieldValidationService fieldValidationService,
     AuditLogService auditLogService,
+    IStringLocalizer<MasterDataResources> localizer,
     ILogger<FormService> logger)
 {
     #region Properties
@@ -28,6 +31,7 @@ public class FormService(
     private FieldValidationService FieldValidationService { get; } = fieldValidationService;
 
     private AuditLogService AuditLogService { get; } = auditLogService;
+    private IStringLocalizer<MasterDataResources> Localizer { get; } = localizer;
     private ILogger<FormService> Logger { get; } = logger;
 
     public bool EnableErrorLinks { get; set; }
@@ -76,7 +80,7 @@ public class FormService(
         catch (Exception e)
         {
             Logger.LogError(e, "Error at {Method}", nameof(UpdateAsync));
-            errors.Add("DbException", ExceptionManager.GetMessage(e));
+            errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
         }
 
         result.NumberOfRowsAffected = rowsAffected;
@@ -126,7 +130,7 @@ public class FormService(
         catch (Exception e)
         {
             Logger.LogError(e, "Error at {Method}", nameof(InsertAsync));
-            errors.Add("DbException", ExceptionManager.GetMessage(e));
+            errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
         }
 
         if (errors.Count > 0)
@@ -176,7 +180,7 @@ public class FormService(
         catch (Exception e)
         {
             Logger.LogError(e, "Error at {Method}", nameof(InsertOrReplaceAsync));
-            errors.Add("DbException", ExceptionManager.GetMessage(e));
+            errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
         }
 
         if (errors.Count > 0)
@@ -240,7 +244,7 @@ public class FormService(
         catch (Exception e)
         {
             Logger.LogError(e, "Error at {Method}", nameof(DeleteAsync));
-            errors.Add("DbException", ExceptionManager.GetMessage(e));
+            errors.Add("DbException", Localizer[ExceptionManager.GetMessage(e)]);
         }
 
         if (errors.Count > 0)

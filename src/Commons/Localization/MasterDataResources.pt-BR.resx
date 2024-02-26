@@ -4004,4 +4004,13 @@
   <data name="Connection String" xml:space="preserve">
     <value>String de Conexão</value>
   </data>
+  <data name="Field Name" xml:space="preserve">
+    <value>Nome do Campo</value>
+  </data>
+  <data name="Trigger On Change" xml:space="preserve">
+    <value>Gatilhar quando alterar</value>
+  </data>
+  <data name="Invalid character." xml:space="preserve">
+    <value>Caractere inválido.</value>
+  </data>
 </root>

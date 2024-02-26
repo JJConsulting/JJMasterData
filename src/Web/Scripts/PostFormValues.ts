@@ -23,7 +23,13 @@ function postFormValues(options : PostFormValuesOptions) {
             }
             else if (response.redirected) {
                 window.location.href = response.url;
-            } else {
+            }
+            else if(response.status == 440 || response.status == 403 || response.status == 401)
+            {
+                //Let the application handle any error in these status
+                document.forms[0].submit();
+            }
+            else {
                 return response.text();
             }
         })

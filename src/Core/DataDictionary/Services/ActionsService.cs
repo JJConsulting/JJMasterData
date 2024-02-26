@@ -196,9 +196,9 @@ public class ActionsService(IValidationDictionary validationDictionary,
                 var pluginHandler = pluginHandlers.First(p => p.Id == pluginAction.PluginId);
                 if (pluginAction is PluginFieldAction pluginFieldAction)
                 {
-                    if (!formElement.Fields[fieldName!].AutoPostBack && pluginFieldAction.AutoTriggerOnChange)
+                    if (!formElement.Fields[fieldName!].AutoPostBack && pluginFieldAction.TriggerOnChange)
                     {
-                        AddError(nameof(PluginFieldAction.AutoTriggerOnChange), StringLocalizer["To use [AutoTriggerOnChange], [AutoPostBack] must be enabled at your field"]);
+                        AddError(nameof(PluginFieldAction.TriggerOnChange), StringLocalizer["To use [AutoTriggerOnChange], [AutoPostBack] must be enabled at your field"]);
                     }
                 }
 

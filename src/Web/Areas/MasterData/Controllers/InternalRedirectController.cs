@@ -1,6 +1,7 @@
 ﻿using System.Web;
 using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
+using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataManager.Expressions;
@@ -11,12 +12,14 @@ using JJMasterData.Web.Areas.MasterData.Models;
 using JJMasterData.Web.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Localization;
 
 namespace JJMasterData.Web.Areas.MasterData.Controllers;
 
 public class InternalRedirectController(
     ExpressionsService expressionsService,
     IComponentFactory componentFactory, 
+    IStringLocalizer<MasterDataResources> localizer,
     IEncryptionService encryptionService) : MasterDataController
 {
     private string? _elementName;
@@ -124,7 +127,7 @@ public class InternalRedirectController(
         }
         catch (SqlException ex)
         {
-            errors.Add("DB", ExceptionManager.GetMessage(ex));
+            errors.Add("DB", localizer[ExceptionManager.GetMessage(ex)]);
         }
 
         if (errors.Count > 0)

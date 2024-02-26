@@ -10,7 +10,7 @@ public class CnaeResult
 
     public Dictionary<string,object> ToDictionary()
     {
-        return new Dictionary<string, object>()
+        return new Dictionary<string, object>
         {
             { nameof(Code), Code },
             { nameof(Text), Text }

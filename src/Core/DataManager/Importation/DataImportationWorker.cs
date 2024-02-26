@@ -102,7 +102,7 @@ public class DataImportationWorker(
             {
                 currentProcess.Message = StringLocalizer["Unexpected error"];
                 currentProcess.Message += " ";
-                currentProcess.Message += ExceptionManager.GetMessage(ex);
+                currentProcess.Message += StringLocalizer[ExceptionManager.GetMessage(ex)];
                 currentProcess.AddError(currentProcess.Message);
                 Logger.LogError(ex, "Error while importing file");
                 throw;
@@ -317,7 +317,7 @@ public class DataImportationWorker(
         catch (Exception ex)
         {
             currentProcess.Error++;
-            currentProcess.AddError(ExceptionManager.GetMessage(ex));
+            currentProcess.AddError(StringLocalizer[ExceptionManager.GetMessage(ex)]);
         }
     }
 }

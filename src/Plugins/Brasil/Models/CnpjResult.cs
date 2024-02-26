@@ -96,7 +96,8 @@ public class CnpjResult
     /// </summary>
     [JsonProperty("Quadro_socios")]
     public string[]? QuadroSocios { get; set; }
-
+    
+    
     /// <summary>
     /// Data da Abertura
     /// </summary>
@@ -119,7 +120,8 @@ public class CnpjResult
             { nameof(Email), Email },
             { nameof(Telefone), Telefone },
             { nameof(Situacao), Situacao },
-            { nameof(AtividadePrincipal), AtividadePrincipal.ToDictionary() },
+            { "AtividadePrincipal.Codigo", AtividadePrincipal.Code },
+            { "AtividadePrincipal.Descricao", AtividadePrincipal.Text },
             { nameof(CapitalSocial), CapitalSocial },
             { nameof(QuadroSocios), QuadroSocios != null ? string.Join(", ", QuadroSocios) : "" },
             { nameof(Abertura), Abertura }
