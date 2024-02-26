@@ -5,10 +5,10 @@
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
 @{
-    bool showImage = Model.DataItem!.ShowIcon;
+    bool showIcon = Model.DataItem!.ShowIcon;
 }
 
-<div id="divSqlCommand" >
+<div id="divSqlCommand">
     <div class="@BootstrapHelper.FormGroup col-sm-12 required">
         <label asp-for="DataItem!.Command!.Sql" class="form-label"></label>
         <span class="small @BootstrapHelper.TextRight text-info">&nbsp;@StringLocalizer["(Type Ctrl+Space to AutoComplete)"]</span>
@@ -16,34 +16,40 @@
             @Html.TextAreaFor(model => model.DataItem!.Command!.Sql, new { @class = "form-control", rows = "10" })
         </div>
     </div>
-    <label class="small col-sm-12">
-        <span class="text-info fa fa-info-circle"></span>
-        @if (showImage)
-        {
-            <span>@StringLocalizer["Return four columns in query 1 = Id, 2 = Description, 3 = ImageId, 4 = Color in Hexa(#ffffff)"]</span>
-        }
-        else
-        {
-            <span>@StringLocalizer["Return two columns in query 1 = Id, 2 = Description"]</span>
-        }
-        <br/><br/>
-        <b>@StringLocalizer["We recommend using the parameters to be passed in the procedure:"]</b><br/>
-        @if (Model.Component == FormComponent.Search)
-        {
-            <span>
-                @StringLocalizer["{SearchId} retrieves the list record from the found ID that can be used in the query filter condition"]<br/>
-                @StringLocalizer["{SearchText} passage of typed text that can be used with the LIKE command in the query."]<br/>
-                <i>@StringLocalizer["Optimizing the reading of SEARCH component records"]</i>
-            </span>
-        }
-        else if (Model.Component is FormComponent.ComboBox or FormComponent.RadioButtonGroup)
-        {
-            <span>
-                @StringLocalizer["{SearchId} retrieves the list record from the found ID that can be used in the query filter condition"]
-            </span>
-        }
-    </label>
-    <div class="col-sm-12">
-        <br/>
-    </div>
+    <collapse-panel color="Info" title="@StringLocalizer["Data Item SQL Query"]" icon="InfoCircle" expanded-by-default="true">
+        <span>@StringLocalizer["The query result must contain these columns in the following order:"]</span>
+        <ol>
+            <li>@StringLocalizer["Id"]</li>
+            <li>@StringLocalizer["Description"]</li>
+            @if (showIcon)
+            {
+            <li>
+                <a href="https://md.jjconsulting.tech/api/JJMasterData.Core.DataDictionary.IconType.html">@StringLocalizer["Icon Id"]</a>
+            </li>
+            <li>@StringLocalizer["Icon Color in Hexadecimal"]</li>
+            }
+            @if (Model.Component is FormComponent.ComboBox)
+            {
+                <li>@StringLocalizer["Group (optional)"]</li>
+            }
+        </ol>
+        <span>@StringLocalizer["We recommend using the following parameters in the query:"]</span><br/>
+        <ul>
+            <li>
+                @StringLocalizer["{SearchId}: Id of the column used at the grid for recovering the description."]
+            </li>
+            @if (Model.Component is FormComponent.Search)
+            {
+            <li>
+                @StringLocalizer["{SearchText}: Typed text that can be used with the SQL query."]
+            </li>
+            }
+        </ul>
+    </collapse-panel>
+
+
+
+    <br/>
+
+
 </div>

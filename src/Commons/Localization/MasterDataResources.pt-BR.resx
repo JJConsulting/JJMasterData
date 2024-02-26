@@ -1361,10 +1361,6 @@
     <value>Ícone</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="IconId" xml:space="preserve">
-    <value>Id do ícone</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Identity" xml:space="preserve">
     <value>Auto.Incr.</value>
     <comment>JJMasterDataWeb</comment>
@@ -1957,10 +1953,6 @@
     <value>Abrir ação como popup</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="Optimizing the reading of SEARCH component records" xml:space="preserve">
-    <value> Otimização da leitura de registros do componente SEARCH</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
   <data name="Options" xml:space="preserve">
     <value>Opções</value>
     <comment>JJMasterDataWeb</comment>
@@ -2340,14 +2332,6 @@
   <data name="Retrieving records..." xml:space="preserve">
     <value>Recuperando registros...</value>
     <comment>JJMasterDataCore</comment>
-  </data>
-  <data name="Return four columns in query Id, Description, ImageId,  Color in Hexa" xml:space="preserve">
-    <value>Retornar quatro colunas na query Id, Descrição, IdImagem, Cor em Hexa</value>
-    <comment>JJMasterDataWeb</comment>
-  </data>
-  <data name="Return two columns in query Id, Description" xml:space="preserve">
-    <value>Retornar duas colunas na query Id, Descrição</value>
-    <comment>JJMasterDataWeb</comment>
   </data>
   <data name="Row:" xml:space="preserve">
     <value>Linha:</value>
@@ -2977,8 +2961,8 @@
     <value>Recomendamos consultar a documentação atual do seu banco de dados antes de avançar.</value>
     <comment>JJMasterDataWeb</comment>
   </data>
-  <data name="We recommend using the parameters to be passed in the procedure:" xml:space="preserve">
-    <value>Recomendamos utilizar os parâmetros a serem passados na procedure:</value>
+  <data name="We recommend using the following parameters in the query:" xml:space="preserve">
+    <value>Recomendamos utilizar os seguintes parâmetros na query:</value>
     <comment>JJMasterDataWeb</comment>
   </data>
   <data name="WebSales" xml:space="preserve">
@@ -3192,10 +3176,6 @@
   <data name="{0} selected records" xml:space="preserve">
     <value>{0} registros selecionados</value>
     <comment>JJMasterDataApi</comment>
-  </data>
-  <data name="{search_text} passage of typed text that can be used with the LIKE command in the query." xml:space="preserve">
-    <value>{search_text} passagem do texto digitado que pode ser utilizado com o comando LIKE na query.</value>
-    <comment>JJMasterDataWeb</comment>
   </data>
   <data name="We recommend checking your database documentation before proceeding." xml:space="preserve">
     <value>Nós recomendamos checar a documentação do seu banco de dados antes de continuar.</value>
@@ -4012,5 +3992,32 @@
   </data>
   <data name="Invalid character." xml:space="preserve">
     <value>Caractere inválido.</value>
+  </data>
+  <data name="Data Item SQL Query" xml:space="preserve">
+    <value>Consulta SQL do DataItem</value>
+  </data>
+  <data name="The query result must contain these columns in the following order:" xml:space="preserve">
+    <value>O resultado da consulta deve conter estas colunas na seguinte ordem:</value>
+  </data>
+  <data name="Group (optional)" xml:space="preserve">
+    <value>Grupo (opcional)</value>
+  </data>
+  <data name="Icon Id" xml:space="preserve">
+    <value>Id do ícone</value>
+  </data>
+  <data name="{SearchId}: Id of the column used at the grid for recovering the description." xml:space="preserve">
+    <value>{SearchId}: Id da coluna usado na grid para recuperar a descrição.</value>
+  </data>
+  <data name="{SearchText}: Text entered by the user that can be used in the query." xml:space="preserve">
+    <value>{SearchText}: Texto digitado pelo usuário que pode ser usado na query.</value>
+  </data>
+  <data name="Group" xml:space="preserve">
+    <value>Grupo</value>
+  </data>
+  <data name="Icon Color" xml:space="preserve">
+    <value>Cor do Ícone</value>
+  </data>
+  <data name="Icon Color in Hexadecimal" xml:space="preserve">
+    <value>Cor do Ícone em Hexadecimal</value>
   </data>
 </root>

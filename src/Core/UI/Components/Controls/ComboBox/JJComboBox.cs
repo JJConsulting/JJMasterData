@@ -19,14 +19,14 @@ namespace JJMasterData.Core.UI.Components;
 public class JJComboBox : ControlBase
 {
     private string? _selectedValue;
-    
+
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; }
     private DataItemService DataItemService { get; }
     internal ILogger<JJComboBox> Logger { get; }
     internal FormStateData FormStateData { get; set; }
-    
+
     public string? Id { get; set; }
-    
+
     /// <summary>
     /// If the filter is MULTVALUES_EQUALS, enable multiselect.
     /// </summary>
@@ -49,7 +49,7 @@ public class JJComboBox : ControlBase
     }
 
     public bool EnableLocalization { get; set; } = true;
-    
+
     public JJComboBox(
         IFormValues formValues,
         DataItemService dataItemService,
@@ -65,7 +65,7 @@ public class JJComboBox : ControlBase
         var defaultValues = new Dictionary<string, object?>();
         FormStateData = new FormStateData(defaultValues, PageState.List);
     }
-    
+
     protected override async Task<ComponentResult> BuildResultAsync()
     {
         if (DataItem == null)
@@ -82,8 +82,8 @@ public class JJComboBox : ControlBase
 
         return new RenderedComponentResult(GetSelectHtml(values));
     }
-    
-    private HtmlBuilder GetSelectHtml(IEnumerable<DataItemValue> values)
+
+    private HtmlBuilder GetSelectHtml(List<DataItemValue> values)
     {
         var select = new HtmlBuilder(HtmlTag.Select)
             .WithCssClass(CssClass)
@@ -103,7 +103,7 @@ public class JJComboBox : ControlBase
         return select;
     }
 
-    private IEnumerable<HtmlBuilder> GetOptions(IEnumerable<DataItemValue> values)
+    private IEnumerable<HtmlBuilder> GetOptions(List<DataItemValue> values)
     {
         if (DataItem == null)
             throw new ArgumentException("[DataItem] properties not defined for combo", Name);
@@ -116,34 +116,53 @@ public class JJComboBox : ControlBase
         if (DataItem.FirstOption != FirstOptionMode.None)
             yield return firstOption;
 
-        foreach (var value in values)
+        var groupedValues = values.Where(v => v.Group != null).GroupBy(v => v.Group);
+
+        foreach (var group in groupedValues)
         {
-            var label = IsManualValues() && EnableLocalization ? StringLocalizer[value.Description!] : value.Description;
+            var optgroup = new HtmlBuilder(HtmlTag.OptGroup)
+                .WithAttribute("label", group.Key ?? string.Empty);
 
-            var isSelected = !MultiSelect && SelectedValue != null && SelectedValue.Equals(value.Id);
-
-            if (MultiSelect && SelectedValue != null)
+            foreach (var value in group)
             {
-                isSelected = SelectedValue.Split(',').Contains(value.Id);
+                optgroup.Append(CreateOption(value));
             }
-            
-            var content = new HtmlBuilder();
-            content.AppendComponentIf(DataItem.ShowIcon,new JJIcon(value.Icon,value.IconColor));
-            content.Append(HtmlTag.Span, span =>
-            {
-                span.AppendText(label);
-                span.WithCssClassIf(DataItem.ShowIcon,$"{BootstrapHelper.MarginLeft}-1");
-            });
 
-            var option = new HtmlBuilder(HtmlTag.Option)
-                .WithValue(value.Id)
-                .WithAttributeIf(isSelected, "selected")
-                .WithAttributeIf(DataItem.ShowIcon, "data-content", HttpUtility.HtmlAttributeEncode(content.ToString()))
-                .AppendTextIf(!DataItem.ShowIcon, label);
+            yield return optgroup;
+        }
+        
+        foreach (var value in values.Where(v => v.Group == null))
+        {
+            yield return CreateOption(value);
+        }
+    }
 
-            yield return option;
+    private HtmlBuilder CreateOption(DataItemValue value)
+    {
+        var label = IsManualValues() && EnableLocalization ? StringLocalizer[value.Description!] : value.Description;
+
+        var isSelected = !MultiSelect && SelectedValue != null && SelectedValue.Equals(value.Id);
+
+        if (MultiSelect && SelectedValue != null)
+        {
+            isSelected = SelectedValue.Split(',').Contains(value.Id);
         }
 
+        var content = new HtmlBuilder();
+        content.AppendComponentIf(DataItem.ShowIcon, new JJIcon(value.Icon, value.IconColor));
+        content.Append(HtmlTag.Span, span =>
+        {
+            span.AppendText(label);
+            span.WithCssClassIf(DataItem.ShowIcon, $"{BootstrapHelper.MarginLeft}-1");
+        });
+
+        var option = new HtmlBuilder(HtmlTag.Option)
+            .WithValue(value.Id)
+            .WithAttributeIf(isSelected, "selected")
+            .WithAttributeIf(DataItem.ShowIcon, "data-content", HttpUtility.HtmlAttributeEncode(content.ToString()))
+            .AppendTextIf(!DataItem.ShowIcon, label);
+
+        return option;
     }
 
     private IEnumerable<HtmlBuilder> GetReadOnlyInputs(IEnumerable<DataItemValue> values)
@@ -169,7 +188,6 @@ public class JJComboBox : ControlBase
             .WithAttribute("readonly", "readonly");
 
         yield return readonlyInput;
-
     }
 
 
@@ -195,7 +213,7 @@ public class JJComboBox : ControlBase
 
     public Task<List<DataItemValue>> GetValuesAsync()
     {
-        return DataItemService.GetValuesAsync(DataItem,FormStateData);
+        return DataItemService.GetValuesAsync(DataItem, FormStateData);
     }
 
 
@@ -221,10 +239,10 @@ public class JJComboBox : ControlBase
             }.BuildHtml();
 
             div.Append(icon);
-            
+
             div.AppendText("&nbsp;");
             div.AppendText(label);
-            
+
             description = div.ToString();
         }
         else
@@ -238,10 +256,10 @@ public class JJComboBox : ControlBase
 
     public async Task<DataItemValue?> GetValueAsync(string? searchId)
     {
-        var values = await DataItemService.GetValuesAsync(DataItem,FormStateData,null,searchId);
-        return values.FirstOrDefault(v=> v.Id==searchId);
+        var values = await DataItemService.GetValuesAsync(DataItem, FormStateData, null, searchId);
+        return values.FirstOrDefault(v => v.Id == searchId);
     }
-    
+
 
     private bool IsManualValues()
     {
