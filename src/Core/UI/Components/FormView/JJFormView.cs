@@ -816,15 +816,19 @@ public class JJFormView : AsyncComponent
             {
                 formValues ??= new Dictionary<string, object?>();
                 DataHelper.CopyIntoDictionary(formValues,RelationValues!);
+                var formContext = new FormContext(formValues, PageState);
+                var reloadFields = PanelState is not PageState.View && CurrentAction is not PluginAction;
                 return await GetFormResult(
-                    new FormContext(formValues, PageState),
-                    false);
+                    formContext,
+                    reloadFields);
             }
 
             case PageState.Update or PageState.View:
             {
                 formValues ??= await GetFormValuesAsync();
-                return await GetFormResult(new FormContext(formValues, PageState), PanelState is not PageState.View && CurrentAction is not PluginAction);
+                var reloadFields = PanelState is not PageState.View && CurrentAction is not PluginAction;
+                var formContext = new FormContext(formValues, PageState);
+                return await GetFormResult(formContext, reloadFields);
             }
             default:
                 return await GetGridViewResult();
