@@ -1,5 +1,6 @@
 using JJMasterData.Commons.Configuration.Options;
 using JJMasterData.Commons.Data;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -14,11 +15,31 @@ public class FormElementMigrationService(IDataDictionaryRepository dataDictionar
     ExpressionsMigrationService expressionsMigrationService,
     ILogger<FormElementMigrationService> logger)
 {
+    private DataAccess? _dataAccess;
     private IDataDictionaryRepository DataDictionaryRepository { get; } = dataDictionaryRepository;
     private MetadataRepository MetadataRepository { get; } = metadataRepository;
     private ExpressionsMigrationService ExpressionsMigrationService { get; } = expressionsMigrationService;
     private ILogger<FormElementMigrationService> Logger { get; } = logger;
-    private DataAccess DataAccess { get; } = new(commonsOptions.Value.ConnectionString, DataAccessProvider.SqlServer);
+
+    private DataAccess DataAccess
+    {
+        get
+        {
+            if (_dataAccess == null)
+            {
+                var connStr = commonsOptions.Value.ConnectionString;
+                var connProvider = commonsOptions.Value.ConnectionProvider;
+
+                if (connStr == null)
+                    throw new DataAccessException("Connection string not found");
+
+                _dataAccess = new(connStr, connProvider);
+            }
+
+            return _dataAccess;
+        }
+    } 
+
     private string TableName => Options.DataDictionaryTableName;
     private MasterDataCoreOptions Options { get; } = options.Value;
 
