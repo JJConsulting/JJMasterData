@@ -24,9 +24,6 @@ public class DataElementMap
     [JsonProperty("iconColor")]
     public string? IconColorFieldName { get; set; }
     
-    [JsonProperty("group")]
-    public string? GroupFieldName { get; set; }
-    
     [JsonProperty("popUpSize")]
     public ModalSize ModalSize { get; set; }
 

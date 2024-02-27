@@ -1,7 +1,5 @@
-@using JJMasterData.Core.DataDictionary.Models
 @using JJMasterData.Core.UI.Components
 @using JJMasterData.Core.UI
-@using JJMasterData.Web.TagHelpers
 @model JJMasterData.Core.DataDictionary.Models.FormElementField
 
 @inject IStringLocalizer<MasterDataResources> StringLocalizer
@@ -50,16 +48,12 @@
     <table class="table table-striped table-hover">
         <thead>
         <tr>
-            <th style="width:9.375rem;">@StringLocalizer["Id"]</th>
+            <th style="width:120px;">@StringLocalizer["Id"]</th>
             <th>@StringLocalizer["Description"]</th>
             @if (showImage)
             {
                 <th>@StringLocalizer["IconId"]</th>
                 <th style="width:3.75rem">@StringLocalizer["Color"]</th>
-            }
-            @if (Model.Component is FormComponent.ComboBox)
-            {
-                <th style="width:12.5rem">@StringLocalizer["Group"]</th>
             }
             <th style="width:3.75rem"></th>
         </tr>
@@ -92,13 +86,7 @@
                             Model.DataItem.Items[i].IconColor, new { @class = "form-control form-control-color", type = "color" })
                     </td>
                 }
-                @if (Model.Component is FormComponent.ComboBox)
-                {
-                    <td>
-                        @Html.TextBox(Html.NameFor(m => m.DataItem!.Items![i].Group),
-                            Model.DataItem.Items[i].Group, new { @class = "form-control" })
-                    </td>
-                }
+
                 <td align="center" valign="middle">
                     <link-button icon="RegularTrashCan" type="LinkButtonType.Link" show-as-button="false" tooltip="Remove" on-client-click="removeDataItem(@i);"/>
                 </td>
@@ -107,7 +95,7 @@
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="@(showImage ? 6 : 4)">
+            <td colspan="@(showImage ? 5 : 3)">
                 <div class="btn-group dropup">
                     <link-button text="Add" icon="PlusCircle" on-client-click="addDataItem(1)"/>
                     <button type="button" class="btn btn-default btn-small dropdown-toggle" @BootstrapHelper.GetDataToggle("dropdown") aria-haspopup="true" aria-expanded="false">

@@ -26,24 +26,15 @@
 
         @if (Model.Component is FormComponent.ComboBox or FormComponent.Search or FormComponent.RadioButtonGroup && Model.DataItem!.ShowIcon)
         {
-            <div class="@BootstrapHelper.FormGroup col-sm-2">
+            <div class="@BootstrapHelper.FormGroup col-sm-3">
                 <label class="@BootstrapHelper.Label">@StringLocalizer["Icon"]</label>
                 @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.IconIdFieldName,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                     new { @class = "form-control form-select" })
             </div>
-            <div class="@BootstrapHelper.FormGroup col-sm-2">
+            <div class="@BootstrapHelper.FormGroup col-sm-3">
                 <label class="@BootstrapHelper.Label">@StringLocalizer["Icon Color"]</label>
                 @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.IconColorFieldName,
-                    new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
-                    new { @class = "form-control form-select" })
-            </div>
-        }
-        @if (Model.Component is FormComponent.ComboBox)
-        {
-            <div class="@BootstrapHelper.FormGroup col-sm-2">
-                <label class="@BootstrapHelper.Label">@StringLocalizer["Group"]</label>
-                @Html.DropDownListFor(modelItem => modelItem.DataItem!.ElementMap!.GroupFieldName,
                     new SelectList(ViewBag.ElementFieldList, "Key", "Value"),
                     new { @class = "form-control form-select" })
             </div>
