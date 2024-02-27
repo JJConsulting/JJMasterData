@@ -43,5 +43,6 @@ public enum HtmlTag
     Form,
     FieldSet,
     Legend,
-    U
+    U,
+    OptGroup
 }

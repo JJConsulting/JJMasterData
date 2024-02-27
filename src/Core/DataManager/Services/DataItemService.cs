@@ -109,6 +109,9 @@ public class DataItemService(IEntityRepository entityRepository,
                 if (elementMap.IconColorFieldName != null)
                     item.IconColor = value[elementMap.IconColorFieldName]?.ToString();
             }
+            
+            if (elementMap.GroupFieldName != null)
+                item.Group = value[elementMap.GroupFieldName]?.ToString();
 
             if (searchText == null || item.Description!.ToLower().Contains(searchText.ToLower()))
             {
@@ -154,6 +157,17 @@ public class DataItemService(IEntityRepository entityRepository,
             {
                 item.Icon = (IconType)int.Parse(row[2].ToString() ?? string.Empty);
                 item.IconColor = row[3].ToString();
+                if (row.Table.Columns.Count >= 5)
+                {
+                    item.Group = row[4]?.ToString();
+                }
+            }
+            else
+            {
+                if (row.Table.Columns.Count >= 3)
+                {
+                    item.Group = row[2]?.ToString();
+                }
             }
 
             if (searchText == null || (item.Description?.ToLower().Contains(searchText.ToLower()) ?? false))

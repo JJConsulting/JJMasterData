@@ -12,7 +12,9 @@ public class DataItemValue
     [JsonProperty("id")]
     public string Id { get; set; }
 
-    [JsonProperty("description")] [CanBeNull] public string Description { get; set; }
+    [JsonProperty("description")]
+    [CanBeNull] 
+    public string Description { get; set; }
     
     [JsonProperty("icon")]
     public IconType Icon { get; set; }
@@ -26,6 +28,9 @@ public class DataItemValue
     [JsonProperty("imagecolor")]
     public string IconColor { get; set; }
 
+    [JsonProperty("group")] 
+    [CanBeNull]
+    public string Group { get; set; }
 
     public DataItemValue() { }
     
