@@ -143,7 +143,7 @@ public class ExcelWriter(
                 }
 
                 await sw.WriteAsync($"\t\t\t\t<td{tdStyle}>");
-                await sw.WriteAsync(HttpUtility.HtmlEncode(value)?.Replace("\n","<br>"));
+                await sw.WriteAsync(HttpUtility.HtmlEncode(value)?.Replace("\n"," "));
                 await sw.WriteLineAsync("</td>");
             }
 
