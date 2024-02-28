@@ -48,11 +48,31 @@ public static class EnumerableHelper
             foreach (var key in item.Keys)
             {
                 var value = item[key];
-                row[key] = value;
+                row[key] = value ?? DBNull.Value;
             }
             table.Rows.Add(row);
         }
 
+        return table;
+    }
+    
+    public static DataTable ConvertToDataTable<T>(IEnumerable<T> list)
+    {
+        var table = CreateDataTable<T>();
+        var entityType = typeof(T);
+        var properties = TypeDescriptor.GetProperties(entityType);
+        foreach (var item in list)
+        {
+            var row = table.NewRow();
+            foreach (PropertyDescriptor prop in properties)
+            {
+                if (item is null)
+                    row[prop.Name] = DBNull.Value;
+                else
+                    row[prop.Name] = prop.GetValue(item);
+            }
+            table.Rows.Add(row);
+        }
         return table;
     }
     
@@ -81,23 +101,6 @@ public static class EnumerableHelper
             default:
                 throw new ArgumentOutOfRangeException(nameof(fieldType), fieldType, "Unknown FieldType");
         }
-    }
-    
-    public static DataTable ConvertToDataTable<T>(IEnumerable<T> list)
-    {
-        var table = CreateDataTable<T>();
-        var entityType = typeof(T);
-        var properties = TypeDescriptor.GetProperties(entityType);
-        foreach (T item in list)
-        {
-            var row = table.NewRow();
-            foreach (PropertyDescriptor prop in properties)
-            {
-                row[prop.Name] = prop.GetValue(item)!;
-            }
-            table.Rows.Add(row);
-        }
-        return table;
     }
 
     private static DataTable CreateDataTable<T>()
