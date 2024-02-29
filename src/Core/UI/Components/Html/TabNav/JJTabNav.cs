@@ -77,8 +77,10 @@ public class JJTabNav : HtmlComponent
                        .WithDataAttribute("toggle", "tab")
                        .WithCssClass("jj-tab-link nav-link")
                        .WithCssClassIf(SelectedTabIndex == index && BootstrapHelper.Version > 3, "active")
-                       .AppendComponentIf(nav.Icon.HasValue, new JJIcon(nav.Icon!.Value))
                        .AppendText(nav.Title);
+
+                      if (nav.Icon.HasValue)
+                          a.AppendComponent(new JJIcon(nav.Icon.Value));
                   });
             });
         }
