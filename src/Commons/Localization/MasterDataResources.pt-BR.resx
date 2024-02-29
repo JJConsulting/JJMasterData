@@ -4020,6 +4020,12 @@
   <data name="Icon Color in Hexadecimal" xml:space="preserve">
     <value>Cor do Ícone em Hexadecimal</value>
   </data>
+  <data name="{SearchId} is required at queries not using Id as Grid Behavior." xml:space="preserve">
+    <value>{SearchId} é obrigatório em queries que não usam o Id como Comportamento na Grid.</value>
+  </data>
+  <data name="Check &lt;a href=&quot;{0}&quot;&gt;the docs&lt;/a&gt; for more information." xml:space="preserve">
+    <value>Veja &lt;a href=\&quot;{0}\&quot;&gt;nossa documentação&lt;/a&gt; para mais informações.</value>
+  </data>
   <data name="File successfully renamed." xml:space="preserve">
     <value>Arquivo renomeado com sucesso.</value>
   </data>

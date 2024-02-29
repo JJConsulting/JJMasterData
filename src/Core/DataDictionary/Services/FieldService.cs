@@ -235,12 +235,13 @@ public class FieldService(IValidationDictionary validationDictionary,
             }
                
             if (string.IsNullOrEmpty(dataItem.Command.Sql))
-                AddError("Command.Sql", StringLocalizer["[Field Command.Sql] required"]);
+                AddError(nameof(FormElementDataItem.Command.Sql), StringLocalizer["[Field Command.Sql] required"]);
 
-            if (dataItem.GridBehavior is not DataItemGridBehavior.Id && !dataItem.Command.Sql.Contains("{SearchId}"))
+            if (dataItem.GridBehavior is not DataItemGridBehavior.Id 
+                && (!dataItem.Command.Sql.Contains("{SearchId}") || dataItem.Command.Sql.Contains("--{SearchId}")))
             {
-                AddError("Command.Sql", "{SearchId} is required at queries not using GridBehavior.Id " +
-                                        "Check <a href=\"https://portal.jjconsulting.com.br/jjdoc/articles/errors/search_id.html\">the docs</a> for more information.");
+                AddError("DataItem.Command.Sql", StringLocalizer["{SearchId} is required at queries not using Id as Grid Behavior."] + "\n" +
+                                        StringLocalizer["Check <a href=\"{0}\">the docs</a> for more information.","https://md.jjconsulting.tech/articles/tutorials/search_id.html"]);
             }
         }
         else if (dataItem.DataItemType == DataItemType.Manual)

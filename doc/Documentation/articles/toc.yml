@@ -36,7 +36,9 @@
   - name: Importing and Exporting Data Dictionaries
     href: tutorials/import_export.md
   - name: How to create a Relationship
-    href: tutorials/relationship.md    
+    href: tutorials/relationship.md
+  - name: DataItem SearchId and SearchText
+    href: tutorials/search_id.md
 - name: Components
   href: components/intro.md
   items:
@@ -53,8 +55,6 @@
   items:
     - name: ConnectionString not found.
       href: errors/connection_string.md
-    - name: SearchId is required at queries using ReplaceTextOnGrid.
-      href: errors/search_id.md
 - name: Plugins
   items:
   - name: Hangfire
