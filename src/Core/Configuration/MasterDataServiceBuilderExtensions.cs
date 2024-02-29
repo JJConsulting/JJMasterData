@@ -12,6 +12,7 @@ using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataManager.Exportation.Abstractions;
 using JJMasterData.Core.DataManager.Expressions.Abstractions;
 using JJMasterData.Core.Events.Abstractions;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -70,7 +71,7 @@ public static class MasterDataServiceBuilderExtensions
     {
         builder.WithEntityProvider(connectionString,provider);
         return WithDataDictionaryRepository(builder,serviceProvider => new SqlDataDictionaryRepository(serviceProvider.GetRequiredService<IEntityRepository>(),
-            serviceProvider.GetRequiredService<IOptionsSnapshot<MasterDataCoreOptions>>()));
+            serviceProvider.GetRequiredService<IMemoryCache>(),serviceProvider.GetRequiredService<IOptionsSnapshot<MasterDataCoreOptions>>()));
     }
     
     public static MasterDataServiceBuilder WithFileSystemDataDictionary(this MasterDataServiceBuilder builder)

@@ -11,13 +11,18 @@ using JJMasterData.Core.Configuration.Options;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
 using JJMasterData.Core.DataDictionary.Structure;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace JJMasterData.Core.DataDictionary.Repository;
 
-public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOptionsSnapshot<MasterDataCoreOptions> options)
+public class SqlDataDictionaryRepository(
+    IEntityRepository entityRepository, 
+    IMemoryCache memoryCache,
+    IOptionsSnapshot<MasterDataCoreOptions> options)
     : IDataDictionaryRepository
 {
+    private IMemoryCache MemoryCache { get; } = memoryCache;
     internal Element MasterDataElement { get; } = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
 
     public async Task<List<FormElement>> GetFormElementListAsync(bool? apiSync = null)
@@ -59,24 +64,44 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
 
     public FormElement? GetFormElement(string elementName)
     {
+        if (MemoryCache.TryGetValue(elementName, out FormElement? formElement))
+            return formElement;
+        
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
 
         var values =  entityRepository.GetFields(MasterDataElement, filter);
 
         var model = values.ToModel<DataDictionaryModel>();
 
-        return model != null ? FormElementSerializer.Deserialize(model.Json) : null;
+        if (model != null)
+        {
+            formElement = FormElementSerializer.Deserialize(model.Json);
+            MemoryCache.Set(elementName, formElement);
+            return formElement;
+        }
+
+        return null;
     }
 
     public async Task<FormElement?> GetFormElementAsync(string elementName)
     {
+        if (MemoryCache.TryGetValue(elementName, out FormElement formElement))
+            return formElement;
+        
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
 
         var values = await entityRepository.GetFieldsAsync(MasterDataElement, filter);
 
         var model = values.ToModel<DataDictionaryModel>();
+        
+        if (model != null)
+        {
+            formElement = FormElementSerializer.Deserialize(model.Json);
+            MemoryCache.Set(elementName, formElement);
+            return formElement;
+        }
 
-        return model != null ? FormElementSerializer.Deserialize(model.Json) : null;
+        return null;
     }
 
 
@@ -85,6 +110,8 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
         var values = GetFormElementDictionary(formElement);
 
         await entityRepository.SetValuesAsync(MasterDataElement, values);
+
+        MemoryCache.Remove(formElement.Name);
     }
 
     public void InsertOrReplace(FormElement formElement)
@@ -92,6 +119,8 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
         var values = GetFormElementDictionary(formElement);
 
         entityRepository.SetValues(MasterDataElement, values);
+        
+        MemoryCache.Remove(formElement.Name);
     }
 
     private static Dictionary<string, object?> GetFormElementDictionary(FormElement formElement)
@@ -134,6 +163,8 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
         var filters = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName } };
 
         await entityRepository.DeleteAsync(MasterDataElement, filters);
+        
+        MemoryCache.Remove(elementName);
     }
 
 
