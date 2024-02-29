@@ -4020,4 +4020,10 @@
   <data name="Icon Color in Hexadecimal" xml:space="preserve">
     <value>Cor do Ícone em Hexadecimal</value>
   </data>
+  <data name="File successfully renamed." xml:space="preserve">
+    <value>Arquivo renomeado com sucesso.</value>
+  </data>
+  <data name="File successfully deleted." xml:space="preserve">
+    <value>Arquivo deletado com sucesso.</value>
+  </data>
 </root>
