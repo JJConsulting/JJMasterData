@@ -381,7 +381,6 @@ public class JJFormView : AsyncComponent
         Logger = logger;
         DataDictionaryRepository = dataDictionaryRepository;
         ComponentFactory = componentFactory;
-        formService.EnableErrorLinks = true;
     }
 
     #endregion

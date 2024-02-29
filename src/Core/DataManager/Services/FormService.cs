@@ -33,8 +33,7 @@ public class FormService(
     private AuditLogService AuditLogService { get; } = auditLogService;
     private IStringLocalizer<MasterDataResources> Localizer { get; } = localizer;
     private ILogger<FormService> Logger { get; } = logger;
-
-    public bool EnableErrorLinks { get; set; }
+    
     #endregion
 
     #region Events
@@ -59,7 +58,8 @@ public class FormService(
     /// <param name="dataContext"></param>
     public async Task<FormLetter> UpdateAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext)
     {
-        var errors =  FieldValidationService.ValidateFields(formElement, values, PageState.Update, EnableErrorLinks);
+        var isForm = dataContext.Source is DataContextSource.Form;
+        var errors =  FieldValidationService.ValidateFields(formElement, values, PageState.Update, isForm);
         var result = new FormLetter(errors);
 
         if (OnBeforeUpdateAsync != null)
@@ -106,9 +106,10 @@ public class FormService(
 
     public async Task<FormLetter> InsertAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext, bool validateFields = true)
     {
+        var isForm = dataContext.Source is DataContextSource.Form;
         Dictionary<string, string> errors;
         if (validateFields)
-            errors = FieldValidationService.ValidateFields(formElement, values, PageState.Insert, EnableErrorLinks);
+            errors = FieldValidationService.ValidateFields(formElement, values, PageState.Insert, isForm);
         else
             errors = new Dictionary<string, string>();
 
@@ -160,7 +161,8 @@ public class FormService(
     /// <param name="dataContext"></param>
     public async Task<FormLetter<CommandOperation>> InsertOrReplaceAsync(FormElement formElement, Dictionary<string, object> values, DataContext dataContext)
     {
-        var errors = FieldValidationService.ValidateFields(formElement, values, PageState.Import, EnableErrorLinks);
+        var isForm = dataContext.Source is DataContextSource.Form;
+        var errors = FieldValidationService.ValidateFields(formElement, values, PageState.Import, isForm);
         var result = new FormLetter<CommandOperation>(errors);
 
         if (OnBeforeImportAsync != null)
