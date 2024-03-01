@@ -35,11 +35,13 @@ public class DataPanelExampleController : Controller
     {
         var dataPanel = await GetDataPanel();
 
+        // You can remove these two lines if you are at PageState.Insert.
         int id = 1;
         await dataPanel.LoadValuesFromPkAsync(id);
+
         var result = await dataPanel.GetResultAsync();
         
-        /// Here we intercept any async POST request, like pagination and search boxes.
+        /// Here we intercept any async POST request, like the form reload.
         if (result is IActionResult actionResult)
             return actionResult;
         
@@ -51,8 +53,8 @@ public class DataPanelExampleController : Controller
 
     private async Task<JJDataPanel> GetDataPanel()
     {
-        var dataPanel = await _componentFactory.DataPanel.CreateAsync("Test");
-        dataPanel.PageState = PageState.Update;
+        var dataPanel = await _componentFactory.DataPanel.CreateAsync("MyElementName");
+        dataPanel.PageState = PageState.Update; // You can change here to PageState.Insert if you want.
         return dataPanel;
     }
 
