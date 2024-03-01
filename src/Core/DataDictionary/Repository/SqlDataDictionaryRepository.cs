@@ -22,8 +22,8 @@ public class SqlDataDictionaryRepository(
     IOptionsSnapshot<MasterDataCoreOptions> options)
     : IDataDictionaryRepository
 {
-    private IMemoryCache MemoryCache { get; } = memoryCache;
-    internal Element MasterDataElement { get; } = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
+
+    private Element MasterDataElement { get; } = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
 
     public async Task<List<FormElement>> GetFormElementListAsync(bool? apiSync = null)
     {
@@ -64,7 +64,7 @@ public class SqlDataDictionaryRepository(
 
     public FormElement? GetFormElement(string elementName)
     {
-        if (MemoryCache.TryGetValue(elementName, out FormElement? formElement))
+        if (memoryCache.TryGetValue(elementName, out FormElement? formElement))
             return formElement;
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
@@ -76,7 +76,7 @@ public class SqlDataDictionaryRepository(
         if (model != null)
         {
             formElement = FormElementSerializer.Deserialize(model.Json);
-            MemoryCache.Set(elementName, formElement);
+            memoryCache.Set(elementName, formElement);
             return formElement;
         }
 
@@ -85,7 +85,7 @@ public class SqlDataDictionaryRepository(
 
     public async Task<FormElement?> GetFormElementAsync(string elementName)
     {
-        if (MemoryCache.TryGetValue(elementName, out FormElement formElement))
+        if (memoryCache.TryGetValue(elementName, out FormElement formElement))
             return formElement;
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
@@ -97,7 +97,7 @@ public class SqlDataDictionaryRepository(
         if (model != null)
         {
             formElement = FormElementSerializer.Deserialize(model.Json);
-            MemoryCache.Set(elementName, formElement);
+            memoryCache.Set(elementName, formElement);
             return formElement;
         }
 
@@ -111,7 +111,7 @@ public class SqlDataDictionaryRepository(
 
         await entityRepository.SetValuesAsync(MasterDataElement, values);
 
-        MemoryCache.Remove(formElement.Name);
+        memoryCache.Remove(formElement.Name);
     }
 
     public void InsertOrReplace(FormElement formElement)
@@ -120,7 +120,7 @@ public class SqlDataDictionaryRepository(
 
         entityRepository.SetValues(MasterDataElement, values);
         
-        MemoryCache.Remove(formElement.Name);
+        memoryCache.Remove(formElement.Name);
     }
 
     private static Dictionary<string, object?> GetFormElementDictionary(FormElement formElement)
@@ -164,7 +164,7 @@ public class SqlDataDictionaryRepository(
 
         await entityRepository.DeleteAsync(MasterDataElement, filters);
         
-        MemoryCache.Remove(elementName);
+        memoryCache.Remove(elementName);
     }
 
 
