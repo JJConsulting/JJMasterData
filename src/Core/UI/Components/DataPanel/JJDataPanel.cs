@@ -274,7 +274,8 @@ public class JJDataPanel : AsyncComponent
         var mergedValues = await FormValuesService.GetFormValuesWithMergedValuesAsync(FormElement, formStateData, AutoReloadFormFields, FieldNamePrefix);
         
         DataHelper.CopyIntoDictionary(Values, mergedValues, true);
-
+        DataHelper.RemoveNullValues(Values);
+        
         return Values;
     }
 #if NETFRAMEWORK

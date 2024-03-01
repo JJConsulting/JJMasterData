@@ -224,4 +224,23 @@ public static class DataHelper
         }
     }
 
+    public static void RemoveNullValues(Dictionary<string, object?>? values)
+    {
+        if (values == null || !values.Any())
+            return;
+
+        var keysToRemove = new List<string>();
+        foreach (var pair in values)
+        {
+            if (pair.Value == null)
+                keysToRemove.Add(pair.Key);
+        }
+
+        foreach (var key in keysToRemove)
+        {
+            values.Remove(key);
+        }
+    }
+    
+    
 }

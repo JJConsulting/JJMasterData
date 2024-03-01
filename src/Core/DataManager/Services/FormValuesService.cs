@@ -101,7 +101,7 @@ public class FormValuesService(
         if (parsedValue is not null)
             values.Add(field.Name, parsedValue);
         else if (value == string.Empty)
-            values.Add(field.Name, DBNull.Value);
+            values.Add(field.Name, null);
     }
 
     internal static object? HandleCurrencyComponent(FormElementField field, string? value)
