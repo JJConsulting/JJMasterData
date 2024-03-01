@@ -15,9 +15,9 @@ public class CpfResult
     [JsonProperty("Comprovante_Emitido")]
     public required string ComprovanteEmitido { get; set; }
     
-    public Dictionary<string, object?> ToDictionary()
+    public Dictionary<string, object> ToDictionary()
     {
-        return new Dictionary<string, object?>
+        return new Dictionary<string, object>
         {
             { nameof(NomeDaPf), NomeDaPf },
             { nameof(SituacaoCadastral), SituacaoCadastral },

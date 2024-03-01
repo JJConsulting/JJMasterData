@@ -44,7 +44,7 @@ public class MasterApiControllerTest
     [InlineData("[{\"Id\":1, \"Name\":\"new_string\",\"Age\":100}]", "ApiTestDictionary", true)]
     public async Task PostTest(string parametersString, string elementName, bool replace)
     {
-        var parameterList = JsonConvert.DeserializeObject<Dictionary<string, object?>[]>(parametersString);
+        var parameterList = JsonConvert.DeserializeObject<Dictionary<string, object>[]>(parametersString);
 
         if (parameterList == null) 
             return;

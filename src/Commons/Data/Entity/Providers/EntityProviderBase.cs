@@ -30,13 +30,13 @@ public abstract class EntityProviderBase(
     public abstract string? GetReadProcedureScript(Element element);
     public abstract string GetAlterTableScript(Element element, IEnumerable<ElementField> addedFields);
     public abstract Task<Element> GetElementFromTableAsync(string tableName);
-    public abstract DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values);
-    public abstract DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values);
+    public abstract DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object> values);
+    public abstract DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object> values);
     public abstract DataAccessCommand GetDeleteCommand(Element element, Dictionary<string,object> primaryKeys);
     public abstract DataAccessCommand GetReadCommand(Element element, EntityParameters parameters, DataAccessParameter totalOfRecordsParameter);
-    protected abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values);
+    protected abstract DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object> values);
     
-    public async Task InsertAsync(Element element, Dictionary<string,object?> values)
+    public async Task InsertAsync(Element element, Dictionary<string, object> values)
     {
         var command = GetInsertCommand(element, values);
         var newFields = await DataAccess.GetDictionaryAsync(command);
@@ -47,10 +47,10 @@ public abstract class EntityProviderBase(
         }
     }
     
-    public  void Insert(Element element, Dictionary<string,object?> values)
+    public  void Insert(Element element, Dictionary<string, object> values)
     {
         var command = GetInsertCommand(element, values);
-        var newFields =  DataAccess.GetDictionary(command) ?? new Dictionary<string, object?>();
+        var newFields =  DataAccess.GetDictionary(command) ?? new Dictionary<string, object>();
 
         foreach (var entry in newFields.Where(entry => element.Fields.ContainsKey(entry.Key)))
         {
@@ -58,21 +58,21 @@ public abstract class EntityProviderBase(
         }
     }
     
-    public int Update(Element element, Dictionary<string, object?> values)
+    public int Update(Element element, Dictionary<string, object> values)
     {
         var cmd = GetUpdateCommand(element, values);
         int numberRowsAffected = DataAccess.SetCommand(cmd);
         return numberRowsAffected;
     }
     
-    public async Task<int> UpdateAsync(Element element, Dictionary<string,object?> values)
+    public async Task<int> UpdateAsync(Element element, Dictionary<string, object> values)
     {
         var cmd = GetUpdateCommand(element, values);
         int numberRowsAffected = await DataAccess.SetCommandAsync(cmd);
         return numberRowsAffected;
     }
     
-    public async Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string,object?> values)
+    public async Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string, object> values)
     {
         const CommandOperation commandType = CommandOperation.None;
         var command = GetInsertOrReplaceCommand(element, values);
@@ -81,7 +81,7 @@ public abstract class EntityProviderBase(
         return GetCommandOperation(element, values, command, commandType, newFields);
     }
     
-    public CommandOperation SetValues(Element element, Dictionary<string, object?> values, bool ignoreResults)
+    public CommandOperation SetValues(Element element, Dictionary<string, object> values, bool ignoreResults)
     {
         const CommandOperation commandType = CommandOperation.None;
         var command = GetInsertOrReplaceCommand(element, values);
@@ -90,8 +90,8 @@ public abstract class EntityProviderBase(
         return GetCommandOperation(element, values, command, commandType, newFields);
     }
     
-    private static CommandOperation GetCommandOperation(Element element, Dictionary<string,object?> values, DataAccessCommand command,
-        CommandOperation commandType, Dictionary<string, object?>? newFields)
+    private static CommandOperation GetCommandOperation(Element element, Dictionary<string, object> values, DataAccessCommand command,
+        CommandOperation commandType, Dictionary<string, object>? newFields)
     {
         var resultParameter = command.Parameters.ToList().First(x => x.Name.Equals("@RET"));
 
@@ -119,7 +119,7 @@ public abstract class EntityProviderBase(
         return commandType;
     }
     
-    public Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string,object?> values, bool ignoreResults)
+    public Task<CommandOperation> SetValuesAsync(Element element, Dictionary<string, object> values, bool ignoreResults)
     {
         if (ignoreResults)
             return SetValuesNoResultAsync(element, values);
@@ -242,7 +242,7 @@ public abstract class EntityProviderBase(
         return true;
     }
     
-    private async Task<CommandOperation> SetValuesNoResultAsync(Element element, Dictionary<string,object?> values)
+    private async Task<CommandOperation> SetValuesNoResultAsync(Element element, Dictionary<string, object> values)
     {
         const CommandOperation result = CommandOperation.None;
         var command = GetInsertOrReplaceCommand(element, values);

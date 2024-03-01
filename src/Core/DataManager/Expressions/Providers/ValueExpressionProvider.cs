@@ -10,7 +10,7 @@ public class ValueExpressionProvider : IAsyncExpressionProvider, ISyncExpression
     public string Prefix => "val";
     public string Title => "Value";
 
-    public object Evaluate(string expression, Dictionary<string, object?> parsedValues)
+    public object Evaluate(string expression, Dictionary<string, object> parsedValues)
     {
         if (expression.Contains(ExpressionHelper.Begin.ToString()))
             return ExpressionHelper.ReplaceExpression(expression, parsedValues).Trim();
@@ -18,6 +18,6 @@ public class ValueExpressionProvider : IAsyncExpressionProvider, ISyncExpression
         return expression.Trim();
     }
 
-    public Task<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues)
+    public Task<object?> EvaluateAsync(string expression, Dictionary<string, object> parsedValues)
         => Task.FromResult<object?>(Evaluate(expression, parsedValues));
 }

@@ -11,17 +11,17 @@ namespace JJMasterData.Commons.Util;
 public static class EnumerableHelper
 {
     
-    public static List<Dictionary<string, object?>> ConvertToDictionaryList(DataTable dataTable)
+    public static List<Dictionary<string, object>> ConvertToDictionaryList(DataTable dataTable)
     {
-        var list = new List<Dictionary<string, object?>>();
+        var list = new List<Dictionary<string, object>>();
 
         foreach (DataRow row in dataTable.Rows)
         {
-            var dict = new Dictionary<string, object?>();
+            var dict = new Dictionary<string, object>();
 
             foreach (DataColumn col in dataTable.Columns)
             {
-                dict[col.ColumnName] = row.IsNull(col) ? null : row[col];
+                dict[col.ColumnName] = row.IsNull(col) ? DBNull.Value : row[col];
             }
 
             list.Add(dict);
@@ -30,7 +30,7 @@ public static class EnumerableHelper
         return list;
     }
     
-    public static DataTable ConvertToDataTable(Element element, IList<Dictionary<string, object?>> data)
+    public static DataTable ConvertToDataTable(Element element, IList<Dictionary<string, object>> data)
     {
         if (data == null || data.Count == 0)
             throw new ArgumentException("Data cannot be null or empty.");

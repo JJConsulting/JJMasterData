@@ -13,7 +13,7 @@ public class GridDataLoadEventArgs : EventArgs
     /// <summary>
     /// Filters sended to the IEntityRepository
     /// </summary>
-    public required Dictionary<string, object?> Filters { get; init; }
+    public required Dictionary<string, object> Filters { get; init; }
     
     public OrderByData? OrderBy { get; init; }
     
@@ -26,5 +26,5 @@ public class GridDataLoadEventArgs : EventArgs
     /// </summary>
     public int TotalOfRecords { get; set; }
     
-    public List<Dictionary<string,object?>>? DataSource { get; set; }
+    public List<Dictionary<string, object>>? DataSource { get; set; }
 }

@@ -16,7 +16,7 @@ public partial class DataAccess
         CancellationToken cancellationToken = default)
     {
         var fields = await GetDictionaryAsync(cmd, cancellationToken);
-        return (fields as Dictionary<string,object?>).ToModel<T>(serializerSettings);
+        return (fields as Dictionary<string, object>).ToModel<T>(serializerSettings);
     }
 
     public IList<T>? GetModelList<T>(DataAccessCommand cmd, JsonSerializerSettings? serializerSettings = null)

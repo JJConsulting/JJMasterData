@@ -11,7 +11,7 @@ public class ExpressionHelperTests
     [InlineData("exp: {PRICE} - {RANGE}", "{\"PRICE\": null, \"RANGE\": 0.01}","exp:  - 0.01")]
     public void Expression_Replace_Test(string expression, string parsedValuesJson, string expected)
     {
-        var parsedValues = JsonConvert.DeserializeObject<Dictionary<string, object?>>(parsedValuesJson)!;
+        var parsedValues = JsonConvert.DeserializeObject<Dictionary<string, object>>(parsedValuesJson)!;
 
         var parsedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
      

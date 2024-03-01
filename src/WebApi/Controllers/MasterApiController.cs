@@ -39,19 +39,19 @@ public class MasterApiController(MasterApiService service) : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<ResponseLetter>> Post([FromBody] Dictionary<string, object?>[] listParam, string elementName, bool replace = false)
+    public async Task<ActionResult<ResponseLetter>> Post([FromBody] Dictionary<string, object>[] listParam, string elementName, bool replace = false)
     {
         return GetResponseMessage(await service.SetFieldsAsync(listParam, elementName, replace).ToListAsync());
     }
     
     [HttpPut]
-    public async Task<ActionResult<ResponseLetter>> Put([FromBody] Dictionary<string, object?>[] listParam, string elementName)
+    public async Task<ActionResult<ResponseLetter>> Put([FromBody] Dictionary<string, object>[] listParam, string elementName)
     {
         return GetResponseMessage(await service.UpdateFieldsAsync(listParam, elementName).ToListAsync());
     }
     
     [HttpPatch]
-    public async Task<ActionResult<ResponseLetter>> Patch([FromBody] Dictionary<string, object?>[] listParam, string elementName)
+    public async Task<ActionResult<ResponseLetter>> Patch([FromBody] Dictionary<string, object>[] listParam, string elementName)
     {
         return GetResponseMessage(await service.UpdatePartAsync(listParam, elementName).ToListAsync());
     }

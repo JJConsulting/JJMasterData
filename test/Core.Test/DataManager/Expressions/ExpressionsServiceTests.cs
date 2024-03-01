@@ -44,7 +44,7 @@ public class ExpressionsServiceTests
         // Arrange
         var field = new ElementField { DefaultValue = "example:sampleExpression" };
 
-        var values = new Dictionary<string, object?>();
+        var values = new Dictionary<string, object>();
         
         var formStateData = new FormStateData(
             values, 
@@ -67,7 +67,7 @@ public class ExpressionsServiceTests
     {
         // Arrange
         var expression = "bool_example:sampleExpression";
-        var values = new Dictionary<string, object?>();
+        var values = new Dictionary<string, object>();
         
         var formStateData = new FormStateData(
             values, 
@@ -92,9 +92,9 @@ public class ExpressionsServiceTests
     {
         // Arrange
         var field = new FormElementField { TriggerExpression = "example:sampleExpression" };
-        var values = new Dictionary<string, object?>();
+        var values = new Dictionary<string, object>();
         var formStateData = new FormStateData(
-            new Dictionary<string, object?>(), 
+            new Dictionary<string, object>(), 
             values,
             new PageState()
         );

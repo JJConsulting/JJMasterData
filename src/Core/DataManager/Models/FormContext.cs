@@ -5,18 +5,18 @@ using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.Models;
 
-internal class FormContext(Dictionary<string, object?> values, Dictionary<string, string> errors, PageState pageState)
+internal class FormContext(Dictionary<string, object> values, Dictionary<string, string> errors, PageState pageState)
 {
-    public FormContext(Dictionary<string, object?> values, PageState pageState)
+    public FormContext(Dictionary<string, object> values, PageState pageState)
         : this(values, new Dictionary<string, string>(), pageState)
     {
     }
 
-    public Dictionary<string, object?> Values { get; } = values;
+    public Dictionary<string, object> Values { get; } = values;
     public Dictionary<string, string> Errors { get; } = errors;
     public PageState PageState { get; } = pageState;
 
-    public void Deconstruct(out Dictionary<string, object?> values, out Dictionary<string, string> errors,
+    public void Deconstruct(out Dictionary<string, object> values, out Dictionary<string, string> errors,
         out PageState pageState)
     {
         values = Values;

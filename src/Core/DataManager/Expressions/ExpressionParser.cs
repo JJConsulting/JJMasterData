@@ -17,11 +17,11 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
     private IHttpRequest Request => HttpContext.Request;
     private IHttpSession Session => HttpContext.Session;
 
-    public Dictionary<string, object?> ParseExpression(
+    public Dictionary<string, object> ParseExpression(
         string? expression,
         FormStateData formStateData)
     {
-        var result = new Dictionary<string, object?>();
+        var result = new Dictionary<string, object>();
 
         if (expression is null)
             return result;
@@ -38,10 +38,10 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
         return result;
     }
 
-    private object? GetParsedValue(string field, FormStateData formStateData)
+    private object GetParsedValue(string field, FormStateData formStateData)
     {
         var loweredFieldName = field.ToLower();
-        object? parsedValue;
+        object parsedValue;
             
         var (values, userValues, pageState) = formStateData;
             
@@ -75,7 +75,8 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
                 parsedValue = $"{Request.QueryString["fieldName"]}";
                 break;
             case "userid":
-                parsedValue = DataHelper.GetCurrentUserId(HttpContext, userValues!);
+                var userId = DataHelper.GetCurrentUserId(HttpContext, userValues!); 
+                parsedValue = userId ?? string.Empty;
                 break;
             default:
             {
@@ -88,7 +89,7 @@ public class ExpressionParser(IHttpContext httpContext, ILogger<ExpressionParser
                     if (objValue is bool boolValue)
                         parsedValue = boolValue ? "1" : "0";
                     else
-                        parsedValue = objValue;
+                        parsedValue = objValue ?? string.Empty;
                 }
                 
                 else if (Session.HasSession() && Session[field] != null)

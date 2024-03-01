@@ -18,8 +18,8 @@ public class ExpressionParserTests
         // Act
         var result = parser.ParseExpression(null, new FormStateData()
         {
-            Values = new Dictionary<string, object?>(),
-            UserValues = new Dictionary<string, object?>(),
+            Values = new Dictionary<string, object>(),
+            UserValues = new Dictionary<string, object>(),
             PageState = PageState.List
         });
 
@@ -32,8 +32,8 @@ public class ExpressionParserTests
     {
         // Arrange
         var httpContext = MockHttpContext();
-        var userValues = new Dictionary<string, object?> { { "Name", "Gustavo" } };
-        var formStateData = new FormStateData { UserValues = userValues,  Values = new Dictionary<string, object?>(), PageState = PageState.List };
+        var userValues = new Dictionary<string, object> { { "Name", "Gustavo" } };
+        var formStateData = new FormStateData { UserValues = userValues,  Values = new Dictionary<string, object>(), PageState = PageState.List };
         var parser = new ExpressionParser(httpContext, MockLogger());
 
         // Act
@@ -54,8 +54,8 @@ public class ExpressionParserTests
         // Act
         var result = parser.ParseExpression("{UnknownField}", new FormStateData()
         {
-            Values = new Dictionary<string, object?>(),
-            UserValues = new Dictionary<string, object?>(),
+            Values = new Dictionary<string, object>(),
+            UserValues = new Dictionary<string, object>(),
             PageState = PageState.List
         });
 

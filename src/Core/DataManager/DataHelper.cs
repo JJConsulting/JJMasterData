@@ -23,9 +23,9 @@ public static class DataHelper
         return context.User.Identity?.Name;
     }
 
-    public static Dictionary<string, object?> GetElementValues(Element element, Dictionary<string, object?> values)
+    public static Dictionary<string, object> GetElementValues(Element element, Dictionary<string, object> values)
     {
-        var elementValues = new Dictionary<string, object?>();
+        var elementValues = new Dictionary<string, object>();
 
         foreach (var entry in values)
         {
@@ -38,14 +38,14 @@ public static class DataHelper
         return elementValues;
     }
     
-    public static bool ContainsPkValues(Element element, Dictionary<string, object?> values)
+    public static bool ContainsPkValues(Element element, Dictionary<string, object> values)
     {
         var elementPks = GetElementPrimaryKeys(element);
 
         return elementPks.Count != 0 && elementPks.All(field => values.ContainsKey(field.Name));
     }
 
-    public static Dictionary<string, object> GetPkValues(Element element, Dictionary<string, object?> values)
+    public static Dictionary<string, object> GetPkValues(Element element, Dictionary<string, object> values)
     {
         if (element == null)
             throw new ArgumentNullException(nameof(element));
@@ -106,7 +106,7 @@ public static class DataHelper
     }
     
     
-    public static Dictionary<string, object> GetRelationValues(Element element, Dictionary<string, object?> values, bool usePkColumnName = false)
+    public static Dictionary<string, object> GetRelationValues(Element element, Dictionary<string, object> values, bool usePkColumnName = false)
     {
         var foreignKeys = new Dictionary<string, object>();
         var relationships = element.Relationships;
@@ -132,7 +132,7 @@ public static class DataHelper
     /// <summary>
     /// Concat primary keys with separator characters
     /// </summary>
-    public static string ParsePkValues(FormElement formElement, Dictionary<string, object?> formValues, char separator)
+    public static string ParsePkValues(FormElement formElement, Dictionary<string, object> formValues, char separator)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -189,12 +189,12 @@ public static class DataHelper
     /// Preserves the original name of the field as registered in the dictionary
     /// and validates if the field exists
     /// </summary>
-    public static Dictionary<string, object?>? ParseOriginalName(FormElement formElement, Dictionary<string, object?>? paramValues)
+    public static Dictionary<string, object>? ParseOriginalName(FormElement formElement, Dictionary<string, object>? paramValues)
     {
         if (paramValues == null)
             return null;
 
-        var filters = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var filters = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entry in paramValues)
         {
             var field = formElement.Fields[entry.Key];
@@ -205,7 +205,7 @@ public static class DataHelper
         return filters;
     }
 
-    public static void CopyIntoDictionary(Dictionary<string, object?> valuesToBeReceived, Dictionary<string, object?>? valuesToBeCopied, bool replaceIfKeyExists = false)
+    public static void CopyIntoDictionary(Dictionary<string, object> valuesToBeReceived, Dictionary<string, object>? valuesToBeCopied, bool replaceIfKeyExists = false)
     {
         if (valuesToBeCopied == null || !valuesToBeCopied.Any())
             return;

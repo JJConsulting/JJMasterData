@@ -219,14 +219,14 @@ public partial class DataAccess
     }
     
     /// <inheritdoc cref="GetHashtable(string)"/>
-    public Task<Dictionary<string,object?>> GetDictionaryAsync(string sql, CancellationToken cancellationToken = default) =>
+    public Task<Dictionary<string, object>> GetDictionaryAsync(string sql, CancellationToken cancellationToken = default) =>
         GetDictionaryAsync(new DataAccessCommand(sql), cancellationToken);
     
     
     /// <inheritdoc cref="GetHashtable"/>
-    public async Task<Dictionary<string,object?>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+    public async Task<Dictionary<string, object>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
     {
-        var result = new Dictionary<string, object?>();
+        var result = new Dictionary<string, object>();
         try
         {
 #if NET
@@ -276,9 +276,9 @@ public partial class DataAccess
         return result;
     }
 
-    public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
+    public async Task<List<Dictionary<string, object>>> GetDictionaryListAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
-        var dictionaryList = new List<Dictionary<string, object?>>();
+        var dictionaryList = new List<Dictionary<string, object>>();
 
         try
         {
@@ -304,11 +304,12 @@ public partial class DataAccess
 
                     while (await dataReader.ReadAsync(cancellationToken))
                     {
-                        var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+                        var dictionary = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
                         foreach (var columnName in columnNames)
                         {
+                            int index = dataReader.GetOrdinal(columnName); 
                             var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
-                                ? null
+                                ? DBNull.Value
                                 : dataReader.GetValue(dataReader.GetOrdinal(columnName));
                             dictionary[columnName] = value;
                         }

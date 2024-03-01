@@ -104,9 +104,9 @@ public class CnpjResult
     [JsonProperty("Abertura")]
     public required DateTime Abertura { get; set; }
     
-    public Dictionary<string, object?> ToDictionary()
+    public Dictionary<string, object> ToDictionary()
     {
-        var dictionary = new Dictionary<string, object?>
+        var dictionary = new Dictionary<string, object>
         {
             { nameof(Nome), Nome },
             { nameof(Fantasia), Fantasia },

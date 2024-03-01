@@ -22,7 +22,7 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
 
     public async Task<List<FormElement>> GetFormElementListAsync(bool? apiSync = null)
     {
-        var filters = new Dictionary<string, object?>();
+        var filters = new Dictionary<string, object>();
         if (apiSync.HasValue)
             filters.Add(DataDictionaryStructure.EnableSynchronism, apiSync);
 
@@ -38,7 +38,7 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
         return ParseDictionaryList(result.Data).ToList();
     }
 
-    private static IEnumerable<FormElement> ParseDictionaryList(IEnumerable<Dictionary<string, object?>> result)
+    private static IEnumerable<FormElement> ParseDictionaryList(IEnumerable<Dictionary<string, object>> result)
     {
         foreach (var row in result)
         {
@@ -48,7 +48,7 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
 
     public async Task<List<string>> GetNameListAsync()
     {
-        var filter = new Dictionary<string, object?> { { DataDictionaryStructure.Type, "F" } };
+        var filter = new Dictionary<string, object> { { DataDictionaryStructure.Type, "F" } };
 
         var dt = await entityRepository.GetDictionaryListResultAsync(MasterDataElement,
             new EntityParameters { Filters = filter }, false);
@@ -94,7 +94,7 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
         entityRepository.SetValues(MasterDataElement, values);
     }
 
-    private static Dictionary<string, object?> GetFormElementDictionary(FormElement formElement)
+    private static Dictionary<string, object> GetFormElementDictionary(FormElement formElement)
     {
         if (formElement == null)
             throw new ArgumentNullException(nameof(formElement));
@@ -111,13 +111,13 @@ public class SqlDataDictionaryRepository(IEntityRepository entityRepository, IOp
 
         var jsonForm = FormElementSerializer.Serialize(formElement);
 
-        var values = new Dictionary<string, object?>
+        var values = new Dictionary<string, object>
         {
             { DataDictionaryStructure.Name, name },
             { DataDictionaryStructure.TableName, formElement.TableName },
             { DataDictionaryStructure.Info, formElement.Info },
             { DataDictionaryStructure.Type, "F" },
-            { DataDictionaryStructure.Owner, null },
+            { DataDictionaryStructure.Owner, DBNull.Value },
             { DataDictionaryStructure.Json, jsonForm },
             { DataDictionaryStructure.EnableSynchronism, formElement.EnableSynchronism },
             { DataDictionaryStructure.LastModified, dNow }

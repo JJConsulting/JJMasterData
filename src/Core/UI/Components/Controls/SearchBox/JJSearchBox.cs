@@ -232,7 +232,7 @@ public class JJSearchBox : ControlBase
         AutoReloadFormFields = true;
         Name = "jjsearchbox1";
         DataItem = new FormElementDataItem();
-        var defaultValues = new Dictionary<string, object?>();
+        var defaultValues = new Dictionary<string, object>();
         FormStateData = new(defaultValues, UserValues, PageState.List);
     }
 

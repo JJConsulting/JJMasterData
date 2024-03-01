@@ -62,7 +62,7 @@ public class JJComboBox : ControlBase
         Enabled = true;
         MultiSelect = false;
         DataItem = new FormElementDataItem();
-        var defaultValues = new Dictionary<string, object?>();
+        var defaultValues = new Dictionary<string, object>();
         FormStateData = new FormStateData(defaultValues, PageState.List);
     }
 

@@ -254,12 +254,12 @@ public class SQLiteProvider(
         throw new NotImplementedException();
     }
 
-    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object?> values)
+    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object> values)
     {
         return GetScriptInsert(element, values, false);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object?> values)
+    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object> values)
     {
         return GetScriptUpdate(element, values);
     }
@@ -269,7 +269,7 @@ public class SQLiteProvider(
         return GetScriptDelete(element, filters);
     }
 
-    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object?> values)
+    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object> values)
     {
         return GetScriptInsert(element, values, true);
     }
@@ -339,7 +339,7 @@ public class SQLiteProvider(
         return command;
     }
 
-    private DataAccessCommand GetScriptInsert(Element element, Dictionary<string, object?> values, bool isReplace)
+    private DataAccessCommand GetScriptInsert(Element element, Dictionary<string, object> values, bool isReplace)
     {
         var fields = element.Fields
             .ToList()
@@ -402,7 +402,7 @@ public class SQLiteProvider(
         return cmd;
     }
 
-    private DataAccessCommand GetScriptUpdate(Element element, Dictionary<string, object?> values)
+    private DataAccessCommand GetScriptUpdate(Element element, Dictionary<string, object> values)
     {
         var fields = element.Fields
             .ToList()
@@ -531,7 +531,7 @@ public class SQLiteProvider(
         return cmd;
     }
 
-    private static object GetElementValue(ElementField f, Dictionary<string, object?> values)
+    private static object GetElementValue(ElementField f, Dictionary<string, object> values)
     {
         if (!values.ContainsKey(f.Name))
             return DBNull.Value;
@@ -577,7 +577,7 @@ public class SQLiteProvider(
     }
 
     // ReSharper disable once UnusedMember.Local
-    private DataAccessCommand GetScriptCount(Element element, Dictionary<string, object?> filters)
+    private DataAccessCommand GetScriptCount(Element element, Dictionary<string, object> filters)
     {
         var fields = element.Fields
             .ToList()

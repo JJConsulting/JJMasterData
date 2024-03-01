@@ -98,7 +98,7 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         return syncInfo;
     }
 
-    private async Task<int> GetCountAsync(Element element, Dictionary<string,object?> filters)
+    private async Task<int> GetCountAsync(Element element, Dictionary<string, object> filters)
     {
         var parameters = new EntityParameters
         {
@@ -109,9 +109,9 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         return result.TotalOfRecords;
     }
     
-    private Dictionary<string,object?> GetSyncInfoFilter(string? userId, FormElement metadata, Hashtable? metadataFilters)
+    private Dictionary<string, object> GetSyncInfoFilter(string? userId, FormElement metadata, Hashtable? metadataFilters)
     {
-        var filters = new Dictionary<string,object?>();
+        var filters = new Dictionary<string, object>();
         var fields = metadata.Fields;
         if (metadataFilters != null)
         {
@@ -120,7 +120,7 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
                 if (!fields.Contains(osFilter.Key.ToString()))
                     continue;
 
-                filters.Add(fields[osFilter.Key.ToString()!].Name, osFilter.Value);
+                filters.Add(fields[osFilter.Key.ToString()!].Name, osFilter.Value ?? string.Empty);
             }
         }
 
@@ -128,9 +128,10 @@ public class DictionariesService(IDataDictionaryRepository dataDictionaryReposit
         
         if (string.IsNullOrEmpty(fieldApplyUser)) 
             return filters;
+        
         if (!filters.ContainsKey(fieldApplyUser))
         {
-            filters.Add(fieldApplyUser, userId);
+            filters.Add(fieldApplyUser, userId ?? string.Empty);
         }
         else
         {

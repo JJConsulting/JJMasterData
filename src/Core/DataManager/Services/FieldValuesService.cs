@@ -25,33 +25,33 @@ public class FieldValuesService(ExpressionsService expressionsService)
     /// <returns>
     /// Returns a new Dictionary with the updated values
     /// </returns>
-    public async Task<Dictionary<string, object?>> MergeWithExpressionValuesAsync(FormElement formElement, FormStateData formStateData, bool replaceNullValues = true)
+    public async Task<Dictionary<string, object>> MergeWithExpressionValuesAsync(FormElement formElement, FormStateData formStateData, bool replaceNullValues = true)
     {
         var formValues = formStateData.Values;
         foreach (var f in formElement.Fields)
         {
             if (formValues.TryGetValue(f.Name, out var value))
             {
-                formValues[f.Name] = ClearSpecialChars(f, value);
+                formValues[f.Name] = ClearSpecialChars(f, value)!;
             }
         }
 
         await ApplyDefaultValues(formElement, formStateData, replaceNullValues);
         await ApplyTriggerValues(formElement, formStateData);
 
-        return new Dictionary<string, object?>(formStateData.Values);
+        return new Dictionary<string, object>(formStateData.Values);
     }
 
-    public async Task<Dictionary<string, object?>> GetDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
+    public async Task<Dictionary<string, object>> GetDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
     {
-        var defaultValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var defaultValues = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         var fieldsWithDefaultValue = formElement.Fields
             .Where(FieldNeedsDefaultValue(formStateData));
         
         foreach (var field in fieldsWithDefaultValue)
         {
             var defaultValue = await ExpressionsService.GetDefaultValueAsync(field, formStateData);
-            if (!string.IsNullOrEmpty(defaultValue?.ToString()))
+            if (defaultValue != null && defaultValue.ToString() != string.Empty)
             {
                 defaultValues.Add(field.Name, defaultValue);
                 DataHelper.CopyIntoDictionary(formStateData.Values, defaultValues);
@@ -67,9 +67,9 @@ public class FieldValuesService(ExpressionsService expressionsService)
                     (!formStateData.Values.ContainsKey(f.Name) || string.IsNullOrEmpty(formStateData.Values[f.Name]?.ToString()));
     }
     
-    public async Task<Dictionary<string, object?>> MergeWithDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
+    public async Task<Dictionary<string, object>> MergeWithDefaultValuesAsync(FormElement formElement,FormStateData formStateData)
     {
-        var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
   
         foreach (var v in formStateData.Values)
             values.Add(v.Key, v.Value);

@@ -46,7 +46,7 @@ public class FormElementInfo
         Modified = modified;
     }
 
-    public static FormElementInfo FromDictionary(Dictionary<string, object?> dictionary)
+    public static FormElementInfo FromDictionary(Dictionary<string, object> dictionary)
     {
         return new FormElementInfo
         {
@@ -58,9 +58,9 @@ public class FormElementInfo
         };
     }
     
-    public Dictionary<string, object?> ToDictionary()
+    public Dictionary<string, object> ToDictionary()
     {
-        return new Dictionary<string, object?>
+        return new Dictionary<string, object>
         {
             { DataDictionaryStructure.Info, Info },
             { DataDictionaryStructure.Type, "F"},

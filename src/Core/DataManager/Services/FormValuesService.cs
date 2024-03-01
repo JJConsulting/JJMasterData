@@ -27,13 +27,13 @@ public class FormValuesService(
     private IEncryptionService EncryptionService { get; } = encryptionService;
     private IFormValues FormValues { get; } = httpRequest.Form;
 
-    private Dictionary<string, object?> GetFormValues(FormElement formElement,
+    private Dictionary<string, object> GetFormValues(FormElement formElement,
         string? fieldPrefix = null)
     {
         if (formElement == null)
             throw new ArgumentException(nameof(FormElement));
 
-        var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var field in formElement.Fields)
         {
             var fieldName = (fieldPrefix ?? string.Empty) + field.Name;
@@ -51,7 +51,7 @@ public class FormValuesService(
         return values;
     }
 
-    internal static void HandleFieldValue(FormElementField field, Dictionary<string, object?> values, string? value)
+    internal static void HandleFieldValue(FormElementField field, Dictionary<string, object> values, string? value)
     {
         object? parsedValue = null;
         switch (field.Component)
@@ -157,7 +157,7 @@ public class FormValuesService(
         return parsedValue;
     }
 
-    public async Task<Dictionary<string, object?>> GetFormValuesWithMergedValuesAsync(
+    public async Task<Dictionary<string, object>> GetFormValuesWithMergedValuesAsync(
         FormElement formElement,
         FormStateData formStateData,
         bool autoReloadFormFields,
@@ -183,7 +183,7 @@ public class FormValuesService(
     }
 
 
-    private async Task<Dictionary<string, object?>> GetDbValues(Element element)
+    private async Task<Dictionary<string, object>> GetDbValues(Element element)
     {
         string encryptedPkValues = FormValues[
             $"data-panel-pk-values-{element.Name}"];
@@ -200,7 +200,7 @@ public class FormValuesService(
         }
 
         if (encryptedPkValues is null)
-            return new Dictionary<string, object?>();
+            return new Dictionary<string, object>();
 
         string pkValues = EncryptionService.DecryptStringWithUrlUnescape(encryptedPkValues)!;
         var filters = DataHelper.GetPkValues(element, pkValues, '|');

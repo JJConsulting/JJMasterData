@@ -156,7 +156,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
                 .ChildElement);
         childFormView.FormElement.ParentName = parentFormView.FormElement.ParentName ?? parentFormView.FormElement.Name;
 
-        var filter = new Dictionary<string, object?>();
+        var filter = new Dictionary<string, object>();
         foreach (var col in relationship.ElementRelationship.Columns.Where(col =>
                      formContext.Values.ContainsKey(col.PkColumn)))
         {
@@ -184,7 +184,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
     private async Task<ComponentResult> ConfigureOneToManyFormView
     (   JJFormView childFormView,
         FormElementRelationship relationship,
-        Dictionary<string, object?> filter)
+        Dictionary<string, object> filter)
     {
         childFormView.ShowTitle = false;
         childFormView.UserValues = new Dictionary<string, object>(parentFormView.UserValues);
@@ -208,9 +208,9 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
     }
 
     private async Task<ComponentResult> ConfigureOneToOneFormView(JJFormView childFormView,
-        FormElementRelationship relationship, Dictionary<string, object?> filter)
+        FormElementRelationship relationship, Dictionary<string, object> filter)
     {
-        Dictionary<string, object?>? childValues = null;
+        Dictionary<string, object>? childValues = null;
         if (filter.Any())
         {
             childValues =

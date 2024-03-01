@@ -8,7 +8,7 @@ public class DictionaryExtensionsTest
     [Fact]
     public void ToModel_Test()
     {
-        var dictionary = new Dictionary<string,object?>
+        var dictionary = new Dictionary<string, object>
         {
             { "Name", "Test" },
             { "Sync", true }

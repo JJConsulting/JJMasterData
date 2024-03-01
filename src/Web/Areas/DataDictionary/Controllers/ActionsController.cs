@@ -333,7 +333,7 @@ public class ActionsController(ActionsService actionsService,
         return EditActionResult(elementName, pluginFieldAction, context, isActionSave, originalName, fieldName);
     }
 
-    private void SetPluginConfigurationMap(Dictionary<string, object?> configurationMap,
+    private void SetPluginConfigurationMap(Dictionary<string, object> configurationMap,
         Guid pluginId)
     {
         var pluginHandler = pluginHandlers.First(p => p.Id == pluginId);

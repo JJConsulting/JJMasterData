@@ -39,9 +39,9 @@ internal class DataPanelControl
 
     public PageState PageState => FormStateData.PageState;
 
-    public Dictionary<string, object?>? UserValues => FormStateData.UserValues;
+    public Dictionary<string, object>? UserValues => FormStateData.UserValues;
 
-    public Dictionary<string, object?> Values => FormStateData.Values;
+    public Dictionary<string, object> Values => FormStateData.Values;
 
     public FormStateData FormStateData { get; }
 
@@ -68,7 +68,7 @@ internal class DataPanelControl
         FormStateData = new FormStateData(dataPanel.Values, dataPanel.UserValues, dataPanel.PageState);
     }
 
-    public DataPanelControl(JJGridView gridView, Dictionary<string, object?> values)
+    public DataPanelControl(JJGridView gridView, Dictionary<string, object> values)
     {
         ParentComponentName = gridView.ParentComponentName ?? gridView.Name;
         FormElement = gridView.FormElement;

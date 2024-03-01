@@ -85,9 +85,9 @@ public class JJGridView : AsyncComponent
     private ExportOptions? _currentExportConfig;
     private GridFilter? _filter;
     private GridTable? _table;
-    private IList<Dictionary<string,object?>>? _dataSource;
+    private IList<Dictionary<string, object>>? _dataSource;
     private List<FormElementField>? _pkFields;
-    private Dictionary<string, object?>? _defaultValues;
+    private Dictionary<string, object>? _defaultValues;
     private FormStateData? _formStateData;
     private ActionMap? _currentActionMap;
     private JJDataImportation? _dataImportation;
@@ -184,7 +184,7 @@ public class JJGridView : AsyncComponent
     /// <para/>2) If the DataSource property is null, try to execute the OnDataLoad action;
     /// <para/>3) If the OnDataLoad action is not implemented, try to retrieve
     /// Using the stored procedure informed in the FormElement;
-    public IList<Dictionary<string,object?>>? DataSource
+    public IList<Dictionary<string, object>>? DataSource
     {
         get => _dataSource;
         set
@@ -701,7 +701,7 @@ public class JJGridView : AsyncComponent
         return html;
     }
 
-    public Task<Dictionary<string, object?>> GetCurrentFilterAsync()
+    public Task<Dictionary<string, object>> GetCurrentFilterAsync()
     {
         return Filter.GetCurrentFilterAsync();
     }
@@ -810,7 +810,7 @@ public class JJGridView : AsyncComponent
         var row = DataSource?[rowIndex];
 
         string result = string.Empty;
-        await foreach (var builder in Table.Body.GetTdHtmlList(row ?? new Dictionary<string, object?>(), rowIndex))
+        await foreach (var builder in Table.Body.GetTdHtmlList(row ?? new Dictionary<string, object>(), rowIndex))
             result = result + builder;
         
         return result;
@@ -888,15 +888,15 @@ public class JJGridView : AsyncComponent
         return alert.GetHtmlBuilder();
     }
 
-    internal async Task<Dictionary<string, object?>> GetDefaultValuesAsync() => _defaultValues ??=
-        await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(),UserValues, PageState.List));
+    internal async Task<Dictionary<string, object>> GetDefaultValuesAsync() => _defaultValues ??=
+        await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object>(),UserValues, PageState.List));
 
     internal async Task<FormStateData> GetFormStateDataAsync()
     {
         if (_formStateData == null)
         {
-            var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object?>(RelationValues!),UserValues, PageState.List));
-            var userValues = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+            var defaultValues = await FieldsService.GetDefaultValuesAsync(FormElement, new FormStateData(new Dictionary<string, object>(RelationValues!),UserValues, PageState.List));
+            var userValues = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
             DataHelper.CopyIntoDictionary(userValues, RelationValues!, true);
             DataHelper.CopyIntoDictionary(userValues, UserValues);
@@ -977,7 +977,7 @@ public class JJGridView : AsyncComponent
         return await legend.GetHtmlBuilderAsync();
     }
 
-    internal string GetFieldName(string fieldName, Dictionary<string, object?> row)
+    internal string GetFieldName(string fieldName, Dictionary<string, object> row)
     {
         string name = "";
         foreach (var fpk in PrimaryKeyFields)
@@ -1076,7 +1076,7 @@ public class JJGridView : AsyncComponent
         DataExportation.ExportFileInBackground(await GetCurrentFilterAsync(), CurrentOrder);
     }
     
-    public async Task<IList<Dictionary<string,object?>>?> GetDictionaryListAsync()
+    public async Task<IList<Dictionary<string, object>>?> GetDictionaryListAsync()
     {
         await SetDataSource();
 
@@ -1152,7 +1152,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the <see cref="EnableEditMode"/> property
     /// </remarks>
-    public async Task<List<Dictionary<string, object?>>?> GetGridValuesAsync(int recordsPerPage, int currentPage)
+    public async Task<List<Dictionary<string, object>>?> GetGridValuesAsync(int recordsPerPage, int currentPage)
     {
         var result = await GetDataSourceAsync(new EntityParameters
         {
@@ -1168,7 +1168,7 @@ public class JJGridView : AsyncComponent
     /// <remarks>
     /// Used with the EnableEditMode property
     /// </remarks>
-    public async Task<List<Dictionary<string, object?>>?> GetGridValuesAsync(IList<Dictionary<string,object?>>? loadedData = null)
+    public async Task<List<Dictionary<string, object>>?> GetGridValuesAsync(IList<Dictionary<string, object>>? loadedData = null)
     {
         if (loadedData == null)
         {
@@ -1177,7 +1177,7 @@ public class JJGridView : AsyncComponent
                 return null;
         }
 
-        var gridValues = new List<Dictionary<string, object?>>();
+        var gridValues = new List<Dictionary<string, object>>();
         foreach (var row in loadedData)
         {
             string fieldName = GetFieldName("", row);
@@ -1260,7 +1260,7 @@ public class JJGridView : AsyncComponent
     /// Key = Field name
     /// Value = Message
     /// </returns>
-    public Dictionary<string, string> ValidateGridFields(List<Dictionary<string, object?>> values)
+    public Dictionary<string, string> ValidateGridFields(List<Dictionary<string, object>> values)
     {
         if (values == null)
             throw new ArgumentNullException(nameof(values));

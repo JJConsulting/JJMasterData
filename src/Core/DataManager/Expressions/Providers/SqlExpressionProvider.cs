@@ -15,7 +15,7 @@ public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncE
     public string Prefix => "sql";
     public string Title => "SQL";
     
-    public async Task<object?> EvaluateAsync(string expression, Dictionary<string,object?> parsedValues)
+    public async Task<object?> EvaluateAsync(string expression, Dictionary<string, object> parsedValues)
     {
         var command = GetParsedDataAccessCommand(expression, parsedValues);
 
@@ -24,7 +24,7 @@ public class SqlExpressionProvider(IEntityRepository entityRepository) : IAsyncE
         return result;
     }
 
-    internal static DataAccessCommand GetParsedDataAccessCommand(string expression, Dictionary<string, object?> parsedValues)
+    internal static DataAccessCommand GetParsedDataAccessCommand(string expression, Dictionary<string, object> parsedValues)
     {
         var command = new DataAccessCommand();
 

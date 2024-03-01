@@ -47,12 +47,12 @@ public class SqlServerProvider(
         return SqlServerScripts.GetReadProcedureScript(element);
     }
     
-    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values)
+    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object> values)
     {
         return GetWriteCommand(InsertInitial, element, values);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values)
+    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object> values)
     {
         return GetWriteCommand(UpdateInitial, element, values);
     }
@@ -62,7 +62,7 @@ public class SqlServerProvider(
         return GetWriteCommand(DeleteInitial, element, filters!);
     }
 
-    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values)
+    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object> values)
     {
         return GetWriteCommand(string.Empty, element, values);
     }
@@ -167,7 +167,7 @@ public class SqlServerProvider(
     }
 
 
-    private DataAccessCommand GetWriteCommand(string action, Element element, Dictionary<string,object?> values)
+    private DataAccessCommand GetWriteCommand(string action, Element element, Dictionary<string, object> values)
     {
         string sql;
 
@@ -224,7 +224,7 @@ public class SqlServerProvider(
         return writeCommand;
     }
     
-    private static object GetElementValue(ElementField field, Dictionary<string,object?> values)
+    private static object GetElementValue(ElementField field, Dictionary<string, object> values)
     {
         if (!values.TryGetValue(field.Name, out var value)) 
             return DBNull.Value;

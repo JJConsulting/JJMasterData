@@ -150,7 +150,7 @@ public class FileService(IDataDictionaryRepository dictionaryRepository, IEntity
         }
         else
         {
-            values[field.Name] = null;
+            values[field.Name] = DBNull.Value;
         }
 
 

@@ -413,7 +413,7 @@ public partial class DataAccess
     /// </returns>
     public Hashtable? GetHashtable(string sql) => GetHashtable(new DataAccessCommand(sql));
     
-    public Dictionary<string,object?>? GetDictionary(string sql) => GetDictionary(new DataAccessCommand(sql));
+    public Dictionary<string, object>? GetDictionary(string sql) => GetDictionary(new DataAccessCommand(sql));
 
     
     /// <summary>
@@ -478,9 +478,9 @@ public partial class DataAccess
     /// Return a Dictionary Object. 
     /// If no record is found it returns null.
     /// </returns>
-    public Dictionary<string, object?>? GetDictionary(DataAccessCommand cmd)
+    public Dictionary<string, object>? GetDictionary(DataAccessCommand cmd)
     {
-        Dictionary<string, object?>? retCollection = null;
+        Dictionary<string, object>? retCollection = null;
         try
         {
             using var dbCommand = CreateDbCommand(cmd);
@@ -492,7 +492,7 @@ public partial class DataAccess
                 {
                     if (dr.Read())
                     {
-                        retCollection = new Dictionary<string, object?>();
+                        retCollection = new Dictionary<string, object>();
                         int nQtd = 0;
 
                         while (nQtd < dr.FieldCount)
@@ -718,9 +718,9 @@ public partial class DataAccess
         return command;
     }
 
-  public List<Dictionary<string, object?>> GetDictionaryList(DataAccessCommand cmd)
+  public List<Dictionary<string, object>> GetDictionaryList(DataAccessCommand cmd)
     {
-        var dictionaryList = new List<Dictionary<string, object?>>();
+        var dictionaryList = new List<Dictionary<string, object>>();
 
         try
         {
@@ -740,12 +740,13 @@ public partial class DataAccess
 
                     while ( dataReader.Read())
                     {
-                        var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+                        var dictionary = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
                         foreach (var columnName in columnNames)
                         {
-                            var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
-                                ? null
-                                : dataReader.GetValue(dataReader.GetOrdinal(columnName));
+                            int index = dataReader.GetOrdinal(columnName); 
+                            object value = dataReader.IsDBNull(index)
+                                ? DBNull.Value
+                                : dataReader.GetValue(index);
                             dictionary[columnName] = value;
                         }
 

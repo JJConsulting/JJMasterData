@@ -796,12 +796,12 @@ public class OracleProvider(
     }
 
 
-    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string,object?> values)
+    public override DataAccessCommand GetInsertCommand(Element element, Dictionary<string, object> values)
     {
         return GetCommandWrite(InsertKeyword, element, values);
     }
 
-    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string,object?> values)
+    public override DataAccessCommand GetUpdateCommand(Element element, Dictionary<string, object> values)
     {
         return GetCommandWrite(UpdateKeyword, element, values);
     }
@@ -811,7 +811,7 @@ public class OracleProvider(
         return GetCommandWrite(DeleteKeyword, element, filters!);
     }
 
-    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string,object?> values)
+    protected override DataAccessCommand GetInsertOrReplaceCommand(Element element, Dictionary<string, object> values)
     {
         return GetCommandWrite(string.Empty, element, values);
     }
@@ -821,7 +821,7 @@ public class OracleProvider(
         return "Not implemented";
     }
 
-    private DataAccessCommand GetCommandWrite(string action, Element element, Dictionary<string,object?> values)
+    private DataAccessCommand GetCommandWrite(string action, Element element, Dictionary<string, object> values)
     {
         var cmd = new DataAccessCommand()
         {

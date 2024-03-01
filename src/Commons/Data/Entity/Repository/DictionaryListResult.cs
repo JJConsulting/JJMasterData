@@ -5,9 +5,9 @@ using JJMasterData.Commons.Util;
 
 namespace JJMasterData.Commons.Data.Entity.Repository;
 
-public class DictionaryListResult : ListResult<Dictionary<string, object?>>
+public class DictionaryListResult : ListResult<Dictionary<string, object>>
 {
-    internal DictionaryListResult(List<Dictionary<string, object?>> list, int totalOfRecords) : base(list,totalOfRecords)
+    internal DictionaryListResult(List<Dictionary<string, object>> list, int totalOfRecords) : base(list,totalOfRecords)
     {
     }
 

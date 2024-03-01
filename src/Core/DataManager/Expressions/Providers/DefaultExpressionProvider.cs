@@ -14,13 +14,13 @@ public class DefaultExpressionProvider : ISyncExpressionProvider, IAsyncExpressi
     
     private static readonly DataTable _expressionsDataTable = new();
     
-    public object Evaluate(string expression, Dictionary<string, object?> parsedValues)
+    public object Evaluate(string expression, Dictionary<string, object> parsedValues)
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
         var result = _expressionsDataTable.Compute(replacedExpression, string.Empty);
         return result!;
     }
 
-    public Task<object?> EvaluateAsync(string expression, Dictionary<string, object?> parsedValues) 
+    public Task<object?> EvaluateAsync(string expression, Dictionary<string, object> parsedValues) 
         => Task.FromResult<object?>(Evaluate(expression,parsedValues));
 }

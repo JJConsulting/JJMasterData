@@ -174,8 +174,6 @@ public class JJUploadView : AsyncComponent
 
             _gridView.GridTableActions.Add(RenameAction);
             _gridView.GridTableActions.Add(DeleteAction);
-        
-            
             _gridView.FormElement.Options.Grid.RecordsPerPage = int.MaxValue;
             _gridView.FormElement.Options.Grid.ShowPagging = false;
             _gridView.FormElement.Options.Grid.ShowToolBar = false;

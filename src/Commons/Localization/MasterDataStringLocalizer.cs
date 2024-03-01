@@ -120,7 +120,7 @@ public class MasterDataStringLocalizer(
              EntityRepository.CreateDataModel(element,[]);
 
         var stringLocalizerValues = GetStringLocalizerValues();
-        var databaseValues = hasConnectionString ? GetDatabaseValues(element, culture) : new Dictionary<string, object?>();
+        var databaseValues = hasConnectionString ? GetDatabaseValues(element, culture) : new Dictionary<string, object>();
 
         if (databaseValues.Count > 0)
         {
@@ -155,14 +155,18 @@ public class MasterDataStringLocalizer(
         }
     }
 
-    private Dictionary<string, object?> GetDatabaseValues(Element element, string culture)
+    private Dictionary<string, object> GetDatabaseValues(Element element, string culture)
     {
-        var values = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-        var filter = new Dictionary<string,object?> { { "cultureCode", culture} };
+        var values = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
+        var filter = new Dictionary<string, object> { { "cultureCode", culture} };
         var result =EntityRepository.GetDictionaryListResult(element, new EntityParameters {Filters = filter},false);
         foreach (var row in result.Data)
         {
-            values.Add(row["resourceKey"]!.ToString()!, row["resourceValue"]?.ToString());
+            var value = row["resourceValue"];
+            if (value != null && value != DBNull.Value)
+            {
+                values.Add(row["resourceKey"]!.ToString()!, value.ToString());
+            } 
         }
 
         return values;

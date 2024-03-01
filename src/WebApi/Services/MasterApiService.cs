@@ -116,7 +116,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return listRet;
     }
 
-    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> SetFieldsAsync(IEnumerable<Dictionary<string, object>> paramsList,
         string elementName, bool replace = false)
     {
         if (paramsList == null)
@@ -134,7 +134,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<Dictionary<string, object?>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdateFieldsAsync(IEnumerable<Dictionary<string, object>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -150,7 +150,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         }
     }
 
-    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<Dictionary<string, object?>> paramsList,
+    public async IAsyncEnumerable<ResponseLetter> UpdatePartAsync(IEnumerable<Dictionary<string, object>> paramsList,
         string elementName)
     {
         if (paramsList == null)
@@ -170,7 +170,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         }
     }
 
-    private async Task<ResponseLetter> Insert(FormElement formElement, Dictionary<string, object?> apiValues,
+    private async Task<ResponseLetter> Insert(FormElement formElement, Dictionary<string, object> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -200,7 +200,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return ret;
     }
 
-    private async Task<ResponseLetter> Update(FormElement formElement, Dictionary<string, object?> apiValues)
+    private async Task<ResponseLetter> Update(FormElement formElement, Dictionary<string, object> apiValues)
     {
         ResponseLetter ret;
         try
@@ -232,7 +232,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return ret;
     }
 
-    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, Dictionary<string, object?> apiValues,
+    private async Task<ResponseLetter> InsertOrReplace(FormElement formElement, Dictionary<string, object> apiValues,
         FormElementApiOptions metadataApiOptions)
     {
         ResponseLetter ret;
@@ -269,7 +269,7 @@ public class MasterApiService(ExpressionsService expressionsService,
         return ret;
     }
 
-    private async Task<ResponseLetter> Patch(FormElement formElement, Dictionary<string, object?> values)
+    private async Task<ResponseLetter> Patch(FormElement formElement, Dictionary<string, object> values)
     {
         ResponseLetter ret;
         try
@@ -340,7 +340,7 @@ public class MasterApiService(ExpressionsService expressionsService,
             throw new UnauthorizedAccessException();
 
         var values = ParseFilter(dictionary, paramValues);
-        var userValues = new Dictionary<string, object?>
+        var userValues = new Dictionary<string, object>
         {
             { "componentName", objname }
         };
@@ -458,12 +458,12 @@ public class MasterApiService(ExpressionsService expressionsService,
     /// This happens due to triggers or values
     /// returned in set methods (id autoNum) for example
     /// </remarks>
-    private static Dictionary<string, object?>? GetDiff(
-        Dictionary<string, object?> original,
-        Dictionary<string, object?> result, 
+    private static Dictionary<string, object>? GetDiff(
+        Dictionary<string, object> original,
+        Dictionary<string, object> result, 
         FormElementApiOptions apiOptions)
     {
-        var newValues = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+        var newValues = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
         foreach (var entry in result)
         {
             var entryVal = entry.Value;

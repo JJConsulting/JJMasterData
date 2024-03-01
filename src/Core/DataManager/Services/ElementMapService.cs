@@ -16,14 +16,14 @@ public class ElementMapService(IDataDictionaryRepository dataDictionaryRepositor
     private IEntityRepository EntityRepository { get; } = entityRepository;
     private ExpressionsService ExpressionsService { get; } = expressionsService;
 
-    public async Task<Dictionary<string, object?>> GetFieldsAsync(DataElementMap elementMap, object? value, FormStateData? formStateData)
+    public async Task<Dictionary<string, object>> GetFieldsAsync(DataElementMap elementMap, object? value, FormStateData? formStateData)
     {
         var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
         var filters = await GetFilters(childElement,elementMap, value, formStateData);
         return await EntityRepository.GetFieldsAsync(childElement, filters);
     }
     
-    public async Task<List<Dictionary<string, object?>>> GetDictionaryList(DataElementMap elementMap, object? value, FormStateData formStateData)
+    public async Task<List<Dictionary<string, object>>> GetDictionaryList(DataElementMap elementMap, object? value, FormStateData formStateData)
     {
         var childElement = await DataDictionaryRepository.GetFormElementAsync(elementMap.ElementName);
         var filters = await GetFilters(childElement,elementMap, value, formStateData);

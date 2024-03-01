@@ -9,8 +9,8 @@ namespace JJMasterData.Core.DataManager.Models;
 
 public class FormStateData
 {
-    public required Dictionary<string, object?> Values { get; init; }
-    public required Dictionary<string, object?>? UserValues { get; init; }
+    public required Dictionary<string, object> Values { get; init; }
+    public required Dictionary<string, object>? UserValues { get; init; }
     public required PageState PageState { get; init; }
 
     public FormStateData()
@@ -20,8 +20,8 @@ public class FormStateData
     
     [SetsRequiredMembers]
     public FormStateData(
-        Dictionary<string, object?> values, 
-        Dictionary<string, object?>? userValues,
+        Dictionary<string, object> values, 
+        Dictionary<string, object>? userValues,
         PageState pageState)
     {
         UserValues = ObjectCloner.DeepCopy(userValues);
@@ -31,7 +31,7 @@ public class FormStateData
 
     [SetsRequiredMembers]
     public FormStateData(
-        Dictionary<string, object?> values,
+        Dictionary<string, object> values,
         PageState pageState)
     {
         Values = values;
@@ -39,8 +39,8 @@ public class FormStateData
     }
 
     public void Deconstruct(
-        out Dictionary<string, object?> values,
-        out Dictionary<string, object?>? userValues,
+        out Dictionary<string, object> values,
+        out Dictionary<string, object>? userValues,
         out PageState pageState)
     {
         values = Values;

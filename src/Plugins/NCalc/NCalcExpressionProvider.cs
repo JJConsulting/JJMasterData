@@ -15,7 +15,7 @@ public class NCalcExpressionProvider(IOptionsSnapshot<NCalcExpressionProviderOpt
     private NCalcExpressionProviderOptions Options { get; } = options.Value;
     
 
-    public object? Evaluate(string expression, Dictionary<string, object?> parsedValues)
+    public object? Evaluate(string expression, Dictionary<string, object> parsedValues)
     {
         var replacedExpression = ExpressionHelper.ReplaceExpression(expression, parsedValues);
         var ncalcExpression = new Expression(replacedExpression, Options.EvaluateOptions);
@@ -26,6 +26,6 @@ public class NCalcExpressionProvider(IOptionsSnapshot<NCalcExpressionProviderOpt
         return ncalcExpression.Evaluate();
     }
 
-    public Task<object?> EvaluateAsync(string expression, Dictionary<string, object?> parsedValues) 
+    public Task<object?> EvaluateAsync(string expression, Dictionary<string, object> parsedValues) 
         => Task.FromResult(Evaluate(expression,parsedValues));
 }
