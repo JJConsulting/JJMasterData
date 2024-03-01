@@ -13,7 +13,7 @@
 		<FileVersion>$(Version)</FileVersion>
 		<Company>JJ Consulting</Company>
 		<Copyright>© 2023 JJConsulting. All rights reserved.</Copyright>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageReadmeFile>README.NuGet.md</PackageReadmeFile>
 		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
 	</PropertyGroup>
 	<ItemGroup>
