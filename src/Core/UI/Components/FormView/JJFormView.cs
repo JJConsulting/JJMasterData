@@ -247,7 +247,7 @@ public class JJFormView : AsyncComponent
 
             return _pageState ?? PageState.List;
         }
-        internal set => _pageState = value;
+        set => _pageState = value;
     }
 
     /// <summary>
