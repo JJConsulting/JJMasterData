@@ -1,10 +1,11 @@
 # DataPanel
 
-JJDataPanel control the fields of a form in the JJMasterData CRUDs. 
+JJDataPanel represents the visualization of a record in a JJMasterData Element.
 
 ## Usage
 
-At your Controller, create a JJDataPanel instance and use the result as your Model or add it as a property to your ViewModel.
+At your Controller, create a JJDataPanel instance and use the result as your Model, add it as a property to your ViewModel or use ViewData.
+
 ### At your Controller
 
 ```csharp
@@ -15,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JJMasterData.WebEntryPoint.Controllers;
 
-public class TestController : Controller
+public class DataPanelExampleController : Controller
 {
     [ViewData]
     public required string PanelViewHtml { get; set; }
@@ -23,7 +24,7 @@ public class TestController : Controller
     private readonly IComponentFactory _componentFactory;
     private readonly IEntityRepository _entityRepository;
 
-    public TestController(IComponentFactory componentFactory, IEntityRepository entityRepository)
+    public DataPanelExampleController(IComponentFactory componentFactory, IEntityRepository entityRepository)
     {
         _componentFactory = componentFactory;
         _entityRepository = entityRepository;
