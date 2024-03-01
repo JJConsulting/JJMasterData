@@ -623,6 +623,9 @@ public class JJGridView : AsyncComponent
         if (ComponentContext is ComponentContext.DataExportation)
             return await GetExportationResult();
 
+        if (ComponentContext is ComponentContext.DownloadFile)
+            return ComponentFactory.Downloader.Create().GetDownloadResult();
+        
         if (ComponentContext is ComponentContext.GridViewRow)
         {
             int rowIndex = int.Parse(CurrentContext.Request.QueryString["gridViewRowIndex"]);
