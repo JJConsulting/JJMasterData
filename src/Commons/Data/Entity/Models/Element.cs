@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace JJMasterData.Commons.Data.Entity.Models;
@@ -72,5 +73,10 @@ public class Element()
     public Element(string name, string description) : this(name)
     {
         Info = description;
+    }
+    
+    public List<ElementField> GetPrimaryKeys()
+    {
+        return Fields.Where(x => x.IsPk).ToList();
     }
 }

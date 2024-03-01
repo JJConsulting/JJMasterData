@@ -50,6 +50,8 @@
     href: components/searchbox.md
   - name: FormView
     href: components/form_view.md
+  - name: DataPanel
+    href: components/datapanel.md
 - name: Errors
   href: errors/intro.md
   items:

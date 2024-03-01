@@ -40,8 +40,7 @@ public static class DataHelper
     
     public static bool ContainsPkValues(Element element, Dictionary<string, object?> values)
     {
-        var elementPks = GetElementPrimaryKeys(element);
-
+        var elementPks = element.GetPrimaryKeys();
         return elementPks.Count != 0 && elementPks.All(field => values.ContainsKey(field.Name));
     }
 
@@ -54,7 +53,7 @@ public static class DataHelper
             throw new ArgumentNullException(nameof(values));
 
         var primaryKeys = new Dictionary<string, object>(StringComparer.InvariantCultureIgnoreCase);
-        var elementPks = GetElementPrimaryKeys(element);
+        var elementPks = element.GetPrimaryKeys();
 
         if (elementPks.Count == 0)
             throw new JJMasterDataException($"Primary key not defined for dictionary {element.Name}");
@@ -98,11 +97,6 @@ public static class DataHelper
         }
 
         return primaryKeys;
-    }
-    
-    private static List<ElementField> GetElementPrimaryKeys(Element element)
-    {
-        return element.Fields.Where(x => x.IsPk).ToList();
     }
     
     

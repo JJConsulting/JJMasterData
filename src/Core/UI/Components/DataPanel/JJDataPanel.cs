@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using JJMasterData.Commons.Data.Entity.Repository.Abstractions;
+using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
 using JJMasterData.Commons.Util;
 using JJMasterData.Core.DataDictionary.Models;
@@ -290,6 +291,26 @@ public class JJDataPanel : AsyncComponent
         Values = await EntityRepository.GetFieldsAsync(FormElement, pks);
     }
 
+    public async Task LoadValuesFromPkAsync(params object[] pks)
+    {
+        var primaryKeys = FormElement.GetPrimaryKeys();
+        if (primaryKeys.Count == 0)
+            throw new JJMasterDataException("Primary key not found");
+
+        if (pks.Length != primaryKeys.Count)
+            throw new JJMasterDataException("Primary key not found");
+        
+        var filter = new Dictionary<string, object>();
+        for (var index = 0; index < primaryKeys.Count; index++)
+        {
+            var field = primaryKeys[index];
+            filter.Add(field.Name, pks[index]);
+        }
+
+        await LoadValuesFromPkAsync(filter);
+    }
+    
+    
     /// <summary>
     /// Validate form fields and return a list with errors
     ///  </summary>
@@ -302,6 +323,12 @@ public class JJDataPanel : AsyncComponent
         return ValidateFields(values, pageState, true);
     }
 
+    /// <inheritdoc cref="ValidateFields()"/>
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values)
+    {
+        return ValidateFields(values, PageState, true);
+    }
+    
     /// <summary>
     /// Validate form fields and return a list with errors
     /// </summary>

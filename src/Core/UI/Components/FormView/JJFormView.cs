@@ -1483,14 +1483,13 @@ public class JJFormView : AsyncComponent
         return values;
     }
 
-    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values,
-        PageState pageState)
+    public Dictionary<string, string> ValidateFields(Dictionary<string, object> values, PageState pageState)
     {
         DataPanel.Values = values;
         var errors = DataPanel.ValidateFields(values, pageState);
         return errors;
     }
-
+    
     private void ClearTempFiles()
     {
         var uploadFields = FormElement.Fields.ToList().FindAll(x => x.Component == FormComponent.File);
