@@ -3,7 +3,7 @@
 		<PackageProjectUrl>https://www.github.com/JJConsulting/JJMasterData</PackageProjectUrl>
 		<RepositoryUrl>https://www.github.com/JJConsulting/JJMasterData</RepositoryUrl>
 		<PackageIcon>JJMasterData.png</PackageIcon>
-		<Version>4.0.29</Version>
+		<Version>4.0.30</Version>
 		<PackageReadmeFile>README.NuGet.md</PackageReadmeFile>
 		<PackageVersion>$(Version)</PackageVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
@@ -21,7 +21,7 @@
 			<Pack>True</Pack>
 			<PackagePath>/</PackagePath>
 		</None>
-		<None Include="../../README.md">
+		<None Include="../../README.NuGet.md">
 			<Pack>True</Pack>
 			<PackagePath>/</PackagePath>
 		</None>
