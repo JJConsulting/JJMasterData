@@ -21,6 +21,10 @@
 			<Pack>True</Pack>
 			<PackagePath>/</PackagePath>
 		</None>
+		<None Include="../../README.md">
+			<Pack>True</Pack>
+			<PackagePath>/</PackagePath>
+		</None>
 		<None Include="../../README.NuGet.md">
 			<Pack>True</Pack>
 			<PackagePath>/</PackagePath>
