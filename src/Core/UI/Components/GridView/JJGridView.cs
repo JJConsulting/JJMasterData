@@ -1122,9 +1122,10 @@ public class JJGridView : AsyncComponent
         if (IsUserSetDataSource && DataSource != null)
         {
 
-            using var dataView = new DataView(EnumerableHelper.ConvertToDataTable( ObjectCloner.DeepCopy(DataSource)));
+            using var dataSource = EnumerableHelper.ConvertToDataTable(ObjectCloner.DeepCopy(DataSource));
+            using var dataView = new DataView(dataSource);
             dataView.Sort = parameters.OrderBy.ToQueryParameter();
-            var dataTable = dataView.ToTable();
+            using var dataTable = dataView.ToTable();
             
             return DictionaryListResult.FromDataTable(dataTable);
         }

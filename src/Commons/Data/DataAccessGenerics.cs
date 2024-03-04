@@ -16,19 +16,20 @@ public partial class DataAccess
         CancellationToken cancellationToken = default)
     {
         var fields = await GetDictionaryAsync(cmd, cancellationToken);
-        return (fields as Dictionary<string,object?>).ToModel<T>(serializerSettings);
+        return (fields as Dictionary<string, object?>).ToModel<T>(serializerSettings);
     }
 
     public IList<T>? GetModelList<T>(DataAccessCommand cmd, JsonSerializerSettings? serializerSettings = null)
     {
-        return GetDataTable(cmd).ToModelList<T>(serializerSettings);
+        using var dataTable = GetDataTable(cmd);
+        return dataTable.ToModelList<T>(serializerSettings);
     }
 
-    public async IAsyncEnumerable<T>? GetModelAsyncEnumerable<T>(DataAccessCommand cmd, 
+    public async IAsyncEnumerable<T>? GetModelAsyncEnumerable<T>(DataAccessCommand cmd,
         JsonSerializerSettings? serializerSettings = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var dataTable = await GetDataTableAsync(cmd, cancellationToken);
+        using var dataTable = await GetDataTableAsync(cmd, cancellationToken);
         var result = dataTable.ToModelList<T>(serializerSettings);
 
         if (result != null)

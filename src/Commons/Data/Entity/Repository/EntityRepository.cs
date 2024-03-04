@@ -131,10 +131,10 @@ public class EntityRepository(DataAccess dataAccess, EntityProviderBase provider
     ///<inheritdoc cref="IEntityRepository.GetWriteProcedureScript"/>
     public string? GetWriteProcedureScript(Element element) => Provider.GetWriteProcedureScript(element);
 
-    public async Task<string> GetAlterTableScriptAsync(Element element)
+    public  Task<string> GetAlterTableScriptAsync(Element element)
     {
-        var addedFields = await GetAddedFieldsAsync(element).ToListAsync();
-        return Provider.GetAlterTableScript(element, addedFields);
+        var addedFields = GetAddedFieldsAsync(element);
+        return Task.FromResult(Provider.GetAlterTableScript(element, []));
     }
 
     private async IAsyncEnumerable<ElementField> GetAddedFieldsAsync(Element element)

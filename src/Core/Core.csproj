@@ -26,6 +26,10 @@
     </ItemGroup>
     
     <ItemGroup>
+        <PackageReference Include="IDisposableAnalyzers" Version="4.0.7">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     </ItemGroup>
     

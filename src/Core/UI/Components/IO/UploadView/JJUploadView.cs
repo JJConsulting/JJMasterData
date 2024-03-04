@@ -104,7 +104,7 @@ public class JJUploadView : AsyncComponent
     {
         get
         {
-            var files = GetFilesDataTable();
+            using var files = GetFilesDataTable();
             
             if (_gridView != null)
             {
@@ -780,11 +780,12 @@ public class JJUploadView : AsyncComponent
     {
         var files = FormFileManager.GetFiles();
         var dt = new DataTable();
+#pragma warning disable IDISP004
         dt.Columns.Add(FileName, typeof(string));
         dt.Columns.Add(Size, typeof(string));
         dt.Columns.Add(LastWriteTime, typeof(string));
         dt.Columns.Add(FileNameJs, typeof(string));
-
+#pragma warning restore IDISP004
         foreach (var fileInfo in files.Where(f => !f.Deleted))
         {
             var content = fileInfo.Content;

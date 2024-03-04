@@ -39,7 +39,9 @@ public static class EnumerableHelper
         
         foreach (var column in data[0].Keys)
         {
+#pragma warning disable IDISP004
             table.Columns.Add(column, GetTypeFromField(element.Fields[column].DataType));
+#pragma warning restore IDISP004
         }
         foreach (var item in data)
         {

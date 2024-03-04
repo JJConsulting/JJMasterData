@@ -25,7 +25,7 @@ public static class SystemWebHelper
             var filePath = fileComponentResult.Content;
             var fileName = Path.GetFileName(filePath);
 
-            var file = new MemoryStream(File.ReadAllBytes(filePath));
+            using var file = new MemoryStream(File.ReadAllBytes(filePath));
             currentContext.Response.ClearHeaders();
             currentContext.Response.ClearContent();
             currentContext.Response.ContentType = MimeTypeUtil.GetMimeType(fileName);

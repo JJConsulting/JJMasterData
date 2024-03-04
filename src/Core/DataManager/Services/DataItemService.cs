@@ -40,9 +40,9 @@ public class DataItemService(IEntityRepository entityRepository,
             case DataItemType.Manual:
                 return GetItemsValues(dataItem, searchId, searchText).ToList();
             case DataItemType.SqlCommand:
-                return await GetSqlCommandValues(dataItem, formStateData, searchId, searchText).ToListAsync();
+                return await GetSqlCommandValues(dataItem, formStateData, searchId, searchText);
             case DataItemType.ElementMap:
-                return await GetElementMapValues(dataItem, formStateData, searchId,searchText).ToListAsync();
+                return await GetElementMapValues(dataItem, formStateData, searchId,searchText);
             default:
                 throw new JJMasterDataException("Invalid DataItemType.");
         }
@@ -86,11 +86,11 @@ public class DataItemService(IEntityRepository entityRepository,
             }
     }
 
-    private async IAsyncEnumerable<DataItemValue> GetElementMapValues(FormElementDataItem dataItem, FormStateData formStateData, string? searchId, string? searchText)
+    private async Task<List<DataItemValue>> GetElementMapValues(FormElementDataItem dataItem, FormStateData formStateData, string? searchId, string? searchText)
     {
         var elementMap = dataItem.ElementMap;
         var values = await ElementMapService.GetDictionaryList(elementMap!, searchId, formStateData);
-            
+        List<DataItemValue> result = [];
         foreach(var value in values)
         {
             var item = new DataItemValue
@@ -115,66 +115,67 @@ public class DataItemService(IEntityRepository entityRepository,
 
             if (searchText == null || item.Description!.ToLower().Contains(searchText.ToLower()))
             {
-                yield return item;
+                result.Add(item);
             }
         }
+
+        return result;
     }
 
-    private async IAsyncEnumerable<DataItemValue> GetSqlCommandValues(FormElementDataItem dataItem,
+    private async Task<List<DataItemValue>> GetSqlCommandValues(FormElementDataItem dataItem,
         FormStateData formStateData,
         string? searchId,
         string? searchText)
     {
         var command = GetDataItemCommand(dataItem, formStateData, searchText, searchId);
-        
-        DataTable result;
-        
+        List<DataItemValue> result = [];
         try
         {
-             result = await EntityRepository.GetDataTableAsync(command);
+            using var dataTable = await EntityRepository.GetDataTableAsync(command);
+            foreach (DataRow row in dataTable.Rows)
+            {
+                var item = new DataItemValue();
+                item.Id = row[0].ToString()!;
+
+                if (row.Table.Columns.Count == 1)
+                {
+                    item.Description = item.Id;
+                }
+                else
+                {
+                    item.Description = row[1].ToString()!;
+                }
+            
+                if (dataItem.ShowIcon)
+                {
+                    item.Icon = (IconType)int.Parse(row[2].ToString() ?? string.Empty);
+                    item.IconColor = row[3].ToString();
+                    if (row.Table.Columns.Count >= 5)
+                    {
+                        item.Group = row[4]?.ToString();
+                    }
+                }
+                else
+                {
+                    if (row.Table.Columns.Count >= 3)
+                    {
+                        item.Group = row[2]?.ToString();
+                    }
+                }
+
+                if (searchText == null || (item.Description?.ToLower().Contains(searchText.ToLower()) ?? false))
+                {
+                    result.Add(item);
+                }
+            }
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error at DataItemService while recovering SqlCommand values. Sql: {Sql}", command?.Sql);
+            Logger.LogError(ex, "Error at DataItemService while recovering SqlCommand values. Sql: {Sql}", command.Sql);
             throw;
         }
 
-        foreach (DataRow row in result.Rows)
-        {
-            var item = new DataItemValue();
-            item.Id = row[0].ToString()!;
-
-            if (row.Table.Columns.Count == 1)
-            {
-                item.Description = item.Id;
-            }
-            else
-            {
-                item.Description = row[1].ToString()!;
-            }
-            
-            if (dataItem.ShowIcon)
-            {
-                item.Icon = (IconType)int.Parse(row[2].ToString() ?? string.Empty);
-                item.IconColor = row[3].ToString();
-                if (row.Table.Columns.Count >= 5)
-                {
-                    item.Group = row[4]?.ToString();
-                }
-            }
-            else
-            {
-                if (row.Table.Columns.Count >= 3)
-                {
-                    item.Group = row[2]?.ToString();
-                }
-            }
-
-            if (searchText == null || (item.Description?.ToLower().Contains(searchText.ToLower()) ?? false))
-            {
-                yield return item;
-            }
-        }
+        return result;
     }
 
     private DataAccessCommand GetDataItemCommand(FormElementDataItem dataItem, FormStateData formStateData, string? searchText,

@@ -19,7 +19,7 @@ public static class AsyncHelper
     public static void RunSync(Func<Task> task)
     {
         var oldContext = SynchronizationContext.Current;
-        var synch = new ExclusiveSynchronizationContext();
+        using var synch = new ExclusiveSynchronizationContext();
         SynchronizationContext.SetSynchronizationContext(synch);
         synch.Post(async _ =>
         {
@@ -50,7 +50,7 @@ public static class AsyncHelper
     public static T RunSync<T>(Func<Task<T>> task)
     {
         var oldContext = SynchronizationContext.Current;
-        var synch = new ExclusiveSynchronizationContext();
+        using var synch = new ExclusiveSynchronizationContext();
         SynchronizationContext.SetSynchronizationContext(synch);
         var ret = default(T);
         synch.Post(async _ =>
@@ -74,11 +74,13 @@ public static class AsyncHelper
         return ret;
     }
 
-    private class ExclusiveSynchronizationContext : SynchronizationContext
+    private sealed class ExclusiveSynchronizationContext : SynchronizationContext, IDisposable
     {
         private bool done;
+        private bool disposed;
+
         public Exception InnerException { get; set; }
-        readonly AutoResetEvent workItemsWaiting = new AutoResetEvent(false);
+        private readonly AutoResetEvent _workItemsWaiting = new(false);
         readonly Queue<Tuple<SendOrPostCallback, object>> items = new();
 
         public override void Send(SendOrPostCallback d, object state)
@@ -92,7 +94,7 @@ public static class AsyncHelper
             {
                 items.Enqueue(Tuple.Create(d, state));
             }
-            workItemsWaiting.Set();
+            _workItemsWaiting.Set();
         }
 
         public void EndMessageLoop()
@@ -122,7 +124,7 @@ public static class AsyncHelper
                 }
                 else
                 {
-                    workItemsWaiting.WaitOne();
+                    _workItemsWaiting.WaitOne();
                 }
             }
         }
@@ -130,6 +132,25 @@ public static class AsyncHelper
         public override SynchronizationContext CreateCopy()
         {
             return this;
+        }
+
+        public void Dispose()
+        {
+            if (disposed)
+            {
+                return;
+            }
+
+            disposed = true;
+            _workItemsWaiting.Dispose();
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
         }
     }
 }

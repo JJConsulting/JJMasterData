@@ -97,7 +97,7 @@ internal class GridViewFactory(IHttpContext currentContext,
 
     public JJGridView Create<T>(IEnumerable<T> list)
     {
-        var dataTable = EnumerableHelper.ConvertToDataTable(list);
+        using var dataTable = EnumerableHelper.ConvertToDataTable(list);
         var grid = Create(dataTable);
         return grid;
     }

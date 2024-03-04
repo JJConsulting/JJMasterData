@@ -332,7 +332,7 @@ public class SqlServerProvider(
         };
         cmdFields.Parameters.Add(new DataAccessParameter("@table_name", tableName));
 
-        var dtFields = await DataAccess.GetDataTableAsync(cmdFields);
+        using var dtFields = await DataAccess.GetDataTableAsync(cmdFields);
         if (dtFields.Rows.Count == 0)
             throw new JJMasterDataException($"Table {tableName} has invalid structure");
 

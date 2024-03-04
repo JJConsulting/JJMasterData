@@ -27,7 +27,9 @@ public class DictionaryListResult : ListResult<Dictionary<string, object?>>
         foreach (var key in Data[0].Keys)
         {
             var valueType = Data[0][key]?.GetType() ?? typeof(object);
+#pragma warning disable IDISP004
             dataTable.Columns.Add(key, valueType);
+#pragma warning restore IDISP004
         }
 
         foreach (var data in Data)

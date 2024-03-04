@@ -30,7 +30,7 @@ public partial class DataAccess
 
         return connection;
     }
-    
+
     ///<inheritdoc cref="GetDataTable(string)"/>
     public Task<DataTable> GetDataTableAsync(string sql, CancellationToken cancellationToken = default)
     {
@@ -42,33 +42,22 @@ public partial class DataAccess
     {
         try
         {
-#if NET
-            await
-#endif
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
 
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
+
+            using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
             {
-#if NET
-                await
-#endif
-                using (var reader = await dbCommand.ExecuteReaderAsync(cancellationToken))
+                var dataTable = new DataTable();
+                dataTable.Load(reader);
+
+                foreach (var parameter in cmd.Parameters)
                 {
-                    var dataTable = new DataTable();
-                    dataTable.Load(reader);
- 
-                    foreach (var parameter in cmd.Parameters)
-                    {
-                        if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                            parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                    }
-               
-                    return dataTable;
+                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
                 }
+
+                return dataTable;
             }
         }
         catch (Exception ex)
@@ -76,7 +65,7 @@ public partial class DataAccess
             throw GetDataAccessException(ex, cmd);
         }
     }
-    
+
     /// <inheritdoc cref="GetResult(string)"/>
     public Task<object?> GetResultAsync(string sql, CancellationToken cancellationToken = default)
     {
@@ -89,24 +78,15 @@ public partial class DataAccess
         object? scalarResult;
         try
         {
-#if NET
-            await
-#endif
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
 
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
-            {
-                scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken);
+            scalarResult = await dbCommand.ExecuteScalarAsync(cancellationToken);
 
-                foreach (var parameter in cmd.Parameters)
-                {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                }
+            foreach (var parameter in cmd.Parameters)
+            {
+                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
             }
         }
         catch (Exception ex)
@@ -116,30 +96,22 @@ public partial class DataAccess
 
         return scalarResult;
     }
-    
+
     /// <inheritdoc cref="SetCommand(DataAccessCommand)"/>
     public async Task<int> SetCommandAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
     {
         int rowsAffected;
         try
         {
-#if NET
-            await
-#endif
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
-            {
-                rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken);
 
-                foreach (var parameter in cmd.Parameters)
-                {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                }
+            rowsAffected = await dbCommand.ExecuteNonQueryAsync(cancellationToken);
+
+            foreach (var parameter in cmd.Parameters)
+            {
+                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
             }
         }
         catch (Exception ex)
@@ -149,9 +121,10 @@ public partial class DataAccess
 
         return rowsAffected;
     }
-    
+
     /// <inheritdoc cref="SetCommand(DataAccessCommand)"/>
-    public async Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commands, CancellationToken cancellationToken = default)
+    public async Task<int> SetCommandListAsync(IEnumerable<DataAccessCommand> commands,
+        CancellationToken cancellationToken = default)
     {
         int numberOfRowsAffected = 0;
         DataAccessCommand? currentCommand = null;
@@ -184,7 +157,7 @@ public partial class DataAccess
                 }
 #if NET
                 await transaction.CommitAsync(cancellationToken);
-                
+
 #else
                 transaction.Commit();
 #endif
@@ -202,13 +175,13 @@ public partial class DataAccess
 
         return numberOfRowsAffected;
     }
-    
+
     /// <inheritdoc cref="SetCommand(string)"/>
     public Task<int> SetCommandAsync(string sql, CancellationToken cancellationToken = default)
     {
         return SetCommandAsync(new DataAccessCommand(sql), cancellationToken);
     }
-    
+
     /// <inheritdoc cref="SetCommand(IEnumerable&lt;string&gt;)"/>
     public async Task<int> SetCommandAsync(IEnumerable<string> sqlList, CancellationToken cancellationToken = default)
     {
@@ -217,55 +190,47 @@ public partial class DataAccess
         int numberOfRowsAffected = await SetCommandListAsync(commandList, cancellationToken);
         return numberOfRowsAffected;
     }
-    
+
     /// <inheritdoc cref="GetHashtable(string)"/>
-    public Task<Dictionary<string,object?>> GetDictionaryAsync(string sql, CancellationToken cancellationToken = default) =>
+    public Task<Dictionary<string, object?>> GetDictionaryAsync(string sql,
+        CancellationToken cancellationToken = default) =>
         GetDictionaryAsync(new DataAccessCommand(sql), cancellationToken);
-    
-    
-    /// <inheritdoc cref="GetHashtable"/>
-    public async Task<Dictionary<string,object?>> GetDictionaryAsync(DataAccessCommand command, CancellationToken cancellationToken = default)
+
+
+    /// <inheritdoc cref="GetHashtable(string)"/>
+    public async Task<Dictionary<string, object?>> GetDictionaryAsync(DataAccessCommand command,
+        CancellationToken cancellationToken = default)
     {
         var result = new Dictionary<string, object?>();
         try
         {
-#if NET
-            await
-#endif
             using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
+
+
+            using (var dataReader =
+                   await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
             {
-#if NET
-                await
-#endif
-                using (var dataReader =
-                       await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
+                while (await dataReader.ReadAsync(cancellationToken))
                 {
-                    while (await dataReader.ReadAsync(cancellationToken))
+                    int count = 0;
+
+                    while (count < dataReader.FieldCount)
                     {
-                        int count = 0;
+                        string fieldName = dataReader.GetName(count);
+                        if (result.ContainsKey(fieldName))
+                            throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
 
-                        while (count < dataReader.FieldCount)
-                        {
-                            string fieldName = dataReader.GetName(count);
-                            if (result.ContainsKey(fieldName))
-                                throw new DataAccessException($"[{fieldName}] field duplicated in get procedure");
-
-                            result.Add(fieldName, dataReader.GetValue(count));
-                            count += 1;
-                        }
+                        result.Add(fieldName, dataReader.GetValue(count));
+                        count += 1;
                     }
                 }
+            }
 
-                foreach (var parameter in command.Parameters)
-                {
-                    if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
-                        parameter.Value = dbCommand.Parameters[parameter.Name].Value;
-                }
+            foreach (var parameter in command.Parameters)
+            {
+                if (parameter.Direction is ParameterDirection.Output or ParameterDirection.InputOutput)
+                    parameter.Value = dbCommand.Parameters[parameter.Name].Value;
             }
         }
         catch (Exception ex)
@@ -276,53 +241,41 @@ public partial class DataAccess
         return result;
     }
 
-    public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand cmd, CancellationToken cancellationToken = default)
+    public async Task<List<Dictionary<string, object?>>> GetDictionaryListAsync(DataAccessCommand cmd,
+        CancellationToken cancellationToken = default)
     {
         var dictionaryList = new List<Dictionary<string, object?>>();
 
         try
         {
-#if NET
-            await
-#endif
             using var dbCommand = CreateDbCommand(cmd);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
 
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
+            using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
             {
-#if NET
-                await
-#endif
-                using (var dataReader = await dbCommand.ExecuteReaderAsync(cancellationToken))
-                {
-                    var columnNames = Enumerable.Range(0, dataReader.FieldCount)
-                        .Select(i => dataReader.GetName(i))
-                        .ToList();
+                var columnNames = Enumerable.Range(0, dataReader.FieldCount)
+                    .Select(i => dataReader.GetName(i))
+                    .ToList();
 
-                    while (await dataReader.ReadAsync(cancellationToken))
+                while (await dataReader.ReadAsync(cancellationToken))
+                {
+                    var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
+                    foreach (var columnName in columnNames)
                     {
-                        var dictionary = new Dictionary<string, object?>(StringComparer.InvariantCultureIgnoreCase);
-                        foreach (var columnName in columnNames)
-                        {
-                            var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
-                                ? null
-                                : dataReader.GetValue(dataReader.GetOrdinal(columnName));
-                            dictionary[columnName] = value;
-                        }
-
-                        dictionaryList.Add(dictionary);
+                        var value = dataReader.IsDBNull(dataReader.GetOrdinal(columnName))
+                            ? null
+                            : dataReader.GetValue(dataReader.GetOrdinal(columnName));
+                        dictionary[columnName] = value;
                     }
-                }
 
-                foreach (var param in cmd.Parameters.Where(param =>
-                             param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
-                {
-                    param.Value = dbCommand.Parameters[param.Name].Value;
+                    dictionaryList.Add(dictionary);
                 }
-                
+            }
+
+            foreach (var param in cmd.Parameters.Where(param =>
+                         param.Direction is ParameterDirection.Output or ParameterDirection.InputOutput))
+            {
+                param.Value = dbCommand.Parameters[param.Name].Value;
             }
         }
         catch (Exception ex)
@@ -332,7 +285,7 @@ public partial class DataAccess
 
         return dictionaryList;
     }
-    
+
     /// <inheritdoc cref="TableExists"/>
     public async Task<bool> TableExistsAsync(string tableName, CancellationToken cancellationToken = default)
     {
@@ -340,7 +293,7 @@ public partial class DataAccess
         var result = await GetResultAsync(command, cancellationToken);
         return (int)result! == 1;
     }
-    
+
     /// <inheritdoc cref="TryConnection"/>
     public async Task<(bool, string?)> TryConnectionAsync(CancellationToken cancellationToken = default)
     {
@@ -349,10 +302,12 @@ public partial class DataAccess
         string? errorMessage = null;
         try
         {
-            connection = Factory.CreateConnection();
-            connection!.ConnectionString = ConnectionString;
-            await connection.OpenAsync(cancellationToken);
-            result = true;
+            using (connection = Factory.CreateConnection())
+            {
+                connection!.ConnectionString = ConnectionString;
+                await connection.OpenAsync(cancellationToken);
+                result = true;
+            }
         }
         catch (Exception ex)
         {
@@ -370,11 +325,7 @@ public partial class DataAccess
             {
                 if (connection.State == ConnectionState.Open)
                 {
-#if NET
-                       await connection.CloseAsync();
-#else
                     connection.Close();
-#endif
                 }
 
                 connection.Dispose();
@@ -383,8 +334,8 @@ public partial class DataAccess
 
         return (result, errorMessage);
     }
-    
-    
+
+
     /// <inheritdoc cref="ExecuteBatch(string)"/>
     public async Task<bool> ExecuteBatchAsync(string script, CancellationToken cancellationToken = default)
     {
@@ -394,7 +345,7 @@ public partial class DataAccess
             markpar = "/";
         }
 
-        if (script.Trim().Length <= 0) 
+        if (script.Trim().Length <= 0)
             return true;
 
         var sqlList = new List<string>();
@@ -421,30 +372,21 @@ public partial class DataAccess
         await SetCommandAsync(sqlList, cancellationToken);
         return true;
     }
-    
 
-    public async Task<bool> ColumnExistsAsync(string tableName, string columnName, CancellationToken cancellationToken = default)
+
+    public async Task<bool> ColumnExistsAsync(string tableName, string columnName,
+        CancellationToken cancellationToken = default)
     {
         var command = GetColumnExistsCommand(tableName, columnName);
         try
         {
-#if NET
-            await
-#endif
             using var dbCommand = CreateDbCommand(command);
             dbCommand.Connection = await GetConnectionAsync(cancellationToken);
-#if NET
-            await
-#endif
-            using (dbCommand.Connection)
+
+
+            using (var reader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
             {
-#if NET
-                await
-#endif
-                using (var reader = await dbCommand.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken))
-                {
-                    return await reader.ReadAsync(cancellationToken);
-                }
+                return await reader.ReadAsync(cancellationToken);
             }
         }
         catch (Exception ex)
@@ -452,5 +394,4 @@ public partial class DataAccess
             throw GetDataAccessException(ex, command);
         }
     }
-    
 }

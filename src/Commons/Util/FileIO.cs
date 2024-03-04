@@ -74,13 +74,14 @@ public static class FileIO
     {
         var dir = new DirectoryInfo(fullPath);
         var dtFiles = new DataTable();
+#pragma warning disable IDISP004
         dtFiles.Columns.Add("Id", typeof(string));
         dtFiles.Columns.Add("Nome", typeof(string));
         dtFiles.Columns.Add("Tamanho", typeof(string));
         dtFiles.Columns.Add("TamBytes", typeof(double));
         dtFiles.Columns.Add("LastWriteTime", typeof(string));
         dtFiles.Columns.Add("NomeCompleto", typeof(string));
-
+#pragma warning restore IDISP004
         if (!dir.Exists)
             return dtFiles;
 

@@ -13,7 +13,7 @@ public class FileController(FileService service) : ControllerBase
     [Route("{fileName}")]
     public async Task<IActionResult> GetFile(string elementName, string id, string fieldName, string fileName)
     {
-        var fileStream = await service.GetDictionaryFileAsync(elementName, id, fieldName, fileName);
+        await using var fileStream = await service.GetDictionaryFileAsync(elementName, id, fieldName, fileName);
 
         return File(fileStream, "application/octet-stream", fileName);
     }

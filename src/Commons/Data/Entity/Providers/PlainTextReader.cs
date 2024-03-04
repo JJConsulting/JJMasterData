@@ -44,103 +44,98 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
 
             conn.ConnectionString = dataAccess.ConnectionString;
             await conn.OpenAsync();
-
-#if NET
-            await
-#endif
-                using var dbCmd = providerFactory.CreateCommand();
-            if (dbCmd == null)
-                throw new JJMasterDataException("Error on create DbCommand");
-
-            foreach (DataAccessParameter parm in cmd.Parameters)
-            {
-                DbParameter oPar = providerFactory.CreateParameter();
-                if (oPar == null)
-                    throw new JJMasterDataException("Error on create DbParameter");
-
-                oPar.DbType = parm.Type;
-                oPar.Value = parm.Value ?? DBNull.Value;
-                oPar.ParameterName = parm.Name;
-                dbCmd.Parameters.Add(oPar);
-            }
-
-            dbCmd.CommandType = cmd.Type;
-            dbCmd.CommandText = cmd.Sql;
-            dbCmd.Connection = conn;
-            dbCmd.CommandTimeout = dataAccess.TimeOut;
-            var dr = await dbCmd.ExecuteReaderAsync();
-
-            int col = 0;
             int qtd = 0;
-            var columns = new Dictionary<string, int>();
-
-            if (dr.HasRows)
+            using (var dbCmd = providerFactory.CreateCommand())
             {
-                for (int i = 0; i < dr.FieldCount; i++)
+                if (dbCmd == null)
+                    throw new JJMasterDataException("Error on create DbCommand");
+
+                foreach (DataAccessParameter parm in cmd.Parameters)
                 {
-                    columns.Add(dr.GetName(i), i);
+                    DbParameter oPar = providerFactory.CreateParameter();
+                    if (oPar == null)
+                        throw new JJMasterDataException("Error on create DbParameter");
+
+                    oPar.DbType = parm.Type;
+                    oPar.Value = parm.Value ?? DBNull.Value;
+                    oPar.ParameterName = parm.Name;
+                    dbCmd.Parameters.Add(oPar);
                 }
 
-                while (await dr.ReadAsync())
+                dbCmd.CommandType = cmd.Type;
+                dbCmd.CommandText = cmd.Sql;
+                dbCmd.Connection = conn;
+                dbCmd.CommandTimeout = dataAccess.TimeOut;
+
+                using (var dr = await dbCmd.ExecuteReaderAsync())
                 {
-                    qtd++;
-                    foreach (ElementField field in element.Fields)
+                    int col = 0;
+          
+                    var columns = new Dictionary<string, int>();
+
+                    if (dr.HasRows)
                     {
-                        currentField = field.Name;
-                        if (!columns.ContainsKey(field.Name))
-                            throw new JJMasterDataException($"{field.Name} field not found");
-
-                        if (col > 0)
-                            sRet.Append(Delimiter);
-
-                        int ordinal = columns[field.Name];
-                        if (!dr.IsDBNull(ordinal))
+                        for (int i = 0; i < dr.FieldCount; i++)
                         {
-                            switch (field.DataType)
-                            {
-                                case FieldType.Date:
-                                case FieldType.DateTime:
-                                    sRet.Append(dr.GetDateTime(ordinal).ToString("yyyy-MM-dd HH:mm:ss"));
-                                    break;
-                                case FieldType.NVarchar:
-                                case FieldType.Varchar:
-                                case FieldType.Text:
-                                    string val = dr.GetString(ordinal)
-                                        .TrimEnd()
-                                        .Replace("\r\n", "&#182;")
-                                        .Replace("\r", "&#182;")
-                                        .Replace("\n", "&#182;")
-                                        .Replace(Delimiter, "&#124;");
-                                    sRet.Append(val);
-                                    break;
-                                case FieldType.Int:
-                                    sRet.Append(dr.GetInt32(ordinal));
-                                    break;
-                                case FieldType.Float:
-                                    sRet.Append(double.Parse(dr.GetValue(ordinal).ToString() ?? string.Empty)
-                                        .ToString("G", culture));
-                                    break;
-                                default:
-                                    sRet.Append(dr.GetValue(ordinal).ToString()?.TrimEnd());
-                                    break;
-                            }
+                            columns.Add(dr.GetName(i), i);
                         }
 
-                        col++;
+                        while (await dr.ReadAsync())
+                        {
+                            qtd++;
+                            foreach (ElementField field in element.Fields)
+                            {
+                                currentField = field.Name;
+                                if (!columns.ContainsKey(field.Name))
+                                    throw new JJMasterDataException($"{field.Name} field not found");
+
+                                if (col > 0)
+                                    sRet.Append(Delimiter);
+
+                                int ordinal = columns[field.Name];
+                                if (!dr.IsDBNull(ordinal))
+                                {
+                                    switch (field.DataType)
+                                    {
+                                        case FieldType.Date:
+                                        case FieldType.DateTime:
+                                            sRet.Append(dr.GetDateTime(ordinal).ToString("yyyy-MM-dd HH:mm:ss"));
+                                            break;
+                                        case FieldType.NVarchar:
+                                        case FieldType.Varchar:
+                                        case FieldType.Text:
+                                            string val = dr.GetString(ordinal)
+                                                .TrimEnd()
+                                                .Replace("\r\n", "&#182;")
+                                                .Replace("\r", "&#182;")
+                                                .Replace("\n", "&#182;")
+                                                .Replace(Delimiter, "&#124;");
+                                            sRet.Append(val);
+                                            break;
+                                        case FieldType.Int:
+                                            sRet.Append(dr.GetInt32(ordinal));
+                                            break;
+                                        case FieldType.Float:
+                                            sRet.Append(double.Parse(dr.GetValue(ordinal).ToString() ?? string.Empty)
+                                                .ToString("G", culture));
+                                            break;
+                                        default:
+                                            sRet.Append(dr.GetValue(ordinal).ToString()?.TrimEnd());
+                                            break;
+                                    }
+                                }
+
+                                col++;
+                            }
+
+                            sRet.AppendLine("");
+                            col = 0;
+                        }
                     }
 
-                    sRet.AppendLine("");
-                    col = 0;
+                    dr.Close();
                 }
             }
-#if NET
-            await dr.CloseAsync();
-            await dr.DisposeAsync();
-#else
-            dr.Close();
-            dr.Dispose();
-#endif
-            dbCmd.Dispose();
 
             if (ShowLogInfo)
             {
@@ -200,13 +195,8 @@ public class PlainTextReader(EntityProviderBase provider, ILogger<PlainTextReade
         {
             if (conn != null)
             {
-#if NET
-                await conn.CloseAsync();
-                await conn.DisposeAsync();
-#else
                 conn.Close();
                 conn.Dispose();
-#endif
             }
         }
 
