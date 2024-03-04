@@ -225,9 +225,9 @@ public class JJFormView : AsyncComponent
         if (!insertActionVisible || !insertActionEnabled)
             return;
         
-        PageState = PageState.Insert;
-
-        var result = await GetFormResult(new FormContext(formStateData.Values, DataPanel.Errors, PageState), true);
+        PanelState = PageState.Insert;
+        
+        var result = await GetFormResult(new FormContext(formStateData.Values, DataPanel.Errors, PageState.Insert), true);
 
         if (result is HtmlComponentResult htmlComponentResult)
         {
@@ -490,6 +490,7 @@ public class JJFormView : AsyncComponent
         }
         
         DataPanel.Values = values;
+        DataPanel.PageState = PanelState ?? PageState;
         
         var dataPanelResult = await DataPanel.GetResultAsync();
         
@@ -651,7 +652,7 @@ public class JJFormView : AsyncComponent
         {
             html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
         
-            if(PageState is not PageState.List && PanelState is not null)
+            if(PanelState is not null)
                 html.AppendHiddenInput($"form-view-panel-state-{Name}", ((int)PanelState).ToString());
 
             html.AppendHiddenInput($"current-action-map-{Name}",
@@ -815,7 +816,7 @@ public class JJFormView : AsyncComponent
             {
                 formValues ??= new Dictionary<string, object?>();
                 DataHelper.CopyIntoDictionary(formValues,RelationValues!);
-                var formContext = new FormContext(formValues, PageState);
+                var formContext = new FormContext(formValues, PanelState ?? PageState);
                 var reloadFields = PanelState is not PageState.View && CurrentAction is not PluginAction;
                 return await GetFormResult(
                     formContext,
@@ -826,7 +827,7 @@ public class JJFormView : AsyncComponent
             {
                 formValues ??= await GetFormValuesAsync();
                 var reloadFields = PanelState is not PageState.View && CurrentAction is not PluginAction;
-                var formContext = new FormContext(formValues, PageState);
+                var formContext = new FormContext(formValues, PanelState ?? PageState);
                 return await GetFormResult(formContext, reloadFields);
             }
             default:
@@ -1161,7 +1162,7 @@ public class JJFormView : AsyncComponent
 
         var visibleRelationships = GetVisibleRelationships(values, pageState);
         
-        DataPanel.PageState = PanelState ?? pageState;
+        DataPanel.PageState = pageState;
         DataPanel.Errors = errors;
         DataPanel.Values = values;
         DataPanel.AutoReloadFormFields = autoReloadFormFields;
