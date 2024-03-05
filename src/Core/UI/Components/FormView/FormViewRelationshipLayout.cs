@@ -199,9 +199,12 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         childFormView.ShowTitle = false;
         childFormView.IsChildFormView = true;
         
-        var isDisabled = IsRelationshipDisabled(relationship);
+        var panelState = parentFormView.DataPanel.PageState;
         
-        if (parentFormView.PageState is PageState.View  || isDisabled)
+        var isDisabled = IsRelationshipDisabled(relationship);
+        var isEditing = panelState is PageState.Insert or PageState.Update;
+        
+        if (parentFormView.PageState is PageState.View || isDisabled || isEditing)
             childFormView.DisableActionsAtViewMode();
     }
 

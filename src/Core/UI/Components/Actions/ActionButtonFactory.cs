@@ -158,7 +158,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
             switch (action)
             {
                 case CancelAction:
-                    var isAtRelationshipLayout = formView.ContainsRelationshipLayout(formStateData) || formView.IsChildFormView;
+                    var isAtRelationshipLayout = formView.ContainsRelationshipLayout(formStateData);
 
                     if (isAtRelationshipLayout)
                     {

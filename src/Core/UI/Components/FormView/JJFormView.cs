@@ -222,6 +222,8 @@ public class JJFormView : AsyncComponent
         var insertActionEnabled = ExpressionsService.GetBoolValue(insertAction.EnableExpression,formStateData );
         if (!insertActionVisible || !insertActionEnabled)
             return;
+
+        DataPanel.PageState = PageState.Insert;
         
         var result = await GetFormResult(new FormContext(formStateData.Values, DataPanel.Errors, PageState.Insert), true);
 
@@ -394,8 +396,10 @@ public class JJFormView : AsyncComponent
                                 childFormView.FormElement.Name;
         
         childFormView.ShowTitle = isInsertSelection;
+
+        var panelState = DataPanel.PageState;
         
-        if (PageState is PageState.View)
+        if (PageState is PageState.View || panelState is PageState.Insert || panelState is PageState.Update)
             childFormView.DisableActionsAtViewMode();
         
         if (!isInsertSelection)
@@ -518,7 +522,7 @@ public class JJFormView : AsyncComponent
             return formResult;
         }
 
-        if (ContainsRelationshipLayout(new FormStateData(values, PageState)) || IsChildFormView)
+        if (ContainsRelationshipLayout(new FormStateData(values, PageState)) && DataPanel.ContainsPanelState())
         {
             DataPanel.PageState = PageState.View;
             return await GetFormResult(new FormContext(values, PageState.View), false);
@@ -1142,7 +1146,7 @@ public class JJFormView : AsyncComponent
         var visibleRelationships = GetVisibleRelationships(values, pageState);
         var containsRelationshipLayout = ContainsRelationshipLayout(visibleRelationships);
         
-        if(!containsRelationshipLayout && !IsChildFormView)
+        if(!containsRelationshipLayout)
             DataPanel.PageState = pageState;
         
         DataPanel.Errors = errors;
@@ -1196,7 +1200,7 @@ public class JJFormView : AsyncComponent
     {
         var formToolbarActions = FormElement.Options.FormToolbarActions;
         var panelState = DataPanel.PageState;
-        
+
         if (panelState is PageState.View)
         {
             formToolbarActions.CancelAction.SetVisible(false);
