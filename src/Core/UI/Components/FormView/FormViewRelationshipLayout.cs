@@ -175,7 +175,7 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
             }
             case RelationshipViewType.List:
             {
-                ConfigureOneToManyFormView(childFormView,relationship, filter);
+                await ConfigureOneToManyFormView(childFormView,relationship, filter);
                 break;
             }
         }
@@ -183,11 +183,13 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         return await childFormView.GetFormResultAsync();
     }
 
-    private async void ConfigureOneToManyFormView
+    private async Task ConfigureOneToManyFormView
     (   JJFormView childFormView,
         FormElementRelationship relationship,
         Dictionary<string, object?> filter)
     {
+        childFormView.IsChildFormView = true;
+        
         childFormView.ShowTitle = false;
         childFormView.UserValues = new Dictionary<string, object>(parentFormView.UserValues);
         
@@ -196,8 +198,6 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
         await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
-        childFormView.ShowTitle = false;
-        childFormView.IsChildFormView = true;
         
         var panelState = parentFormView.DataPanel.PageState;
         

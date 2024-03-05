@@ -144,20 +144,22 @@ public class JJFormView : AsyncComponent
                 _dataPanel.AutoReloadFormFields = PageState is not PageState.View;
                 _dataPanel.UserValues = UserValues;
                 _dataPanel.RenderPanelGroup = true;
+
+                if (IsInsertAtGridView)
+                {
+                    _dataPanel.Name += "_insert";
+                    _dataPanel.FieldNamePrefix = "insert_";
+                }
+
+                if (IsChildFormView)
+                    _dataPanel.FieldNamePrefix += $"{Name}_";
+                
+                _dataPanel.ParentComponentName = Name;
+                _dataPanel.FormUI = FormElement.Options.Form;
+                
                 DataHelper.CopyIntoDictionary(_dataPanel.UserValues, RelationValues!);
             }
-            _dataPanel.ParentComponentName = Name;
-            _dataPanel.FormUI = FormElement.Options.Form;
-
-            if (IsInsertAtGridView && (_dataPanel.FieldNamePrefix == null || !_dataPanel.FieldNamePrefix.Contains("insert_")))
-            {
-                _dataPanel.Name += "_insert";
-                _dataPanel.FieldNamePrefix = "insert_";
-            }
-
-            if (IsChildFormView && (_dataPanel.FieldNamePrefix == null || !_dataPanel.FieldNamePrefix.Contains(Name)))
-                _dataPanel.FieldNamePrefix += $"{Name}_";
-            
+          
             return _dataPanel;
         }
     }
