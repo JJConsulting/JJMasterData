@@ -520,6 +520,7 @@ public class JJFormView : AsyncComponent
 
         if (ContainsRelationshipLayout(new FormStateData(values, PageState)) || IsChildFormView)
         {
+            DataPanel.PageState = PageState.View;
             return await GetFormResult(new FormContext(values, PageState.View), false);
         }
 
@@ -1167,16 +1168,14 @@ public class JJFormView : AsyncComponent
 
         var layout = new FormViewRelationshipLayout(this, visibleRelationships);
 
-        ConfigureFormToolbar();
-
-        var topActions = GetTopToolbarActions(FormElement).ToList();
-
-        html.AppendComponent(await GetFormToolbarAsync(topActions));
-
         var relationshipsResult = await layout.GetRelationshipsResult();
 
         if (relationshipsResult is HtmlComponentResult htmlResult)
         {
+            var topActions = GetTopToolbarActions(FormElement).ToList();
+
+            html.PrependComponent(await GetFormToolbarAsync(topActions));
+            
             html.Append((HtmlBuilder?)htmlResult.HtmlBuilder);
             var toolbarActions = FormElement.Options.FormToolbarActions;
 
@@ -1302,15 +1301,8 @@ public class JJFormView : AsyncComponent
     {
         var formHtml = new HtmlBuilder(HtmlTag.Div);
 
-        if (PageState is not PageState.View)
-        {
-            DataPanel.PageState = relationship.EditModeOpenByDefault ? PageState.Update : PageState.View;
-        }
-        else
-        {
-            DataPanel.PageState = PageState;
-        }
-
+        if (!DataPanel.ContainsPanelState())
+            DataPanel.PageState = relationship.EditModeOpenByDefault ? PageState : PageState.View;
         
         var parentPanelHtml = await DataPanel.GetPanelHtmlBuilderAsync();
 

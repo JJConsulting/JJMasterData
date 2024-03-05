@@ -54,13 +54,15 @@ public class JJDataPanel : AsyncComponent
     {
         get
         {
-            if (CurrentContext.Request.Form[$"data-panel-state-{Name}"] != null && _pageState is null)
+            if (ContainsPanelState() && _pageState is null)
                 _pageState = (PageState)int.Parse(CurrentContext.Request.Form[$"data-panel-state-{Name}"]);
 
             return _pageState ?? PageState.View;
         }
         set => _pageState = value;
     }
+
+    internal bool ContainsPanelState() => CurrentContext.Request.Form[$"data-panel-state-{Name}"] != null;
 
     /// <summary>
     /// Fields with error.
