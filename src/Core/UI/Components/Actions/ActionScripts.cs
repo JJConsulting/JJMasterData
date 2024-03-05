@@ -108,13 +108,17 @@ public class ActionScripts(
         return script.ToString();
     }
 
-    public string GetFormActionScript(ActionContext actionContext, ActionSource actionSource, bool encode = true)
+    public string GetFormActionScript(
+        ActionContext actionContext, 
+        ActionSource actionSource, 
+        bool encode = true, 
+        bool isAtModal = false)
     {
         var formElement = actionContext.FormElement;
         var action = actionContext.Action;
         var actionMap = actionContext.ToActionMap(actionSource);
         var encryptedActionMap = EncryptionService.EncryptActionMap(actionMap);
-        string confirmationMessage =
+        var confirmationMessage =
             GetParsedConfirmationMessage(StringLocalizer[action.ConfirmationMessage], actionContext.FormStateData);
         
         var actionData = new ActionData
@@ -129,9 +133,11 @@ public class ActionScripts(
             actionData.ModalTitle = modalAction.ModalTitle ?? string.Empty;
             actionData.IsModal = true;
         }
+        else if (isAtModal)
+        {
+            actionData.IsModal = true;
+        }
         
-        var formViewRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.FormViewReload);
-        actionData.EncryptedFormViewRouteContext = EncryptionService.EncryptRouteContext(formViewRouteContext);
         actionData.IsSubmit = actionContext.IsSubmit;
 
         var actionDataJson = actionData.ToJson();

@@ -126,7 +126,8 @@ class ActionHelper {
         defaultModal.showIframe(url, "", modalSize);
     }
     static executeActionData(actionData) {
-        const { componentName, actionMap, modalTitle, isModal, gridViewRouteContext, formViewRouteContext, isSubmit, confirmationMessage } = actionData;
+        var _a;
+        const { componentName, actionMap, modalTitle, isModal, isSubmit, confirmationMessage } = actionData;
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -134,6 +135,7 @@ class ActionHelper {
         }
         const gridViewActionInput = document.querySelector("#grid-view-action-map-" + componentName);
         const formViewActionInput = document.querySelector("#current-action-map-" + componentName);
+        const formViewRouteContext = (_a = document.querySelector("#form-view-route-context-" + componentName)) === null || _a === void 0 ? void 0 : _a.value;
         if (gridViewActionInput) {
             gridViewActionInput.value = "";
         }
@@ -144,14 +146,18 @@ class ActionHelper {
         if (!form) {
             return;
         }
+        function onModalClose() {
+            formViewActionInput.value = String();
+            setPageState(componentName, PageState.List);
+        }
         if (isModal) {
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
             const modal = new Modal();
             modal.modalId = componentName + "-modal";
-            modal.onModalHidden = function () {
-                formViewActionInput.value = "";
-            };
+            $("body").on('hidden.bs.modal', "#" + modal.modalId, function () {
+                onModalClose();
+            });
             SpinnerOverlay.show();
             const requestOptions = getRequestOptions();
             modal.showUrl({
@@ -161,13 +167,8 @@ class ActionHelper {
                 listenAllEvents("#" + modal.modalId + " ");
                 if (typeof data === "object") {
                     if (data.closeModal) {
-                        if (isSubmit) {
-                            ActionHelper.submitWithScrollPosition();
-                        }
-                        else {
-                            GridViewHelper.refresh(componentName, gridViewRouteContext);
-                            modal.remove();
-                        }
+                        onModalClose();
+                        ActionHelper.submitWithScrollPosition();
                     }
                 }
             });
@@ -923,7 +924,9 @@ class DataImportationModal {
     static getInstance() {
         if (this.instance === undefined) {
             this.instance = new Modal();
-            this.instance.onModalHidden = DataImportationHelper.removePasteListener;
+            $("body").on('hidden.bs.modal', "#" + this.instance.modalId, function () {
+                DataImportationHelper.removePasteListener();
+            });
         }
         return this.instance;
     }
@@ -1019,8 +1022,8 @@ class FormViewHelper {
         document.querySelector(`#current-action-map-${componentName}`).value = String();
         this.refreshFormView(componentName, routeContext);
     }
-    static setPanelState(componentName, pageState, routeContext) {
-        document.querySelector(`#form-view-panel-state-${componentName}`).value = pageState.toString();
+    static setPanelState(componentName, dataPanelName, pageState, routeContext) {
+        document.querySelector(`#data-panel-state-${dataPanelName}`).value = pageState.toString();
         document.querySelector(`#current-action-map-${componentName}`).value = String();
         this.refreshFormView(componentName, routeContext);
     }
@@ -1770,11 +1773,7 @@ class _Modal extends ModalBase {
             else {
                 document.body.appendChild(this.modalElement);
             }
-            const onModalHidden = this.onModalHidden;
             this.modalElement.addEventListener('hidden.bs.modal', () => {
-                if (onModalHidden) {
-                    onModalHidden();
-                }
                 document.getElementById(this.modalId).remove();
             });
         }
@@ -1879,10 +1878,6 @@ class _LegacyModal extends ModalBase {
     }
     showModal() {
         $(`#${this.modalId}`).modal();
-        let onModalHidden = this.onModalHidden;
-        $("#" + this.modalId).one('hidden.bs.modal', function () {
-            onModalHidden();
-        });
         $("iframe").on("load", () => {
             SpinnerOverlay.hide();
         });
@@ -2000,12 +1995,6 @@ class Modal {
     }
     set centered(value) {
         this.instance.centered = value;
-    }
-    get onModalHidden() {
-        return this.instance.onModalHidden;
-    }
-    set onModalHidden(value) {
-        this.instance.onModalHidden = value;
     }
     showIframe(url, title, size = null) {
         this.instance.showIframe(url, title, size);

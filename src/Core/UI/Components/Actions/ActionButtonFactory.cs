@@ -157,16 +157,24 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
             var gridTableActions = actionContext.FormElement.Options.GridTableActions;
             switch (action)
             {
-                case CancelAction when formView.PanelState is null:
-    
-                    var isCancelModal = gridTableActions.EditAction.ShowAsModal;
-                    if (isCancelModal)
+                case CancelAction:
+                    var isAtRelationshipLayout = formView.ContainsRelationshipLayout(formStateData) || formView.IsChildFormView;
+
+                    if (isAtRelationshipLayout)
                     {
-                        button.OnClientClick = ActionScripts.GetHideModalScript(actionContext.ParentComponentName);
+                        button.OnClientClick = formView.Scripts.GetSetPanelStateScript(PageState.View);
                     }
                     else
                     {
-                        button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
+                        var isCancelModal = gridTableActions.EditAction.ShowAsModal;
+                        if (isCancelModal)
+                        {
+                            button.OnClientClick = ActionScripts.GetHideModalScript(actionContext.ParentComponentName);
+                        }
+                        else
+                        {
+                            button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
+                        }        
                     }
                     break;
                 case BackAction:
@@ -185,19 +193,17 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
                 case FormEditAction:
                     button.OnClientClick = formView.Scripts.GetSetPanelStateScript(PageState.Update);
                     break;
-                case CancelAction:
-                    button.OnClientClick = formView.Scripts.GetSetPanelStateScript(PageState.View);
-                    break;
                 case AuditLogFormToolbarAction:
                     button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
                     break;
                 case SaveAction saveAction:
+                    var isAtModal = formView.DataPanel.IsAtModal;
                     if (saveAction.EnterKeyBehavior == FormEnterKey.Submit)
                         button.Type = LinkButtonType.Submit;
                     else
                         button.Type = saveAction.IsGroup ? LinkButtonType.Link : LinkButtonType.Button;
                     
-                    button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar);
+                    button.OnClientClick = ActionScripts.GetFormActionScript(actionContext, ActionSource.FormToolbar,true,isAtModal);
                     break;
             }
         }
@@ -214,7 +220,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
     {
         var button = Create(action, actionContext.FormStateData);
 
-        if (action is UserCreatedAction userCreatedAction)
+        if (action is UserCreatedAction)
         {
             button.OnClientClick = ActionScripts.GetUserActionScript(actionContext, ActionSource.Field);
         }

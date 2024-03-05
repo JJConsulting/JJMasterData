@@ -40,7 +40,7 @@ public class FormViewScripts(JJFormView formView)
     {
         var encryptedRouteContext = GetEncryptedRouteContext(ComponentContext.FormViewReload);
         //language=Javascript
-        return $"FormViewHelper.setPanelState('{formView.Name}','{(int)pageState}', '{encryptedRouteContext}')";
+        return $"FormViewHelper.setPanelState('{formView.Name}','{formView.DataPanel.Name}','{(int)pageState}', '{encryptedRouteContext}')";
     }
 
 }

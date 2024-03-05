@@ -50,7 +50,17 @@ public class JJDataPanel : AsyncComponent
     /// <summary>
     /// Current state of the form
     /// </summary>
-    public PageState PageState { get; set; }
+    public PageState PageState
+    {
+        get
+        {
+            if (CurrentContext.Request.Form[$"data-panel-state-{Name}"] != null && _pageState is null)
+                _pageState = (PageState)int.Parse(CurrentContext.Request.Form[$"data-panel-state-{Name}"]);
+
+            return _pageState ?? PageState.View;
+        }
+        set => _pageState = value;
+    }
 
     /// <summary>
     /// Fields with error.
@@ -83,6 +93,9 @@ public class JJDataPanel : AsyncComponent
     public string FieldNamePrefix { get; set; }
     
     private RouteContext _routeContext;
+    private PageState? _pageState;
+    private bool _isAtModal;
+
     protected RouteContext RouteContext
     {
         get
@@ -98,8 +111,19 @@ public class JJDataPanel : AsyncComponent
     }
     
     internal ComponentContext ComponentContext => RouteContext.ComponentContext;
-    
-    
+
+    public bool IsAtModal
+    {
+        get
+        {
+            if (CurrentContext.Request.Form[$"data-panel-is-at-modal-{Name}"] != null)
+                _isAtModal = StringManager.ParseBool(CurrentContext.Request.Form[$"data-panel-is-at-modal-{Name}"]);
+
+            return _isAtModal;
+        }
+        set => _isAtModal = value;
+    }
+
     public IEntityRepository EntityRepository { get; }
     internal IHttpContext CurrentContext { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -108,6 +132,7 @@ public class JJDataPanel : AsyncComponent
     internal ExpressionsService ExpressionsService { get; }
     private UrlRedirectService UrlRedirectService { get; }
     internal IComponentFactory ComponentFactory { get; }
+
 
     #endregion
 
@@ -135,7 +160,6 @@ public class JJDataPanel : AsyncComponent
         Values = new Dictionary<string, object>();
         Errors = new Dictionary<string, string>();
         AutoReloadFormFields = true;
-        PageState = PageState.View;
     }
 
     public JJDataPanel(
@@ -221,16 +245,23 @@ public class JJDataPanel : AsyncComponent
             .WithNameAndId(Name)
             .WithCssClass(CssClass);
 
-        if (DataHelper.ContainsPkValues(FormElement, Values) && AppendPkValues)
-        {
-            html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
-        }
-        
+        AppendHiddenInputs(html);
+
         var panelGroup = new DataPanelLayout(this);
         await html.AppendRangeAsync(panelGroup.GetHtmlPanelList());
         html.AppendScript(GetHtmlFormScript());
 
         return html;
+    }
+
+    private void AppendHiddenInputs(HtmlBuilder html)
+    {
+        if (DataHelper.ContainsPkValues(FormElement, Values) && AppendPkValues)
+        {
+            html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
+        }
+        html.AppendHiddenInput($"data-panel-state-{Name}", ((int)PageState).ToString());
+        html.AppendHiddenInput($"data-panel-is-at-modal-{Name}", IsAtModal.ToString());
     }
 
     private string GetPkHiddenInput()

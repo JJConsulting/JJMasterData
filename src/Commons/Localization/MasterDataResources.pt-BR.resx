@@ -3483,8 +3483,8 @@
   <data name="Trigger the action when the value of the field is changed." xml:space="preserve">
     <value>Gatilha a ação quando o valor do campo é alterado.</value>
   </data>
-  <data name="If true, the entire page will be reloaded after executing the action, else, a AJAX request is made to reload just the current form. If inside a modal, the submit will be executed after the modal is closed." xml:space="preserve">
-    <value>Se verdadeiro, a página inteira será recarregada após executar a ação, senão, uma requisição AJAX será feita para recarregar apenas o formulário. Se dentro de um modal, o submit será executado após o modal ser fechado.</value>
+  <data name="If true, the entire page will be reloaded after executing the action, else, a AJAX request is made to reload just the current form. If inside a modal, this option will be ignored." xml:space="preserve">
+    <value>Se verdadeiro, a página inteira será recarregada após executar a ação, senão, uma requisição AJAX será feita para recarregar apenas o formulário. Se dentro de um modal, essa opção será ignorada.</value>
   </data>
   <data name="If not in a relationship, Panel is considered the same as Bottom." xml:space="preserve">
     <value>Se não estiver em um relacionamento, Panel é considerado o mesmo que Bottom.</value>

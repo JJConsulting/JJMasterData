@@ -15,7 +15,7 @@ abstract class ModalBase{
     modalElement: HTMLElement;
     modalSize: ModalSize;
     centered: boolean;
-    onModalHidden?: Function;
+
 
 
     abstract get modalTitle();
@@ -100,12 +100,7 @@ class _Modal extends ModalBase {
                 document.body.appendChild(this.modalElement);
             }
             
-            const onModalHidden = this.onModalHidden;
-            
             this.modalElement.addEventListener('hidden.bs.modal', () => {
-                if(onModalHidden){
-                    onModalHidden();
-                }
                 document.getElementById(this.modalId).remove();
             })
 
@@ -235,10 +230,6 @@ class _LegacyModal extends ModalBase{
     private showModal() {
         $(`#${this.modalId}`).modal();
 
-        let onModalHidden = this.onModalHidden;
-        $("#" + this.modalId).one('hidden.bs.modal', function () {
-            onModalHidden();
-        });
         
         $("iframe").on("load", () => {
             SpinnerOverlay.hide();
@@ -367,14 +358,6 @@ class Modal {
 
     set centered(value: boolean) {
         this.instance.centered = value;
-    }
-
-    get onModalHidden(): Function {
-        return this.instance.onModalHidden;
-    }
-
-    set onModalHidden(value: Function) {
-        this.instance.onModalHidden = value;
     }
     
     constructor() {
