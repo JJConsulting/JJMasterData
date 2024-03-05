@@ -86,9 +86,9 @@ public class FileSystemDataDictionaryRepository
 
         return Task.FromResult(names);
     }
+
+    public List<FormElement> GetFormElementList(bool? apiSync = null) => GetMetadataList(apiSync);
     
-
-
     ///<inheritdoc cref="IDataDictionaryRepository.GetMetadata"/>
     public FormElement GetMetadata(string elementName)
     {
