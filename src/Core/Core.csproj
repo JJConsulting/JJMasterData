@@ -26,6 +26,7 @@
     </ItemGroup>
     
     <ItemGroup>
+        <PackageReference Include="Riok.Mapperly" Version="3.4.0" ExcludeAssets="runtime" PrivateAssets="all" />
         <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     </ItemGroup>
     
