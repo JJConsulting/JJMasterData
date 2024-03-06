@@ -187,7 +187,7 @@ public abstract class DataExportationWriterBase(
             ProcessReporter.Message = StringLocalizer["Retrieving records..."];
 
             Reporter(ProcessReporter);
-
+            
             var filePath = Path.Combine(FolderPath, GetFilePath());
 
             using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite))

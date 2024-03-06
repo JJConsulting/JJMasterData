@@ -29,9 +29,14 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 public class JJDataPanel : AsyncComponent
 {
+    #region "Fields"
+    private RouteContext _routeContext;
+    private PageState? _pageState;
+    private bool _isAtModal;
+    private FormUI _formUI;
+    #endregion
     #region "Properties"
 
-    private FormUI _formUI;
 
     /// <summary>
     /// Layout form settings
@@ -50,8 +55,26 @@ public class JJDataPanel : AsyncComponent
     /// <summary>
     /// Current state of the form
     /// </summary>
-    public PageState PageState { get; set; }
+    public PageState PageState
+    {
+        get
+        {
+            if (ContainsPanelState() && _pageState is null)
+                _pageState = (PageState)int.Parse(CurrentContext.Request.Form[$"data-panel-state-{Name}"]);
 
+            return _pageState ?? PageState.View;
+        }
+        set
+        {
+            _pageState = value;
+            HasCustomPanelState = true;
+        }
+    }
+
+    internal bool ContainsPanelState() => CurrentContext.Request.Form[$"data-panel-state-{Name}"] != null;
+
+    internal bool HasCustomPanelState { get; set; }
+    
     /// <summary>
     /// Fields with error.
     /// Key=Field Name, Value=Error Description
@@ -78,12 +101,11 @@ public class JJDataPanel : AsyncComponent
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
 
-    internal bool AppendPkValues { get; set; } = true;
+    private bool AppendPkValues { get; set; } = true;
     
     public string FieldNamePrefix { get; set; }
-    
-    private RouteContext _routeContext;
-    protected RouteContext RouteContext
+
+    private RouteContext RouteContext
     {
         get
         {
@@ -96,10 +118,21 @@ public class JJDataPanel : AsyncComponent
             return _routeContext;
         }
     }
-    
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
-    
-    
+
+    private ComponentContext ComponentContext => RouteContext.ComponentContext;
+
+    public bool IsAtModal
+    {
+        get
+        {
+            if (CurrentContext.Request.Form[$"data-panel-is-at-modal-{Name}"] != null)
+                _isAtModal = StringManager.ParseBool(CurrentContext.Request.Form[$"data-panel-is-at-modal-{Name}"]);
+
+            return _isAtModal;
+        }
+        set => _isAtModal = value;
+    }
+
     public IEntityRepository EntityRepository { get; }
     internal IHttpContext CurrentContext { get; }
     internal IEncryptionService EncryptionService { get; }
@@ -108,6 +141,7 @@ public class JJDataPanel : AsyncComponent
     internal ExpressionsService ExpressionsService { get; }
     private UrlRedirectService UrlRedirectService { get; }
     internal IComponentFactory ComponentFactory { get; }
+
 
     #endregion
 
@@ -135,7 +169,6 @@ public class JJDataPanel : AsyncComponent
         Values = new Dictionary<string, object>();
         Errors = new Dictionary<string, string>();
         AutoReloadFormFields = true;
-        PageState = PageState.View;
     }
 
     public JJDataPanel(
@@ -221,16 +254,23 @@ public class JJDataPanel : AsyncComponent
             .WithNameAndId(Name)
             .WithCssClass(CssClass);
 
-        if (DataHelper.ContainsPkValues(FormElement, Values) && AppendPkValues)
-        {
-            html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
-        }
-        
+        AppendHiddenInputs(html);
+
         var panelGroup = new DataPanelLayout(this);
         await html.AppendRangeAsync(panelGroup.GetHtmlPanelList());
         html.AppendScript(GetHtmlFormScript());
 
         return html;
+    }
+
+    private void AppendHiddenInputs(HtmlBuilder html)
+    {
+        if (DataHelper.ContainsPkValues(FormElement, Values) && AppendPkValues)
+        {
+            html.AppendHiddenInput($"data-panel-pk-values-{FormElement.Name}", GetPkHiddenInput());
+        }
+        html.AppendHiddenInput($"data-panel-state-{Name}", ((int)PageState).ToString());
+        html.AppendHiddenInput($"data-panel-is-at-modal-{Name}", IsAtModal.ToString());
     }
 
     private string GetPkHiddenInput()

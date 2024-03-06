@@ -33,8 +33,8 @@ class FormViewHelper {
         this.refreshFormView(componentName, routeContext);
     }
 
-    static setPanelState(componentName: string, pageState: PageState, routeContext: string) {
-        document.querySelector<HTMLInputElement>(`#form-view-panel-state-${componentName}`).value = pageState.toString();
+    static setPanelState(componentName: string, dataPanelName: string, pageState: PageState, routeContext: string) {
+        document.querySelector<HTMLInputElement>(`#data-panel-state-${dataPanelName}`).value = pageState.toString();
         document.querySelector<HTMLInputElement>(`#current-action-map-${componentName}`).value = String();
 
         this.refreshFormView(componentName, routeContext);

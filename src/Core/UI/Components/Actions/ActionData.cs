@@ -15,9 +15,6 @@ internal record ActionData
     [JsonProperty("modalTitle")]
     public string? ModalTitle { get; set; }
     
-    [JsonProperty("formViewRouteContext")]
-    public string? EncryptedFormViewRouteContext { get; set; }
-    
     [JsonProperty("gridViewRouteContext")]
     public string? EncryptedGridViewRouteContext { get; set; }
     

@@ -9,23 +9,23 @@ public abstract class ControlBase(IFormValues formValues) : AsyncComponent
     private string _text;
 
     /// <summary>
-    /// Obtém ou define um valor que indica se o controle está habilitado.
+    /// Property to check if the control is enabled.
     /// (Default = true)
     /// </summary>
-    public bool Enabled { get; set; }
+    public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Obtém ou define um valor que indica se o controle é somente leitura
+    /// Property to tell if the control is readonly, but the value is sent to the server.
     /// </summary>
     public bool ReadOnly { get; set; }
 
     /// <summary>
-    /// Texto que especifica uma dica curta que descreve o valor esperado de um campo de entrada
+    /// Text shown when the component don't have any content.
     /// </summary>
     public string PlaceHolder { get; set; }
 
     /// <summary>
-    /// Texto exibido quando o ponteiro do mouse passa sobre o controle
+    /// Text shown when the component is hovered.
     /// </summary>
     public virtual string Tooltip { get; set; }
     
@@ -34,7 +34,7 @@ public abstract class ControlBase(IFormValues formValues) : AsyncComponent
     internal IFormValues FormValues { get; } = formValues;
 
     /// <summary>
-    /// Text content inside the input
+    /// Value of the component.
     /// </summary>
     public string Text
     {

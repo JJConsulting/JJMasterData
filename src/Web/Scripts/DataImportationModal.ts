@@ -4,7 +4,9 @@ class DataImportationModal {
     static getInstance() {
         if(this.instance === undefined){
             this.instance = new Modal();
-            this.instance.onModalHidden = DataImportationHelper.removePasteListener;
+            $("body").on('hidden.bs.modal',"#" + this.instance.modalId, function () {
+                DataImportationHelper.removePasteListener()
+            });
         }
         return this.instance;
     }

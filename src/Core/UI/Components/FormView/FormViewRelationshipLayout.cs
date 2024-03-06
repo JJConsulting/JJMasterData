@@ -170,22 +170,26 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
             case RelationshipViewType.Update:
             case RelationshipViewType.View:
             {
-                return await ConfigureOneToOneFormView(childFormView, relationship, filter);
+                await ConfigureOneToOneFormView(childFormView, relationship, filter);
+                break;
             }
             case RelationshipViewType.List:
             {
-                return await ConfigureOneToManyFormView(childFormView,relationship, filter);
+                await ConfigureOneToManyFormView(childFormView,relationship, filter);
+                break;
             }
-            default:
-                return new EmptyComponentResult();
         }
+        
+        return await childFormView.GetFormResultAsync();
     }
 
-    private async Task<ComponentResult> ConfigureOneToManyFormView
+    private async Task ConfigureOneToManyFormView
     (   JJFormView childFormView,
         FormElementRelationship relationship,
         Dictionary<string, object?> filter)
     {
+        childFormView.RelationshipType = RelationshipType.OneToMany;
+        
         childFormView.ShowTitle = false;
         childFormView.UserValues = new Dictionary<string, object>(parentFormView.UserValues);
         
@@ -194,20 +198,17 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
         await childFormView.GridView.Filter.ApplyCurrentFilter(filter);
-        childFormView.ShowTitle = false;
-        childFormView.IsChildFormView = true;
+        
+        var panelState = parentFormView.DataPanel.PageState;
         
         var isDisabled = IsRelationshipDisabled(relationship);
+        var isEditing = panelState is PageState.Insert or PageState.Update;
         
-        if (parentFormView.PageState is PageState.View || parentFormView.PanelState is PageState.Update || isDisabled)
+        if (parentFormView.PageState is PageState.View || isDisabled || isEditing)
             childFormView.DisableActionsAtViewMode();
-                
-        var result = await childFormView.GetFormResultAsync();
-                
-        return result;
     }
 
-    private async Task<ComponentResult> ConfigureOneToOneFormView(JJFormView childFormView,
+    private async Task ConfigureOneToOneFormView(JJFormView childFormView,
         FormElementRelationship relationship, Dictionary<string, object?> filter)
     {
         Dictionary<string, object?>? childValues = null;
@@ -217,28 +218,24 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
                 await parentFormView.EntityRepository.GetFieldsAsync(childFormView.FormElement, filter!);
         }
         
-        childFormView.IsChildFormView = true;
+        childFormView.RelationshipType = RelationshipType.OneToOne;
 
         var isDisabled = IsRelationshipDisabled(relationship);
         
         if (relationship.ViewType is RelationshipViewType.View ||
-            parentFormView.PageState is PageState.View || 
-            parentFormView.PanelState is PageState.Update || isDisabled)
+            parentFormView.PageState is PageState.View || isDisabled)
         {
             childFormView.PageState = PageState.View;
-            childFormView.PanelState = PageState.View;
         }
         else
         {
             childFormView.PageState = childValues is not null ? PageState.Update : PageState.Insert;
-
-            if (childFormView.PanelState is null)
-            {
-                if (childValues is not null)
-                    childFormView.PanelState = relationship.EditModeOpenByDefault ? PageState.Update: PageState.View;
-                else
-                    childFormView.PanelState = PageState.Insert;
-            }
+            
+            if (childValues is not null)
+                childFormView.DataPanel.PageState = relationship.EditModeOpenByDefault ? childFormView.PageState: PageState.View;
+            else
+                childFormView.DataPanel.PageState = PageState.Insert;
+         
         }
         
         childFormView.RelationValues = DataHelper.GetRelationValues(parentFormView.FormElement, filter);
@@ -250,8 +247,6 @@ internal class FormViewRelationshipLayout(JJFormView parentFormView, List<FormEl
         
         childFormView.DataPanel.RenderPanelGroup = false;
         childFormView.DataPanel.FormUI = childFormView.FormElement.Options.Form;
-                
-        return await childFormView.GetFormResultAsync();
     }
 
     private bool IsRelationshipDisabled(FormElementRelationship relationship) => !parentFormView.ExpressionsService.GetBoolValue(relationship.Panel.EnableExpression, GetFormStateData());

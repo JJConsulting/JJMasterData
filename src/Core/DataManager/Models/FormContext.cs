@@ -1,10 +1,12 @@
 #nullable enable
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using JJMasterData.Core.DataDictionary.Models;
 
 namespace JJMasterData.Core.DataManager.Models;
 
+[DebuggerStepThrough]
 internal class FormContext(Dictionary<string, object?> values, Dictionary<string, string> errors, PageState pageState)
 {
     public FormContext(Dictionary<string, object?> values, PageState pageState)

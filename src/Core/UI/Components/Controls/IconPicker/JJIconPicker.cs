@@ -27,7 +27,7 @@ public class JJIconPicker(
         var comboBox = comboBoxFactory.Create();
         comboBox.Name = Name;
         comboBox.Id =  id;
-        
+        comboBox.Enabled = Enabled;
         if(SelectedIcon is not null)
         {
             comboBox.SelectedValue = ((int)SelectedIcon).ToString();
@@ -55,7 +55,7 @@ public class JJIconPicker(
         var div = new HtmlBuilder(HtmlTag.Div);
         div.WithCssClass("input-group");
         await div.AppendControlAsync(comboBox);
-        div.AppendDiv(div =>
+        div.AppendIf(Enabled,HtmlTag.Div,div =>
         {
             var tooltip = stringLocalizer["Search Icon"];
             div.WithCssClass("btn btn-default");

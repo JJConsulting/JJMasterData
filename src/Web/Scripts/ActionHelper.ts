@@ -1,6 +1,7 @@
 class ActionHelper {
     static submitWithScrollPosition(){
         localStorage.setItem('masterDataScrollPosition', window.scrollY.toString());
+        SpinnerOverlay.show();
         document.forms[0].submit();
     }
     
@@ -137,15 +138,13 @@ class ActionHelper {
         defaultModal.showIframe(url, "", modalSize);
     }
     
-
     static executeActionData(actionData: ActionData){
         const {
             componentName,
             actionMap,
+            gridViewRouteContext,
             modalTitle,
             isModal,
-            gridViewRouteContext,
-            formViewRouteContext,
             isSubmit,
             confirmationMessage
         } = actionData;
@@ -158,7 +157,8 @@ class ActionHelper {
 
         const gridViewActionInput = document.querySelector<HTMLInputElement>("#grid-view-action-map-" + componentName);
         const formViewActionInput = document.querySelector<HTMLInputElement>("#current-action-map-" + componentName);
-
+        const formViewRouteContext = document.querySelector<HTMLInputElement>("#form-view-route-context-" + componentName)?.value;
+        
         if (gridViewActionInput) {
             gridViewActionInput.value = "";
         }
@@ -172,15 +172,22 @@ class ActionHelper {
             return;
         }
 
+        function onModalClose() {
+            formViewActionInput.value = String();
+            setPageState(componentName, PageState.List)
+        }
+
         if (isModal) {
             const urlBuilder = new UrlBuilder();
             urlBuilder.addQueryParameter("routeContext", formViewRouteContext);
 
             const modal = new Modal();
             modal.modalId = componentName + "-modal";
-            modal.onModalHidden = function(){
-                formViewActionInput.value = "";
-            }
+
+            $("body").on('hidden.bs.modal',"#" + modal.modalId, function () {
+                onModalClose();
+            });
+            
             SpinnerOverlay.show();
             const requestOptions = getRequestOptions();
             modal.showUrl({
@@ -192,11 +199,12 @@ class ActionHelper {
                 if (typeof data === "object") {
                     if (data.closeModal) {
                         if(isSubmit){
+                            onModalClose();
                             ActionHelper.submitWithScrollPosition();
                         }
-                        else{
-                            GridViewHelper.refresh(componentName,gridViewRouteContext)
-                            modal.remove();
+                       else{
+                            modal.hide();
+                            GridViewHelper.refresh(componentName,gridViewRouteContext);
                         }
                     }
                 }
@@ -234,7 +242,7 @@ class ActionHelper {
     static hideActionModal(componentName:string){
         const modal = new Modal();
         modal.modalId = componentName + "-modal";
-        modal.remove();
+        modal.hide();
     }
     
     static launchUrl(url, isModal, title, confirmationMessage, modalSize = 1) {
