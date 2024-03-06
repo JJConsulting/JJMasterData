@@ -132,12 +132,16 @@ public class ActionScripts(
         if (action is IModalAction { ShowAsModal: true } modalAction)
         {
             actionData.ModalTitle = modalAction.ModalTitle ?? string.Empty;
-            actionData.EncryptedGridViewRouteContext =  GetGridRouteContext(formElement);
+            
+            if (!actionData.IsSubmit)
+                actionData.EncryptedGridViewRouteContext = GetGridRouteContext(formElement);
+
             actionData.IsModal = true;
         }
         else if (isAtModal)
         {
-            actionData.EncryptedGridViewRouteContext = GetGridRouteContext(formElement);
+            if (!actionData.IsSubmit)
+                actionData.EncryptedGridViewRouteContext = GetGridRouteContext(formElement);
             actionData.IsModal = true;
         }
         
