@@ -1,6 +1,7 @@
 class ActionHelper {
     static submitWithScrollPosition(){
         localStorage.setItem('masterDataScrollPosition', window.scrollY.toString());
+        SpinnerOverlay.show();
         document.forms[0].submit();
     }
     
@@ -141,6 +142,7 @@ class ActionHelper {
         const {
             componentName,
             actionMap,
+            gridViewRouteContext,
             modalTitle,
             isModal,
             isSubmit,
@@ -196,8 +198,14 @@ class ActionHelper {
                 
                 if (typeof data === "object") {
                     if (data.closeModal) {
-                        onModalClose();
-                        ActionHelper.submitWithScrollPosition();
+                        if(isSubmit){
+                            onModalClose();
+                            ActionHelper.submitWithScrollPosition();
+                        }
+                       else{
+                            modal.hide();
+                            GridViewHelper.refresh(componentName,gridViewRouteContext);
+                        }
                     }
                 }
             })

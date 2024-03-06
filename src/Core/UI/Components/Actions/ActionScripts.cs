@@ -2,6 +2,7 @@
 using System.Web;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
+using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Models.Actions;
 using JJMasterData.Core.DataManager.Expressions;
 using JJMasterData.Core.DataManager.Models;
@@ -127,14 +128,16 @@ public class ActionScripts(
             EncryptedActionMap = encryptedActionMap,
             ConfirmationMessage = confirmationMessage.IsNullOrEmpty() ? null : confirmationMessage
         };
-
+        
         if (action is IModalAction { ShowAsModal: true } modalAction)
         {
             actionData.ModalTitle = modalAction.ModalTitle ?? string.Empty;
+            actionData.EncryptedGridViewRouteContext =  GetGridRouteContext(formElement);
             actionData.IsModal = true;
         }
         else if (isAtModal)
         {
+            actionData.EncryptedGridViewRouteContext = GetGridRouteContext(formElement);
             actionData.IsModal = true;
         }
         
@@ -149,7 +152,13 @@ public class ActionScripts(
 
         return functionSignature;
     }
-    
+
+    private string GetGridRouteContext(FormElement formElement)
+    {
+        var gridRouteContext = RouteContext.FromFormElement(formElement, ComponentContext.GridViewReload);
+        var encryptedRouteContext = EncryptionService.EncryptRouteContext(gridRouteContext);
+        return encryptedRouteContext;
+    }
 
     internal string GetUserActionScript(
         ActionContext actionContext,

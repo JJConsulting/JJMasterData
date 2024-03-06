@@ -12,6 +12,7 @@ class ActionData {
 class ActionHelper {
     static submitWithScrollPosition() {
         localStorage.setItem('masterDataScrollPosition', window.scrollY.toString());
+        SpinnerOverlay.show();
         document.forms[0].submit();
     }
     static executeSqlCommand(componentName, encryptedActionMap, encryptedRouteContext, isSubmit, confirmMessage) {
@@ -127,7 +128,7 @@ class ActionHelper {
     }
     static executeActionData(actionData) {
         var _a;
-        const { componentName, actionMap, modalTitle, isModal, isSubmit, confirmationMessage } = actionData;
+        const { componentName, actionMap, gridViewRouteContext, modalTitle, isModal, isSubmit, confirmationMessage } = actionData;
         if (confirmationMessage) {
             if (!confirm(confirmationMessage)) {
                 return false;
@@ -167,8 +168,14 @@ class ActionHelper {
                 listenAllEvents("#" + modal.modalId + " ");
                 if (typeof data === "object") {
                     if (data.closeModal) {
-                        onModalClose();
-                        ActionHelper.submitWithScrollPosition();
+                        if (isSubmit) {
+                            onModalClose();
+                            ActionHelper.submitWithScrollPosition();
+                        }
+                        else {
+                            modal.hide();
+                            GridViewHelper.refresh(componentName, gridViewRouteContext);
+                        }
                     }
                 }
             });
