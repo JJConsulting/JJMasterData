@@ -114,12 +114,6 @@ public partial class DataAccess
         ConnectionProvider = optionsValue.ConnectionProvider;
     }
     
-    public DataAccess(IOptions<MasterDataCommonsOptions> options)
-    {
-        var optionsValue = options.Value;
-        ConnectionString = optionsValue.ConnectionString ?? throw new ArgumentNullException(nameof(optionsValue.ConnectionString));
-        ConnectionProvider = optionsValue.ConnectionProvider;
-    }
 
     public DbConnection GetConnection()
     {
