@@ -126,27 +126,23 @@ public class ActionScripts(
         {
             ComponentName = actionContext.ParentComponentName,
             EncryptedActionMap = encryptedActionMap,
+            IsSubmit = actionContext.IsSubmit,
             ConfirmationMessage = confirmationMessage.IsNullOrEmpty() ? null : confirmationMessage
         };
         
         if (action is IModalAction { ShowAsModal: true } modalAction)
         {
             actionData.ModalTitle = modalAction.ModalTitle ?? string.Empty;
-            
-            if (!actionData.IsSubmit)
-                actionData.EncryptedGridViewRouteContext = GetGridRouteContext(formElement);
-
             actionData.IsModal = true;
         }
         else if (isAtModal)
         {
-            if (!actionData.IsSubmit)
-                actionData.EncryptedGridViewRouteContext = GetGridRouteContext(formElement);
             actionData.IsModal = true;
         }
-        
-        actionData.IsSubmit = actionContext.IsSubmit;
 
+        if (actionData.IsModal && !actionData.IsSubmit)
+            actionData.EncryptedGridViewRouteContext = GetGridRouteContext(formElement);
+        
         var actionDataJson = actionData.ToJson();
 
         var functionSignature = $"ActionHelper.executeAction('{actionDataJson}');";
