@@ -23,6 +23,9 @@ public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory
     [HtmlAttributeName("value")] 
     public IconType? Value { get; set; }
 
+    [HtmlAttributeName("enabled")]
+    public bool Enabled { get; set; } = true;
+
     private IMasterDataUrlHelper UrlHelper { get; } = urlHelper;
     private IControlFactory<JJIconPicker> IconPickerFactory { get; } = iconPickerFactory;
     private IStringLocalizer<MasterDataResources> StringLocalizer { get; } = stringLocalizer;
@@ -46,6 +49,8 @@ public class IconPickerTagHelper(IControlFactory<JJIconPicker> iconPickerFactory
         var iconPicker = IconPickerFactory.Create();
         iconPicker.Id = id;
         iconPicker.Name = name;
+        iconPicker.Enabled = Enabled;
+        
         if (modelValue != null) 
             iconPicker.SelectedIcon = modelValue.Value;
 
