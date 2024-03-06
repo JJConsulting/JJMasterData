@@ -1,3 +1,4 @@
+using JJMasterData.Commons.Data.Entity.Models;
 using JJMasterData.Commons.Exceptions;
 using JJMasterData.Commons.Localization;
 using JJMasterData.Commons.Security.Cryptography.Abstractions;
@@ -150,7 +151,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
     
         if (action is UserCreatedAction)
         {
-            button.OnClientClick =  ActionScripts.GetUserActionScript(actionContext, ActionSource.FormToolbar);
+            button.OnClientClick = ActionScripts.GetUserActionScript(actionContext, ActionSource.FormToolbar);
         }
         else if (action is FormToolbarAction)
         {
@@ -158,7 +159,7 @@ public class ActionButtonFactory(IComponentFactory<JJLinkButton> linkButtonFacto
             switch (action)
             {
                 case CancelAction:
-                    var isAtRelationshipLayout = formView.ContainsRelationshipLayout(formStateData);
+                    var isAtRelationshipLayout = formView.ContainsRelationshipLayout(formStateData) || formView.RelationshipType is RelationshipType.OneToOne;
 
                     if (isAtRelationshipLayout)
                     {

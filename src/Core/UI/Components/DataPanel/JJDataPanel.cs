@@ -29,9 +29,14 @@ namespace JJMasterData.Core.UI.Components;
 /// </summary>
 public class JJDataPanel : AsyncComponent
 {
+    #region "Fields"
+    private RouteContext _routeContext;
+    private PageState? _pageState;
+    private bool _isAtModal;
+    private FormUI _formUI;
+    #endregion
     #region "Properties"
 
-    private FormUI _formUI;
 
     /// <summary>
     /// Layout form settings
@@ -59,11 +64,17 @@ public class JJDataPanel : AsyncComponent
 
             return _pageState ?? PageState.View;
         }
-        set => _pageState = value;
+        set
+        {
+            _pageState = value;
+            HasCustomPanelState = true;
+        }
     }
 
     internal bool ContainsPanelState() => CurrentContext.Request.Form[$"data-panel-state-{Name}"] != null;
 
+    internal bool HasCustomPanelState { get; set; }
+    
     /// <summary>
     /// Fields with error.
     /// Key=Field Name, Value=Error Description
@@ -90,15 +101,11 @@ public class JJDataPanel : AsyncComponent
     /// </summary>
     internal bool RenderPanelGroup { get; set; }
 
-    internal bool AppendPkValues { get; set; } = true;
+    private bool AppendPkValues { get; set; } = true;
     
     public string FieldNamePrefix { get; set; }
-    
-    private RouteContext _routeContext;
-    private PageState? _pageState;
-    private bool _isAtModal;
 
-    protected RouteContext RouteContext
+    private RouteContext RouteContext
     {
         get
         {
@@ -111,8 +118,8 @@ public class JJDataPanel : AsyncComponent
             return _routeContext;
         }
     }
-    
-    internal ComponentContext ComponentContext => RouteContext.ComponentContext;
+
+    private ComponentContext ComponentContext => RouteContext.ComponentContext;
 
     public bool IsAtModal
     {

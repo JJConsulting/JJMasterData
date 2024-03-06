@@ -202,7 +202,7 @@ class ActionHelper {
     static hideActionModal(componentName) {
         const modal = new Modal();
         modal.modalId = componentName + "-modal";
-        modal.remove();
+        modal.hide();
     }
     static launchUrl(url, isModal, title, confirmationMessage, modalSize = 1) {
         if (confirmationMessage) {

@@ -79,6 +79,7 @@ public class JJFormView : AsyncComponent
     private RouteContext? _routeContext;
     private FormStateData? _formStateData;
     private bool _isCustomCurrentActionMap;
+    private RelationshipType? _relationshipType;
 
     #endregion
 
@@ -306,8 +307,20 @@ public class JJFormView : AsyncComponent
     internal FormViewScripts Scripts => _scripts ??= new(this);
 
     public bool ShowTitle { get; set; }
-    
-    internal bool IsChildFormView { get; set; }
+
+    internal bool IsChildFormView => RelationshipType is not RelationshipType.Parent;
+
+    internal RelationshipType RelationshipType
+    {
+        get
+        {
+            if (CurrentContext.Request.Form[$"form-view-relationship-type-{Name}"] != null && _relationshipType is null)
+                _relationshipType = (RelationshipType)int.Parse(CurrentContext.Request.Form[$"form-view-relationship-type-{Name}"]);
+
+            return _relationshipType ?? RelationshipType.Parent;
+        }
+        set => _relationshipType = value;
+    }
 
     internal bool IsInsertAtGridView => PageState is PageState.List && 
                                         FormElement.Options.GridToolbarActions.InsertAction.ShowOpenedAtGrid;
@@ -387,7 +400,7 @@ public class JJFormView : AsyncComponent
     private async Task<JJFormView> GetChildFormView()
     {
         var childFormView = await ComponentFactory.FormView.CreateAsync(RouteContext.ElementName);
-        childFormView.IsChildFormView = true;
+
         
         childFormView.FormElement.ParentName = RouteContext.ParentElementName;
         childFormView.UserValues = UserValues;
@@ -400,6 +413,7 @@ public class JJFormView : AsyncComponent
         childFormView.ShowTitle = isInsertSelection;
 
         var panelState = DataPanel.PageState;
+
         
         if (PageState is PageState.View || panelState is PageState.Insert || panelState is PageState.Update)
             childFormView.DisableActionsAtViewMode();
@@ -639,6 +653,10 @@ public class JJFormView : AsyncComponent
         if (CurrentAction is not IModalAction { ShowAsModal: true } && (_dataPanel is null || !DataPanel.IsAtModal ))
         {
             html.AppendHiddenInput($"form-view-page-state-{Name}", ((int)PageState).ToString());
+         
+            html.AppendHiddenInput($"form-view-relationship-type-{Name}", ((int)RelationshipType).ToString());
+            
+
             html.AppendHiddenInput($"current-action-map-{Name}",
                 EncryptionService.EncryptActionMap(CurrentActionMap));
             html.AppendHiddenInput($"form-view-relation-values-{FormElement.Name}",
@@ -1148,7 +1166,7 @@ public class JJFormView : AsyncComponent
         var visibleRelationships = GetVisibleRelationships(values, pageState);
         var containsRelationshipLayout = ContainsRelationshipLayout(visibleRelationships);
         
-        if(!containsRelationshipLayout)
+        if(!containsRelationshipLayout && !DataPanel.HasCustomPanelState && RelationshipType is not RelationshipType.OneToOne)
             DataPanel.PageState = pageState;
         
         DataPanel.Errors = errors;
@@ -1211,7 +1229,7 @@ public class JJFormView : AsyncComponent
         
         switch (PageState)
         {
-            case PageState.Insert when panelState is PageState.Insert && IsChildFormView:
+            case PageState.Insert when panelState is PageState.Insert:
                 formToolbarActions.CancelAction.SetVisible(false);
                 break;
             case PageState.Insert when IsInsertAtGridView:
@@ -1224,12 +1242,11 @@ public class JJFormView : AsyncComponent
                 break;
             case PageState.Update:
                 formToolbarActions.FormEditAction.SetVisible(false);
-                if (IsChildFormView)
-                    formToolbarActions.BackAction.SetVisible(false);
+                formToolbarActions.BackAction.SetVisible(false);
                 break;
             case PageState.View:
             {
-                if (IsChildFormView)
+                if (RelationshipType is RelationshipType.OneToOne)
                     formToolbarActions.BackAction.SetVisible(false);
                 break;
             }
