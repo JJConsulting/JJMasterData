@@ -79,7 +79,7 @@ public class SqlDataDictionaryRepository(
 
     public FormElement? GetFormElement(string elementName)
     {
-        if (memoryCache.TryGetValue(elementName, out FormElement? formElement))
+        if (memoryCache.TryGetValue(elementName, out FormElement formElement))
             return formElement;
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
