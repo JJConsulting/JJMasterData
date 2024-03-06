@@ -79,8 +79,8 @@ public class SqlDataDictionaryRepository(
 
     public FormElement? GetFormElement(string elementName)
     {
-        if (memoryCache.TryGetValue(elementName, out FormElement formElement))
-            return formElement;
+        if (memoryCache.TryGetValue(elementName, out string formElementJson))
+            return FormElementSerializer.Deserialize(formElementJson);
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
 
@@ -90,9 +90,8 @@ public class SqlDataDictionaryRepository(
 
         if (model != null)
         {
-            formElement = FormElementSerializer.Deserialize(model.Json);
-            memoryCache.Set(elementName, formElement);
-            return formElement;
+            memoryCache.Set(elementName, model.Json);
+            return FormElementSerializer.Deserialize(model.Json);
         }
 
         return null;
@@ -100,8 +99,8 @@ public class SqlDataDictionaryRepository(
 
     public async Task<FormElement?> GetFormElementAsync(string elementName)
     {
-        if (memoryCache.TryGetValue(elementName, out FormElement formElement))
-            return formElement;
+        if (memoryCache.TryGetValue(elementName, out string formElementJson))
+            return FormElementSerializer.Deserialize(formElementJson);
         
         var filter = new Dictionary<string, object> { { DataDictionaryStructure.Name, elementName }, {DataDictionaryStructure.Type, "F" } };
 
@@ -111,9 +110,8 @@ public class SqlDataDictionaryRepository(
         
         if (model != null)
         {
-            formElement = FormElementSerializer.Deserialize(model.Json);
-            memoryCache.Set(elementName, formElement);
-            return formElement;
+            memoryCache.Set(elementName, model.Json);
+            return FormElementSerializer.Deserialize(model.Json);
         }
 
         return null;
