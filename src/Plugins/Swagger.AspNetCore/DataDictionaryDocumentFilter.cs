@@ -3,24 +3,22 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using JJMasterData.Core.DataDictionary.Models;
 using JJMasterData.Core.DataDictionary.Repository.Abstractions;
+using JJMasterData.Core.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace JJMasterData.Swagger.AspNetCore;
 
-public class DataDictionaryDocumentFilter : IDocumentFilter
+public class DataDictionaryDocumentFilter(IServiceProvider serviceProvider) : IDocumentFilter
 {
-    private readonly IDataDictionaryRepository _dataDictionaryRepository;
-
-    public DataDictionaryDocumentFilter(IServiceProvider serviceProvider)
-    {
-        using var scope = serviceProvider.CreateScope();
-        _dataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
-    }
-    
+    private static string Version { get; } = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? string.Empty;
     public void Apply(OpenApiDocument document, DocumentFilterContext context)
     {
-        document.Info.Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString();
-        var formElements = _dataDictionaryRepository.GetFormElementListAsync().GetAwaiter().GetResult();
+        using var scope = serviceProvider.CreateScope();
+        var dataDictionaryRepository = scope.ServiceProvider.GetRequiredService<IDataDictionaryRepository>();
+        
+        document.Info.Version = Version;
+
+        var formElements = dataDictionaryRepository.GetFormElementList();
 
         foreach (var formElement in formElements)
         {

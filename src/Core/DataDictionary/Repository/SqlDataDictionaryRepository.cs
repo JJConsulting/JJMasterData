@@ -25,7 +25,27 @@ public class SqlDataDictionaryRepository(
 
     private Element MasterDataElement { get; } = DataDictionaryStructure.GetElement(options.Value.DataDictionaryTableName);
 
+    public List<FormElement> GetFormElementList(bool? apiSync = null)
+    {
+        var parameters = GetFormElementListParameters(apiSync);
+
+        var result = entityRepository.GetDictionaryListResult(MasterDataElement,
+            parameters, false);
+
+        return ParseDictionaryList(result.Data).ToList();
+    }
+    
     public async Task<List<FormElement>> GetFormElementListAsync(bool? apiSync = null)
+    {
+        var parameters = GetFormElementListParameters(apiSync);
+
+        var result = await entityRepository.GetDictionaryListResultAsync(MasterDataElement,
+            parameters, false);
+
+        return ParseDictionaryList(result.Data).ToList();
+    }
+
+    private static EntityParameters GetFormElementListParameters(bool? apiSync)
     {
         var filters = new Dictionary<string, object?>();
         if (apiSync.HasValue)
@@ -36,11 +56,7 @@ public class SqlDataDictionaryRepository(
         var orderBy = new OrderByData();
         orderBy.AddOrReplace(DataDictionaryStructure.Name, OrderByDirection.Asc);
         orderBy.AddOrReplace(DataDictionaryStructure.Type, OrderByDirection.Asc);
-
-        var result = await entityRepository.GetDictionaryListResultAsync(MasterDataElement,
-            new EntityParameters { Filters = filters, OrderBy = orderBy }, false);
-
-        return ParseDictionaryList(result.Data).ToList();
+        return new EntityParameters{Filters = filters, OrderBy = orderBy};
     }
 
     private static IEnumerable<FormElement> ParseDictionaryList(IEnumerable<Dictionary<string, object?>> result)
@@ -60,7 +76,6 @@ public class SqlDataDictionaryRepository(
 
         return dt.Data.Select(row => row[DataDictionaryStructure.Name]!.ToString()!).ToList();
     }
-
 
     public FormElement? GetFormElement(string elementName)
     {

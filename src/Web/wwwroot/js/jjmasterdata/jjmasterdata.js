@@ -1057,6 +1057,7 @@ class GridViewFilterHelper {
             url: urlBuilder.build(),
             success: (content) => {
                 HTMLHelper.setOuterHTML(filterPanelName, content);
+                listenAllEvents("#" + filterPanelName);
             }
         });
     }

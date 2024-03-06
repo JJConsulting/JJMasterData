@@ -147,14 +147,22 @@ internal class GridTableBody(JJGridView gridView)
                     else
                         tooltip = string.Empty;
 
-                    cell = GetIconCell(dataItemValue!.Icon, dataItemValue.IconColor ?? string.Empty, tooltip);
+                    if (dataItemValue != null)
+                    {
+                        cell = GetIconCell(dataItemValue.Icon, dataItemValue.IconColor ?? string.Empty, tooltip);
 
-                    cell.AppendIf(field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription, HtmlTag.Span,
-                        span =>
-                        {
-                            span.AppendText(dataItemValue.Description ?? dataItemValue.Id);
-                            span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
-                        });
+                        cell.AppendIf(field.DataItem.GridBehavior is DataItemGridBehavior.IconWithDescription,
+                            HtmlTag.Span,
+                            span =>
+                            {
+                                span.AppendText(dataItemValue.Description ?? dataItemValue.Id);
+                                span.WithCssClass($"{BootstrapHelper.MarginLeft}-1");
+                            });
+                    }
+                    else
+                    {
+                        cell = new HtmlBuilder();
+                    }
                 }
                 else if (field.DataFile is not null)
                 {
