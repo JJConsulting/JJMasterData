@@ -113,14 +113,6 @@ public class DataAccessParameter
 
     public DataAccessParameter DeepCopy()
     {
-        return new DataAccessParameter
-        {
-            Name = Name,
-            Type = Type,
-            Size = Size,
-            Direction = Direction,
-            Value = Value,
-            IsNullable = IsNullable
-        };
+        return (DataAccessParameter)MemberwiseClone();
     }
 }

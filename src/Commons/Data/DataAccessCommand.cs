@@ -30,7 +30,7 @@ public class DataAccessCommand
     public string Sql { get; set; }
 
     [JsonProperty("parameters")]
-    public List<DataAccessParameter> Parameters { get; internal init; }
+    public List<DataAccessParameter> Parameters { get; private set; }
 
     [SetsRequiredMembers]
     public DataAccessCommand()
@@ -65,11 +65,8 @@ public class DataAccessCommand
 
     public DataAccessCommand DeepCopy()
     {
-        return new DataAccessCommand
-        {
-            Type = Type,
-            Parameters = Parameters.Select(p => p.DeepCopy()).ToList(),
-            Sql = Sql
-        };
+        var copy = (DataAccessCommand)MemberwiseClone();
+        copy.Parameters = Parameters.ConvertAll(p => p.DeepCopy());
+        return copy;
     }
 }
