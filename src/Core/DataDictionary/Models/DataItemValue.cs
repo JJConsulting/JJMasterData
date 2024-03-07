@@ -49,13 +49,6 @@ public class DataItemValue
 
     public DataItemValue DeepCopy()
     {
-        return new()
-        {
-            Group = Group,
-            Description = Description,
-            Icon = Icon,
-            Id = Id,
-            IconColor = IconColor
-        };
+        return (DataItemValue)MemberwiseClone();
     }
 }

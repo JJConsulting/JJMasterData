@@ -17,11 +17,7 @@ public class DataElementMapFilter
 
     public DataElementMapFilter DeepCopy()
     {
-        return new()
-        {
-            ExpressionValue = ExpressionValue,
-            FieldName = FieldName
-        };
+        return (DataElementMapFilter)MemberwiseClone();
     }
 
 }

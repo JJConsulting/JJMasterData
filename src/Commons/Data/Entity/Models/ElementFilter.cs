@@ -27,12 +27,5 @@ public class ElementFilter(FilterMode type)
     {
     }
 
-    public ElementFilter DeepCopy()
-    {
-        return new ElementFilter
-        {
-            Type = Type,
-            IsRequired = IsRequired
-        };
-    }
+    public ElementFilter DeepCopy() => (ElementFilter)MemberwiseClone();
 }

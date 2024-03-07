@@ -34,11 +34,6 @@ public class ProcessOptions
 
     public ProcessOptions DeepCopy()
     {
-        return new ProcessOptions
-        {
-            CommandBeforeProcess = CommandBeforeProcess,
-            CommandAfterProcess = CommandAfterProcess,
-            Scope = Scope
-        };
+        return (ProcessOptions)MemberwiseClone();
     }
 }

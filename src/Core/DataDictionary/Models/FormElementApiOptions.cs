@@ -76,16 +76,6 @@ public class FormElementApiOptions
 
     public FormElementApiOptions DeepCopy()
     {
-        return new FormElementApiOptions
-        {
-            EnableGetAll = EnableGetAll,
-            EnableGetDetail = EnableGetDetail,
-            EnableAdd = EnableAdd,
-            EnableUpdate = EnableUpdate,
-            EnableUpdatePart = EnableUpdatePart,
-            EnableDel = EnableDel,
-            JsonFormatting = JsonFormatting,
-            ApplyUserIdOn = ApplyUserIdOn
-        };
+        return (FormElementApiOptions)MemberwiseClone();
     }
 }

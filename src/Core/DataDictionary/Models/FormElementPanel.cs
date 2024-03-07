@@ -65,18 +65,6 @@ public class FormElementPanel
 
     public FormElementPanel DeepCopy()
     {
-        return new FormElementPanel
-        {
-            Title = Title,
-            Icon = Icon,
-            SubTitle = SubTitle,
-            Color = Color,
-            Layout = Layout,
-            CssClass = CssClass,
-            EnableExpression = EnableExpression,
-            PanelId = PanelId,
-            VisibleExpression = VisibleExpression,
-            ExpandedByDefault = ExpandedByDefault
-        };
+        return (FormElementPanel)MemberwiseClone();
     }
 }

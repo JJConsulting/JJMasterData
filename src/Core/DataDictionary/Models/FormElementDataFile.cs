@@ -67,17 +67,6 @@ public class FormElementDataFile
 
     public FormElementDataFile DeepCopy()
     {
-        return new FormElementDataFile
-        {
-            AllowedTypes = AllowedTypes,
-            AllowPasting = AllowPasting,
-            DragDrop = DragDrop,
-            FolderPath = FolderPath,
-            MultipleFile = MultipleFile,
-            ViewGallery = ViewGallery,
-            ExportAsLink = ExportAsLink,
-            MaxFileSize = MaxFileSize,
-            ShowAsUploadView = ShowAsUploadView
-        };
+        return (FormElementDataFile)MemberwiseClone();
     }
 }

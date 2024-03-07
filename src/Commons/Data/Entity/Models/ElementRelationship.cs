@@ -41,12 +41,8 @@ public class ElementRelationship
 
     public ElementRelationship DeepCopy()
     {
-        return new ElementRelationship
-        {
-            Columns = Columns.Select(c => c.DeepCopy()).ToList(),
-            ChildElement = ChildElement,
-            DeleteOnCascade = DeleteOnCascade,
-            UpdateOnCascade = UpdateOnCascade
-        };
+        var copy = (ElementRelationship)MemberwiseClone();
+        copy.Columns = Columns.ConvertAll(c => c.DeepCopy());
+        return copy;
     }
 }

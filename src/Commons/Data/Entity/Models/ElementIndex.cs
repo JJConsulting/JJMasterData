@@ -32,11 +32,8 @@ public class ElementIndex
 
     public ElementIndex DeepCopy()
     {
-        return new ElementIndex
-        {
-            Columns = [..Columns],
-            IsClustered = IsClustered,
-            IsUnique = IsUnique
-        };
+        var copy = (ElementIndex)MemberwiseClone();
+        copy.Columns = [..Columns];
+        return copy;
     }
 }

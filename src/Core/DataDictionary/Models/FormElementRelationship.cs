@@ -53,14 +53,9 @@ public class FormElementRelationship
 
     public FormElementRelationship DeepCopy()
     {
-        return new FormElementRelationship
-        {
-            Id = Id,
-            Panel = Panel.DeepCopy(),
-            ElementRelationship = ElementRelationship?.DeepCopy(),
-            ViewType = ViewType,
-            IsParent = IsParent,
-            EditModeOpenByDefault = EditModeOpenByDefault
-        };
+        var copy = (FormElementRelationship)MemberwiseClone();
+        copy.Panel = Panel.DeepCopy();
+        copy.ElementRelationship = ElementRelationship?.DeepCopy();
+        return copy;
     }
 }
